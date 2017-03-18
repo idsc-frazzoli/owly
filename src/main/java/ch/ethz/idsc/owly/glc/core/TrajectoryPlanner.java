@@ -10,7 +10,8 @@ import java.util.Set;
 
 import ch.ethz.idsc.tensor.DoubleScalar;
 import ch.ethz.idsc.tensor.Tensor;
-import ch.ethz.idsc.tensor.alg.Floor;
+import ch.ethz.idsc.tensor.alg.Dimensions;
+import ch.ethz.idsc.tensor.sca.Floor;
 
 public class TrajectoryPlanner {
   final DynamicalSystem dynamicalSystem;
@@ -46,7 +47,7 @@ public class TrajectoryPlanner {
     this.goalQuery = goalQuery;
     this.obstacleQuery = obstacleQuery;
     // ---
-    final int state_dim = controls.dimensions().get(1);
+    final int state_dim = Dimensions.of(controls).get(1); // TODO control dim != state dim
     // ---
     partitionScale = 1; // TODO
     if (0 < costFunction.getLipschitz()) {
@@ -62,7 +63,7 @@ public class TrajectoryPlanner {
   }
 
   private Tensor convertToKey(Tensor x) {
-    return x.multiply(DoubleScalar.of(partitionScale)).map(Floor::of);
+    return x.multiply(DoubleScalar.of(partitionScale)).map(Floor.function);
   }
 
   public void insertRoot(Tensor x) {
