@@ -10,7 +10,6 @@ import java.util.Set;
 
 import ch.ethz.idsc.tensor.DoubleScalar;
 import ch.ethz.idsc.tensor.Tensor;
-import ch.ethz.idsc.tensor.alg.Dimensions;
 import ch.ethz.idsc.tensor.sca.Floor;
 
 public class TrajectoryPlanner {
@@ -28,7 +27,7 @@ public class TrajectoryPlanner {
   double expand_time;
   private Map<Tensor, Domain> domain_labels = new HashMap<>();
   private int res = 10; // TODO
-  final double eps;
+  double eps;
   private boolean foundGoal = false; // TODO
   private Node best = null;
 
@@ -47,9 +46,10 @@ public class TrajectoryPlanner {
     this.goalQuery = goalQuery;
     this.obstacleQuery = obstacleQuery;
     // ---
-    final int state_dim = Dimensions.of(controls).get(1); // TODO control dim != state dim
-    // ---
-    partitionScale = 1; // TODO
+  }
+
+  public void initialize(int state_dim, double partitionScale) {
+    this.partitionScale = partitionScale; // TODO
     if (0 < costFunction.getLipschitz()) {
       eps = (Math.sqrt(state_dim) / partitionScale) * //
           (dynamicalSystem.getLipschitz()) / (costFunction.getLipschitz()) * //

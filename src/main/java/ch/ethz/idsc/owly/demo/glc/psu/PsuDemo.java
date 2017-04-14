@@ -1,7 +1,8 @@
 // code by jph
-package ch.ethz.idsc.owly.demo.glc.rn;
+package ch.ethz.idsc.owly.demo.glc.psu;
 
 import ch.ethz.idsc.owly.glc.adapter.MinTimeCost;
+import ch.ethz.idsc.owly.glc.adapter.NoObstacles;
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
 import ch.ethz.idsc.owly.glc.adapter.TimeInvariantRegion;
 import ch.ethz.idsc.owly.glc.adapter.ZeroHeuristic;
@@ -15,26 +16,24 @@ import ch.ethz.idsc.owly.util.rn.RnSphericalRegion;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
-import ch.ethz.idsc.tensor.io.Pretty;
 
-public class RnDemo {
+public class PsuDemo {
   public static void main(String[] args) {
-    DynamicalSystem dynamicalSystem = new RnSingleIntegrator(1);
-    Tensor controls = RnControls.createR2RadialControls(6);
-    System.out.println(Pretty.of(controls));
+    DynamicalSystem dynamicalSystem = new PsuIntegrator();
+    Tensor controls = PsuControls.createR2RadialControls(6);
+    // System.out.println(Pretty.of(controls));
     CostFunction costFunction = new MinTimeCost();
     Heuristic heuristic = new ZeroHeuristic();
+    // TODO join +PI and - PI
     TrajectoryRegionQuery goalQuery = //
         new SimpleTrajectoryRegionQuery(new TimeInvariantRegion( //
-            new RnSphericalRegion(Tensors.vector(10, 0), RealScalar.of(1))));
-    TrajectoryRegionQuery obstacleQuery = //
-        new SimpleTrajectoryRegionQuery(new TimeInvariantRegion( //
-            new RnSphericalRegion(Tensors.vector(5, 0), RealScalar.of(3))));
+            new RnSphericalRegion(Tensors.vector(Math.PI, 0), RealScalar.of(1))));
+    TrajectoryRegionQuery obstacleQuery = new NoObstacles();
     // ---
     TrajectoryPlanner trajectoryPlanner = new TrajectoryPlanner( //
         dynamicalSystem, controls, costFunction, heuristic, goalQuery, obstacleQuery);
     // ---
-    trajectoryPlanner.initialize(2, 1);
+    trajectoryPlanner.initialize(2, 5);
     trajectoryPlanner.insertRoot(Tensors.vector(0, 0));
     trajectoryPlanner.plan();
     Trajectory trajectory = trajectoryPlanner.getPathFromGoalToRoot();
