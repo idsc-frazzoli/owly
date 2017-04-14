@@ -25,15 +25,15 @@ public class RnDemo {
     Heuristic heuristic = new ZeroHeuristic();
     TrajectoryRegionQuery goalQuery = //
         new SimpleTrajectoryRegionQuery(new TimeInvariantRegion( //
-            new RnSphericalRegion(Tensors.vectorLong(10, 0), RealScalar.of(1))));
+            new RnSphericalRegion(Tensors.vector(10, 0), RealScalar.of(1))));
     TrajectoryRegionQuery obstacleQuery = //
         new SimpleTrajectoryRegionQuery(new TimeInvariantRegion( //
-            new RnSphericalRegion(Tensors.vectorLong(5, 0), RealScalar.of(3))));
+            new RnSphericalRegion(Tensors.vector(5, 0), RealScalar.of(3))));
     // ---
     TrajectoryPlanner trajectoryPlanner = new TrajectoryPlanner( //
         dynamicalSystem, controls, costFunction, heuristic, goalQuery, obstacleQuery);
     // ---
-    trajectoryPlanner.insertRoot(Tensors.vectorLong(0, 0));
+    trajectoryPlanner.insertRoot(Tensors.vector(0, 0));
     trajectoryPlanner.plan();
     Trajectory trajectory = trajectoryPlanner.getPathFromGoalToRoot();
     trajectory.print();

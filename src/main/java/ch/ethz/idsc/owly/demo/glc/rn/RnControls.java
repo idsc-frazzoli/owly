@@ -11,7 +11,7 @@ public class RnControls {
     final double deltaAngle = 2 * Math.PI / num;
     for (int index = 0; index < num; ++index) {
       double angle = deltaAngle * index;
-      Tensor u = Tensors.vectorDouble(Math.cos(angle), Math.sin(angle));
+      Tensor u = Tensors.vector(Math.cos(angle), Math.sin(angle));
       tensor.append(u.unmodifiable());
     }
     return Chop.of(tensor);
