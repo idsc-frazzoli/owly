@@ -6,7 +6,7 @@ import java.util.PriorityQueue;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
 
-class Domain {
+public class Domain {
   private Node label = null;
   PriorityQueue<Node> candidates = new PriorityQueue<>(NodeCostComparator.instance);
 
@@ -20,5 +20,9 @@ class Domain {
 
   public void setLabel(Node node) {
     label = node;
+  }
+
+  public Node getLabel() {
+    return label;
   }
 }

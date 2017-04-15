@@ -20,7 +20,7 @@ import ch.ethz.idsc.tensor.Tensors;
 public class RnDemo {
   public static void main(String[] args) {
     DynamicalSystem dynamicalSystem = new RnSingleIntegrator(RealScalar.ONE);
-    Tensor controls = RnControls.createR2RadialControls(6);
+    Tensor controls = RnControls.createR2RadialControls(6).multiply(RealScalar.of(.7));
     // System.out.println(Pretty.of(controls));
     CostFunction costFunction = new MinTimeCost();
     Heuristic heuristic = new ZeroHeuristic();
@@ -34,7 +34,7 @@ public class RnDemo {
     TrajectoryPlanner trajectoryPlanner = new TrajectoryPlanner( //
         dynamicalSystem, controls, costFunction, heuristic, goalQuery, obstacleQuery);
     // ---
-    trajectoryPlanner.initialize(Tensors.vector(1, 1));
+    trajectoryPlanner.initialize(Tensors.vector(3, 3));
     trajectoryPlanner.insertRoot(Tensors.vector(0, 0));
     trajectoryPlanner.plan();
     Trajectory trajectory = trajectoryPlanner.getPathFromRootToGoal();

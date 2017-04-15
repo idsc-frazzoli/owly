@@ -1,6 +1,8 @@
 // code by bapaden and jph
 package ch.ethz.idsc.owly.glc.core;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -27,7 +29,7 @@ public class TrajectoryPlanner {
   // ---
   Tensor partitionScale;
   int depth_limit = 20; // TODO
-  public final PriorityQueue<Node> queue = new PriorityQueue<>(NodeMeritComparator.instance);
+  private final PriorityQueue<Node> queue = new PriorityQueue<>(NodeMeritComparator.instance);
   double time_scale = 10; // TODO
   Scalar expand_time;
   private Map<Tensor, Domain> domain_labels = new HashMap<>();
@@ -77,6 +79,14 @@ public class TrajectoryPlanner {
     queue.add(node);
     Tensor current_domain = convertToKey(node.x);
     domain_labels.put(current_domain, new Domain());
+  }
+
+  public Collection<Node> getQueue() {
+    return Collections.unmodifiableCollection(queue);
+  }
+
+  public Map<Tensor, Domain> getDomains() {
+    return Collections.unmodifiableMap(domain_labels);
   }
 
   public boolean expand() {
@@ -159,7 +169,6 @@ public class TrajectoryPlanner {
 
   public void plan() {
     while (expand()) {
-      // System.out.println("expand");
       // ---
     }
   }
