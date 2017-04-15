@@ -29,18 +29,18 @@ public class RnDemo {
             new RnSphericalRegion(Tensors.vector(10, 0), RealScalar.of(1))));
     TrajectoryRegionQuery obstacleQuery = //
         new SimpleTrajectoryRegionQuery(new TimeInvariantRegion( //
-            new RnSphericalRegion(Tensors.vector(5, 0), RealScalar.of(3))));
+            new RnSphericalRegion(Tensors.vector(5, 0), RealScalar.of(4))));
     // ---
     TrajectoryPlanner trajectoryPlanner = new TrajectoryPlanner( //
         dynamicalSystem, controls, costFunction, heuristic, goalQuery, obstacleQuery);
     // ---
-    trajectoryPlanner.initialize(2, 1);
+    trajectoryPlanner.initialize(Tensors.vector(1, 1));
     trajectoryPlanner.insertRoot(Tensors.vector(0, 0));
     trajectoryPlanner.plan();
-    Trajectory trajectory = trajectoryPlanner.getPathFromGoalToRoot();
+    Trajectory trajectory = trajectoryPlanner.getPathFromRootToGoal();
     trajectory.print();
     GlcFrame glcFrame = new GlcFrame();
-    glcFrame.setTrajectoryPlanner(trajectoryPlanner);
+    glcFrame.glcComponent.setTrajectoryPlanner(trajectoryPlanner);
     // double d = Double.parseDouble("0.5000000000000001");
     // double dn = Math.nextDown(d);
     // System.out.println(dn);

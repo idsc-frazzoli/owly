@@ -22,6 +22,6 @@ class PsuIntegrator extends EulerIntegrator {
 
   @Override
   public double getMaxTimeStep() {
-    return .5;
+    return .25;
   }
 }

@@ -38,12 +38,12 @@ public class PsuDemo {
     TrajectoryPlanner trajectoryPlanner = new TrajectoryPlanner( //
         dynamicalSystem, controls, costFunction, heuristic, goalQuery, obstacleQuery);
     // ---
-    trajectoryPlanner.initialize(2, 5);
+    trajectoryPlanner.initialize(Tensors.vector(10, 10));
     trajectoryPlanner.insertRoot(Tensors.vector(0, 0));
     trajectoryPlanner.plan();
-    Trajectory trajectory = trajectoryPlanner.getPathFromGoalToRoot();
+    Trajectory trajectory = trajectoryPlanner.getPathFromRootToGoal();
     trajectory.print();
     GlcFrame glcFrame = new GlcFrame();
-    glcFrame.setTrajectoryPlanner(trajectoryPlanner);
+    glcFrame.glcComponent.setTrajectoryPlanner(trajectoryPlanner);
   }
 }

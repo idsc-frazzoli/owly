@@ -2,11 +2,13 @@
 package ch.ethz.idsc.owly.glc.adapter;
 
 import ch.ethz.idsc.owly.glc.core.Heuristic;
+import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
+import ch.ethz.idsc.tensor.ZeroScalar;
 
 public class ZeroHeuristic implements Heuristic {
   @Override
-  public final double costToGo(Tensor tensor) {
-    return 0;
+  public final Scalar costToGo(Tensor tensor) {
+    return ZeroScalar.get();
   }
 }
