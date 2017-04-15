@@ -2,6 +2,8 @@
 package ch.ethz.idsc.owly.demo.glc.psu;
 
 import ch.ethz.idsc.owly.glc.adapter.EulerIntegrator;
+import ch.ethz.idsc.tensor.RealScalar;
+import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
 import ch.ethz.idsc.tensor.sca.Sin;
@@ -16,12 +18,12 @@ class PsuIntegrator extends EulerIntegrator {
   }
 
   @Override
-  public double getLipschitz() {
-    return 2; // TODO check
+  public Scalar getLipschitz() {
+    return RealScalar.of(2); // TODO check
   }
 
   @Override
-  public double getMaxTimeStep() {
-    return .25;
+  public Scalar getMaxTimeStep() {
+    return RealScalar.of(.25);
   }
 }

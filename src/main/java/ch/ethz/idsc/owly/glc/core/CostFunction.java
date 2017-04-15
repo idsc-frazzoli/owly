@@ -7,5 +7,5 @@ import ch.ethz.idsc.tensor.Tensor;
 public interface CostFunction {
   Scalar cost(Trajectory trajectory, Tensor u);
 
-  double getLipschitz();
+  Scalar getLipschitz();
 }

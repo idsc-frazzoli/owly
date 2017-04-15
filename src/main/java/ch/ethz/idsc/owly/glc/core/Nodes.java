@@ -16,5 +16,4 @@ public class Nodes {
     Collections.reverse(list);
     return list;
   }
-  
 }

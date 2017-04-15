@@ -19,7 +19,7 @@ import ch.ethz.idsc.tensor.Tensors;
 
 public class RnDemo {
   public static void main(String[] args) {
-    DynamicalSystem dynamicalSystem = new RnSingleIntegrator(1);
+    DynamicalSystem dynamicalSystem = new RnSingleIntegrator(RealScalar.ONE);
     Tensor controls = RnControls.createR2RadialControls(6);
     // System.out.println(Pretty.of(controls));
     CostFunction costFunction = new MinTimeCost();

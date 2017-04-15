@@ -1,8 +1,8 @@
 // code by jph
 package ch.ethz.idsc.owly.demo.glc.psu;
 
-import ch.ethz.idsc.owly.glc.adapter.MinTimeCost;
 import ch.ethz.idsc.owly.glc.adapter.EmptyRegionQuery;
+import ch.ethz.idsc.owly.glc.adapter.MinTimeCost;
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
 import ch.ethz.idsc.owly.glc.adapter.TimeInvariantRegion;
 import ch.ethz.idsc.owly.glc.adapter.ZeroHeuristic;
@@ -29,7 +29,7 @@ public class PsuDemo {
     // System.out.println(Pretty.of(controls));
     CostFunction costFunction = new MinTimeCost();
     Heuristic heuristic = new ZeroHeuristic();
-    // TODO join +PI and - PI
+    // TODO join +PI and -PI
     TrajectoryRegionQuery goalQuery = //
         new SimpleTrajectoryRegionQuery(new TimeInvariantRegion( //
             new RnSphericalRegion(Tensors.vector(Math.PI, 0), RealScalar.of(1))));

@@ -2,6 +2,8 @@
 package ch.ethz.idsc.owly.demo.glc.ip;
 
 import ch.ethz.idsc.owly.glc.adapter.EulerIntegrator;
+import ch.ethz.idsc.tensor.RealScalar;
+import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
 
 class IpIntegrator extends EulerIntegrator {
@@ -12,12 +14,12 @@ class IpIntegrator extends EulerIntegrator {
   }
 
   @Override
-  public double getLipschitz() {
-    return 1;
+  public Scalar getLipschitz() {
+    return RealScalar.ONE;
   }
 
   @Override
-  public double getMaxTimeStep() {
-    return 1;
+  public Scalar getMaxTimeStep() {
+    return RealScalar.ONE;
   }
 }

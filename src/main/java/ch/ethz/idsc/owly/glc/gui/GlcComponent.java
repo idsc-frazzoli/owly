@@ -57,7 +57,7 @@ public class GlcComponent {
       }
       if (trajectoryPlanner != null) {
         graphics.setColor(Color.BLACK);
-        DoubleSummaryStatistics dss = trajectoryPlanner.queue.stream().mapToDouble(n->n.cost.number().doubleValue()).summaryStatistics();
+        DoubleSummaryStatistics dss = trajectoryPlanner.queue.stream().mapToDouble(n -> n.cost.number().doubleValue()).summaryStatistics();
         System.out.println(dss);
         dss.getMin();
         dss.getMax();
@@ -65,7 +65,7 @@ public class GlcComponent {
           Tensor x = node.x;
           Point2D p = toPoint(x);
           Shape shape = new Rectangle2D.Double(p.getX(), p.getY(), 1, 1);
-//          graphics.drawLine((int) p.getX(), (int) p.getY(), (int) p.getX() + 1, (int) p.getY() + 1);
+          // graphics.drawLine((int) p.getX(), (int) p.getY(), (int) p.getX() + 1, (int) p.getY() + 1);
           graphics.fill(shape);
         }
         {
