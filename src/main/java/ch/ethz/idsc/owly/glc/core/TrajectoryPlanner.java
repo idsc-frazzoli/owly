@@ -22,7 +22,7 @@ public class TrajectoryPlanner {
   // ---
   double partitionScale;
   int depth_limit = 20; // TODO
-  PriorityQueue<Node> queue = new PriorityQueue<>(NodeMeritComparator.instance);
+  public final PriorityQueue<Node> queue = new PriorityQueue<>(NodeMeritComparator.instance);
   double time_scale = 10; // TODO
   double expand_time;
   private Map<Tensor, Domain> domain_labels = new HashMap<>();
@@ -84,7 +84,7 @@ public class TrajectoryPlanner {
       System.out.println("depth limit reached " + current_node.depth);
       return false;
     }
-    System.out.println("current_node " + current_node);
+//    System.out.println("current_node " + current_node);
     boolean live = true;
     Set<Domain> domains_needing_update = new HashSet<>();
     Map<Node, Trajectory> traj_from_parent = new HashMap<>();
@@ -163,7 +163,7 @@ public class TrajectoryPlanner {
     Node node = best;
     while (node != null) {
       trajectory.add(node.getStateTime());
-      System.out.println(node);
+//      System.out.println(node);
       node = node.parent;
     }
     Collections.reverse(trajectory);

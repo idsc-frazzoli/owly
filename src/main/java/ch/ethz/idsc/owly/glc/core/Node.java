@@ -6,7 +6,7 @@ import java.util.Map;
 
 import ch.ethz.idsc.tensor.Tensor;
 
-class Node {
+public class Node {
   public Node parent;
   public final Map<Tensor, Node> children = new HashMap<>();
   public final Tensor x;
