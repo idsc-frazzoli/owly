@@ -10,6 +10,7 @@ import java.util.Map;
 import java.util.PriorityQueue;
 import java.util.Set;
 
+import ch.ethz.idsc.owly.util.Flow;
 import ch.ethz.idsc.owly.util.Integrator;
 import ch.ethz.idsc.owly.util.StateSpaceModel;
 import ch.ethz.idsc.tensor.RealScalar;
@@ -25,7 +26,7 @@ public class TrajectoryPlanner {
   final Integrator integrator;
   final StateSpaceModel stateSpaceModel;
   final DynamicalSystem dynamicalSystem;
-  final Tensor controls;
+  final Controls controls;
   final CostFunction costFunction;
   final Heuristic heuristic;
   final TrajectoryRegionQuery goalQuery;
@@ -46,7 +47,7 @@ public class TrajectoryPlanner {
       Integrator integrator, //
       StateSpaceModel stateSpaceModel, //
       DynamicalSystem dynamicalSystem, //
-      Tensor controls, //
+      Controls controls, //
       CostFunction costFunction, //
       Heuristic heuristic, //
       TrajectoryRegionQuery goalQuery, //
@@ -112,15 +113,15 @@ public class TrajectoryPlanner {
     boolean live = true;
     Set<Domain> domains_needing_update = new HashSet<>();
     Map<Node, Trajectory> traj_from_parent = new HashMap<>();
-    for (Tensor u : controls) {
-      final Trajectory trajectory = dynamicalSystem.sim(integrator, stateSpaceModel, current_node.time, current_node.time.add(expand_time), current_node.x, u);
+    for (Flow flow : controls) {
+      final Trajectory trajectory = dynamicalSystem.sim(integrator, flow, current_node.time, current_node.time.add(expand_time), current_node.x);
       final StateTime last = trajectory.getBack();
       Node new_arc = new Node( //
           last.tensor, // new_arc.x
-          current_node.cost.add(costFunction.cost(trajectory, u)), // new_arc.cost
+          current_node.cost.add(costFunction.cost(trajectory, flow)), // new_arc.cost
           last.time, // new_arc.t
           heuristic.costToGo(last.tensor), // new_arc.merit
-          u // new_arc.u_idx
+          flow // new_arc.u_idx
       );
       traj_from_parent.put(new_arc, trajectory);
       // ---
@@ -190,7 +191,7 @@ public class TrajectoryPlanner {
     for (int index = 1; index < list.size(); ++index) {
       Node prev = list.get(index - 1);
       Node next = list.get(index);
-      Trajectory part = dynamicalSystem.sim(integrator, stateSpaceModel, prev.time, prev.time.add(expand_time), prev.x, next.u);
+      Trajectory part = dynamicalSystem.sim(integrator, next.u, prev.time, prev.time.add(expand_time), prev.x);
       trajectory.addAll(part);
     }
     return trajectory;

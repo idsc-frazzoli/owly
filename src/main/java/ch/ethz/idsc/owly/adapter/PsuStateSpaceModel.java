@@ -17,9 +17,7 @@ public class PsuStateSpaceModel implements StateSpaceModel {
     return Tensors.of(x.Get(1), u.Get(0).subtract(Sin.function.apply(x.Get(0))));
   }
 
-  /**
-   * | f(x_1, u) - f(x_2, u) | <= L | x_1 - x_2 |
-   */
+  /** | f(x_1, u) - f(x_2, u) | <= L | x_1 - x_2 | */
   @Override
   public Scalar getLipschitz() {
     return RealScalar.ONE; // TODO check

@@ -8,6 +8,7 @@ import ch.ethz.idsc.owly.glc.adapter.MinTimeCost;
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
 import ch.ethz.idsc.owly.glc.adapter.TimeInvariantRegion;
 import ch.ethz.idsc.owly.glc.adapter.ZeroHeuristic;
+import ch.ethz.idsc.owly.glc.core.Controls;
 import ch.ethz.idsc.owly.glc.core.CostFunction;
 import ch.ethz.idsc.owly.glc.core.DynamicalSystem;
 import ch.ethz.idsc.owly.glc.core.Heuristic;
@@ -20,7 +21,6 @@ import ch.ethz.idsc.owly.util.StateSpaceModel;
 import ch.ethz.idsc.owly.util.rn.RnSphericalRegion;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
-import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
 
 /** Pendulum Swing-up
@@ -37,7 +37,7 @@ public class PsuDemo {
         return RealScalar.of(.25);
       }
     };
-    Tensor controls = PsuControls.createControls(6);
+    Controls controls = PsuControls.createControls(6);
     // System.out.println(Pretty.of(controls));
     CostFunction costFunction = new MinTimeCost();
     Heuristic heuristic = new ZeroHeuristic();

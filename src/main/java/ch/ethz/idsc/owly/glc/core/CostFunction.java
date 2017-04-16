@@ -1,11 +1,11 @@
 // code by bapaden and jph
 package ch.ethz.idsc.owly.glc.core;
 
+import ch.ethz.idsc.owly.util.Flow;
 import ch.ethz.idsc.tensor.Scalar;
-import ch.ethz.idsc.tensor.Tensor;
 
 public interface CostFunction {
-  Scalar cost(Trajectory trajectory, Tensor u);
+  Scalar cost(Trajectory trajectory, Flow u);
 
   Scalar getLipschitz();
 }

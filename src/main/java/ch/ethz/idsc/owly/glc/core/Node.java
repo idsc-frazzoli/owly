@@ -4,21 +4,22 @@ package ch.ethz.idsc.owly.glc.core;
 import java.util.HashMap;
 import java.util.Map;
 
+import ch.ethz.idsc.owly.util.Flow;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
 
 public class Node {
   public Node parent;
-  public final Map<Tensor, Node> children = new HashMap<>();
+  public final Map<Flow, Node> children = new HashMap<>();
   public final Tensor x;
   public Scalar time;
   public final Scalar cost;
   public final Scalar merit;
   /** u is null for root node */
-  public final Tensor u;
+  public final Flow u;
   public int depth;
 
-  public Node(Tensor tensor, Scalar cost, Scalar time, Scalar e, Tensor u) {
+  public Node(Tensor tensor, Scalar cost, Scalar time, Scalar e, Flow u) {
     this.cost = cost;
     this.x = tensor;
     this.time = time;

@@ -1,8 +1,8 @@
 // code by jph
 package ch.ethz.idsc.owly.adapter;
 
+import ch.ethz.idsc.owly.util.Flow;
 import ch.ethz.idsc.owly.util.Integrator;
-import ch.ethz.idsc.owly.util.StateSpaceModel;
 import ch.ethz.idsc.tensor.RationalScalar;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
@@ -18,11 +18,11 @@ public final class RungeKutta4Integrator implements Integrator {
   private static final Tensor WEIGHTS = Tensors.of(SIXTH, THIRD, THIRD, SIXTH);
 
   @Override
-  public Tensor step(StateSpaceModel stateSpaceModel, Tensor x, Tensor u, Scalar dt) {
-    Tensor k1 = stateSpaceModel.flow(x, u).multiply(dt);
-    Tensor k2 = stateSpaceModel.flow(x.add(k1.multiply(HALF)), u).multiply(dt);
-    Tensor k3 = stateSpaceModel.flow(x.add(k2.multiply(HALF)), u).multiply(dt);
-    Tensor k4 = stateSpaceModel.flow(x.add(k3), u).multiply(dt);
+  public Tensor step(Flow flow, Tensor x, Scalar dt) {
+    Tensor k1 = flow.at(x).multiply(dt);
+    Tensor k2 = flow.at(x.add(k1.multiply(HALF))).multiply(dt);
+    Tensor k3 = flow.at(x.add(k2.multiply(HALF))).multiply(dt);
+    Tensor k4 = flow.at(x.add(k3)).multiply(dt);
     return x.add(WEIGHTS.dot(Tensors.of(k1, k2, k3, k4)));
   }
 }

@@ -1,8 +1,8 @@
 // code by bapaden and jph
 package ch.ethz.idsc.owly.glc.core;
 
+import ch.ethz.idsc.owly.util.Flow;
 import ch.ethz.idsc.owly.util.Integrator;
-import ch.ethz.idsc.owly.util.StateSpaceModel;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.sca.Ceiling;
@@ -10,7 +10,7 @@ import ch.ethz.idsc.tensor.sca.Ceiling;
 public abstract class DynamicalSystem {
   public abstract Scalar getMaxTimeStep();
 
-  public Trajectory sim(Integrator integrator, StateSpaceModel ssm, Scalar t0, Scalar tf, Tensor x0, Tensor u) {
+  public Trajectory sim(Integrator integrator, Flow flow, Scalar t0, Scalar tf, Tensor x0) {
     Scalar num_steps = Ceiling.function.apply(tf.subtract(t0).divide(getMaxTimeStep()));
     Scalar dt = tf.subtract(t0).divide(num_steps);
     Trajectory trajectory = new Trajectory();
@@ -18,7 +18,7 @@ public abstract class DynamicalSystem {
     trajectory.add(prev);
     for (int c0 = 0; c0 < num_steps.number().intValue(); ++c0) {
       // TODO maybe doesn't add the right number of stateTimes ...
-      Tensor x1 = integrator.step(ssm, prev.tensor, u, dt);
+      Tensor x1 = integrator.step(flow, prev.tensor, dt);
       StateTime next = new StateTime(x1, prev.time.add(dt));
       trajectory.add(next);
       prev = next;
