@@ -106,7 +106,7 @@ public class GlcComponent {
           StateTime prev = null;
           for (StateTime stateTime : trajectory) {
             if (prev != null)
-              graphics.draw(new Line2D.Double(toPoint(prev.tensor), toPoint(stateTime.tensor)));
+              graphics.draw(new Line2D.Double(toPoint(prev.x), toPoint(stateTime.x)));
             prev = stateTime;
           }
         }
@@ -116,7 +116,7 @@ public class GlcComponent {
           StateTime prev = null;
           for (StateTime stateTime : trajectory) {
             if (prev != null)
-              graphics.draw(new Line2D.Double(toPoint(prev.tensor), toPoint(stateTime.tensor)));
+              graphics.draw(new Line2D.Double(toPoint(prev.x), toPoint(stateTime.x)));
             prev = stateTime;
           }
         }

@@ -8,7 +8,7 @@ import ch.ethz.idsc.tensor.Tensor;
 
 public class BulirschStoerIntegrator implements Integrator {
   @Override
-  public Tensor step(Flow flow, Tensor x, Scalar dt) {
+  public Tensor step(Flow flow, Tensor x, Scalar h) {
     // TODO implementation
     return null;
   }

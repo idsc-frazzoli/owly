@@ -84,7 +84,7 @@ public class TrajectoryPlanner {
   }
 
   public void insertRoot(Tensor x) {
-    final Node node = new Node(x, ZeroScalar.get(), ZeroScalar.get(), ZeroScalar.get(), null);
+    final Node node = new Node(null, x, ZeroScalar.get(), ZeroScalar.get(), ZeroScalar.get());
     queue.add(node);
     Tensor current_domain = convertToKey(node.x);
     domain_labels.put(current_domain, new Domain());
@@ -117,11 +117,11 @@ public class TrajectoryPlanner {
       final Trajectory trajectory = dynamicalSystem.sim(integrator, flow, current_node.time, current_node.time.add(expand_time), current_node.x);
       final StateTime last = trajectory.getBack();
       Node new_arc = new Node( //
-          last.tensor, // new_arc.x
+          flow, // new_arc.u_idx
+          last.x, // new_arc.x
           current_node.cost.add(costFunction.cost(trajectory, flow)), // new_arc.cost
           last.time, // new_arc.t
-          heuristic.costToGo(last.tensor), // new_arc.merit
-          flow // new_arc.u_idx
+          heuristic.costToGo(last.x) // new_arc.merit
       );
       traj_from_parent.put(new_arc, trajectory);
       // ---

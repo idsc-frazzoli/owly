@@ -18,7 +18,7 @@ public abstract class DynamicalSystem {
     trajectory.add(prev);
     for (int c0 = 0; c0 < num_steps.number().intValue(); ++c0) {
       // TODO maybe doesn't add the right number of stateTimes ...
-      Tensor x1 = integrator.step(flow, prev.tensor, dt);
+      Tensor x1 = integrator.step(flow, prev.x, dt);
       StateTime next = new StateTime(x1, prev.time.add(dt));
       trajectory.add(next);
       prev = next;

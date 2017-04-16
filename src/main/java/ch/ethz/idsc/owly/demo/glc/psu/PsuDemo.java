@@ -18,6 +18,7 @@ import ch.ethz.idsc.owly.glc.core.TrajectoryRegionQuery;
 import ch.ethz.idsc.owly.glc.gui.GlcFrame;
 import ch.ethz.idsc.owly.util.Integrator;
 import ch.ethz.idsc.owly.util.StateSpaceModel;
+import ch.ethz.idsc.owly.util.UnionRegion;
 import ch.ethz.idsc.owly.util.rn.RnSphericalRegion;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
@@ -44,7 +45,10 @@ public class PsuDemo {
     // TODO join +PI and -PI
     TrajectoryRegionQuery goalQuery = //
         new SimpleTrajectoryRegionQuery(new TimeInvariantRegion( //
-            new RnSphericalRegion(Tensors.vector(Math.PI, 0), RealScalar.of(1))));
+            UnionRegion.of( //
+                new RnSphericalRegion(Tensors.vector(+Math.PI, 0), RealScalar.of(.2)), //
+                new RnSphericalRegion(Tensors.vector(-Math.PI, 0), RealScalar.of(.2)) //
+            )));
     TrajectoryRegionQuery obstacleQuery = new EmptyRegionQuery();
     // ---
     TrajectoryPlanner trajectoryPlanner = new TrajectoryPlanner( //

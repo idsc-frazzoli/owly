@@ -18,11 +18,11 @@ public final class RungeKutta4Integrator implements Integrator {
   private static final Tensor WEIGHTS = Tensors.of(SIXTH, THIRD, THIRD, SIXTH);
 
   @Override
-  public Tensor step(Flow flow, Tensor x, Scalar dt) {
-    Tensor k1 = flow.at(x).multiply(dt);
-    Tensor k2 = flow.at(x.add(k1.multiply(HALF))).multiply(dt);
-    Tensor k3 = flow.at(x.add(k2.multiply(HALF))).multiply(dt);
-    Tensor k4 = flow.at(x.add(k3)).multiply(dt);
+  public Tensor step(Flow flow, Tensor x, Scalar h) {
+    Tensor k1 = flow.at(x).multiply(h);
+    Tensor k2 = flow.at(x.add(k1.multiply(HALF))).multiply(h);
+    Tensor k3 = flow.at(x.add(k2.multiply(HALF))).multiply(h);
+    Tensor k4 = flow.at(x.add(k3)).multiply(h);
     return x.add(WEIGHTS.dot(Tensors.of(k1, k2, k3, k4)));
   }
 }

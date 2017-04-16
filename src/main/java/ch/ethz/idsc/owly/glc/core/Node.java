@@ -11,20 +11,21 @@ import ch.ethz.idsc.tensor.Tensor;
 public class Node {
   public Node parent;
   public final Map<Flow, Node> children = new HashMap<>();
+  public final Flow u;
   public final Tensor x;
   public Scalar time;
   public final Scalar cost;
   public final Scalar merit;
   /** u is null for root node */
-  public final Flow u;
   public int depth;
 
-  public Node(Tensor tensor, Scalar cost, Scalar time, Scalar e, Flow u) {
+  public Node(Flow u, Tensor x, Scalar cost, Scalar time, Scalar e) {
+    this.u = u;
+    this.x = x;
     this.cost = cost;
-    this.x = tensor;
     this.time = time;
     this.merit = cost.add(e);
-    this.u = u;
+    
   }
 
   public void addChild(Node child, Scalar expand_time) {
