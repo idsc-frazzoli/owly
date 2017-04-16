@@ -1,9 +1,10 @@
 // code by jph
 package ch.ethz.idsc.owly.demo.glc.rn;
 
+import ch.ethz.idsc.owly.adapter.IdentityStateSpaceModel;
+import ch.ethz.idsc.owly.adapter.EulerIntegrator;
 import ch.ethz.idsc.owly.glc.adapter.MinTimeCost;
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
-import ch.ethz.idsc.owly.glc.adapter.SingleIntegrator;
 import ch.ethz.idsc.owly.glc.adapter.TimeInvariantRegion;
 import ch.ethz.idsc.owly.glc.adapter.ZeroHeuristic;
 import ch.ethz.idsc.owly.glc.core.CostFunction;
@@ -13,6 +14,7 @@ import ch.ethz.idsc.owly.glc.core.Trajectory;
 import ch.ethz.idsc.owly.glc.core.TrajectoryPlanner;
 import ch.ethz.idsc.owly.glc.core.TrajectoryRegionQuery;
 import ch.ethz.idsc.owly.glc.gui.GlcFrame;
+import ch.ethz.idsc.owly.util.Integrator;
 import ch.ethz.idsc.owly.util.StateSpaceModel;
 import ch.ethz.idsc.owly.util.rn.RnSphericalRegion;
 import ch.ethz.idsc.tensor.RealScalar;
@@ -21,7 +23,8 @@ import ch.ethz.idsc.tensor.Tensors;
 
 public class RnDemo {
   public static void main(String[] args) {
-    StateSpaceModel stateSpaceModel = new SingleIntegrator();
+    Integrator integrator = new EulerIntegrator();
+    StateSpaceModel stateSpaceModel = new IdentityStateSpaceModel();
     DynamicalSystem dynamicalSystem = new RnSingleIntegrator(RealScalar.ONE);
     Tensor controls = RnControls.createR2RadialControls(6).multiply(RealScalar.of(.7));
     // System.out.println(Pretty.of(controls));
@@ -35,6 +38,7 @@ public class RnDemo {
             new RnSphericalRegion(Tensors.vector(5, 0), RealScalar.of(4))));
     // ---
     TrajectoryPlanner trajectoryPlanner = new TrajectoryPlanner( //
+        integrator, //
         stateSpaceModel, //
         dynamicalSystem, controls, costFunction, heuristic, goalQuery, obstacleQuery);
     // ---
