@@ -7,14 +7,14 @@ import ch.ethz.idsc.owly.util.Flow;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.ZeroScalar;
 
-public class MinTimeCost implements CostFunction {
+public final class MinTimeCost implements CostFunction {
   @Override
-  public final Scalar cost(Trajectory trajectory, Flow u) {
+  public Scalar cost(Trajectory trajectory, Flow u) {
     return trajectory.getDuration();
   }
 
   @Override
-  public final Scalar getLipschitz() {
+  public Scalar getLipschitz() {
     return ZeroScalar.get(); // TODO really 0 !?
   }
 }

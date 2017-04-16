@@ -10,7 +10,8 @@ import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
 import ch.ethz.idsc.tensor.sca.Chop;
 
-class RnControls {
+enum RnControls {
+  ;
   public static Controls createR2RadialControls(final int num, Scalar amp) {
     StateSpaceModel stateSpaceModel = new IdentityStateSpaceModel();
     Controls controls = new Controls();
@@ -20,7 +21,6 @@ class RnControls {
       Tensor u = Chop.of(Tensors.vector(Math.cos(angle), Math.sin(angle)).multiply(amp));
       controls.add(StateSpaceModels.createFlow(stateSpaceModel, u));
     }
-    // return Chop.of(tensor);
     return controls;
   }
 }

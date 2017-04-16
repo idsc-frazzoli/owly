@@ -10,7 +10,8 @@ import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.alg.Partition;
 import ch.ethz.idsc.tensor.alg.Subdivide;
 
-class PsuControls {
+enum PsuControls {
+  ;
   public static Controls createControls(int num) {
     StateSpaceModel stateSpaceModel = new PsuStateSpaceModel();
     Controls controls = new Controls();

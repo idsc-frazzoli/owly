@@ -10,8 +10,8 @@ import java.util.Map;
 import java.util.PriorityQueue;
 import java.util.Set;
 
+import ch.ethz.idsc.owly.integrator.Integrator;
 import ch.ethz.idsc.owly.util.Flow;
-import ch.ethz.idsc.owly.util.Integrator;
 import ch.ethz.idsc.owly.util.StateSpaceModel;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
@@ -24,7 +24,7 @@ import ch.ethz.idsc.tensor.sca.Floor;
 
 public class TrajectoryPlanner {
   final Integrator integrator;
-  final StateSpaceModel stateSpaceModel;
+  final StateSpaceModel stateSpaceModel; // only used for lipschitz
   final DynamicalSystem dynamicalSystem;
   final Controls controls;
   final CostFunction costFunction;
@@ -119,8 +119,8 @@ public class TrajectoryPlanner {
       Node new_arc = new Node( //
           flow, // new_arc.u_idx
           last.x, // new_arc.x
-          current_node.cost.add(costFunction.cost(trajectory, flow)), // new_arc.cost
           last.time, // new_arc.t
+          current_node.cost.add(costFunction.cost(trajectory, flow)), // new_arc.cost
           heuristic.costToGo(last.x) // new_arc.merit
       );
       traj_from_parent.put(new_arc, trajectory);

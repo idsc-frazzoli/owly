@@ -1,7 +1,6 @@
 // code by jph
 package ch.ethz.idsc.owly.demo.glc.psu;
 
-import ch.ethz.idsc.owly.adapter.MidpointIntegrator;
 import ch.ethz.idsc.owly.adapter.PsuStateSpaceModel;
 import ch.ethz.idsc.owly.glc.adapter.EmptyRegionQuery;
 import ch.ethz.idsc.owly.glc.adapter.MinTimeCost;
@@ -16,7 +15,8 @@ import ch.ethz.idsc.owly.glc.core.Trajectory;
 import ch.ethz.idsc.owly.glc.core.TrajectoryPlanner;
 import ch.ethz.idsc.owly.glc.core.TrajectoryRegionQuery;
 import ch.ethz.idsc.owly.glc.gui.GlcFrame;
-import ch.ethz.idsc.owly.util.Integrator;
+import ch.ethz.idsc.owly.integrator.Integrator;
+import ch.ethz.idsc.owly.integrator.MidpointIntegrator;
 import ch.ethz.idsc.owly.util.StateSpaceModel;
 import ch.ethz.idsc.owly.util.UnionRegion;
 import ch.ethz.idsc.owly.util.rn.RnSphericalRegion;
@@ -52,8 +52,7 @@ public class PsuDemo {
     TrajectoryRegionQuery obstacleQuery = new EmptyRegionQuery();
     // ---
     TrajectoryPlanner trajectoryPlanner = new TrajectoryPlanner( //
-        integrator, //
-        stateSpaceModel, //
+        integrator, stateSpaceModel, //
         dynamicalSystem, controls, costFunction, heuristic, goalQuery, obstacleQuery);
     // ---
     trajectoryPlanner.initialize(Tensors.vector(10, 10));

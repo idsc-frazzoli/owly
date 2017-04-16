@@ -7,7 +7,7 @@ import ch.ethz.idsc.owly.glc.core.Trajectory;
 import ch.ethz.idsc.owly.glc.core.TrajectoryRegionQuery;
 
 public class SimpleTrajectoryRegionQuery implements TrajectoryRegionQuery {
-  final StateTimeRegion stateTimeRegion;
+  private final StateTimeRegion stateTimeRegion;
 
   public SimpleTrajectoryRegionQuery(StateTimeRegion stateTimeRegion) {
     this.stateTimeRegion = stateTimeRegion;

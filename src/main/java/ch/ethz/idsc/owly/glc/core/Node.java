@@ -19,13 +19,12 @@ public class Node {
   /** u is null for root node */
   public int depth;
 
-  public Node(Flow u, Tensor x, Scalar cost, Scalar time, Scalar e) {
+  public Node(Flow u, Tensor x, Scalar time, Scalar cost, Scalar e) {
     this.u = u;
     this.x = x;
-    this.cost = cost;
     this.time = time;
+    this.cost = cost;
     this.merit = cost.add(e);
-    
   }
 
   public void addChild(Node child, Scalar expand_time) {

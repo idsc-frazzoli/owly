@@ -76,7 +76,11 @@ public class GlcComponent {
         }
         {
           DoubleSummaryStatistics dss = trajectoryPlanner.getDomains().values().stream() //
-              .mapToDouble(d -> d.getCost().number().doubleValue()).summaryStatistics();
+              .map(Domain::getCost) //
+              .map(Scalar::number) //
+              .mapToDouble(Number::doubleValue) //
+              .filter(Double::isFinite) //
+              .summaryStatistics();
           // System.out.println(dss);
           final double min = dss.getMin();
           final double max = dss.getMax();
