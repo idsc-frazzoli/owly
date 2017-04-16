@@ -3,7 +3,10 @@ package ch.ethz.idsc.owly.glc.core;
 
 import java.util.PriorityQueue;
 
-class Domain {
+import ch.ethz.idsc.tensor.RealScalar;
+import ch.ethz.idsc.tensor.Scalar;
+
+public class Domain {
   private Node label = null;
   PriorityQueue<Node> candidates = new PriorityQueue<>(NodeCostComparator.instance);
 
@@ -11,11 +14,15 @@ class Domain {
     return label == null;
   }
 
-  public double getCost() {
-    return empty() ? Double.POSITIVE_INFINITY : label.cost;
+  public Scalar getCost() {
+    return empty() ? RealScalar.POSITIVE_INFINITY : label.cost;
   }
 
   public void setLabel(Node node) {
     label = node;
+  }
+
+  public Node getLabel() {
+    return label;
   }
 }

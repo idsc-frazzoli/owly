@@ -3,13 +3,15 @@ package ch.ethz.idsc.owly.glc.core;
 
 import java.util.ArrayList;
 
+import ch.ethz.idsc.tensor.Scalar;
+
 public class Trajectory extends ArrayList<StateTime> {
-  public double getDuration() {
-    return getBack().time - get(0).time;
+  public Scalar getDuration() {
+    return getBack().time.subtract(get(0).time);
   }
 
-  public double getDuration(int num) {
-    return get(num).time - get(0).time;
+  public Scalar getDuration(int num) {
+    return get(num).time.subtract(get(0).time);
   }
 
   public StateTime getBack() {

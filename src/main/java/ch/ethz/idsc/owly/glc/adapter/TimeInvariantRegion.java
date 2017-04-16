@@ -6,7 +6,7 @@ import ch.ethz.idsc.owly.glc.core.StateTimeRegion;
 import ch.ethz.idsc.owly.util.Region;
 
 public class TimeInvariantRegion implements StateTimeRegion {
-  final Region region;
+  private final Region region;
 
   public TimeInvariantRegion(Region region) {
     this.region = region;
@@ -14,6 +14,6 @@ public class TimeInvariantRegion implements StateTimeRegion {
 
   @Override
   public boolean isMember(StateTime stateTime) {
-    return region.isMember(stateTime.tensor);
+    return region.isMember(stateTime.x);
   }
 }

@@ -1,7 +1,8 @@
 // code by jph
-package ch.ethz.idsc.owly.demo.glc.rn;
+package ch.ethz.idsc.owly.demo.glc.psu;
 
-import ch.ethz.idsc.owly.adapter.IdentityStateSpaceModel;
+import ch.ethz.idsc.owly.adapter.PsuStateSpaceModel;
+import ch.ethz.idsc.owly.glc.adapter.EmptyRegionQuery;
 import ch.ethz.idsc.owly.glc.adapter.MinTimeCost;
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
 import ch.ethz.idsc.owly.glc.adapter.TimeInvariantRegion;
@@ -14,43 +15,52 @@ import ch.ethz.idsc.owly.glc.core.Trajectory;
 import ch.ethz.idsc.owly.glc.core.TrajectoryPlanner;
 import ch.ethz.idsc.owly.glc.core.TrajectoryRegionQuery;
 import ch.ethz.idsc.owly.glc.gui.GlcFrame;
-import ch.ethz.idsc.owly.integrator.EulerIntegrator;
 import ch.ethz.idsc.owly.integrator.Integrator;
+import ch.ethz.idsc.owly.integrator.MidpointIntegrator;
 import ch.ethz.idsc.owly.util.StateSpaceModel;
+import ch.ethz.idsc.owly.util.UnionRegion;
 import ch.ethz.idsc.owly.util.rn.RnSphericalRegion;
 import ch.ethz.idsc.tensor.RealScalar;
+import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensors;
 
-public class RnDemo {
+/** Pendulum Swing-up
+ * 
+ * implementation inspired by
+ * "A Generalized Label Correcting Method for Optimal Kinodynamic Motion Planning" [Paden/Frazzoli] */
+public class PsuDemo {
   public static void main(String[] args) {
-    Integrator integrator = new EulerIntegrator();
-    StateSpaceModel stateSpaceModel = new IdentityStateSpaceModel();
-    DynamicalSystem dynamicalSystem = new RnSingleIntegrator(RealScalar.ONE);
-    Controls controls = RnControls.createR2RadialControls(6, RealScalar.of(.7));
+    Integrator integrator = new MidpointIntegrator();
+    StateSpaceModel stateSpaceModel = new PsuStateSpaceModel();
+    DynamicalSystem dynamicalSystem = new DynamicalSystem() {
+      @Override
+      public Scalar getMaxTimeStep() {
+        return RealScalar.of(.25);
+      }
+    };
+    Controls controls = PsuControls.createControls(6);
     // System.out.println(Pretty.of(controls));
     CostFunction costFunction = new MinTimeCost();
     Heuristic heuristic = new ZeroHeuristic();
+    // TODO join +PI and -PI
     TrajectoryRegionQuery goalQuery = //
         new SimpleTrajectoryRegionQuery(new TimeInvariantRegion( //
-            new RnSphericalRegion(Tensors.vector(10, 0), RealScalar.of(1))));
-    TrajectoryRegionQuery obstacleQuery = //
-        new SimpleTrajectoryRegionQuery(new TimeInvariantRegion( //
-            new RnSphericalRegion(Tensors.vector(5, 0), RealScalar.of(4))));
+            UnionRegion.of( //
+                new RnSphericalRegion(Tensors.vector(+Math.PI, 0), RealScalar.of(.2)), //
+                new RnSphericalRegion(Tensors.vector(-Math.PI, 0), RealScalar.of(.2)) //
+            )));
+    TrajectoryRegionQuery obstacleQuery = new EmptyRegionQuery();
     // ---
     TrajectoryPlanner trajectoryPlanner = new TrajectoryPlanner( //
-        integrator, //
-        stateSpaceModel, //
+        integrator, stateSpaceModel, //
         dynamicalSystem, controls, costFunction, heuristic, goalQuery, obstacleQuery);
     // ---
-    trajectoryPlanner.initialize(Tensors.vector(3, 3));
+    trajectoryPlanner.initialize(Tensors.vector(10, 10));
     trajectoryPlanner.insertRoot(Tensors.vector(0, 0));
     trajectoryPlanner.plan();
     Trajectory trajectory = trajectoryPlanner.getPathFromRootToGoal();
     trajectory.print();
     GlcFrame glcFrame = new GlcFrame();
     glcFrame.glcComponent.setTrajectoryPlanner(trajectoryPlanner);
-    // double d = Double.parseDouble("0.5000000000000001");
-    // double dn = Math.nextDown(d);
-    // System.out.println(dn);
   }
 }
