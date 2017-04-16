@@ -1,10 +1,10 @@
 // code by jph
 package ch.ethz.idsc.owly.demo.glc.rn;
 
-import ch.ethz.idsc.owly.glc.adapter.SingleIntegrator;
+import ch.ethz.idsc.owly.glc.adapter.EulerIntegrator;
 import ch.ethz.idsc.tensor.Scalar;
 
-class RnSingleIntegrator extends SingleIntegrator {
+class RnSingleIntegrator extends EulerIntegrator {
   final Scalar maxtimestep;
 
   public RnSingleIntegrator(Scalar maxtimestep) {

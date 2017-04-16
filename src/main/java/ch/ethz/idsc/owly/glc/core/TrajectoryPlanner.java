@@ -10,6 +10,7 @@ import java.util.Map;
 import java.util.PriorityQueue;
 import java.util.Set;
 
+import ch.ethz.idsc.owly.util.StateSpaceModel;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Scalars;
@@ -20,6 +21,7 @@ import ch.ethz.idsc.tensor.sca.Exp;
 import ch.ethz.idsc.tensor.sca.Floor;
 
 public class TrajectoryPlanner {
+  final StateSpaceModel stateSpaceModel;
   final DynamicalSystem dynamicalSystem;
   final Tensor controls;
   final CostFunction costFunction;
@@ -39,6 +41,7 @@ public class TrajectoryPlanner {
   private Node best = null;
 
   public TrajectoryPlanner( //
+      StateSpaceModel stateSpaceModel, //
       DynamicalSystem dynamicalSystem, //
       Tensor controls, //
       CostFunction costFunction, //
@@ -46,6 +49,7 @@ public class TrajectoryPlanner {
       TrajectoryRegionQuery goalQuery, //
       TrajectoryRegionQuery obstacleQuery //
   ) {
+    this.stateSpaceModel = stateSpaceModel;
     this.dynamicalSystem = dynamicalSystem;
     this.controls = controls;
     this.costFunction = costFunction;
@@ -60,8 +64,8 @@ public class TrajectoryPlanner {
     this.partitionScale = partitionScale; // TODO
     if (Scalars.lessThan(ZeroScalar.get(), costFunction.getLipschitz())) {
       eps = (Math.sqrt(state_dim) / Mean.of(partitionScale).Get().number().doubleValue()) * //
-          (dynamicalSystem.getLipschitz().divide(costFunction.getLipschitz()).number().doubleValue()) * //
-          (res * Exp.function.apply(dynamicalSystem.getLipschitz()).number().doubleValue() - 1.0);
+          (stateSpaceModel.getLipschitz().divide(costFunction.getLipschitz()).number().doubleValue()) * //
+          (res * Exp.function.apply(stateSpaceModel.getLipschitz()).number().doubleValue() - 1.0);
     } else {
       eps = 0;
     }
@@ -105,7 +109,7 @@ public class TrajectoryPlanner {
     Set<Domain> domains_needing_update = new HashSet<>();
     Map<Node, Trajectory> traj_from_parent = new HashMap<>();
     for (Tensor u : controls) {
-      final Trajectory trajectory = dynamicalSystem.sim(current_node.time, current_node.time.add(expand_time), current_node.x, u);
+      final Trajectory trajectory = dynamicalSystem.sim(stateSpaceModel, current_node.time, current_node.time.add(expand_time), current_node.x, u);
       final StateTime last = trajectory.getBack();
       Node new_arc = new Node( //
           last.tensor, // new_arc.x
@@ -182,7 +186,7 @@ public class TrajectoryPlanner {
     for (int index = 1; index < list.size(); ++index) {
       Node prev = list.get(index - 1);
       Node next = list.get(index);
-      Trajectory part = dynamicalSystem.sim(prev.time, prev.time.add(expand_time), prev.x, next.u);
+      Trajectory part = dynamicalSystem.sim(stateSpaceModel, prev.time, prev.time.add(expand_time), prev.x, next.u);
       trajectory.addAll(part);
     }
     return trajectory;
