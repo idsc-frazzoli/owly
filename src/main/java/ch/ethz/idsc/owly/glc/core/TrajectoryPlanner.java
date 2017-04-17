@@ -66,9 +66,7 @@ public class TrajectoryPlanner {
   public void insertRoot(Tensor x) {
     final Node node = new Node(null, x, ZeroScalar.get(), ZeroScalar.get(), ZeroScalar.get());
     queue.add(node);
-    Domain domain = new Domain();
-    domain.setLabel(node);
-    domain_labels.put(convertToKey(node.x), domain);
+    domain_labels.put(convertToKey(node.x), new Domain(node));
   }
 
   public Collection<Node> getQueue() {
@@ -108,7 +106,7 @@ public class TrajectoryPlanner {
       // TODO can make more efficient by treating contain cases in detail
       // TODO don't add to domain if future fail!
       if (!domain_labels.containsKey(current_domain_key))
-        domain_labels.put(current_domain_key, new Domain());
+        domain_labels.put(current_domain_key, new Domain(null));
       Domain bucket = domain_labels.get(current_domain_key);
       if (bucket.takesOffer(new_arc)) {
         if (domains_needing_update.containsKey(bucket)) {

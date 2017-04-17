@@ -6,7 +6,11 @@ import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Scalars;
 
 public class Domain {
-  private Node label = null;
+  private Node label;
+
+  public Domain(Node label) {
+    setLabel(label);
+  }
 
   public boolean empty() {
     return label == null;
