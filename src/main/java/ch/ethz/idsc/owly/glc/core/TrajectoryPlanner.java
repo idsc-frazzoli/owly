@@ -8,6 +8,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.PriorityQueue;
+import java.util.Queue;
 import java.util.Set;
 
 import ch.ethz.idsc.owly.math.Flow;
@@ -23,23 +24,20 @@ import ch.ethz.idsc.tensor.sca.Exp;
 import ch.ethz.idsc.tensor.sca.Floor;
 
 public class TrajectoryPlanner {
-  final Integrator integrator;
-  final StateSpaceModel stateSpaceModel; // only used for lipschitz
-  final DynamicalSystem dynamicalSystem;
-  final Controls controls;
-  final CostFunction costFunction;
-  final Heuristic heuristic;
-  final TrajectoryRegionQuery goalQuery;
-  final TrajectoryRegionQuery obstacleQuery;
+  private final Integrator integrator;
+  private final StateSpaceModel stateSpaceModel; // only used for lipschitz
+  private final DynamicalSystem dynamicalSystem;
+  private final Controls controls;
+  private final CostFunction costFunction;
+  private final Heuristic heuristic;
+  private final TrajectoryRegionQuery goalQuery;
+  private final TrajectoryRegionQuery obstacleQuery;
   // ---
-  Tensor partitionScale;
-  int depth_limit = 20; // TODO
-  private final PriorityQueue<Node> queue = new PriorityQueue<>(NodeMeritComparator.instance);
-  double time_scale = 10; // TODO
-  Scalar expand_time;
+  private Tensor partitionScale;
+  private int depth_limit = 20; // TODO
+  private final Queue<Node> queue = new PriorityQueue<>(NodeMeritComparator.instance);
+  private Scalar expand_time;
   private Map<Tensor, Domain> domain_labels = new HashMap<>();
-  private int res = 10; // TODO
-  double eps;
   private boolean foundGoal = false; // TODO
   private Node best = null;
 
@@ -67,6 +65,8 @@ public class TrajectoryPlanner {
   public void initialize(Tensor partitionScale) {
     int state_dim = partitionScale.length();
     this.partitionScale = partitionScale; // TODO
+    int res = 10; // TODO
+    double eps;
     if (Scalars.lessThan(ZeroScalar.get(), costFunction.getLipschitz())) {
       eps = (Math.sqrt(state_dim) / Mean.of(partitionScale).Get().number().doubleValue()) * //
           (stateSpaceModel.getLipschitz().divide(costFunction.getLipschitz()).number().doubleValue()) * //
@@ -74,8 +74,9 @@ public class TrajectoryPlanner {
     } else {
       eps = 0;
     }
+    double time_scale = 10; // TODO
     expand_time = RealScalar.of(time_scale / res);
-    System.out.println("eps " + eps);
+    // System.out.println("eps " + eps);
     System.out.println("expand_time " + expand_time);
   }
 
@@ -98,6 +99,10 @@ public class TrajectoryPlanner {
     return Collections.unmodifiableMap(domain_labels);
   }
 
+  public void setDepthLimit(int depth_limit) {
+    this.depth_limit = depth_limit;
+  }
+
   public boolean expand() {
     if (queue.isEmpty()) {
       System.out.println("queue is empty");
@@ -110,7 +115,6 @@ public class TrajectoryPlanner {
       return false;
     }
     // System.out.println("current_node " + current_node);
-    boolean live = true;
     Set<Domain> domains_needing_update = new HashSet<>();
     Map<Node, Trajectory> traj_from_parent = new HashMap<>();
     for (Flow flow : controls) {
@@ -132,7 +136,7 @@ public class TrajectoryPlanner {
       }
       Domain bucket = domain_labels.get(current_domain);
       domains_needing_update.add(bucket);
-      if (Scalars.lessThan(new_arc.cost, bucket.getCost().add(RealScalar.of(eps))))
+      if (Scalars.lessThan(new_arc.cost, bucket.getCost())) // .add(RealScalar.of(eps))
         bucket.candidates.add(new_arc);
     }
     // ---
@@ -143,7 +147,7 @@ public class TrajectoryPlanner {
       while (!current_domain.candidates.isEmpty()) {
         // peek() Retrieves, but does not remove, the head of this queue
         final Node top = current_domain.candidates.peek();
-        if (Scalars.lessThan(top.cost, current_domain.getCost().add(RealScalar.of(eps)))) {
+        if (Scalars.lessThan(top.cost, current_domain.getCost())) { // .add(RealScalar.of(eps))
           final Node curr = top;
           int collisionIndex = obstacleQuery.firstMember(traj_from_parent.get(curr));
           if (collisionIndex == TrajectoryRegionQuery.NOMATCH) {
@@ -157,9 +161,7 @@ public class TrajectoryPlanner {
             }
             int goalIndex = goalQuery.firstMember(traj_from_parent.get(curr));
             if (goalIndex != TrajectoryRegionQuery.NOMATCH && (best == null || Scalars.lessThan(curr.cost, best.cost))) {
-              // TODO logic is not so intuitive
               foundGoal = true;
-              live = false;
               System.out.println("found goal");
               best = curr;
               // double tail_cost = traj_from_parent.get(curr).getDurationFrom(num-1)*
@@ -169,11 +171,12 @@ public class TrajectoryPlanner {
         }
         current_domain.candidates.poll();
       }
+      System.out.println(current_domain.candidates.size());
       if (current_domain.empty()) {
         domain_labels.remove(current_domain);
       }
     }
-    return live;
+    return !foundGoal;
   }
 
   public void plan() {

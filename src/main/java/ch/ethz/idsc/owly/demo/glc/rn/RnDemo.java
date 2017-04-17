@@ -26,13 +26,13 @@ public class RnDemo {
     Integrator integrator = new EulerIntegrator();
     StateSpaceModel stateSpaceModel = new IdentityStateSpaceModel();
     DynamicalSystem dynamicalSystem = new RnSingleIntegrator(RealScalar.ONE);
-    Controls controls = RnControls.createR2RadialControls(6, RealScalar.of(.7));
+    Controls controls = RnControls.createR2RadialControls(40, RealScalar.of(.7));
     // System.out.println(Pretty.of(controls));
     CostFunction costFunction = new MinTimeCost();
     Heuristic heuristic = new ZeroHeuristic();
     TrajectoryRegionQuery goalQuery = //
         new SimpleTrajectoryRegionQuery(new TimeInvariantRegion( //
-            new EllipsoidRegion(Tensors.vector(10, 0), Tensors.vector(1, 1))));
+            new EllipsoidRegion(Tensors.vector(10, 0), Tensors.vector(.5, .5))));
     TrajectoryRegionQuery obstacleQuery = //
         new SimpleTrajectoryRegionQuery(new TimeInvariantRegion( //
             new EllipsoidRegion(Tensors.vector(5, 0), Tensors.vector(4, 4))));

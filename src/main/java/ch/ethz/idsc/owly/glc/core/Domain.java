@@ -8,6 +8,7 @@ import ch.ethz.idsc.tensor.Scalar;
 
 public class Domain {
   private Node label = null;
+  @Deprecated
   PriorityQueue<Node> candidates = new PriorityQueue<>(NodeCostComparator.instance);
 
   public boolean empty() {

@@ -45,8 +45,8 @@ public class PsuDemo {
     TrajectoryRegionQuery goalQuery = //
         new SimpleTrajectoryRegionQuery(new TimeInvariantRegion( //
             UnionRegion.of( //
-                new EllipsoidRegion(Tensors.vector(+Math.PI, 0), Tensors.vector(.2, .2)), //
-                new EllipsoidRegion(Tensors.vector(-Math.PI, 0), Tensors.vector(.2, .2)) //
+                new EllipsoidRegion(Tensors.vector(+Math.PI, 0), Tensors.vector(.1, .1)), //
+                new EllipsoidRegion(Tensors.vector(-Math.PI, 0), Tensors.vector(.1, .1)) //
             )));
     TrajectoryRegionQuery obstacleQuery = new EmptyRegionQuery();
     // ---
