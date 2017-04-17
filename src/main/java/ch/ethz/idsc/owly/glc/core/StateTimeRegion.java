@@ -2,5 +2,7 @@
 package ch.ethz.idsc.owly.glc.core;
 
 public interface StateTimeRegion {
-  public boolean isMember(StateTime stateTime);
+  /** @param stateTime
+   * @return */
+  boolean isMember(StateTime stateTime);
 }

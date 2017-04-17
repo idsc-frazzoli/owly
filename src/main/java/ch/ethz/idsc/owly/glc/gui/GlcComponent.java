@@ -10,12 +10,9 @@ import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.util.DoubleSummaryStatistics;
-import java.util.Map;
-import java.util.Map.Entry;
 
 import javax.swing.JComponent;
 
-import ch.ethz.idsc.owly.glc.core.Domain;
 import ch.ethz.idsc.owly.glc.core.Node;
 import ch.ethz.idsc.owly.glc.core.StateTime;
 import ch.ethz.idsc.owly.glc.core.Trajectory;
@@ -39,8 +36,8 @@ public class GlcComponent {
 
   public GlcComponent() {
     rep = Tensors.matrixInt(new int[][] { //
-        { 40, 0, 300 }, //
-        { 0, -40, 300 }, //
+        { 60, 0, 300 }, //
+        { 0, -60, 300 }, //
         { 0, 0, 1 }, //
     });
   }
@@ -75,33 +72,25 @@ public class GlcComponent {
           }
         }
         {
-          DoubleSummaryStatistics dss = trajectoryPlanner.getDomains().values().stream() //
-              .map(Domain::getCost) //
+          DoubleSummaryStatistics dss = trajectoryPlanner.getNodes().stream() //
+              .map(n -> n.cost) //
               .map(Scalar::number) //
               .mapToDouble(Number::doubleValue) //
               .filter(Double::isFinite) //
               .summaryStatistics();
-          // System.out.println(dss);
           final double min = dss.getMin();
           final double max = dss.getMax();
-          Map<Tensor, Domain> map = trajectoryPlanner.getDomains();
           graphics.setColor(Color.BLUE);
-          for (Entry<Tensor, Domain> entry : map.entrySet()) {
-            // Tensor key = entry.getKey();
-            Domain domain = entry.getValue();
-            Node node = domain.getLabel();
-            if (node != null) {
-              Scalar cost = domain.getCost();
-              double val = cost.number().doubleValue();
-              double interp = (val - min) / (max - min);
-              // System.out.println(key);
-              Hue hue = new Hue(interp, 1, 1, 1);
-              graphics.setColor(hue.rgba);
-              Tensor x = node.x;
-              Point2D p = toPoint(x);
-              Shape shape = new Rectangle2D.Double(p.getX(), p.getY(), 1, 1);
-              graphics.fill(shape);
-            }
+          for (Node node : trajectoryPlanner.getNodes()) {
+            Scalar cost = node.cost;
+            double val = cost.number().doubleValue();
+            double interp = (val - min) / (max - min);
+            Hue hue = new Hue(interp, 1, 1, 1);
+            graphics.setColor(hue.rgba);
+            Tensor x = node.x;
+            Point2D p = toPoint(x);
+            Shape shape = new Rectangle2D.Double(p.getX(), p.getY(), 1, 1);
+            graphics.fill(shape);
           }
         }
         {
@@ -116,7 +105,7 @@ public class GlcComponent {
         }
         {
           graphics.setColor(new Color(0, 192, 0, 128));
-          Trajectory trajectory = trajectoryPlanner.getDetailed();
+          Trajectory trajectory = trajectoryPlanner.getDetailedTrajectory();
           StateTime prev = null;
           for (StateTime stateTime : trajectory) {
             if (prev != null)

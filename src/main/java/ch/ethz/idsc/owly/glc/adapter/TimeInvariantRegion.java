@@ -3,9 +3,9 @@ package ch.ethz.idsc.owly.glc.adapter;
 
 import ch.ethz.idsc.owly.glc.core.StateTime;
 import ch.ethz.idsc.owly.glc.core.StateTimeRegion;
-import ch.ethz.idsc.owly.util.Region;
+import ch.ethz.idsc.owly.math.Region;
 
-public class TimeInvariantRegion implements StateTimeRegion {
+public final class TimeInvariantRegion implements StateTimeRegion {
   private final Region region;
 
   public TimeInvariantRegion(Region region) {

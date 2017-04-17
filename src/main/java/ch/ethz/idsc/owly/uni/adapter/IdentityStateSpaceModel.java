@@ -1,7 +1,7 @@
 // code by bapaden and jph
-package ch.ethz.idsc.owly.adapter;
+package ch.ethz.idsc.owly.uni.adapter;
 
-import ch.ethz.idsc.owly.util.StateSpaceModel;
+import ch.ethz.idsc.owly.math.StateSpaceModel;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.ZeroScalar;

@@ -1,10 +1,12 @@
 // code by jph
-package ch.ethz.idsc.owly.adapter;
+package ch.ethz.idsc.owly.uni.adapter;
 
-import ch.ethz.idsc.owly.util.StateSpaceModel;
+import ch.ethz.idsc.owly.math.StateSpaceModel;
+import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
+import ch.ethz.idsc.tensor.red.Norm;
 
 public class RiceStateSpaceModel implements StateSpaceModel {
   private final Scalar lambda;
@@ -25,6 +27,6 @@ public class RiceStateSpaceModel implements StateSpaceModel {
   /** | f(x_1, u) - f(x_2, u) | <= L | x_1 - x_2 | */
   @Override
   public Scalar getLipschitz() {
-    return lambda.invert(); // TODO check, or Sqrt(1+lambda^2) ?
+    return Norm._2.of(Tensors.of(RealScalar.ONE, lambda));
   }
 }
