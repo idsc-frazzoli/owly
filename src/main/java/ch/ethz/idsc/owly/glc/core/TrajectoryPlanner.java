@@ -30,8 +30,8 @@ public class TrajectoryPlanner {
   private final TrajectoryRegionQuery obstacleQuery;
   // ---
   private Tensor partitionScale;
-  private int depth_limit = 20; // TODO
   private Scalar expand_time = RealScalar.ONE; // TODO
+  private int depth_limit;
   private Node best;
   private final Queue<Node> queue = new PriorityQueue<>(NodeMeritComparator.instance);
   private Map<Tensor, Domain> domain_labels = new HashMap<>();
@@ -73,12 +73,12 @@ public class TrajectoryPlanner {
     return Collections.unmodifiableCollection(queue);
   }
 
-  public Map<Tensor, Domain> getDomains() {
-    return Collections.unmodifiableMap(domain_labels);
-  }
-
-  public void setDepthLimit(int depth_limit) {
-    this.depth_limit = depth_limit;
+  public Map<Tensor, Node> getDomains() {
+    Map<Tensor, Node> map = new HashMap<>();
+    for (Entry<Tensor, Domain> entry : domain_labels.entrySet())
+      if (entry.getValue().getLabel() != null)
+        map.put(entry.getKey(), entry.getValue().getLabel());
+    return map;
   }
 
   private boolean expand() {
@@ -135,7 +135,8 @@ public class TrajectoryPlanner {
     return best == null;
   }
 
-  public void plan() {
+  public void plan(int depth_limit) {
+    this.depth_limit = depth_limit;
     best = null;
     while (expand()) {
       // ---

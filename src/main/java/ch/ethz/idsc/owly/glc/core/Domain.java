@@ -5,7 +5,8 @@ import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Scalars;
 
-public class Domain {
+@Deprecated
+class Domain {
   private Node label;
 
   public Domain(Node label) {

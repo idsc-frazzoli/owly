@@ -36,7 +36,6 @@ public class PsuDemo {
       }
     };
     Controls controls = PsuControls.createControls(6);
-    // System.out.println(Pretty.of(controls));
     CostFunction costFunction = new MinTimeCost();
     Heuristic heuristic = new ZeroHeuristic();
     TrajectoryRegionQuery goalQuery = //
@@ -53,7 +52,7 @@ public class PsuDemo {
     // ---
     trajectoryPlanner.setResolution(Tensors.vector(10, 10));
     trajectoryPlanner.insertRoot(Tensors.vector(0, 0));
-    trajectoryPlanner.plan();
+    trajectoryPlanner.plan(25);
     Trajectory trajectory = trajectoryPlanner.getPathFromRootToGoal();
     trajectory.print();
     GlcFrame glcFrame = new GlcFrame();

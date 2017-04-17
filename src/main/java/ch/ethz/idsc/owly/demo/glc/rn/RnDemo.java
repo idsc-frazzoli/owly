@@ -39,7 +39,7 @@ public class RnDemo {
     // ---
     trajectoryPlanner.setResolution(Tensors.vector(3, 3));
     trajectoryPlanner.insertRoot(Tensors.vector(0, 0));
-    trajectoryPlanner.plan();
+    trajectoryPlanner.plan(25);
     Trajectory trajectory = trajectoryPlanner.getPathFromRootToGoal();
     trajectory.print();
     GlcFrame glcFrame = new GlcFrame();

@@ -15,7 +15,6 @@ import java.util.Map.Entry;
 
 import javax.swing.JComponent;
 
-import ch.ethz.idsc.owly.glc.core.Domain;
 import ch.ethz.idsc.owly.glc.core.Node;
 import ch.ethz.idsc.owly.glc.core.StateTime;
 import ch.ethz.idsc.owly.glc.core.Trajectory;
@@ -76,7 +75,7 @@ public class GlcComponent {
         }
         {
           DoubleSummaryStatistics dss = trajectoryPlanner.getDomains().values().stream() //
-              .map(Domain::getCost) //
+              .map(n -> n.cost) //
               .map(Scalar::number) //
               .mapToDouble(Number::doubleValue) //
               .filter(Double::isFinite) //
@@ -84,14 +83,15 @@ public class GlcComponent {
           // System.out.println(dss);
           final double min = dss.getMin();
           final double max = dss.getMax();
-          Map<Tensor, Domain> map = trajectoryPlanner.getDomains();
+          Map<Tensor, Node> map = trajectoryPlanner.getDomains();
           graphics.setColor(Color.BLUE);
-          for (Entry<Tensor, Domain> entry : map.entrySet()) {
+          for (Entry<Tensor, Node> entry : map.entrySet()) {
             // Tensor key = entry.getKey();
-            Domain domain = entry.getValue();
-            Node node = domain.getLabel();
-            if (node != null) {
-              Scalar cost = domain.getCost();
+            // Domain domain = entry.getValue();
+            Node node = entry.getValue();
+            // if (node != null)
+            {
+              Scalar cost = node.cost;
               double val = cost.number().doubleValue();
               double interp = (val - min) / (max - min);
               // System.out.println(key);
