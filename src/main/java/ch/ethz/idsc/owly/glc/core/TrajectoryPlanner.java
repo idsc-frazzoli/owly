@@ -10,9 +10,9 @@ import java.util.Map;
 import java.util.PriorityQueue;
 import java.util.Set;
 
-import ch.ethz.idsc.owly.integrator.Integrator;
-import ch.ethz.idsc.owly.util.Flow;
-import ch.ethz.idsc.owly.util.StateSpaceModel;
+import ch.ethz.idsc.owly.math.Flow;
+import ch.ethz.idsc.owly.math.StateSpaceModel;
+import ch.ethz.idsc.owly.math.integrator.Integrator;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Scalars;

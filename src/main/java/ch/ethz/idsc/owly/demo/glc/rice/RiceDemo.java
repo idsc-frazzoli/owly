@@ -1,7 +1,6 @@
 // code by jph
 package ch.ethz.idsc.owly.demo.glc.rice;
 
-import ch.ethz.idsc.owly.adapter.RiceStateSpaceModel;
 import ch.ethz.idsc.owly.glc.adapter.MinTimeCost;
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
 import ch.ethz.idsc.owly.glc.adapter.TimeInvariantRegion;
@@ -14,11 +13,12 @@ import ch.ethz.idsc.owly.glc.core.Trajectory;
 import ch.ethz.idsc.owly.glc.core.TrajectoryPlanner;
 import ch.ethz.idsc.owly.glc.core.TrajectoryRegionQuery;
 import ch.ethz.idsc.owly.glc.gui.GlcFrame;
-import ch.ethz.idsc.owly.integrator.Integrator;
-import ch.ethz.idsc.owly.integrator.MidpointIntegrator;
-import ch.ethz.idsc.owly.util.StateSpaceModel;
-import ch.ethz.idsc.owly.util.UnionRegion;
-import ch.ethz.idsc.owly.util.rn.RnSphericalRegion;
+import ch.ethz.idsc.owly.math.EllipsoidRegion;
+import ch.ethz.idsc.owly.math.StateSpaceModel;
+import ch.ethz.idsc.owly.math.UnionRegion;
+import ch.ethz.idsc.owly.math.integrator.Integrator;
+import ch.ethz.idsc.owly.math.integrator.MidpointIntegrator;
+import ch.ethz.idsc.owly.uni.adapter.RiceStateSpaceModel;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensors;
@@ -41,16 +41,15 @@ public class RiceDemo {
     // System.out.println(Pretty.of(controls));
     CostFunction costFunction = new MinTimeCost();
     Heuristic heuristic = new ZeroHeuristic();
-    // TODO join +PI and -PI
     TrajectoryRegionQuery goalQuery = //
         new SimpleTrajectoryRegionQuery(new TimeInvariantRegion( //
-            new RnSphericalRegion(Tensors.vector(6, -.7), RealScalar.of(.1)) //
+            new EllipsoidRegion(Tensors.vector(6, -.7), Tensors.vector(.1, .1)) //
         ));
     TrajectoryRegionQuery obstacleQuery = // new EmptyRegionQuery();
         new SimpleTrajectoryRegionQuery(new TimeInvariantRegion( //
             UnionRegion.of( //
-                new RnSphericalRegion(Tensors.vector(3, 1), RealScalar.of(.75)), //
-                new RnSphericalRegion(Tensors.vector(3, -1), RealScalar.of(.75)) //
+                new EllipsoidRegion(Tensors.vector(3, +1), Tensors.vector(.75, .75)), //
+                new EllipsoidRegion(Tensors.vector(3, -1), Tensors.vector(.75, .75)) //
             )));
     // ---
     TrajectoryPlanner trajectoryPlanner = new TrajectoryPlanner( //

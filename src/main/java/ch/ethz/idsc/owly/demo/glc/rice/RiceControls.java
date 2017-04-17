@@ -1,10 +1,10 @@
 // code by jph
 package ch.ethz.idsc.owly.demo.glc.rice;
 
-import ch.ethz.idsc.owly.adapter.RiceStateSpaceModel;
 import ch.ethz.idsc.owly.glc.core.Controls;
-import ch.ethz.idsc.owly.util.StateSpaceModel;
-import ch.ethz.idsc.owly.util.StateSpaceModels;
+import ch.ethz.idsc.owly.math.StateSpaceModel;
+import ch.ethz.idsc.owly.math.StateSpaceModels;
+import ch.ethz.idsc.owly.uni.adapter.RiceStateSpaceModel;
 import ch.ethz.idsc.tensor.DoubleScalar;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Tensor;

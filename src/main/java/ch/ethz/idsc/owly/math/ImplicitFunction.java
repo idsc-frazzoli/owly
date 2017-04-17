@@ -1,5 +1,5 @@
 // code by jph
-package ch.ethz.idsc.owly.util;
+package ch.ethz.idsc.owly.math;
 
 import java.util.function.Function;
 

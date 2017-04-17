@@ -1,7 +1,6 @@
 // code by jph
 package ch.ethz.idsc.owly.demo.glc.rn;
 
-import ch.ethz.idsc.owly.adapter.IdentityStateSpaceModel;
 import ch.ethz.idsc.owly.glc.adapter.MinTimeCost;
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
 import ch.ethz.idsc.owly.glc.adapter.TimeInvariantRegion;
@@ -14,10 +13,11 @@ import ch.ethz.idsc.owly.glc.core.Trajectory;
 import ch.ethz.idsc.owly.glc.core.TrajectoryPlanner;
 import ch.ethz.idsc.owly.glc.core.TrajectoryRegionQuery;
 import ch.ethz.idsc.owly.glc.gui.GlcFrame;
-import ch.ethz.idsc.owly.integrator.EulerIntegrator;
-import ch.ethz.idsc.owly.integrator.Integrator;
-import ch.ethz.idsc.owly.util.StateSpaceModel;
-import ch.ethz.idsc.owly.util.rn.RnSphericalRegion;
+import ch.ethz.idsc.owly.math.EllipsoidRegion;
+import ch.ethz.idsc.owly.math.StateSpaceModel;
+import ch.ethz.idsc.owly.math.integrator.EulerIntegrator;
+import ch.ethz.idsc.owly.math.integrator.Integrator;
+import ch.ethz.idsc.owly.uni.adapter.IdentityStateSpaceModel;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Tensors;
 
@@ -32,10 +32,10 @@ public class RnDemo {
     Heuristic heuristic = new ZeroHeuristic();
     TrajectoryRegionQuery goalQuery = //
         new SimpleTrajectoryRegionQuery(new TimeInvariantRegion( //
-            new RnSphericalRegion(Tensors.vector(10, 0), RealScalar.of(1))));
+            new EllipsoidRegion(Tensors.vector(10, 0), Tensors.vector(1, 1))));
     TrajectoryRegionQuery obstacleQuery = //
         new SimpleTrajectoryRegionQuery(new TimeInvariantRegion( //
-            new RnSphericalRegion(Tensors.vector(5, 0), RealScalar.of(4))));
+            new EllipsoidRegion(Tensors.vector(5, 0), Tensors.vector(4, 4))));
     // ---
     TrajectoryPlanner trajectoryPlanner = new TrajectoryPlanner( //
         integrator, //

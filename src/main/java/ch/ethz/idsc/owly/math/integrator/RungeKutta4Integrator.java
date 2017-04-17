@@ -1,7 +1,7 @@
 // code by jph
-package ch.ethz.idsc.owly.integrator;
+package ch.ethz.idsc.owly.math.integrator;
 
-import ch.ethz.idsc.owly.util.Flow;
+import ch.ethz.idsc.owly.math.Flow;
 import ch.ethz.idsc.tensor.RationalScalar;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;

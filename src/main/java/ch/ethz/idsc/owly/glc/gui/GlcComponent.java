@@ -39,8 +39,8 @@ public class GlcComponent {
 
   public GlcComponent() {
     rep = Tensors.matrixInt(new int[][] { //
-        { 40, 0, 300 }, //
-        { 0, -40, 300 }, //
+        { 60, 0, 300 }, //
+        { 0, -60, 300 }, //
         { 0, 0, 1 }, //
     });
   }

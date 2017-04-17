@@ -1,7 +1,6 @@
 // code by jph
 package ch.ethz.idsc.owly.demo.glc.psu;
 
-import ch.ethz.idsc.owly.adapter.PsuStateSpaceModel;
 import ch.ethz.idsc.owly.glc.adapter.EmptyRegionQuery;
 import ch.ethz.idsc.owly.glc.adapter.MinTimeCost;
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
@@ -15,11 +14,12 @@ import ch.ethz.idsc.owly.glc.core.Trajectory;
 import ch.ethz.idsc.owly.glc.core.TrajectoryPlanner;
 import ch.ethz.idsc.owly.glc.core.TrajectoryRegionQuery;
 import ch.ethz.idsc.owly.glc.gui.GlcFrame;
-import ch.ethz.idsc.owly.integrator.Integrator;
-import ch.ethz.idsc.owly.integrator.MidpointIntegrator;
-import ch.ethz.idsc.owly.util.StateSpaceModel;
-import ch.ethz.idsc.owly.util.UnionRegion;
-import ch.ethz.idsc.owly.util.rn.RnSphericalRegion;
+import ch.ethz.idsc.owly.math.EllipsoidRegion;
+import ch.ethz.idsc.owly.math.StateSpaceModel;
+import ch.ethz.idsc.owly.math.UnionRegion;
+import ch.ethz.idsc.owly.math.integrator.Integrator;
+import ch.ethz.idsc.owly.math.integrator.MidpointIntegrator;
+import ch.ethz.idsc.owly.uni.adapter.PsuStateSpaceModel;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensors;
@@ -42,12 +42,11 @@ public class PsuDemo {
     // System.out.println(Pretty.of(controls));
     CostFunction costFunction = new MinTimeCost();
     Heuristic heuristic = new ZeroHeuristic();
-    // TODO join +PI and -PI
     TrajectoryRegionQuery goalQuery = //
         new SimpleTrajectoryRegionQuery(new TimeInvariantRegion( //
             UnionRegion.of( //
-                new RnSphericalRegion(Tensors.vector(+Math.PI, 0), RealScalar.of(.2)), //
-                new RnSphericalRegion(Tensors.vector(-Math.PI, 0), RealScalar.of(.2)) //
+                new EllipsoidRegion(Tensors.vector(+Math.PI, 0), Tensors.vector(.2, .2)), //
+                new EllipsoidRegion(Tensors.vector(-Math.PI, 0), Tensors.vector(.2, .2)) //
             )));
     TrajectoryRegionQuery obstacleQuery = new EmptyRegionQuery();
     // ---
