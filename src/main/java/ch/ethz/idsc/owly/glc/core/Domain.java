@@ -1,15 +1,14 @@
 // code by bapaden and jph
 package ch.ethz.idsc.owly.glc.core;
 
-import java.util.PriorityQueue;
-
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
 
 public class Domain {
   private Node label = null;
-  @Deprecated
-  PriorityQueue<Node> candidates = new PriorityQueue<>(NodeCostComparator.instance);
+  // @Deprecated
+  // PriorityQueue<Node> candidates = new PriorityQueue<>(NodeCostComparator.instance);
+  Node candidate = null;
 
   public boolean empty() {
     return label == null;

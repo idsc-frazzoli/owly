@@ -136,17 +136,24 @@ public class TrajectoryPlanner {
       }
       Domain bucket = domain_labels.get(current_domain);
       domains_needing_update.add(bucket);
-      if (Scalars.lessThan(new_arc.cost, bucket.getCost())) // .add(RealScalar.of(eps))
-        bucket.candidates.add(new_arc);
+      if (Scalars.lessThan(new_arc.cost, bucket.getCost())) { // .add(RealScalar.of(eps))
+        bucket.candidate = new_arc;
+        // bucket.candidates.add(new_arc);
+        // if (!foundGoal) {
+        // queue.add(new_arc);
+        // }
+      }
     }
     // ---
     // System.out.println("domneedupsize " + domains_needing_update.size());
     for (Domain current_domain : domains_needing_update) {
       // System.out.println(current_domain);
       boolean found_best = false;
-      while (!current_domain.candidates.isEmpty()) {
+      if (current_domain.candidate != null) {
+        // while (!current_domain.candidates.isEmpty()) {
         // peek() Retrieves, but does not remove, the head of this queue
-        final Node top = current_domain.candidates.peek();
+        final Node top = current_domain.candidate;
+        // current_domain.candidates.peek();
         if (Scalars.lessThan(top.cost, current_domain.getCost())) { // .add(RealScalar.of(eps))
           final Node curr = top;
           int collisionIndex = obstacleQuery.firstMember(traj_from_parent.get(curr));
@@ -169,9 +176,10 @@ public class TrajectoryPlanner {
             }
           }
         }
-        current_domain.candidates.poll();
+        // current_domain.candidates.poll();
+        current_domain.candidate = null;
       }
-      System.out.println(current_domain.candidates.size());
+      // System.out.println(current_domain.candidates.size());
       if (current_domain.empty()) {
         domain_labels.remove(current_domain);
       }
