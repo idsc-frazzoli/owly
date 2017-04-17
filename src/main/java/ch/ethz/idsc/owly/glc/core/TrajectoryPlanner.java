@@ -4,7 +4,6 @@ package ch.ethz.idsc.owly.glc.core;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -31,10 +30,8 @@ public class TrajectoryPlanner {
   // ---
   private Tensor partitionScale;
   private Scalar expand_time = RealScalar.ONE; // TODO
-  private int depth_limit;
-  private Node best;
   private final Queue<Node> queue = new PriorityQueue<>(NodeMeritComparator.instance);
-  private Map<Tensor, Domain> domain_labels = new HashMap<>();
+  private Map<Tensor, Node> domain_labels = new HashMap<>();
 
   public TrajectoryPlanner( //
       Integrator integrator, //
@@ -52,7 +49,6 @@ public class TrajectoryPlanner {
     this.heuristic = heuristic;
     this.goalQuery = goalQuery;
     this.obstacleQuery = obstacleQuery;
-    // ---
   }
 
   public void setResolution(Tensor partitionScale) {
@@ -64,21 +60,16 @@ public class TrajectoryPlanner {
   }
 
   public void insertRoot(Tensor x) {
-    final Node node = new Node(null, x, ZeroScalar.get(), ZeroScalar.get(), ZeroScalar.get());
-    queue.add(node);
-    domain_labels.put(convertToKey(node.x), new Domain(node));
+    insert(convertToKey(x), //
+        new Node(null, x, ZeroScalar.get(), ZeroScalar.get(), ZeroScalar.get()));
   }
 
   public Collection<Node> getQueue() {
     return Collections.unmodifiableCollection(queue);
   }
 
-  public Map<Tensor, Node> getDomains() {
-    Map<Tensor, Node> map = new HashMap<>();
-    for (Entry<Tensor, Domain> entry : domain_labels.entrySet())
-      if (entry.getValue().getLabel() != null)
-        map.put(entry.getKey(), entry.getValue().getLabel());
-    return map;
+  public Collection<Node> getNodes() {
+    return Collections.unmodifiableCollection(domain_labels.values());
   }
 
   private boolean expand() {
@@ -91,7 +82,7 @@ public class TrajectoryPlanner {
       System.out.println("depth limit reached " + current_node.depth);
       return false;
     }
-    Map<Domain, Node> domains_needing_update = new LinkedHashMap<>();
+    Map<Tensor, Node> candidates = new HashMap<>();
     Map<Node, Trajectory> traj_from_parent = new HashMap<>();
     for (Flow flow : controls) {
       final Trajectory trajectory = dynamicalSystem.sim(integrator, flow, current_node.time, current_node.time.add(expand_time), current_node.x);
@@ -102,29 +93,27 @@ public class TrajectoryPlanner {
       );
       traj_from_parent.put(new_arc, trajectory);
       // ---
-      final Tensor current_domain_key = convertToKey(new_arc.x);
-      // TODO can make more efficient by treating contain cases in detail
-      // TODO don't add to domain if future fail!
-      if (!domain_labels.containsKey(current_domain_key))
-        domain_labels.put(current_domain_key, new Domain(null));
-      Domain bucket = domain_labels.get(current_domain_key);
-      if (bucket.takesOffer(new_arc)) {
-        if (domains_needing_update.containsKey(bucket)) {
-          Node cmp = domains_needing_update.get(bucket);
-          if (Scalars.lessThan(new_arc.cost, cmp.cost))
-            domains_needing_update.put(bucket, new_arc);
-        } else
-          domains_needing_update.put(bucket, new_arc);
-      }
+      final Tensor domain_key = convertToKey(new_arc.x);
+      if (domain_labels.containsKey(domain_key)) {
+        Node bucket = domain_labels.get(domain_key);
+        if (Scalars.lessThan(new_arc.cost, bucket.cost)) {
+          if (candidates.containsKey(domain_key)) {
+            Node cmp = candidates.get(domain_key);
+            if (Scalars.lessThan(new_arc.cost, cmp.cost))
+              candidates.put(domain_key, new_arc);
+          } else
+            candidates.put(domain_key, new_arc);
+        }
+      } else
+        candidates.put(domain_key, new_arc);
     }
     // ---
-    for (Entry<Domain, Node> entry : domains_needing_update.entrySet()) {
-      final Domain current_domain = entry.getKey();
+    for (Entry<Tensor, Node> entry : candidates.entrySet()) {
+      final Tensor domain_key = entry.getKey();
       final Node node = entry.getValue();
       if (obstacleQuery.isDisjoint(traj_from_parent.get(node))) {
         current_node.addChild(node, expand_time);
-        queue.add(node);
-        current_domain.setLabel(node);
+        insert(domain_key, node);
         if (!goalQuery.isDisjoint(traj_from_parent.get(node)))
           if (best == null || Scalars.lessThan(node.cost, best.cost)) {
             best = node;
@@ -134,6 +123,14 @@ public class TrajectoryPlanner {
     }
     return best == null;
   }
+
+  private void insert(Tensor domain_key, Node node) {
+    queue.add(node);
+    domain_labels.put(domain_key, node);
+  }
+
+  private int depth_limit;
+  private Node best;
 
   public void plan(int depth_limit) {
     this.depth_limit = depth_limit;

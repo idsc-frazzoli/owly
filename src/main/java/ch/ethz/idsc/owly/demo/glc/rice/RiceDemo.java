@@ -35,14 +35,13 @@ public class RiceDemo {
       }
     };
     Controls controls = RiceControls.createControls(15);
-    // System.out.println(Pretty.of(controls));
     CostFunction costFunction = new MinTimeCost();
     Heuristic heuristic = new ZeroHeuristic();
     TrajectoryRegionQuery goalQuery = //
         new SimpleTrajectoryRegionQuery(new TimeInvariantRegion( //
             new EllipsoidRegion(Tensors.vector(6, -.7), Tensors.vector(.1, .1)) //
         ));
-    TrajectoryRegionQuery obstacleQuery = // new EmptyRegionQuery();
+    TrajectoryRegionQuery obstacleQuery = //
         new SimpleTrajectoryRegionQuery(new TimeInvariantRegion( //
             UnionRegion.of( //
                 new EllipsoidRegion(Tensors.vector(3, +1), Tensors.vector(.75, .75)), // speed limit along the way
