@@ -4,28 +4,24 @@ package ch.ethz.idsc.owly.glc.core;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.PriorityQueue;
 import java.util.Queue;
-import java.util.Set;
 
 import ch.ethz.idsc.owly.math.Flow;
-import ch.ethz.idsc.owly.math.StateSpaceModel;
 import ch.ethz.idsc.owly.math.integrator.Integrator;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Scalars;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.ZeroScalar;
-import ch.ethz.idsc.tensor.red.Mean;
-import ch.ethz.idsc.tensor.sca.Exp;
 import ch.ethz.idsc.tensor.sca.Floor;
 
 public class TrajectoryPlanner {
   private final Integrator integrator;
-  private final StateSpaceModel stateSpaceModel; // only used for lipschitz
   private final DynamicalSystem dynamicalSystem;
   private final Controls controls;
   private final CostFunction costFunction;
@@ -35,15 +31,13 @@ public class TrajectoryPlanner {
   // ---
   private Tensor partitionScale;
   private int depth_limit = 20; // TODO
+  private Scalar expand_time = RealScalar.ONE; // TODO
+  private Node best;
   private final Queue<Node> queue = new PriorityQueue<>(NodeMeritComparator.instance);
-  private Scalar expand_time;
   private Map<Tensor, Domain> domain_labels = new HashMap<>();
-  private boolean foundGoal = false; // TODO
-  private Node best = null;
 
   public TrajectoryPlanner( //
       Integrator integrator, //
-      StateSpaceModel stateSpaceModel, //
       DynamicalSystem dynamicalSystem, //
       Controls controls, //
       CostFunction costFunction, //
@@ -52,7 +46,6 @@ public class TrajectoryPlanner {
       TrajectoryRegionQuery obstacleQuery //
   ) {
     this.integrator = integrator;
-    this.stateSpaceModel = stateSpaceModel;
     this.dynamicalSystem = dynamicalSystem;
     this.controls = controls;
     this.costFunction = costFunction;
@@ -62,22 +55,8 @@ public class TrajectoryPlanner {
     // ---
   }
 
-  public void initialize(Tensor partitionScale) {
-    int state_dim = partitionScale.length();
-    this.partitionScale = partitionScale; // TODO
-    int res = 10; // TODO
-    double eps;
-    if (Scalars.lessThan(ZeroScalar.get(), costFunction.getLipschitz())) {
-      eps = (Math.sqrt(state_dim) / Mean.of(partitionScale).Get().number().doubleValue()) * //
-          (stateSpaceModel.getLipschitz().divide(costFunction.getLipschitz()).number().doubleValue()) * //
-          (res * Exp.function.apply(stateSpaceModel.getLipschitz()).number().doubleValue() - 1.0);
-    } else {
-      eps = 0;
-    }
-    double time_scale = 10; // TODO
-    expand_time = RealScalar.of(time_scale / res);
-    // System.out.println("eps " + eps);
-    System.out.println("expand_time " + expand_time);
+  public void setResolution(Tensor partitionScale) {
+    this.partitionScale = partitionScale;
   }
 
   private Tensor convertToKey(Tensor x) {
@@ -87,8 +66,9 @@ public class TrajectoryPlanner {
   public void insertRoot(Tensor x) {
     final Node node = new Node(null, x, ZeroScalar.get(), ZeroScalar.get(), ZeroScalar.get());
     queue.add(node);
-    Tensor current_domain = convertToKey(node.x);
-    domain_labels.put(current_domain, new Domain());
+    Domain domain = new Domain();
+    domain.setLabel(node);
+    domain_labels.put(convertToKey(node.x), domain);
   }
 
   public Collection<Node> getQueue() {
@@ -103,101 +83,72 @@ public class TrajectoryPlanner {
     this.depth_limit = depth_limit;
   }
 
-  public boolean expand() {
+  private boolean expand() {
     if (queue.isEmpty()) {
       System.out.println("queue is empty");
       return false;
     }
-    // poll() Retrieves and removes the head of this queue
-    final Node current_node = queue.poll();
+    final Node current_node = queue.poll(); // poll() Retrieves and removes the head of this queue
     if (depth_limit < current_node.depth) {
       System.out.println("depth limit reached " + current_node.depth);
       return false;
     }
-    // System.out.println("current_node " + current_node);
-    Set<Domain> domains_needing_update = new HashSet<>();
+    Map<Domain, Node> domains_needing_update = new LinkedHashMap<>();
     Map<Node, Trajectory> traj_from_parent = new HashMap<>();
     for (Flow flow : controls) {
       final Trajectory trajectory = dynamicalSystem.sim(integrator, flow, current_node.time, current_node.time.add(expand_time), current_node.x);
       final StateTime last = trajectory.getBack();
-      Node new_arc = new Node( //
-          flow, // new_arc.u_idx
-          last.x, // new_arc.x
-          last.time, // new_arc.t
+      Node new_arc = new Node(flow, last.x, last.time, //
           current_node.cost.add(costFunction.cost(trajectory, flow)), // new_arc.cost
           heuristic.costToGo(last.x) // new_arc.merit
       );
       traj_from_parent.put(new_arc, trajectory);
       // ---
-      Tensor current_domain = convertToKey(new_arc.x);
-      if (!domain_labels.containsKey(current_domain)) {
-        Domain d_new = new Domain();
-        domain_labels.put(current_domain, d_new);
-      }
-      Domain bucket = domain_labels.get(current_domain);
-      domains_needing_update.add(bucket);
-      if (Scalars.lessThan(new_arc.cost, bucket.getCost())) { // .add(RealScalar.of(eps))
-        bucket.candidate = new_arc;
-        // bucket.candidates.add(new_arc);
-        // if (!foundGoal) {
-        // queue.add(new_arc);
-        // }
+      final Tensor current_domain_key = convertToKey(new_arc.x);
+      // TODO can make more efficient by treating contain cases in detail
+      // TODO don't add to domain if future fail!
+      if (!domain_labels.containsKey(current_domain_key))
+        domain_labels.put(current_domain_key, new Domain());
+      Domain bucket = domain_labels.get(current_domain_key);
+      if (bucket.takesOffer(new_arc)) {
+        if (domains_needing_update.containsKey(bucket)) {
+          Node cmp = domains_needing_update.get(bucket);
+          if (Scalars.lessThan(new_arc.cost, cmp.cost))
+            domains_needing_update.put(bucket, new_arc);
+        } else
+          domains_needing_update.put(bucket, new_arc);
       }
     }
     // ---
-    // System.out.println("domneedupsize " + domains_needing_update.size());
-    for (Domain current_domain : domains_needing_update) {
-      // System.out.println(current_domain);
-      boolean found_best = false;
-      if (current_domain.candidate != null) {
-        // while (!current_domain.candidates.isEmpty()) {
-        // peek() Retrieves, but does not remove, the head of this queue
-        final Node top = current_domain.candidate;
-        // current_domain.candidates.peek();
-        if (Scalars.lessThan(top.cost, current_domain.getCost())) { // .add(RealScalar.of(eps))
-          final Node curr = top;
-          int collisionIndex = obstacleQuery.firstMember(traj_from_parent.get(curr));
-          if (collisionIndex == TrajectoryRegionQuery.NOMATCH) {
-            current_node.addChild(curr, expand_time);
-            if (!foundGoal) {
-              queue.add(curr);
-            }
-            if (!found_best) {
-              found_best = true;
-              current_domain.setLabel(curr);
-            }
-            int goalIndex = goalQuery.firstMember(traj_from_parent.get(curr));
-            if (goalIndex != TrajectoryRegionQuery.NOMATCH && (best == null || Scalars.lessThan(curr.cost, best.cost))) {
-              foundGoal = true;
-              System.out.println("found goal");
-              best = curr;
-              // double tail_cost = traj_from_parent.get(curr).getDurationFrom(num-1)*
-              // (1.0+(cf->getLipschitzConstant())*sqr(controls[best->u_idx][0]));
-            }
+    for (Entry<Domain, Node> entry : domains_needing_update.entrySet()) {
+      final Domain current_domain = entry.getKey();
+      final Node node = entry.getValue();
+      if (obstacleQuery.isDisjoint(traj_from_parent.get(node))) {
+        current_node.addChild(node, expand_time);
+        queue.add(node);
+        current_domain.setLabel(node);
+        if (!goalQuery.isDisjoint(traj_from_parent.get(node)))
+          if (best == null || Scalars.lessThan(node.cost, best.cost)) {
+            best = node;
+            System.out.println("found goal");
           }
-        }
-        // current_domain.candidates.poll();
-        current_domain.candidate = null;
-      }
-      // System.out.println(current_domain.candidates.size());
-      if (current_domain.empty()) {
-        domain_labels.remove(current_domain);
       }
     }
-    return !foundGoal;
+    return best == null;
   }
 
   public void plan() {
+    best = null;
     while (expand()) {
       // ---
     }
   }
 
-  public Trajectory getDetailed() {
-    return getDetailed(Nodes.getNodesFromRoot(best));
+  public Trajectory getDetailedTrajectory() {
+    return getDetailedTrajectory(Nodes.getNodesFromRoot(best));
   }
 
-  public Trajectory getDetailed(List<Node> list) {
+  public Trajectory getDetailedTrajectory(List<Node> list) {
     Trajectory trajectory = new Trajectory();
     for (int index = 1; index < list.size(); ++index) {
       Node prev = list.get(index - 1);

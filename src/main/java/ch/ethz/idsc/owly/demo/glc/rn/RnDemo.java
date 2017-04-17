@@ -14,17 +14,14 @@ import ch.ethz.idsc.owly.glc.core.TrajectoryPlanner;
 import ch.ethz.idsc.owly.glc.core.TrajectoryRegionQuery;
 import ch.ethz.idsc.owly.glc.gui.GlcFrame;
 import ch.ethz.idsc.owly.math.EllipsoidRegion;
-import ch.ethz.idsc.owly.math.StateSpaceModel;
 import ch.ethz.idsc.owly.math.integrator.EulerIntegrator;
 import ch.ethz.idsc.owly.math.integrator.Integrator;
-import ch.ethz.idsc.owly.uni.adapter.IdentityStateSpaceModel;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Tensors;
 
 public class RnDemo {
   public static void main(String[] args) {
     Integrator integrator = new EulerIntegrator();
-    StateSpaceModel stateSpaceModel = new IdentityStateSpaceModel();
     DynamicalSystem dynamicalSystem = new RnSingleIntegrator(RealScalar.ONE);
     Controls controls = RnControls.createR2RadialControls(40, RealScalar.of(.7));
     // System.out.println(Pretty.of(controls));
@@ -38,11 +35,9 @@ public class RnDemo {
             new EllipsoidRegion(Tensors.vector(5, 0), Tensors.vector(4, 4))));
     // ---
     TrajectoryPlanner trajectoryPlanner = new TrajectoryPlanner( //
-        integrator, //
-        stateSpaceModel, //
-        dynamicalSystem, controls, costFunction, heuristic, goalQuery, obstacleQuery);
+        integrator, dynamicalSystem, controls, costFunction, heuristic, goalQuery, obstacleQuery);
     // ---
-    trajectoryPlanner.initialize(Tensors.vector(3, 3));
+    trajectoryPlanner.setResolution(Tensors.vector(3, 3));
     trajectoryPlanner.insertRoot(Tensors.vector(0, 0));
     trajectoryPlanner.plan();
     Trajectory trajectory = trajectoryPlanner.getPathFromRootToGoal();

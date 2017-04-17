@@ -116,7 +116,7 @@ public class GlcComponent {
         }
         {
           graphics.setColor(new Color(0, 192, 0, 128));
-          Trajectory trajectory = trajectoryPlanner.getDetailed();
+          Trajectory trajectory = trajectoryPlanner.getDetailedTrajectory();
           StateTime prev = null;
           for (StateTime stateTime : trajectory) {
             if (prev != null)

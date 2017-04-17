@@ -15,11 +15,9 @@ import ch.ethz.idsc.owly.glc.core.TrajectoryPlanner;
 import ch.ethz.idsc.owly.glc.core.TrajectoryRegionQuery;
 import ch.ethz.idsc.owly.glc.gui.GlcFrame;
 import ch.ethz.idsc.owly.math.EllipsoidRegion;
-import ch.ethz.idsc.owly.math.StateSpaceModel;
 import ch.ethz.idsc.owly.math.UnionRegion;
 import ch.ethz.idsc.owly.math.integrator.Integrator;
 import ch.ethz.idsc.owly.math.integrator.MidpointIntegrator;
-import ch.ethz.idsc.owly.uni.adapter.PsuStateSpaceModel;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensors;
@@ -31,7 +29,6 @@ import ch.ethz.idsc.tensor.Tensors;
 public class PsuDemo {
   public static void main(String[] args) {
     Integrator integrator = new MidpointIntegrator();
-    StateSpaceModel stateSpaceModel = new PsuStateSpaceModel();
     DynamicalSystem dynamicalSystem = new DynamicalSystem() {
       @Override
       public Scalar getMaxTimeStep() {
@@ -51,10 +48,10 @@ public class PsuDemo {
     TrajectoryRegionQuery obstacleQuery = new EmptyRegionQuery();
     // ---
     TrajectoryPlanner trajectoryPlanner = new TrajectoryPlanner( //
-        integrator, stateSpaceModel, //
+        integrator, //
         dynamicalSystem, controls, costFunction, heuristic, goalQuery, obstacleQuery);
     // ---
-    trajectoryPlanner.initialize(Tensors.vector(10, 10));
+    trajectoryPlanner.setResolution(Tensors.vector(10, 10));
     trajectoryPlanner.insertRoot(Tensors.vector(0, 0));
     trajectoryPlanner.plan();
     Trajectory trajectory = trajectoryPlanner.getPathFromRootToGoal();

@@ -14,11 +14,9 @@ import ch.ethz.idsc.owly.glc.core.TrajectoryPlanner;
 import ch.ethz.idsc.owly.glc.core.TrajectoryRegionQuery;
 import ch.ethz.idsc.owly.glc.gui.GlcFrame;
 import ch.ethz.idsc.owly.math.EllipsoidRegion;
-import ch.ethz.idsc.owly.math.StateSpaceModel;
 import ch.ethz.idsc.owly.math.UnionRegion;
 import ch.ethz.idsc.owly.math.integrator.Integrator;
 import ch.ethz.idsc.owly.math.integrator.MidpointIntegrator;
-import ch.ethz.idsc.owly.uni.adapter.RiceStateSpaceModel;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensors;
@@ -30,14 +28,13 @@ import ch.ethz.idsc.tensor.Tensors;
 public class RiceDemo {
   public static void main(String[] args) {
     Integrator integrator = new MidpointIntegrator();
-    StateSpaceModel stateSpaceModel = new RiceStateSpaceModel(RealScalar.of(.5));
     DynamicalSystem dynamicalSystem = new DynamicalSystem() {
       @Override
       public Scalar getMaxTimeStep() {
         return RealScalar.of(.25);
       }
     };
-    Controls controls = RiceControls.createControls(8);
+    Controls controls = RiceControls.createControls(15);
     // System.out.println(Pretty.of(controls));
     CostFunction costFunction = new MinTimeCost();
     Heuristic heuristic = new ZeroHeuristic();
@@ -48,15 +45,15 @@ public class RiceDemo {
     TrajectoryRegionQuery obstacleQuery = // new EmptyRegionQuery();
         new SimpleTrajectoryRegionQuery(new TimeInvariantRegion( //
             UnionRegion.of( //
-                new EllipsoidRegion(Tensors.vector(3, +1), Tensors.vector(.75, .75)), //
-                new EllipsoidRegion(Tensors.vector(3, -1), Tensors.vector(.75, .75)) //
+                new EllipsoidRegion(Tensors.vector(3, +1), Tensors.vector(.75, .75)), // speed limit along the way
+                new EllipsoidRegion(Tensors.vector(-2, 0), Tensors.vector(1, 1)) // block to the left
             )));
     // ---
     TrajectoryPlanner trajectoryPlanner = new TrajectoryPlanner( //
-        integrator, stateSpaceModel, //
+        integrator, //
         dynamicalSystem, controls, costFunction, heuristic, goalQuery, obstacleQuery);
     // ---
-    trajectoryPlanner.initialize(Tensors.vector(13, 13));
+    trajectoryPlanner.setResolution(Tensors.vector(13, 13));
     trajectoryPlanner.insertRoot(Tensors.vector(0, 0));
     trajectoryPlanner.plan();
     Trajectory trajectory = trajectoryPlanner.getPathFromRootToGoal();
