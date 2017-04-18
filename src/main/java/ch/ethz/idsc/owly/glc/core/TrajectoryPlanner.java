@@ -55,6 +55,10 @@ public class TrajectoryPlanner {
     this.partitionScale = partitionScale;
   }
 
+  public Tensor getResolution() {
+    return partitionScale;
+  }
+
   private Tensor convertToKey(Tensor x) {
     return partitionScale.pmul(x).map(Floor.function);
   }
@@ -64,13 +68,23 @@ public class TrajectoryPlanner {
         new Node(null, x, ZeroScalar.get(), ZeroScalar.get(), ZeroScalar.get()));
   }
 
-  public Collection<Node> getQueue() {
-    return Collections.unmodifiableCollection(queue);
+  private void insert(Tensor domain_key, Node node) {
+    queue.add(node);
+    domain_labels.put(domain_key, node);
   }
 
-  public Collection<Node> getNodes() {
-    return Collections.unmodifiableCollection(domain_labels.values());
+  private int depth_limit;
+  private Node best;
+
+  public void plan(int depth_limit) {
+    this.depth_limit = depth_limit;
+    best = null;
+    while (expand()) {
+      // ---
+    }
   }
+  
+  int replaceCount = 0; // TODO
 
   private boolean expand() {
     if (queue.isEmpty()) {
@@ -124,20 +138,12 @@ public class TrajectoryPlanner {
     return best == null;
   }
 
-  private void insert(Tensor domain_key, Node node) {
-    queue.add(node);
-    domain_labels.put(domain_key, node);
+  public Collection<Node> getQueue() {
+    return Collections.unmodifiableCollection(queue);
   }
 
-  private int depth_limit;
-  private Node best;
-
-  public void plan(int depth_limit) {
-    this.depth_limit = depth_limit;
-    best = null;
-    while (expand()) {
-      // ---
-    }
+  public Collection<Node> getNodes() {
+    return Collections.unmodifiableCollection(domain_labels.values());
   }
 
   public Trajectory getDetailedTrajectory() {

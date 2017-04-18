@@ -22,30 +22,25 @@ import ch.ethz.idsc.tensor.Tensors;
 public class RnDemo {
   public static void main(String[] args) {
     Integrator integrator = new EulerIntegrator();
-    DynamicalSystem dynamicalSystem = new RnSingleIntegrator(RealScalar.ONE);
+    DynamicalSystem dynamicalSystem = new DynamicalSystem(RealScalar.of(.5));
     Controls controls = RnControls.createR2RadialControls(40, RealScalar.of(.7));
-    // System.out.println(Pretty.of(controls));
     CostFunction costFunction = new MinTimeCost();
     Heuristic heuristic = new ZeroHeuristic();
     TrajectoryRegionQuery goalQuery = //
         new SimpleTrajectoryRegionQuery(new TimeInvariantRegion( //
-            new EllipsoidRegion(Tensors.vector(10, 0), Tensors.vector(.5, .5))));
+            new EllipsoidRegion(Tensors.vector(5, 0), Tensors.vector(.25, .25))));
     TrajectoryRegionQuery obstacleQuery = //
         new SimpleTrajectoryRegionQuery(new TimeInvariantRegion( //
-            new EllipsoidRegion(Tensors.vector(5, 0), Tensors.vector(4, 4))));
+            new EllipsoidRegion(Tensors.vector(2.5, 0), Tensors.vector(2, 2))));
     // ---
     TrajectoryPlanner trajectoryPlanner = new TrajectoryPlanner( //
         integrator, dynamicalSystem, controls, costFunction, heuristic, goalQuery, obstacleQuery);
-    // ---
-    trajectoryPlanner.setResolution(Tensors.vector(3, 3));
+    trajectoryPlanner.setResolution(Tensors.vector(7, 7));
     trajectoryPlanner.insertRoot(Tensors.vector(0, 0));
     trajectoryPlanner.plan(25);
     Trajectory trajectory = trajectoryPlanner.getPathFromRootToGoal();
     trajectory.print();
     GlcFrame glcFrame = new GlcFrame();
     glcFrame.glcComponent.setTrajectoryPlanner(trajectoryPlanner);
-    // double d = Double.parseDouble("0.5000000000000001");
-    // double dn = Math.nextDown(d);
-    // System.out.println(dn);
   }
 }

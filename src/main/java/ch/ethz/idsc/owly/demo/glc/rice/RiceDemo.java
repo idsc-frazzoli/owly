@@ -18,22 +18,13 @@ import ch.ethz.idsc.owly.math.UnionRegion;
 import ch.ethz.idsc.owly.math.integrator.Integrator;
 import ch.ethz.idsc.owly.math.integrator.MidpointIntegrator;
 import ch.ethz.idsc.tensor.RealScalar;
-import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensors;
 
-/** Pendulum Swing-up
- * 
- * implementation inspired by
- * "A Generalized Label Correcting Method for Optimal Kinodynamic Motion Planning" [Paden/Frazzoli] */
+/** "Mobility and Autonomous Reconfiguration of Marsokhod" */
 public class RiceDemo {
   public static void main(String[] args) {
     Integrator integrator = new MidpointIntegrator();
-    DynamicalSystem dynamicalSystem = new DynamicalSystem() {
-      @Override
-      public Scalar getMaxTimeStep() {
-        return RealScalar.of(.25);
-      }
-    };
+    DynamicalSystem dynamicalSystem = new DynamicalSystem(RealScalar.of(.25));
     Controls controls = RiceControls.createControls(15);
     CostFunction costFunction = new MinTimeCost();
     Heuristic heuristic = new ZeroHeuristic();
@@ -44,13 +35,12 @@ public class RiceDemo {
     TrajectoryRegionQuery obstacleQuery = //
         new SimpleTrajectoryRegionQuery(new TimeInvariantRegion( //
             UnionRegion.of( //
-                new EllipsoidRegion(Tensors.vector(3, +1), Tensors.vector(.75, .75)), // speed limit along the way
-                new EllipsoidRegion(Tensors.vector(-2, 0), Tensors.vector(1, 1)) // block to the left
+                new EllipsoidRegion(Tensors.vector(+3, +1), Tensors.vector(1.75, .75)), // speed limit along the way
+                new EllipsoidRegion(Tensors.vector(-2, +0), Tensors.vector(1, 1)) // block to the left
             )));
     // ---
     TrajectoryPlanner trajectoryPlanner = new TrajectoryPlanner( //
-        integrator, //
-        dynamicalSystem, controls, costFunction, heuristic, goalQuery, obstacleQuery);
+        integrator, dynamicalSystem, controls, costFunction, heuristic, goalQuery, obstacleQuery);
     // ---
     trajectoryPlanner.setResolution(Tensors.vector(13, 13));
     trajectoryPlanner.insertRoot(Tensors.vector(0, 0));

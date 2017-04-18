@@ -19,7 +19,6 @@ import ch.ethz.idsc.owly.math.UnionRegion;
 import ch.ethz.idsc.owly.math.integrator.Integrator;
 import ch.ethz.idsc.owly.math.integrator.MidpointIntegrator;
 import ch.ethz.idsc.tensor.RealScalar;
-import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensors;
 
 /** Pendulum Swing-up
@@ -29,12 +28,7 @@ import ch.ethz.idsc.tensor.Tensors;
 public class PsuDemo {
   public static void main(String[] args) {
     Integrator integrator = new MidpointIntegrator();
-    DynamicalSystem dynamicalSystem = new DynamicalSystem() {
-      @Override
-      public Scalar getMaxTimeStep() {
-        return RealScalar.of(.25);
-      }
-    };
+    DynamicalSystem dynamicalSystem = new DynamicalSystem(RealScalar.of(.25));
     Controls controls = PsuControls.createControls(6);
     CostFunction costFunction = new MinTimeCost();
     Heuristic heuristic = new ZeroHeuristic();
@@ -47,8 +41,7 @@ public class PsuDemo {
     TrajectoryRegionQuery obstacleQuery = new EmptyRegionQuery();
     // ---
     TrajectoryPlanner trajectoryPlanner = new TrajectoryPlanner( //
-        integrator, //
-        dynamicalSystem, controls, costFunction, heuristic, goalQuery, obstacleQuery);
+        integrator, dynamicalSystem, controls, costFunction, heuristic, goalQuery, obstacleQuery);
     // ---
     trajectoryPlanner.setResolution(Tensors.vector(10, 10));
     trajectoryPlanner.insertRoot(Tensors.vector(0, 0));
