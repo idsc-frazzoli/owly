@@ -15,7 +15,7 @@ import ch.ethz.idsc.owly.glc.core.TrajectoryPlanner;
 import ch.ethz.idsc.owly.glc.core.TrajectoryRegionQuery;
 import ch.ethz.idsc.owly.glc.gui.GlcFrame;
 import ch.ethz.idsc.owly.math.EllipsoidRegion;
-import ch.ethz.idsc.owly.math.UnionRegion;
+import ch.ethz.idsc.owly.math.RegionUnion;
 import ch.ethz.idsc.owly.math.integrator.Integrator;
 import ch.ethz.idsc.owly.math.integrator.MidpointIntegrator;
 import ch.ethz.idsc.tensor.RealScalar;
@@ -34,7 +34,7 @@ public class PsuDemo {
     Heuristic heuristic = new ZeroHeuristic();
     TrajectoryRegionQuery goalQuery = //
         new SimpleTrajectoryRegionQuery(new TimeInvariantRegion( //
-            UnionRegion.of( //
+            RegionUnion.of( //
                 new EllipsoidRegion(Tensors.vector(+Math.PI, 0), Tensors.vector(.1, .1)), //
                 new EllipsoidRegion(Tensors.vector(-Math.PI, 0), Tensors.vector(.1, .1)) //
             )));

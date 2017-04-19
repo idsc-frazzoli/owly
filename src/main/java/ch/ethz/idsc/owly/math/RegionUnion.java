@@ -6,14 +6,14 @@ import java.util.Collection;
 
 import ch.ethz.idsc.tensor.Tensor;
 
-public class UnionRegion implements Region {
+public class RegionUnion implements Region {
   private final Collection<Region> collection;
 
   public static Region of(Region... regions) {
-    return new UnionRegion(Arrays.asList(regions));
+    return new RegionUnion(Arrays.asList(regions));
   }
 
-  private UnionRegion(Collection<Region> collection) {
+  private RegionUnion(Collection<Region> collection) {
     this.collection = collection;
   }
 

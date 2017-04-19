@@ -132,6 +132,7 @@ public class TrajectoryPlanner {
           if (best == null || Scalars.lessThan(node.cost, best.cost)) {
             best = node;
             System.out.println("found goal");
+            // TODO count updates in cell based on costs
           }
       }
     }
