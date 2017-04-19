@@ -9,9 +9,14 @@ import ch.ethz.idsc.owly.math.Flow;
 import ch.ethz.idsc.owly.math.integrator.Integrator;
 import ch.ethz.idsc.tensor.Scalars;
 import ch.ethz.idsc.tensor.Tensor;
-import ch.ethz.idsc.tensor.sca.Floor;
 
 public class SteepTrajectoryPlanner extends TrajectoryPlanner {
+  protected final Controls controls;
+  protected final CostFunction costFunction;
+  protected final Heuristic heuristic;
+  protected final TrajectoryRegionQuery goalQuery;
+  protected final TrajectoryRegionQuery obstacleQuery;
+
   public SteepTrajectoryPlanner( //
       Integrator integrator, //
       DynamicalSystem dynamicalSystem, //
@@ -21,33 +26,21 @@ public class SteepTrajectoryPlanner extends TrajectoryPlanner {
       TrajectoryRegionQuery goalQuery, //
       TrajectoryRegionQuery obstacleQuery //
   ) {
-    super(integrator, dynamicalSystem, controls, costFunction, heuristic, goalQuery, obstacleQuery);
-  }
-
-  private Tensor convertToKey(Tensor x) {
-    return partitionScale.pmul(x).map(Floor.function);
-  }
-
-  private void insert(Tensor domain_key, Node node) {
-    queue.add(node);
-    domain_labels.put(domain_key, node);
+    super(integrator, dynamicalSystem);
+    this.controls = controls;
+    this.costFunction = costFunction;
+    this.heuristic = heuristic;
+    this.goalQuery = goalQuery;
+    this.obstacleQuery = obstacleQuery;
   }
 
   @Override
-  boolean expand() {
-    if (queue.isEmpty()) {
-      System.out.println("queue is empty");
-      return false;
-    }
-    final Node current_node = queue.poll(); // poll() Retrieves and removes the head of this queue
-    if (depth_limit < current_node.depth) {
-      System.out.println("depth limit reached " + current_node.depth);
-      return false;
-    }
-    Map<Tensor, Node> candidates = new HashMap<>();
+  protected void expand(Node current_node) {
+    // TODO count updates in cell based on costs for benchmarking
+    Map<Tensor, DomainQueue> candidates = new HashMap<>();
     Map<Node, Trajectory> traj_from_parent = new HashMap<>();
     for (Flow flow : controls) {
-      final Trajectory trajectory = dynamicalSystem.sim(integrator, flow, current_node.time, current_node.time.add(expand_time), current_node.x);
+      final Trajectory trajectory = evolve(flow, current_node);
       final StateTime last = trajectory.getBack();
       Node new_arc = new Node(flow, last.x, last.time, //
           current_node.cost.add(costFunction.cost(trajectory, flow)), // new_arc.cost
@@ -56,34 +49,33 @@ public class SteepTrajectoryPlanner extends TrajectoryPlanner {
       traj_from_parent.put(new_arc, trajectory);
       // ---
       final Tensor domain_key = convertToKey(new_arc.x);
-      if (domain_labels.containsKey(domain_key)) {
-        Node bucket = domain_labels.get(domain_key);
-        if (Scalars.lessThan(new_arc.cost, bucket.cost)) {
+      Node prev = getNode(domain_key);
+      if (prev != null) {
+        if (Scalars.lessThan(new_arc.cost, prev.cost)) {
           if (candidates.containsKey(domain_key)) {
-            Node cmp = candidates.get(domain_key);
-            if (Scalars.lessThan(new_arc.cost, cmp.cost))
-              candidates.put(domain_key, new_arc);
+            DomainQueue domainQueue = candidates.get(domain_key);
+            domainQueue.add(new_arc);
           } else
-            candidates.put(domain_key, new_arc);
+            candidates.put(domain_key, new DomainQueue(new_arc));
         }
       } else
-        candidates.put(domain_key, new_arc);
+        candidates.put(domain_key, new DomainQueue(new_arc));
     }
     // ---
-    for (Entry<Tensor, Node> entry : candidates.entrySet()) {
+    for (Entry<Tensor, DomainQueue> entry : candidates.entrySet()) {
       final Tensor domain_key = entry.getKey();
-      final Node node = entry.getValue();
-      if (obstacleQuery.isDisjoint(traj_from_parent.get(node))) {
-        current_node.addChild(node, expand_time);
-        insert(domain_key, node);
-        if (!goalQuery.isDisjoint(traj_from_parent.get(node)))
-          if (best == null || Scalars.lessThan(node.cost, best.cost)) {
-            best = node;
-            System.out.println("found goal");
-            // TODO count updates in cell based on costs
-          }
+      final DomainQueue domainQueue = entry.getValue();
+      while (!domainQueue.isEmpty()) {
+        Node node = domainQueue.poll(); // poll() Retrieves and removes the head of this queue
+        if (obstacleQuery.isDisjoint(traj_from_parent.get(node))) {
+          current_node.addChild(node, expand_time);
+          insert(domain_key, node);
+          if (!goalQuery.isDisjoint(traj_from_parent.get(node)))
+            offerDestination(node);
+          domainQueue.clear();
+          break;
+        }
       }
     }
-    return best == null;
   }
 }

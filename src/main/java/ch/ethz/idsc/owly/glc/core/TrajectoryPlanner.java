@@ -9,94 +9,99 @@ import java.util.Map;
 import java.util.PriorityQueue;
 import java.util.Queue;
 
+import ch.ethz.idsc.owly.math.Flow;
 import ch.ethz.idsc.owly.math.integrator.Integrator;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
+import ch.ethz.idsc.tensor.Scalars;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.ZeroScalar;
 import ch.ethz.idsc.tensor.sca.Floor;
 
 public abstract class TrajectoryPlanner {
-  protected final Integrator integrator;
-  protected final DynamicalSystem dynamicalSystem;
-  protected final Controls controls;
-  protected final CostFunction costFunction;
-  protected final Heuristic heuristic;
-  protected final TrajectoryRegionQuery goalQuery;
-  protected final TrajectoryRegionQuery obstacleQuery;
+  private final Integrator integrator;
+  private final DynamicalSystem dynamicalSystem;
   // ---
-  protected Tensor partitionScale;
+  private Tensor partitionScale;
   protected Scalar expand_time = RealScalar.ONE; // TODO
-  protected final Queue<Node> queue = new PriorityQueue<>(NodeMeritComparator.instance);
-  protected Map<Tensor, Node> domain_labels = new HashMap<>();
+  private final Queue<Node> queue = new PriorityQueue<>(NodeMeritComparator.instance);
+  private final Map<Tensor, Node> domain_labels = new HashMap<>();
 
-  public TrajectoryPlanner( //
-      Integrator integrator, //
-      DynamicalSystem dynamicalSystem, //
-      Controls controls, //
-      CostFunction costFunction, //
-      Heuristic heuristic, //
-      TrajectoryRegionQuery goalQuery, //
-      TrajectoryRegionQuery obstacleQuery //
-  ) {
+  public TrajectoryPlanner(Integrator integrator, DynamicalSystem dynamicalSystem) {
     this.integrator = integrator;
     this.dynamicalSystem = dynamicalSystem;
-    this.controls = controls;
-    this.costFunction = costFunction;
-    this.heuristic = heuristic;
-    this.goalQuery = goalQuery;
-    this.obstacleQuery = obstacleQuery;
   }
 
-  public void setResolution(Tensor partitionScale) {
+  public final void setResolution(Tensor partitionScale) {
     this.partitionScale = partitionScale;
   }
 
-  public Tensor getResolution() {
+  public final Tensor getResolution() {
     return partitionScale;
   }
 
-  private Tensor convertToKey(Tensor x) {
+  protected final Tensor convertToKey(Tensor x) {
     return partitionScale.pmul(x).map(Floor.function);
   }
 
-  public void insertRoot(Tensor x) {
+  public final void insertRoot(Tensor x) {
     insert(convertToKey(x), //
         new Node(null, x, ZeroScalar.get(), ZeroScalar.get(), ZeroScalar.get()));
   }
 
-  private void insert(Tensor domain_key, Node node) {
+  protected final void insert(Tensor domain_key, Node node) {
     queue.add(node);
     domain_labels.put(domain_key, node);
   }
 
-  int depth_limit;
-  Node best;
+  protected final Node getNode(Tensor domain_key) {
+    return domain_labels.get(domain_key);
+  }
+
+  protected final Trajectory evolve(Flow flow, Node node) {
+    return dynamicalSystem.sim(integrator, flow, node.time, node.time.add(expand_time), node.x);
+  }
+
+  private Node best;
   int replaceCount = 0; // TODO
 
   public final void plan(int depth_limit) {
-    this.depth_limit = depth_limit;
     best = null;
-    while (expand()) {
+    while (!queue.isEmpty()) {
+      Node current_node = queue.poll();
+      if (depth_limit < current_node.depth) {
+        System.out.println("depth limit reached " + current_node.depth);
+        break;
+      }
+      expand(current_node);
       // ---
+      if (best != null)
+        break;
     }
   }
 
-  abstract boolean expand();
+  abstract protected void expand(Node current_node);
 
-  public Collection<Node> getQueue() {
+  protected final void offerDestination(Node node) {
+    if (best == null || Scalars.lessThan(node.cost, best.cost)) {
+      best = node;
+      System.out.println("found goal");
+    }
+  }
+
+  public final Collection<Node> getQueue() {
     return Collections.unmodifiableCollection(queue);
   }
 
-  public Collection<Node> getNodes() {
+  public final Collection<Node> getNodes() {
     return Collections.unmodifiableCollection(domain_labels.values());
   }
 
-  public Trajectory getDetailedTrajectory() {
+  public final Trajectory getDetailedTrajectory() {
     return getDetailedTrajectory(Nodes.getNodesFromRoot(best));
   }
 
-  public Trajectory getDetailedTrajectory(List<Node> list) {
+  public final Trajectory getDetailedTrajectory(List<Node> list) {
     Trajectory trajectory = new Trajectory();
     for (int index = 1; index < list.size(); ++index) {
       Node prev = list.get(index - 1);
@@ -107,11 +112,11 @@ public abstract class TrajectoryPlanner {
     return trajectory;
   }
 
-  public Trajectory getPathFromRootToGoal() {
+  public final Trajectory getPathFromRootToGoal() {
     return getPathFromRootToGoal(Nodes.getNodesFromRoot(best));
   }
 
-  public Trajectory getPathFromRootToGoal(List<Node> list) {
+  public static Trajectory getPathFromRootToGoal(List<Node> list) {
     Trajectory trajectory = new Trajectory();
     for (Node node : list)
       trajectory.add(node.getStateTime());
