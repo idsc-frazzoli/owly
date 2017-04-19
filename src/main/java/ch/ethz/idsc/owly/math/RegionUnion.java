@@ -6,6 +6,8 @@ import java.util.Collection;
 
 import ch.ethz.idsc.tensor.Tensor;
 
+/** TODO ref mathematica
+ * RegionUnion */
 public class RegionUnion implements Region {
   private final Collection<Region> collection;
 

@@ -6,32 +6,29 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.PriorityQueue;
 import java.util.Queue;
 
-import ch.ethz.idsc.owly.math.Flow;
 import ch.ethz.idsc.owly.math.integrator.Integrator;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
-import ch.ethz.idsc.tensor.Scalars;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.ZeroScalar;
 import ch.ethz.idsc.tensor.sca.Floor;
 
-public class TrajectoryPlanner {
-  private final Integrator integrator;
-  private final DynamicalSystem dynamicalSystem;
-  private final Controls controls;
-  private final CostFunction costFunction;
-  private final Heuristic heuristic;
-  private final TrajectoryRegionQuery goalQuery;
-  private final TrajectoryRegionQuery obstacleQuery;
+public abstract class TrajectoryPlanner {
+  protected final Integrator integrator;
+  protected final DynamicalSystem dynamicalSystem;
+  protected final Controls controls;
+  protected final CostFunction costFunction;
+  protected final Heuristic heuristic;
+  protected final TrajectoryRegionQuery goalQuery;
+  protected final TrajectoryRegionQuery obstacleQuery;
   // ---
-  private Tensor partitionScale;
-  private Scalar expand_time = RealScalar.ONE; // TODO
-  private final Queue<Node> queue = new PriorityQueue<>(NodeMeritComparator.instance);
-  private Map<Tensor, Node> domain_labels = new HashMap<>();
+  protected Tensor partitionScale;
+  protected Scalar expand_time = RealScalar.ONE; // TODO
+  protected final Queue<Node> queue = new PriorityQueue<>(NodeMeritComparator.instance);
+  protected Map<Tensor, Node> domain_labels = new HashMap<>();
 
   public TrajectoryPlanner( //
       Integrator integrator, //
@@ -73,71 +70,19 @@ public class TrajectoryPlanner {
     domain_labels.put(domain_key, node);
   }
 
-  private int depth_limit;
-  private Node best;
+  int depth_limit;
+  Node best;
+  int replaceCount = 0; // TODO
 
-  public void plan(int depth_limit) {
+  public final void plan(int depth_limit) {
     this.depth_limit = depth_limit;
     best = null;
     while (expand()) {
       // ---
     }
   }
-  
-  int replaceCount = 0; // TODO
 
-  private boolean expand() {
-    if (queue.isEmpty()) {
-      System.out.println("queue is empty");
-      return false;
-    }
-    final Node current_node = queue.poll(); // poll() Retrieves and removes the head of this queue
-    if (depth_limit < current_node.depth) {
-      System.out.println("depth limit reached " + current_node.depth);
-      return false;
-    }
-    Map<Tensor, Node> candidates = new HashMap<>();
-    Map<Node, Trajectory> traj_from_parent = new HashMap<>();
-    for (Flow flow : controls) {
-      final Trajectory trajectory = dynamicalSystem.sim(integrator, flow, current_node.time, current_node.time.add(expand_time), current_node.x);
-      final StateTime last = trajectory.getBack();
-      Node new_arc = new Node(flow, last.x, last.time, //
-          current_node.cost.add(costFunction.cost(trajectory, flow)), // new_arc.cost
-          heuristic.costToGo(last.x) // new_arc.merit
-      );
-      traj_from_parent.put(new_arc, trajectory);
-      // ---
-      final Tensor domain_key = convertToKey(new_arc.x);
-      if (domain_labels.containsKey(domain_key)) {
-        Node bucket = domain_labels.get(domain_key);
-        if (Scalars.lessThan(new_arc.cost, bucket.cost)) {
-          if (candidates.containsKey(domain_key)) {
-            Node cmp = candidates.get(domain_key);
-            if (Scalars.lessThan(new_arc.cost, cmp.cost))
-              candidates.put(domain_key, new_arc);
-          } else
-            candidates.put(domain_key, new_arc);
-        }
-      } else
-        candidates.put(domain_key, new_arc);
-    }
-    // ---
-    for (Entry<Tensor, Node> entry : candidates.entrySet()) {
-      final Tensor domain_key = entry.getKey();
-      final Node node = entry.getValue();
-      if (obstacleQuery.isDisjoint(traj_from_parent.get(node))) {
-        current_node.addChild(node, expand_time);
-        insert(domain_key, node);
-        if (!goalQuery.isDisjoint(traj_from_parent.get(node)))
-          if (best == null || Scalars.lessThan(node.cost, best.cost)) {
-            best = node;
-            System.out.println("found goal");
-            // TODO count updates in cell based on costs
-          }
-      }
-    }
-    return best == null;
-  }
+  abstract boolean expand();
 
   public Collection<Node> getQueue() {
     return Collections.unmodifiableCollection(queue);

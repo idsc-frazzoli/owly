@@ -10,6 +10,7 @@ import ch.ethz.idsc.owly.glc.core.Controls;
 import ch.ethz.idsc.owly.glc.core.CostFunction;
 import ch.ethz.idsc.owly.glc.core.DynamicalSystem;
 import ch.ethz.idsc.owly.glc.core.Heuristic;
+import ch.ethz.idsc.owly.glc.core.SteepTrajectoryPlanner;
 import ch.ethz.idsc.owly.glc.core.Trajectory;
 import ch.ethz.idsc.owly.glc.core.TrajectoryPlanner;
 import ch.ethz.idsc.owly.glc.core.TrajectoryRegionQuery;
@@ -40,7 +41,7 @@ public class PsuDemo {
             )));
     TrajectoryRegionQuery obstacleQuery = new EmptyRegionQuery();
     // ---
-    TrajectoryPlanner trajectoryPlanner = new TrajectoryPlanner( //
+    TrajectoryPlanner trajectoryPlanner = new SteepTrajectoryPlanner( //
         integrator, dynamicalSystem, controls, costFunction, heuristic, goalQuery, obstacleQuery);
     // ---
     trajectoryPlanner.setResolution(Tensors.vector(10, 10));

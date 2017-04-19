@@ -9,6 +9,7 @@ import ch.ethz.idsc.owly.glc.core.Controls;
 import ch.ethz.idsc.owly.glc.core.CostFunction;
 import ch.ethz.idsc.owly.glc.core.DynamicalSystem;
 import ch.ethz.idsc.owly.glc.core.Heuristic;
+import ch.ethz.idsc.owly.glc.core.SteepTrajectoryPlanner;
 import ch.ethz.idsc.owly.glc.core.Trajectory;
 import ch.ethz.idsc.owly.glc.core.TrajectoryPlanner;
 import ch.ethz.idsc.owly.glc.core.TrajectoryRegionQuery;
@@ -39,7 +40,7 @@ public class RiceDemo {
                 new EllipsoidRegion(Tensors.vector(-2, +0), Tensors.vector(1, 1)) // block to the left
             )));
     // ---
-    TrajectoryPlanner trajectoryPlanner = new TrajectoryPlanner( //
+    TrajectoryPlanner trajectoryPlanner = new SteepTrajectoryPlanner( //
         integrator, dynamicalSystem, controls, costFunction, heuristic, goalQuery, obstacleQuery);
     // ---
     trajectoryPlanner.setResolution(Tensors.vector(13, 13));
