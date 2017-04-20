@@ -17,10 +17,4 @@ public class LruCacheTest extends TestCase {
     map.get(3);
     System.out.println(map);
   }
-
-  public static void main(String[] args) {
-    int asd = 0x01234567;
-    int put = asd >> 16;
-    // System.out.println(put);
-  }
 }

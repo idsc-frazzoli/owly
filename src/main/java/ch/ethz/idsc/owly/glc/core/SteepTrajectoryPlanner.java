@@ -51,17 +51,19 @@ public class SteepTrajectoryPlanner extends TrajectoryPlanner {
       final Tensor domain_key = convertToKey(new_arc.x);
       Node prev = getNode(domain_key);
       if (prev != null) {
-        if (Scalars.lessThan(new_arc.cost, prev.cost)) {
-          if (candidates.containsKey(domain_key)) {
-            DomainQueue domainQueue = candidates.get(domain_key);
-            domainQueue.add(new_arc);
-          } else
+        if (Scalars.lessThan(new_arc.cost, prev.cost))
+          if (candidates.containsKey(domain_key))
+            candidates.get(domain_key).add(new_arc);
+          else
             candidates.put(domain_key, new DomainQueue(new_arc));
-        }
       } else
         candidates.put(domain_key, new DomainQueue(new_arc));
     }
     // ---
+    processCandidates(current_node, candidates, traj_from_parent);
+  }
+
+  void processCandidates(Node current_node, Map<Tensor, DomainQueue> candidates, Map<Node, Trajectory> traj_from_parent) {
     for (Entry<Tensor, DomainQueue> entry : candidates.entrySet()) {
       final Tensor domain_key = entry.getKey();
       final DomainQueue domainQueue = entry.getValue();
