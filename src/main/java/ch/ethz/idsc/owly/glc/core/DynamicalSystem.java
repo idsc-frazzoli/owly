@@ -9,10 +9,11 @@ import ch.ethz.idsc.tensor.sca.Ceiling;
 
 public final class DynamicalSystem {
   final Scalar maxTimeStep;
+
   public DynamicalSystem(Scalar maxTimeStep) {
-    this.maxTimeStep=maxTimeStep;
+    this.maxTimeStep = maxTimeStep;
   }
-//  public abstract Scalar getMaxTimeStep();
+  // public abstract Scalar getMaxTimeStep();
 
   public Trajectory sim(Integrator integrator, Flow flow, Scalar t0, Scalar tf, Tensor x0) {
     Scalar num_steps = Ceiling.function.apply(tf.subtract(t0).divide(maxTimeStep));

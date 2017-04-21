@@ -30,7 +30,7 @@ public class PsuDemo {
   public static void main(String[] args) {
     Integrator integrator = new MidpointIntegrator();
     DynamicalSystem dynamicalSystem = new DynamicalSystem(RealScalar.of(.25));
-    Controls controls = PsuControls.createControls(6);
+    Controls controls = new PsuControls(6);
     CostFunction costFunction = new MinTimeCost();
     Heuristic heuristic = new ZeroHeuristic();
     TrajectoryRegionQuery goalQuery = //

@@ -21,9 +21,9 @@ import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
 
-public class RnDemo {
-  public static RnDemo createSphere() {
-    RnDemo rnDemo = new RnDemo();
+public class R2Demo {
+  public static R2Demo createSphere() {
+    R2Demo rnDemo = new R2Demo();
     rnDemo.controlSize = 40;
     rnDemo.root = Tensors.vector(0, 0);
     rnDemo.goal = Tensors.vector(5, 0);
@@ -36,8 +36,8 @@ public class RnDemo {
     return rnDemo;
   }
 
-  public static RnDemo createBubbles() {
-    RnDemo rnDemo = new RnDemo();
+  public static R2Demo createBubbles() {
+    R2Demo rnDemo = new R2Demo();
     rnDemo.controlSize = 15;
     rnDemo.root = Tensors.vector(-2, -2);
     rnDemo.goal = Tensors.vector(2, 2);
@@ -50,15 +50,15 @@ public class RnDemo {
   Tensor goal;
   TrajectoryRegionQuery obstacleQuery;
 
-  private RnDemo() {
+  private R2Demo() {
   }
 
   public static void main(String[] args) {
-    RnDemo rnDemo = createBubbles();
+    R2Demo rnDemo = createBubbles();
     // rnDemo = createSphere();
     Integrator integrator = new EulerIntegrator();
     DynamicalSystem dynamicalSystem = new DynamicalSystem(RealScalar.of(.5));
-    Controls controls = RnControls.createR2RadialControls(rnDemo.controlSize, RealScalar.of(.7));
+    Controls controls = new R2RadialControls(rnDemo.controlSize, RealScalar.of(.7));
     CostFunction costFunction = new MinTimeCost();
     Heuristic heuristic = new RnDistanceHeuristic(rnDemo.goal);
     TrajectoryRegionQuery goalQuery = //

@@ -1,5 +1,5 @@
 // code by jph
-package ch.ethz.idsc.owly.uni.adapter;
+package ch.ethz.idsc.owly.demo.glc.rice;
 
 import ch.ethz.idsc.owly.math.StateSpaceModel;
 import ch.ethz.idsc.tensor.RealScalar;
@@ -8,10 +8,10 @@ import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
 import ch.ethz.idsc.tensor.red.Norm;
 
-public class RiceStateSpaceModel implements StateSpaceModel {
+class Rice1StateSpaceModel implements StateSpaceModel {
   private final Scalar lambda;
 
-  public RiceStateSpaceModel(Scalar lambda) {
+  public Rice1StateSpaceModel(Scalar lambda) {
     this.lambda = lambda;
   }
 
