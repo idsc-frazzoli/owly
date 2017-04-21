@@ -10,16 +10,16 @@ import ch.ethz.idsc.owly.glc.core.Controls;
 import ch.ethz.idsc.owly.glc.core.CostFunction;
 import ch.ethz.idsc.owly.glc.core.DynamicalSystem;
 import ch.ethz.idsc.owly.glc.core.Heuristic;
+import ch.ethz.idsc.owly.glc.core.SteepTrajectoryPlanner;
 import ch.ethz.idsc.owly.glc.core.Trajectory;
 import ch.ethz.idsc.owly.glc.core.TrajectoryPlanner;
 import ch.ethz.idsc.owly.glc.core.TrajectoryRegionQuery;
 import ch.ethz.idsc.owly.glc.gui.GlcFrame;
 import ch.ethz.idsc.owly.math.EllipsoidRegion;
-import ch.ethz.idsc.owly.math.UnionRegion;
+import ch.ethz.idsc.owly.math.RegionUnion;
 import ch.ethz.idsc.owly.math.integrator.Integrator;
 import ch.ethz.idsc.owly.math.integrator.MidpointIntegrator;
 import ch.ethz.idsc.tensor.RealScalar;
-import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensors;
 
 /** Pendulum Swing-up
@@ -29,26 +29,20 @@ import ch.ethz.idsc.tensor.Tensors;
 public class PsuDemo {
   public static void main(String[] args) {
     Integrator integrator = new MidpointIntegrator();
-    DynamicalSystem dynamicalSystem = new DynamicalSystem() {
-      @Override
-      public Scalar getMaxTimeStep() {
-        return RealScalar.of(.25);
-      }
-    };
-    Controls controls = PsuControls.createControls(6);
+    DynamicalSystem dynamicalSystem = new DynamicalSystem(RealScalar.of(.25));
+    Controls controls = new PsuControls(6);
     CostFunction costFunction = new MinTimeCost();
     Heuristic heuristic = new ZeroHeuristic();
     TrajectoryRegionQuery goalQuery = //
         new SimpleTrajectoryRegionQuery(new TimeInvariantRegion( //
-            UnionRegion.of( //
+            RegionUnion.of( //
                 new EllipsoidRegion(Tensors.vector(+Math.PI, 0), Tensors.vector(.1, .1)), //
                 new EllipsoidRegion(Tensors.vector(-Math.PI, 0), Tensors.vector(.1, .1)) //
             )));
     TrajectoryRegionQuery obstacleQuery = new EmptyRegionQuery();
     // ---
-    TrajectoryPlanner trajectoryPlanner = new TrajectoryPlanner( //
-        integrator, //
-        dynamicalSystem, controls, costFunction, heuristic, goalQuery, obstacleQuery);
+    TrajectoryPlanner trajectoryPlanner = new SteepTrajectoryPlanner( //
+        integrator, dynamicalSystem, controls, costFunction, heuristic, goalQuery, obstacleQuery);
     // ---
     trajectoryPlanner.setResolution(Tensors.vector(10, 10));
     trajectoryPlanner.insertRoot(Tensors.vector(0, 0));

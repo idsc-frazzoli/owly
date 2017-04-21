@@ -7,11 +7,16 @@ import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.sca.Ceiling;
 
-public abstract class DynamicalSystem {
-  public abstract Scalar getMaxTimeStep();
+public final class DynamicalSystem {
+  final Scalar maxTimeStep;
+
+  public DynamicalSystem(Scalar maxTimeStep) {
+    this.maxTimeStep = maxTimeStep;
+  }
+  // public abstract Scalar getMaxTimeStep();
 
   public Trajectory sim(Integrator integrator, Flow flow, Scalar t0, Scalar tf, Tensor x0) {
-    Scalar num_steps = Ceiling.function.apply(tf.subtract(t0).divide(getMaxTimeStep()));
+    Scalar num_steps = Ceiling.function.apply(tf.subtract(t0).divide(maxTimeStep));
     Scalar dt = tf.subtract(t0).divide(num_steps);
     Trajectory trajectory = new Trajectory();
     StateTime prev = new StateTime(x0, t0);

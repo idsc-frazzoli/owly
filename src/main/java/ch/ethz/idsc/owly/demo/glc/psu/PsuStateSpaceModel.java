@@ -1,5 +1,5 @@
 // code by jph
-package ch.ethz.idsc.owly.uni.adapter;
+package ch.ethz.idsc.owly.demo.glc.psu;
 
 import ch.ethz.idsc.owly.math.StateSpaceModel;
 import ch.ethz.idsc.tensor.RealScalar;
@@ -8,7 +8,7 @@ import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
 import ch.ethz.idsc.tensor.sca.Sin;
 
-public class PsuStateSpaceModel implements StateSpaceModel {
+class PsuStateSpaceModel implements StateSpaceModel {
   @Override
   public Tensor flow(Tensor x, Tensor u) {
     // equation (10)

@@ -16,6 +16,6 @@ public final class IdentityStateSpaceModel implements StateSpaceModel {
 
   @Override
   public Scalar getLipschitz() {
-    return ZeroScalar.get(); // TODO check, that change is valid
+    return ZeroScalar.get();
   }
 }

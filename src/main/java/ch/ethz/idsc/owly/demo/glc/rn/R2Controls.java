@@ -14,16 +14,13 @@ import ch.ethz.idsc.tensor.sca.Chop;
 import ch.ethz.idsc.tensor.sca.Cos;
 import ch.ethz.idsc.tensor.sca.Sin;
 
-enum RnControls {
-  ;
+class R2Controls extends Controls {
   // ---
-  public static Controls createR2RadialControls(final int num, Scalar amp) {
+  public R2Controls(final int num, Scalar amp) {
     StateSpaceModel stateSpaceModel = new IdentityStateSpaceModel();
-    Controls controls = new Controls();
     for (Tensor angle : Range.of(0, num).multiply(DoubleScalar.of(2 * Math.PI / num))) {
       Tensor u = Chop.of(Tensors.of(Cos.of(angle), Sin.of(angle)).multiply(amp));
-      controls.add(StateSpaceModels.createFlow(stateSpaceModel, u));
+      add(StateSpaceModels.createFlow(stateSpaceModel, u));
     }
-    return controls;
   }
 }
