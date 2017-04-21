@@ -12,6 +12,11 @@ public enum StateSpaceModels {
       public Tensor at(Tensor x) {
         return stateSpaceModel.flow(x, u);
       }
+
+      @Override
+      public Tensor getU() {
+        return u;
+      }
     };
   }
 }

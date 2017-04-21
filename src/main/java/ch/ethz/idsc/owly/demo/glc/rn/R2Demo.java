@@ -58,7 +58,7 @@ public class R2Demo {
     // rnDemo = createSphere();
     Integrator integrator = new EulerIntegrator();
     DynamicalSystem dynamicalSystem = new DynamicalSystem(RealScalar.of(.5));
-    Controls controls = new R2RadialControls(rnDemo.controlSize, RealScalar.of(.7));
+    Controls controls = new R2Controls(rnDemo.controlSize, RealScalar.of(.7));
     CostFunction costFunction = new MinTimeCost();
     Heuristic heuristic = new RnDistanceHeuristic(rnDemo.goal);
     TrajectoryRegionQuery goalQuery = //

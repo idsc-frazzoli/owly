@@ -32,7 +32,8 @@ import ch.ethz.idsc.tensor.mat.DiagonalMatrix;
 import ch.ethz.idsc.tensor.sca.Power;
 
 public class GlcComponent {
-  public static Tensor toAffinePoint(Tensor x) {
+  // function ignores all but the first and second entry of x
+  static Tensor toAffinePoint(Tensor x) {
     return Tensors.of( //
         x.get(0), //
         x.get(1), //
@@ -62,13 +63,13 @@ public class GlcComponent {
       Point down = null;
 
       @Override
-      public void mousePressed(MouseEvent e) {
-        down = e.getPoint();
+      public void mousePressed(MouseEvent event) {
+        down = event.getPoint();
       }
 
       @Override
-      public void mouseDragged(MouseEvent e) {
-        Point now = e.getPoint();
+      public void mouseDragged(MouseEvent event) {
+        Point now = event.getPoint();
         int dx = now.x - down.x;
         int dy = now.y - down.y;
         down = now;
@@ -176,10 +177,10 @@ public class GlcComponent {
     jComponent.repaint();
   }
 
-  public Point2D toPoint2D(Tensor xx) {
-    Tensor x = model2pixel.dot(toAffinePoint(xx));
+  public Point2D toPoint2D(Tensor x) {
+    Tensor point = model2pixel.dot(toAffinePoint(x));
     return new Point2D.Double( //
-        x.Get(0).number().doubleValue(), //
-        x.Get(1).number().doubleValue());
+        point.Get(0).number().doubleValue(), //
+        point.Get(1).number().doubleValue());
   }
 }

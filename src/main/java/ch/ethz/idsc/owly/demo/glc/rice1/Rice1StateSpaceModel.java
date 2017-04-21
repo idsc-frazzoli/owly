@@ -1,5 +1,5 @@
 // code by jph
-package ch.ethz.idsc.owly.demo.glc.rice;
+package ch.ethz.idsc.owly.demo.glc.rice1;
 
 import ch.ethz.idsc.owly.math.StateSpaceModel;
 import ch.ethz.idsc.tensor.RealScalar;

@@ -69,6 +69,7 @@ public abstract class TrajectoryPlanner {
     best = null;
     while (!queue.isEmpty()) {
       Node current_node = queue.poll();
+      // System.out.println(current_node);
       if (depth_limit < current_node.depth) {
         System.out.println("depth limit reached " + current_node.depth);
         break;
