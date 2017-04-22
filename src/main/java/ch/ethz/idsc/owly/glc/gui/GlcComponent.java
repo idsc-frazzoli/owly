@@ -1,6 +1,7 @@
 // code by jph
 package ch.ethz.idsc.owly.glc.gui;
 
+import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
@@ -159,7 +160,8 @@ public class GlcComponent {
           }
         }
         {
-          graphics.setColor(new Color(0, 192, 0, 255));
+          graphics.setStroke(new BasicStroke(2.0f));
+          graphics.setColor(new Color(0, 192, 0, 128));
           Trajectory trajectory = trajectoryPlanner.getDetailedTrajectory();
           StateTime prev = null;
           for (StateTime stateTime : trajectory) {
@@ -167,6 +169,7 @@ public class GlcComponent {
               graphics.draw(new Line2D.Double(toPoint2D(prev.x), toPoint2D(stateTime.x)));
             prev = stateTime;
           }
+          graphics.setStroke(new BasicStroke());
         }
       }
     }

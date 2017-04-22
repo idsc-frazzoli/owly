@@ -9,7 +9,4 @@ public interface CostFunction {
    * @param u
    * @return cost of trajectory along flow u */
   Scalar cost(Trajectory trajectory, Flow u);
-
-  @Deprecated
-  Scalar getLipschitz(); // not used
 }

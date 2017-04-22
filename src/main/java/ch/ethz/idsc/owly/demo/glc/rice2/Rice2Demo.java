@@ -47,6 +47,7 @@ public class Rice2Demo {
     trajectoryPlanner.setResolution(Tensors.vector(2, 2, 2, 2));
     trajectoryPlanner.insertRoot(Tensors.vector(0, 0, 0, 0));
     trajectoryPlanner.plan(25);
+    // TODO keep trying to improve path to goal for a few iterations...?
     Trajectory trajectory = trajectoryPlanner.getPathFromRootToGoal();
     trajectory.print();
     GlcFrame glcFrame = new GlcFrame();

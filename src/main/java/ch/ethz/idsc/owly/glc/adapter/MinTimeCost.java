@@ -12,9 +12,4 @@ public final class MinTimeCost implements CostFunction {
   public Scalar cost(Trajectory trajectory, Flow u) {
     return trajectory.getDuration();
   }
-
-  @Override
-  public Scalar getLipschitz() {
-    return ZeroScalar.get(); // TODO really 0 !?
-  }
 }

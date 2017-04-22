@@ -16,22 +16,22 @@ import ch.ethz.idsc.owly.glc.core.TrajectoryPlanner;
 import ch.ethz.idsc.owly.glc.core.TrajectoryRegionQuery;
 import ch.ethz.idsc.owly.glc.gui.GlcFrame;
 import ch.ethz.idsc.owly.math.EllipsoidRegion;
+import ch.ethz.idsc.owly.math.integrator.EulerIntegrator;
 import ch.ethz.idsc.owly.math.integrator.Integrator;
-import ch.ethz.idsc.owly.math.integrator.MidpointIntegrator;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Tensors;
 
 /** (x,y,theta) */
 public class Se2Demo {
   public static void main(String[] args) {
-    Integrator integrator = new MidpointIntegrator();
+    Integrator integrator = new EulerIntegrator();
     DynamicalSystem dynamicalSystem = new DynamicalSystem(RealScalar.of(.25));
-    Controls controls = new Se2Controls(15);
+    Controls controls = new Se2Controls(10);
     CostFunction costFunction = new MinTimeCost();
     Heuristic heuristic = new ZeroHeuristic();
     TrajectoryRegionQuery goalQuery = //
         new SimpleTrajectoryRegionQuery(new TimeInvariantRegion( //
-            new EllipsoidRegion(Tensors.vector(3, 3, -1, 0), Tensors.vector(1, 1, .5, 1)) //
+            new EllipsoidRegion(Tensors.vector(5, -1, Math.PI/2), Tensors.vector(.5, .5, .2)) //
         ));
     TrajectoryRegionQuery obstacleQuery = //
         new EmptyRegionQuery();
@@ -44,8 +44,8 @@ public class Se2Demo {
     TrajectoryPlanner trajectoryPlanner = new SteepTrajectoryPlanner( //
         integrator, dynamicalSystem, controls, costFunction, heuristic, goalQuery, obstacleQuery);
     // ---
-    trajectoryPlanner.setResolution(Tensors.vector(2, 2, 2, 2));
-    trajectoryPlanner.insertRoot(Tensors.vector(0, 0, 0, 0));
+    trajectoryPlanner.setResolution(Tensors.vector(3, 3, 3));
+    trajectoryPlanner.insertRoot(Tensors.vector(0, 0, 0));
     trajectoryPlanner.plan(25);
     Trajectory trajectory = trajectoryPlanner.getPathFromRootToGoal();
     trajectory.print();
