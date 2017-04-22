@@ -20,6 +20,6 @@ class PsuStateSpaceModel implements StateSpaceModel {
   /** | f(x_1, u) - f(x_2, u) | <= L | x_1 - x_2 | */
   @Override
   public Scalar getLipschitz() {
-    return RealScalar.ONE; // TODO check
+    return RealScalar.ONE;
   }
 }

@@ -5,7 +5,6 @@ import ch.ethz.idsc.owly.glc.adapter.EmptyRegionQuery;
 import ch.ethz.idsc.owly.glc.adapter.MinTimeCost;
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
 import ch.ethz.idsc.owly.glc.adapter.TimeInvariantRegion;
-import ch.ethz.idsc.owly.glc.adapter.ZeroHeuristic;
 import ch.ethz.idsc.owly.glc.core.Controls;
 import ch.ethz.idsc.owly.glc.core.CostFunction;
 import ch.ethz.idsc.owly.glc.core.DynamicalSystem;
@@ -15,9 +14,9 @@ import ch.ethz.idsc.owly.glc.core.Trajectory;
 import ch.ethz.idsc.owly.glc.core.TrajectoryPlanner;
 import ch.ethz.idsc.owly.glc.core.TrajectoryRegionQuery;
 import ch.ethz.idsc.owly.glc.gui.GlcFrame;
-import ch.ethz.idsc.owly.math.EllipsoidRegion;
 import ch.ethz.idsc.owly.math.integrator.EulerIntegrator;
 import ch.ethz.idsc.owly.math.integrator.Integrator;
+import ch.ethz.idsc.tensor.DoubleScalar;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Tensors;
 
@@ -28,11 +27,14 @@ public class Se2Demo {
     DynamicalSystem dynamicalSystem = new DynamicalSystem(RealScalar.of(.25));
     Controls controls = new Se2Controls(10);
     CostFunction costFunction = new MinTimeCost();
-    Heuristic heuristic = new ZeroHeuristic();
+    Se2Goal rnGoal = new Se2Goal(Tensors.vector(5, -1, Math.PI/2), DoubleScalar.of(.2));
+    Heuristic heuristic = rnGoal; //new ZeroHeuristic();
     TrajectoryRegionQuery goalQuery = //
+        
         new SimpleTrajectoryRegionQuery(new TimeInvariantRegion( //
-            new EllipsoidRegion(Tensors.vector(5, -1, Math.PI/2), Tensors.vector(.5, .5, .2)) //
-        ));
+            rnGoal));
+//            new EllipsoidRegion(Tensors.vector(5, -1, Math.PI/2), Tensors.vector(.5, .5, .2)) //
+//        ));
     TrajectoryRegionQuery obstacleQuery = //
         new EmptyRegionQuery();
     // new SimpleTrajectoryRegionQuery(new TimeInvariantRegion( //

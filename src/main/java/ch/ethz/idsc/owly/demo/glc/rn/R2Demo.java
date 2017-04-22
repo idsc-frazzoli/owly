@@ -17,6 +17,7 @@ import ch.ethz.idsc.owly.math.EllipsoidRegion;
 import ch.ethz.idsc.owly.math.RegionUnion;
 import ch.ethz.idsc.owly.math.integrator.EulerIntegrator;
 import ch.ethz.idsc.owly.math.integrator.Integrator;
+import ch.ethz.idsc.tensor.DoubleScalar;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
@@ -26,7 +27,7 @@ public class R2Demo {
     R2Demo rnDemo = new R2Demo();
     rnDemo.controlSize = 40;
     rnDemo.root = Tensors.vector(0, 0);
-    rnDemo.goal = Tensors.vector(5, 0);
+    rnDemo.goal = new RnGoal(Tensors.vector(5, 0), DoubleScalar.of(.2));
     rnDemo.obstacleQuery = // new EmptyRegionQuery();
         new SimpleTrajectoryRegionQuery(new TimeInvariantRegion( //
             RegionUnion.of( //
@@ -40,14 +41,14 @@ public class R2Demo {
     R2Demo rnDemo = new R2Demo();
     rnDemo.controlSize = 15;
     rnDemo.root = Tensors.vector(-2, -2);
-    rnDemo.goal = Tensors.vector(2, 2);
+    rnDemo.goal = new RnGoal(Tensors.vector(2, 2), DoubleScalar.of(.25));
     rnDemo.obstacleQuery = new SimpleTrajectoryRegionQuery(new TimeInvariantRegion(new R2Bubbles()));
     return rnDemo;
   }
 
   int controlSize;
   Tensor root;
-  Tensor goal;
+  RnGoal goal;
   TrajectoryRegionQuery obstacleQuery;
 
   private R2Demo() {
@@ -55,15 +56,14 @@ public class R2Demo {
 
   public static void main(String[] args) {
     R2Demo rnDemo = createBubbles();
-    // rnDemo = createSphere();
+    rnDemo = createSphere();
     Integrator integrator = new EulerIntegrator();
     DynamicalSystem dynamicalSystem = new DynamicalSystem(RealScalar.of(.5));
     Controls controls = new R2Controls(rnDemo.controlSize, RealScalar.of(.7));
     CostFunction costFunction = new MinTimeCost();
-    Heuristic heuristic = new RnDistanceHeuristic(rnDemo.goal);
+    Heuristic heuristic = rnDemo.goal;
     TrajectoryRegionQuery goalQuery = //
-        new SimpleTrajectoryRegionQuery(new TimeInvariantRegion( //
-            new EllipsoidRegion(rnDemo.goal, Tensors.vector(.25, .25))));
+        new SimpleTrajectoryRegionQuery(new TimeInvariantRegion(rnDemo.goal));
     TrajectoryRegionQuery obstacleQuery = rnDemo.obstacleQuery;
     // ---
     TrajectoryPlanner trajectoryPlanner = new SteepTrajectoryPlanner( //
