@@ -19,7 +19,7 @@ public class NdTreeMapTest extends TestCase {
     testTree.add(Tensors.vector(1, 1), "d4");
     testTree.add(Tensors.vector(0.1, 0.1), "d5");
     testTree.add(Tensors.vector(6, 7), "d6");
-    Distancer distancer = Distancer.EUCLIDEAN;
+    Distance distancer = Distance.EUCLIDEAN;
     {
       Cluster<String> cluster = testTree.buildCluster(Tensors.vector(0, 0), 1, distancer);
       assertTrue(cluster.iterator().next().value.equals("d5"));

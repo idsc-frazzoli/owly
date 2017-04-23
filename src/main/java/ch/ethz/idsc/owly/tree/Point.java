@@ -16,13 +16,12 @@ public class Point<V> implements Comparable<Point<V>> {
     this.value = value;
   }
 
-  void setDistanceToCenter(Distancer distancer, Tensor center) {
+  void setDistanceToCenter(Distance distancer, Tensor center) {
     distanceToCenter = distancer.getDistance(center, location);
   }
 
-  boolean isFartherThan(Tensor testPoint, Tensor center, Distancer distancer) {
-    return Scalars.lessThan( //
-        distancer.getDistance(testPoint, center), distanceToCenter);
+  boolean isFartherThan(Tensor testPoint, Tensor center, Distance distancer) {
+    return Scalars.lessThan(distancer.getDistance(testPoint, center), distanceToCenter);
   }
 
   @Override
@@ -43,10 +42,5 @@ public class Point<V> implements Comparable<Point<V>> {
       return location.equals(other.location) && value.equals(other.value);
     }
     return false;
-  }
-
-  @Override
-  public String toString() {
-    return value.toString();
   }
 }

@@ -37,6 +37,20 @@ public class R2Demo {
     return rnDemo;
   }
 
+  public static R2Demo createPoints() {
+    R2Demo rnDemo = new R2Demo();
+    rnDemo.controlSize = 40;
+    rnDemo.root = Tensors.vector(0, 0);
+    rnDemo.goal = new RnGoal(Tensors.vector(5, 0), DoubleScalar.of(.2));
+    Tensor points = Tensors.matrix(new Number[][] { //
+        { 2.5, 1 }, { 1.5, -1.5 }, { 0, 2 }, { 3.5, -0.5 } //
+    });
+    rnDemo.obstacleQuery = // new EmptyRegionQuery();
+        new SimpleTrajectoryRegionQuery(new TimeInvariantRegion( //
+            RnPointcloud.create(points, RealScalar.ONE)));
+    return rnDemo;
+  }
+
   public static R2Demo createBubbles() {
     R2Demo rnDemo = new R2Demo();
     rnDemo.controlSize = 15;
@@ -57,6 +71,7 @@ public class R2Demo {
   public static void main(String[] args) {
     R2Demo rnDemo = createBubbles();
     rnDemo = createSphere();
+    rnDemo = createPoints();
     Integrator integrator = new EulerIntegrator();
     DynamicalSystem dynamicalSystem = new DynamicalSystem(RealScalar.of(.5));
     Controls controls = new R2Controls(rnDemo.controlSize, RealScalar.of(.7));

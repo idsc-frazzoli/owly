@@ -4,7 +4,7 @@ package ch.ethz.idsc.owly.demo.glc.rn;
 import ch.ethz.idsc.owly.math.EmptyRegion;
 import ch.ethz.idsc.owly.math.Region;
 import ch.ethz.idsc.owly.tree.Cluster;
-import ch.ethz.idsc.owly.tree.Distancer;
+import ch.ethz.idsc.owly.tree.Distance;
 import ch.ethz.idsc.owly.tree.NdTreeMap;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Scalars;
@@ -29,7 +29,7 @@ public class RnPointcloud implements Region {
     // System.out.println("---");
     // System.out.println(lbounds);
     // System.out.println(ubounds);
-    ndTreeMap = new NdTreeMap<>(lbounds, ubounds, 10, 5);
+    ndTreeMap = new NdTreeMap<>(lbounds, ubounds, 10, 5); // TODO
     for (Tensor point : points)
       ndTreeMap.add(point, point.toString()); // TODO
     this.radius = radius;
@@ -37,7 +37,7 @@ public class RnPointcloud implements Region {
 
   @Override
   public boolean isMember(Tensor tensor) {
-    Cluster<String> cluster = ndTreeMap.buildCluster(tensor, 1, Distancer.EUCLIDEAN);
+    Cluster<String> cluster = ndTreeMap.buildCluster(tensor, 1, Distance.EUCLIDEAN);
     Scalar dist = cluster.iterator().next().distanceToCenter;
     return Scalars.lessEquals(dist, radius);
   }
