@@ -26,7 +26,7 @@ public class Rice1Demo {
   public static void main(String[] args) {
     Integrator integrator = new MidpointIntegrator();
     DynamicalSystem dynamicalSystem = new DynamicalSystem(RealScalar.of(.25)); // magic
-    Controls controls = new Rice1Controls(15); // 
+    Controls controls = new Rice1Controls(15); //
     CostFunction costFunction = new MinTimeCost();
     Heuristic heuristic = new ZeroHeuristic();
     TrajectoryRegionQuery goalQuery = //

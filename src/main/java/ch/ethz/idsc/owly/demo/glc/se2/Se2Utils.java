@@ -17,7 +17,7 @@ enum Se2Utils {
   ;
   // ---
   public static Tensor vec2mat(Tensor x) {
-    Scalar angle =x.Get(2); 
+    Scalar angle = x.Get(2);
     return Tensors.matrix(new Tensor[][] { //
         { Cos.of(angle), Sin.of(angle).negate(), x.Get(0) }, //
         { Sin.of(angle), Cos.of(angle), x.Get(1) }, //
@@ -36,6 +36,6 @@ enum Se2Utils {
     System.out.println(um1.getU());
     Tensor x = Tensors.vector(0, 0, 0.0);
     Tensor x1 = um1.at(um1.at(x));
-     System.out.println(x1);
+    System.out.println(x1);
   }
 }

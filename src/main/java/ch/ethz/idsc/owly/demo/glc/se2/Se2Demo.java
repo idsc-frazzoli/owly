@@ -27,14 +27,13 @@ public class Se2Demo {
     DynamicalSystem dynamicalSystem = new DynamicalSystem(RealScalar.of(.25));
     Controls controls = new Se2Controls(10);
     CostFunction costFunction = new MinTimeCost();
-    Se2Goal rnGoal = new Se2Goal(Tensors.vector(5, -1, Math.PI/2), DoubleScalar.of(.2));
-    Heuristic heuristic = rnGoal; //new ZeroHeuristic();
+    Se2Goal rnGoal = new Se2Goal(Tensors.vector(5, -1, Math.PI / 2), DoubleScalar.of(.2));
+    Heuristic heuristic = rnGoal; // new ZeroHeuristic();
     TrajectoryRegionQuery goalQuery = //
-        
         new SimpleTrajectoryRegionQuery(new TimeInvariantRegion( //
             rnGoal));
-//            new EllipsoidRegion(Tensors.vector(5, -1, Math.PI/2), Tensors.vector(.5, .5, .2)) //
-//        ));
+    // new EllipsoidRegion(Tensors.vector(5, -1, Math.PI/2), Tensors.vector(.5, .5, .2)) //
+    // ));
     TrajectoryRegionQuery obstacleQuery = //
         new EmptyRegionQuery();
     // new SimpleTrajectoryRegionQuery(new TimeInvariantRegion( //
