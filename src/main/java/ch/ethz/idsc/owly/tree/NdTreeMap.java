@@ -47,7 +47,7 @@ public class NdTreeMap<V> {
     return removed;
   }
 
-  public Cluster<V> buildCluster(Tensor center, int size, Distance distancer) {
+  public Cluster<V> buildCluster(Tensor center, int size, DistanceInterface distancer) {
     resetBounds();
     Cluster<V> cluster = new Cluster<V>(center, size, distancer);
     root.addToCluster(cluster);

@@ -1,7 +1,10 @@
 // code by jph
 package ch.ethz.idsc.owly.demo.glc.rn;
 
+import ch.ethz.idsc.owly.glc.adapter.EllipsoidRegion;
+import ch.ethz.idsc.owly.glc.adapter.InvertedRegion;
 import ch.ethz.idsc.owly.glc.adapter.MinTimeCost;
+import ch.ethz.idsc.owly.glc.adapter.RnPointcloudRegion;
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
 import ch.ethz.idsc.owly.glc.adapter.TimeInvariantRegion;
 import ch.ethz.idsc.owly.glc.core.Controls;
@@ -13,7 +16,6 @@ import ch.ethz.idsc.owly.glc.core.Trajectory;
 import ch.ethz.idsc.owly.glc.core.TrajectoryPlanner;
 import ch.ethz.idsc.owly.glc.core.TrajectoryRegionQuery;
 import ch.ethz.idsc.owly.glc.gui.GlcFrame;
-import ch.ethz.idsc.owly.math.EllipsoidRegion;
 import ch.ethz.idsc.owly.math.RegionUnion;
 import ch.ethz.idsc.owly.math.integrator.EulerIntegrator;
 import ch.ethz.idsc.owly.math.integrator.Integrator;
@@ -47,7 +49,23 @@ public class R2Demo {
     });
     rnDemo.obstacleQuery = // new EmptyRegionQuery();
         new SimpleTrajectoryRegionQuery(new TimeInvariantRegion( //
-            RnPointcloud.create(points, RealScalar.ONE)));
+            RnPointcloudRegion.create(points, RealScalar.ONE)));
+    return rnDemo;
+  }
+
+  public static R2Demo createPointsInside() {
+    R2Demo rnDemo = new R2Demo();
+    rnDemo.controlSize = 40;
+    rnDemo.root = Tensors.vector(0, 0);
+    rnDemo.goal = new RnGoal(Tensors.vector(5, 0), DoubleScalar.of(.2));
+    Tensor points = Tensors.matrix(new Number[][] { //
+        { 0, 0 }, { 0, -1 }, { 0, -2 }, //
+        { 1, -2 }, { 2, -2 }, { 3, -2 }, { 4, -2 }, //
+        { 5, -2 }, { 5, -1 }, { 5, 0 } //
+    });
+    rnDemo.obstacleQuery = // new EmptyRegionQuery();
+        new SimpleTrajectoryRegionQuery(new TimeInvariantRegion( //
+            new InvertedRegion(RnPointcloudRegion.create(points, RealScalar.of(0.6)))));
     return rnDemo;
   }
 
@@ -71,7 +89,7 @@ public class R2Demo {
   public static void main(String[] args) {
     R2Demo rnDemo = createBubbles();
     rnDemo = createSphere();
-    rnDemo = createPoints();
+    rnDemo = createPointsInside();
     Integrator integrator = new EulerIntegrator();
     DynamicalSystem dynamicalSystem = new DynamicalSystem(RealScalar.of(.5));
     Controls controls = new R2Controls(rnDemo.controlSize, RealScalar.of(.7));

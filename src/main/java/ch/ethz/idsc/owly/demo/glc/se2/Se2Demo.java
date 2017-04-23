@@ -27,7 +27,9 @@ public class Se2Demo {
     DynamicalSystem dynamicalSystem = new DynamicalSystem(RealScalar.of(.25));
     Controls controls = new Se2Controls(10);
     CostFunction costFunction = new MinTimeCost();
-    Se2Goal rnGoal = new Se2Goal(Tensors.vector(5, -1, Math.PI / 2), DoubleScalar.of(.2));
+    Se2Goal rnGoal = new Se2Goal( //
+        Tensors.vector(5, 1), RealScalar.of(Math.PI/2), //
+        DoubleScalar.of(.2), Se2Utils.DEGREE(10));
     Heuristic heuristic = rnGoal; // new ZeroHeuristic();
     TrajectoryRegionQuery goalQuery = //
         new SimpleTrajectoryRegionQuery(new TimeInvariantRegion( //

@@ -1,6 +1,7 @@
 // code by jph
 package ch.ethz.idsc.owly.demo.glc.rice1;
 
+import ch.ethz.idsc.owly.glc.adapter.EllipsoidRegion;
 import ch.ethz.idsc.owly.glc.adapter.MinTimeCost;
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
 import ch.ethz.idsc.owly.glc.adapter.TimeInvariantRegion;
@@ -14,7 +15,6 @@ import ch.ethz.idsc.owly.glc.core.Trajectory;
 import ch.ethz.idsc.owly.glc.core.TrajectoryPlanner;
 import ch.ethz.idsc.owly.glc.core.TrajectoryRegionQuery;
 import ch.ethz.idsc.owly.glc.gui.GlcFrame;
-import ch.ethz.idsc.owly.math.EllipsoidRegion;
 import ch.ethz.idsc.owly.math.RegionUnion;
 import ch.ethz.idsc.owly.math.integrator.Integrator;
 import ch.ethz.idsc.owly.math.integrator.MidpointIntegrator;

@@ -1,10 +1,9 @@
 // code by jph
-package ch.ethz.idsc.owly.demo.glc.rn;
+package ch.ethz.idsc.owly.glc.adapter;
 
-import ch.ethz.idsc.owly.math.EmptyRegion;
 import ch.ethz.idsc.owly.math.Region;
 import ch.ethz.idsc.owly.tree.Cluster;
-import ch.ethz.idsc.owly.tree.Distance;
+import ch.ethz.idsc.owly.tree.DistanceInterface;
 import ch.ethz.idsc.owly.tree.NdTreeMap;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Scalars;
@@ -14,15 +13,15 @@ import ch.ethz.idsc.tensor.alg.Transpose;
 import ch.ethz.idsc.tensor.red.Max;
 import ch.ethz.idsc.tensor.red.Min;
 
-public class RnPointcloud implements Region {
+public class RnPointcloudRegion implements Region {
   public static Region create(Tensor points, Scalar radius) {
-    return points.length() == 0 ? new EmptyRegion() : new RnPointcloud(points, radius);
+    return points.length() == 0 ? new EmptyRegion() : new RnPointcloudRegion(points, radius);
   }
 
   final NdTreeMap<String> ndTreeMap;
   final Scalar radius;
 
-  private RnPointcloud(Tensor points, Scalar radius) {
+  private RnPointcloudRegion(Tensor points, Scalar radius) {
     Tensor pt = Transpose.of(points);
     Tensor lbounds = Tensors.vector(i -> pt.get(i).flatten(0).reduce(Min::of).get(), pt.length());
     Tensor ubounds = Tensors.vector(i -> pt.get(i).flatten(0).reduce(Max::of).get(), pt.length());
@@ -37,7 +36,7 @@ public class RnPointcloud implements Region {
 
   @Override
   public boolean isMember(Tensor tensor) {
-    Cluster<String> cluster = ndTreeMap.buildCluster(tensor, 1, Distance.EUCLIDEAN);
+    Cluster<String> cluster = ndTreeMap.buildCluster(tensor, 1, DistanceInterface.EUCLIDEAN);
     Scalar dist = cluster.iterator().next().distanceToCenter;
     return Scalars.lessEquals(dist, radius);
   }

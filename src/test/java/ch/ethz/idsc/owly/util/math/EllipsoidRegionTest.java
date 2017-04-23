@@ -1,7 +1,7 @@
 // code by jph
 package ch.ethz.idsc.owly.util.math;
 
-import ch.ethz.idsc.owly.math.EllipsoidRegion;
+import ch.ethz.idsc.owly.glc.adapter.EllipsoidRegion;
 import ch.ethz.idsc.owly.math.Region;
 import ch.ethz.idsc.tensor.Tensors;
 import junit.framework.TestCase;

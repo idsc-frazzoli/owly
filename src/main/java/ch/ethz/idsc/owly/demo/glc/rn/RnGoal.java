@@ -1,8 +1,8 @@
 // code by jph
 package ch.ethz.idsc.owly.demo.glc.rn;
 
+import ch.ethz.idsc.owly.glc.adapter.EllipsoidRegion;
 import ch.ethz.idsc.owly.glc.core.Heuristic;
-import ch.ethz.idsc.owly.math.EllipsoidRegion;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.ZeroScalar;

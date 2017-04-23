@@ -4,6 +4,8 @@ package ch.ethz.idsc.owly.demo.glc.se2;
 import ch.ethz.idsc.owly.glc.core.Controls;
 import ch.ethz.idsc.owly.math.Flow;
 import ch.ethz.idsc.tensor.ComplexScalar;
+import ch.ethz.idsc.tensor.DoubleScalar;
+import ch.ethz.idsc.tensor.RationalScalar;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
@@ -15,6 +17,10 @@ import ch.ethz.idsc.tensor.sca.Sin;
 
 enum Se2Utils {
   ;
+  public static final Scalar DEGREE(int value) {
+    return RationalScalar.of(value, 180).multiply(DoubleScalar.of(Math.PI));
+  }
+
   // ---
   public static Tensor vec2mat(Tensor x) {
     Scalar angle = x.Get(2);

@@ -14,11 +14,11 @@ import ch.ethz.idsc.tensor.sca.Clip;
 public class Cluster<V> implements Iterable<Point<V>> {
   final Tensor center;
   private final int size;
-  private final Distance distancer;
+  private final DistanceInterface distancer;
   // PriorityQueue uses canonic ordering of points: distance from center
   private final Queue<Point<V>> points = new PriorityQueue<Point<V>>();
 
-  Cluster(Tensor center, int size, Distance distancer) {
+  Cluster(Tensor center, int size, DistanceInterface distancer) {
     this.center = center;
     this.size = size;
     this.distancer = distancer;
