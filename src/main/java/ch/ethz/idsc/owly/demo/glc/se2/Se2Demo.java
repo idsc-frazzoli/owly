@@ -18,6 +18,7 @@ import ch.ethz.idsc.owly.math.integrator.Integrator;
 import ch.ethz.idsc.tensor.DoubleScalar;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
+import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
 
 /** (x,y,theta) */
@@ -25,7 +26,10 @@ public class Se2Demo {
   public static void main(String[] args) {
     Integrator integrator = new EulerIntegrator();
     Scalar timeStep = RealScalar.of(.25);
+    Tensor partitionScale = Tensors.vector(3, 3, 3);
     Controls controls = new Se2Controls(10);
+    int trajectorySize = 5;
+    
     CostFunction costFunction = new MinTimeCost();
     Se2Goal rnGoal = new Se2Goal( //
         Tensors.vector(5, 1), RealScalar.of(Math.PI / 2), //
@@ -45,9 +49,8 @@ public class Se2Demo {
     // )));
     // ---
     TrajectoryPlanner trajectoryPlanner = new DefaultTrajectoryPlanner( //
-        integrator, timeStep, controls, costFunction, heuristic, goalQuery, obstacleQuery);
+        integrator, timeStep, partitionScale, controls, trajectorySize, costFunction, heuristic, goalQuery, obstacleQuery);
     // ---
-    trajectoryPlanner.setResolution(Tensors.vector(3, 3, 3));
     trajectoryPlanner.insertRoot(Tensors.vector(0, 0, 0));
     trajectoryPlanner.plan(25);
     Trajectory trajectory = trajectoryPlanner.getPathFromRootToGoal();

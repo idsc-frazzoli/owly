@@ -19,6 +19,7 @@ import ch.ethz.idsc.owly.math.integrator.Integrator;
 import ch.ethz.idsc.owly.math.integrator.MidpointIntegrator;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
+import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
 
 /** "Mobility and Autonomous Reconfiguration of Marsokhod" */
@@ -26,7 +27,9 @@ public class Rice2Demo {
   public static void main(String[] args) {
     Integrator integrator = new MidpointIntegrator();
     Scalar timeStep = RealScalar.of(.25);
+    Tensor partitionScale = Tensors.vector(2, 2, 2, 2);
     Controls controls = new Rice2Controls(15);
+    int trajectorySize = 5;
     CostFunction costFunction = new MinTimeCost();
     Heuristic heuristic = new ZeroHeuristic();
     TrajectoryRegionQuery goalQuery = //
@@ -42,9 +45,8 @@ public class Rice2Demo {
     // )));
     // ---
     TrajectoryPlanner trajectoryPlanner = new DefaultTrajectoryPlanner( //
-        integrator, timeStep, controls, costFunction, heuristic, goalQuery, obstacleQuery);
+        integrator, timeStep, partitionScale, controls, trajectorySize, costFunction, heuristic, goalQuery, obstacleQuery);
     // ---
-    trajectoryPlanner.setResolution(Tensors.vector(2, 2, 2, 2));
     trajectoryPlanner.insertRoot(Tensors.vector(0, 0, 0, 0));
     trajectoryPlanner.plan(25);
     // TODO keep trying to improve path to goal for a few iterations...?

@@ -89,10 +89,11 @@ public class R2Demo {
   public static void main(String[] args) {
     R2Demo rnDemo = createBubbles();
     rnDemo = createSphere();
-    // rnDemo = createPointsInside();
     Integrator integrator = new EulerIntegrator();
     final Scalar timeStep = RealScalar.of(.20);
+    Tensor partitionScale = Tensors.vector(7, 7);
     Controls controls = new R2Controls(rnDemo.controlSize, RealScalar.ONE);
+    int trajectorySize = 5;
     CostFunction costFunction = new MinTimeCost();
     Heuristic heuristic = rnDemo.goal;
     TrajectoryRegionQuery goalQuery = //
@@ -100,8 +101,7 @@ public class R2Demo {
     TrajectoryRegionQuery obstacleQuery = rnDemo.obstacleQuery;
     // ---
     TrajectoryPlanner trajectoryPlanner = new DefaultTrajectoryPlanner( //
-        integrator, timeStep, controls, costFunction, heuristic, goalQuery, obstacleQuery);
-    trajectoryPlanner.setResolution(Tensors.vector(7, 7));
+        integrator, timeStep, partitionScale, controls, trajectorySize, costFunction, heuristic, goalQuery, obstacleQuery);
     trajectoryPlanner.insertRoot(rnDemo.root);
     trajectoryPlanner.plan(45);
     Trajectory trajectory = trajectoryPlanner.getPathFromRootToGoal();

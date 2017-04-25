@@ -20,14 +20,16 @@ public class DefaultTrajectoryPlanner extends TrajectoryPlanner {
 
   public DefaultTrajectoryPlanner( //
       Integrator integrator, //
-      Scalar maxTimeStep, //
+      Scalar timeStep, // 
+      Tensor partitionScale, //
       Controls controls, //
+      int trajectorySize, //
       CostFunction costFunction, //
       Heuristic heuristic, //
       TrajectoryRegionQuery goalQuery, //
       TrajectoryRegionQuery obstacleQuery //
   ) {
-    super(integrator, maxTimeStep);
+    super(integrator, timeStep, partitionScale);
     this.controls = controls;
     this.costFunction = costFunction;
     this.heuristic = heuristic;
@@ -44,10 +46,9 @@ public class DefaultTrajectoryPlanner extends TrajectoryPlanner {
       final Trajectory trajectory = new Trajectory();
       {
         StateTime prev = new StateTime(current_node.x, current_node.time);
-//        Scalar dt = dynamicalSystem.maxTimeStep;
         for (int c0 = 0; c0 < 5; ++c0) { // TODO magic const
-          Tensor x1 = integrator.step(flow, prev.x, maxTimeStep);
-          StateTime next = new StateTime(x1, prev.time.add(maxTimeStep));
+          Tensor x1 = integrator.step(flow, prev.x, timeStep);
+          StateTime next = new StateTime(x1, prev.time.add(timeStep));
           trajectory.add(next);
           prev = next;
         }

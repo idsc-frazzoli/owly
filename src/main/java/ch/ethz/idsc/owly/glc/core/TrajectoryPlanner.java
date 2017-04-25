@@ -18,18 +18,15 @@ import ch.ethz.idsc.tensor.sca.Floor;
 
 public abstract class TrajectoryPlanner {
   protected final Integrator integrator;
-  protected final Scalar maxTimeStep;
+  protected final Scalar timeStep;
   // ---
-  private Tensor partitionScale;
+  private final Tensor partitionScale;
   private final Queue<Node> queue = new PriorityQueue<>(NodeMeritComparator.instance);
   private final Map<Tensor, Node> domain_labels = new HashMap<>();
 
-  public TrajectoryPlanner(Integrator integrator, Scalar maxTimeStep) {
+  public TrajectoryPlanner(Integrator integrator, Scalar timeStep, Tensor partitionScale) {
     this.integrator = integrator;
-    this.maxTimeStep = maxTimeStep;
-  }
-
-  public final void setResolution(Tensor partitionScale) {
+    this.timeStep = timeStep;
     this.partitionScale = partitionScale;
   }
 
@@ -55,9 +52,6 @@ public abstract class TrajectoryPlanner {
     return domain_labels.get(domain_key);
   }
 
-  // protected final Trajectory evolve(Flow flow, Node node) {
-  // return dynamicalSystem.sim(integrator, flow, node.time, node.time.add(expand_time), node.x);
-  // }
   private Node best;
   int replaceCount = 0; // TODO
 

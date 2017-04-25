@@ -20,6 +20,7 @@ import ch.ethz.idsc.owly.math.integrator.Integrator;
 import ch.ethz.idsc.owly.math.integrator.MidpointIntegrator;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
+import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
 
 /** Pendulum Swing-up
@@ -29,9 +30,10 @@ import ch.ethz.idsc.tensor.Tensors;
 public class PsuDemo {
   public static void main(String[] args) {
     Integrator integrator = new MidpointIntegrator();
-    // DynamicalSystem dynamicalSystem = new DynamicalSystem();
     Scalar timeStep = RealScalar.of(.25);
+    Tensor partitionScale = Tensors.vector(10, 10);
     Controls controls = new PsuControls(6);
+    int trajectorySize = 5;
     CostFunction costFunction = new MinTimeCost();
     Heuristic heuristic = new ZeroHeuristic();
     TrajectoryRegionQuery goalQuery = //
@@ -43,9 +45,8 @@ public class PsuDemo {
     TrajectoryRegionQuery obstacleQuery = new EmptyRegionQuery();
     // ---
     TrajectoryPlanner trajectoryPlanner = new DefaultTrajectoryPlanner( //
-        integrator, timeStep, controls, costFunction, heuristic, goalQuery, obstacleQuery);
+        integrator, timeStep, partitionScale, controls, trajectorySize, costFunction, heuristic, goalQuery, obstacleQuery);
     // ---
-    trajectoryPlanner.setResolution(Tensors.vector(10, 10));
     trajectoryPlanner.insertRoot(Tensors.vector(0, 0));
     trajectoryPlanner.plan(25);
     Trajectory trajectory = trajectoryPlanner.getPathFromRootToGoal();
