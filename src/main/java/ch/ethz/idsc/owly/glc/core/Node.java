@@ -27,11 +27,11 @@ public class Node {
     this.merit = cost.add(e);
   }
 
-  public void addChild(Node child, Scalar expand_time) {
+  public void addChild(Node child, Scalar expand_time) { // FIXME
     Node _parent = this;
     child.parent = _parent;
     child.depth = _parent.depth + 1;
-    child.time = _parent.time.add(expand_time);
+    // child.time = _parent.time.add(expand_time);
     _parent.children.put(child.u, child);
   }
 

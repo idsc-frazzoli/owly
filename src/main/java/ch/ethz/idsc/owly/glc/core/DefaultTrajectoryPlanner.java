@@ -7,26 +7,27 @@ import java.util.Map.Entry;
 
 import ch.ethz.idsc.owly.math.Flow;
 import ch.ethz.idsc.owly.math.integrator.Integrator;
+import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Scalars;
 import ch.ethz.idsc.tensor.Tensor;
 
-public class SteepTrajectoryPlanner extends TrajectoryPlanner {
+public class DefaultTrajectoryPlanner extends TrajectoryPlanner {
   protected final Controls controls;
   protected final CostFunction costFunction;
   protected final Heuristic heuristic;
   protected final TrajectoryRegionQuery goalQuery;
   protected final TrajectoryRegionQuery obstacleQuery;
 
-  public SteepTrajectoryPlanner( //
+  public DefaultTrajectoryPlanner( //
       Integrator integrator, //
-      DynamicalSystem dynamicalSystem, //
+      Scalar maxTimeStep, //
       Controls controls, //
       CostFunction costFunction, //
       Heuristic heuristic, //
       TrajectoryRegionQuery goalQuery, //
       TrajectoryRegionQuery obstacleQuery //
   ) {
-    super(integrator, dynamicalSystem);
+    super(integrator, maxTimeStep);
     this.controls = controls;
     this.costFunction = costFunction;
     this.heuristic = heuristic;
@@ -40,7 +41,17 @@ public class SteepTrajectoryPlanner extends TrajectoryPlanner {
     Map<Tensor, DomainQueue> candidates = new HashMap<>();
     Map<Node, Trajectory> traj_from_parent = new HashMap<>();
     for (Flow flow : controls) {
-      final Trajectory trajectory = evolve(flow, current_node);
+      final Trajectory trajectory = new Trajectory();
+      {
+        StateTime prev = new StateTime(current_node.x, current_node.time);
+//        Scalar dt = dynamicalSystem.maxTimeStep;
+        for (int c0 = 0; c0 < 5; ++c0) { // TODO magic const
+          Tensor x1 = integrator.step(flow, prev.x, maxTimeStep);
+          StateTime next = new StateTime(x1, prev.time.add(maxTimeStep));
+          trajectory.add(next);
+          prev = next;
+        }
+      }
       final StateTime last = trajectory.getBack();
       Node new_arc = new Node(flow, last.x, last.time, //
           current_node.cost.add(costFunction.cost(trajectory, flow)), // new_arc.cost
@@ -70,7 +81,7 @@ public class SteepTrajectoryPlanner extends TrajectoryPlanner {
       while (!domainQueue.isEmpty()) {
         Node node = domainQueue.poll(); // poll() Retrieves and removes the head of this queue
         if (obstacleQuery.isDisjoint(traj_from_parent.get(node))) {
-          current_node.addChild(node, expand_time);
+          current_node.addChild(node, node.time);
           insert(domain_key, node);
           if (!goalQuery.isDisjoint(traj_from_parent.get(node)))
             offerDestination(node);

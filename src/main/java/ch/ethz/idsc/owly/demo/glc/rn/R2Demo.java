@@ -9,9 +9,8 @@ import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
 import ch.ethz.idsc.owly.glc.adapter.TimeInvariantRegion;
 import ch.ethz.idsc.owly.glc.core.Controls;
 import ch.ethz.idsc.owly.glc.core.CostFunction;
-import ch.ethz.idsc.owly.glc.core.DynamicalSystem;
+import ch.ethz.idsc.owly.glc.core.DefaultTrajectoryPlanner;
 import ch.ethz.idsc.owly.glc.core.Heuristic;
-import ch.ethz.idsc.owly.glc.core.SteepTrajectoryPlanner;
 import ch.ethz.idsc.owly.glc.core.Trajectory;
 import ch.ethz.idsc.owly.glc.core.TrajectoryPlanner;
 import ch.ethz.idsc.owly.glc.core.TrajectoryRegionQuery;
@@ -21,6 +20,7 @@ import ch.ethz.idsc.owly.math.integrator.EulerIntegrator;
 import ch.ethz.idsc.owly.math.integrator.Integrator;
 import ch.ethz.idsc.tensor.DoubleScalar;
 import ch.ethz.idsc.tensor.RealScalar;
+import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
 
@@ -89,21 +89,21 @@ public class R2Demo {
   public static void main(String[] args) {
     R2Demo rnDemo = createBubbles();
     rnDemo = createSphere();
-    rnDemo = createPointsInside();
+    // rnDemo = createPointsInside();
     Integrator integrator = new EulerIntegrator();
-    DynamicalSystem dynamicalSystem = new DynamicalSystem(RealScalar.of(.5));
-    Controls controls = new R2Controls(rnDemo.controlSize, RealScalar.of(.7));
+    final Scalar timeStep = RealScalar.of(.20);
+    Controls controls = new R2Controls(rnDemo.controlSize, RealScalar.ONE);
     CostFunction costFunction = new MinTimeCost();
     Heuristic heuristic = rnDemo.goal;
     TrajectoryRegionQuery goalQuery = //
         new SimpleTrajectoryRegionQuery(new TimeInvariantRegion(rnDemo.goal));
     TrajectoryRegionQuery obstacleQuery = rnDemo.obstacleQuery;
     // ---
-    TrajectoryPlanner trajectoryPlanner = new SteepTrajectoryPlanner( //
-        integrator, dynamicalSystem, controls, costFunction, heuristic, goalQuery, obstacleQuery);
+    TrajectoryPlanner trajectoryPlanner = new DefaultTrajectoryPlanner( //
+        integrator, timeStep, controls, costFunction, heuristic, goalQuery, obstacleQuery);
     trajectoryPlanner.setResolution(Tensors.vector(7, 7));
     trajectoryPlanner.insertRoot(rnDemo.root);
-    trajectoryPlanner.plan(25);
+    trajectoryPlanner.plan(45);
     Trajectory trajectory = trajectoryPlanner.getPathFromRootToGoal();
     trajectory.print();
     GlcFrame glcFrame = new GlcFrame();

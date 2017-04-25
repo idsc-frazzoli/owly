@@ -9,9 +9,7 @@ import java.util.Map;
 import java.util.PriorityQueue;
 import java.util.Queue;
 
-import ch.ethz.idsc.owly.math.Flow;
 import ch.ethz.idsc.owly.math.integrator.Integrator;
-import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Scalars;
 import ch.ethz.idsc.tensor.Tensor;
@@ -19,17 +17,16 @@ import ch.ethz.idsc.tensor.ZeroScalar;
 import ch.ethz.idsc.tensor.sca.Floor;
 
 public abstract class TrajectoryPlanner {
-  private final Integrator integrator;
-  private final DynamicalSystem dynamicalSystem;
+  protected final Integrator integrator;
+  protected final Scalar maxTimeStep;
   // ---
   private Tensor partitionScale;
-  protected Scalar expand_time = RealScalar.ONE; // TODO
   private final Queue<Node> queue = new PriorityQueue<>(NodeMeritComparator.instance);
   private final Map<Tensor, Node> domain_labels = new HashMap<>();
 
-  public TrajectoryPlanner(Integrator integrator, DynamicalSystem dynamicalSystem) {
+  public TrajectoryPlanner(Integrator integrator, Scalar maxTimeStep) {
     this.integrator = integrator;
-    this.dynamicalSystem = dynamicalSystem;
+    this.maxTimeStep = maxTimeStep;
   }
 
   public final void setResolution(Tensor partitionScale) {
@@ -58,10 +55,9 @@ public abstract class TrajectoryPlanner {
     return domain_labels.get(domain_key);
   }
 
-  protected final Trajectory evolve(Flow flow, Node node) {
-    return dynamicalSystem.sim(integrator, flow, node.time, node.time.add(expand_time), node.x);
-  }
-
+  // protected final Trajectory evolve(Flow flow, Node node) {
+  // return dynamicalSystem.sim(integrator, flow, node.time, node.time.add(expand_time), node.x);
+  // }
   private Node best;
   int replaceCount = 0; // TODO
 
@@ -107,7 +103,7 @@ public abstract class TrajectoryPlanner {
     for (int index = 1; index < list.size(); ++index) {
       Node prev = list.get(index - 1);
       Node next = list.get(index);
-      Trajectory part = dynamicalSystem.sim(integrator, next.u, prev.time, prev.time.add(expand_time), prev.x);
+      Trajectory part = new Trajectory(); // .sim(integrator, next.u, prev.time, prev.time.add(expand_time), prev.x);
       trajectory.addAll(part);
     }
     return trajectory;

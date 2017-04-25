@@ -8,7 +8,6 @@ import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Scalars;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.ZeroScalar;
-import ch.ethz.idsc.tensor.red.Max;
 import ch.ethz.idsc.tensor.red.Norm;
 import ch.ethz.idsc.tensor.sca.Mod;
 
@@ -33,9 +32,9 @@ public class Se2Goal implements Region, Heuristic {
     Scalar cur_angle = tensor.Get(2);
     Scalar dxy = Norm._2.of(cur_xy.subtract(xy)).subtract(radius);
     // Scalar dangle = PRINCIPAL.apply(cur_angle.subtract(angle)).abs().subtract(angle_delta);
-//    return Max.of(dxy, ZeroScalar.get());
+    // return Max.of(dxy, ZeroScalar.get());
     // return Max.of(Norm._2.of(tensor.subtract(center)).subtract(radius), ZeroScalar.get());
-     return ZeroScalar.get();
+    return ZeroScalar.get();
   }
 
   @Override

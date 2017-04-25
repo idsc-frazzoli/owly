@@ -23,4 +23,10 @@ public class Trajectory extends ArrayList<StateTime> {
     for (StateTime stateTime : this)
       System.out.println(stateTime);
   }
+
+  public Trajectory copy() {
+    Trajectory trajectory = new Trajectory();
+    trajectory.addAll(this);
+    return trajectory;
+  }
 }

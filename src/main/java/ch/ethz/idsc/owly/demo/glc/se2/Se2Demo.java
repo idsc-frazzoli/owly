@@ -7,9 +7,8 @@ import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
 import ch.ethz.idsc.owly.glc.adapter.TimeInvariantRegion;
 import ch.ethz.idsc.owly.glc.core.Controls;
 import ch.ethz.idsc.owly.glc.core.CostFunction;
-import ch.ethz.idsc.owly.glc.core.DynamicalSystem;
+import ch.ethz.idsc.owly.glc.core.DefaultTrajectoryPlanner;
 import ch.ethz.idsc.owly.glc.core.Heuristic;
-import ch.ethz.idsc.owly.glc.core.SteepTrajectoryPlanner;
 import ch.ethz.idsc.owly.glc.core.Trajectory;
 import ch.ethz.idsc.owly.glc.core.TrajectoryPlanner;
 import ch.ethz.idsc.owly.glc.core.TrajectoryRegionQuery;
@@ -18,17 +17,18 @@ import ch.ethz.idsc.owly.math.integrator.EulerIntegrator;
 import ch.ethz.idsc.owly.math.integrator.Integrator;
 import ch.ethz.idsc.tensor.DoubleScalar;
 import ch.ethz.idsc.tensor.RealScalar;
+import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensors;
 
 /** (x,y,theta) */
 public class Se2Demo {
   public static void main(String[] args) {
     Integrator integrator = new EulerIntegrator();
-    DynamicalSystem dynamicalSystem = new DynamicalSystem(RealScalar.of(.25));
+    Scalar timeStep = RealScalar.of(.25);
     Controls controls = new Se2Controls(10);
     CostFunction costFunction = new MinTimeCost();
     Se2Goal rnGoal = new Se2Goal( //
-        Tensors.vector(5, 1), RealScalar.of(Math.PI/2), //
+        Tensors.vector(5, 1), RealScalar.of(Math.PI / 2), //
         DoubleScalar.of(.2), Se2Utils.DEGREE(10));
     Heuristic heuristic = rnGoal; // new ZeroHeuristic();
     TrajectoryRegionQuery goalQuery = //
@@ -44,8 +44,8 @@ public class Se2Demo {
     // new EllipsoidRegion(Tensors.vector(-2, +0), Tensors.vector(1, 1)) // block to the left
     // )));
     // ---
-    TrajectoryPlanner trajectoryPlanner = new SteepTrajectoryPlanner( //
-        integrator, dynamicalSystem, controls, costFunction, heuristic, goalQuery, obstacleQuery);
+    TrajectoryPlanner trajectoryPlanner = new DefaultTrajectoryPlanner( //
+        integrator, timeStep, controls, costFunction, heuristic, goalQuery, obstacleQuery);
     // ---
     trajectoryPlanner.setResolution(Tensors.vector(3, 3, 3));
     trajectoryPlanner.insertRoot(Tensors.vector(0, 0, 0));
