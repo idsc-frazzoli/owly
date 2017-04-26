@@ -6,6 +6,7 @@ import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
+import ch.ethz.idsc.tensor.alg.Join;
 import ch.ethz.idsc.tensor.red.Norm;
 
 class Rice2StateSpaceModel implements StateSpaceModel {
@@ -17,14 +18,8 @@ class Rice2StateSpaceModel implements StateSpaceModel {
 
   @Override
   public Tensor createFlow(Tensor x, Tensor u) { // u.length() == 2
-    Scalar v0 = x.Get(2);
-    Scalar v1 = x.Get(3);
-    return Tensors.of( //
-        v0, // x0' = v // v = x1
-        v1, //
-        lambda.multiply(u.Get(0).subtract(v0)), // x1' = lambda * (u - v)
-        lambda.multiply(u.Get(1).subtract(v1)) //
-    );
+    Tensor v = x.extract(2, 4);
+    return Join.of(v, u.subtract(v).multiply(lambda));
   }
 
   /** | f(x_1, u) - f(x_2, u) | <= L | x_1 - x_2 | */

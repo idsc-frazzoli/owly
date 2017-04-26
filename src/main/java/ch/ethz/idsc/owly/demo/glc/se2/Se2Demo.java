@@ -29,14 +29,14 @@ import ch.ethz.idsc.tensor.Tensors;
 public class Se2Demo {
   public static void main(String[] args) {
     Integrator integrator = new EulerIntegrator();
-    Scalar timeStep = RationalScalar.of(1, 4);
+    Scalar timeStep = RationalScalar.of(1, 6);
     Tensor partitionScale = Tensors.vector(3, 3, 30);
-    Controls controls = new Se2Controls(Se2Utils.DEGREE(35), 10);
+    Controls controls = new Se2Controls(Se2Utils.DEGREE(45), 6);
     int trajectorySize = 5;
     CostFunction costFunction = new MinTimeCost();
     Se2Goal rnGoal = new Se2Goal( //
-        Tensors.vector(5, 1), RealScalar.of(Math.PI / 2), //
-        DoubleScalar.of(.4), Se2Utils.DEGREE(10));
+        Tensors.vector(2, 1), RealScalar.of(Math.PI ), //
+        DoubleScalar.of(.5), Se2Utils.DEGREE(10));
     Heuristic heuristic = rnGoal; // new ZeroHeuristic();
     TrajectoryRegionQuery goalQuery = //
         new SimpleTrajectoryRegionQuery(new TimeInvariantRegion( //
