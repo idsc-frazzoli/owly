@@ -1,6 +1,8 @@
 // code by jph
 package ch.ethz.idsc.owly.demo.glc.se2;
 
+import java.util.List;
+
 import ch.ethz.idsc.owly.glc.adapter.EmptyRegionQuery;
 import ch.ethz.idsc.owly.glc.adapter.MinTimeCost;
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
@@ -9,6 +11,7 @@ import ch.ethz.idsc.owly.glc.core.Controls;
 import ch.ethz.idsc.owly.glc.core.CostFunction;
 import ch.ethz.idsc.owly.glc.core.DefaultTrajectoryPlanner;
 import ch.ethz.idsc.owly.glc.core.Heuristic;
+import ch.ethz.idsc.owly.glc.core.StateTime;
 import ch.ethz.idsc.owly.glc.core.Trajectory;
 import ch.ethz.idsc.owly.glc.core.TrajectoryPlanner;
 import ch.ethz.idsc.owly.glc.core.TrajectoryRegionQuery;
@@ -29,7 +32,6 @@ public class Se2Demo {
     Tensor partitionScale = Tensors.vector(3, 3, 3);
     Controls controls = new Se2Controls(10);
     int trajectorySize = 5;
-    
     CostFunction costFunction = new MinTimeCost();
     Se2Goal rnGoal = new Se2Goal( //
         Tensors.vector(5, 1), RealScalar.of(Math.PI / 2), //
@@ -53,8 +55,8 @@ public class Se2Demo {
     // ---
     trajectoryPlanner.insertRoot(Tensors.vector(0, 0, 0));
     trajectoryPlanner.plan(25);
-    Trajectory trajectory = trajectoryPlanner.getPathFromRootToGoal();
-    trajectory.print();
+    List<StateTime> trajectory = trajectoryPlanner.getPathFromRootToGoal();
+    Trajectory.print(trajectory);
     GlcFrame glcFrame = new GlcFrame();
     glcFrame.glcComponent.setTrajectoryPlanner(trajectoryPlanner);
   }

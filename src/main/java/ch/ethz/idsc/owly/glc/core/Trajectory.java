@@ -1,32 +1,27 @@
 // code by bapaden and jph
 package ch.ethz.idsc.owly.glc.core;
 
-import java.util.ArrayList;
+import java.util.List;
 
 import ch.ethz.idsc.tensor.Scalar;
 
-public class Trajectory extends ArrayList<StateTime> {
-  public Scalar getDuration() {
-    return getBack().time.subtract(get(0).time);
+public class Trajectory {
+  public static Scalar getDuration(List<StateTime> list) {
+    return getBack(list).time.subtract(list.get(0).time);
   }
 
-  public Scalar getDuration(int num) {
-    return get(num).time.subtract(get(0).time);
+  public static StateTime getBack(List<StateTime> list) {
+    return list.get(list.size() - 1);
   }
 
-  public StateTime getBack() {
-    return get(size() - 1);
-  }
-
-  public void print() {
-    System.out.println("Trajectory (" + size() + ")");
-    for (StateTime stateTime : this)
+  public static void print(List<StateTime> list) {
+    System.out.println("Trajectory (" + list.size() + ")");
+    for (StateTime stateTime : list)
       System.out.println(stateTime);
   }
-
-  public Trajectory copy() {
-    Trajectory trajectory = new Trajectory();
-    trajectory.addAll(this);
-    return trajectory;
-  }
+  // public Trajectory copy() {
+  // Trajectory trajectory = new Trajectory();
+  // trajectory.addAll(this);
+  // return trajectory;
+  // }
 }

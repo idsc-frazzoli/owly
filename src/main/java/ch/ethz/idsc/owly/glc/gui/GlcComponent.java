@@ -15,6 +15,7 @@ import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.util.DoubleSummaryStatistics;
+import java.util.List;
 
 import javax.swing.JComponent;
 import javax.swing.event.MouseInputAdapter;
@@ -22,7 +23,6 @@ import javax.swing.event.MouseInputListener;
 
 import ch.ethz.idsc.owly.glc.core.Node;
 import ch.ethz.idsc.owly.glc.core.StateTime;
-import ch.ethz.idsc.owly.glc.core.Trajectory;
 import ch.ethz.idsc.owly.glc.core.TrajectoryPlanner;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
@@ -173,7 +173,7 @@ public class GlcComponent {
         }
         {
           graphics.setColor(new Color(255, 0, 0, 128));
-          Trajectory trajectory = trajectoryPlanner.getPathFromRootToGoal();
+          List<StateTime> trajectory = trajectoryPlanner.getPathFromRootToGoal();
           StateTime prev = null;
           for (StateTime stateTime : trajectory) {
             if (prev != null) {
@@ -188,7 +188,7 @@ public class GlcComponent {
         {
           graphics.setStroke(new BasicStroke(2.0f));
           graphics.setColor(new Color(0, 192, 0, 128));
-          Trajectory trajectory = trajectoryPlanner.getDetailedTrajectory();
+          List<StateTime> trajectory = trajectoryPlanner.getDetailedTrajectory();
           StateTime prev = null;
           for (StateTime stateTime : trajectory) {
             if (prev != null)

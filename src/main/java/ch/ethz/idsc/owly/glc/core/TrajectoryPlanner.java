@@ -1,6 +1,7 @@
 // code by bapaden and jph
 package ch.ethz.idsc.owly.glc.core;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -14,7 +15,6 @@ import ch.ethz.idsc.owly.math.integrator.Integrator;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Scalars;
 import ch.ethz.idsc.tensor.Tensor;
-import ch.ethz.idsc.tensor.ZeroScalar;
 import ch.ethz.idsc.tensor.sca.Floor;
 
 public abstract class TrajectoryPlanner {
@@ -39,9 +39,10 @@ public abstract class TrajectoryPlanner {
     return partitionScale.pmul(x).map(Floor.function);
   }
 
+  protected abstract Node createRootNode(Tensor x);
+
   public final void insertRoot(Tensor x) {
-    insert(convertToKey(x), //
-        new Node(null, x, ZeroScalar.get(), ZeroScalar.get(), ZeroScalar.get()));
+    insert(convertToKey(x), createRootNode(x));
   }
 
   protected final void insert(Tensor domain_key, Node node) {
@@ -87,38 +88,40 @@ public abstract class TrajectoryPlanner {
     return Collections.unmodifiableCollection(domain_labels.values());
   }
 
-  public final Trajectory getDetailedTrajectory() {
+  public final List<StateTime> getDetailedTrajectory() {
     return getDetailedTrajectory(Nodes.getNodesFromRoot(best));
   }
 
-  public final Trajectory getDetailedTrajectory(List<Node> list) {
-    Trajectory trajectory = new Trajectory();
-    trajectory.add(list.get(0).getStateTime());
-    for (int index = 1; index < list.size(); ++index) {
-      Node prevNode = list.get(index - 1);
-      Node nextNode = list.get(index);
-      final Flow flow = nextNode.flow;
-      Trajectory part = new Trajectory();
-      {
-        StateTime prev = prevNode.getStateTime();
-        while (Scalars.lessThan(prev.time, nextNode.time)) {
-          Tensor x1 = integrator.step(flow, prev.x, timeStep);
-          StateTime next = new StateTime(x1, prev.time.add(timeStep));
-          part.add(next);
-          prev = next;
+  public final List<StateTime> getDetailedTrajectory(List<Node> list) {
+    List<StateTime> trajectory = new ArrayList<>();
+    if (!list.isEmpty()) {
+      trajectory.add(list.get(0).getStateTime());
+      for (int index = 1; index < list.size(); ++index) {
+        Node prevNode = list.get(index - 1);
+        Node nextNode = list.get(index);
+        final Flow flow = nextNode.flow;
+        List<StateTime> part = new ArrayList<>();
+        {
+          StateTime prev = prevNode.getStateTime();
+          while (Scalars.lessThan(prev.time, nextNode.time)) {
+            Tensor x1 = integrator.step(flow, prev.x, timeStep);
+            StateTime next = new StateTime(x1, prev.time.add(timeStep));
+            part.add(next);
+            prev = next;
+          }
         }
+        trajectory.addAll(part);
       }
-      trajectory.addAll(part);
     }
     return trajectory;
   }
 
-  public final Trajectory getPathFromRootToGoal() {
+  public final List<StateTime> getPathFromRootToGoal() {
     return getPathFromRootToGoal(Nodes.getNodesFromRoot(best));
   }
 
-  public static Trajectory getPathFromRootToGoal(List<Node> list) {
-    Trajectory trajectory = new Trajectory();
+  public static List<StateTime> getPathFromRootToGoal(List<Node> list) {
+    List<StateTime> trajectory = new ArrayList<>();
     for (Node node : list)
       trajectory.add(node.getStateTime());
     return trajectory;

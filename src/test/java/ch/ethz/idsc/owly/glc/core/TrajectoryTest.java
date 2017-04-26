@@ -1,5 +1,8 @@
 package ch.ethz.idsc.owly.glc.core;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import ch.ethz.idsc.owly.glc.adapter.EllipsoidRegion;
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
 import ch.ethz.idsc.owly.glc.adapter.TimeInvariantRegion;
@@ -12,7 +15,7 @@ public class TrajectoryTest extends TestCase {
     TrajectoryRegionQuery goalQuery = //
         new SimpleTrajectoryRegionQuery(new TimeInvariantRegion( //
             new EllipsoidRegion(Tensors.vector(10, 5), Tensors.vector(1, 1))));
-    Trajectory trajectory = new Trajectory();
+    List<StateTime> trajectory = new ArrayList<>();
     trajectory.add(new StateTime(Tensors.vector(0, 5), ZeroScalar.get()));
     trajectory.add(new StateTime(Tensors.vector(5, 5), ZeroScalar.get()));
     assertEquals(goalQuery.firstMember(trajectory), -1);

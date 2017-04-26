@@ -1,7 +1,9 @@
 // code by bapaden and jph
 package ch.ethz.idsc.owly.glc.core;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -10,6 +12,7 @@ import ch.ethz.idsc.owly.math.integrator.Integrator;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Scalars;
 import ch.ethz.idsc.tensor.Tensor;
+import ch.ethz.idsc.tensor.ZeroScalar;
 
 public class DefaultTrajectoryPlanner extends TrajectoryPlanner {
   protected final Controls controls;
@@ -43,9 +46,9 @@ public class DefaultTrajectoryPlanner extends TrajectoryPlanner {
   protected void expand(Node current_node) {
     // TODO count updates in cell based on costs for benchmarking
     Map<Tensor, DomainQueue> candidates = new HashMap<>();
-    Map<Node, Trajectory> traj_from_parent = new HashMap<>();
+    Map<Node, List<StateTime>> traj_from_parent = new HashMap<>();
     for (Flow flow : controls) {
-      final Trajectory trajectory = new Trajectory();
+      final List<StateTime> trajectory = new ArrayList<>();
       {
         StateTime prev = new StateTime(current_node.x, current_node.time);
         for (int c0 = 0; c0 < trajectorySize; ++c0) {
@@ -55,7 +58,7 @@ public class DefaultTrajectoryPlanner extends TrajectoryPlanner {
           prev = next;
         }
       }
-      final StateTime last = trajectory.getBack();
+      final StateTime last = Trajectory.getBack(trajectory);
       Node new_arc = new Node(flow, last.x, last.time, //
           current_node.cost.add(costFunction.cost(trajectory, flow)), // new_arc.cost
           heuristic.costToGo(last.x) // new_arc.merit
@@ -77,7 +80,7 @@ public class DefaultTrajectoryPlanner extends TrajectoryPlanner {
     processCandidates(current_node, candidates, traj_from_parent);
   }
 
-  void processCandidates(Node current_node, Map<Tensor, DomainQueue> candidates, Map<Node, Trajectory> traj_from_parent) {
+  void processCandidates(Node current_node, Map<Tensor, DomainQueue> candidates, Map<Node, List<StateTime>> traj_from_parent) {
     for (Entry<Tensor, DomainQueue> entry : candidates.entrySet()) {
       final Tensor domain_key = entry.getKey();
       final DomainQueue domainQueue = entry.getValue();
@@ -93,5 +96,10 @@ public class DefaultTrajectoryPlanner extends TrajectoryPlanner {
         }
       }
     }
+  }
+
+  @Override
+  protected Node createRootNode(Tensor x) {
+    return new Node(null, x, ZeroScalar.get(), ZeroScalar.get(), heuristic.costToGo(x));
   }
 }

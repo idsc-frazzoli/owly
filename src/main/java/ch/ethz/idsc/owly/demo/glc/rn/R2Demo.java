@@ -1,6 +1,8 @@
 // code by jph
 package ch.ethz.idsc.owly.demo.glc.rn;
 
+import java.util.List;
+
 import ch.ethz.idsc.owly.glc.adapter.EllipsoidRegion;
 import ch.ethz.idsc.owly.glc.adapter.InvertedRegion;
 import ch.ethz.idsc.owly.glc.adapter.MinTimeCost;
@@ -11,6 +13,7 @@ import ch.ethz.idsc.owly.glc.core.Controls;
 import ch.ethz.idsc.owly.glc.core.CostFunction;
 import ch.ethz.idsc.owly.glc.core.DefaultTrajectoryPlanner;
 import ch.ethz.idsc.owly.glc.core.Heuristic;
+import ch.ethz.idsc.owly.glc.core.StateTime;
 import ch.ethz.idsc.owly.glc.core.Trajectory;
 import ch.ethz.idsc.owly.glc.core.TrajectoryPlanner;
 import ch.ethz.idsc.owly.glc.core.TrajectoryRegionQuery;
@@ -104,8 +107,8 @@ public class R2Demo {
         integrator, timeStep, partitionScale, controls, trajectorySize, costFunction, heuristic, goalQuery, obstacleQuery);
     trajectoryPlanner.insertRoot(rnDemo.root);
     trajectoryPlanner.plan(45);
-    Trajectory trajectory = trajectoryPlanner.getPathFromRootToGoal();
-    trajectory.print();
+    List<StateTime> trajectory = trajectoryPlanner.getPathFromRootToGoal();
+    Trajectory.print(trajectory);
     GlcFrame glcFrame = new GlcFrame();
     glcFrame.glcComponent.setTrajectoryPlanner(trajectoryPlanner);
   }

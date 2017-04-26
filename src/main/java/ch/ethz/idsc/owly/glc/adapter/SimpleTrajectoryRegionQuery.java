@@ -1,9 +1,10 @@
 // code by bapaden and jph
 package ch.ethz.idsc.owly.glc.adapter;
 
+import java.util.List;
+
 import ch.ethz.idsc.owly.glc.core.StateTime;
 import ch.ethz.idsc.owly.glc.core.StateTimeRegion;
-import ch.ethz.idsc.owly.glc.core.Trajectory;
 import ch.ethz.idsc.owly.glc.core.TrajectoryRegionQuery;
 
 public class SimpleTrajectoryRegionQuery implements TrajectoryRegionQuery {
@@ -14,7 +15,7 @@ public class SimpleTrajectoryRegionQuery implements TrajectoryRegionQuery {
   }
 
   @Override
-  public final int firstMember(Trajectory trajectory) {
+  public final int firstMember(List<StateTime> trajectory) {
     int index = -1;
     for (StateTime stateTime : trajectory) {
       ++index;
