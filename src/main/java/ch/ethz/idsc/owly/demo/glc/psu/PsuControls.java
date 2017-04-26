@@ -9,6 +9,7 @@ import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.alg.Partition;
 import ch.ethz.idsc.tensor.alg.Subdivide;
 
+/** Pendulum Swing-up controls */
 class PsuControls extends Controls {
   public PsuControls(double amplitude, int num) {
     StateSpaceModel stateSpaceModel = new PsuStateSpaceModel();

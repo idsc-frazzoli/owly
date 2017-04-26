@@ -8,7 +8,7 @@ import ch.ethz.idsc.tensor.Tensor;
 /** inverted pendulum */
 class IpStateSpaceModel implements StateSpaceModel {
   @Override
-  public Tensor flow(Tensor x, Tensor u) {
+  public Tensor createFlow(Tensor x, Tensor u) {
     // TODO Auto-generated method stub
     return null;
   }

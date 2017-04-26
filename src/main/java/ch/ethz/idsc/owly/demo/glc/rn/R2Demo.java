@@ -8,6 +8,7 @@ import ch.ethz.idsc.owly.glc.adapter.MinTimeCost;
 import ch.ethz.idsc.owly.glc.adapter.RnPointcloudRegion;
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
 import ch.ethz.idsc.owly.glc.adapter.TimeInvariantRegion;
+import ch.ethz.idsc.owly.glc.adapter.ZeroHeuristic;
 import ch.ethz.idsc.owly.glc.core.Controls;
 import ch.ethz.idsc.owly.glc.core.CostFunction;
 import ch.ethz.idsc.owly.glc.core.DefaultTrajectoryPlanner;
@@ -20,28 +21,13 @@ import ch.ethz.idsc.owly.glc.gui.GlcFrame;
 import ch.ethz.idsc.owly.math.integrator.EulerIntegrator;
 import ch.ethz.idsc.owly.math.integrator.Integrator;
 import ch.ethz.idsc.tensor.DoubleScalar;
+import ch.ethz.idsc.tensor.RationalScalar;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
 
 public class R2Demo {
-  
-
-  public static R2Demo createPoints() {
-    R2Demo rnDemo = new R2Demo();
-    rnDemo.controlSize = 40;
-    rnDemo.root = Tensors.vector(0, 0);
-    rnDemo.goal = new RnGoal(Tensors.vector(5, 0), DoubleScalar.of(.2));
-    Tensor points = Tensors.matrix(new Number[][] { //
-        { 2.5, 1 }, { 1.5, -1.5 }, { 0, 2 }, { 3.5, -0.5 } //
-    });
-    rnDemo.obstacleQuery = // new EmptyRegionQuery();
-        new SimpleTrajectoryRegionQuery(new TimeInvariantRegion( //
-            RnPointcloudRegion.create(points, RealScalar.of(0.6))));
-    return rnDemo;
-  }
-
   public static R2Demo createPointsInside() {
     R2Demo rnDemo = new R2Demo();
     rnDemo.controlSize = 40;
@@ -58,15 +44,6 @@ public class R2Demo {
     return rnDemo;
   }
 
-  public static R2Demo createBubbles() {
-    R2Demo rnDemo = new R2Demo();
-    rnDemo.controlSize = 15;
-    rnDemo.root = Tensors.vector(-2, -2);
-    rnDemo.goal = new RnGoal(Tensors.vector(2, 2), DoubleScalar.of(.25));
-    rnDemo.obstacleQuery = new SimpleTrajectoryRegionQuery(new TimeInvariantRegion(new R2Bubbles()));
-    return rnDemo;
-  }
-
   int controlSize;
   Tensor root;
   RnGoal goal;
@@ -76,22 +53,24 @@ public class R2Demo {
   }
 
   public static void main(String[] args) {
-    R2Demo rnDemo = createBubbles();
     Integrator integrator = new EulerIntegrator();
-    final Scalar timeStep = RealScalar.of(.20);
-    Tensor partitionScale = Tensors.vector(7, 7);
-    Controls controls = new R2Controls(rnDemo.controlSize);
+    final Scalar timeStep = RationalScalar.of(1, 5);
+    Tensor partitionScale = Tensors.vector(4, 4);
+    Controls controls = new R2Controls(36);
     int trajectorySize = 5;
     CostFunction costFunction = new MinTimeCost();
-    Heuristic heuristic = rnDemo.goal;
+    RnGoal rnGoal = new RnGoal(Tensors.vector(2, 2), DoubleScalar.of(.25));
+    // performance depends on heuristic: zeroHeuristic vs rnGoal
+    Heuristic heuristic = new ZeroHeuristic(); // rnGoal
     TrajectoryRegionQuery goalQuery = //
-        new SimpleTrajectoryRegionQuery(new TimeInvariantRegion(rnDemo.goal));
-    TrajectoryRegionQuery obstacleQuery = rnDemo.obstacleQuery;
+        new SimpleTrajectoryRegionQuery(new TimeInvariantRegion(rnGoal));
+    TrajectoryRegionQuery obstacleQuery = new SimpleTrajectoryRegionQuery( //
+        new TimeInvariantRegion(new R2Bubbles()));
     // ---
     TrajectoryPlanner trajectoryPlanner = new DefaultTrajectoryPlanner( //
         integrator, timeStep, partitionScale, controls, trajectorySize, costFunction, heuristic, goalQuery, obstacleQuery);
-    trajectoryPlanner.insertRoot(rnDemo.root);
-    trajectoryPlanner.plan(45);
+    trajectoryPlanner.insertRoot(Tensors.vector(-2, -2));
+    trajectoryPlanner.plan(1400);
     List<StateTime> trajectory = trajectoryPlanner.getPathFromRootToGoal();
     Trajectory.print(trajectory);
     GlcFrame glcFrame = new GlcFrame();

@@ -25,7 +25,7 @@ import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
 
-public class R2SphereDemo {
+class R2SphereDemo {
   public static void main(String[] args) {
     Integrator integrator = new EulerIntegrator();
     final Scalar timeStep = RationalScalar.of(1, 8);
@@ -33,16 +33,16 @@ public class R2SphereDemo {
     Controls controls = new R2Controls(20);
     int trajectorySize = 10;
     CostFunction costFunction = new MinTimeCost();
-    RnGoal goal = new RnGoal(Tensors.vector(5, 0), DoubleScalar.of(.2));
+    RnGoal rnGoal = new RnGoal(Tensors.vector(5, 0), DoubleScalar.of(.2));
     TrajectoryRegionQuery obstacleQuery = // new EmptyRegionQuery();
         new SimpleTrajectoryRegionQuery(new TimeInvariantRegion( //
             RegionUnion.of( //
                 new EllipsoidRegion(Tensors.vector(4, 3), Tensors.vector(2, 2)), //
                 new EllipsoidRegion(Tensors.vector(2.5, 0), Tensors.vector(2, 2)) //
             )));
-    Heuristic heuristic = goal;
+    Heuristic heuristic = rnGoal;
     TrajectoryRegionQuery goalQuery = //
-        new SimpleTrajectoryRegionQuery(new TimeInvariantRegion(goal));
+        new SimpleTrajectoryRegionQuery(new TimeInvariantRegion(rnGoal));
     // TrajectoryRegionQuery obstacleQuery = obstacleQuery;
     // ---
     TrajectoryPlanner trajectoryPlanner = new DefaultTrajectoryPlanner( //

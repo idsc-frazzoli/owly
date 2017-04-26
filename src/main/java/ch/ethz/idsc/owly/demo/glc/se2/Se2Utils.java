@@ -37,7 +37,7 @@ enum Se2Utils {
   }
 
   public static void main(String[] args) {
-    Controls c = new Se2Controls(2);
+    Controls c = new Se2Controls(DEGREE(10), 2);
     Flow um1 = c.get(0);
     System.out.println(um1.getU());
     Tensor x = Tensors.vector(0, 0, 0.0);

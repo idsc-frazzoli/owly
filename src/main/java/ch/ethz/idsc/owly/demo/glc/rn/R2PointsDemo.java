@@ -1,10 +1,10 @@
 // code by jph
-package ch.ethz.idsc.owly.demo.glc.se2;
+package ch.ethz.idsc.owly.demo.glc.rn;
 
 import java.util.List;
 
-import ch.ethz.idsc.owly.glc.adapter.EmptyRegionQuery;
 import ch.ethz.idsc.owly.glc.adapter.MinTimeCost;
+import ch.ethz.idsc.owly.glc.adapter.RnPointcloudRegion;
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
 import ch.ethz.idsc.owly.glc.adapter.TimeInvariantRegion;
 import ch.ethz.idsc.owly.glc.core.Controls;
@@ -25,36 +25,29 @@ import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
 
-/** (x,y,theta) */
-public class Se2Demo {
+class R2PointsDemo {
   public static void main(String[] args) {
     Integrator integrator = new EulerIntegrator();
-    Scalar timeStep = RationalScalar.of(1, 4);
-    Tensor partitionScale = Tensors.vector(3, 3, 30);
-    Controls controls = new Se2Controls(Se2Utils.DEGREE(35), 10);
+    final Scalar timeStep = RationalScalar.of(1, 8);
+    Tensor partitionScale = Tensors.vector(4, 4);
+    Controls controls = new R2Controls(20);
     int trajectorySize = 5;
     CostFunction costFunction = new MinTimeCost();
-    Se2Goal rnGoal = new Se2Goal( //
-        Tensors.vector(5, 1), RealScalar.of(Math.PI / 2), //
-        DoubleScalar.of(.4), Se2Utils.DEGREE(10));
-    Heuristic heuristic = rnGoal; // new ZeroHeuristic();
-    TrajectoryRegionQuery goalQuery = //
+    RnGoal rnGoal = new RnGoal(Tensors.vector(5, 0), DoubleScalar.of(.2));
+    Tensor points = Tensors.matrix(new Number[][] { //
+        { 2.5, 1 }, { 1.5, -1.5 }, { 0, 2 }, { 3.5, -0.5 } //
+    });
+    TrajectoryRegionQuery obstacleQuery = // new EmptyRegionQuery();
         new SimpleTrajectoryRegionQuery(new TimeInvariantRegion( //
-            rnGoal));
-    // new EllipsoidRegion(Tensors.vector(5, -1, Math.PI/2), Tensors.vector(.5, .5, .2)) //
-    // ));
-    TrajectoryRegionQuery obstacleQuery = //
-        new EmptyRegionQuery();
-    // new SimpleTrajectoryRegionQuery(new TimeInvariantRegion( //
-    // RegionUnion.of( //
-    // new EllipsoidRegion(Tensors.vector(+3, +1), Tensors.vector(1.75, .75)), // speed limit along the way
-    // new EllipsoidRegion(Tensors.vector(-2, +0), Tensors.vector(1, 1)) // block to the left
-    // )));
+            RnPointcloudRegion.create(points, RealScalar.of(0.6))));
+    Heuristic heuristic = rnGoal;
+    TrajectoryRegionQuery goalQuery = //
+        new SimpleTrajectoryRegionQuery(new TimeInvariantRegion(rnGoal));
+    // TrajectoryRegionQuery obstacleQuery = obstacleQuery;
     // ---
     TrajectoryPlanner trajectoryPlanner = new DefaultTrajectoryPlanner( //
         integrator, timeStep, partitionScale, controls, trajectorySize, costFunction, heuristic, goalQuery, obstacleQuery);
-    // ---
-    trajectoryPlanner.insertRoot(Tensors.vector(0, 0, 0));
+    trajectoryPlanner.insertRoot(Tensors.vector(0, 0));
     int iters = trajectoryPlanner.plan(1000);
     System.out.println(iters);
     List<StateTime> trajectory = trajectoryPlanner.getPathFromRootToGoal();
