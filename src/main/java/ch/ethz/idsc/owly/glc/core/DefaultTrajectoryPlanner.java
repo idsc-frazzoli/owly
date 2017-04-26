@@ -13,6 +13,7 @@ import ch.ethz.idsc.tensor.Tensor;
 
 public class DefaultTrajectoryPlanner extends TrajectoryPlanner {
   protected final Controls controls;
+  protected final int trajectorySize;
   protected final CostFunction costFunction;
   protected final Heuristic heuristic;
   protected final TrajectoryRegionQuery goalQuery;
@@ -20,7 +21,7 @@ public class DefaultTrajectoryPlanner extends TrajectoryPlanner {
 
   public DefaultTrajectoryPlanner( //
       Integrator integrator, //
-      Scalar timeStep, // 
+      Scalar timeStep, //
       Tensor partitionScale, //
       Controls controls, //
       int trajectorySize, //
@@ -31,6 +32,7 @@ public class DefaultTrajectoryPlanner extends TrajectoryPlanner {
   ) {
     super(integrator, timeStep, partitionScale);
     this.controls = controls;
+    this.trajectorySize = trajectorySize;
     this.costFunction = costFunction;
     this.heuristic = heuristic;
     this.goalQuery = goalQuery;
@@ -46,7 +48,7 @@ public class DefaultTrajectoryPlanner extends TrajectoryPlanner {
       final Trajectory trajectory = new Trajectory();
       {
         StateTime prev = new StateTime(current_node.x, current_node.time);
-        for (int c0 = 0; c0 < 5; ++c0) { // TODO magic const
+        for (int c0 = 0; c0 < trajectorySize; ++c0) {
           Tensor x1 = integrator.step(flow, prev.x, timeStep);
           StateTime next = new StateTime(x1, prev.time.add(timeStep));
           trajectory.add(next);
@@ -82,7 +84,7 @@ public class DefaultTrajectoryPlanner extends TrajectoryPlanner {
       while (!domainQueue.isEmpty()) {
         Node node = domainQueue.poll(); // poll() Retrieves and removes the head of this queue
         if (obstacleQuery.isDisjoint(traj_from_parent.get(node))) {
-          current_node.addChild(node, node.time);
+          current_node.addChild(node);
           insert(domain_key, node);
           if (!goalQuery.isDisjoint(traj_from_parent.get(node)))
             offerDestination(node);

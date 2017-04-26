@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.PriorityQueue;
 import java.util.Queue;
 
+import ch.ethz.idsc.owly.math.Flow;
 import ch.ethz.idsc.owly.math.integrator.Integrator;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Scalars;
@@ -31,7 +32,7 @@ public abstract class TrajectoryPlanner {
   }
 
   public final Tensor getResolution() {
-    return partitionScale;
+    return partitionScale.unmodifiable();
   }
 
   protected final Tensor convertToKey(Tensor x) {
@@ -55,20 +56,18 @@ public abstract class TrajectoryPlanner {
   private Node best;
   int replaceCount = 0; // TODO
 
-  public final void plan(int depth_limit) {
+  public final int plan(int expandLimit) {
     best = null;
-    while (!queue.isEmpty()) {
+    int expandCount = 0;
+    while (!queue.isEmpty() && expandCount < expandLimit) {
       Node current_node = queue.poll();
-      // System.out.println(current_node);
-      if (depth_limit < current_node.depth) {
-        System.out.println("depth limit reached " + current_node.depth);
-        break;
-      }
       expand(current_node);
+      ++expandCount;
       // ---
       if (best != null)
         break;
     }
+    return expandCount;
   }
 
   abstract protected void expand(Node current_node);
@@ -94,10 +93,21 @@ public abstract class TrajectoryPlanner {
 
   public final Trajectory getDetailedTrajectory(List<Node> list) {
     Trajectory trajectory = new Trajectory();
+    trajectory.add(list.get(0).getStateTime());
     for (int index = 1; index < list.size(); ++index) {
-      Node prev = list.get(index - 1);
-      Node next = list.get(index);
-      Trajectory part = new Trajectory(); // .sim(integrator, next.u, prev.time, prev.time.add(expand_time), prev.x);
+      Node prevNode = list.get(index - 1);
+      Node nextNode = list.get(index);
+      final Flow flow = nextNode.flow;
+      Trajectory part = new Trajectory();
+      {
+        StateTime prev = prevNode.getStateTime();
+        while (Scalars.lessThan(prev.time, nextNode.time)) {
+          Tensor x1 = integrator.step(flow, prev.x, timeStep);
+          StateTime next = new StateTime(x1, prev.time.add(timeStep));
+          part.add(next);
+          prev = next;
+        }
+      }
       trajectory.addAll(part);
     }
     return trajectory;

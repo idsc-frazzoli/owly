@@ -11,7 +11,7 @@ public class Nodes {
     Node node = best;
     while (node != null) {
       list.add(node);
-      node = node.parent;
+      node = node.getParent();
     }
     Collections.reverse(list);
     return list;

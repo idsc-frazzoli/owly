@@ -91,8 +91,30 @@ public class GlcComponent {
       g.fillRect(0, 0, dimension.width, dimension.height);
       // ---
       Graphics2D graphics = (Graphics2D) g;
+      if (trajectoryPlanner != null) {
+        Tensor resolution = trajectoryPlanner.getResolution();
+        Tensor inv = resolution.map(Scalar::invert);
+        graphics.setColor(Color.LIGHT_GRAY);
+        for (int i = 0; i < resolution.Get(1).number().intValue(); ++i) {
+          double dy = i * inv.Get(1).number().doubleValue();
+          graphics.draw(new Line2D.Double( //
+              toPoint2D(Tensors.vector(0, dy)), //
+              toPoint2D(Tensors.vector(1, dy))));
+        }
+        for (int i = 0; i < resolution.Get(0).number().intValue(); ++i) {
+          double dx = i * inv.Get(0).number().doubleValue();
+          graphics.draw(new Line2D.Double( //
+              toPoint2D(Tensors.vector(dx, 0)), //
+              toPoint2D(Tensors.vector(dx, 1))));
+        }
+      }
       {
         graphics.setColor(Color.LIGHT_GRAY);
+        graphics.draw(new Line2D.Double(toPoint2D(Tensors.vector(-10, 1)), toPoint2D(Tensors.vector(10, 1))));
+        graphics.draw(new Line2D.Double(toPoint2D(Tensors.vector(1, -10)), toPoint2D(Tensors.vector(1, 10))));
+      }
+      {
+        graphics.setColor(Color.GRAY);
         graphics.draw(new Line2D.Double(toPoint2D(Tensors.vector(-10, 0)), toPoint2D(Tensors.vector(10, 0))));
         graphics.draw(new Line2D.Double(toPoint2D(Tensors.vector(0, -10)), toPoint2D(Tensors.vector(0, 10))));
       }
@@ -138,7 +160,7 @@ public class GlcComponent {
               Shape shape = new Rectangle2D.Double(p.getX(), p.getY(), 1, 1);
               graphics.fill(shape);
             }
-            Node parent = node.parent;
+            Node parent = node.getParent();
             if (parent != null) {
               Point2D p2 = toPoint2D(parent.x);
               {
@@ -154,8 +176,12 @@ public class GlcComponent {
           Trajectory trajectory = trajectoryPlanner.getPathFromRootToGoal();
           StateTime prev = null;
           for (StateTime stateTime : trajectory) {
-            if (prev != null)
-              graphics.draw(new Line2D.Double(toPoint2D(prev.x), toPoint2D(stateTime.x)));
+            if (prev != null) {
+              Point2D p = toPoint2D(prev.x);
+              Shape shape = new Rectangle2D.Double(p.getX(), p.getY(), 2, 2);
+              graphics.draw(shape);
+              // graphics.draw(new Line2D.Double(toPoint2D(prev.x), toPoint2D(stateTime.x)));
+            }
             prev = stateTime;
           }
         }

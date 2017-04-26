@@ -10,9 +10,10 @@ import ch.ethz.idsc.tensor.alg.Partition;
 import ch.ethz.idsc.tensor.alg.Subdivide;
 
 class PsuControls extends Controls {
-  public PsuControls(int num) {
+  public PsuControls(double amplitude, int num) {
     StateSpaceModel stateSpaceModel = new PsuStateSpaceModel();
-    for (Tensor u : Partition.of(Subdivide.of(DoubleScalar.of(-0.2), DoubleScalar.of(0.2), num), 1))
+    for (Tensor u : Partition.of( //
+        Subdivide.of(DoubleScalar.of(-amplitude), DoubleScalar.of(amplitude), num), 1))
       add(StateSpaceModels.createFlow(stateSpaceModel, u));
   }
 }

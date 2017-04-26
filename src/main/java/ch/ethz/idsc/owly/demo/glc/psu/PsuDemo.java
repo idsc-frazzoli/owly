@@ -18,7 +18,7 @@ import ch.ethz.idsc.owly.glc.gui.GlcFrame;
 import ch.ethz.idsc.owly.math.RegionUnion;
 import ch.ethz.idsc.owly.math.integrator.Integrator;
 import ch.ethz.idsc.owly.math.integrator.MidpointIntegrator;
-import ch.ethz.idsc.tensor.RealScalar;
+import ch.ethz.idsc.tensor.RationalScalar;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
@@ -30,9 +30,9 @@ import ch.ethz.idsc.tensor.Tensors;
 public class PsuDemo {
   public static void main(String[] args) {
     Integrator integrator = new MidpointIntegrator();
-    Scalar timeStep = RealScalar.of(.25);
-    Tensor partitionScale = Tensors.vector(10, 10);
-    Controls controls = new PsuControls(6);
+    Scalar timeStep = RationalScalar.of(1, 4);
+    Tensor partitionScale = Tensors.vector(5, 7);
+    Controls controls = new PsuControls(0.2, 6);
     int trajectorySize = 5;
     CostFunction costFunction = new MinTimeCost();
     Heuristic heuristic = new ZeroHeuristic();
@@ -48,7 +48,8 @@ public class PsuDemo {
         integrator, timeStep, partitionScale, controls, trajectorySize, costFunction, heuristic, goalQuery, obstacleQuery);
     // ---
     trajectoryPlanner.insertRoot(Tensors.vector(0, 0));
-    trajectoryPlanner.plan(25);
+    int iters = trajectoryPlanner.plan(1000);
+    System.out.println(iters);
     Trajectory trajectory = trajectoryPlanner.getPathFromRootToGoal();
     trajectory.print();
     GlcFrame glcFrame = new GlcFrame();
