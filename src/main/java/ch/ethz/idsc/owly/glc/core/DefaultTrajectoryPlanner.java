@@ -43,11 +43,11 @@ public class DefaultTrajectoryPlanner extends TrajectoryPlanner {
   }
 
   @Override
-  protected void expand(Node current_node) {
+  protected void expand(final Node current_node) {
     // TODO count updates in cell based on costs for benchmarking
     Map<Tensor, DomainQueue> candidates = new HashMap<>();
     Map<Node, List<StateTime>> traj_from_parent = new HashMap<>();
-    for (Flow flow : controls) {
+    for (final Flow flow : controls) {
       final List<StateTime> trajectory = new ArrayList<>();
       {
         StateTime prev = new StateTime(current_node.x, current_node.time);
@@ -67,8 +67,8 @@ public class DefaultTrajectoryPlanner extends TrajectoryPlanner {
       // ---
       final Tensor domain_key = convertToKey(new_arc.x);
       Node prev = getNode(domain_key);
-      if (prev != null) {
-        if (Scalars.lessThan(new_arc.cost, prev.cost))
+      if (prev != null) { // already some node present from previous exploration
+        if (Scalars.lessThan(new_arc.cost, prev.cost)) // new node is better than previous one
           if (candidates.containsKey(domain_key))
             candidates.get(domain_key).add(new_arc);
           else
@@ -80,18 +80,20 @@ public class DefaultTrajectoryPlanner extends TrajectoryPlanner {
     processCandidates(current_node, candidates, traj_from_parent);
   }
 
-  void processCandidates(Node current_node, Map<Tensor, DomainQueue> candidates, Map<Node, List<StateTime>> traj_from_parent) {
+  private void processCandidates( //
+      Node current_node, //
+      Map<Tensor, DomainQueue> candidates, //
+      Map<Node, List<StateTime>> traj_from_parent) {
     for (Entry<Tensor, DomainQueue> entry : candidates.entrySet()) {
       final Tensor domain_key = entry.getKey();
       final DomainQueue domainQueue = entry.getValue();
       while (!domainQueue.isEmpty()) {
         Node node = domainQueue.poll(); // poll() Retrieves and removes the head of this queue
-        if (obstacleQuery.isDisjoint(traj_from_parent.get(node))) {
+        if (obstacleQuery.isDisjoint(traj_from_parent.get(node))) { // no collision
           current_node.addChild(node);
           insert(domain_key, node);
           if (!goalQuery.isDisjoint(traj_from_parent.get(node)))
             offerDestination(node);
-          domainQueue.clear();
           break;
         }
       }

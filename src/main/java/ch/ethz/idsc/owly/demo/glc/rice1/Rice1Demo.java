@@ -32,8 +32,8 @@ public class Rice1Demo {
     Integrator integrator = new MidpointIntegrator();
     Scalar timeStep = RationalScalar.of(1, 5); // magic
     Tensor partitionScale = Tensors.vector(7, 7);
-    Controls controls = new Rice1Controls(RealScalar.of(.5), 10); //
-    int trajectorySize = 5;
+    Controls controls = new Rice1Controls(RealScalar.of(.5), 15); //
+    int trajectorySize = 7;
     CostFunction costFunction = new MinTimeCost();
     Heuristic heuristic = new ZeroHeuristic();
     TrajectoryRegionQuery goalQuery = //

@@ -30,7 +30,7 @@ public class Se2Demo {
   public static void main(String[] args) {
     Integrator integrator = new EulerIntegrator();
     Scalar timeStep = RationalScalar.of(1, 6);
-    Tensor partitionScale = Tensors.vector(3, 3, 30);
+    Tensor partitionScale = Tensors.vector(3, 3, 15); //.multiply(resolutionFactor); //
     Controls controls = new Se2Controls(Se2Utils.DEGREE(45), 6);
     int trajectorySize = 5;
     CostFunction costFunction = new MinTimeCost();
