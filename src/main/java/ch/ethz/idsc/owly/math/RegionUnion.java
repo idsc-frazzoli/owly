@@ -6,8 +6,11 @@ import java.util.Collection;
 
 import ch.ethz.idsc.tensor.Tensor;
 
-/** TODO ref mathematica
- * RegionUnion */
+/** RegionUnion is a region that defines membership
+ * to be member in either of a collection of {@link Region}s
+ * 
+ * <p>inspired by
+ * <a href="https://reference.wolfram.com/language/ref/RegionUnion.html">RegionUnion</a> */
 public class RegionUnion implements Region {
   private final Collection<Region> collection;
 

@@ -1,33 +1,41 @@
 // code by bapaden and jph
 package ch.ethz.idsc.owly.glc.core;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
 import ch.ethz.idsc.owly.math.Flow;
 import ch.ethz.idsc.owly.math.integrator.Integrator;
+import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Scalars;
 import ch.ethz.idsc.tensor.Tensor;
+import ch.ethz.idsc.tensor.ZeroScalar;
 
-public class SteepTrajectoryPlanner extends TrajectoryPlanner {
+public class DefaultTrajectoryPlanner extends TrajectoryPlanner {
   protected final Controls controls;
+  protected final int trajectorySize;
   protected final CostFunction costFunction;
   protected final Heuristic heuristic;
   protected final TrajectoryRegionQuery goalQuery;
   protected final TrajectoryRegionQuery obstacleQuery;
 
-  public SteepTrajectoryPlanner( //
+  public DefaultTrajectoryPlanner( //
       Integrator integrator, //
-      DynamicalSystem dynamicalSystem, //
+      Scalar timeStep, //
+      Tensor partitionScale, //
       Controls controls, //
+      int trajectorySize, //
       CostFunction costFunction, //
       Heuristic heuristic, //
       TrajectoryRegionQuery goalQuery, //
       TrajectoryRegionQuery obstacleQuery //
   ) {
-    super(integrator, dynamicalSystem);
+    super(integrator, timeStep, partitionScale);
     this.controls = controls;
+    this.trajectorySize = trajectorySize;
     this.costFunction = costFunction;
     this.heuristic = heuristic;
     this.goalQuery = goalQuery;
@@ -38,10 +46,19 @@ public class SteepTrajectoryPlanner extends TrajectoryPlanner {
   protected void expand(Node current_node) {
     // TODO count updates in cell based on costs for benchmarking
     Map<Tensor, DomainQueue> candidates = new HashMap<>();
-    Map<Node, Trajectory> traj_from_parent = new HashMap<>();
+    Map<Node, List<StateTime>> traj_from_parent = new HashMap<>();
     for (Flow flow : controls) {
-      final Trajectory trajectory = evolve(flow, current_node);
-      final StateTime last = trajectory.getBack();
+      final List<StateTime> trajectory = new ArrayList<>();
+      {
+        StateTime prev = new StateTime(current_node.x, current_node.time);
+        for (int c0 = 0; c0 < trajectorySize; ++c0) {
+          Tensor x1 = integrator.step(flow, prev.x, timeStep);
+          StateTime next = new StateTime(x1, prev.time.add(timeStep));
+          trajectory.add(next);
+          prev = next;
+        }
+      }
+      final StateTime last = Trajectory.getBack(trajectory);
       Node new_arc = new Node(flow, last.x, last.time, //
           current_node.cost.add(costFunction.cost(trajectory, flow)), // new_arc.cost
           heuristic.costToGo(last.x) // new_arc.merit
@@ -63,14 +80,14 @@ public class SteepTrajectoryPlanner extends TrajectoryPlanner {
     processCandidates(current_node, candidates, traj_from_parent);
   }
 
-  void processCandidates(Node current_node, Map<Tensor, DomainQueue> candidates, Map<Node, Trajectory> traj_from_parent) {
+  void processCandidates(Node current_node, Map<Tensor, DomainQueue> candidates, Map<Node, List<StateTime>> traj_from_parent) {
     for (Entry<Tensor, DomainQueue> entry : candidates.entrySet()) {
       final Tensor domain_key = entry.getKey();
       final DomainQueue domainQueue = entry.getValue();
       while (!domainQueue.isEmpty()) {
         Node node = domainQueue.poll(); // poll() Retrieves and removes the head of this queue
         if (obstacleQuery.isDisjoint(traj_from_parent.get(node))) {
-          current_node.addChild(node, expand_time);
+          current_node.addChild(node);
           insert(domain_key, node);
           if (!goalQuery.isDisjoint(traj_from_parent.get(node)))
             offerDestination(node);
@@ -79,5 +96,15 @@ public class SteepTrajectoryPlanner extends TrajectoryPlanner {
         }
       }
     }
+  }
+
+  @Override
+  protected Node createRootNode(Tensor x) {
+    return new Node(null, x, ZeroScalar.get(), ZeroScalar.get(), heuristic.costToGo(x));
+  }
+
+  @Override
+  public TrajectoryRegionQuery getObstacleQuery() {
+    return obstacleQuery;
   }
 }

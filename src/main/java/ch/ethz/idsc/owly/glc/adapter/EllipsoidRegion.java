@@ -1,13 +1,14 @@
 // code by jph
-package ch.ethz.idsc.owly.math;
+package ch.ethz.idsc.owly.glc.adapter;
 
+import ch.ethz.idsc.owly.math.ImplicitFunctionRegion;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.red.Norm;
 
 public class EllipsoidRegion extends ImplicitFunctionRegion {
-  private final Tensor center;
+  protected final Tensor center;
   private final Tensor invert;
 
   public EllipsoidRegion(Tensor center, Tensor radius) {
@@ -17,6 +18,8 @@ public class EllipsoidRegion extends ImplicitFunctionRegion {
 
   @Override
   public Scalar apply(Tensor tensor) {
+    // TODO perhaps this function should return the real euclidean distance in case ellipsoid is a sphere!!!
+    // FIXME needs math derivation
     Tensor delta = center.subtract(tensor).pmul(invert);
     return Norm._2.of(delta).subtract(RealScalar.ONE);
   }

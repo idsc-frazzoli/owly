@@ -16,7 +16,7 @@ class Rice2StateSpaceModel implements StateSpaceModel {
   }
 
   @Override
-  public Tensor flow(Tensor x, Tensor u) { // u.length() == 2
+  public Tensor createFlow(Tensor x, Tensor u) { // u.length() == 2
     Scalar v0 = x.Get(2);
     Scalar v1 = x.Get(3);
     return Tensors.of( //

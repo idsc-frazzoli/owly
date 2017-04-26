@@ -14,7 +14,12 @@ public class LruCacheTest extends TestCase {
     System.out.println(map);
     map.get(3);
     System.out.println(map);
+    map.containsKey(4);
+    System.out.println("containsKey 4");
+    System.out.println(map);
     map.get(3);
+    System.out.println(map);
+    map.put(4, "0");
     System.out.println(map);
   }
 }

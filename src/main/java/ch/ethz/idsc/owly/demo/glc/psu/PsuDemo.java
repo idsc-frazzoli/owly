@@ -1,6 +1,9 @@
 // code by jph
 package ch.ethz.idsc.owly.demo.glc.psu;
 
+import java.util.List;
+
+import ch.ethz.idsc.owly.glc.adapter.EllipsoidRegion;
 import ch.ethz.idsc.owly.glc.adapter.EmptyRegionQuery;
 import ch.ethz.idsc.owly.glc.adapter.MinTimeCost;
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
@@ -8,18 +11,19 @@ import ch.ethz.idsc.owly.glc.adapter.TimeInvariantRegion;
 import ch.ethz.idsc.owly.glc.adapter.ZeroHeuristic;
 import ch.ethz.idsc.owly.glc.core.Controls;
 import ch.ethz.idsc.owly.glc.core.CostFunction;
-import ch.ethz.idsc.owly.glc.core.DynamicalSystem;
+import ch.ethz.idsc.owly.glc.core.DefaultTrajectoryPlanner;
 import ch.ethz.idsc.owly.glc.core.Heuristic;
-import ch.ethz.idsc.owly.glc.core.SteepTrajectoryPlanner;
+import ch.ethz.idsc.owly.glc.core.StateTime;
 import ch.ethz.idsc.owly.glc.core.Trajectory;
 import ch.ethz.idsc.owly.glc.core.TrajectoryPlanner;
 import ch.ethz.idsc.owly.glc.core.TrajectoryRegionQuery;
 import ch.ethz.idsc.owly.glc.gui.GlcFrame;
-import ch.ethz.idsc.owly.math.EllipsoidRegion;
 import ch.ethz.idsc.owly.math.RegionUnion;
 import ch.ethz.idsc.owly.math.integrator.Integrator;
 import ch.ethz.idsc.owly.math.integrator.MidpointIntegrator;
-import ch.ethz.idsc.tensor.RealScalar;
+import ch.ethz.idsc.tensor.RationalScalar;
+import ch.ethz.idsc.tensor.Scalar;
+import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
 
 /** Pendulum Swing-up
@@ -29,8 +33,10 @@ import ch.ethz.idsc.tensor.Tensors;
 public class PsuDemo {
   public static void main(String[] args) {
     Integrator integrator = new MidpointIntegrator();
-    DynamicalSystem dynamicalSystem = new DynamicalSystem(RealScalar.of(.25));
-    Controls controls = new PsuControls(6);
+    Scalar timeStep = RationalScalar.of(1, 4);
+    Tensor partitionScale = Tensors.vector(5, 7);
+    Controls controls = new PsuControls(0.2, 6);
+    int trajectorySize = 5;
     CostFunction costFunction = new MinTimeCost();
     Heuristic heuristic = new ZeroHeuristic();
     TrajectoryRegionQuery goalQuery = //
@@ -41,14 +47,14 @@ public class PsuDemo {
             )));
     TrajectoryRegionQuery obstacleQuery = new EmptyRegionQuery();
     // ---
-    TrajectoryPlanner trajectoryPlanner = new SteepTrajectoryPlanner( //
-        integrator, dynamicalSystem, controls, costFunction, heuristic, goalQuery, obstacleQuery);
+    TrajectoryPlanner trajectoryPlanner = new DefaultTrajectoryPlanner( //
+        integrator, timeStep, partitionScale, controls, trajectorySize, costFunction, heuristic, goalQuery, obstacleQuery);
     // ---
-    trajectoryPlanner.setResolution(Tensors.vector(10, 10));
     trajectoryPlanner.insertRoot(Tensors.vector(0, 0));
-    trajectoryPlanner.plan(25);
-    Trajectory trajectory = trajectoryPlanner.getPathFromRootToGoal();
-    trajectory.print();
+    int iters = trajectoryPlanner.plan(1000);
+    System.out.println(iters);
+    List<StateTime> trajectory = trajectoryPlanner.getPathFromRootToGoal();
+    Trajectory.print(trajectory);
     GlcFrame glcFrame = new GlcFrame();
     glcFrame.glcComponent.setTrajectoryPlanner(trajectoryPlanner);
   }

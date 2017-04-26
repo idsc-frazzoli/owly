@@ -12,4 +12,6 @@ buildNumber.properties
 .settings/
 .project
 .classpath
+testall.sh
+gendocs.sh
 

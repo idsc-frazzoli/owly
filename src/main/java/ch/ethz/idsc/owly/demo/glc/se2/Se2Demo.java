@@ -1,14 +1,12 @@
 // code by jph
-package ch.ethz.idsc.owly.demo.glc.rice2;
+package ch.ethz.idsc.owly.demo.glc.se2;
 
 import java.util.List;
 
-import ch.ethz.idsc.owly.glc.adapter.EllipsoidRegion;
 import ch.ethz.idsc.owly.glc.adapter.EmptyRegionQuery;
 import ch.ethz.idsc.owly.glc.adapter.MinTimeCost;
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
 import ch.ethz.idsc.owly.glc.adapter.TimeInvariantRegion;
-import ch.ethz.idsc.owly.glc.adapter.ZeroHeuristic;
 import ch.ethz.idsc.owly.glc.core.Controls;
 import ch.ethz.idsc.owly.glc.core.CostFunction;
 import ch.ethz.idsc.owly.glc.core.DefaultTrajectoryPlanner;
@@ -18,27 +16,33 @@ import ch.ethz.idsc.owly.glc.core.Trajectory;
 import ch.ethz.idsc.owly.glc.core.TrajectoryPlanner;
 import ch.ethz.idsc.owly.glc.core.TrajectoryRegionQuery;
 import ch.ethz.idsc.owly.glc.gui.GlcFrame;
+import ch.ethz.idsc.owly.math.integrator.EulerIntegrator;
 import ch.ethz.idsc.owly.math.integrator.Integrator;
-import ch.ethz.idsc.owly.math.integrator.MidpointIntegrator;
+import ch.ethz.idsc.tensor.DoubleScalar;
+import ch.ethz.idsc.tensor.RationalScalar;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
 
-/** "Mobility and Autonomous Reconfiguration of Marsokhod" */
-public class Rice2Demo {
+/** (x,y,theta) */
+public class Se2Demo {
   public static void main(String[] args) {
-    Integrator integrator = new MidpointIntegrator();
-    Scalar timeStep = RealScalar.of(.25);
-    Tensor partitionScale = Tensors.vector(2, 2, 2, 2);
-    Controls controls = new Rice2Controls(15);
+    Integrator integrator = new EulerIntegrator();
+    Scalar timeStep = RationalScalar.of(1, 4);
+    Tensor partitionScale = Tensors.vector(3, 3, 30);
+    Controls controls = new Se2Controls(Se2Utils.DEGREE(35), 10);
     int trajectorySize = 5;
     CostFunction costFunction = new MinTimeCost();
-    Heuristic heuristic = new ZeroHeuristic();
+    Se2Goal rnGoal = new Se2Goal( //
+        Tensors.vector(5, 1), RealScalar.of(Math.PI / 2), //
+        DoubleScalar.of(.4), Se2Utils.DEGREE(10));
+    Heuristic heuristic = rnGoal; // new ZeroHeuristic();
     TrajectoryRegionQuery goalQuery = //
         new SimpleTrajectoryRegionQuery(new TimeInvariantRegion( //
-            new EllipsoidRegion(Tensors.vector(3, 3, -1, 0), Tensors.vector(1, 1, .5, 1)) //
-        ));
+            rnGoal));
+    // new EllipsoidRegion(Tensors.vector(5, -1, Math.PI/2), Tensors.vector(.5, .5, .2)) //
+    // ));
     TrajectoryRegionQuery obstacleQuery = //
         new EmptyRegionQuery();
     // new SimpleTrajectoryRegionQuery(new TimeInvariantRegion( //
@@ -50,9 +54,9 @@ public class Rice2Demo {
     TrajectoryPlanner trajectoryPlanner = new DefaultTrajectoryPlanner( //
         integrator, timeStep, partitionScale, controls, trajectorySize, costFunction, heuristic, goalQuery, obstacleQuery);
     // ---
-    trajectoryPlanner.insertRoot(Tensors.vector(0, 0, 0, 0));
-    trajectoryPlanner.plan(25);
-    // TODO keep trying to improve path to goal for a few iterations...?
+    trajectoryPlanner.insertRoot(Tensors.vector(0, 0, 0));
+    int iters = trajectoryPlanner.plan(1000);
+    System.out.println(iters);
     List<StateTime> trajectory = trajectoryPlanner.getPathFromRootToGoal();
     Trajectory.print(trajectory);
     GlcFrame glcFrame = new GlcFrame();

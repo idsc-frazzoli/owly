@@ -1,7 +1,7 @@
 // code by jph
 package ch.ethz.idsc.owly.util.math;
 
-import ch.ethz.idsc.owly.math.EllipsoidRegion;
+import ch.ethz.idsc.owly.glc.adapter.EllipsoidRegion;
 import ch.ethz.idsc.owly.math.Region;
 import ch.ethz.idsc.tensor.Tensors;
 import junit.framework.TestCase;
@@ -23,6 +23,18 @@ public class EllipsoidRegionTest extends TestCase {
     assertTrue(region.isMember(Tensors.vector(12, 5)));
     assertTrue(region.isMember(Tensors.vector(11.2, 6.2)));
     assertFalse(region.isMember(Tensors.vector(10, 7.1)));
+    assertFalse(region.isMember(Tensors.vector(10, 7.5)));
+  }
+
+  public void testEllipsoid() {
+    Region region = new EllipsoidRegion(Tensors.vector(10, 5), Tensors.vector(2, 1));
+    assertTrue(region.isMember(Tensors.vector(10, 5)));
+    assertTrue(region.isMember(Tensors.vector(10, 5.5)));
+    assertFalse(region.isMember(Tensors.vector(10, 7)));
+    assertTrue(region.isMember(Tensors.vector(12, 5)));
+    assertFalse(region.isMember(Tensors.vector(12.1, 5)));
+    assertFalse(region.isMember(Tensors.vector(11.2, 6.2)));
+    assertFalse(region.isMember(Tensors.vector(10, 6.1)));
     assertFalse(region.isMember(Tensors.vector(10, 7.5)));
   }
 }

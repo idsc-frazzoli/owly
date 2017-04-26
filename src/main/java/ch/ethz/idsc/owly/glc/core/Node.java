@@ -9,38 +9,49 @@ import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
 
 public class Node {
-  public Node parent;
-  public final Map<Flow, Node> children = new HashMap<>();
-  public final Flow u;
+  private final Map<Flow, Node> children = new HashMap<>();
+  /** flow is null for root node */
+  public final Flow flow;
   public final Tensor x;
-  public Scalar time;
+  public final Scalar time;
   public final Scalar cost;
   public final Scalar merit;
-  /** u is null for root node */
-  public int depth;
+  private Node parent = null;
+  private int depth = 0;
 
-  public Node(Flow u, Tensor x, Scalar time, Scalar cost, Scalar e) {
-    this.u = u;
+  /** @param flow that got us to this Node from the parent
+   * @param x
+   * @param time
+   * @param cost
+   * @param e */
+  public Node(Flow flow, Tensor x, Scalar time, Scalar cost, Scalar e) {
+    this.flow = flow;
     this.x = x;
     this.time = time;
     this.cost = cost;
     this.merit = cost.add(e);
   }
 
-  public void addChild(Node child, Scalar expand_time) {
-    Node _parent = this;
-    child.parent = _parent;
-    child.depth = _parent.depth + 1;
-    child.time = _parent.time.add(expand_time);
-    _parent.children.put(child.u, child);
+  public void addChild(Node child) {
+    child.parent = this;
+    child.depth = depth + 1;
+    children.put(child.flow, child);
+  }
+
+  public StateTime getStateTime() {
+    return new StateTime(x, time);
+  }
+
+  public Node getParent() {
+    return parent;
+  }
+
+  public int getDepth() {
+    return depth;
   }
 
   @Override
   public String toString() {
     return "@" + x.toString() + " cost=" + cost + " merit=" + merit;
-  }
-
-  public StateTime getStateTime() {
-    return new StateTime(x, time);
   }
 }
