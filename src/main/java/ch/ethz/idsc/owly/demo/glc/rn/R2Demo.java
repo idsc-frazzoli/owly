@@ -3,7 +3,6 @@ package ch.ethz.idsc.owly.demo.glc.rn;
 
 import java.util.List;
 
-import ch.ethz.idsc.owly.glc.adapter.EllipsoidRegion;
 import ch.ethz.idsc.owly.glc.adapter.InvertedRegion;
 import ch.ethz.idsc.owly.glc.adapter.MinTimeCost;
 import ch.ethz.idsc.owly.glc.adapter.RnPointcloudRegion;
@@ -18,7 +17,6 @@ import ch.ethz.idsc.owly.glc.core.Trajectory;
 import ch.ethz.idsc.owly.glc.core.TrajectoryPlanner;
 import ch.ethz.idsc.owly.glc.core.TrajectoryRegionQuery;
 import ch.ethz.idsc.owly.glc.gui.GlcFrame;
-import ch.ethz.idsc.owly.math.RegionUnion;
 import ch.ethz.idsc.owly.math.integrator.EulerIntegrator;
 import ch.ethz.idsc.owly.math.integrator.Integrator;
 import ch.ethz.idsc.tensor.DoubleScalar;
@@ -28,19 +26,7 @@ import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
 
 public class R2Demo {
-  public static R2Demo createSphere() {
-    R2Demo rnDemo = new R2Demo();
-    rnDemo.controlSize = 40;
-    rnDemo.root = Tensors.vector(0, 0);
-    rnDemo.goal = new RnGoal(Tensors.vector(5, 0), DoubleScalar.of(.2));
-    rnDemo.obstacleQuery = // new EmptyRegionQuery();
-        new SimpleTrajectoryRegionQuery(new TimeInvariantRegion( //
-            RegionUnion.of( //
-                new EllipsoidRegion(Tensors.vector(4, 3), Tensors.vector(2, 2)), //
-                new EllipsoidRegion(Tensors.vector(2.5, 0), Tensors.vector(2, 2)) //
-            )));
-    return rnDemo;
-  }
+  
 
   public static R2Demo createPoints() {
     R2Demo rnDemo = new R2Demo();
@@ -52,7 +38,7 @@ public class R2Demo {
     });
     rnDemo.obstacleQuery = // new EmptyRegionQuery();
         new SimpleTrajectoryRegionQuery(new TimeInvariantRegion( //
-            RnPointcloudRegion.create(points, RealScalar.ONE)));
+            RnPointcloudRegion.create(points, RealScalar.of(0.6))));
     return rnDemo;
   }
 
@@ -91,11 +77,10 @@ public class R2Demo {
 
   public static void main(String[] args) {
     R2Demo rnDemo = createBubbles();
-    rnDemo = createSphere();
     Integrator integrator = new EulerIntegrator();
     final Scalar timeStep = RealScalar.of(.20);
     Tensor partitionScale = Tensors.vector(7, 7);
-    Controls controls = new R2Controls(rnDemo.controlSize, RealScalar.ONE);
+    Controls controls = new R2Controls(rnDemo.controlSize);
     int trajectorySize = 5;
     CostFunction costFunction = new MinTimeCost();
     Heuristic heuristic = rnDemo.goal;

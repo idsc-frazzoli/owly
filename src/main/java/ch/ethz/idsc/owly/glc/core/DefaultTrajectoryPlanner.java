@@ -102,4 +102,9 @@ public class DefaultTrajectoryPlanner extends TrajectoryPlanner {
   protected Node createRootNode(Tensor x) {
     return new Node(null, x, ZeroScalar.get(), ZeroScalar.get(), heuristic.costToGo(x));
   }
+
+  @Override
+  public TrajectoryRegionQuery getObstacleQuery() {
+    return obstacleQuery;
+  }
 }

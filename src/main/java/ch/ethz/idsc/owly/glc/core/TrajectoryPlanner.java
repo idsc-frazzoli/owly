@@ -126,4 +126,6 @@ public abstract class TrajectoryPlanner {
       trajectory.add(node.getStateTime());
     return trajectory;
   }
+
+  public abstract TrajectoryRegionQuery getObstacleQuery();
 }
