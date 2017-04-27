@@ -3,14 +3,8 @@ package ch.ethz.idsc.owly.glc.core;
 
 import java.util.List;
 
-import ch.ethz.idsc.tensor.Scalar;
-
 public class Trajectory {
-  public static Scalar getDuration(List<StateTime> list) {
-    return getBack(list).time.subtract(list.get(0).time);
-  }
-
-  public static StateTime getBack(List<StateTime> list) {
+  public static StateTime getLast(List<StateTime> list) {
     return list.get(list.size() - 1);
   }
 
@@ -19,9 +13,4 @@ public class Trajectory {
     for (StateTime stateTime : list)
       System.out.println(stateTime);
   }
-  // public Trajectory copy() {
-  // Trajectory trajectory = new Trajectory();
-  // trajectory.addAll(this);
-  // return trajectory;
-  // }
 }

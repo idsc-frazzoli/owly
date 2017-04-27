@@ -10,5 +10,5 @@ public interface CostFunction {
   /** @param trajectory
    * @param u
    * @return cost of trajectory along flow u */
-  Scalar cost(List<StateTime> trajectory, Flow u);
+  Scalar costIncrement(StateTime from, List<StateTime> trajectory, Flow u);
 }

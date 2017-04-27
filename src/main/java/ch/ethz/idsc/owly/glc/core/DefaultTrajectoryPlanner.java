@@ -58,15 +58,15 @@ public class DefaultTrajectoryPlanner extends TrajectoryPlanner {
           prev = next;
         }
       }
-      final StateTime last = Trajectory.getBack(trajectory);
-      Node new_arc = new Node(flow, last.x, last.time, //
-          current_node.cost.add(costFunction.cost(trajectory, flow)), // new_arc.cost
+      final StateTime last = Trajectory.getLast(trajectory);
+      final Node new_arc = new Node(flow, last.x, last.time, //
+          current_node.cost.add(costFunction.costIncrement(current_node.getStateTime(), trajectory, flow)), // new_arc.cost
           heuristic.costToGo(last.x) // new_arc.merit
       );
       traj_from_parent.put(new_arc, trajectory);
       // ---
       final Tensor domain_key = convertToKey(new_arc.x);
-      Node prev = getNode(domain_key);
+      final Node prev = getNode(domain_key);
       if (prev != null) { // already some node present from previous exploration
         if (Scalars.lessThan(new_arc.cost, prev.cost)) // new node is better than previous one
           if (candidates.containsKey(domain_key))
@@ -94,7 +94,7 @@ public class DefaultTrajectoryPlanner extends TrajectoryPlanner {
           insert(domain_key, node);
           if (!goalQuery.isDisjoint(traj_from_parent.get(node)))
             offerDestination(node);
-          break;
+          break; // leaves the while loop, but not the for loop
         }
       }
     }

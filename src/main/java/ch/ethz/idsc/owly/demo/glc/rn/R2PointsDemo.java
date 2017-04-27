@@ -3,14 +3,11 @@ package ch.ethz.idsc.owly.demo.glc.rn;
 
 import java.util.List;
 
-import ch.ethz.idsc.owly.glc.adapter.MinTimeCost;
 import ch.ethz.idsc.owly.glc.adapter.RnPointcloudRegion;
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
 import ch.ethz.idsc.owly.glc.adapter.TimeInvariantRegion;
 import ch.ethz.idsc.owly.glc.core.Controls;
-import ch.ethz.idsc.owly.glc.core.CostFunction;
 import ch.ethz.idsc.owly.glc.core.DefaultTrajectoryPlanner;
-import ch.ethz.idsc.owly.glc.core.Heuristic;
 import ch.ethz.idsc.owly.glc.core.StateTime;
 import ch.ethz.idsc.owly.glc.core.Trajectory;
 import ch.ethz.idsc.owly.glc.core.TrajectoryPlanner;
@@ -32,21 +29,16 @@ class R2PointsDemo {
     Tensor partitionScale = Tensors.vector(4, 4);
     Controls controls = new R2Controls(20);
     int trajectorySize = 5;
-    CostFunction costFunction = new MinTimeCost();
-    RnGoal rnGoal = new RnGoal(Tensors.vector(5, 0), DoubleScalar.of(.2));
+    RnGoalManager rnGoal = new RnGoalManager(Tensors.vector(5, 0), DoubleScalar.of(.2));
     Tensor points = Tensors.matrix(new Number[][] { //
         { 2.5, 1 }, { 1.5, -1.5 }, { 0, 2 }, { 3.5, -0.5 } //
     });
     TrajectoryRegionQuery obstacleQuery = // new EmptyRegionQuery();
         new SimpleTrajectoryRegionQuery(new TimeInvariantRegion( //
             RnPointcloudRegion.create(points, RealScalar.of(0.6))));
-    Heuristic heuristic = rnGoal;
-    TrajectoryRegionQuery goalQuery = //
-        new SimpleTrajectoryRegionQuery(new TimeInvariantRegion(rnGoal));
-    // TrajectoryRegionQuery obstacleQuery = obstacleQuery;
     // ---
     TrajectoryPlanner trajectoryPlanner = new DefaultTrajectoryPlanner( //
-        integrator, timeStep, partitionScale, controls, trajectorySize, costFunction, heuristic, goalQuery, obstacleQuery);
+        integrator, timeStep, partitionScale, controls, trajectorySize, rnGoal, rnGoal, rnGoal, obstacleQuery);
     trajectoryPlanner.insertRoot(Tensors.vector(0, 0));
     int iters = trajectoryPlanner.plan(1000);
     System.out.println(iters);

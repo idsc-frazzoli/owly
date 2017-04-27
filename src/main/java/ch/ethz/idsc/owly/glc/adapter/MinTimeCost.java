@@ -11,7 +11,7 @@ import ch.ethz.idsc.tensor.Scalar;
 
 public final class MinTimeCost implements CostFunction {
   @Override
-  public Scalar cost(List<StateTime> trajectory, Flow u) {
-    return Trajectory.getDuration(trajectory);
+  public Scalar costIncrement(StateTime from, List<StateTime> trajectory, Flow u) {
+    return Trajectory.getLast(trajectory).time.subtract(from.time);
   }
 }

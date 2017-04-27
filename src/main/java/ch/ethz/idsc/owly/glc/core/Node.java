@@ -46,6 +46,10 @@ public class Node {
     return parent;
   }
 
+  public boolean isRoot() {
+    return parent == null;
+  }
+
   public int getDepth() {
     return depth;
   }

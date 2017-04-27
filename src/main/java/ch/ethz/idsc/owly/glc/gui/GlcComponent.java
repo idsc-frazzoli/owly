@@ -1,36 +1,28 @@
 // code by jph
 package ch.ethz.idsc.owly.glc.gui;
 
-import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Point;
-import java.awt.Shape;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
 import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
-import java.awt.geom.Rectangle2D;
-import java.util.DoubleSummaryStatistics;
+import java.util.LinkedList;
 import java.util.List;
 
 import javax.swing.JComponent;
 import javax.swing.event.MouseInputAdapter;
 import javax.swing.event.MouseInputListener;
 
-import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
-import ch.ethz.idsc.owly.glc.core.Node;
-import ch.ethz.idsc.owly.glc.core.StateTime;
 import ch.ethz.idsc.owly.glc.core.TrajectoryPlanner;
-import ch.ethz.idsc.owly.glc.core.TrajectoryRegionQuery;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
-import ch.ethz.idsc.tensor.alg.Range;
 import ch.ethz.idsc.tensor.mat.DiagonalMatrix;
 import ch.ethz.idsc.tensor.sca.Power;
 
@@ -45,6 +37,7 @@ public class GlcComponent {
 
   private Tensor model2pixel;
   private TrajectoryPlanner trajectoryPlanner = null;
+  final List<AbstractLayer> layers = new LinkedList<>();
 
   public GlcComponent() {
     model2pixel = Tensors.matrix(new Number[][] { //
@@ -83,6 +76,12 @@ public class GlcComponent {
     };
     jComponent.addMouseMotionListener(mouseInputListener);
     jComponent.addMouseListener(mouseInputListener);
+    // ---
+    layers.add(new DomainLayer(this));
+    layers.add(new ObstacleLayer(this));
+    layers.add(new QueueLayer(this));
+    layers.add(new TreeLayer(this));
+    layers.add(new TrajectoryLayer(this));
   }
 
   final JComponent jComponent = new JComponent() {
@@ -93,23 +92,6 @@ public class GlcComponent {
       g.fillRect(0, 0, dimension.width, dimension.height);
       // ---
       Graphics2D graphics = (Graphics2D) g;
-      if (trajectoryPlanner != null) {
-        Tensor resolution = trajectoryPlanner.getResolution();
-        Tensor inv = resolution.map(Scalar::invert);
-        graphics.setColor(Color.LIGHT_GRAY);
-        for (int i = 0; i < resolution.Get(1).number().intValue(); ++i) {
-          double dy = i * inv.Get(1).number().doubleValue();
-          graphics.draw(new Line2D.Double( //
-              toPoint2D(Tensors.vector(0, dy)), //
-              toPoint2D(Tensors.vector(1, dy))));
-        }
-        for (int i = 0; i < resolution.Get(0).number().intValue(); ++i) {
-          double dx = i * inv.Get(0).number().doubleValue();
-          graphics.draw(new Line2D.Double( //
-              toPoint2D(Tensors.vector(dx, 0)), //
-              toPoint2D(Tensors.vector(dx, 1))));
-        }
-      }
       {
         graphics.setColor(Color.LIGHT_GRAY);
         graphics.draw(new Line2D.Double(toPoint2D(Tensors.vector(-10, 1)), toPoint2D(Tensors.vector(10, 1))));
@@ -120,97 +102,8 @@ public class GlcComponent {
         graphics.draw(new Line2D.Double(toPoint2D(Tensors.vector(-10, 0)), toPoint2D(Tensors.vector(10, 0))));
         graphics.draw(new Line2D.Double(toPoint2D(Tensors.vector(0, -10)), toPoint2D(Tensors.vector(0, 10))));
       }
-      if (trajectoryPlanner != null) {
-        {
-          TrajectoryRegionQuery trq = trajectoryPlanner.getObstacleQuery();
-          if (trq instanceof SimpleTrajectoryRegionQuery) {
-            SimpleTrajectoryRegionQuery strq = (SimpleTrajectoryRegionQuery) trq;
-            graphics.setColor(new Color(0, 0, 0, 64));
-            for (StateTime st : strq.getDiscoveredMembers()) {
-              Point2D p = toPoint2D(st.x);
-              Shape shape = new Rectangle2D.Double(p.getX(), p.getY(), 2, 2);
-              graphics.draw(shape);
-            }
-          }
-        }
-        {
-          int rgb = 192 + 32;
-          graphics.setColor(new Color(rgb, rgb, rgb, 16));
-          Tensor scale = trajectoryPlanner.getResolution().map(Scalar::invert);
-          for (Tensor x : Range.of(-10, 10))
-            for (Tensor y : Range.of(-10, 10)) {
-              // Tensor res = scale.pmul(Tensors.of(x, y));
-              // graphics.draw(new Line2D.Double(toPoint2D(Tensors.vector(-10, res.Get(1).number())), toPoint2D(Tensors.vector(10, res.Get(1).number()))));
-              // graphics.draw(new Line2D.Double(toPoint2D(Tensors.vector(res.Get(0).number(), -10)), toPoint2D(Tensors.vector(res.Get(0).number(), 10))));
-            }
-        }
-        {
-          int rgb = 64;
-          graphics.setColor(new Color(rgb, rgb, rgb, 128));
-          for (Node node : trajectoryPlanner.getQueue()) {
-            Tensor x = node.x;
-            Point2D p = toPoint2D(x);
-            Shape shape = new Rectangle2D.Double(p.getX() - 1, p.getY() - 1, 3, 3);
-            graphics.fill(shape);
-          }
-        }
-        {
-          DoubleSummaryStatistics dss = trajectoryPlanner.getNodes().stream() //
-              .map(n -> n.cost) //
-              .map(Scalar::number) //
-              .mapToDouble(Number::doubleValue) //
-              .filter(Double::isFinite) //
-              .summaryStatistics();
-          final double min = dss.getMin();
-          final double max = dss.getMax();
-          graphics.setColor(Color.BLUE);
-          for (Node node : trajectoryPlanner.getNodes()) {
-            Scalar cost = node.cost;
-            double val = cost.number().doubleValue();
-            double interp = (val - min) / (max - min);
-            graphics.setColor(new Hue(interp, 1, 1, 1).rgba);
-            Point2D p = toPoint2D(node.x);
-            {
-              Shape shape = new Rectangle2D.Double(p.getX(), p.getY(), 1, 1);
-              graphics.fill(shape);
-            }
-            Node parent = node.getParent();
-            if (parent != null) {
-              Point2D p2 = toPoint2D(parent.x);
-              {
-                graphics.setColor(new Hue(interp, 1, 1, .1).rgba);
-                Shape shape = new Line2D.Double(p.getX(), p.getY(), p2.getX(), p2.getY());
-                graphics.draw(shape);
-              }
-            }
-          }
-        }
-        {
-          graphics.setColor(new Color(255, 0, 0, 128));
-          List<StateTime> trajectory = trajectoryPlanner.getPathFromRootToGoal();
-          StateTime prev = null;
-          for (StateTime stateTime : trajectory) {
-            if (prev != null) {
-              Point2D p = toPoint2D(prev.x);
-              Shape shape = new Rectangle2D.Double(p.getX(), p.getY(), 2, 2);
-              graphics.draw(shape);
-            }
-            prev = stateTime;
-          }
-        }
-        {
-          graphics.setStroke(new BasicStroke(2.0f));
-          graphics.setColor(new Color(0, 192, 0, 128));
-          List<StateTime> trajectory = trajectoryPlanner.getDetailedTrajectory();
-          StateTime prev = null;
-          for (StateTime stateTime : trajectory) {
-            if (prev != null)
-              graphics.draw(new Line2D.Double(toPoint2D(prev.x), toPoint2D(stateTime.x)));
-            prev = stateTime;
-          }
-          graphics.setStroke(new BasicStroke());
-        }
-      }
+      if (trajectoryPlanner != null)
+        layers.forEach(layer -> layer.render(graphics, trajectoryPlanner));
     }
   };
 

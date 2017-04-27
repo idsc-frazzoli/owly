@@ -30,13 +30,13 @@ public class Se2Demo {
   public static void main(String[] args) {
     Integrator integrator = new EulerIntegrator();
     Scalar timeStep = RationalScalar.of(1, 6);
-    Tensor partitionScale = Tensors.vector(3, 3, 15); //.multiply(resolutionFactor); //
+    Tensor partitionScale = Tensors.vector(3, 3, 15); // .multiply(resolutionFactor); //
     Controls controls = new Se2Controls(Se2Utils.DEGREE(45), 6);
     int trajectorySize = 5;
     CostFunction costFunction = new MinTimeCost();
     Se2Goal rnGoal = new Se2Goal( //
-        Tensors.vector(2, 1), RealScalar.of(Math.PI ), //
-        DoubleScalar.of(.5), Se2Utils.DEGREE(10));
+        Tensors.vector(2, 1), RealScalar.of(Math.PI), //
+        DoubleScalar.of(.75), Se2Utils.DEGREE(10));
     Heuristic heuristic = rnGoal; // new ZeroHeuristic();
     TrajectoryRegionQuery goalQuery = //
         new SimpleTrajectoryRegionQuery(new TimeInvariantRegion( //
@@ -55,7 +55,7 @@ public class Se2Demo {
         integrator, timeStep, partitionScale, controls, trajectorySize, costFunction, heuristic, goalQuery, obstacleQuery);
     // ---
     trajectoryPlanner.insertRoot(Tensors.vector(0, 0, 0));
-    int iters = trajectoryPlanner.plan(1000);
+    int iters = trajectoryPlanner.plan(2000);
     System.out.println(iters);
     List<StateTime> trajectory = trajectoryPlanner.getPathFromRootToGoal();
     Trajectory.print(trajectory);
