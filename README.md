@@ -16,3 +16,15 @@ Pendulum Swing Up
 SE(2)
 
 ![se2](https://cloud.githubusercontent.com/assets/4012178/25422502/5b00be4e-2a61-11e7-8798-08fcd8f44658.png)
+
+---
+
+Rice1
+
+![rice1](https://cloud.githubusercontent.com/assets/4012178/25473189/c505917a-2b2e-11e7-8799-0d3bcc32c1d5.png)
+
+---
+
+R^2
+
+![r2](https://cloud.githubusercontent.com/assets/4012178/25473192/c7cdd192-2b2e-11e7-8c9e-72d88d6723d3.png)
