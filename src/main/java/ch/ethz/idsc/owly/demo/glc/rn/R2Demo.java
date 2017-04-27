@@ -62,7 +62,8 @@ public class R2Demo {
         new TimeInvariantRegion(new R2Bubbles()));
     // ---
     TrajectoryPlanner trajectoryPlanner = new DefaultTrajectoryPlanner( //
-        integrator, timeStep, partitionScale, controls, trajectorySize, rnGoal, rnGoal, rnGoal, obstacleQuery);
+        integrator, timeStep, partitionScale, controls, trajectorySize, //
+        rnGoal, rnGoal, obstacleQuery);
     trajectoryPlanner.insertRoot(Tensors.vector(-2, -2));
     trajectoryPlanner.plan(1400);
     List<StateTime> trajectory = trajectoryPlanner.getPathFromRootToGoal();

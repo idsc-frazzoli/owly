@@ -7,7 +7,6 @@ import ch.ethz.idsc.owly.glc.adapter.EllipsoidRegion;
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
 import ch.ethz.idsc.owly.glc.adapter.TimeInvariantRegion;
 import ch.ethz.idsc.owly.glc.core.CostFunction;
-import ch.ethz.idsc.owly.glc.core.Heuristic;
 import ch.ethz.idsc.owly.glc.core.StateTime;
 import ch.ethz.idsc.owly.glc.core.Trajectories;
 import ch.ethz.idsc.owly.math.Flow;
@@ -18,7 +17,7 @@ import ch.ethz.idsc.tensor.red.Norm;
 import ch.ethz.idsc.tensor.sca.Ramp;
 
 /** objective is minimum path length */
-class RnGoalManager extends SimpleTrajectoryRegionQuery implements CostFunction, Heuristic {
+class RnGoalManager extends SimpleTrajectoryRegionQuery implements CostFunction {
   final Tensor center;
   final Scalar radius;
 
@@ -34,7 +33,7 @@ class RnGoalManager extends SimpleTrajectoryRegionQuery implements CostFunction,
   }
 
   @Override
-  public Scalar costToGoal(Tensor x) {
+  public Scalar minCostToGoal(Tensor x) {
     return (Scalar) Ramp.of(Norm._2.of(x.subtract(center)).subtract(radius));
   }
 }

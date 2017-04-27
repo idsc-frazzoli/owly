@@ -9,9 +9,10 @@ import ch.ethz.idsc.owly.glc.core.Trajectories;
 import ch.ethz.idsc.owly.math.Flow;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Scalars;
+import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.ZeroScalar;
 
-public final class MinTimeCost implements CostFunction {
+public class MinTimeCost implements CostFunction {
   public static Scalar timeIncrement(StateTime from, List<StateTime> trajectory) {
     Scalar dt = Trajectories.getLast(trajectory).time.subtract(from.time);
     if (Scalars.lessEquals(dt, ZeroScalar.get()))
@@ -22,5 +23,10 @@ public final class MinTimeCost implements CostFunction {
   @Override
   public Scalar costIncrement(StateTime from, List<StateTime> trajectory, Flow flow) {
     return timeIncrement(from, trajectory);
+  }
+
+  @Override
+  public Scalar minCostToGoal(Tensor x) {
+    return ZeroScalar.get();
   }
 }

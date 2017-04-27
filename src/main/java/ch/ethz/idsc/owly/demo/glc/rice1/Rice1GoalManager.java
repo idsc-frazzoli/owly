@@ -8,7 +8,6 @@ import ch.ethz.idsc.owly.glc.adapter.MinTimeCost;
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
 import ch.ethz.idsc.owly.glc.adapter.TimeInvariantRegion;
 import ch.ethz.idsc.owly.glc.core.CostFunction;
-import ch.ethz.idsc.owly.glc.core.Heuristic;
 import ch.ethz.idsc.owly.glc.core.StateTime;
 import ch.ethz.idsc.owly.math.Flow;
 import ch.ethz.idsc.tensor.Scalar;
@@ -16,7 +15,7 @@ import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.red.Norm;
 import ch.ethz.idsc.tensor.sca.Ramp;
 
-class Rice1GoalManager extends SimpleTrajectoryRegionQuery implements CostFunction, Heuristic {
+class Rice1GoalManager extends SimpleTrajectoryRegionQuery implements CostFunction {
   final Tensor center;
   final Tensor radius;
 
@@ -32,7 +31,7 @@ class Rice1GoalManager extends SimpleTrajectoryRegionQuery implements CostFuncti
   }
 
   @Override
-  public Scalar costToGoal(Tensor x) {
+  public Scalar minCostToGoal(Tensor x) {
     Scalar pc = x.Get(0);
     Scalar pd = center.Get(0);
     Scalar mindist = Ramp.function.apply(Norm._2.of(pc.subtract(pd)).subtract(radius.get(0)));

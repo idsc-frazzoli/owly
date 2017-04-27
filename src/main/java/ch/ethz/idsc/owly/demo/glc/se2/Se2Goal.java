@@ -1,7 +1,12 @@
 // code by jph
 package ch.ethz.idsc.owly.demo.glc.se2;
 
-import ch.ethz.idsc.owly.glc.core.Heuristic;
+import java.util.List;
+
+import ch.ethz.idsc.owly.glc.adapter.MinTimeCost;
+import ch.ethz.idsc.owly.glc.core.CostFunction;
+import ch.ethz.idsc.owly.glc.core.StateTime;
+import ch.ethz.idsc.owly.math.Flow;
 import ch.ethz.idsc.owly.math.Region;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
@@ -12,7 +17,7 @@ import ch.ethz.idsc.tensor.red.Max;
 import ch.ethz.idsc.tensor.red.Norm;
 import ch.ethz.idsc.tensor.sca.Mod;
 
-public class Se2Goal implements Region, Heuristic {
+public class Se2Goal implements Region, CostFunction {
   static final Mod PRINCIPAL = Mod.function(RealScalar.of(2 * Math.PI), RealScalar.of(-Math.PI));
   // ---
   final Tensor xy;
@@ -28,7 +33,12 @@ public class Se2Goal implements Region, Heuristic {
   }
 
   @Override
-  public Scalar costToGoal(Tensor x) {
+  public Scalar costIncrement(StateTime from, List<StateTime> trajectory, Flow flow) {
+    return MinTimeCost.timeIncrement(from, trajectory);
+  }
+
+  @Override
+  public Scalar minCostToGoal(Tensor x) {
     Tensor cur_xy = x.extract(0, 2);
     Scalar cur_angle = x.Get(2);
     Scalar dxy = Norm._2.of(cur_xy.subtract(xy)).subtract(radius);

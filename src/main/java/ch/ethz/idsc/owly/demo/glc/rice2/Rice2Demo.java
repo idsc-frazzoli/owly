@@ -46,7 +46,7 @@ public class Rice2Demo {
     // ---
     TrajectoryPlanner trajectoryPlanner = new DefaultTrajectoryPlanner( //
         integrator, timeStep, partitionScale, controls, trajectorySize, //
-        rice2Goal, rice2Goal, rice2Goal, obstacleQuery);
+        rice2Goal, rice2Goal, obstacleQuery);
     // ---
     trajectoryPlanner.insertRoot(Tensors.vector(0, 0, 0, 0));
     int iters = trajectoryPlanner.plan(1000);

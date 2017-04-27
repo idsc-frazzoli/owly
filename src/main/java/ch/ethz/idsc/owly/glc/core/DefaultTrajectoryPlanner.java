@@ -19,7 +19,6 @@ public class DefaultTrajectoryPlanner extends TrajectoryPlanner {
   protected final Collection<Flow> controls;
   protected final int trajectorySize;
   protected final CostFunction costFunction;
-  protected final Heuristic heuristic;
   protected final TrajectoryRegionQuery goalQuery;
   protected final TrajectoryRegionQuery obstacleQuery;
 
@@ -30,7 +29,6 @@ public class DefaultTrajectoryPlanner extends TrajectoryPlanner {
       Collection<Flow> controls, //
       int trajectorySize, //
       CostFunction costFunction, //
-      Heuristic heuristic, //
       TrajectoryRegionQuery goalQuery, //
       TrajectoryRegionQuery obstacleQuery //
   ) {
@@ -38,7 +36,6 @@ public class DefaultTrajectoryPlanner extends TrajectoryPlanner {
     this.controls = controls;
     this.trajectorySize = trajectorySize;
     this.costFunction = costFunction;
-    this.heuristic = heuristic;
     this.goalQuery = goalQuery;
     this.obstacleQuery = obstacleQuery;
   }
@@ -62,7 +59,7 @@ public class DefaultTrajectoryPlanner extends TrajectoryPlanner {
       final StateTime last = Trajectories.getLast(trajectory);
       final Node new_arc = new Node(flow, last.x, last.time, //
           current_node.cost.add(costFunction.costIncrement(current_node.getStateTime(), trajectory, flow)), // new_arc.cost
-          heuristic.costToGoal(last.x) // new_arc.merit
+          costFunction.minCostToGoal(last.x) // new_arc.merit
       );
       traj_from_parent.put(new_arc, trajectory);
       // ---
@@ -103,7 +100,7 @@ public class DefaultTrajectoryPlanner extends TrajectoryPlanner {
 
   @Override
   protected Node createRootNode(Tensor x) {
-    return new Node(null, x, ZeroScalar.get(), ZeroScalar.get(), heuristic.costToGoal(x));
+    return new Node(null, x, ZeroScalar.get(), ZeroScalar.get(), costFunction.minCostToGoal(x));
   }
 
   @Override

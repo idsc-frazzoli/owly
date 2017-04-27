@@ -42,7 +42,7 @@ public class Rice1Demo {
     Integrator integrator = new MidpointIntegrator();
     TrajectoryPlanner trajectoryPlanner = new DefaultTrajectoryPlanner( //
         integrator, timeStep, partitionScale, controls, trajectorySize, //
-        rice1Goal, rice1Goal, rice1Goal, obstacleQuery);
+        rice1Goal, rice1Goal, obstacleQuery);
     // ---
     trajectoryPlanner.insertRoot(Tensors.vector(0, 0));
     int iters = trajectoryPlanner.plan(1000);
