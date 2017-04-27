@@ -14,7 +14,7 @@ public class StateTime {
   }
 
   @Override
-  public String toString() {
+  public String toString() { // TODO this function should have a different name and not override toString
     return String.format("t=%s  x=%s", time, x.toString());
   }
 }

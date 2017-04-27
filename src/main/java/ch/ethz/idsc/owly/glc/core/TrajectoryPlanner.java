@@ -20,8 +20,8 @@ import ch.ethz.idsc.tensor.sca.Floor;
 public abstract class TrajectoryPlanner {
   protected final Integrator integrator;
   protected final Scalar timeStep;
-  // ---
   private final Tensor partitionScale;
+  // ---
   private final Queue<Node> queue = new PriorityQueue<>(NodeMeritComparator.instance);
   private final Map<Tensor, Node> domain_labels = new HashMap<>();
 

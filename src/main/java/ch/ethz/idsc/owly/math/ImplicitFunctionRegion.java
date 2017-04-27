@@ -12,7 +12,7 @@ import ch.ethz.idsc.tensor.Tensor;
 public abstract class ImplicitFunctionRegion implements Region, ImplicitFunction {
   @Override
   public final boolean isMember(Tensor tensor) {
-    RealScalar realScalar = (RealScalar) apply(tensor);
+    RealScalar realScalar = (RealScalar) evaluate(tensor);
     return realScalar.signInt() <= 0;
   }
 }
