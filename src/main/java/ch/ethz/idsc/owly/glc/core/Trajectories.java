@@ -3,7 +3,10 @@ package ch.ethz.idsc.owly.glc.core;
 
 import java.util.List;
 
-public class Trajectory {
+/** utility functions that operate on List<StateTime> */
+public enum Trajectories {
+  ;
+  // ---
   public static StateTime getLast(List<StateTime> list) {
     return list.get(list.size() - 1);
   }

@@ -10,7 +10,7 @@ import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
 import ch.ethz.idsc.owly.glc.adapter.TimeInvariantRegion;
 import ch.ethz.idsc.owly.glc.core.DefaultTrajectoryPlanner;
 import ch.ethz.idsc.owly.glc.core.StateTime;
-import ch.ethz.idsc.owly.glc.core.Trajectory;
+import ch.ethz.idsc.owly.glc.core.Trajectories;
 import ch.ethz.idsc.owly.glc.core.TrajectoryPlanner;
 import ch.ethz.idsc.owly.glc.core.TrajectoryRegionQuery;
 import ch.ethz.idsc.owly.glc.gui.GlcFrame;
@@ -66,7 +66,7 @@ public class R2Demo {
     trajectoryPlanner.insertRoot(Tensors.vector(-2, -2));
     trajectoryPlanner.plan(1400);
     List<StateTime> trajectory = trajectoryPlanner.getPathFromRootToGoal();
-    Trajectory.print(trajectory);
+    Trajectories.print(trajectory);
     GlcFrame glcFrame = new GlcFrame();
     glcFrame.glcComponent.setTrajectoryPlanner(trajectoryPlanner);
   }

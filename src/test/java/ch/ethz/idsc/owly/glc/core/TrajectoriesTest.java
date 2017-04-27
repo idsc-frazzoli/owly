@@ -10,7 +10,7 @@ import ch.ethz.idsc.tensor.Tensors;
 import ch.ethz.idsc.tensor.ZeroScalar;
 import junit.framework.TestCase;
 
-public class TrajectoryTest extends TestCase {
+public class TrajectoriesTest extends TestCase {
   public void testDisjoint() {
     TrajectoryRegionQuery goalQuery = //
         new SimpleTrajectoryRegionQuery(new TimeInvariantRegion( //

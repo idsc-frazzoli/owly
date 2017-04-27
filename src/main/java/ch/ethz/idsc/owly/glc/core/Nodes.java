@@ -5,7 +5,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class Nodes {
+enum Nodes {
+  ;
+  // ---
   public static List<Node> getNodesFromRoot(Node best) {
     List<Node> list = new ArrayList<>();
     Node node = best;

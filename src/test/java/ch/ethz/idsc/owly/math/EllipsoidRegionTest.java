@@ -1,5 +1,5 @@
 // code by jph
-package ch.ethz.idsc.owly.util.math;
+package ch.ethz.idsc.owly.math;
 
 import ch.ethz.idsc.owly.glc.adapter.EllipsoidRegion;
 import ch.ethz.idsc.owly.math.Region;

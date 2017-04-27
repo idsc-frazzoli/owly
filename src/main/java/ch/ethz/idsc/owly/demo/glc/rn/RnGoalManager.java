@@ -9,7 +9,7 @@ import ch.ethz.idsc.owly.glc.adapter.TimeInvariantRegion;
 import ch.ethz.idsc.owly.glc.core.CostFunction;
 import ch.ethz.idsc.owly.glc.core.Heuristic;
 import ch.ethz.idsc.owly.glc.core.StateTime;
-import ch.ethz.idsc.owly.glc.core.Trajectory;
+import ch.ethz.idsc.owly.glc.core.Trajectories;
 import ch.ethz.idsc.owly.math.Flow;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
@@ -30,11 +30,11 @@ class RnGoalManager extends SimpleTrajectoryRegionQuery implements CostFunction,
 
   @Override
   public Scalar costIncrement(StateTime from, List<StateTime> trajectory, Flow flow) {
-    return Norm._2.of(from.x.subtract(Trajectory.getLast(trajectory).x));
+    return Norm._2.of(from.x.subtract(Trajectories.getLast(trajectory).x));
   }
 
   @Override
-  public Scalar costToGo(Tensor x) {
+  public Scalar costToGoal(Tensor x) {
     return (Scalar) Ramp.of(Norm._2.of(x.subtract(center)).subtract(radius));
   }
 }

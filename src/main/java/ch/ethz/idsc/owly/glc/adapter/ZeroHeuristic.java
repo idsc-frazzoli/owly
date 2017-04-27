@@ -8,7 +8,7 @@ import ch.ethz.idsc.tensor.ZeroScalar;
 
 public final class ZeroHeuristic implements Heuristic {
   @Override
-  public Scalar costToGo(Tensor x) {
+  public Scalar costToGoal(Tensor x) {
     return ZeroScalar.get();
   }
 }

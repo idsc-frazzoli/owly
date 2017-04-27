@@ -1,5 +1,5 @@
 // code by jph
-package ch.ethz.idsc.owly.util.data;
+package ch.ethz.idsc.owly.data;
 
 import java.util.Map;
 

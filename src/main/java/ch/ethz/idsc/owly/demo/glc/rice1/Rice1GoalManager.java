@@ -32,7 +32,7 @@ class Rice1GoalManager extends SimpleTrajectoryRegionQuery implements CostFuncti
   }
 
   @Override
-  public Scalar costToGo(Tensor x) {
+  public Scalar costToGoal(Tensor x) {
     Scalar pc = x.Get(0);
     Scalar pd = center.Get(0);
     Scalar mindist = Ramp.function.apply(Norm._2.of(pc.subtract(pd)).subtract(radius.get(0)));

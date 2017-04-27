@@ -10,7 +10,7 @@ import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
 import ch.ethz.idsc.owly.glc.adapter.TimeInvariantRegion;
 import ch.ethz.idsc.owly.glc.core.DefaultTrajectoryPlanner;
 import ch.ethz.idsc.owly.glc.core.StateTime;
-import ch.ethz.idsc.owly.glc.core.Trajectory;
+import ch.ethz.idsc.owly.glc.core.Trajectories;
 import ch.ethz.idsc.owly.glc.core.TrajectoryPlanner;
 import ch.ethz.idsc.owly.glc.core.TrajectoryRegionQuery;
 import ch.ethz.idsc.owly.glc.gui.GlcFrame;
@@ -53,7 +53,7 @@ public class Rice2Demo {
     System.out.println(iters);
     // TODO keep trying to improve path to goal for a few iterations...?
     List<StateTime> trajectory = trajectoryPlanner.getPathFromRootToGoal();
-    Trajectory.print(trajectory);
+    Trajectories.print(trajectory);
     GlcFrame glcFrame = new GlcFrame();
     glcFrame.glcComponent.setTrajectoryPlanner(trajectoryPlanner);
   }

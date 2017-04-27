@@ -28,7 +28,7 @@ public class Se2Goal implements Region, Heuristic {
   }
 
   @Override
-  public Scalar costToGo(Tensor x) {
+  public Scalar costToGoal(Tensor x) {
     Tensor cur_xy = x.extract(0, 2);
     Scalar cur_angle = x.Get(2);
     Scalar dxy = Norm._2.of(cur_xy.subtract(xy)).subtract(radius);

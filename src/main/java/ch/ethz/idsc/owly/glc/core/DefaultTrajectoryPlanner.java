@@ -59,10 +59,10 @@ public class DefaultTrajectoryPlanner extends TrajectoryPlanner {
           prev = next;
         }
       }
-      final StateTime last = Trajectory.getLast(trajectory);
+      final StateTime last = Trajectories.getLast(trajectory);
       final Node new_arc = new Node(flow, last.x, last.time, //
           current_node.cost.add(costFunction.costIncrement(current_node.getStateTime(), trajectory, flow)), // new_arc.cost
-          heuristic.costToGo(last.x) // new_arc.merit
+          heuristic.costToGoal(last.x) // new_arc.merit
       );
       traj_from_parent.put(new_arc, trajectory);
       // ---
@@ -103,7 +103,7 @@ public class DefaultTrajectoryPlanner extends TrajectoryPlanner {
 
   @Override
   protected Node createRootNode(Tensor x) {
-    return new Node(null, x, ZeroScalar.get(), ZeroScalar.get(), heuristic.costToGo(x));
+    return new Node(null, x, ZeroScalar.get(), ZeroScalar.get(), heuristic.costToGoal(x));
   }
 
   @Override
