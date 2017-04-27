@@ -1,6 +1,7 @@
 // code by jph
 package ch.ethz.idsc.owly.demo.glc.rn;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Random;
 import java.util.stream.IntStream;
@@ -8,13 +9,13 @@ import java.util.stream.IntStream;
 import ch.ethz.idsc.owly.glc.adapter.RnPointcloudRegion;
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
 import ch.ethz.idsc.owly.glc.adapter.TimeInvariantRegion;
-import ch.ethz.idsc.owly.glc.core.Controls;
 import ch.ethz.idsc.owly.glc.core.DefaultTrajectoryPlanner;
 import ch.ethz.idsc.owly.glc.core.StateTime;
 import ch.ethz.idsc.owly.glc.core.Trajectory;
 import ch.ethz.idsc.owly.glc.core.TrajectoryPlanner;
 import ch.ethz.idsc.owly.glc.core.TrajectoryRegionQuery;
 import ch.ethz.idsc.owly.glc.gui.GlcFrame;
+import ch.ethz.idsc.owly.math.Flow;
 import ch.ethz.idsc.owly.math.integrator.EulerIntegrator;
 import ch.ethz.idsc.owly.math.integrator.Integrator;
 import ch.ethz.idsc.tensor.DoubleScalar;
@@ -37,7 +38,7 @@ class R2PointsDemo {
     Integrator integrator = new EulerIntegrator();
     final Scalar timeStep = RationalScalar.of(1, 8);
     Tensor partitionScale = Tensors.vector(5, 5);
-    Controls controls = new R2Controls(20);
+    Collection<Flow> controls = R2Controls.createControls(20);
     int trajectorySize = 4;
     RnGoalManager rnGoal = new RnGoalManager(Tensors.vector(5, 5), DoubleScalar.of(.2));
     Tensor points = createRandom(10, Tensors.vector(4, 4));

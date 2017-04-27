@@ -1,18 +1,19 @@
 // code by jph
 package ch.ethz.idsc.owly.demo.glc.rice1;
 
+import java.util.Collection;
 import java.util.List;
 
 import ch.ethz.idsc.owly.glc.adapter.EllipsoidRegion;
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
 import ch.ethz.idsc.owly.glc.adapter.TimeInvariantRegion;
-import ch.ethz.idsc.owly.glc.core.Controls;
 import ch.ethz.idsc.owly.glc.core.DefaultTrajectoryPlanner;
 import ch.ethz.idsc.owly.glc.core.StateTime;
 import ch.ethz.idsc.owly.glc.core.Trajectory;
 import ch.ethz.idsc.owly.glc.core.TrajectoryPlanner;
 import ch.ethz.idsc.owly.glc.core.TrajectoryRegionQuery;
 import ch.ethz.idsc.owly.glc.gui.GlcFrame;
+import ch.ethz.idsc.owly.math.Flow;
 import ch.ethz.idsc.owly.math.RegionUnion;
 import ch.ethz.idsc.owly.math.integrator.Integrator;
 import ch.ethz.idsc.owly.math.integrator.MidpointIntegrator;
@@ -27,7 +28,7 @@ public class Rice1Demo {
   public static void main(String[] args) {
     Scalar timeStep = RationalScalar.of(1, 5);
     Tensor partitionScale = Tensors.vector(5, 8);
-    Controls controls = new Rice1Controls(RealScalar.of(.5), 15); //
+    Collection<Flow> controls = Rice1Controls.createControls(RealScalar.of(.5), 15); //
     int trajectorySize = 5;
     Rice1GoalManager rice1Goal = new Rice1GoalManager(Tensors.vector(6, -.7), Tensors.vector(.4, .3));
     TrajectoryRegionQuery obstacleQuery = //

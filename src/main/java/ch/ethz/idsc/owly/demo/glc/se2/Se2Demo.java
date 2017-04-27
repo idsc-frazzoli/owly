@@ -1,13 +1,13 @@
 // code by jph
 package ch.ethz.idsc.owly.demo.glc.se2;
 
+import java.util.Collection;
 import java.util.List;
 
 import ch.ethz.idsc.owly.glc.adapter.EmptyRegionQuery;
 import ch.ethz.idsc.owly.glc.adapter.MinTimeCost;
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
 import ch.ethz.idsc.owly.glc.adapter.TimeInvariantRegion;
-import ch.ethz.idsc.owly.glc.core.Controls;
 import ch.ethz.idsc.owly.glc.core.CostFunction;
 import ch.ethz.idsc.owly.glc.core.DefaultTrajectoryPlanner;
 import ch.ethz.idsc.owly.glc.core.Heuristic;
@@ -16,6 +16,7 @@ import ch.ethz.idsc.owly.glc.core.Trajectory;
 import ch.ethz.idsc.owly.glc.core.TrajectoryPlanner;
 import ch.ethz.idsc.owly.glc.core.TrajectoryRegionQuery;
 import ch.ethz.idsc.owly.glc.gui.GlcFrame;
+import ch.ethz.idsc.owly.math.Flow;
 import ch.ethz.idsc.owly.math.integrator.EulerIntegrator;
 import ch.ethz.idsc.owly.math.integrator.Integrator;
 import ch.ethz.idsc.tensor.DoubleScalar;
@@ -31,7 +32,7 @@ public class Se2Demo {
     Integrator integrator = new EulerIntegrator();
     Scalar timeStep = RationalScalar.of(1, 6);
     Tensor partitionScale = Tensors.vector(3, 3, 15); // .multiply(resolutionFactor); //
-    Controls controls = new Se2Controls(Se2Utils.DEGREE(45), 6);
+    Collection<Flow> controls = Se2Controls.createControls(Se2Utils.DEGREE(45), 6);
     int trajectorySize = 5;
     CostFunction costFunction = new MinTimeCost();
     Se2Goal rnGoal = new Se2Goal( //

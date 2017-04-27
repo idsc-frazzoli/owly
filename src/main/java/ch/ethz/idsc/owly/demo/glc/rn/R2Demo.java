@@ -1,19 +1,20 @@
 // code by jph
 package ch.ethz.idsc.owly.demo.glc.rn;
 
+import java.util.Collection;
 import java.util.List;
 
 import ch.ethz.idsc.owly.glc.adapter.InvertedRegion;
 import ch.ethz.idsc.owly.glc.adapter.RnPointcloudRegion;
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
 import ch.ethz.idsc.owly.glc.adapter.TimeInvariantRegion;
-import ch.ethz.idsc.owly.glc.core.Controls;
 import ch.ethz.idsc.owly.glc.core.DefaultTrajectoryPlanner;
 import ch.ethz.idsc.owly.glc.core.StateTime;
 import ch.ethz.idsc.owly.glc.core.Trajectory;
 import ch.ethz.idsc.owly.glc.core.TrajectoryPlanner;
 import ch.ethz.idsc.owly.glc.core.TrajectoryRegionQuery;
 import ch.ethz.idsc.owly.glc.gui.GlcFrame;
+import ch.ethz.idsc.owly.math.Flow;
 import ch.ethz.idsc.owly.math.integrator.EulerIntegrator;
 import ch.ethz.idsc.owly.math.integrator.Integrator;
 import ch.ethz.idsc.tensor.DoubleScalar;
@@ -52,7 +53,7 @@ public class R2Demo {
     Integrator integrator = new EulerIntegrator();
     final Scalar timeStep = RationalScalar.of(1, 5);
     Tensor partitionScale = Tensors.vector(4, 4);
-    Controls controls = new R2Controls(36);
+    Collection<Flow> controls = R2Controls.createControls(36);
     int trajectorySize = 5;
     RnGoalManager rnGoal = new RnGoalManager(Tensors.vector(2, 2), DoubleScalar.of(.25));
     // performance depends on heuristic: zeroHeuristic vs rnGoal

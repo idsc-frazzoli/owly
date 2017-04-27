@@ -2,6 +2,7 @@
 package ch.ethz.idsc.owly.glc.core;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -15,7 +16,7 @@ import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.ZeroScalar;
 
 public class DefaultTrajectoryPlanner extends TrajectoryPlanner {
-  protected final Controls controls;
+  protected final Collection<Flow> controls;
   protected final int trajectorySize;
   protected final CostFunction costFunction;
   protected final Heuristic heuristic;
@@ -26,7 +27,7 @@ public class DefaultTrajectoryPlanner extends TrajectoryPlanner {
       Integrator integrator, //
       Scalar timeStep, //
       Tensor partitionScale, //
-      Controls controls, //
+      Collection<Flow> controls, //
       int trajectorySize, //
       CostFunction costFunction, //
       Heuristic heuristic, //

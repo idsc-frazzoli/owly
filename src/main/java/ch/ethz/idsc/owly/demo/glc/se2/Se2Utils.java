@@ -1,7 +1,8 @@
 // code by jph
 package ch.ethz.idsc.owly.demo.glc.se2;
 
-import ch.ethz.idsc.owly.glc.core.Controls;
+import java.util.Collection;
+
 import ch.ethz.idsc.owly.math.Flow;
 import ch.ethz.idsc.tensor.ComplexScalar;
 import ch.ethz.idsc.tensor.DoubleScalar;
@@ -37,8 +38,8 @@ enum Se2Utils {
   }
 
   public static void main(String[] args) {
-    Controls c = new Se2Controls(DEGREE(10), 2);
-    Flow um1 = c.get(0);
+    Collection<Flow> c = Se2Controls.createControls(DEGREE(10), 2);
+    Flow um1 = c.iterator().next();
     System.out.println(um1.getU());
     Tensor x = Tensors.vector(0, 0, 0.0);
     Tensor x1 = um1.at(um1.at(x));

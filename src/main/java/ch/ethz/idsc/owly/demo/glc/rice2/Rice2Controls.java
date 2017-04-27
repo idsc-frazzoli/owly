@@ -1,7 +1,11 @@
 // code by jph
 package ch.ethz.idsc.owly.demo.glc.rice2;
 
-import ch.ethz.idsc.owly.glc.core.Controls;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
+import ch.ethz.idsc.owly.math.Flow;
 import ch.ethz.idsc.owly.math.StateSpaceModel;
 import ch.ethz.idsc.owly.math.StateSpaceModels;
 import ch.ethz.idsc.tensor.DoubleScalar;
@@ -13,12 +17,14 @@ import ch.ethz.idsc.tensor.sca.Chop;
 import ch.ethz.idsc.tensor.sca.Cos;
 import ch.ethz.idsc.tensor.sca.Sin;
 
-class Rice2Controls extends Controls {
-  public Rice2Controls(Scalar lambda, int num) {
+class Rice2Controls {
+  public static Collection<Flow> createControls(Scalar lambda, int num) {
     StateSpaceModel stateSpaceModel = new Rice2StateSpaceModel(lambda);
+    List<Flow> list = new ArrayList<>();
     for (Tensor angle : Range.of(0, num).multiply(DoubleScalar.of(2 * Math.PI / num))) {
       Tensor u = Chop.of(Tensors.of(Cos.of(angle), Sin.of(angle)));
-      add(StateSpaceModels.createFlow(stateSpaceModel, u));
+      list.add(StateSpaceModels.createFlow(stateSpaceModel, u));
     }
+    return list;
   }
 }
