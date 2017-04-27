@@ -28,9 +28,9 @@ public class Se2Goal implements Region, Heuristic {
   }
 
   @Override
-  public Scalar costToGo(Tensor tensor) {
-    Tensor cur_xy = tensor.extract(0, 2);
-    Scalar cur_angle = tensor.Get(2);
+  public Scalar costToGo(Tensor x) {
+    Tensor cur_xy = x.extract(0, 2);
+    Scalar cur_angle = x.Get(2);
     Scalar dxy = Norm._2.of(cur_xy.subtract(xy)).subtract(radius);
     // Scalar dangle = PRINCIPAL.apply(cur_angle.subtract(angle)).abs().subtract(angle_delta);
     return Max.of(dxy, ZeroScalar.get());

@@ -10,7 +10,7 @@ import ch.ethz.idsc.tensor.io.ExtractPrimitives;
 /** example functions for use with RnImplicitObstacle
  *
  * positive return value (including zero) means inside obstacle region */
-public class R3Tubes extends ImplicitFunctionRegion {
+class R3Tubes extends ImplicitFunctionRegion {
   /** 3-dimensional tube network
    * the challenge is to find the path through narrow passages along the diagonal
    *
@@ -22,7 +22,7 @@ public class R3Tubes extends ImplicitFunctionRegion {
    * motivated by
    * https://reference.wolfram.com/language/ref/ContourPlot3D.html */
   @Override
-  public Scalar apply(Tensor tensor) {
+  public Scalar evaluate(Tensor tensor) {
     final double[] data = ExtractPrimitives.toArrayDouble(tensor);
     double x = data[0];
     double y = data[1];

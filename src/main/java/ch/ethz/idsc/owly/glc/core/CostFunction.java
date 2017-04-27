@@ -8,7 +8,7 @@ import ch.ethz.idsc.tensor.Scalar;
 
 public interface CostFunction {
   /** @param trajectory
-   * @param u
+   * @param flow
    * @return cost of trajectory along flow u */
-  Scalar costIncrement(StateTime from, List<StateTime> trajectory, Flow u);
+  Scalar costIncrement(StateTime from, List<StateTime> trajectory, Flow flow);
 }

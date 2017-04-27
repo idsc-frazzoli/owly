@@ -1,40 +1,42 @@
 // code by jph
-package ch.ethz.idsc.owly.demo.glc.rn;
+package ch.ethz.idsc.owly.demo.glc.rice1;
 
 import java.util.List;
 
 import ch.ethz.idsc.owly.glc.adapter.EllipsoidRegion;
+import ch.ethz.idsc.owly.glc.adapter.MinTimeCost;
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
 import ch.ethz.idsc.owly.glc.adapter.TimeInvariantRegion;
 import ch.ethz.idsc.owly.glc.core.CostFunction;
 import ch.ethz.idsc.owly.glc.core.Heuristic;
 import ch.ethz.idsc.owly.glc.core.StateTime;
-import ch.ethz.idsc.owly.glc.core.Trajectory;
 import ch.ethz.idsc.owly.math.Flow;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
-import ch.ethz.idsc.tensor.alg.Array;
-import ch.ethz.idsc.tensor.red.Norm;
+import ch.ethz.idsc.tensor.sca.Abs;
 import ch.ethz.idsc.tensor.sca.Ramp;
 
-/** objective is minimum path length */
-class RnGoalManager extends SimpleTrajectoryRegionQuery implements CostFunction, Heuristic {
+class Rice1GoalManager extends SimpleTrajectoryRegionQuery implements CostFunction, Heuristic {
   final Tensor center;
-  final Scalar radius;
+  final Tensor radius;
 
-  public RnGoalManager(Tensor center, Scalar radius) {
-    super(new TimeInvariantRegion(new EllipsoidRegion(center, Array.of(l -> radius, center.length()))));
+  public Rice1GoalManager(Tensor center, Tensor radius) {
+    super(new TimeInvariantRegion(new EllipsoidRegion(center, radius)));
     this.center = center;
     this.radius = radius;
   }
 
   @Override
   public Scalar costIncrement(StateTime from, List<StateTime> trajectory, Flow flow) {
-    return Norm._2.of(from.x.subtract(Trajectory.getLast(trajectory).x));
+    return MinTimeCost.timeIncrement(from, trajectory);
   }
 
   @Override
   public Scalar costToGo(Tensor x) {
-    return (Scalar) Ramp.of(Norm._2.of(x.subtract(center)).subtract(radius));
+    Scalar pc = x.Get(0);
+    Scalar pd = center.Get(0);
+    Scalar mindist = (Scalar) Ramp.of( //
+        Abs.of(pc.subtract(pd)).subtract(radius.get(0)));
+    return mindist; // .divide(1 [m/s]), since max velocity == 1 => division is obsolete
   }
 }

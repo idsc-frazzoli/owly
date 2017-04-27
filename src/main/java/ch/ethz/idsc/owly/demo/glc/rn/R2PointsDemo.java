@@ -2,6 +2,8 @@
 package ch.ethz.idsc.owly.demo.glc.rn;
 
 import java.util.List;
+import java.util.Random;
+import java.util.stream.IntStream;
 
 import ch.ethz.idsc.owly.glc.adapter.RnPointcloudRegion;
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
@@ -23,16 +25,25 @@ import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
 
 class R2PointsDemo {
+  static Tensor createRandom(int num, Tensor width) {
+    Random random = new Random();
+    Tensor points = Tensors.empty();
+    IntStream.range(0, num).boxed() //
+        .forEach(i -> points.append(width.pmul(Tensors.vector(random.nextDouble(), random.nextDouble()))));
+    return points;
+  }
+
   public static void main(String[] args) {
     Integrator integrator = new EulerIntegrator();
     final Scalar timeStep = RationalScalar.of(1, 8);
-    Tensor partitionScale = Tensors.vector(4, 4);
+    Tensor partitionScale = Tensors.vector(5, 5);
     Controls controls = new R2Controls(20);
-    int trajectorySize = 5;
-    RnGoalManager rnGoal = new RnGoalManager(Tensors.vector(5, 0), DoubleScalar.of(.2));
-    Tensor points = Tensors.matrix(new Number[][] { //
-        { 2.5, 1 }, { 1.5, -1.5 }, { 0, 2 }, { 3.5, -0.5 } //
-    });
+    int trajectorySize = 4;
+    RnGoalManager rnGoal = new RnGoalManager(Tensors.vector(5, 5), DoubleScalar.of(.2));
+    Tensor points = createRandom(10, Tensors.vector(4, 4));
+    // Tensors.matrix(new Number[][] { //
+    // { 2.5, 1 }, { 2.5, 0 }, { 1.5, -1.5 }, { 0, 2 }, { 3.5, -0.5 } //
+    // });
     TrajectoryRegionQuery obstacleQuery = // new EmptyRegionQuery();
         new SimpleTrajectoryRegionQuery(new TimeInvariantRegion( //
             RnPointcloudRegion.create(points, RealScalar.of(0.6))));

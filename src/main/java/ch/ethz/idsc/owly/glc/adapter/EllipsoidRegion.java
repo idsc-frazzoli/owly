@@ -17,7 +17,7 @@ public class EllipsoidRegion extends ImplicitFunctionRegion {
   }
 
   @Override
-  public Scalar apply(Tensor tensor) {
+  public Scalar evaluate(Tensor tensor) {
     // TODO perhaps this function should return the real euclidean distance in case ellipsoid is a sphere!!!
     // FIXME needs math derivation
     Tensor delta = center.subtract(tensor).pmul(invert);
