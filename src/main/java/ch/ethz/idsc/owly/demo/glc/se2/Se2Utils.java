@@ -16,7 +16,7 @@ import ch.ethz.idsc.tensor.sca.ArgInterface;
 import ch.ethz.idsc.tensor.sca.Cos;
 import ch.ethz.idsc.tensor.sca.Sin;
 
-enum Se2Utils {
+public enum Se2Utils {
   ;
   public static final Scalar DEGREE(int value) {
     return RationalScalar.of(value, 180).multiply(DoubleScalar.of(Math.PI));
