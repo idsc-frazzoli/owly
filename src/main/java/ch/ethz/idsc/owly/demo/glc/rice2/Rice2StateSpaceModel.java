@@ -25,6 +25,14 @@ class Rice2StateSpaceModel implements StateSpaceModel {
   /** | f(x_1, u) - f(x_2, u) | <= L | x_1 - x_2 | */
   @Override
   public Scalar getLipschitz() {
-    return Norm._2.of(Tensors.of(RealScalar.ONE, lambda)); // confirmed with mathematica
+    // theory tells that:
+    // lipschitz const is 2-norm of 4x4 state space matrix
+    // 1 0 0 0
+    // 0 1 0 0
+    // 0 0 L 0
+    // 0 0 0 L
+    // where L == lambda
+    // confirmed with mathematica
+    return Norm._2.of(Tensors.of(RealScalar.ONE, lambda));
   }
 }
