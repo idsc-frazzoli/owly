@@ -8,7 +8,8 @@ import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
 import ch.ethz.idsc.owly.glc.adapter.TimeInvariantRegion;
 import ch.ethz.idsc.owly.glc.core.CostFunction;
 import ch.ethz.idsc.owly.glc.core.StateTime;
-import ch.ethz.idsc.owly.math.Flow;
+import ch.ethz.idsc.owly.glc.core.Trajectories;
+import ch.ethz.idsc.owly.math.flow.Flow;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.red.Norm;
@@ -28,7 +29,7 @@ class Rice2GoalManager extends SimpleTrajectoryRegionQuery implements CostFuncti
 
   @Override
   public Scalar costIncrement(StateTime from, List<StateTime> trajectory, Flow flow) {
-    return CostFunction.timeIncrement(from, trajectory);
+    return Trajectories.timeIncrement(from, trajectory);
   }
 
   @Override

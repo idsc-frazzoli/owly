@@ -3,7 +3,7 @@ package ch.ethz.idsc.owly.demo.glc.se2;
 
 import java.util.Collection;
 
-import ch.ethz.idsc.owly.math.Flow;
+import ch.ethz.idsc.owly.math.flow.Flow;
 import ch.ethz.idsc.tensor.ComplexScalar;
 import ch.ethz.idsc.tensor.DoubleScalar;
 import ch.ethz.idsc.tensor.RationalScalar;

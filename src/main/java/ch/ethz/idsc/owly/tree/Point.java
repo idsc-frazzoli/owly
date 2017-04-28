@@ -6,6 +6,7 @@ import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Scalars;
 import ch.ethz.idsc.tensor.Tensor;
 
+// TODO class name is no good
 public class Point<V> implements Comparable<Point<V>> {
   public final Tensor location;
   public final V value;

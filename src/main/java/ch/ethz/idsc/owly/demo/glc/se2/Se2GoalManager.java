@@ -5,8 +5,9 @@ import java.util.List;
 
 import ch.ethz.idsc.owly.glc.core.CostFunction;
 import ch.ethz.idsc.owly.glc.core.StateTime;
-import ch.ethz.idsc.owly.math.Flow;
+import ch.ethz.idsc.owly.glc.core.Trajectories;
 import ch.ethz.idsc.owly.math.Region;
+import ch.ethz.idsc.owly.math.flow.Flow;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Scalars;
@@ -34,7 +35,7 @@ class Se2GoalManager implements Region, CostFunction {
 
   @Override
   public Scalar costIncrement(StateTime from, List<StateTime> trajectory, Flow flow) {
-    return CostFunction.timeIncrement(from, trajectory);
+    return Trajectories.timeIncrement(from, trajectory);
   }
 
   @Override

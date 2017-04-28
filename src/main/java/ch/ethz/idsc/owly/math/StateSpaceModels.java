@@ -1,6 +1,7 @@
 // code by jph
 package ch.ethz.idsc.owly.math;
 
+import ch.ethz.idsc.owly.math.flow.Flow;
 import ch.ethz.idsc.tensor.Tensor;
 
 /** utility functions related to {@link StateSpaceModel} */

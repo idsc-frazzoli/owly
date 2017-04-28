@@ -4,7 +4,10 @@ package ch.ethz.idsc.owly.math;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
 
-/** system dynamics described by a differential constraint */
+/** system dynamics described by a differential constraint
+ * 
+ * inspired by
+ * <a href="https://reference.wolfram.com/language/ref/StateSpaceModel.html">StateSpaceModel</a> */
 public interface StateSpaceModel {
   /** flow is function f in
    * (d_t x) |_t == f(x(t), u(t))

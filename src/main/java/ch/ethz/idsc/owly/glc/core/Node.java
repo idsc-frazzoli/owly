@@ -4,7 +4,7 @@ package ch.ethz.idsc.owly.glc.core;
 import java.util.HashMap;
 import java.util.Map;
 
-import ch.ethz.idsc.owly.math.Flow;
+import ch.ethz.idsc.owly.math.flow.Flow;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
 
