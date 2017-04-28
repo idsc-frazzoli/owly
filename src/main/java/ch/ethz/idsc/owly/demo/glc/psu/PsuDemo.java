@@ -29,12 +29,13 @@ public class PsuDemo {
     Tensor partitionScale = Tensors.vector(5, 7);
     Collection<Flow> controls = PsuControls.createControls(0.2, 6);
     int trajectorySize = 5;
+    int depthLimit = 1000;
     PsuGoalManager psuGoalManager = new PsuGoalManager(Tensors.vector(.1, .1));
     TrajectoryRegionQuery obstacleQuery = new EmptyRegionQuery();
     // ---
     Integrator integrator = new MidpointIntegrator();
     TrajectoryPlanner trajectoryPlanner = new DefaultTrajectoryPlanner( //
-        integrator, timeStep, partitionScale, controls, trajectorySize, //
+        integrator, timeStep, partitionScale, depthLimit, controls, trajectorySize, //
         psuGoalManager, psuGoalManager, obstacleQuery);
     // ---
     trajectoryPlanner.insertRoot(Tensors.vector(0, 0));

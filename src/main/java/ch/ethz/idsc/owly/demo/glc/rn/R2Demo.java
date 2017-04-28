@@ -54,6 +54,7 @@ class R2Demo {
     Tensor partitionScale = Tensors.vector(4, 4);
     Collection<Flow> controls = R2Controls.createControls(36);
     int trajectorySize = 5;
+    int depthLimit = 1000;
     RnGoalManager rnGoal = new RnGoalManager(Tensors.vector(2, 2), DoubleScalar.of(.25));
     // performance depends on heuristic: zeroHeuristic vs rnGoal
     // Heuristic heuristic = new ZeroHeuristic(); // rnGoal
@@ -61,7 +62,7 @@ class R2Demo {
         new TimeInvariantRegion(new R2Bubbles()));
     // ---
     TrajectoryPlanner trajectoryPlanner = new DefaultTrajectoryPlanner( //
-        integrator, timeStep, partitionScale, controls, trajectorySize, //
+        integrator, timeStep, partitionScale, depthLimit, controls, trajectorySize, //
         rnGoal, rnGoal, obstacleQuery);
     trajectoryPlanner.insertRoot(Tensors.vector(-2, -2));
     trajectoryPlanner.plan(1400);

@@ -26,13 +26,14 @@ public class DefaultTrajectoryPlanner extends TrajectoryPlanner {
       Integrator integrator, //
       Scalar timeStep, //
       Tensor partitionScale, //
+      int depthLimit, //
       Collection<Flow> controls, //
       int trajectorySize, //
       CostFunction costFunction, //
       TrajectoryRegionQuery goalQuery, //
       TrajectoryRegionQuery obstacleQuery //
   ) {
-    super(integrator, timeStep, partitionScale);
+    super(integrator, timeStep, partitionScale, depthLimit);
     this.controls = controls;
     this.trajectorySize = trajectorySize;
     this.costFunction = costFunction;
