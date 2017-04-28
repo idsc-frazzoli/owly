@@ -17,13 +17,14 @@ import ch.ethz.idsc.tensor.sca.Ramp;
 
 class Rice2GoalManager extends SimpleTrajectoryRegionQuery implements CostFunction {
   final Tensor center;
-  final Tensor radius;
+  final Scalar radius;
 
   public Rice2GoalManager(Tensor center, Tensor radius) {
     super(new TimeInvariantRegion(new EllipsoidRegion(center, radius)));
     this.center = center;
-    this.radius = radius;
-    // TODO assert that radius(0) == radius(1)
+    if (!radius.Get(0).equals(radius.Get(1)))
+      throw new RuntimeException(); // x-y radius have to be equal
+    this.radius = radius.Get(0);
   }
 
   @Override
@@ -35,7 +36,7 @@ class Rice2GoalManager extends SimpleTrajectoryRegionQuery implements CostFuncti
   public Scalar minCostToGoal(Tensor x) {
     Tensor pc = x.extract(0, 2);
     Tensor pd = center.extract(0, 2);
-    Scalar mindist = Ramp.function.apply(Norm._2.of(pc.subtract(pd)).subtract(radius.get(0)));
+    Scalar mindist = Ramp.function.apply(Norm._2.of(pc.subtract(pd)).subtract(radius));
     return mindist; // .divide(1 [m/s]), since max velocity == 1 => division is obsolete
   }
 }

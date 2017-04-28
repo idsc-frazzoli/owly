@@ -4,23 +4,28 @@ package ch.ethz.idsc.owly.glc.adapter;
 import ch.ethz.idsc.owly.math.ImplicitFunctionRegion;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
+import ch.ethz.idsc.tensor.alg.Normalize;
 
-// TODO make a test and document!!!
 public class HyperplaneRegion extends ImplicitFunctionRegion {
-  final Tensor normal;
-  final Scalar threshold;
+  private final Tensor normal; // orthogonal to hyperplane pointing outside
+  private final Scalar distanceFromZero;
 
-  /** normal is not required to have Euclidean length 1
+  /** orthogonal is not required to have Euclidean length 1
+   * but will be normalized inside the constructor
    * 
-   * @param normal is orthogonal to hyperplane
-   * @param threshold */
-  public HyperplaneRegion(Tensor normal, Scalar threshold) {
-    this.normal = normal;
-    this.threshold = threshold;
+   * distanceFromZero is the amount needed to reach the region
+   * starting from position (0,...,0).
+   * That means, if distanceFromZero is negative, (0,...,0) is inside the region
+   * 
+   * @param orthogonal is orthogonal to hyperplane
+   * @param distanceFromZero */
+  public HyperplaneRegion(Tensor orthogonal, Scalar distanceFromZero) {
+    this.normal = Normalize.of(orthogonal);
+    this.distanceFromZero = distanceFromZero;
   }
 
   @Override
   public Scalar evaluate(Tensor x) {
-    return (Scalar) x.dot(normal).subtract(threshold);
+    return (Scalar) x.dot(normal).add(distanceFromZero);
   }
 }
