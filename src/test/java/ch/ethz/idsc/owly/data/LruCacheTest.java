@@ -3,7 +3,6 @@ package ch.ethz.idsc.owly.data;
 
 import java.util.Map;
 
-import ch.ethz.idsc.owly.data.LruCache;
 import junit.framework.TestCase;
 
 public class LruCacheTest extends TestCase {

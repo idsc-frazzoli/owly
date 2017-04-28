@@ -3,7 +3,6 @@ package ch.ethz.idsc.owly.demo.glc.se2;
 
 import java.util.List;
 
-import ch.ethz.idsc.owly.glc.adapter.MinTimeCost;
 import ch.ethz.idsc.owly.glc.core.CostFunction;
 import ch.ethz.idsc.owly.glc.core.StateTime;
 import ch.ethz.idsc.owly.math.Flow;
@@ -17,7 +16,8 @@ import ch.ethz.idsc.tensor.red.Max;
 import ch.ethz.idsc.tensor.red.Norm;
 import ch.ethz.idsc.tensor.sca.Mod;
 
-public class Se2Goal implements Region, CostFunction {
+/** Se2 goal region is not elliptic, therefore we implement {@link Region} */
+class Se2GoalManager implements Region, CostFunction {
   static final Mod PRINCIPAL = Mod.function(RealScalar.of(2 * Math.PI), RealScalar.of(-Math.PI));
   // ---
   final Tensor xy;
@@ -25,7 +25,7 @@ public class Se2Goal implements Region, CostFunction {
   final Scalar radius;
   final Scalar angle_delta;
 
-  public Se2Goal(Tensor xy, Scalar angle, Scalar radius, Scalar angle_delta) {
+  public Se2GoalManager(Tensor xy, Scalar angle, Scalar radius, Scalar angle_delta) {
     this.xy = xy;
     this.angle = angle;
     this.radius = radius;
@@ -34,7 +34,7 @@ public class Se2Goal implements Region, CostFunction {
 
   @Override
   public Scalar costIncrement(StateTime from, List<StateTime> trajectory, Flow flow) {
-    return MinTimeCost.timeIncrement(from, trajectory);
+    return CostFunction.timeIncrement(from, trajectory);
   }
 
   @Override

@@ -24,7 +24,7 @@ import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
 
 /** "Mobility and Autonomous Reconfiguration of Marsokhod" */
-public class Rice1Demo {
+class Rice1Demo {
   public static void main(String[] args) {
     Scalar timeStep = RationalScalar.of(1, 5);
     Tensor partitionScale = Tensors.vector(5, 8);

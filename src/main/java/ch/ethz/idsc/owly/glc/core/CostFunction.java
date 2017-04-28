@@ -5,9 +5,21 @@ import java.util.List;
 
 import ch.ethz.idsc.owly.math.Flow;
 import ch.ethz.idsc.tensor.Scalar;
+import ch.ethz.idsc.tensor.Scalars;
 import ch.ethz.idsc.tensor.Tensor;
+import ch.ethz.idsc.tensor.ZeroScalar;
 
 public interface CostFunction {
+  /** @param from
+   * @param trajectory
+   * @return time increment between given from State and end of trajectory */
+  static Scalar timeIncrement(StateTime from, List<StateTime> trajectory) {
+    Scalar dt = Trajectories.getLast(trajectory).time.subtract(from.time);
+    if (Scalars.lessEquals(dt, ZeroScalar.get()))
+      throw new RuntimeException();
+    return dt;
+  }
+
   /** @param trajectory
    * @param flow
    * @return cost of trajectory along flow */

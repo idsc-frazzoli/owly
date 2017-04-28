@@ -50,7 +50,7 @@ class R2PointsDemo {
             RnPointcloudRegion.create(points, RealScalar.of(0.6))));
     // ---
     TrajectoryPlanner trajectoryPlanner = new DefaultTrajectoryPlanner( //
-        integrator, timeStep, partitionScale, controls, trajectorySize, // 
+        integrator, timeStep, partitionScale, controls, trajectorySize, //
         rnGoal, rnGoal, obstacleQuery);
     trajectoryPlanner.insertRoot(Tensors.vector(0, 0));
     int iters = trajectoryPlanner.plan(1000);

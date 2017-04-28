@@ -4,7 +4,6 @@ package ch.ethz.idsc.owly.demo.glc.rice1;
 import java.util.List;
 
 import ch.ethz.idsc.owly.glc.adapter.EllipsoidRegion;
-import ch.ethz.idsc.owly.glc.adapter.MinTimeCost;
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
 import ch.ethz.idsc.owly.glc.adapter.TimeInvariantRegion;
 import ch.ethz.idsc.owly.glc.core.CostFunction;
@@ -27,7 +26,7 @@ class Rice1GoalManager extends SimpleTrajectoryRegionQuery implements CostFuncti
 
   @Override
   public Scalar costIncrement(StateTime from, List<StateTime> trajectory, Flow flow) {
-    return MinTimeCost.timeIncrement(from, trajectory);
+    return CostFunction.timeIncrement(from, trajectory);
   }
 
   @Override
