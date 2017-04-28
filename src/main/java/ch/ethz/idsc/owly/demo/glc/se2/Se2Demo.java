@@ -49,8 +49,7 @@ class Se2Demo {
             )));
     // ---
     TrajectoryPlanner trajectoryPlanner = new DefaultTrajectoryPlanner( //
-        integrator, timeStep, partitionScale, depthLimit, controls, trajectorySize, se2GoalManager, goalQuery,
-        obstacleQuery);
+        integrator, timeStep, partitionScale, depthLimit, controls, trajectorySize, se2GoalManager, goalQuery, obstacleQuery);
     // ---
     trajectoryPlanner.insertRoot(Tensors.vector(0, 0, 0));
     int iters = trajectoryPlanner.plan(2000);

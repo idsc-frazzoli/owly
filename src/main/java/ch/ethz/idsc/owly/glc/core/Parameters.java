@@ -11,7 +11,6 @@ import ch.ethz.idsc.tensor.sca.Log;
 import ch.ethz.idsc.tensor.sca.Power;
 
 public class Parameters {
-
   // Initial condition
   Tensors x0;
   // Discretization resolution
@@ -57,20 +56,16 @@ public class Parameters {
 
   /** @return depthScale * R * log(R) */
   public Scalar getDepthLimit() {
-
     return depthScale.multiply(RealScalar.of(resolution)).multiply(Log.function.apply(RealScalar.of(resolution))); // TODO add logarithm
   }
 
   /** @param Lipschitz
    * @return if (Lipschitz ==0) R * log(R)*log(R)/partitionScale else: R^(1+Lipschitz)/partitionscale */
-
   public Scalar getEta(Scalar Lipschitz) {
     if (Lipschitz.equals(ZeroScalar.get()))
-      return RealScalar.of(resolution).multiply(Log.function.apply(RealScalar.of(resolution)))
-          .multiply(Log.function.apply(RealScalar.of(resolution))).divide(partitionScale);
+      return RealScalar.of(resolution).multiply(Log.function.apply(RealScalar.of(resolution))).multiply(Log.function.apply(RealScalar.of(resolution)))
+          .divide(partitionScale);
     else
       return Power.of(RealScalar.of(resolution), RealScalar.ONE.add(Lipschitz)).divide(partitionScale);
-
   }
-
 }
