@@ -107,4 +107,9 @@ public class DefaultTrajectoryPlanner extends TrajectoryPlanner {
   public TrajectoryRegionQuery getObstacleQuery() {
     return obstacleQuery;
   }
+
+  @Override
+  public TrajectoryRegionQuery getGoalQuery() {
+    return goalQuery;
+  }
 }

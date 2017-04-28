@@ -48,7 +48,7 @@ public class GlcComponent {
     jComponent.addMouseWheelListener(new MouseWheelListener() {
       @Override
       public void mouseWheelMoved(MouseWheelEvent event) {
-        int exp = -event.getWheelRotation();
+        int exp = -event.getWheelRotation(); // either 1 or -1
         Scalar factor = Power.of(RealScalar.of(2), exp);
         Tensor scale = DiagonalMatrix.of(Tensors.of(factor, factor, RealScalar.ONE));
         model2pixel = model2pixel.dot(scale);
