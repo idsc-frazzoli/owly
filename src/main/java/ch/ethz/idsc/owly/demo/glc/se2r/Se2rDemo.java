@@ -1,9 +1,10 @@
 // code by jph
-package ch.ethz.idsc.owly.demo.glc.se2;
+package ch.ethz.idsc.owly.demo.glc.se2r;
 
 import java.util.Collection;
 import java.util.List;
 
+import ch.ethz.idsc.owly.demo.glc.se2.Se2Utils;
 import ch.ethz.idsc.owly.glc.adapter.HyperplaneRegion;
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
 import ch.ethz.idsc.owly.glc.adapter.TimeInvariantRegion;
@@ -25,16 +26,14 @@ import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
 
 /** (x,y,theta) */
-class Se2Demo {
+class Se2rDemo {
   public static void main(String[] args) {
     Integrator integrator = new EulerIntegrator();
-    // ---
     Scalar timeStep = RationalScalar.of(1, 6);
-    int trajectorySize = 5;
-    // ---
     Tensor partitionScale = Tensors.vector(3, 3, 15); // TODO instead of 15 use multiple of PI...
-    Collection<Flow> controls = Se2Controls.createControls(Se2Utils.DEGREE(45), 6);
-    Se2GoalManager se2GoalManager = new Se2GoalManager( //
+    Collection<Flow> controls = Se2rControls.createControls(Se2Utils.DEGREE(45), 6);
+    int trajectorySize = 5;
+    Se2rGoalManager se2GoalManager = new Se2rGoalManager( //
         Tensors.vector(0, 1), RealScalar.of(Math.PI), //
         DoubleScalar.of(.1), Se2Utils.DEGREE(10));
     TrajectoryRegionQuery goalQuery = //
@@ -47,7 +46,8 @@ class Se2Demo {
             )));
     // ---
     TrajectoryPlanner trajectoryPlanner = new DefaultTrajectoryPlanner( //
-        integrator, timeStep, partitionScale, controls, trajectorySize, se2GoalManager, goalQuery, obstacleQuery);
+        integrator, timeStep, partitionScale, controls, trajectorySize, // 
+        se2GoalManager, goalQuery, obstacleQuery);
     // ---
     trajectoryPlanner.insertRoot(Tensors.vector(0, 0, 0));
     int iters = trajectoryPlanner.plan(2000);

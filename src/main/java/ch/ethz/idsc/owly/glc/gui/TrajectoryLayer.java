@@ -10,8 +10,10 @@ import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.util.List;
 
+import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
 import ch.ethz.idsc.owly.glc.core.StateTime;
 import ch.ethz.idsc.owly.glc.core.TrajectoryPlanner;
+import ch.ethz.idsc.owly.glc.core.TrajectoryRegionQuery;
 
 public class TrajectoryLayer extends AbstractLayer {
   TrajectoryLayer(GlcComponent glcComponent) {
@@ -44,6 +46,18 @@ public class TrajectoryLayer extends AbstractLayer {
         prev = stateTime;
       }
       graphics.setStroke(new BasicStroke());
+    }
+    {
+      TrajectoryRegionQuery trq = trajectoryPlanner.getGoalQuery();
+      if (trq instanceof SimpleTrajectoryRegionQuery) {
+        SimpleTrajectoryRegionQuery strq = (SimpleTrajectoryRegionQuery) trq;
+        graphics.setColor(new Color(255, 0, 0, 255));
+        for (StateTime st : strq.getDiscoveredMembers()) {
+          Point2D p = toPoint2D(st.x);
+          Shape shape = new Rectangle2D.Double(p.getX(), p.getY(), 3, 3);
+          graphics.fill(shape);
+        }
+      }
     }
   }
 }

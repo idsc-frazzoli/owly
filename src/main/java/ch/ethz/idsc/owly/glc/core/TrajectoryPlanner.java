@@ -128,4 +128,6 @@ public abstract class TrajectoryPlanner {
   }
 
   public abstract TrajectoryRegionQuery getObstacleQuery();
+
+  public abstract TrajectoryRegionQuery getGoalQuery();
 }
