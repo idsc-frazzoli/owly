@@ -36,7 +36,7 @@ class Se2rDemo {
     // place holder for parameter class
     int depthLimit = 100;
     Se2rGoalManager se2GoalManager = new Se2rGoalManager( //
-        Tensors.vector(10, -10), RealScalar.of(Math.PI*2), //
+        Tensors.vector(-1, -1), RealScalar.of(Math.PI*2), //
         DoubleScalar.of(.1), Se2Utils.DEGREE(10));
     TrajectoryRegionQuery goalQuery = //
         new SimpleTrajectoryRegionQuery(new TimeInvariantRegion(se2GoalManager));
