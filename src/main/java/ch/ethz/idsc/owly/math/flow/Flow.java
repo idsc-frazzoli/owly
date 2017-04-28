@@ -1,5 +1,5 @@
 // code by jph
-package ch.ethz.idsc.owly.math;
+package ch.ethz.idsc.owly.math.flow;
 
 import ch.ethz.idsc.tensor.Tensor;
 

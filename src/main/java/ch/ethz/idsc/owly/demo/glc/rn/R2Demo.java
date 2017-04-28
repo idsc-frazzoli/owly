@@ -14,9 +14,9 @@ import ch.ethz.idsc.owly.glc.core.Trajectories;
 import ch.ethz.idsc.owly.glc.core.TrajectoryPlanner;
 import ch.ethz.idsc.owly.glc.core.TrajectoryRegionQuery;
 import ch.ethz.idsc.owly.glc.gui.GlcFrame;
-import ch.ethz.idsc.owly.math.Flow;
-import ch.ethz.idsc.owly.math.integrator.EulerIntegrator;
-import ch.ethz.idsc.owly.math.integrator.Integrator;
+import ch.ethz.idsc.owly.math.flow.EulerIntegrator;
+import ch.ethz.idsc.owly.math.flow.Flow;
+import ch.ethz.idsc.owly.math.flow.Integrator;
 import ch.ethz.idsc.tensor.DoubleScalar;
 import ch.ethz.idsc.tensor.RationalScalar;
 import ch.ethz.idsc.tensor.RealScalar;
@@ -24,16 +24,15 @@ import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
 
-public class R2Demo {
+class R2Demo {
   public static R2Demo createPointsInside() {
     R2Demo rnDemo = new R2Demo();
     rnDemo.controlSize = 40;
     rnDemo.root = Tensors.vector(0, 0);
     rnDemo.goal = new RnGoalManager(Tensors.vector(5, 0), DoubleScalar.of(.2));
     Tensor points = Tensors.matrix(new Number[][] { //
-        { 0, 0 }, { 0, -1 }, { 0, -2 }, //
-        { 1, -2 }, { 2, -2 }, { 3, -2 }, { 4, -2 }, //
-        { 5, -2 }, { 5, -1 }, { 5, 0 } //
+        { 0, 0 }, { 0, -1 }, { 0, -2 }, { 1, -2 }, { 2, -2 }, //
+        { 3, -2 }, { 4, -2 }, { 5, -2 }, { 5, -1 }, { 5, 0 } //
     });
     rnDemo.obstacleQuery = // new EmptyRegionQuery();
         new SimpleTrajectoryRegionQuery(new TimeInvariantRegion( //

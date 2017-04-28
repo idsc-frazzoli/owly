@@ -35,7 +35,7 @@ public class TrajectoryLayer extends AbstractLayer {
     }
     {
       graphics.setStroke(new BasicStroke(2.0f));
-      graphics.setColor(new Color(0, 192, 0, 128));
+      graphics.setColor(new Color(0, 192, 0, 255));
       List<StateTime> trajectory = trajectoryPlanner.getDetailedTrajectory();
       StateTime prev = null;
       for (StateTime stateTime : trajectory) {

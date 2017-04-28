@@ -13,10 +13,10 @@ import ch.ethz.idsc.owly.glc.core.Trajectories;
 import ch.ethz.idsc.owly.glc.core.TrajectoryPlanner;
 import ch.ethz.idsc.owly.glc.core.TrajectoryRegionQuery;
 import ch.ethz.idsc.owly.glc.gui.GlcFrame;
-import ch.ethz.idsc.owly.math.Flow;
 import ch.ethz.idsc.owly.math.RegionUnion;
-import ch.ethz.idsc.owly.math.integrator.Integrator;
-import ch.ethz.idsc.owly.math.integrator.MidpointIntegrator;
+import ch.ethz.idsc.owly.math.flow.Flow;
+import ch.ethz.idsc.owly.math.flow.Integrator;
+import ch.ethz.idsc.owly.math.flow.MidpointIntegrator;
 import ch.ethz.idsc.tensor.RationalScalar;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
@@ -24,7 +24,7 @@ import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
 
 /** "Mobility and Autonomous Reconfiguration of Marsokhod" */
-public class Rice1Demo {
+class Rice1Demo {
   public static void main(String[] args) {
     Scalar timeStep = RationalScalar.of(1, 5);
     Tensor partitionScale = Tensors.vector(5, 8);
