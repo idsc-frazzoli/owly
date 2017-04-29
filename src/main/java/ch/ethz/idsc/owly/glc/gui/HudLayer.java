@@ -13,8 +13,9 @@ import ch.ethz.idsc.owly.glc.core.Node;
 import ch.ethz.idsc.owly.glc.core.StateTime;
 import ch.ethz.idsc.owly.glc.core.TrajectoryPlanner;
 import ch.ethz.idsc.owly.glc.core.TrajectoryRegionQuery;
+import ch.ethz.idsc.tensor.DecimalScalar;
 import ch.ethz.idsc.tensor.Tensor;
-import ch.ethz.idsc.tensor.sca.N;
+import ch.ethz.idsc.tensor.sca.Round;
 
 class HudLayer extends AbstractLayer {
   HudLayer(GlcComponent glcComponent) {
@@ -23,8 +24,8 @@ class HudLayer extends AbstractLayer {
       @Override
       public void mousePressed(MouseEvent mouseEvent) {
         Tensor location = glcComponent.toTensor(mouseEvent.getPoint());
-        System.out.println(location);
-        System.out.println(N.of(location));
+        location = location.extract(0, 2);
+        System.out.println(location.map(Round.toMultipleOf(DecimalScalar.of(0.001))) + ",");
       }
     };
     glcComponent.jComponent.addMouseListener(mouseListener);
@@ -44,11 +45,10 @@ class HudLayer extends AbstractLayer {
         SimpleTrajectoryRegionQuery strq = (SimpleTrajectoryRegionQuery) trq;
         Collection<StateTime> collection = strq.getDiscoveredMembers();
         graphics.drawString("obstacles:" + collection.size(), 0, 20);
-//        LruCache.create(maxSize)
+        // LruCache.create(maxSize)
       }
-
-//      Collection<Node> collection = trajectoryPlanner.getNodes();
-//      graphics.drawString("nodes:" + collection.size(), 0, 10);
+      // Collection<Node> collection = trajectoryPlanner.getNodes();
+      // graphics.drawString("nodes:" + collection.size(), 0, 10);
     }
   }
 }
