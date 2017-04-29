@@ -10,6 +10,7 @@ import ch.ethz.idsc.tensor.ZeroScalar;
 import ch.ethz.idsc.tensor.alg.Dimensions;
 import ch.ethz.idsc.tensor.sca.Floor;
 
+/** TODO describe conventions of {@link ImageRegion} */
 public class ImageRegion implements Region {
   private final Tensor image;
   private final List<Integer> dimensions;
@@ -28,7 +29,6 @@ public class ImageRegion implements Region {
   public boolean isMember(Tensor tensor) {
     if (tensor.length() != 2)
       tensor = tensor.extract(0, 2);
-    // throw new RuntimeException(); // must have exactly 2 coordinates
     Tensor pixel = Floor.of(tensor.pmul(scale));
     int pix = pixel.Get(0).number().intValue();
     int piy = pixel.Get(1).number().intValue();
