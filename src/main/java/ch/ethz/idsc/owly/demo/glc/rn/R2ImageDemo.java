@@ -15,7 +15,8 @@ import ch.ethz.idsc.owly.glc.core.Trajectories;
 import ch.ethz.idsc.owly.glc.core.TrajectoryPlanner;
 import ch.ethz.idsc.owly.glc.core.TrajectoryRegionQuery;
 import ch.ethz.idsc.owly.glc.gui.GlcFrame;
-import ch.ethz.idsc.owly.math.PolygonRegion;
+import ch.ethz.idsc.owly.math.ImageRegion;
+import ch.ethz.idsc.owly.math.Region;
 import ch.ethz.idsc.owly.math.flow.EulerIntegrator;
 import ch.ethz.idsc.owly.math.flow.Flow;
 import ch.ethz.idsc.owly.math.flow.Integrator;
@@ -24,44 +25,28 @@ import ch.ethz.idsc.tensor.RationalScalar;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
-import ch.ethz.idsc.tensor.alg.Dimensions;
 import ch.ethz.idsc.tensor.io.Import;
 
 class R2ImageDemo {
-  public static void main(String[] args) {
+  public static void main(String[] args) throws ClassNotFoundException, DataFormatException, IOException {
     Integrator integrator = new EulerIntegrator();
     String string = integrator.getClass().getResource("/io/track0_100.png").getPath();
-    try {
-      Tensor image = Import.of(new File(string));
-      System.out.println(Dimensions.of(image));
-    } catch (ClassNotFoundException | DataFormatException | IOException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
-    }
-    // File file = ;
-    // System.out.println(file.exists());
-    // System.exit(1);
+    Tensor image = Import.of(new File(string)).get(Tensor.ALL, Tensor.ALL, 0);
+    Region region = new ImageRegion(image, Tensors.vector(10, 10));
     final Scalar timeStep = RationalScalar.of(1, 8);
     Tensor partitionScale = Tensors.vector(5, 5);
     Collection<Flow> controls = R2Controls.createControls(20);
     int trajectorySize = 4;
-    RnGoalManager rnGoal = new RnGoalManager(Tensors.vector(5, 5), DoubleScalar.of(.2));
+    RnGoalManager rnGoal = new RnGoalManager(Tensors.vector(5, 10), DoubleScalar.of(.2));
     TrajectoryRegionQuery obstacleQuery = //
         new SimpleTrajectoryRegionQuery(new TimeInvariantRegion( //
-            new PolygonRegion(Tensors.matrix(new Number[][] { //
-                { 3, 1 }, //
-                { 4, 1 }, //
-                { 4, 4 }, //
-                { 1, 4 }, //
-                { 1, 3 }, //
-                { 3, 3 }//
-            }))));
+            region));
     // ---
     TrajectoryPlanner trajectoryPlanner = new DefaultTrajectoryPlanner( //
         integrator, timeStep, partitionScale, controls, trajectorySize, //
         rnGoal, rnGoal, obstacleQuery);
     trajectoryPlanner.insertRoot(Tensors.vector(0, 0));
-    int iters = trajectoryPlanner.plan(1000);
+    int iters = trajectoryPlanner.plan(5000);
     System.out.println(iters);
     List<StateTime> trajectory = trajectoryPlanner.getPathFromRootToGoal();
     Trajectories.print(trajectory);

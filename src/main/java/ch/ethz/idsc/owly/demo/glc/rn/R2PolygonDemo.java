@@ -25,9 +25,6 @@ import ch.ethz.idsc.tensor.Tensors;
 class R2PolygonDemo {
   public static void main(String[] args) {
     Integrator integrator = new EulerIntegrator();
-    String string = integrator.getClass().getResource("/io/track0_100.png").getPath();
-    System.out.println(string);
-    System.exit(1);
     final Scalar timeStep = RationalScalar.of(1, 8);
     Tensor partitionScale = Tensors.vector(5, 5);
     Collection<Flow> controls = R2Controls.createControls(20);
@@ -36,10 +33,10 @@ class R2PolygonDemo {
     TrajectoryRegionQuery obstacleQuery = //
         new SimpleTrajectoryRegionQuery(new TimeInvariantRegion( //
             new PolygonRegion(Tensors.matrix(new Number[][] { //
-                { 3, 1 }, //
-                { 4, 1 }, //
-                { 4, 4 }, //
-                { 1, 4 }, //
+                { 3, 0 }, //
+                { 4, 0 }, //
+                { 4, 6 }, //
+                { 1, 6 }, //
                 { 1, 3 }, //
                 { 3, 3 }//
             }))));
@@ -48,7 +45,7 @@ class R2PolygonDemo {
         integrator, timeStep, partitionScale, controls, trajectorySize, //
         rnGoal, rnGoal, obstacleQuery);
     trajectoryPlanner.insertRoot(Tensors.vector(0, 0));
-    int iters = trajectoryPlanner.plan(1000);
+    int iters = trajectoryPlanner.plan(1500);
     System.out.println(iters);
     List<StateTime> trajectory = trajectoryPlanner.getPathFromRootToGoal();
     Trajectories.print(trajectory);
