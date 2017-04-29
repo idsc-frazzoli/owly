@@ -27,7 +27,8 @@ public class ImageRegion implements Region {
   @Override
   public boolean isMember(Tensor tensor) {
     if (tensor.length() != 2)
-      throw new RuntimeException(); // must have exactly 2 coordinates
+      tensor = tensor.extract(0, 2);
+    // throw new RuntimeException(); // must have exactly 2 coordinates
     Tensor pixel = Floor.of(tensor.pmul(scale));
     int pix = pixel.Get(0).number().intValue();
     int piy = pixel.Get(1).number().intValue();

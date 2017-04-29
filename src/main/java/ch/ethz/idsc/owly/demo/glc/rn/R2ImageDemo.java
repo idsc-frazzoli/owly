@@ -30,9 +30,12 @@ import ch.ethz.idsc.tensor.io.Import;
 class R2ImageDemo {
   public static void main(String[] args) throws ClassNotFoundException, DataFormatException, IOException {
     Integrator integrator = new EulerIntegrator();
-    String string = integrator.getClass().getResource("/io/track0_100.png").getPath();
-    Tensor image = Import.of(new File(string)).get(Tensor.ALL, Tensor.ALL, 0);
-    Region region = new ImageRegion(image, Tensors.vector(10, 10));
+    Region region;
+    {
+      String string = integrator.getClass().getResource("/io/track0_100.png").getPath();
+      Tensor image = Import.of(new File(string)).get(Tensor.ALL, Tensor.ALL, 0);
+      region = new ImageRegion(image, Tensors.vector(10, 10));
+    }
     final Scalar timeStep = RationalScalar.of(1, 8);
     Tensor partitionScale = Tensors.vector(5, 5);
     Collection<Flow> controls = R2Controls.createControls(20);

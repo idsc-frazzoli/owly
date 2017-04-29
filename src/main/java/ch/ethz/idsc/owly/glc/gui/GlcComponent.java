@@ -24,11 +24,12 @@ import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
 import ch.ethz.idsc.tensor.mat.DiagonalMatrix;
+import ch.ethz.idsc.tensor.mat.LinearSolve;
 import ch.ethz.idsc.tensor.sca.Power;
 
 public class GlcComponent {
   // function ignores all but the first and second entry of x
-  static Tensor toAffinePoint(Tensor x) {
+  private static Tensor toAffinePoint(Tensor x) {
     return Tensors.of( //
         x.get(0), //
         x.get(1), //
@@ -82,6 +83,7 @@ public class GlcComponent {
     layers.add(new QueueLayer(this));
     layers.add(new TreeLayer(this));
     layers.add(new TrajectoryLayer(this));
+    layers.add(new HudLayer(this));
   }
 
   final JComponent jComponent = new JComponent() {
@@ -117,5 +119,11 @@ public class GlcComponent {
     return new Point2D.Double( //
         point.Get(0).number().doubleValue(), //
         point.Get(1).number().doubleValue());
+  }
+
+  public Tensor toTensor(Point point) {
+    return LinearSolve.of( //
+        model2pixel, //
+        toAffinePoint(Tensors.vector(point.x, point.y)));
   }
 }
