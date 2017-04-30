@@ -33,8 +33,9 @@ class Se2rDemo {
     Tensor partitionScale = Tensors.vector(3, 3, 15); // TODO instead of 15 use multiple of PI...
     Collection<Flow> controls = Se2rControls.createControls(Se2Utils.DEGREE(45), 6);
     int trajectorySize = 5;
+    // place holder for parameter class
     Se2rGoalManager se2GoalManager = new Se2rGoalManager( //
-        Tensors.vector(0, 1), RealScalar.of(Math.PI), //
+        Tensors.vector(-1, -1), RealScalar.of(Math.PI * 2), //
         DoubleScalar.of(.1), Se2Utils.DEGREE(10));
     TrajectoryRegionQuery goalQuery = //
         new SimpleTrajectoryRegionQuery(new TimeInvariantRegion(se2GoalManager));
@@ -46,11 +47,12 @@ class Se2rDemo {
             )));
     // ---
     TrajectoryPlanner trajectoryPlanner = new DefaultTrajectoryPlanner( //
-        integrator, timeStep, partitionScale, controls, trajectorySize, // 
+        integrator, timeStep, partitionScale, controls, trajectorySize, //
         se2GoalManager, goalQuery, obstacleQuery);
     // ---
+    trajectoryPlanner.depthLimit = 1000;
     trajectoryPlanner.insertRoot(Tensors.vector(0, 0, 0));
-    int iters = trajectoryPlanner.plan(2000);
+    int iters = trajectoryPlanner.plan(20000);
     System.out.println(iters);
     List<StateTime> trajectory = trajectoryPlanner.getPathFromRootToGoal();
     Trajectories.print(trajectory);

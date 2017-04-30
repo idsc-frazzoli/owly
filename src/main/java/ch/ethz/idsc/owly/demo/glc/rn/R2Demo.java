@@ -63,6 +63,7 @@ class R2Demo {
     TrajectoryPlanner trajectoryPlanner = new DefaultTrajectoryPlanner( //
         integrator, timeStep, partitionScale, controls, trajectorySize, //
         rnGoal, rnGoal, obstacleQuery);
+    trajectoryPlanner.depthLimit = 1000;
     trajectoryPlanner.insertRoot(Tensors.vector(-2, -2));
     trajectoryPlanner.plan(1400);
     List<StateTime> trajectory = trajectoryPlanner.getPathFromRootToGoal();

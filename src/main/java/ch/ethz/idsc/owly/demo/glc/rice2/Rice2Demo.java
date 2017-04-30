@@ -46,6 +46,7 @@ class Rice2Demo {
         integrator, timeStep, partitionScale, controls, trajectorySize, //
         rice2Goal, rice2Goal, obstacleQuery);
     // ---
+    trajectoryPlanner.depthLimit = 1000;
     trajectoryPlanner.insertRoot(Tensors.vector(0, 0, 0, 0));
     int iters = trajectoryPlanner.plan(1000);
     System.out.println(iters);
