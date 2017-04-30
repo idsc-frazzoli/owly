@@ -8,12 +8,13 @@ import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
 
 public interface CostFunction {
-  /** @param trajectory
+  /** @param from
+   * @param trajectory
    * @param flow
    * @return cost of trajectory along flow */
   Scalar costIncrement(StateTime from, List<StateTime> trajectory, Flow flow);
 
-  /** if a lower bound of the cost to goal are unknown,
+  /** if a lower bound of the cost to goal is unknown,
    * the function should return ZeroScalar.get()
    * 
    * it is imperative that the function does not return a
