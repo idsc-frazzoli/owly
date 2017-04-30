@@ -32,7 +32,6 @@ class Rice2Demo {
     Tensor partitionScale = Tensors.vector(3, 3, 6, 6);
     Collection<Flow> controls = Rice2Controls.createControls(RealScalar.of(.5), 3, 15);
     int trajectorySize = 5;
-    int depthLimit = 1000;
     Rice2GoalManager rice2Goal = new Rice2GoalManager( //
         Tensors.vector(3, 3, -1, 0), Tensors.vector(.5, .5, .4, .4));
     TrajectoryRegionQuery obstacleQuery = //
@@ -44,9 +43,10 @@ class Rice2Demo {
             )));
     // ---
     TrajectoryPlanner trajectoryPlanner = new DefaultTrajectoryPlanner( //
-        integrator, timeStep, partitionScale, depthLimit, controls, trajectorySize, //
+        integrator, timeStep, partitionScale, controls, trajectorySize, //
         rice2Goal, rice2Goal, obstacleQuery);
     // ---
+    trajectoryPlanner.depthLimit = 1000;
     trajectoryPlanner.insertRoot(Tensors.vector(0, 0, 0, 0));
     int iters = trajectoryPlanner.plan(1000);
     System.out.println(iters);

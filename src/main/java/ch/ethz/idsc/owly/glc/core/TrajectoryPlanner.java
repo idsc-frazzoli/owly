@@ -21,17 +21,15 @@ public abstract class TrajectoryPlanner {
   protected final Integrator integrator;
   protected final Scalar timeStep;
   private final Tensor partitionScale;
-  private final int depthLimit;
   // ---
   private final Queue<Node> queue = new PriorityQueue<>(NodeMeritComparator.instance);
   private final Map<Tensor, Node> domain_labels = new HashMap<>();
 
   public TrajectoryPlanner( // ..
-      Integrator integrator, Scalar timeStep, Tensor partitionScale, int depthLimit) {
+      Integrator integrator, Scalar timeStep, Tensor partitionScale) {
     this.integrator = integrator;
     this.timeStep = timeStep;
     this.partitionScale = partitionScale;
-    this.depthLimit = depthLimit;
   }
 
   public final Tensor getResolution() {
@@ -59,6 +57,7 @@ public abstract class TrajectoryPlanner {
 
   private Node best;
   int replaceCount = 0; // TODO
+  public Integer depthLimit = null;
 
   public final int plan(int expandLimit) {
     best = null;
@@ -70,7 +69,7 @@ public abstract class TrajectoryPlanner {
       // ---
       if (best != null)
         break;
-      if (current_node.getDepth() > depthLimit)
+      if (depthLimit!=null && current_node.getDepth() > depthLimit)
         break;
     }
     return expandCount;

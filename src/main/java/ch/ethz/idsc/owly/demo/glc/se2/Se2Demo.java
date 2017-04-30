@@ -31,7 +31,6 @@ class Se2Demo {
     // ---
     Scalar timeStep = RationalScalar.of(1, 6);
     int trajectorySize = 5;
-    int depthLimit = 1000;
     // ---
     Tensor partitionScale = Tensors.vector(3, 3, 15); // TODO instead of 15 use multiple of PI...
     System.out.println("scale=" + partitionScale);
@@ -49,8 +48,9 @@ class Se2Demo {
             )));
     // ---
     TrajectoryPlanner trajectoryPlanner = new DefaultTrajectoryPlanner( //
-        integrator, timeStep, partitionScale, depthLimit, controls, trajectorySize, se2GoalManager, goalQuery, obstacleQuery);
+        integrator, timeStep, partitionScale, controls, trajectorySize, se2GoalManager, goalQuery, obstacleQuery);
     // ---
+    trajectoryPlanner.depthLimit = 1000;
     trajectoryPlanner.insertRoot(Tensors.vector(0, 0, 0));
     int iters = trajectoryPlanner.plan(2000);
     System.out.println(iters);

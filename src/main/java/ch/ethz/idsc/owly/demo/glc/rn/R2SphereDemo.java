@@ -30,7 +30,6 @@ class R2SphereDemo {
     Tensor partitionScale = Tensors.vector(3.5, 4);
     Collection<Flow> controls = R2Controls.createControls(20);
     int trajectorySize = 5;
-    int depthLimit = 1000;
     RnGoalManager rnGoal = new RnGoalManager(Tensors.vector(5, 0), DoubleScalar.of(.5));
     TrajectoryRegionQuery obstacleQuery = //
         new SimpleTrajectoryRegionQuery(new TimeInvariantRegion( //
@@ -40,8 +39,9 @@ class R2SphereDemo {
             )));
     // ---
     TrajectoryPlanner trajectoryPlanner = new DefaultTrajectoryPlanner( //
-        integrator, timeStep, partitionScale, depthLimit, controls, trajectorySize, //
+        integrator, timeStep, partitionScale, controls, trajectorySize, //
         rnGoal, rnGoal, obstacleQuery);
+    trajectoryPlanner.depthLimit = 1000;
     trajectoryPlanner.insertRoot(Tensors.vector(0, 0));
     int iters = trajectoryPlanner.plan(1000);
     System.out.println(iters);

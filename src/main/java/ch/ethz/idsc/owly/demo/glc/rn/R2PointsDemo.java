@@ -40,7 +40,6 @@ class R2PointsDemo {
     Tensor partitionScale = Tensors.vector(5, 5);
     Collection<Flow> controls = R2Controls.createControls(20);
     int trajectorySize = 4;
-    int depthLimit = 1000;
     RnGoalManager rnGoal = new RnGoalManager(Tensors.vector(5, 5), DoubleScalar.of(.2));
     Tensor points = createRandom(10, Tensors.vector(4, 4));
     // Tensors.matrix(new Number[][] { //
@@ -51,8 +50,9 @@ class R2PointsDemo {
             RnPointcloudRegion.create(points, RealScalar.of(0.6))));
     // ---
     TrajectoryPlanner trajectoryPlanner = new DefaultTrajectoryPlanner( //
-        integrator, timeStep, partitionScale, depthLimit, controls, trajectorySize, //
+        integrator, timeStep, partitionScale, controls, trajectorySize, //
         rnGoal, rnGoal, obstacleQuery);
+    trajectoryPlanner.depthLimit = 1000;
     trajectoryPlanner.insertRoot(Tensors.vector(0, 0));
     int iters = trajectoryPlanner.plan(1000);
     System.out.println(iters);

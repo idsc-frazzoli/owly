@@ -34,7 +34,6 @@ class Se2rDemo {
     Collection<Flow> controls = Se2rControls.createControls(Se2Utils.DEGREE(45), 6);
     int trajectorySize = 5;
     // place holder for parameter class
-    int depthLimit = 100;
     Se2rGoalManager se2GoalManager = new Se2rGoalManager( //
         Tensors.vector(-1, -1), RealScalar.of(Math.PI * 2), //
         DoubleScalar.of(.1), Se2Utils.DEGREE(10));
@@ -48,9 +47,10 @@ class Se2rDemo {
             )));
     // ---
     TrajectoryPlanner trajectoryPlanner = new DefaultTrajectoryPlanner( //
-        integrator, timeStep, partitionScale, depthLimit, controls, trajectorySize, //
+        integrator, timeStep, partitionScale, controls, trajectorySize, //
         se2GoalManager, goalQuery, obstacleQuery);
     // ---
+    trajectoryPlanner.depthLimit = 1000;
     trajectoryPlanner.insertRoot(Tensors.vector(0, 0, 0));
     int iters = trajectoryPlanner.plan(20000);
     System.out.println(iters);
