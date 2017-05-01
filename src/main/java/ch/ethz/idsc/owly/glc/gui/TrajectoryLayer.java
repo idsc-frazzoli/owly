@@ -34,7 +34,7 @@ public class TrajectoryLayer extends AbstractLayer {
       graphics.setColor(new Color(255, 0, 0, 128));
       for (StateTime stateTime : trajectoryPlanner.getPathFromRootToGoal()) {
         Point2D point2d = toPoint2D(stateTime.x());
-        graphics.draw(new Rectangle2D.Double(point2d.getX(), point2d.getY(), 2, 2));
+        graphics.draw(new Rectangle2D.Double(point2d.getX() - 1, point2d.getY() - 1, 2, 2));
       }
     }
     { // show points discovered in the goal region
@@ -44,7 +44,7 @@ public class TrajectoryLayer extends AbstractLayer {
         graphics.setColor(new Color(255, 0, 0, 255));
         for (StateTime stateTime : strq.getDiscoveredMembers()) {
           Point2D point2d = toPoint2D(stateTime.x());
-          graphics.fill(new Rectangle2D.Double(point2d.getX(), point2d.getY(), 3, 3));
+          graphics.fill(new Rectangle2D.Double(point2d.getX() - 1, point2d.getY() - 1, 3, 3));
         }
       }
     }

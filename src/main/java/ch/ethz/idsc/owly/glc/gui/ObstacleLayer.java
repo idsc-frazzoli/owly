@@ -22,7 +22,7 @@ class ObstacleLayer extends AbstractLayer {
     TrajectoryRegionQuery trq = trajectoryPlanner.getObstacleQuery();
     if (trq instanceof SimpleTrajectoryRegionQuery) {
       SimpleTrajectoryRegionQuery strq = (SimpleTrajectoryRegionQuery) trq;
-      graphics.setColor(new Color(0, 0, 0, 64));
+      graphics.setColor(new Color(0, 0, 0, 128));
       for (StateTime stateTime : strq.getDiscoveredMembers()) {
         Point2D point2d = toPoint2D(stateTime.x());
         Shape shape = new Rectangle2D.Double(point2d.getX(), point2d.getY(), 2, 2);

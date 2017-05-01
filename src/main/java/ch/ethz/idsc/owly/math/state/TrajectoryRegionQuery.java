@@ -3,6 +3,7 @@ package ch.ethz.idsc.owly.math.state;
 
 import java.util.List;
 
+/** performs trajectory containment query */
 public interface TrajectoryRegionQuery {
   static final int NOMATCH = -1;
 
@@ -11,7 +12,7 @@ public interface TrajectoryRegionQuery {
    * or -1 if no such element exists */
   int firstMember(List<StateTime> trajectory);
 
-  default boolean isDisjoint(List<StateTime> trajectory) {
-    return NOMATCH == firstMember(trajectory);
-  }
+  /** @param trajectory
+   * @return true if no members of trajectory are in region, else false */
+  boolean isDisjoint(List<StateTime> trajectory);
 }
