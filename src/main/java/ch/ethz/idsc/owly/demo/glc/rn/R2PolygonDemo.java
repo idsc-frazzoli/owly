@@ -7,6 +7,8 @@ import java.util.List;
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
 import ch.ethz.idsc.owly.glc.adapter.TimeInvariantRegion;
 import ch.ethz.idsc.owly.glc.core.DefaultTrajectoryPlanner;
+import ch.ethz.idsc.owly.glc.core.Expand;
+import ch.ethz.idsc.owly.glc.core.IntegrationConfig;
 import ch.ethz.idsc.owly.glc.core.StateTime;
 import ch.ethz.idsc.owly.glc.core.Trajectories;
 import ch.ethz.idsc.owly.glc.core.TrajectoryPlanner;
@@ -40,12 +42,12 @@ class R2PolygonDemo {
                 { 1, 3 }, //
                 { 3, 3 }//
             }))));
+    IntegrationConfig integrationConfig = IntegrationConfig.create(new EulerIntegrator(), timeStep, trajectorySize);
     // ---
     TrajectoryPlanner trajectoryPlanner = new DefaultTrajectoryPlanner( //
-        integrator, timeStep, partitionScale, controls, trajectorySize, //
-        rnGoal, rnGoal, obstacleQuery);
+        integrationConfig, partitionScale, controls, rnGoal, rnGoal, obstacleQuery);
     trajectoryPlanner.insertRoot(Tensors.vector(0, 0));
-    int iters = trajectoryPlanner.plan(1500);
+    int iters = Expand.maxSteps(trajectoryPlanner, 1500);
     System.out.println(iters);
     List<StateTime> trajectory = trajectoryPlanner.getPathFromRootToGoal();
     Trajectories.print(trajectory);

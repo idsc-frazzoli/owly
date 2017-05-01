@@ -11,6 +11,8 @@ import ch.ethz.idsc.owly.demo.util.ImageRegions;
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
 import ch.ethz.idsc.owly.glc.adapter.TimeInvariantRegion;
 import ch.ethz.idsc.owly.glc.core.DefaultTrajectoryPlanner;
+import ch.ethz.idsc.owly.glc.core.Expand;
+import ch.ethz.idsc.owly.glc.core.IntegrationConfig;
 import ch.ethz.idsc.owly.glc.core.StateTime;
 import ch.ethz.idsc.owly.glc.core.Trajectories;
 import ch.ethz.idsc.owly.glc.core.TrajectoryPlanner;
@@ -19,7 +21,6 @@ import ch.ethz.idsc.owly.glc.gui.GlcFrame;
 import ch.ethz.idsc.owly.math.Region;
 import ch.ethz.idsc.owly.math.flow.EulerIntegrator;
 import ch.ethz.idsc.owly.math.flow.Flow;
-import ch.ethz.idsc.owly.math.flow.Integrator;
 import ch.ethz.idsc.tensor.RationalScalar;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
@@ -29,7 +30,6 @@ import ch.ethz.idsc.tensor.Tensors;
 /** (x,y,theta) */
 class Se2rImageDemo {
   public static void main(String[] args) throws ClassNotFoundException, DataFormatException, IOException {
-    Integrator integrator = new EulerIntegrator();
     Region region = ImageRegions.load("/io/track0_100.png", Tensors.vector(10, 10));
     Scalar timeStep = RationalScalar.of(1, 6);
     Tensor partitionScale = Tensors.vector(3, 3, 15); // TODO instead of 15 use multiple of PI...
@@ -42,13 +42,14 @@ class Se2rImageDemo {
         new SimpleTrajectoryRegionQuery(new TimeInvariantRegion(se2GoalManager));
     TrajectoryRegionQuery obstacleQuery = //
         new SimpleTrajectoryRegionQuery(new TimeInvariantRegion(region));
+    // TODO why euler
+    IntegrationConfig integrationConfig = IntegrationConfig.create(new EulerIntegrator(), timeStep, trajectorySize);
     // ---
     TrajectoryPlanner trajectoryPlanner = new DefaultTrajectoryPlanner( //
-        integrator, timeStep, partitionScale, controls, trajectorySize, //
-        se2GoalManager, goalQuery, obstacleQuery);
+        integrationConfig, partitionScale, controls, se2GoalManager, goalQuery, obstacleQuery);
     // ---
     trajectoryPlanner.insertRoot(Tensors.vector(0, 0, 0));
-    int iters = trajectoryPlanner.plan(10000);
+    int iters = Expand.maxSteps(trajectoryPlanner, 10000);
     System.out.println(iters);
     List<StateTime> trajectory = trajectoryPlanner.getPathFromRootToGoal();
     Trajectories.print(trajectory);

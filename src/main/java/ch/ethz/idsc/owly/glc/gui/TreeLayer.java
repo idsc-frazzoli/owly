@@ -36,7 +36,7 @@ class TreeLayer extends AbstractLayer {
       final Point2D p1 = toPoint2D(node.x);
       graphics.fill(new Rectangle2D.Double(p1.getX(), p1.getY(), 1, 1));
       if (!node.isRoot()) {
-        Node parent = node.getParent();
+        Node parent = node.parent();
         Point2D p2 = toPoint2D(parent.x);
         graphics.setColor(new Hue(interp, 1, 1, .1).rgba);
         Shape shape = new Line2D.Double(p1.getX(), p1.getY(), p2.getX(), p2.getY());

@@ -8,6 +8,8 @@ import ch.ethz.idsc.owly.glc.adapter.HyperplaneRegion;
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
 import ch.ethz.idsc.owly.glc.adapter.TimeInvariantRegion;
 import ch.ethz.idsc.owly.glc.core.DefaultTrajectoryPlanner;
+import ch.ethz.idsc.owly.glc.core.Expand;
+import ch.ethz.idsc.owly.glc.core.IntegrationConfig;
 import ch.ethz.idsc.owly.glc.core.StateTime;
 import ch.ethz.idsc.owly.glc.core.Trajectories;
 import ch.ethz.idsc.owly.glc.core.TrajectoryPlanner;
@@ -41,14 +43,14 @@ class Rice2Demo {
                 new HyperplaneRegion(Tensors.vector(0, 1, 0, 0), RealScalar.of(0.1)), //
                 new HyperplaneRegion(Tensors.vector(0, 0, 0, 1), RealScalar.of(0.1)) //
             )));
+    IntegrationConfig integrationConfig = IntegrationConfig.createDefault(timeStep, 5);
     // ---
     TrajectoryPlanner trajectoryPlanner = new DefaultTrajectoryPlanner( //
-        integrator, timeStep, partitionScale, controls, trajectorySize, //
+        integrationConfig, partitionScale, controls, //
         rice2Goal, rice2Goal, obstacleQuery);
     // ---
-    trajectoryPlanner.depthLimit = 1000;
     trajectoryPlanner.insertRoot(Tensors.vector(0, 0, 0, 0));
-    int iters = trajectoryPlanner.plan(1000);
+    int iters = Expand.maxSteps(trajectoryPlanner, 1000);
     System.out.println(iters);
     // TODO keep trying to improve path to goal for a few iterations...?
     List<StateTime> trajectory = trajectoryPlanner.getPathFromRootToGoal();

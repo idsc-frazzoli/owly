@@ -9,39 +9,33 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import ch.ethz.idsc.owly.math.flow.Flow;
-import ch.ethz.idsc.owly.math.flow.Integrator;
-import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Scalars;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.ZeroScalar;
 
 public class DefaultTrajectoryPlanner extends TrajectoryPlanner {
   protected final Collection<Flow> controls;
-  protected final int trajectorySize;
   protected final CostFunction costFunction;
   protected final TrajectoryRegionQuery goalQuery;
   protected final TrajectoryRegionQuery obstacleQuery;
 
   public DefaultTrajectoryPlanner( //
-      Integrator integrator, //
-      Scalar timeStep, //
+      IntegrationConfig integrationConfig, //
       Tensor partitionScale, //
       Collection<Flow> controls, //
-      int trajectorySize, //
       CostFunction costFunction, //
       TrajectoryRegionQuery goalQuery, //
       TrajectoryRegionQuery obstacleQuery //
   ) {
-    super(integrator, timeStep, partitionScale);
+    super(integrationConfig, partitionScale);
     this.controls = controls;
-    this.trajectorySize = trajectorySize;
     this.costFunction = costFunction;
     this.goalQuery = goalQuery;
     this.obstacleQuery = obstacleQuery;
   }
 
   @Override
-  protected void expand(final Node current_node) {
+  public void expand(final Node current_node) {
     // TODO count updates in cell based on costs for benchmarking
     Map<Tensor, DomainQueue> candidates = new HashMap<>();
     Map<Node, List<StateTime>> traj_from_parent = new HashMap<>();
@@ -49,9 +43,9 @@ public class DefaultTrajectoryPlanner extends TrajectoryPlanner {
       final List<StateTime> trajectory = new ArrayList<>();
       {
         StateTime prev = new StateTime(current_node.x, current_node.time);
-        for (int c0 = 0; c0 < trajectorySize; ++c0) {
-          Tensor x1 = integrator.step(flow, prev.x, timeStep);
-          StateTime next = new StateTime(x1, prev.time.add(timeStep));
+        for (int c0 = 0; c0 < integrationConfig.trajectorySize; ++c0) {
+          Tensor x1 = integrationConfig.integrator.step(flow, prev.x, integrationConfig.timeStep);
+          StateTime next = new StateTime(x1, prev.time.add(integrationConfig.timeStep));
           trajectory.add(next);
           prev = next;
         }

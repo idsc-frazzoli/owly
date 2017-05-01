@@ -9,14 +9,16 @@ import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
 
 public class Node {
-  private final Map<Flow, Node> children = new HashMap<>();
   /** flow is null for root node */
   public final Flow flow;
   public final Tensor x;
   public final Scalar time;
   public final Scalar cost;
   public final Scalar merit;
+  private final Map<Flow, Node> children = new HashMap<>();
+  /** parent is null for root node */
   private Node parent = null;
+  /** depth == 0 for root node, otherwise depth > 0 */
   private int depth = 0;
 
   /** @param flow that got us to this Node from the parent
@@ -42,7 +44,7 @@ public class Node {
     return new StateTime(x, time);
   }
 
-  public Node getParent() {
+  public Node parent() {
     return parent;
   }
 
@@ -50,7 +52,7 @@ public class Node {
     return parent == null;
   }
 
-  public int getDepth() {
+  public int depth() {
     return depth;
   }
 

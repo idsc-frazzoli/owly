@@ -11,24 +11,20 @@ import java.util.PriorityQueue;
 import java.util.Queue;
 
 import ch.ethz.idsc.owly.math.flow.Flow;
-import ch.ethz.idsc.owly.math.flow.Integrator;
-import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Scalars;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.sca.Floor;
 
-public abstract class TrajectoryPlanner {
-  protected final Integrator integrator;
-  protected final Scalar timeStep;
+public abstract class TrajectoryPlanner implements ExpandInterface {
+  protected final IntegrationConfig integrationConfig;
   private final Tensor partitionScale;
   // ---
   private final Queue<Node> queue = new PriorityQueue<>(NodeMeritComparator.instance);
   private final Map<Tensor, Node> domain_labels = new HashMap<>();
 
   public TrajectoryPlanner( // ..
-      Integrator integrator, Scalar timeStep, Tensor partitionScale) {
-    this.integrator = integrator;
-    this.timeStep = timeStep;
+      IntegrationConfig integrationConfig, Tensor partitionScale) {
+    this.integrationConfig = integrationConfig;
     this.partitionScale = partitionScale;
   }
 
@@ -57,31 +53,22 @@ public abstract class TrajectoryPlanner {
 
   private Node best;
   int replaceCount = 0; // TODO
-  public Integer depthLimit = null;
 
-  public final int plan(int expandLimit) {
-    best = null;
-    int expandCount = 0;
-    while (!queue.isEmpty() && expandCount < expandLimit) {
-      Node current_node = queue.poll();
-      expand(current_node);
-      ++expandCount;
-      // ---
-      if (best != null)
-        break;
-      if (depthLimit!=null && current_node.getDepth() > depthLimit)
-        break;
-    }
-    return expandCount;
+  @Override
+  public final Node pollNext() {
+    return queue.isEmpty() ? null : queue.poll();
   }
-
-  abstract protected void expand(Node current_node);
 
   protected final void offerDestination(Node node) {
     if (best == null || Scalars.lessThan(node.cost, best.cost)) {
       best = node;
       System.out.println("found goal");
     }
+  }
+
+  @Override
+  public final Node getBest() {
+    return best;
   }
 
   public final Collection<Node> getQueue() {
@@ -107,9 +94,10 @@ public abstract class TrajectoryPlanner {
         List<StateTime> part = new ArrayList<>();
         {
           StateTime prev = prevNode.getStateTime();
-          while (Scalars.lessThan(prev.time, nextNode.time)) {
-            Tensor x1 = integrator.step(flow, prev.x, timeStep);
-            StateTime next = new StateTime(x1, prev.time.add(timeStep));
+          // while (Scalars.lessThan(prev.time, nextNode.time)) {
+          for (int c0 = 0; c0 < integrationConfig.trajectorySize; ++c0) {
+            Tensor x1 = integrationConfig.integrator.step(flow, prev.x, integrationConfig.timeStep);
+            StateTime next = new StateTime(x1, prev.time.add(integrationConfig.timeStep));
             part.add(next);
             prev = next;
           }

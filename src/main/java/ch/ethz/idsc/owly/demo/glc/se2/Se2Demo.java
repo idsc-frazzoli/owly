@@ -8,6 +8,8 @@ import ch.ethz.idsc.owly.glc.adapter.HyperplaneRegion;
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
 import ch.ethz.idsc.owly.glc.adapter.TimeInvariantRegion;
 import ch.ethz.idsc.owly.glc.core.DefaultTrajectoryPlanner;
+import ch.ethz.idsc.owly.glc.core.Expand;
+import ch.ethz.idsc.owly.glc.core.IntegrationConfig;
 import ch.ethz.idsc.owly.glc.core.StateTime;
 import ch.ethz.idsc.owly.glc.core.Trajectories;
 import ch.ethz.idsc.owly.glc.core.TrajectoryPlanner;
@@ -16,7 +18,6 @@ import ch.ethz.idsc.owly.glc.gui.GlcFrame;
 import ch.ethz.idsc.owly.math.RegionUnion;
 import ch.ethz.idsc.owly.math.flow.EulerIntegrator;
 import ch.ethz.idsc.owly.math.flow.Flow;
-import ch.ethz.idsc.owly.math.flow.Integrator;
 import ch.ethz.idsc.tensor.DoubleScalar;
 import ch.ethz.idsc.tensor.RationalScalar;
 import ch.ethz.idsc.tensor.RealScalar;
@@ -27,8 +28,6 @@ import ch.ethz.idsc.tensor.Tensors;
 /** (x,y,theta) */
 class Se2Demo {
   public static void main(String[] args) {
-    Integrator integrator = new EulerIntegrator();
-    // ---
     Scalar timeStep = RationalScalar.of(1, 6);
     int trajectorySize = 5;
     // ---
@@ -46,13 +45,14 @@ class Se2Demo {
                 new HyperplaneRegion(Tensors.vector(0, -1, 0), RealScalar.of(1.5)), //
                 new HyperplaneRegion(Tensors.vector(0, +1, 0), RealScalar.of(2.0)) //
             )));
+    // TODO why euler?
+    IntegrationConfig integrationConfig = IntegrationConfig.create(new EulerIntegrator(), timeStep, trajectorySize);
     // ---
     TrajectoryPlanner trajectoryPlanner = new DefaultTrajectoryPlanner( //
-        integrator, timeStep, partitionScale, controls, trajectorySize, se2GoalManager, goalQuery, obstacleQuery);
+        integrationConfig, partitionScale, controls, se2GoalManager, goalQuery, obstacleQuery);
     // ---
-    trajectoryPlanner.depthLimit = 1000;
     trajectoryPlanner.insertRoot(Tensors.vector(0, 0, 0));
-    int iters = trajectoryPlanner.plan(2000);
+    int iters = Expand.maxSteps(trajectoryPlanner, 2000);
     System.out.println(iters);
     List<StateTime> trajectory = trajectoryPlanner.getPathFromRootToGoal();
     Trajectories.print(trajectory);

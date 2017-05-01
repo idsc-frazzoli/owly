@@ -9,6 +9,8 @@ import ch.ethz.idsc.owly.glc.adapter.RnPointcloudRegion;
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
 import ch.ethz.idsc.owly.glc.adapter.TimeInvariantRegion;
 import ch.ethz.idsc.owly.glc.core.DefaultTrajectoryPlanner;
+import ch.ethz.idsc.owly.glc.core.Expand;
+import ch.ethz.idsc.owly.glc.core.IntegrationConfig;
 import ch.ethz.idsc.owly.glc.core.StateTime;
 import ch.ethz.idsc.owly.glc.core.Trajectories;
 import ch.ethz.idsc.owly.glc.core.TrajectoryPlanner;
@@ -16,7 +18,6 @@ import ch.ethz.idsc.owly.glc.core.TrajectoryRegionQuery;
 import ch.ethz.idsc.owly.glc.gui.GlcFrame;
 import ch.ethz.idsc.owly.math.flow.EulerIntegrator;
 import ch.ethz.idsc.owly.math.flow.Flow;
-import ch.ethz.idsc.owly.math.flow.Integrator;
 import ch.ethz.idsc.tensor.DoubleScalar;
 import ch.ethz.idsc.tensor.RationalScalar;
 import ch.ethz.idsc.tensor.RealScalar;
@@ -49,23 +50,21 @@ class R2Demo {
   }
 
   public static void main(String[] args) {
-    Integrator integrator = new EulerIntegrator();
     final Scalar timeStep = RationalScalar.of(1, 5);
     Tensor partitionScale = Tensors.vector(4, 4);
     Collection<Flow> controls = R2Controls.createControls(36);
-    int trajectorySize = 5;
     RnGoalManager rnGoal = new RnGoalManager(Tensors.vector(2, 2), DoubleScalar.of(.25));
     // performance depends on heuristic: zeroHeuristic vs rnGoal
     // Heuristic heuristic = new ZeroHeuristic(); // rnGoal
     TrajectoryRegionQuery obstacleQuery = new SimpleTrajectoryRegionQuery( //
         new TimeInvariantRegion(new R2Bubbles()));
+    IntegrationConfig integrationConfig = IntegrationConfig.create(new EulerIntegrator(), timeStep, 5);
     // ---
     TrajectoryPlanner trajectoryPlanner = new DefaultTrajectoryPlanner( //
-        integrator, timeStep, partitionScale, controls, trajectorySize, //
+        integrationConfig, partitionScale, controls, //
         rnGoal, rnGoal, obstacleQuery);
-    trajectoryPlanner.depthLimit = 1000;
     trajectoryPlanner.insertRoot(Tensors.vector(-2, -2));
-    trajectoryPlanner.plan(1400);
+    int iters = Expand.maxSteps(trajectoryPlanner, 1400);
     List<StateTime> trajectory = trajectoryPlanner.getPathFromRootToGoal();
     Trajectories.print(trajectory);
     GlcFrame glcFrame = new GlcFrame();

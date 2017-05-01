@@ -8,6 +8,8 @@ import ch.ethz.idsc.owly.glc.adapter.EllipsoidRegion;
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
 import ch.ethz.idsc.owly.glc.adapter.TimeInvariantRegion;
 import ch.ethz.idsc.owly.glc.core.DefaultTrajectoryPlanner;
+import ch.ethz.idsc.owly.glc.core.Expand;
+import ch.ethz.idsc.owly.glc.core.IntegrationConfig;
 import ch.ethz.idsc.owly.glc.core.StateTime;
 import ch.ethz.idsc.owly.glc.core.Trajectories;
 import ch.ethz.idsc.owly.glc.core.TrajectoryPlanner;
@@ -15,8 +17,6 @@ import ch.ethz.idsc.owly.glc.core.TrajectoryRegionQuery;
 import ch.ethz.idsc.owly.glc.gui.GlcFrame;
 import ch.ethz.idsc.owly.math.RegionUnion;
 import ch.ethz.idsc.owly.math.flow.Flow;
-import ch.ethz.idsc.owly.math.flow.Integrator;
-import ch.ethz.idsc.owly.math.flow.MidpointIntegrator;
 import ch.ethz.idsc.tensor.RationalScalar;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
@@ -29,7 +29,6 @@ class Rice1Demo {
     Scalar timeStep = RationalScalar.of(1, 5);
     Tensor partitionScale = Tensors.vector(5, 8);
     Collection<Flow> controls = Rice1Controls.createControls(RealScalar.of(.5), 15); //
-    int trajectorySize = 5;
     Rice1GoalManager rice1Goal = new Rice1GoalManager(Tensors.vector(6, -.7), Tensors.vector(.4, .3));
     TrajectoryRegionQuery obstacleQuery = //
         new SimpleTrajectoryRegionQuery(new TimeInvariantRegion( //
@@ -38,15 +37,14 @@ class Rice1Demo {
                 // , // speed limit along the way
                 new EllipsoidRegion(Tensors.vector(-2, +0), Tensors.vector(1, 1)) // block to the left
             )));
+    IntegrationConfig integrationConfig = IntegrationConfig.createDefault(timeStep, 5);
     // ---
-    Integrator integrator = new MidpointIntegrator();
     TrajectoryPlanner trajectoryPlanner = new DefaultTrajectoryPlanner( //
-        integrator, timeStep, partitionScale, controls, trajectorySize, //
+        integrationConfig, partitionScale, controls, //
         rice1Goal, rice1Goal, obstacleQuery);
     // ---
-    trajectoryPlanner.depthLimit = 1000;
     trajectoryPlanner.insertRoot(Tensors.vector(0, 0));
-    int iters = trajectoryPlanner.plan(1000);
+    int iters = Expand.maxSteps(trajectoryPlanner, 1000);
     System.out.println(iters);
     List<StateTime> trajectory = trajectoryPlanner.getPathFromRootToGoal();
     Trajectories.print(trajectory);

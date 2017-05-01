@@ -13,7 +13,7 @@ enum Nodes {
     Node node = best;
     while (node != null) {
       list.add(node);
-      node = node.getParent();
+      node = node.parent();
     }
     Collections.reverse(list);
     return list;
