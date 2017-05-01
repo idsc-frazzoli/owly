@@ -18,20 +18,22 @@ import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.ZeroScalar;
 
 public class DefaultTrajectoryPlanner extends TrajectoryPlanner {
-  protected final Collection<Flow> controls;
-  protected final CostFunction costFunction;
-  protected final TrajectoryRegionQuery goalQuery;
-  protected final TrajectoryRegionQuery obstacleQuery;
+  private final StateIntegrator stateIntegrator;
+  private final Collection<Flow> controls;
+  private final CostFunction costFunction;
+  private final TrajectoryRegionQuery goalQuery;
+  private final TrajectoryRegionQuery obstacleQuery;
 
   public DefaultTrajectoryPlanner( //
-      StateIntegrator stateIntegrator, //
       Tensor partitionScale, //
+      StateIntegrator stateIntegrator, //
       Collection<Flow> controls, //
       CostFunction costFunction, //
       TrajectoryRegionQuery goalQuery, //
       TrajectoryRegionQuery obstacleQuery //
   ) {
-    super(stateIntegrator, partitionScale);
+    super(partitionScale);
+    this.stateIntegrator = stateIntegrator;
     this.controls = controls;
     this.costFunction = costFunction;
     this.goalQuery = goalQuery;
@@ -90,6 +92,11 @@ public class DefaultTrajectoryPlanner extends TrajectoryPlanner {
   @Override
   protected Node createRootNode(Tensor x) {
     return new Node(null, x, ZeroScalar.get(), ZeroScalar.get(), costFunction.minCostToGoal(x));
+  }
+
+  @Override
+  public List<StateTime> detailedTrajectoryToGoal() {
+    return Trajectories.connect(stateIntegrator, Nodes.getNodesFromRoot(getBest()));
   }
 
   @Override

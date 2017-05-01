@@ -1,7 +1,6 @@
 // code by bapaden and jph
 package ch.ethz.idsc.owly.glc.core;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -9,24 +8,21 @@ import java.util.List;
 import java.util.Map;
 import java.util.PriorityQueue;
 import java.util.Queue;
+import java.util.stream.Collectors;
 
-import ch.ethz.idsc.owly.math.state.StateIntegrator;
 import ch.ethz.idsc.owly.math.state.StateTime;
-import ch.ethz.idsc.owly.math.state.Trajectories;
 import ch.ethz.idsc.owly.math.state.TrajectoryRegionQuery;
 import ch.ethz.idsc.tensor.Scalars;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.sca.Floor;
 
 public abstract class TrajectoryPlanner implements ExpandInterface {
-  protected final StateIntegrator stateIntegrator;
   private final Tensor partitionScale;
   // ---
   private final Queue<Node> queue = new PriorityQueue<>(NodeMeritComparator.instance);
   private final Map<Tensor, Node> domain_labels = new HashMap<>();
 
-  public TrajectoryPlanner(StateIntegrator stateIntegrator, Tensor partitionScale) {
-    this.stateIntegrator = stateIntegrator;
+  public TrajectoryPlanner(Tensor partitionScale) {
     this.partitionScale = partitionScale;
   }
 
@@ -34,7 +30,7 @@ public abstract class TrajectoryPlanner implements ExpandInterface {
     return partitionScale.unmodifiable();
   }
 
-  protected final Tensor convertToKey(Tensor x) {
+  protected Tensor convertToKey(Tensor x) {
     return partitionScale.pmul(x).map(Floor.function);
   }
 
@@ -73,6 +69,9 @@ public abstract class TrajectoryPlanner implements ExpandInterface {
     return best;
   }
 
+  // TODO api not finalized
+  public abstract List<StateTime> detailedTrajectoryToGoal();
+
   public final Collection<Node> getQueue() {
     return Collections.unmodifiableCollection(queue);
   }
@@ -81,19 +80,12 @@ public abstract class TrajectoryPlanner implements ExpandInterface {
     return Collections.unmodifiableCollection(domain_labels.values());
   }
 
-  public final List<StateTime> getDetailedTrajectory() {
-    return Trajectories.connect(stateIntegrator, Nodes.getNodesFromRoot(best));
-  }
-
   public final List<StateTime> getPathFromRootToGoal() {
     return getPathFromRootToGoal(Nodes.getNodesFromRoot(best));
   }
 
   public static List<StateTime> getPathFromRootToGoal(List<Node> list) {
-    List<StateTime> trajectory = new ArrayList<>();
-    for (Node node : list)
-      trajectory.add(node.getStateTime());
-    return trajectory;
+    return list.stream().map(Node::getStateTime).collect(Collectors.toList());
   }
 
   public abstract TrajectoryRegionQuery getObstacleQuery();

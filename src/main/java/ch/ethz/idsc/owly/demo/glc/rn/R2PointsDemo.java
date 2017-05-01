@@ -14,6 +14,7 @@ import ch.ethz.idsc.owly.glc.core.TrajectoryPlanner;
 import ch.ethz.idsc.owly.glc.gui.GlcFrame;
 import ch.ethz.idsc.owly.math.flow.EulerIntegrator;
 import ch.ethz.idsc.owly.math.flow.Flow;
+import ch.ethz.idsc.owly.math.state.FixedStateIntegrator;
 import ch.ethz.idsc.owly.math.state.StateIntegrator;
 import ch.ethz.idsc.owly.math.state.StateTime;
 import ch.ethz.idsc.owly.math.state.TimeInvariantRegion;
@@ -22,7 +23,6 @@ import ch.ethz.idsc.owly.math.state.TrajectoryRegionQuery;
 import ch.ethz.idsc.tensor.DoubleScalar;
 import ch.ethz.idsc.tensor.RationalScalar;
 import ch.ethz.idsc.tensor.RealScalar;
-import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
 
@@ -36,10 +36,9 @@ class R2PointsDemo {
   }
 
   public static void main(String[] args) {
-    final Scalar timeStep = RationalScalar.of(1, 8);
     Tensor partitionScale = Tensors.vector(5, 5);
+    StateIntegrator stateIntegrator = FixedStateIntegrator.create(new EulerIntegrator(), RationalScalar.of(1, 8), 4);
     Collection<Flow> controls = R2Controls.createControls(20);
-    int trajectorySize = 4;
     RnGoalManager rnGoal = new RnGoalManager(Tensors.vector(5, 5), DoubleScalar.of(.2));
     Tensor points = createRandom(10, Tensors.vector(4, 4));
     // Tensors.matrix(new Number[][] { //
@@ -48,10 +47,9 @@ class R2PointsDemo {
     TrajectoryRegionQuery obstacleQuery = // new EmptyRegionQuery();
         new SimpleTrajectoryRegionQuery(new TimeInvariantRegion( //
             RnPointcloudRegion.create(points, RealScalar.of(0.6))));
-    StateIntegrator stateIntegrator = StateIntegrator.create(new EulerIntegrator(), timeStep, trajectorySize);
     // ---
     TrajectoryPlanner trajectoryPlanner = new DefaultTrajectoryPlanner( //
-        stateIntegrator, partitionScale, controls, rnGoal, rnGoal, obstacleQuery);
+        partitionScale, stateIntegrator, controls, rnGoal, rnGoal, obstacleQuery);
     trajectoryPlanner.insertRoot(Tensors.vector(0, 0));
     int iters = Expand.maxSteps(trajectoryPlanner, 1000);
     System.out.println(iters);

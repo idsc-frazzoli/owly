@@ -13,6 +13,7 @@ import ch.ethz.idsc.owly.math.flow.EulerIntegrator;
 import ch.ethz.idsc.owly.math.flow.Flow;
 import ch.ethz.idsc.owly.math.region.EllipsoidRegion;
 import ch.ethz.idsc.owly.math.region.RegionUnion;
+import ch.ethz.idsc.owly.math.state.FixedStateIntegrator;
 import ch.ethz.idsc.owly.math.state.StateIntegrator;
 import ch.ethz.idsc.owly.math.state.StateTime;
 import ch.ethz.idsc.owly.math.state.TimeInvariantRegion;
@@ -20,16 +21,14 @@ import ch.ethz.idsc.owly.math.state.Trajectories;
 import ch.ethz.idsc.owly.math.state.TrajectoryRegionQuery;
 import ch.ethz.idsc.tensor.DoubleScalar;
 import ch.ethz.idsc.tensor.RationalScalar;
-import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
 
 class R2SphereDemo {
   public static void main(String[] args) {
-    final Scalar timeStep = RationalScalar.of(1, 8);
     Tensor partitionScale = Tensors.vector(3.5, 4);
+    StateIntegrator stateIntegrator = FixedStateIntegrator.create(new EulerIntegrator(), RationalScalar.of(1, 8), 5);
     Collection<Flow> controls = R2Controls.createControls(20);
-    int trajectorySize = 5;
     RnGoalManager rnGoal = new RnGoalManager(Tensors.vector(5, 0), DoubleScalar.of(.5));
     TrajectoryRegionQuery obstacleQuery = //
         new SimpleTrajectoryRegionQuery(new TimeInvariantRegion( //
@@ -37,10 +36,9 @@ class R2SphereDemo {
                 new EllipsoidRegion(Tensors.vector(3, 3), Tensors.vector(2, 2)), //
                 new EllipsoidRegion(Tensors.vector(2.5, 0), Tensors.vector(2, 1.5)) //
             )));
-    StateIntegrator stateIntegrator = StateIntegrator.create(new EulerIntegrator(), timeStep, trajectorySize);
     // ---
     TrajectoryPlanner trajectoryPlanner = new DefaultTrajectoryPlanner( //
-        stateIntegrator, partitionScale, controls, rnGoal, rnGoal, obstacleQuery);
+        partitionScale, stateIntegrator, controls, rnGoal, rnGoal, obstacleQuery);
     trajectoryPlanner.insertRoot(Tensors.vector(0, 0));
     int iters = Expand.maxSteps(trajectoryPlanner, 1000);
     System.out.println(iters);

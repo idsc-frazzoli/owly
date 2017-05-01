@@ -13,6 +13,7 @@ import ch.ethz.idsc.owly.glc.gui.GlcFrame;
 import ch.ethz.idsc.owly.math.flow.Flow;
 import ch.ethz.idsc.owly.math.region.HyperplaneRegion;
 import ch.ethz.idsc.owly.math.region.RegionUnion;
+import ch.ethz.idsc.owly.math.state.FixedStateIntegrator;
 import ch.ethz.idsc.owly.math.state.StateIntegrator;
 import ch.ethz.idsc.owly.math.state.StateTime;
 import ch.ethz.idsc.owly.math.state.TimeInvariantRegion;
@@ -21,17 +22,15 @@ import ch.ethz.idsc.owly.math.state.TrajectoryRegionQuery;
 import ch.ethz.idsc.tensor.DoubleScalar;
 import ch.ethz.idsc.tensor.RationalScalar;
 import ch.ethz.idsc.tensor.RealScalar;
-import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
 
 /** (x,y,theta) */
 class Se2rDemo {
   public static void main(String[] args) {
-    Scalar timeStep = RationalScalar.of(1, 6);
     Tensor partitionScale = Tensors.vector(3, 3, 15); // TODO instead of 15 use multiple of PI...
+    StateIntegrator stateIntegrator = FixedStateIntegrator.createDefault(RationalScalar.of(1, 6), 5);
     Collection<Flow> controls = Se2rControls.createControls(Se2Utils.DEGREE(45), 6);
-    int trajectorySize = 5;
     // place holder for parameter class
     Se2rGoalManager se2GoalManager = new Se2rGoalManager( //
         Tensors.vector(-1, -1), RealScalar.of(Math.PI * 2), //
@@ -44,10 +43,9 @@ class Se2rDemo {
                 new HyperplaneRegion(Tensors.vector(0, -1, 0), RealScalar.of(1.5)), //
                 new HyperplaneRegion(Tensors.vector(0, +1, 0), RealScalar.of(2.0)) //
             )));
-    StateIntegrator stateIntegrator = StateIntegrator.createDefault(timeStep, trajectorySize);
     // ---
     TrajectoryPlanner trajectoryPlanner = new DefaultTrajectoryPlanner( //
-        stateIntegrator, partitionScale, controls, se2GoalManager, goalQuery, obstacleQuery);
+        partitionScale, stateIntegrator, controls, se2GoalManager, goalQuery, obstacleQuery);
     // ---
     trajectoryPlanner.insertRoot(Tensors.vector(0, 0, 0));
     int iters = Expand.maxSteps(trajectoryPlanner, 20000);

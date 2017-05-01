@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import ch.ethz.idsc.owly.glc.core.Node;
-import ch.ethz.idsc.owly.math.flow.Flow;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Scalars;
 import ch.ethz.idsc.tensor.ZeroScalar;
@@ -28,12 +27,9 @@ public enum Trajectories {
     return list.get(list.size() - 1);
   }
 
-  public static void print(List<StateTime> list) {
-    System.out.println("Trajectory (" + list.size() + ")");
-    for (StateTime stateTime : list)
-      System.out.println(stateTime.info());
-  }
-
+  /** @param stateIntegrator
+   * @param list
+   * @return */
   public static List<StateTime> connect(StateIntegrator stateIntegrator, List<Node> list) {
     List<StateTime> trajectory = new ArrayList<>();
     if (!list.isEmpty()) {
@@ -41,10 +37,18 @@ public enum Trajectories {
       for (int index = 1; index < list.size(); ++index) {
         Node prevNode = list.get(index - 1);
         Node nextNode = list.get(index);
-        final Flow flow = nextNode.flow();
-        trajectory.addAll(stateIntegrator.trajectory(prevNode.getStateTime(), flow));
+        if (prevNode != nextNode.parent())
+          throw new RuntimeException();
+        List<StateTime> part = stateIntegrator.trajectory(prevNode.getStateTime(), nextNode.flow());
+        trajectory.addAll(part);
       }
     }
     return trajectory;
+  }
+
+  public static void print(List<StateTime> list) {
+    System.out.println("Trajectory (" + list.size() + ")");
+    for (StateTime stateTime : list)
+      System.out.println(stateTime.info());
   }
 }
