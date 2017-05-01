@@ -20,26 +20,28 @@ import ch.ethz.idsc.tensor.sca.Floor;
 public abstract class TrajectoryPlanner {
   protected final Integrator integrator;
   protected final Scalar timeStep;
-  private final Tensor partitionScale;
+  private final Tensor eta;
   private final int depthLimit;
   // ---
   private final Queue<Node> queue = new PriorityQueue<>(NodeMeritComparator.instance);
   private final Map<Tensor, Node> domain_labels = new HashMap<>();
 
   public TrajectoryPlanner( // ..
-      Integrator integrator, Scalar timeStep, Tensor partitionScale, int depthLimit) {
+      Integrator integrator, Scalar timeStep, Tensor eta, int depthLimit) {
     this.integrator = integrator;
     this.timeStep = timeStep;
-    this.partitionScale = partitionScale;
+    this.eta = eta;
     this.depthLimit = depthLimit;
   }
 
   public final Tensor getResolution() {
-    return partitionScale.unmodifiable();
+    //TODO not theoretically correct
+    return eta.unmodifiable();
   }
 
   protected final Tensor convertToKey(Tensor x) {
-    return partitionScale.pmul(x).map(Floor.function);
+    //TODO Theory: floor(eta*state) = floor(state / domain_size)
+    return eta.pmul(x).map(Floor.function);
   }
 
   protected abstract Node createRootNode(Tensor x);
