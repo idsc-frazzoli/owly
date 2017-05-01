@@ -8,8 +8,11 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import ch.ethz.idsc.owly.math.flow.Flow;
+import ch.ethz.idsc.owly.math.state.CostFunction;
 import ch.ethz.idsc.owly.math.state.StateIntegrator;
 import ch.ethz.idsc.owly.math.state.StateTime;
+import ch.ethz.idsc.owly.math.state.Trajectories;
+import ch.ethz.idsc.owly.math.state.TrajectoryRegionQuery;
 import ch.ethz.idsc.tensor.Scalars;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.ZeroScalar;

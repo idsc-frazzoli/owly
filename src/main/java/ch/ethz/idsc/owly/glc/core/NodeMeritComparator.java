@@ -5,7 +5,7 @@ import java.util.Comparator;
 
 import ch.ethz.idsc.tensor.Scalars;
 
-enum NodeMeritComparator implements Comparator<Node> {
+/* package */ enum NodeMeritComparator implements Comparator<Node> {
   instance;
   // ---
   @Override

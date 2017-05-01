@@ -1,9 +1,7 @@
 // code by bapaden and jph
-package ch.ethz.idsc.owly.glc.adapter;
+package ch.ethz.idsc.owly.math.state;
 
 import ch.ethz.idsc.owly.math.region.Region;
-import ch.ethz.idsc.owly.math.state.StateTime;
-import ch.ethz.idsc.owly.math.state.StateTimeRegion;
 
 public final class TimeInvariantRegion implements StateTimeRegion {
   private final Region region;

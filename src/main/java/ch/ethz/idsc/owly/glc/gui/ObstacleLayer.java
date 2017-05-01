@@ -9,8 +9,8 @@ import java.awt.geom.Rectangle2D;
 
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
 import ch.ethz.idsc.owly.glc.core.TrajectoryPlanner;
-import ch.ethz.idsc.owly.glc.core.TrajectoryRegionQuery;
 import ch.ethz.idsc.owly.math.state.StateTime;
+import ch.ethz.idsc.owly.math.state.TrajectoryRegionQuery;
 
 class ObstacleLayer extends AbstractLayer {
   ObstacleLayer(GlcComponent glcComponent) {

@@ -5,7 +5,7 @@ import java.util.Comparator;
 
 import ch.ethz.idsc.tensor.Scalars;
 
-enum NodeCostComparator implements Comparator<Node> {
+/* package */ enum NodeCostComparator implements Comparator<Node> {
   instance;
   // ---
   @Override

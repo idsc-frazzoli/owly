@@ -6,9 +6,9 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
-import ch.ethz.idsc.owly.glc.core.TrajectoryRegionQuery;
 import ch.ethz.idsc.owly.math.state.StateTime;
 import ch.ethz.idsc.owly.math.state.StateTimeRegion;
+import ch.ethz.idsc.owly.math.state.TrajectoryRegionQuery;
 
 public class SimpleTrajectoryRegionQuery implements TrajectoryRegionQuery {
   private final StateTimeRegion stateTimeRegion;

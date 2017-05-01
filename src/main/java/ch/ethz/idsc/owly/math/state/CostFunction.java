@@ -1,10 +1,9 @@
 // code by bapaden and jph
-package ch.ethz.idsc.owly.glc.core;
+package ch.ethz.idsc.owly.math.state;
 
 import java.util.List;
 
 import ch.ethz.idsc.owly.math.flow.Flow;
-import ch.ethz.idsc.owly.math.state.StateTime;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
 

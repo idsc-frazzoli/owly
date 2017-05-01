@@ -4,12 +4,12 @@ package ch.ethz.idsc.owly.demo.glc.rn;
 import java.util.List;
 
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
-import ch.ethz.idsc.owly.glc.adapter.TimeInvariantRegion;
-import ch.ethz.idsc.owly.glc.core.CostFunction;
-import ch.ethz.idsc.owly.glc.core.Trajectories;
 import ch.ethz.idsc.owly.math.flow.Flow;
 import ch.ethz.idsc.owly.math.region.EllipsoidRegion;
+import ch.ethz.idsc.owly.math.state.CostFunction;
 import ch.ethz.idsc.owly.math.state.StateTime;
+import ch.ethz.idsc.owly.math.state.TimeInvariantRegion;
+import ch.ethz.idsc.owly.math.state.Trajectories;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.alg.Array;

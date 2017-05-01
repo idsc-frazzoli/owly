@@ -1,12 +1,13 @@
-package ch.ethz.idsc.owly.glc.core;
+package ch.ethz.idsc.owly.math.state;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
-import ch.ethz.idsc.owly.glc.adapter.TimeInvariantRegion;
 import ch.ethz.idsc.owly.math.region.EllipsoidRegion;
 import ch.ethz.idsc.owly.math.state.StateTime;
+import ch.ethz.idsc.owly.math.state.TimeInvariantRegion;
+import ch.ethz.idsc.owly.math.state.TrajectoryRegionQuery;
 import ch.ethz.idsc.tensor.Tensors;
 import ch.ethz.idsc.tensor.ZeroScalar;
 import junit.framework.TestCase;

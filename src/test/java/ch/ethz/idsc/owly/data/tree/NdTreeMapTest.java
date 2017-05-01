@@ -1,6 +1,6 @@
 // code by Eric Simonton
 // adapted by jph
-package ch.ethz.idsc.owly.tree;
+package ch.ethz.idsc.owly.data.tree;
 
 import java.util.Arrays;
 import java.util.List;

@@ -12,8 +12,8 @@ import java.util.List;
 
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
 import ch.ethz.idsc.owly.glc.core.TrajectoryPlanner;
-import ch.ethz.idsc.owly.glc.core.TrajectoryRegionQuery;
 import ch.ethz.idsc.owly.math.state.StateTime;
+import ch.ethz.idsc.owly.math.state.TrajectoryRegionQuery;
 
 public class TrajectoryLayer extends AbstractLayer {
   TrajectoryLayer(GlcComponent glcComponent) {

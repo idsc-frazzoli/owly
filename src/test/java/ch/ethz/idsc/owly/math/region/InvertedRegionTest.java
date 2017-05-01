@@ -1,5 +1,5 @@
 // code by jph
-package ch.ethz.idsc.owly.glc.adapter;
+package ch.ethz.idsc.owly.math.region;
 
 import ch.ethz.idsc.owly.math.region.EmptyRegion;
 import ch.ethz.idsc.owly.math.region.InvertedRegion;

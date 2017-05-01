@@ -1,9 +1,7 @@
 // code by bapaden and jph
-package ch.ethz.idsc.owly.glc.core;
+package ch.ethz.idsc.owly.math.state;
 
 import java.util.List;
-
-import ch.ethz.idsc.owly.math.state.StateTime;
 
 public interface TrajectoryRegionQuery {
   static final int NOMATCH = -1;
