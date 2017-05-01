@@ -10,7 +10,7 @@ import java.util.Map;
 import java.util.PriorityQueue;
 import java.util.Queue;
 
-import ch.ethz.idsc.owly.math.flow.Flow;
+import ch.ethz.idsc.owly.math.StateTime;
 import ch.ethz.idsc.tensor.Scalars;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.sca.Floor;
@@ -80,32 +80,7 @@ public abstract class TrajectoryPlanner implements ExpandInterface {
   }
 
   public final List<StateTime> getDetailedTrajectory() {
-    return getDetailedTrajectory(Nodes.getNodesFromRoot(best));
-  }
-
-  public final List<StateTime> getDetailedTrajectory(List<Node> list) {
-    List<StateTime> trajectory = new ArrayList<>();
-    if (!list.isEmpty()) {
-      trajectory.add(list.get(0).getStateTime());
-      for (int index = 1; index < list.size(); ++index) {
-        Node prevNode = list.get(index - 1);
-        Node nextNode = list.get(index);
-        final Flow flow = nextNode.flow;
-        List<StateTime> part = new ArrayList<>();
-        {
-          StateTime prev = prevNode.getStateTime();
-          // while (Scalars.lessThan(prev.time, nextNode.time)) {
-          for (int c0 = 0; c0 < integrationConfig.trajectorySize; ++c0) {
-            Tensor x1 = integrationConfig.integrator.step(flow, prev.x, integrationConfig.timeStep);
-            StateTime next = new StateTime(x1, prev.time.add(integrationConfig.timeStep));
-            part.add(next);
-            prev = next;
-          }
-        }
-        trajectory.addAll(part);
-      }
-    }
-    return trajectory;
+    return Trajectories.getDetailedTrajectory(integrationConfig, Nodes.getNodesFromRoot(best));
   }
 
   public final List<StateTime> getPathFromRootToGoal() {

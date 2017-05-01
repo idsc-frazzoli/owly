@@ -3,8 +3,8 @@ package ch.ethz.idsc.owly.glc.adapter;
 
 import java.util.List;
 
-import ch.ethz.idsc.owly.glc.core.StateTime;
 import ch.ethz.idsc.owly.glc.core.TrajectoryRegionQuery;
+import ch.ethz.idsc.owly.math.StateTime;
 
 public final class EmptyRegionQuery implements TrajectoryRegionQuery {
   @Override

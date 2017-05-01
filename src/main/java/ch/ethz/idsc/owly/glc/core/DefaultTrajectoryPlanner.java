@@ -1,13 +1,13 @@
 // code by bapaden and jph
 package ch.ethz.idsc.owly.glc.core;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import ch.ethz.idsc.owly.math.StateTime;
 import ch.ethz.idsc.owly.math.flow.Flow;
 import ch.ethz.idsc.tensor.Scalars;
 import ch.ethz.idsc.tensor.Tensor;
@@ -40,16 +40,7 @@ public class DefaultTrajectoryPlanner extends TrajectoryPlanner {
     Map<Tensor, DomainQueue> candidates = new HashMap<>();
     Map<Node, List<StateTime>> traj_from_parent = new HashMap<>();
     for (final Flow flow : controls) {
-      final List<StateTime> trajectory = new ArrayList<>();
-      {
-        StateTime prev = new StateTime(current_node.x, current_node.time);
-        for (int c0 = 0; c0 < integrationConfig.trajectorySize; ++c0) {
-          Tensor x1 = integrationConfig.integrator.step(flow, prev.x, integrationConfig.timeStep);
-          StateTime next = new StateTime(x1, prev.time.add(integrationConfig.timeStep));
-          trajectory.add(next);
-          prev = next;
-        }
-      }
+      final List<StateTime> trajectory = integrationConfig.trajectory(current_node.getStateTime(), flow);
       final StateTime last = Trajectories.getLast(trajectory);
       final Node new_arc = new Node(flow, last.x, last.time, //
           current_node.cost.add(costFunction.costIncrement(current_node.getStateTime(), trajectory, flow)), // new_arc.cost

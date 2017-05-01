@@ -4,10 +4,12 @@ package ch.ethz.idsc.owly.glc.core;
 import java.util.HashMap;
 import java.util.Map;
 
+import ch.ethz.idsc.owly.math.StateTime;
 import ch.ethz.idsc.owly.math.flow.Flow;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
 
+/** glc specific node */
 public class Node {
   /** flow is null for root node */
   public final Flow flow;

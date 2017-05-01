@@ -1,5 +1,5 @@
 // code by bapaden and jph
-package ch.ethz.idsc.owly.glc.core;
+package ch.ethz.idsc.owly.math;
 
 public interface StateTimeRegion {
   /** @param stateTime

@@ -3,6 +3,8 @@ package ch.ethz.idsc.owly.glc.core;
 
 import java.util.List;
 
+import ch.ethz.idsc.owly.math.StateTime;
+
 public interface TrajectoryRegionQuery {
   static final int NOMATCH = -1;
 
