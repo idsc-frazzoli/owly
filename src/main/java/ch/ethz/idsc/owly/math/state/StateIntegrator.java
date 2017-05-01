@@ -1,22 +1,21 @@
 // code by jph
-package ch.ethz.idsc.owly.glc.core;
+package ch.ethz.idsc.owly.math.state;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import ch.ethz.idsc.owly.math.StateTime;
 import ch.ethz.idsc.owly.math.flow.Flow;
 import ch.ethz.idsc.owly.math.flow.Integrator;
 import ch.ethz.idsc.owly.math.flow.MidpointIntegrator;
 import ch.ethz.idsc.tensor.Scalar;
 
-public class IntegrationConfig {
-  public static IntegrationConfig createDefault(Scalar timeStep, int trajectorySize) {
-    return new IntegrationConfig(new MidpointIntegrator(), timeStep, trajectorySize);
+public class StateIntegrator {
+  public static StateIntegrator createDefault(Scalar timeStep, int trajectorySize) {
+    return new StateIntegrator(new MidpointIntegrator(), timeStep, trajectorySize);
   }
 
-  public static IntegrationConfig create(Integrator integrator, Scalar timeStep, int trajectorySize) {
-    return new IntegrationConfig(integrator, timeStep, trajectorySize);
+  public static StateIntegrator create(Integrator integrator, Scalar timeStep, int trajectorySize) {
+    return new StateIntegrator(integrator, timeStep, trajectorySize);
   }
 
   private final Integrator integrator;
@@ -29,7 +28,7 @@ public class IntegrationConfig {
    * @param integrator
    * @param timeStep
    * @param trajectorySize */
-  private IntegrationConfig(Integrator integrator, Scalar timeStep, int trajectorySize) {
+  private StateIntegrator(Integrator integrator, Scalar timeStep, int trajectorySize) {
     this.integrator = integrator;
     this.timeStep = timeStep;
     this.trajectorySize = trajectorySize;

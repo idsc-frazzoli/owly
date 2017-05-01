@@ -10,21 +10,21 @@ import java.util.Map;
 import java.util.PriorityQueue;
 import java.util.Queue;
 
-import ch.ethz.idsc.owly.math.StateTime;
+import ch.ethz.idsc.owly.math.state.StateIntegrator;
+import ch.ethz.idsc.owly.math.state.StateTime;
 import ch.ethz.idsc.tensor.Scalars;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.sca.Floor;
 
 public abstract class TrajectoryPlanner implements ExpandInterface {
-  protected final IntegrationConfig integrationConfig;
+  protected final StateIntegrator stateIntegrator;
   private final Tensor partitionScale;
   // ---
   private final Queue<Node> queue = new PriorityQueue<>(NodeMeritComparator.instance);
   private final Map<Tensor, Node> domain_labels = new HashMap<>();
 
-  public TrajectoryPlanner( // ..
-      IntegrationConfig integrationConfig, Tensor partitionScale) {
-    this.integrationConfig = integrationConfig;
+  public TrajectoryPlanner(StateIntegrator stateIntegrator, Tensor partitionScale) {
+    this.stateIntegrator = stateIntegrator;
     this.partitionScale = partitionScale;
   }
 
@@ -80,7 +80,7 @@ public abstract class TrajectoryPlanner implements ExpandInterface {
   }
 
   public final List<StateTime> getDetailedTrajectory() {
-    return Trajectories.getDetailedTrajectory(integrationConfig, Nodes.getNodesFromRoot(best));
+    return Trajectories.connect(stateIntegrator, Nodes.getNodesFromRoot(best));
   }
 
   public final List<StateTime> getPathFromRootToGoal() {

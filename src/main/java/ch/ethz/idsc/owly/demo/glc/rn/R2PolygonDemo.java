@@ -8,16 +8,15 @@ import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
 import ch.ethz.idsc.owly.glc.adapter.TimeInvariantRegion;
 import ch.ethz.idsc.owly.glc.core.DefaultTrajectoryPlanner;
 import ch.ethz.idsc.owly.glc.core.Expand;
-import ch.ethz.idsc.owly.glc.core.IntegrationConfig;
 import ch.ethz.idsc.owly.glc.core.Trajectories;
 import ch.ethz.idsc.owly.glc.core.TrajectoryPlanner;
 import ch.ethz.idsc.owly.glc.core.TrajectoryRegionQuery;
 import ch.ethz.idsc.owly.glc.gui.GlcFrame;
 import ch.ethz.idsc.owly.math.PolygonRegion;
-import ch.ethz.idsc.owly.math.StateTime;
 import ch.ethz.idsc.owly.math.flow.EulerIntegrator;
 import ch.ethz.idsc.owly.math.flow.Flow;
-import ch.ethz.idsc.owly.math.flow.Integrator;
+import ch.ethz.idsc.owly.math.state.StateIntegrator;
+import ch.ethz.idsc.owly.math.state.StateTime;
 import ch.ethz.idsc.tensor.DoubleScalar;
 import ch.ethz.idsc.tensor.RationalScalar;
 import ch.ethz.idsc.tensor.Scalar;
@@ -26,7 +25,6 @@ import ch.ethz.idsc.tensor.Tensors;
 
 class R2PolygonDemo {
   public static void main(String[] args) {
-    Integrator integrator = new EulerIntegrator();
     final Scalar timeStep = RationalScalar.of(1, 8);
     Tensor partitionScale = Tensors.vector(5, 5);
     Collection<Flow> controls = R2Controls.createControls(20);
@@ -42,10 +40,10 @@ class R2PolygonDemo {
                 { 1, 3 }, //
                 { 3, 3 }//
             }))));
-    IntegrationConfig integrationConfig = IntegrationConfig.create(new EulerIntegrator(), timeStep, trajectorySize);
+    StateIntegrator stateIntegrator = StateIntegrator.create(new EulerIntegrator(), timeStep, trajectorySize);
     // ---
     TrajectoryPlanner trajectoryPlanner = new DefaultTrajectoryPlanner( //
-        integrationConfig, partitionScale, controls, rnGoal, rnGoal, obstacleQuery);
+        stateIntegrator, partitionScale, controls, rnGoal, rnGoal, obstacleQuery);
     trajectoryPlanner.insertRoot(Tensors.vector(0, 0));
     int iters = Expand.maxSteps(trajectoryPlanner, 1500);
     System.out.println(iters);

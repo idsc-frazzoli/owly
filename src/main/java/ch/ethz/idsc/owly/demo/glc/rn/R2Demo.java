@@ -10,14 +10,14 @@ import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
 import ch.ethz.idsc.owly.glc.adapter.TimeInvariantRegion;
 import ch.ethz.idsc.owly.glc.core.DefaultTrajectoryPlanner;
 import ch.ethz.idsc.owly.glc.core.Expand;
-import ch.ethz.idsc.owly.glc.core.IntegrationConfig;
 import ch.ethz.idsc.owly.glc.core.Trajectories;
 import ch.ethz.idsc.owly.glc.core.TrajectoryPlanner;
 import ch.ethz.idsc.owly.glc.core.TrajectoryRegionQuery;
 import ch.ethz.idsc.owly.glc.gui.GlcFrame;
-import ch.ethz.idsc.owly.math.StateTime;
 import ch.ethz.idsc.owly.math.flow.EulerIntegrator;
 import ch.ethz.idsc.owly.math.flow.Flow;
+import ch.ethz.idsc.owly.math.state.StateIntegrator;
+import ch.ethz.idsc.owly.math.state.StateTime;
 import ch.ethz.idsc.tensor.DoubleScalar;
 import ch.ethz.idsc.tensor.RationalScalar;
 import ch.ethz.idsc.tensor.RealScalar;
@@ -58,11 +58,10 @@ class R2Demo {
     // Heuristic heuristic = new ZeroHeuristic(); // rnGoal
     TrajectoryRegionQuery obstacleQuery = new SimpleTrajectoryRegionQuery( //
         new TimeInvariantRegion(new R2Bubbles()));
-    IntegrationConfig integrationConfig = IntegrationConfig.create(new EulerIntegrator(), timeStep, 5);
+    StateIntegrator stateIntegrator = StateIntegrator.create(new EulerIntegrator(), timeStep, 5);
     // ---
     TrajectoryPlanner trajectoryPlanner = new DefaultTrajectoryPlanner( //
-        integrationConfig, partitionScale, controls, //
-        rnGoal, rnGoal, obstacleQuery);
+        stateIntegrator, partitionScale, controls, rnGoal, rnGoal, obstacleQuery);
     trajectoryPlanner.insertRoot(Tensors.vector(-2, -2));
     int iters = Expand.maxSteps(trajectoryPlanner, 1400);
     List<StateTime> trajectory = trajectoryPlanner.getPathFromRootToGoal();

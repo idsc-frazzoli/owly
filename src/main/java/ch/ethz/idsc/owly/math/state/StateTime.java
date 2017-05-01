@@ -1,5 +1,5 @@
 // code by bapaden and jph
-package ch.ethz.idsc.owly.math;
+package ch.ethz.idsc.owly.math.state;
 
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;

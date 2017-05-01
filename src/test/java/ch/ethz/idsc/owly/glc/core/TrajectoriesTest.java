@@ -6,7 +6,7 @@ import java.util.List;
 import ch.ethz.idsc.owly.glc.adapter.EllipsoidRegion;
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
 import ch.ethz.idsc.owly.glc.adapter.TimeInvariantRegion;
-import ch.ethz.idsc.owly.math.StateTime;
+import ch.ethz.idsc.owly.math.state.StateTime;
 import ch.ethz.idsc.tensor.Tensors;
 import ch.ethz.idsc.tensor.ZeroScalar;
 import junit.framework.TestCase;

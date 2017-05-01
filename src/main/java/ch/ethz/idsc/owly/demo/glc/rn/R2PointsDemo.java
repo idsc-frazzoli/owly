@@ -11,14 +11,14 @@ import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
 import ch.ethz.idsc.owly.glc.adapter.TimeInvariantRegion;
 import ch.ethz.idsc.owly.glc.core.DefaultTrajectoryPlanner;
 import ch.ethz.idsc.owly.glc.core.Expand;
-import ch.ethz.idsc.owly.glc.core.IntegrationConfig;
 import ch.ethz.idsc.owly.glc.core.Trajectories;
 import ch.ethz.idsc.owly.glc.core.TrajectoryPlanner;
 import ch.ethz.idsc.owly.glc.core.TrajectoryRegionQuery;
 import ch.ethz.idsc.owly.glc.gui.GlcFrame;
-import ch.ethz.idsc.owly.math.StateTime;
 import ch.ethz.idsc.owly.math.flow.EulerIntegrator;
 import ch.ethz.idsc.owly.math.flow.Flow;
+import ch.ethz.idsc.owly.math.state.StateIntegrator;
+import ch.ethz.idsc.owly.math.state.StateTime;
 import ch.ethz.idsc.tensor.DoubleScalar;
 import ch.ethz.idsc.tensor.RationalScalar;
 import ch.ethz.idsc.tensor.RealScalar;
@@ -48,10 +48,10 @@ class R2PointsDemo {
     TrajectoryRegionQuery obstacleQuery = // new EmptyRegionQuery();
         new SimpleTrajectoryRegionQuery(new TimeInvariantRegion( //
             RnPointcloudRegion.create(points, RealScalar.of(0.6))));
-    IntegrationConfig integrationConfig = IntegrationConfig.create(new EulerIntegrator(), timeStep, trajectorySize);
+    StateIntegrator stateIntegrator = StateIntegrator.create(new EulerIntegrator(), timeStep, trajectorySize);
     // ---
     TrajectoryPlanner trajectoryPlanner = new DefaultTrajectoryPlanner( //
-        integrationConfig, partitionScale, controls, rnGoal, rnGoal, obstacleQuery);
+        stateIntegrator, partitionScale, controls, rnGoal, rnGoal, obstacleQuery);
     trajectoryPlanner.insertRoot(Tensors.vector(0, 0));
     int iters = Expand.maxSteps(trajectoryPlanner, 1000);
     System.out.println(iters);

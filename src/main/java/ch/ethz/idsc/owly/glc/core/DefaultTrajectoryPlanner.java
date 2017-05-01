@@ -7,8 +7,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import ch.ethz.idsc.owly.math.StateTime;
 import ch.ethz.idsc.owly.math.flow.Flow;
+import ch.ethz.idsc.owly.math.state.StateIntegrator;
+import ch.ethz.idsc.owly.math.state.StateTime;
 import ch.ethz.idsc.tensor.Scalars;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.ZeroScalar;
@@ -20,14 +21,14 @@ public class DefaultTrajectoryPlanner extends TrajectoryPlanner {
   protected final TrajectoryRegionQuery obstacleQuery;
 
   public DefaultTrajectoryPlanner( //
-      IntegrationConfig integrationConfig, //
+      StateIntegrator stateIntegrator, //
       Tensor partitionScale, //
       Collection<Flow> controls, //
       CostFunction costFunction, //
       TrajectoryRegionQuery goalQuery, //
       TrajectoryRegionQuery obstacleQuery //
   ) {
-    super(integrationConfig, partitionScale);
+    super(stateIntegrator, partitionScale);
     this.controls = controls;
     this.costFunction = costFunction;
     this.goalQuery = goalQuery;
@@ -40,7 +41,7 @@ public class DefaultTrajectoryPlanner extends TrajectoryPlanner {
     Map<Tensor, DomainQueue> candidates = new HashMap<>();
     Map<Node, List<StateTime>> traj_from_parent = new HashMap<>();
     for (final Flow flow : controls) {
-      final List<StateTime> trajectory = integrationConfig.trajectory(current_node.getStateTime(), flow);
+      final List<StateTime> trajectory = stateIntegrator.trajectory(current_node.getStateTime(), flow);
       final StateTime last = Trajectories.getLast(trajectory);
       final Node new_arc = new Node(flow, last.x, last.time, //
           current_node.cost.add(costFunction.costIncrement(current_node.getStateTime(), trajectory, flow)), // new_arc.cost
