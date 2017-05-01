@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+/** utility functions that operate on {@link Node}s */
 /* package */ enum Nodes {
   ;
   // ---
@@ -18,7 +19,7 @@ import java.util.List;
     return list;
   }
 
-  public static List<Node> getNodesFromRoot(Node best) {
+  public static List<Node> nodesFromRoot(Node best) {
     List<Node> list = nodesToRoot(best);
     Collections.reverse(list);
     return list;

@@ -94,7 +94,7 @@ public class DefaultTrajectoryPlanner extends TrajectoryPlanner {
 
   @Override
   public List<StateTime> detailedTrajectoryToGoal() {
-    return Trajectories.connect(stateIntegrator, Nodes.getNodesFromRoot(getBest()));
+    return Trajectories.connect(stateIntegrator, Nodes.nodesFromRoot(getBest()));
   }
 
   @Override

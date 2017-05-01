@@ -5,6 +5,7 @@ import java.util.Comparator;
 
 import ch.ethz.idsc.tensor.Scalars;
 
+/** compare two nodes based on {@link Node#merit()} */
 /* package */ enum NodeMeritComparator implements Comparator<Node> {
   instance;
   // ---

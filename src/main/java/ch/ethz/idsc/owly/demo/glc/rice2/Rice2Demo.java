@@ -35,9 +35,10 @@ class Rice2Demo {
     TrajectoryRegionQuery obstacleQuery = //
         new SimpleTrajectoryRegionQuery(new TimeInvariantRegion( //
             RegionUnion.of( //
-                new HyperplaneRegion(Tensors.vector(1, 0, 0, 0), RealScalar.of(0.01)), //
-                new HyperplaneRegion(Tensors.vector(0, 1, 0, 0), RealScalar.of(0.01)), //
-                new HyperplaneRegion(Tensors.vector(0, 0, 0, 1), RealScalar.of(0.01)) //
+                new HyperplaneRegion(Tensors.vector(1, +0, 0, 0), RealScalar.of(0.01)), //
+                new HyperplaneRegion(Tensors.vector(0, +1, 0, 0), RealScalar.of(0.01)), //
+                new HyperplaneRegion(Tensors.vector(0, -1, 0, 0), RealScalar.of(3.2)), //
+                new HyperplaneRegion(Tensors.vector(0, +0, 0, 1), RealScalar.of(0.01)) //
             )));
     // ---
     TrajectoryPlanner trajectoryPlanner = new DefaultTrajectoryPlanner( //

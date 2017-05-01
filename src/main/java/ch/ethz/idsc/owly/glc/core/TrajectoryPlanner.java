@@ -16,13 +16,15 @@ import ch.ethz.idsc.tensor.Scalars;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.sca.Floor;
 
+/** base class for generalized label correction implementation */
 public abstract class TrajectoryPlanner implements ExpandInterface {
   private final Tensor partitionScale;
   // ---
   private final Queue<Node> queue = new PriorityQueue<>(NodeMeritComparator.instance);
+  // TODO long-term use RasterMap instead of domainMap
   private final Map<Tensor, Node> domainMap = new HashMap<>();
 
-  protected TrajectoryPlanner(Tensor partitionScale) {
+  TrajectoryPlanner(Tensor partitionScale) {
     this.partitionScale = partitionScale;
   }
 
@@ -81,7 +83,7 @@ public abstract class TrajectoryPlanner implements ExpandInterface {
   }
 
   public final List<StateTime> getPathFromRootToGoal() {
-    return getPathFromRootToGoal(Nodes.getNodesFromRoot(best));
+    return getPathFromRootToGoal(Nodes.nodesFromRoot(best));
   }
 
   public static List<StateTime> getPathFromRootToGoal(List<Node> list) {

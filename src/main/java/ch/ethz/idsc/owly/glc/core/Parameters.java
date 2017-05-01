@@ -9,6 +9,7 @@ import ch.ethz.idsc.tensor.ZeroScalar;
 import ch.ethz.idsc.tensor.sca.Log;
 import ch.ethz.idsc.tensor.sca.Power;
 
+// TODO state origin of every formula in research paper
 public class Parameters {
   // Initial condition
   Tensors x0;
