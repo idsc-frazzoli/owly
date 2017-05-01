@@ -1,8 +1,6 @@
 // code by jph
 package ch.ethz.idsc.owly.math.region;
 
-import ch.ethz.idsc.owly.math.region.EmptyRegion;
-import ch.ethz.idsc.owly.math.region.InvertedRegion;
 import junit.framework.TestCase;
 
 public class InvertedRegionTest extends TestCase {

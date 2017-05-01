@@ -33,13 +33,13 @@ public enum Trajectories {
   public static List<StateTime> connect(StateIntegrator stateIntegrator, List<Node> list) {
     List<StateTime> trajectory = new ArrayList<>();
     if (!list.isEmpty()) {
-      trajectory.add(list.get(0).getStateTime()); // add first node
+      trajectory.add(list.get(0).stateTime()); // add first node
       for (int index = 1; index < list.size(); ++index) {
         Node prevNode = list.get(index - 1);
         Node nextNode = list.get(index);
         if (prevNode != nextNode.parent())
           throw new RuntimeException();
-        List<StateTime> part = stateIntegrator.trajectory(prevNode.getStateTime(), nextNode.flow());
+        List<StateTime> part = stateIntegrator.trajectory(prevNode.stateTime(), nextNode.flow());
         trajectory.addAll(part);
       }
     }

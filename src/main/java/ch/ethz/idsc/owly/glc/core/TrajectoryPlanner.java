@@ -20,9 +20,9 @@ public abstract class TrajectoryPlanner implements ExpandInterface {
   private final Tensor partitionScale;
   // ---
   private final Queue<Node> queue = new PriorityQueue<>(NodeMeritComparator.instance);
-  private final Map<Tensor, Node> domain_labels = new HashMap<>();
+  private final Map<Tensor, Node> domainMap = new HashMap<>();
 
-  public TrajectoryPlanner(Tensor partitionScale) {
+  protected TrajectoryPlanner(Tensor partitionScale) {
     this.partitionScale = partitionScale;
   }
 
@@ -42,17 +42,17 @@ public abstract class TrajectoryPlanner implements ExpandInterface {
 
   protected final void insert(Tensor domain_key, Node node) {
     queue.add(node);
-    domain_labels.put(domain_key, node);
+    domainMap.put(domain_key, node);
   }
 
   protected final Node getNode(Tensor domain_key) {
-    return domain_labels.get(domain_key);
+    return domainMap.get(domain_key);
   }
 
   private Node best;
   int replaceCount = 0; // TODO
 
-  @Override
+  @Override // from ExpandInterface
   public final Node pollNext() {
     return queue.isEmpty() ? null : queue.poll();
   }
@@ -64,7 +64,7 @@ public abstract class TrajectoryPlanner implements ExpandInterface {
     }
   }
 
-  @Override
+  @Override // from ExpandInterface
   public final Node getBest() {
     return best;
   }
@@ -77,7 +77,7 @@ public abstract class TrajectoryPlanner implements ExpandInterface {
   }
 
   public final Collection<Node> getNodes() {
-    return Collections.unmodifiableCollection(domain_labels.values());
+    return Collections.unmodifiableCollection(domainMap.values());
   }
 
   public final List<StateTime> getPathFromRootToGoal() {
@@ -85,7 +85,7 @@ public abstract class TrajectoryPlanner implements ExpandInterface {
   }
 
   public static List<StateTime> getPathFromRootToGoal(List<Node> list) {
-    return list.stream().map(Node::getStateTime).collect(Collectors.toList());
+    return list.stream().map(Node::stateTime).collect(Collectors.toList());
   }
 
   public abstract TrajectoryRegionQuery getObstacleQuery();

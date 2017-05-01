@@ -7,14 +7,12 @@ import java.util.Map;
 import ch.ethz.idsc.owly.math.flow.Flow;
 import ch.ethz.idsc.owly.math.state.StateTime;
 import ch.ethz.idsc.tensor.Scalar;
-import ch.ethz.idsc.tensor.Tensor;
 
 /** glc specific node */
 public class Node {
   /** flow is null for root node */
   private final Flow flow;
-  private final Tensor x;
-  private final Scalar time;
+  private final StateTime stateTime;
   private final Scalar cost;
   private final Scalar merit;
   private final Map<Flow, Node> children = new HashMap<>();
@@ -27,13 +25,12 @@ public class Node {
    * @param x
    * @param time
    * @param cost
-   * @param e */
-  public Node(Flow flow, Tensor x, Scalar time, Scalar cost, Scalar e) {
+   * @param minCostToGoal */
+  public Node(Flow flow, StateTime stateTime, Scalar cost, Scalar minCostToGoal) {
     this.flow = flow;
-    this.x = x;
-    this.time = time;
+    this.stateTime = stateTime;
     this.cost = cost;
-    this.merit = cost.add(e);
+    this.merit = cost.add(minCostToGoal);
   }
 
   public void addChild(Node child) {
@@ -42,12 +39,12 @@ public class Node {
     children.put(child.flow, child);
   }
 
-  public Tensor x() {
-    return x.unmodifiable();
-  }
-
   public Flow flow() {
     return flow;
+  }
+
+  public StateTime stateTime() {
+    return stateTime;
   }
 
   public Scalar cost() {
@@ -56,10 +53,6 @@ public class Node {
 
   public Scalar merit() {
     return merit;
-  }
-
-  public StateTime getStateTime() {
-    return new StateTime(x, time);
   }
 
   public Node parent() {
@@ -72,10 +65,5 @@ public class Node {
 
   public int depth() {
     return depth;
-  }
-
-  @Override
-  public String toString() {
-    return "@" + x.toString() + " cost=" + cost + " merit=" + merit;
   }
 }

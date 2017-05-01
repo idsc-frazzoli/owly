@@ -41,48 +41,46 @@ public class DefaultTrajectoryPlanner extends TrajectoryPlanner {
   }
 
   @Override
-  public void expand(final Node current_node) {
+  public void expand(final Node node) {
     // TODO count updates in cell based on costs for benchmarking
     Map<Tensor, DomainQueue> candidates = new HashMap<>();
-    Map<Node, List<StateTime>> traj_from_parent = new HashMap<>();
+    Map<Node, List<StateTime>> connectors = new HashMap<>();
     for (final Flow flow : controls) {
-      final List<StateTime> trajectory = stateIntegrator.trajectory(current_node.getStateTime(), flow);
+      final List<StateTime> trajectory = stateIntegrator.trajectory(node.stateTime(), flow);
       final StateTime last = Trajectories.getLast(trajectory);
-      final Node new_arc = new Node(flow, last.x(), last.time(), //
-          current_node.cost().add(costFunction.costIncrement(current_node.getStateTime(), trajectory, flow)), // new_arc.cost
-          costFunction.minCostToGoal(last.x()) // new_arc.merit
+      final Node next = new Node(flow, last, //
+          node.cost().add(costFunction.costIncrement(node.stateTime(), trajectory, flow)), //
+          costFunction.minCostToGoal(last.x()) //
       );
-      traj_from_parent.put(new_arc, trajectory);
+      connectors.put(next, trajectory);
       // ---
-      final Tensor domain_key = convertToKey(new_arc.x());
-      final Node prev = getNode(domain_key);
-      if (prev != null) { // already some node present from previous exploration
-        if (Scalars.lessThan(new_arc.cost(), prev.cost())) // new node is better than previous one
+      final Tensor domain_key = convertToKey(next.stateTime().x());
+      final Node former = getNode(domain_key);
+      if (former != null) { // already some node present from previous exploration
+        if (Scalars.lessThan(next.cost(), former.cost())) // new node is better than previous one
           if (candidates.containsKey(domain_key))
-            candidates.get(domain_key).add(new_arc);
+            candidates.get(domain_key).add(next);
           else
-            candidates.put(domain_key, new DomainQueue(new_arc));
+            candidates.put(domain_key, new DomainQueue(next));
       } else
-        candidates.put(domain_key, new DomainQueue(new_arc));
+        candidates.put(domain_key, new DomainQueue(next));
     }
     // ---
-    processCandidates(current_node, candidates, traj_from_parent);
+    processCandidates(node, candidates, connectors);
   }
 
   private void processCandidates( //
-      Node current_node, //
-      Map<Tensor, DomainQueue> candidates, //
-      Map<Node, List<StateTime>> traj_from_parent) {
+      Node node, Map<Tensor, DomainQueue> candidates, Map<Node, List<StateTime>> connectors) {
     for (Entry<Tensor, DomainQueue> entry : candidates.entrySet()) {
       final Tensor domain_key = entry.getKey();
       final DomainQueue domainQueue = entry.getValue();
       while (!domainQueue.isEmpty()) {
-        Node node = domainQueue.poll(); // poll() Retrieves and removes the head of this queue
-        if (obstacleQuery.isDisjoint(traj_from_parent.get(node))) { // no collision
-          current_node.addChild(node);
-          insert(domain_key, node);
-          if (!goalQuery.isDisjoint(traj_from_parent.get(node)))
-            offerDestination(node);
+        Node next = domainQueue.poll(); // poll() Retrieves and removes the head of this queue
+        if (obstacleQuery.isDisjoint(connectors.get(next))) { // no collision
+          node.addChild(next);
+          insert(domain_key, next);
+          if (!goalQuery.isDisjoint(connectors.get(next)))
+            offerDestination(next);
           break; // leaves the while loop, but not the for loop
         }
       }
@@ -91,7 +89,7 @@ public class DefaultTrajectoryPlanner extends TrajectoryPlanner {
 
   @Override
   protected Node createRootNode(Tensor x) {
-    return new Node(null, x, ZeroScalar.get(), ZeroScalar.get(), costFunction.minCostToGoal(x));
+    return new Node(null, new StateTime(x, ZeroScalar.get()), ZeroScalar.get(), costFunction.minCostToGoal(x));
   }
 
   @Override

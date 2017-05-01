@@ -1,8 +1,6 @@
 // code by jph
 package ch.ethz.idsc.owly.math.region;
 
-import ch.ethz.idsc.owly.math.region.HyperplaneRegion;
-import ch.ethz.idsc.owly.math.region.Region;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Tensors;
 import junit.framework.TestCase;

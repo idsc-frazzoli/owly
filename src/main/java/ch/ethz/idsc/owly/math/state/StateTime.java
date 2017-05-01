@@ -4,7 +4,7 @@ package ch.ethz.idsc.owly.math.state;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
 
-public class StateTime {
+public final class StateTime {
   private final Tensor x;
   private final Scalar time;
 
