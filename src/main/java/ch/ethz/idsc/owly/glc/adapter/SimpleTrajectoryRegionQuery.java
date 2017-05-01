@@ -2,17 +2,19 @@
 package ch.ethz.idsc.owly.glc.adapter;
 
 import java.util.Collection;
-import java.util.Collections;
-import java.util.LinkedList;
 import java.util.List;
 
-import ch.ethz.idsc.owly.glc.core.StateTime;
-import ch.ethz.idsc.owly.glc.core.StateTimeRegion;
-import ch.ethz.idsc.owly.glc.core.TrajectoryRegionQuery;
+import ch.ethz.idsc.owly.data.LinearRasterMap;
+import ch.ethz.idsc.owly.data.RasterMap;
+import ch.ethz.idsc.owly.math.state.AbstractTrajectoryRegionQuery;
+import ch.ethz.idsc.owly.math.state.StateTime;
+import ch.ethz.idsc.owly.math.state.StateTimeRegion;
+import ch.ethz.idsc.tensor.Tensors;
 
-public class SimpleTrajectoryRegionQuery implements TrajectoryRegionQuery {
+public class SimpleTrajectoryRegionQuery extends AbstractTrajectoryRegionQuery {
   private final StateTimeRegion stateTimeRegion;
-  private final List<StateTime> discoveredMembers = new LinkedList<>();
+  // TODO magic constants of scale are not universal
+  private final RasterMap<StateTime> discoveredMembers = new LinearRasterMap<>(Tensors.vector(10, 10));
 
   public SimpleTrajectoryRegionQuery(StateTimeRegion stateTimeRegion) {
     this.stateTimeRegion = stateTimeRegion;
@@ -24,7 +26,7 @@ public class SimpleTrajectoryRegionQuery implements TrajectoryRegionQuery {
     for (StateTime stateTime : trajectory) {
       ++index;
       if (stateTimeRegion.isMember(stateTime)) {
-        discoveredMembers.add(stateTime); // TODO make sure that this doesn't grow indefinitely
+        discoveredMembers.put(stateTime.x().extract(0, 2), stateTime);
         return index;
       }
     }
@@ -32,6 +34,6 @@ public class SimpleTrajectoryRegionQuery implements TrajectoryRegionQuery {
   }
 
   public Collection<StateTime> getDiscoveredMembers() {
-    return Collections.unmodifiableCollection(discoveredMembers);
+    return discoveredMembers.values();
   }
 }

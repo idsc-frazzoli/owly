@@ -2,7 +2,7 @@
 package ch.ethz.idsc.owly.demo.glc.rn;
 
 import ch.ethz.idsc.owly.glc.adapter.RnPointcloudRegion;
-import ch.ethz.idsc.owly.math.Region;
+import ch.ethz.idsc.owly.math.region.Region;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Tensors;
 import junit.framework.TestCase;

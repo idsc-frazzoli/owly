@@ -5,8 +5,8 @@ import java.io.File;
 import java.io.IOException;
 import java.util.zip.DataFormatException;
 
-import ch.ethz.idsc.owly.math.ImageRegion;
-import ch.ethz.idsc.owly.math.Region;
+import ch.ethz.idsc.owly.math.region.ImageRegion;
+import ch.ethz.idsc.owly.math.region.Region;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.alg.TensorRank;
 import ch.ethz.idsc.tensor.io.Import;

@@ -1,7 +1,6 @@
 // code by bapaden and jph
 package ch.ethz.idsc.owly.glc.core;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -9,26 +8,23 @@ import java.util.List;
 import java.util.Map;
 import java.util.PriorityQueue;
 import java.util.Queue;
+import java.util.stream.Collectors;
 
-import ch.ethz.idsc.owly.math.flow.Flow;
-import ch.ethz.idsc.owly.math.flow.Integrator;
-import ch.ethz.idsc.tensor.Scalar;
+import ch.ethz.idsc.owly.math.state.StateTime;
+import ch.ethz.idsc.owly.math.state.TrajectoryRegionQuery;
 import ch.ethz.idsc.tensor.Scalars;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.sca.Floor;
 
-public abstract class TrajectoryPlanner {
-  protected final Integrator integrator;
-  protected final Scalar timeStep;
+/** base class for generalized label correction implementation */
+public abstract class TrajectoryPlanner implements ExpandInterface {
   private final Tensor partitionScale;
   // ---
   private final Queue<Node> queue = new PriorityQueue<>(NodeMeritComparator.instance);
-  private final Map<Tensor, Node> domain_labels = new HashMap<>();
+  // TODO long-term use RasterMap instead of domainMap
+  private final Map<Tensor, Node> domainMap = new HashMap<>();
 
-  public TrajectoryPlanner( // ..
-      Integrator integrator, Scalar timeStep, Tensor partitionScale) {
-    this.integrator = integrator;
-    this.timeStep = timeStep;
+  TrajectoryPlanner(Tensor partitionScale) {
     this.partitionScale = partitionScale;
   }
 
@@ -36,7 +32,7 @@ public abstract class TrajectoryPlanner {
     return partitionScale.unmodifiable();
   }
 
-  protected final Tensor convertToKey(Tensor x) {
+  protected Tensor convertToKey(Tensor x) {
     return partitionScale.pmul(x).map(Floor.function);
   }
 
@@ -48,87 +44,50 @@ public abstract class TrajectoryPlanner {
 
   protected final void insert(Tensor domain_key, Node node) {
     queue.add(node);
-    domain_labels.put(domain_key, node);
+    domainMap.put(domain_key, node);
   }
 
   protected final Node getNode(Tensor domain_key) {
-    return domain_labels.get(domain_key);
+    return domainMap.get(domain_key);
   }
 
   private Node best;
   int replaceCount = 0; // TODO
-  public Integer depthLimit = null;
 
-  public final int plan(int expandLimit) {
-    best = null;
-    int expandCount = 0;
-    while (!queue.isEmpty() && expandCount < expandLimit) {
-      Node current_node = queue.poll();
-      expand(current_node);
-      ++expandCount;
-      // ---
-      if (best != null)
-        break;
-      if (depthLimit!=null && current_node.getDepth() > depthLimit)
-        break;
-    }
-    return expandCount;
+  @Override // from ExpandInterface
+  public final Node pollNext() {
+    return queue.isEmpty() ? null : queue.poll();
   }
 
-  abstract protected void expand(Node current_node);
-
   protected final void offerDestination(Node node) {
-    if (best == null || Scalars.lessThan(node.cost, best.cost)) {
+    if (best == null || Scalars.lessThan(node.cost(), best.cost())) {
       best = node;
       System.out.println("found goal");
     }
   }
+
+  @Override // from ExpandInterface
+  public final Node getBest() {
+    return best;
+  }
+
+  // TODO api not finalized
+  public abstract List<StateTime> detailedTrajectoryToGoal();
 
   public final Collection<Node> getQueue() {
     return Collections.unmodifiableCollection(queue);
   }
 
   public final Collection<Node> getNodes() {
-    return Collections.unmodifiableCollection(domain_labels.values());
-  }
-
-  public final List<StateTime> getDetailedTrajectory() {
-    return getDetailedTrajectory(Nodes.getNodesFromRoot(best));
-  }
-
-  public final List<StateTime> getDetailedTrajectory(List<Node> list) {
-    List<StateTime> trajectory = new ArrayList<>();
-    if (!list.isEmpty()) {
-      trajectory.add(list.get(0).getStateTime());
-      for (int index = 1; index < list.size(); ++index) {
-        Node prevNode = list.get(index - 1);
-        Node nextNode = list.get(index);
-        final Flow flow = nextNode.flow;
-        List<StateTime> part = new ArrayList<>();
-        {
-          StateTime prev = prevNode.getStateTime();
-          while (Scalars.lessThan(prev.time, nextNode.time)) {
-            Tensor x1 = integrator.step(flow, prev.x, timeStep);
-            StateTime next = new StateTime(x1, prev.time.add(timeStep));
-            part.add(next);
-            prev = next;
-          }
-        }
-        trajectory.addAll(part);
-      }
-    }
-    return trajectory;
+    return Collections.unmodifiableCollection(domainMap.values());
   }
 
   public final List<StateTime> getPathFromRootToGoal() {
-    return getPathFromRootToGoal(Nodes.getNodesFromRoot(best));
+    return getPathFromRootToGoal(Nodes.nodesFromRoot(best));
   }
 
   public static List<StateTime> getPathFromRootToGoal(List<Node> list) {
-    List<StateTime> trajectory = new ArrayList<>();
-    for (Node node : list)
-      trajectory.add(node.getStateTime());
-    return trajectory;
+    return list.stream().map(Node::stateTime).collect(Collectors.toList());
   }
 
   public abstract TrajectoryRegionQuery getObstacleQuery();
