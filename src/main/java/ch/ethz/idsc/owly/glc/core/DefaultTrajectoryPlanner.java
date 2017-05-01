@@ -46,9 +46,9 @@ public class DefaultTrajectoryPlanner extends TrajectoryPlanner {
     for (final Flow flow : controls) {
       final List<StateTime> trajectory = stateIntegrator.trajectory(current_node.getStateTime(), flow);
       final StateTime last = Trajectories.getLast(trajectory);
-      final Node new_arc = new Node(flow, last.x, last.time, //
+      final Node new_arc = new Node(flow, last.x(), last.time(), //
           current_node.cost().add(costFunction.costIncrement(current_node.getStateTime(), trajectory, flow)), // new_arc.cost
-          costFunction.minCostToGoal(last.x) // new_arc.merit
+          costFunction.minCostToGoal(last.x()) // new_arc.merit
       );
       traj_from_parent.put(new_arc, trajectory);
       // ---

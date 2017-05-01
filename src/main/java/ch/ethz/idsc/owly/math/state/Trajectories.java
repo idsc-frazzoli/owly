@@ -18,7 +18,7 @@ public enum Trajectories {
    * @param trajectory
    * @return time increment between given from State and end of trajectory */
   public static Scalar timeIncrement(StateTime from, List<StateTime> trajectory) {
-    Scalar dt = getLast(trajectory).time.subtract(from.time);
+    Scalar dt = getLast(trajectory).time().subtract(from.time());
     if (Scalars.lessEquals(dt, ZeroScalar.get()))
       throw new RuntimeException();
     return dt;
@@ -31,7 +31,7 @@ public enum Trajectories {
   public static void print(List<StateTime> list) {
     System.out.println("Trajectory (" + list.size() + ")");
     for (StateTime stateTime : list)
-      System.out.println(stateTime);
+      System.out.println(stateTime.info());
   }
 
   public static List<StateTime> connect(StateIntegrator stateIntegrator, List<Node> list) {

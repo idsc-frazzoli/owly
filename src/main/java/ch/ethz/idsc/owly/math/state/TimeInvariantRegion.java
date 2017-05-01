@@ -12,6 +12,6 @@ public final class TimeInvariantRegion implements StateTimeRegion {
 
   @Override
   public boolean isMember(StateTime stateTime) {
-    return region.isMember(stateTime.x);
+    return region.isMember(stateTime.x());
   }
 }

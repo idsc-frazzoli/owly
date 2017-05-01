@@ -39,8 +39,8 @@ public class StateIntegrator {
     StateTime prev = stateTime;
     for (int count = 0; count < trajectorySize; ++count) {
       StateTime next = new StateTime( //
-          integrator.step(flow, prev.x, timeStep), //
-          prev.time.add(timeStep));
+          integrator.step(flow, prev.x(), timeStep), //
+          prev.time().add(timeStep));
       trajectory.add(next);
       prev = next;
     }

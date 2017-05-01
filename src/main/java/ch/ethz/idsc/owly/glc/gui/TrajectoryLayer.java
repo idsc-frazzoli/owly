@@ -28,7 +28,7 @@ public class TrajectoryLayer extends AbstractLayer {
       StateTime prev = null;
       for (StateTime stateTime : trajectory) {
         if (prev != null) {
-          Point2D p = toPoint2D(prev.x);
+          Point2D p = toPoint2D(prev.x());
           Shape shape = new Rectangle2D.Double(p.getX(), p.getY(), 2, 2);
           graphics.draw(shape);
         }
@@ -42,7 +42,7 @@ public class TrajectoryLayer extends AbstractLayer {
       StateTime prev = null;
       for (StateTime stateTime : trajectory) {
         if (prev != null)
-          graphics.draw(new Line2D.Double(toPoint2D(prev.x), toPoint2D(stateTime.x)));
+          graphics.draw(new Line2D.Double(toPoint2D(prev.x()), toPoint2D(stateTime.x())));
         prev = stateTime;
       }
       graphics.setStroke(new BasicStroke());
@@ -52,8 +52,8 @@ public class TrajectoryLayer extends AbstractLayer {
       if (trq instanceof SimpleTrajectoryRegionQuery) {
         SimpleTrajectoryRegionQuery strq = (SimpleTrajectoryRegionQuery) trq;
         graphics.setColor(new Color(255, 0, 0, 255));
-        for (StateTime st : strq.getDiscoveredMembers()) {
-          Point2D p = toPoint2D(st.x);
+        for (StateTime stateTime : strq.getDiscoveredMembers()) {
+          Point2D p = toPoint2D(stateTime.x());
           Shape shape = new Rectangle2D.Double(p.getX(), p.getY(), 3, 3);
           graphics.fill(shape);
         }
