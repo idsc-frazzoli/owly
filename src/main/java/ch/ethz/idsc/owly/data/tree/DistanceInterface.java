@@ -1,6 +1,6 @@
 // code by Eric Simonton
 // adapted by jph and clruch
-package ch.ethz.idsc.owly.tree;
+package ch.ethz.idsc.owly.data.tree;
 
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;

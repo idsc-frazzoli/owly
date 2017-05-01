@@ -1,6 +1,6 @@
 // code by Eric Simonton
 // adapted by jph and clruch
-package ch.ethz.idsc.owly.tree;
+package ch.ethz.idsc.owly.data.tree;
 
 import java.util.Iterator;
 import java.util.PriorityQueue;
