@@ -1,7 +1,6 @@
 // code by jph
-package ch.ethz.idsc.owly.glc.adapter;
+package ch.ethz.idsc.owly.math.region;
 
-import ch.ethz.idsc.owly.math.Region;
 import ch.ethz.idsc.tensor.Tensor;
 
 public class EmptyRegion implements Region {

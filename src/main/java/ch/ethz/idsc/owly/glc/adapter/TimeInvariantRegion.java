@@ -1,7 +1,7 @@
 // code by bapaden and jph
 package ch.ethz.idsc.owly.glc.adapter;
 
-import ch.ethz.idsc.owly.math.Region;
+import ch.ethz.idsc.owly.math.region.Region;
 import ch.ethz.idsc.owly.math.state.StateTime;
 import ch.ethz.idsc.owly.math.state.StateTimeRegion;
 
