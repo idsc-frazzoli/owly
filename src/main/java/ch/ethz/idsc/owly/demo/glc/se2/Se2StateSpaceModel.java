@@ -9,7 +9,7 @@ import ch.ethz.idsc.tensor.Tensors;
 import ch.ethz.idsc.tensor.sca.Cos;
 import ch.ethz.idsc.tensor.sca.Sin;
 
-class Se2StateSpaceModel implements StateSpaceModel {
+public class Se2StateSpaceModel implements StateSpaceModel {
   @Override
   public Tensor createFlow(Tensor x, Tensor u) {
     // u only contains angle, single elements
