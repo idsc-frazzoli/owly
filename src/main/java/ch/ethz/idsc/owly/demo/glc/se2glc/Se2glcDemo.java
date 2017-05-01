@@ -14,6 +14,7 @@ import ch.ethz.idsc.owly.glc.adapter.HyperplaneRegion;
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
 import ch.ethz.idsc.owly.glc.adapter.TimeInvariantRegion;
 import ch.ethz.idsc.owly.glc.core.DefaultTrajectoryPlanner;
+import ch.ethz.idsc.owly.glc.core.Parameters;
 import ch.ethz.idsc.owly.glc.core.StateTime;
 import ch.ethz.idsc.owly.glc.core.Trajectories;
 import ch.ethz.idsc.owly.glc.core.TrajectoryPlanner;
@@ -34,6 +35,13 @@ import ch.ethz.idsc.tensor.Tensors;
 class Se2glcDemo {
   public static void main(String[] args) {
     Integrator integrator = new EulerIntegrator();
+    Parameters parameters = new Parameters();
+    
+    parameters.setResolution(8);
+    parameters.setDepthScale(RealScalar.of(100));
+    parameters.setDtMax(RationalScalar.of(1, 5));
+    parameters.setPartitionScale(parameters.)
+    
     // ---
     Scalar dtMax = RationalScalar.of(1, 6);
     int trajectorySize = 5;
