@@ -44,15 +44,15 @@ public class DefaultTrajectoryPlanner extends TrajectoryPlanner {
       final List<StateTime> trajectory = stateIntegrator.trajectory(current_node.getStateTime(), flow);
       final StateTime last = Trajectories.getLast(trajectory);
       final Node new_arc = new Node(flow, last.x, last.time, //
-          current_node.cost.add(costFunction.costIncrement(current_node.getStateTime(), trajectory, flow)), // new_arc.cost
+          current_node.cost().add(costFunction.costIncrement(current_node.getStateTime(), trajectory, flow)), // new_arc.cost
           costFunction.minCostToGoal(last.x) // new_arc.merit
       );
       traj_from_parent.put(new_arc, trajectory);
       // ---
-      final Tensor domain_key = convertToKey(new_arc.x);
+      final Tensor domain_key = convertToKey(new_arc.x());
       final Node prev = getNode(domain_key);
       if (prev != null) { // already some node present from previous exploration
-        if (Scalars.lessThan(new_arc.cost, prev.cost)) // new node is better than previous one
+        if (Scalars.lessThan(new_arc.cost(), prev.cost())) // new node is better than previous one
           if (candidates.containsKey(domain_key))
             candidates.get(domain_key).add(new_arc);
           else

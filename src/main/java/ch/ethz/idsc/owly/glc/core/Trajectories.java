@@ -35,15 +35,15 @@ public enum Trajectories {
       System.out.println(stateTime);
   }
 
-  public static List<StateTime> connect(StateIntegrator integrationConfig, List<Node> list) {
+  public static List<StateTime> connect(StateIntegrator stateIntegrator, List<Node> list) {
     List<StateTime> trajectory = new ArrayList<>();
     if (!list.isEmpty()) {
       trajectory.add(list.get(0).getStateTime()); // add first node
       for (int index = 1; index < list.size(); ++index) {
         Node prevNode = list.get(index - 1);
         Node nextNode = list.get(index);
-        final Flow flow = nextNode.flow;
-        trajectory.addAll(integrationConfig.trajectory(prevNode.getStateTime(), flow));
+        final Flow flow = nextNode.flow();
+        trajectory.addAll(stateIntegrator.trajectory(prevNode.getStateTime(), flow));
       }
     }
     return trajectory;

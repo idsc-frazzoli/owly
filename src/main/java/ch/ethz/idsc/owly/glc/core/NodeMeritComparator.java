@@ -10,6 +10,6 @@ enum NodeMeritComparator implements Comparator<Node> {
   // ---
   @Override
   public int compare(Node o1, Node o2) {
-    return Scalars.compare(o1.merit, o2.merit);
+    return Scalars.compare(o1.merit(), o2.merit());
   }
 }

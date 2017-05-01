@@ -60,7 +60,7 @@ public abstract class TrajectoryPlanner implements ExpandInterface {
   }
 
   protected final void offerDestination(Node node) {
-    if (best == null || Scalars.lessThan(node.cost, best.cost)) {
+    if (best == null || Scalars.lessThan(node.cost(), best.cost())) {
       best = node;
       System.out.println("found goal");
     }

@@ -10,6 +10,6 @@ enum NodeCostComparator implements Comparator<Node> {
   // ---
   @Override
   public int compare(Node o1, Node o2) {
-    return Scalars.compare(o1.cost, o2.cost);
+    return Scalars.compare(o1.cost(), o2.cost());
   }
 }

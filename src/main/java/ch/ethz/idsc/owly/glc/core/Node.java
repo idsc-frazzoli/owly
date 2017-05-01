@@ -12,11 +12,11 @@ import ch.ethz.idsc.tensor.Tensor;
 /** glc specific node */
 public class Node {
   /** flow is null for root node */
-  public final Flow flow;
-  public final Tensor x;
-  public final Scalar time;
-  public final Scalar cost;
-  public final Scalar merit;
+  private final Flow flow;
+  private final Tensor x;
+  private final Scalar time;
+  private final Scalar cost;
+  private final Scalar merit;
   private final Map<Flow, Node> children = new HashMap<>();
   /** parent is null for root node */
   private Node parent = null;
@@ -40,6 +40,22 @@ public class Node {
     child.parent = this;
     child.depth = depth + 1;
     children.put(child.flow, child);
+  }
+
+  public Tensor x() {
+    return x.unmodifiable();
+  }
+
+  public Flow flow() {
+    return flow;
+  }
+
+  public Scalar cost() {
+    return cost;
+  }
+
+  public Scalar merit() {
+    return merit;
   }
 
   public StateTime getStateTime() {
