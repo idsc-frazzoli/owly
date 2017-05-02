@@ -79,6 +79,10 @@ public class Parameters {
     return (Scalar) Ceiling.of(this.expandTime.divide(this.dtMax));
   }
 
+  public int getResolution() {
+    return resolution;
+  }
+
   /** @param resolution: set Resolution of GLC */
   public void setResolution(int resolution) {
     this.resolution = resolution;

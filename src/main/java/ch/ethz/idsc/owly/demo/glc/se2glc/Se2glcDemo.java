@@ -30,6 +30,7 @@ import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
+import ch.ethz.idsc.tensor.sca.Log;
 
 /** (x,y,theta) */
 class Se2glcDemo {
@@ -40,7 +41,7 @@ class Se2glcDemo {
     parameters.setResolution(8);
     parameters.setDepthScale(RealScalar.of(100));
     parameters.setDtMax(RationalScalar.of(1, 5));
-    parameters.setPartitionScale(parameters.)
+    //parameters.setPartitionScale(RealScalar.of(parameters.getResolution()).multiply(Log.function.apply(RealScalar.of(parameters.getResolution());
     
     // ---
     Scalar dtMax = RationalScalar.of(1, 6);
