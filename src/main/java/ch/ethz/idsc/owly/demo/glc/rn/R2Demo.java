@@ -50,7 +50,7 @@ class R2Demo {
   }
 
   public static void main(String[] args) {
-    Tensor partitionScale = Tensors.vector(4, 4);
+    Tensor eta = Tensors.vector(4, 4);
     StateIntegrator stateIntegrator = FixedStateIntegrator.create(new EulerIntegrator(), RationalScalar.of(1, 5), 5);
     Collection<Flow> controls = R2Controls.createControls(36);
     RnGoalManager rnGoal = new RnGoalManager(Tensors.vector(2, 2), DoubleScalar.of(.25));
@@ -60,7 +60,7 @@ class R2Demo {
         new TimeInvariantRegion(new R2Bubbles()));
     // ---
     TrajectoryPlanner trajectoryPlanner = new DefaultTrajectoryPlanner( //
-        partitionScale, stateIntegrator, controls, rnGoal, rnGoal, obstacleQuery);
+        eta, stateIntegrator, controls, rnGoal, rnGoal, obstacleQuery);
     trajectoryPlanner.insertRoot(Tensors.vector(-2, -2));
     int iters = Expand.maxSteps(trajectoryPlanner, 1400);
     List<StateTime> trajectory = trajectoryPlanner.getPathFromRootToGoal();
