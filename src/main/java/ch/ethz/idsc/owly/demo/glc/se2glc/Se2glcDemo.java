@@ -6,6 +6,7 @@ import java.util.List;
 
 import ch.ethz.idsc.owly.demo.glc.se2.Se2Controls;
 import ch.ethz.idsc.owly.demo.glc.se2.Se2GoalManager;
+import ch.ethz.idsc.owly.demo.glc.se2.Se2StateSpaceModel;
 import ch.ethz.idsc.owly.demo.glc.se2.Se2Utils;
 import ch.ethz.idsc.owly.demo.util.ImageRegions;
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
@@ -14,6 +15,7 @@ import ch.ethz.idsc.owly.glc.core.Expand;
 import ch.ethz.idsc.owly.glc.core.TrajectoryPlanner;
 import ch.ethz.idsc.owly.glc.gui.GlcFrame;
 import ch.ethz.idsc.owly.glc.wrap.Parameters;
+import ch.ethz.idsc.owly.math.StateSpaceModel;
 import ch.ethz.idsc.owly.math.flow.EulerIntegrator;
 import ch.ethz.idsc.owly.math.flow.Flow;
 import ch.ethz.idsc.owly.math.flow.Integrator;
@@ -30,24 +32,26 @@ import ch.ethz.idsc.tensor.DoubleScalar;
 import ch.ethz.idsc.tensor.RationalScalar;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
+import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
 
 /** (x,y,theta) */
 class Se2glcDemo {
   public static void main(String[] args) throws Exception {
-    Region region = ImageRegions.loadFromLocalPath( //
-        "/home/jolo1992/track0_local.png", Tensors.vector(10, 10));
-    
-    Integrator integrator = new EulerIntegrator();
-    Parameters parameters = new Parameters(16,RealScalar.of(10), RealScalar.of(5), Tensors.vector(3,3,15), RationalScalar.of(1, 6), 2000);
-    // ---
+    int resolution = 8;
+    Scalar timeScale = RealScalar.of(10);
+    Scalar depthScale = RealScalar.of(5);
+    Tensor partitionScale = Tensors.vector(3, 3, 15);
     Scalar dtMax = RationalScalar.of(1, 6);
-    Scalar Lipschitz = RealScalar.of(0); //TODO change to ZERO
+    int maxIter = 2000;
+    // --
+    Parameters parameters = new Parameters(resolution, timeScale, depthScale, partitionScale,dtMax, maxIter);
+    StateSpaceModel stateSpaceModel = new Se2StateSpaceModel();
+    Scalar Lipschitz = stateSpaceModel.getLipschitz(); // TODO possible without creation of StateSpaceModel?
     StateIntegrator stateIntegrator = FixedStateIntegrator.createDefault(parameters.getdtMax(), parameters.getTrajectorySize());
     // ---
-    
     System.out.println("scale=" + parameters.getEta(Lipschitz));
-    
+    parameters.printResolution();
     Collection<Flow> controls = Se2Controls.createControls(Se2Utils.DEGREE(45), 6);
     Se2GoalManager se2GoalManager = new Se2GoalManager( //
         Tensors.vector(0, 1), RealScalar.of(Math.PI), //
@@ -66,7 +70,7 @@ class Se2glcDemo {
     // ---
     trajectoryPlanner.insertRoot(Tensors.vector(0, 0, 0));
     int iters = Expand.maxDepth(trajectoryPlanner, parameters.getDepthLimit());
-    System.out.println(iters);
+    System.out.println("After" + iters);
     List<StateTime> trajectory = trajectoryPlanner.getPathFromRootToGoal();
     Trajectories.print(trajectory);
     GlcFrame glcFrame = new GlcFrame();
