@@ -41,7 +41,7 @@ class Se2glcDemo {
     int resolution = 8;
     Scalar timeScale = RealScalar.of(10);
     Scalar depthScale = RealScalar.of(5);
-    Tensor partitionScale = Tensors.vector(6, 6, 15);
+    Tensor partitionScale = Tensors.vector(3, 3, 15);
     Scalar dtMax = RationalScalar.of(1, 6);
     int maxIter = 2000;
     // --
@@ -70,7 +70,7 @@ class Se2glcDemo {
     // ---
     trajectoryPlanner.insertRoot(Tensors.vector(0, 0, 0));
     int iters = Expand.maxDepth(trajectoryPlanner, parameters.getDepthLimit());
-    System.out.println("After" + iters);
+    System.out.println("After " + iters+ "iterations");
     List<StateTime> trajectory = trajectoryPlanner.getPathFromRootToGoal();
     Trajectories.print(trajectory);
     GlcFrame glcFrame = new GlcFrame();
