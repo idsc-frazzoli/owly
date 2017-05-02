@@ -25,14 +25,14 @@ import ch.ethz.idsc.tensor.Tensors;
  * "A Generalized Label Correcting Method for Optimal Kinodynamic Motion Planning" [Paden/Frazzoli] */
 public class PsuDemo {
   public static void main(String[] args) {
-    Tensor partitionScale = Tensors.vector(5, 7);
+    Tensor eta = Tensors.vector(5, 7);
     StateIntegrator stateIntegrator = FixedStateIntegrator.createDefault(RationalScalar.of(1, 4), 5);
     Collection<Flow> controls = PsuControls.createControls(0.2, 6);
     PsuGoalManager psuGoalManager = new PsuGoalManager(Tensors.vector(.1, .1));
     TrajectoryRegionQuery obstacleQuery = new EmptyTrajectoryRegionQuery();
     // ---
     TrajectoryPlanner trajectoryPlanner = new DefaultTrajectoryPlanner( //
-        partitionScale, stateIntegrator, controls, psuGoalManager, psuGoalManager, obstacleQuery);
+        eta, stateIntegrator, controls, psuGoalManager, psuGoalManager, obstacleQuery);
     // ---
     trajectoryPlanner.insertRoot(Tensors.vector(0, 0));
     int iters = Expand.maxSteps(trajectoryPlanner, 1000);

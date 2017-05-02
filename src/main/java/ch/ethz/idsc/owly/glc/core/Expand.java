@@ -27,8 +27,10 @@ public enum Expand {
    * 
    * @param expandInterface
    * @param depthLimit */
-  public static void maxDepth(ExpandInterface expandInterface, int depthLimit) {
+  public static int maxDepth(ExpandInterface expandInterface, int depthLimit) {
+    int expandCount = 0;
     while (true) {
+      expandCount++;
       Node node = expandInterface.pollNext();
       if (node == null) // queue is empty
         break;
@@ -38,5 +40,6 @@ public enum Expand {
       if (depthLimit < node.depth())
         break;
     }
+    return expandCount;
   }
 }

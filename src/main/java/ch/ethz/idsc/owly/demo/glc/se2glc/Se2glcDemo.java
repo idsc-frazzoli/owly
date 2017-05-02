@@ -6,6 +6,7 @@ import java.util.List;
 
 import ch.ethz.idsc.owly.demo.glc.se2.Se2Controls;
 import ch.ethz.idsc.owly.demo.glc.se2.Se2GoalManager;
+import ch.ethz.idsc.owly.demo.glc.se2.Se2StateSpaceModel;
 import ch.ethz.idsc.owly.demo.glc.se2.Se2Utils;
 import ch.ethz.idsc.owly.demo.util.ImageRegions;
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
@@ -14,9 +15,11 @@ import ch.ethz.idsc.owly.glc.core.Expand;
 import ch.ethz.idsc.owly.glc.core.TrajectoryPlanner;
 import ch.ethz.idsc.owly.glc.gui.GlcFrame;
 import ch.ethz.idsc.owly.glc.wrap.Parameters;
+import ch.ethz.idsc.owly.math.StateSpaceModel;
 import ch.ethz.idsc.owly.math.flow.EulerIntegrator;
 import ch.ethz.idsc.owly.math.flow.Flow;
 import ch.ethz.idsc.owly.math.flow.Integrator;
+import ch.ethz.idsc.owly.math.region.HyperplaneRegion;
 import ch.ethz.idsc.owly.math.region.Region;
 import ch.ethz.idsc.owly.math.region.RegionUnion;
 import ch.ethz.idsc.owly.math.state.FixedStateIntegrator;
@@ -35,22 +38,20 @@ import ch.ethz.idsc.tensor.Tensors;
 /** (x,y,theta) */
 class Se2glcDemo {
   public static void main(String[] args) throws Exception {
-    Region region = ImageRegions.loadFromLocalPath( //
-        "/home/jolo1992/track0_local.png", Tensors.vector(10, 10));
-    Integrator integrator = new EulerIntegrator();
-    Parameters parameters = new Parameters();
-    parameters.setResolution(8);
-    parameters.setDepthScale(RealScalar.of(100));
-    parameters.setDtMax(RationalScalar.of(1, 5));
-    // parameters.setPartitionScale(RealScalar.of(parameters.getResolution()).multiply(Log.function.apply(RealScalar.of(parameters.getResolution());
-    // ---
+    int resolution = 8;
+    Scalar timeScale = RealScalar.of(10);
+    Scalar depthScale = RealScalar.of(5);
+    Tensor partitionScale = Tensors.vector(6, 6, 15);
     Scalar dtMax = RationalScalar.of(1, 6);
-    int trajectorySize = 5;
-    int depthLimit = 1000;
-    StateIntegrator stateIntegrator = FixedStateIntegrator.createDefault(dtMax, trajectorySize);
+    int maxIter = 2000;
+    // --
+    Parameters parameters = new Parameters(resolution, timeScale, depthScale, partitionScale,dtMax, maxIter);
+    StateSpaceModel stateSpaceModel = new Se2StateSpaceModel();
+    Scalar Lipschitz = stateSpaceModel.getLipschitz(); // TODO possible without creation of StateSpaceModel?
+    StateIntegrator stateIntegrator = FixedStateIntegrator.createDefault(parameters.getdtMax(), parameters.getTrajectorySize());
     // ---
-    Tensor eta = Tensors.vector(3, 3, 15); // TODO instead of 15 use multiple of PI... not 1/3?
-    System.out.println("scale=" + eta);
+    System.out.println("scale=" + parameters.getEta(Lipschitz));
+    parameters.printResolution();
     Collection<Flow> controls = Se2Controls.createControls(Se2Utils.DEGREE(45), 6);
     Se2GoalManager se2GoalManager = new Se2GoalManager( //
         Tensors.vector(0, 1), RealScalar.of(Math.PI), //
@@ -60,18 +61,16 @@ class Se2glcDemo {
     TrajectoryRegionQuery obstacleQuery = //
         new SimpleTrajectoryRegionQuery(new TimeInvariantRegion( //
             RegionUnion.of( //
-                region
-            // ,
-            // new HyperplaneRegion(Tensors.vector(0, -1, 0), RealScalar.of(1.5)), //
-            // new HyperplaneRegion(Tensors.vector(0, +1, 0), RealScalar.of(2.0)) //
+                new HyperplaneRegion(Tensors.vector(0, -1, 0), RealScalar.of(1.5)), //
+                new HyperplaneRegion(Tensors.vector(0, +1, 0), RealScalar.of(2.0)) //
             )));
     // ---
     TrajectoryPlanner trajectoryPlanner = new DefaultTrajectoryPlanner( //
-        eta, stateIntegrator, controls, se2GoalManager, goalQuery, obstacleQuery);
+        parameters.getEta(Lipschitz), stateIntegrator, controls, se2GoalManager, goalQuery, obstacleQuery);
     // ---
     trajectoryPlanner.insertRoot(Tensors.vector(0, 0, 0));
-    int iters = Expand.maxSteps(trajectoryPlanner, 2000);
-    System.out.println(iters);
+    int iters = Expand.maxDepth(trajectoryPlanner, parameters.getDepthLimit());
+    System.out.println("After" + iters);
     List<StateTime> trajectory = trajectoryPlanner.getPathFromRootToGoal();
     Trajectories.print(trajectory);
     GlcFrame glcFrame = new GlcFrame();

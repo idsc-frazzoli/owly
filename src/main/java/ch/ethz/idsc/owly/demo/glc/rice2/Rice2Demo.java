@@ -27,7 +27,7 @@ import ch.ethz.idsc.tensor.Tensors;
 class Rice2Demo {
   // TODO in general ensure that goal region contains at least 1 domain etc.
   public static void main(String[] args) {
-    Tensor partitionScale = Tensors.vector(3, 3, 6, 6);
+    Tensor eta = Tensors.vector(3, 3, 6, 6);
     StateIntegrator stateIntegrator = FixedStateIntegrator.createDefault(RationalScalar.of(1, 2), 5);
     Collection<Flow> controls = Rice2Controls.createControls(RealScalar.of(.5), 3, 15);
     Rice2GoalManager rice2Goal = new Rice2GoalManager( //
@@ -42,7 +42,7 @@ class Rice2Demo {
             )));
     // ---
     TrajectoryPlanner trajectoryPlanner = new DefaultTrajectoryPlanner( //
-        partitionScale, stateIntegrator, controls, rice2Goal, rice2Goal, obstacleQuery);
+        eta, stateIntegrator, controls, rice2Goal, rice2Goal, obstacleQuery);
     // ---
     trajectoryPlanner.insertRoot(Tensors.vector(0, 0, 0, 0));
     int iters = Expand.maxSteps(trajectoryPlanner, 1000);

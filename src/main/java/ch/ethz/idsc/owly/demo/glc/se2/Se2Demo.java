@@ -27,9 +27,9 @@ import ch.ethz.idsc.tensor.Tensors;
 /** (x,y,theta) */
 class Se2Demo {
   public static void main(String[] args) {
-    Tensor partitionScale = Tensors.vector(3, 3, 15); // TODO instead of 15 use multiple of PI...
+    Tensor eta = Tensors.vector(3, 3, 15); // TODO instead of 15 use multiple of PI...
     StateIntegrator stateIntegrator = FixedStateIntegrator.createDefault(RationalScalar.of(1, 6), 5);
-    System.out.println("scale=" + partitionScale);
+    System.out.println("scale=" + eta);
     Collection<Flow> controls = Se2Controls.createControls(Se2Utils.DEGREE(45), 6);
     Se2GoalManager se2GoalManager = new Se2GoalManager( //
         Tensors.vector(0, 1), RealScalar.of(Math.PI), //
@@ -44,7 +44,7 @@ class Se2Demo {
             )));
     // ---
     TrajectoryPlanner trajectoryPlanner = new DefaultTrajectoryPlanner( //
-        partitionScale, stateIntegrator, controls, se2GoalManager, goalQuery, obstacleQuery);
+        eta, stateIntegrator, controls, se2GoalManager, goalQuery, obstacleQuery);
     // ---
     trajectoryPlanner.insertRoot(Tensors.vector(0, 0, 0));
     int iters = Expand.maxSteps(trajectoryPlanner, 2000);
