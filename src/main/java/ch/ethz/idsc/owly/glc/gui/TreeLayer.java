@@ -21,7 +21,7 @@ class TreeLayer extends AbstractLayer {
   @Override
   void render(Graphics2D graphics, TrajectoryPlanner trajectoryPlanner) {
     DoubleSummaryStatistics dss = trajectoryPlanner.getNodes().stream() //
-        .map(n -> n.cost) //
+        .map(n -> n.cost()) //
         .map(Scalar::number) //
         .mapToDouble(Number::doubleValue) //
         .filter(Double::isFinite) //
@@ -30,14 +30,14 @@ class TreeLayer extends AbstractLayer {
     final double max = dss.getMax();
     graphics.setColor(Color.BLUE);
     for (Node node : trajectoryPlanner.getNodes()) {
-      double val = node.cost.number().doubleValue();
+      double val = node.cost().number().doubleValue();
       final double interp = (val - min) / (max - min);
       graphics.setColor(new Hue(interp, 1, 1, 1).rgba);
-      final Point2D p1 = toPoint2D(node.x);
+      final Point2D p1 = toPoint2D(node.stateTime().x());
       graphics.fill(new Rectangle2D.Double(p1.getX(), p1.getY(), 1, 1));
       if (!node.isRoot()) {
-        Node parent = node.getParent();
-        Point2D p2 = toPoint2D(parent.x);
+        Node parent = node.parent();
+        Point2D p2 = toPoint2D(parent.stateTime().x());
         graphics.setColor(new Hue(interp, 1, 1, .1).rgba);
         Shape shape = new Line2D.Double(p1.getX(), p1.getY(), p2.getX(), p2.getY());
         graphics.draw(shape);

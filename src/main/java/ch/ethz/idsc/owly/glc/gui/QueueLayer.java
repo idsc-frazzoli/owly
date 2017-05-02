@@ -18,10 +18,9 @@ class QueueLayer extends AbstractLayer {
 
   @Override
   void render(Graphics2D graphics, TrajectoryPlanner trajectoryPlanner) {
-    int rgb = 64;
-    graphics.setColor(new Color(rgb, rgb, rgb, 128));
+    graphics.setColor(new Color(0, 192, 192, 128));
     for (Node node : trajectoryPlanner.getQueue()) {
-      Tensor x = node.x;
+      Tensor x = node.stateTime().x();
       Point2D p = toPoint2D(x);
       Shape shape = new Rectangle2D.Double(p.getX() - 1, p.getY() - 1, 3, 3);
       graphics.fill(shape);

@@ -4,33 +4,32 @@ package ch.ethz.idsc.owly.demo.glc.se2glc;
 import java.util.Collection;
 import java.util.List;
 
-import ch.ethz.idsc.owly.demo.glc.se2.Se2Utils;
-import ch.ethz.idsc.owly.demo.glc.se2.Se2StateSpaceModel;
 import ch.ethz.idsc.owly.demo.glc.se2.Se2Controls;
 import ch.ethz.idsc.owly.demo.glc.se2.Se2GoalManager;
-import ch.ethz.idsc.owly.demo.glc.se2.Se2PointcloudRegion;
-
-import ch.ethz.idsc.owly.glc.adapter.HyperplaneRegion;
+import ch.ethz.idsc.owly.demo.glc.se2.Se2Utils;
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
-import ch.ethz.idsc.owly.glc.adapter.TimeInvariantRegion;
 import ch.ethz.idsc.owly.glc.core.DefaultTrajectoryPlanner;
+import ch.ethz.idsc.owly.glc.core.Expand;
 import ch.ethz.idsc.owly.glc.core.Parameters;
-import ch.ethz.idsc.owly.glc.core.StateTime;
-import ch.ethz.idsc.owly.glc.core.Trajectories;
 import ch.ethz.idsc.owly.glc.core.TrajectoryPlanner;
-import ch.ethz.idsc.owly.glc.core.TrajectoryRegionQuery;
 import ch.ethz.idsc.owly.glc.gui.GlcFrame;
-import ch.ethz.idsc.owly.math.RegionUnion;
 import ch.ethz.idsc.owly.math.flow.EulerIntegrator;
 import ch.ethz.idsc.owly.math.flow.Flow;
 import ch.ethz.idsc.owly.math.flow.Integrator;
+import ch.ethz.idsc.owly.math.region.HyperplaneRegion;
+import ch.ethz.idsc.owly.math.region.RegionUnion;
+import ch.ethz.idsc.owly.math.state.FixedStateIntegrator;
+import ch.ethz.idsc.owly.math.state.StateIntegrator;
+import ch.ethz.idsc.owly.math.state.StateTime;
+import ch.ethz.idsc.owly.math.state.TimeInvariantRegion;
+import ch.ethz.idsc.owly.math.state.Trajectories;
+import ch.ethz.idsc.owly.math.state.TrajectoryRegionQuery;
 import ch.ethz.idsc.tensor.DoubleScalar;
 import ch.ethz.idsc.tensor.RationalScalar;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
-import ch.ethz.idsc.tensor.sca.Log;
 
 /** (x,y,theta) */
 class Se2glcDemo {
@@ -47,6 +46,7 @@ class Se2glcDemo {
     Scalar dtMax = RationalScalar.of(1, 6);
     int trajectorySize = 5;
     int depthLimit = 1000;
+    StateIntegrator stateIntegrator = FixedStateIntegrator.createDefault(dtMax, trajectorySize);
     // ---
     Tensor eta = Tensors.vector(3, 3, 15); // TODO instead of 15 use multiple of PI... not 1/3?
     System.out.println("scale=" + eta);
@@ -64,10 +64,10 @@ class Se2glcDemo {
             )));
     // ---
     TrajectoryPlanner trajectoryPlanner = new DefaultTrajectoryPlanner( //
-        integrator, dtMax, eta, depthLimit, controls, trajectorySize, se2GoalManager, goalQuery, obstacleQuery);
+        eta, stateIntegrator, controls, se2GoalManager, goalQuery, obstacleQuery);
     // ---
     trajectoryPlanner.insertRoot(Tensors.vector(0, 0, 0));
-    int iters = trajectoryPlanner.plan(2000);
+    int iters = Expand.maxSteps(trajectoryPlanner, 2000);
     System.out.println(iters);
     List<StateTime> trajectory = trajectoryPlanner.getPathFromRootToGoal();
     Trajectories.print(trajectory);
