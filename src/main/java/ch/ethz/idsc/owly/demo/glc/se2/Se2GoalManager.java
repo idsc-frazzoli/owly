@@ -18,7 +18,7 @@ import ch.ethz.idsc.tensor.red.Norm;
 import ch.ethz.idsc.tensor.sca.Mod;
 
 /** Se2 goal region is not elliptic, therefore we implement {@link Region} */
-class Se2GoalManager implements Region, CostFunction {
+public class Se2GoalManager implements Region, CostFunction {
   static final Mod PRINCIPAL = Mod.function(RealScalar.of(2 * Math.PI), RealScalar.of(-Math.PI));
   // ---
   final Tensor xy;

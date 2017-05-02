@@ -18,22 +18,24 @@ import ch.ethz.idsc.tensor.sca.Floor;
 
 /** base class for generalized label correction implementation */
 public abstract class TrajectoryPlanner implements ExpandInterface {
-  private final Tensor partitionScale;
+  private final Tensor eta;
   // ---
   private final Queue<Node> queue = new PriorityQueue<>(NodeMeritComparator.instance);
   // TODO long-term use RasterMap instead of domainMap
   private final Map<Tensor, Node> domainMap = new HashMap<>();
 
-  TrajectoryPlanner(Tensor partitionScale) {
-    this.partitionScale = partitionScale;
+  TrajectoryPlanner(Tensor eta) {
+    this.eta = eta;
   }
 
   public final Tensor getResolution() {
-    return partitionScale.unmodifiable();
+    // TODO not theoretically correct
+    return eta.unmodifiable();
   }
 
   protected Tensor convertToKey(Tensor x) {
-    return partitionScale.pmul(x).map(Floor.function);
+    // TODO Theory: floor(eta*state) = floor(state / domain_size)
+    return eta.pmul(x).map(Floor.function);
   }
 
   protected abstract Node createRootNode(Tensor x);
