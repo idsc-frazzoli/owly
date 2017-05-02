@@ -1,5 +1,5 @@
 // code by jl
-package ch.ethz.idsc.owly.glc.core;
+package ch.ethz.idsc.owly.glc.wrap;
 
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
@@ -42,7 +42,7 @@ public class Parameters {
    * @param partitionScale Initial Partition Scale
    * @param maxIter, maximum iterations */
   public Parameters( //
-      int Resolution, Scalar timeScale, Scalar depthScale, Scalar partitionScale, Scalar dtMax) {
+      int resolution, Scalar timeScale, Scalar depthScale, Scalar partitionScale, Scalar dtMax) {
     this.resolution = resolution;
     this.timeScale = timeScale;
     this.depthScale = depthScale;
@@ -70,8 +70,7 @@ public class Parameters {
     if (Lipschitz.equals(ZeroScalar.get()))
       return RealScalar.of(this.resolution).multiply(Log.function.apply(RealScalar.of(this.resolution))).multiply(Log.function.apply(RealScalar.of(resolution)))
           .divide(this.partitionScale);
-    else
-      return Power.of(RealScalar.of(this.resolution), RealScalar.ONE.add(Lipschitz)).divide(this.partitionScale);
+    return Power.of(RealScalar.of(this.resolution), RealScalar.ONE.add(Lipschitz)).divide(this.partitionScale);
   }
 
   /** @return trajectory size with current expandtime and dtMax */

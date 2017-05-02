@@ -7,16 +7,17 @@ import java.util.List;
 import ch.ethz.idsc.owly.demo.glc.se2.Se2Controls;
 import ch.ethz.idsc.owly.demo.glc.se2.Se2GoalManager;
 import ch.ethz.idsc.owly.demo.glc.se2.Se2Utils;
+import ch.ethz.idsc.owly.demo.util.ImageRegions;
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
 import ch.ethz.idsc.owly.glc.core.DefaultTrajectoryPlanner;
 import ch.ethz.idsc.owly.glc.core.Expand;
-import ch.ethz.idsc.owly.glc.core.Parameters;
 import ch.ethz.idsc.owly.glc.core.TrajectoryPlanner;
 import ch.ethz.idsc.owly.glc.gui.GlcFrame;
+import ch.ethz.idsc.owly.glc.wrap.Parameters;
 import ch.ethz.idsc.owly.math.flow.EulerIntegrator;
 import ch.ethz.idsc.owly.math.flow.Flow;
 import ch.ethz.idsc.owly.math.flow.Integrator;
-import ch.ethz.idsc.owly.math.region.HyperplaneRegion;
+import ch.ethz.idsc.owly.math.region.Region;
 import ch.ethz.idsc.owly.math.region.RegionUnion;
 import ch.ethz.idsc.owly.math.state.FixedStateIntegrator;
 import ch.ethz.idsc.owly.math.state.StateIntegrator;
@@ -33,15 +34,15 @@ import ch.ethz.idsc.tensor.Tensors;
 
 /** (x,y,theta) */
 class Se2glcDemo {
-  public static void main(String[] args) {
+  public static void main(String[] args) throws Exception {
+    Region region = ImageRegions.loadFromLocalPath( //
+        "/home/jolo1992/track0_local.png", Tensors.vector(10, 10));
     Integrator integrator = new EulerIntegrator();
     Parameters parameters = new Parameters();
-    
     parameters.setResolution(8);
     parameters.setDepthScale(RealScalar.of(100));
     parameters.setDtMax(RationalScalar.of(1, 5));
-    //parameters.setPartitionScale(RealScalar.of(parameters.getResolution()).multiply(Log.function.apply(RealScalar.of(parameters.getResolution());
-    
+    // parameters.setPartitionScale(RealScalar.of(parameters.getResolution()).multiply(Log.function.apply(RealScalar.of(parameters.getResolution());
     // ---
     Scalar dtMax = RationalScalar.of(1, 6);
     int trajectorySize = 5;
@@ -59,8 +60,10 @@ class Se2glcDemo {
     TrajectoryRegionQuery obstacleQuery = //
         new SimpleTrajectoryRegionQuery(new TimeInvariantRegion( //
             RegionUnion.of( //
-                new HyperplaneRegion(Tensors.vector(0, -1, 0), RealScalar.of(1.5)), //
-                new HyperplaneRegion(Tensors.vector(0, +1, 0), RealScalar.of(2.0)) //
+                region
+            // ,
+            // new HyperplaneRegion(Tensors.vector(0, -1, 0), RealScalar.of(1.5)), //
+            // new HyperplaneRegion(Tensors.vector(0, +1, 0), RealScalar.of(2.0)) //
             )));
     // ---
     TrajectoryPlanner trajectoryPlanner = new DefaultTrajectoryPlanner( //

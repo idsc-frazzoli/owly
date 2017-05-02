@@ -12,8 +12,13 @@ import ch.ethz.idsc.tensor.alg.TensorRank;
 import ch.ethz.idsc.tensor.io.Import;
 
 public class ImageRegions {
-  public static Region load(String string, Tensor range) throws ClassNotFoundException, DataFormatException, IOException {
-    String path = "".getClass().getResource(string).getPath();
+  // for files in repo
+  public static Region loadFromRepository(String string, Tensor range) throws ClassNotFoundException, DataFormatException, IOException {
+    return loadFromLocalPath("".getClass().getResource(string).getPath(), range);
+  }
+
+  // for files on local machine
+  public static Region loadFromLocalPath(String path, Tensor range) throws ClassNotFoundException, DataFormatException, IOException {
     Tensor image = Import.of(new File(path));
     if (TensorRank.of(image) == 3)
       image = image.get(Tensor.ALL, Tensor.ALL, 0);
