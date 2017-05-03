@@ -8,7 +8,6 @@ import ch.ethz.idsc.owly.demo.glc.se2.Se2Controls;
 import ch.ethz.idsc.owly.demo.glc.se2.Se2GoalManager;
 import ch.ethz.idsc.owly.demo.glc.se2.Se2StateSpaceModel;
 import ch.ethz.idsc.owly.demo.glc.se2.Se2Utils;
-import ch.ethz.idsc.owly.demo.util.ImageRegions;
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
 import ch.ethz.idsc.owly.glc.core.DefaultTrajectoryPlanner;
 import ch.ethz.idsc.owly.glc.core.Expand;
@@ -16,11 +15,8 @@ import ch.ethz.idsc.owly.glc.core.TrajectoryPlanner;
 import ch.ethz.idsc.owly.glc.gui.GlcFrame;
 import ch.ethz.idsc.owly.glc.wrap.Parameters;
 import ch.ethz.idsc.owly.math.StateSpaceModel;
-import ch.ethz.idsc.owly.math.flow.EulerIntegrator;
 import ch.ethz.idsc.owly.math.flow.Flow;
-import ch.ethz.idsc.owly.math.flow.Integrator;
 import ch.ethz.idsc.owly.math.region.HyperplaneRegion;
-import ch.ethz.idsc.owly.math.region.Region;
 import ch.ethz.idsc.owly.math.region.RegionUnion;
 import ch.ethz.idsc.owly.math.state.FixedStateIntegrator;
 import ch.ethz.idsc.owly.math.state.StateIntegrator;
@@ -45,7 +41,7 @@ class Se2glcDemo {
     Scalar dtMax = RationalScalar.of(1, 6);
     int maxIter = 2000;
     // --
-    Parameters parameters = new Parameters(resolution, timeScale, depthScale, partitionScale,dtMax, maxIter);
+    Parameters parameters = new Parameters(resolution, timeScale, depthScale, partitionScale, dtMax, maxIter);
     StateSpaceModel stateSpaceModel = new Se2StateSpaceModel();
     Scalar Lipschitz = stateSpaceModel.getLipschitz(); // TODO possible without creation of StateSpaceModel?
     StateIntegrator stateIntegrator = FixedStateIntegrator.createDefault(parameters.getdtMax(), parameters.getTrajectorySize());
@@ -70,7 +66,7 @@ class Se2glcDemo {
     // ---
     trajectoryPlanner.insertRoot(Tensors.vector(0, 0, 0));
     int iters = Expand.maxDepth(trajectoryPlanner, parameters.getDepthLimit());
-    System.out.println("After " + iters+ "iterations");
+    System.out.println("After " + iters + "iterations");
     List<StateTime> trajectory = trajectoryPlanner.getPathFromRootToGoal();
     Trajectories.print(trajectory);
     GlcFrame glcFrame = new GlcFrame();

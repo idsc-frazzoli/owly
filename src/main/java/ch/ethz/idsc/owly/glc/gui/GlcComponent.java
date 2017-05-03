@@ -83,6 +83,7 @@ public class GlcComponent {
     layers.add(new QueueLayer(this));
     layers.add(new TreeLayer(this));
     layers.add(new TrajectoryLayer(this));
+    layers.add(new GoalLayer(this));
     layers.add(new HudLayer(this));
   }
 

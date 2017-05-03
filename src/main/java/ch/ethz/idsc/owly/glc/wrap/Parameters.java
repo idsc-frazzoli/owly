@@ -33,7 +33,7 @@ public class Parameters {
   // Time between nodes
   private final Scalar expandTime;
 
-  /** @param Resolution: resolution of algorithm
+  /** @param resolution: resolution of algorithm
    * @param timeScale: Change time coordinate to be appropriate
    * @param depthScale: Adjust initial depth Limit
    * @param partitionScale: Initial Partition Scale
@@ -41,6 +41,7 @@ public class Parameters {
    * @param maxIter: maximum iterations */
   public Parameters( //
       int resolution, Scalar timeScale, Scalar depthScale, Tensor partitionScale, Scalar dtMax, int maxIter) {
+    // TODO add check that resolution > 0
     this.resolution = resolution;
     this.timeScale = timeScale;
     this.depthScale = depthScale;
@@ -57,20 +58,25 @@ public class Parameters {
 
   /** @return depthScale * R * log(R) */
   public int getDepthLimit() {
-    return depthScale.multiply(RealScalar.of(resolution)).multiply(Log.function.apply(RealScalar.of(resolution))).number().intValue(); // TODO add logarithm
+    return depthScale //
+        .multiply(RealScalar.of(resolution)) //
+        .multiply(Log.function.apply(RealScalar.of(resolution))) //
+        .number().intValue(); // TODO add logarithm
   }
 
   /** @param Lipschitz
    * ETA = 1/domainSize
    * @return if (Lipschitz ==0) R * log(R)²/partitionScale
-   * @return else: R^(1+Lipschitz)/partitionscale */
+   * @return else: R^(1+Lipschitz)/partitionScale */
   public Tensor getEta(Scalar Lipschitz) {
     if (Lipschitz.equals(ZeroScalar.get()))
-      return partitionScale.map(Scalar::invert).multiply(RealScalar.of(resolution).multiply(Power.of(Log.function.apply(RealScalar.of(resolution)), 2)));
-    return partitionScale.map(Scalar::invert).multiply(Power.of(RealScalar.of(resolution), RealScalar.ONE.add(Lipschitz)));
+      return partitionScale.map(Scalar::invert) //
+          .multiply(RealScalar.of(resolution).multiply(Power.of(Log.function.apply(RealScalar.of(resolution)), 2)));
+    return partitionScale.map(Scalar::invert) //
+        .multiply(Power.of(RealScalar.of(resolution), RealScalar.ONE.add(Lipschitz)));
   }
 
-  /** @return trajectory size with current expandtime and dtMax */
+  /** @return trajectory size with current expandTime and dtMax */
   public int getTrajectorySize() {
     Scalar temp = (Scalar) Ceiling.of(expandTime.divide(dtMax));
     return temp.number().intValue(); // TODO needs to be int
