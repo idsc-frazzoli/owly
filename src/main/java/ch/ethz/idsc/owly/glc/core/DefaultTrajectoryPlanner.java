@@ -88,13 +88,13 @@ public class DefaultTrajectoryPlanner extends TrajectoryPlanner {
   }
 
   @Override
-  protected Node createRootNode(Tensor x) {
+  protected Node createRootNode(Tensor x) { // TODO check if time of root node should always be set to 0
     return new Node(null, new StateTime(x, ZeroScalar.get()), ZeroScalar.get(), costFunction.minCostToGoal(x));
   }
 
   @Override
-  public List<StateTime> detailedTrajectoryToGoal() {
-    return Trajectories.connect(stateIntegrator, Nodes.nodesFromRoot(getBest()));
+  public List<StateTime> detailedTrajectoryTo(Node node) {
+    return Trajectories.connect(stateIntegrator, Nodes.nodesFromRoot(node));
   }
 
   @Override

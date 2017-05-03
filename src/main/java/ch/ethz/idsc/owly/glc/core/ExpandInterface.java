@@ -2,7 +2,9 @@
 package ch.ethz.idsc.owly.glc.core;
 
 public interface ExpandInterface {
-  /** @return next node for expansion, or null if no such node exists */
+  /** retrieves next node and removes the node from the queue
+   * 
+   * @return next node for expansion, or null if no such node exists */
   Node pollNext();
 
   /** performs expansion at given node
