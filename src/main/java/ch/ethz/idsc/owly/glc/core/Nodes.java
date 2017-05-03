@@ -9,18 +9,22 @@ import java.util.List;
 /* package */ enum Nodes {
   ;
   // ---
-  public static List<Node> nodesToRoot(Node best) {
+  /** @param node
+   * @return */
+  public static List<Node> nodesToRoot(Node node) {
     List<Node> list = new ArrayList<>();
-    Node node = best;
-    while (node != null) {
-      list.add(node);
-      node = node.parent();
+    Node next = node;
+    while (next != null) {
+      list.add(next);
+      next = next.parent();
     }
     return list;
   }
 
-  public static List<Node> nodesFromRoot(Node best) {
-    List<Node> list = nodesToRoot(best);
+  /** @param node
+   * @return */
+  public static List<Node> nodesFromRoot(Node node) {
+    List<Node> list = nodesToRoot(node);
     Collections.reverse(list);
     return list;
   }

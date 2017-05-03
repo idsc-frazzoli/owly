@@ -51,7 +51,7 @@ class HudLayer extends AbstractLayer {
       // graphics.drawString("nodes:" + collection.size(), 0, 10);
     }
     {
-      graphics.drawString("replace:" + trajectoryPlanner.getReplaceCount(), 0, 30);
+      graphics.drawString("replacements:" + trajectoryPlanner.getReplaceCount(), 0, 30);
     }
   }
 }

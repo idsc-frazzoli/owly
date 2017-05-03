@@ -8,6 +8,7 @@ import java.awt.geom.Path2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 
+import ch.ethz.idsc.owly.glc.core.Node;
 import ch.ethz.idsc.owly.glc.core.TrajectoryPlanner;
 import ch.ethz.idsc.owly.math.state.StateTime;
 
@@ -19,7 +20,10 @@ public class TrajectoryLayer extends AbstractLayer {
   @Override
   void render(Graphics2D graphics, TrajectoryPlanner trajectoryPlanner) {
     { // draw detailed trajectory from root to goal
-      Path2D path2d = toPath2D(trajectoryPlanner.detailedTrajectoryToGoal());
+      Node best = trajectoryPlanner.getBest();
+      if (best == null)
+        best = trajectoryPlanner.peek();
+      Path2D path2d = toPath2D(trajectoryPlanner.detailedTrajectoryTo(best));
       graphics.setStroke(new BasicStroke(5.0f));
       graphics.setColor(new Color(255, 255, 255, 128));
       graphics.draw(path2d);

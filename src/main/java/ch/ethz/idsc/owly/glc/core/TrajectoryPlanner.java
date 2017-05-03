@@ -64,6 +64,13 @@ public abstract class TrajectoryPlanner implements ExpandInterface {
     return queue.isEmpty() ? null : queue.poll();
   }
 
+  /** peek does not change the queue state
+   * 
+   * @return next node in the queue */
+  public final Node peek() {
+    return queue.peek();
+  }
+
   protected final void offerDestination(Node node) {
     if (best == null || Scalars.lessThan(node.cost(), best.cost())) {
       best = node;
@@ -75,13 +82,12 @@ public abstract class TrajectoryPlanner implements ExpandInterface {
   public final Node getBest() {
     return best;
   }
-  
+
   public int getReplaceCount() {
     return replaceCount;
   }
 
-  // TODO api not finalized
-  public abstract List<StateTime> detailedTrajectoryToGoal();
+  public abstract List<StateTime> detailedTrajectoryTo(Node node);
 
   public final Collection<Node> getQueue() {
     return Collections.unmodifiableCollection(queue);
@@ -95,7 +101,8 @@ public abstract class TrajectoryPlanner implements ExpandInterface {
     return getPathFromRootToGoal(Nodes.nodesFromRoot(best));
   }
 
-  public static List<StateTime> getPathFromRootToGoal(List<Node> list) {
+  // TODO function is only used once...
+  private static List<StateTime> getPathFromRootToGoal(List<Node> list) {
     return list.stream().map(Node::stateTime).collect(Collectors.toList());
   }
 

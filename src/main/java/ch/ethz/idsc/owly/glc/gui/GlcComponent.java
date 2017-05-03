@@ -37,7 +37,7 @@ public class GlcComponent {
   }
 
   private Tensor model2pixel;
-  private TrajectoryPlanner trajectoryPlanner = null;
+  TrajectoryPlanner trajectoryPlanner = null;
   final List<AbstractLayer> layers = new LinkedList<>();
 
   public GlcComponent() {
