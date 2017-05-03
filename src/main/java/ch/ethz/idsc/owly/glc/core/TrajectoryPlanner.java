@@ -23,6 +23,10 @@ public abstract class TrajectoryPlanner implements ExpandInterface {
   private final Queue<Node> queue = new PriorityQueue<>(NodeMeritComparator.instance);
   // TODO long-term use RasterMap instead of domainMap
   private final Map<Tensor, Node> domainMap = new HashMap<>();
+  /** best is a reference to a Node in the goal region, or null if such a node has not been identified */
+  private Node best;
+  /** number of replacements in the domain map */
+  private int replaceCount = 0;
 
   TrajectoryPlanner(Tensor eta) {
     this.eta = eta;
@@ -46,15 +50,14 @@ public abstract class TrajectoryPlanner implements ExpandInterface {
 
   protected final void insert(Tensor domain_key, Node node) {
     queue.add(node);
-    domainMap.put(domain_key, node);
+    Node prev = domainMap.put(domain_key, node);
+    if (prev != null)
+      ++replaceCount;
   }
 
   protected final Node getNode(Tensor domain_key) {
     return domainMap.get(domain_key);
   }
-
-  private Node best;
-  int replaceCount = 0; // TODO
 
   @Override // from ExpandInterface
   public final Node pollNext() {
@@ -71,6 +74,10 @@ public abstract class TrajectoryPlanner implements ExpandInterface {
   @Override // from ExpandInterface
   public final Node getBest() {
     return best;
+  }
+  
+  public int getReplaceCount() {
+    return replaceCount;
   }
 
   // TODO api not finalized

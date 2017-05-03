@@ -17,7 +17,9 @@ import ch.ethz.idsc.tensor.sca.Chop;
 import ch.ethz.idsc.tensor.sca.Cos;
 import ch.ethz.idsc.tensor.sca.Sin;
 
-class R2Controls {
+// create radial controls
+// class is intentionally public 
+public class R2Controls {
   // ---
   public static Collection<Flow> createControls(final int num) {
     StateSpaceModel stateSpaceModel = new IdentityStateSpaceModel();
