@@ -4,6 +4,7 @@ package ch.ethz.idsc.owly.math.state;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
 
+/** StateTime is immutable, contents of instance do not change after construction */
 public final class StateTime {
   private final Tensor x;
   private final Scalar time;

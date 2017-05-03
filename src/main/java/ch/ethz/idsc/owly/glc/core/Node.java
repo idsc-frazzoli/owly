@@ -8,7 +8,10 @@ import ch.ethz.idsc.owly.math.flow.Flow;
 import ch.ethz.idsc.owly.math.state.StateTime;
 import ch.ethz.idsc.tensor.Scalar;
 
-/** glc specific node */
+/** glc specific node
+ * 
+ * immutable except for children, parent, and depth which are only modified in
+ * {@link Node#addChild(Node)} */
 public class Node {
   /** flow is null for root node */
   private final Flow flow;
@@ -21,7 +24,7 @@ public class Node {
   /** depth == 0 for root node, otherwise depth > 0 */
   private int depth = 0;
 
-  /** @param flow that got us to this Node from the parent
+  /** @param flow that got us to this Node from the parent, or null when this Node is the root
    * @param x
    * @param time
    * @param cost

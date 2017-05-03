@@ -18,7 +18,7 @@ import ch.ethz.idsc.tensor.RationalScalar;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
 
-class R2nDemo {
+class R2nExpandDemo {
   public static void main(String[] args) {
     Tensor eta = Tensors.vector(4, 4);
     StateIntegrator stateIntegrator = FixedStateIntegrator.create(new EulerIntegrator(), RationalScalar.of(1, 5), 5);
@@ -29,6 +29,6 @@ class R2nDemo {
     TrajectoryPlanner trajectoryPlanner = new DefaultTrajectoryPlanner( //
         eta, stateIntegrator, controls, rnGoal, rnGoal, obstacleQuery);
     trajectoryPlanner.insertRoot(Tensors.vector(0, 0));
-    ExpandGlcFrame frame = new ExpandGlcFrame(trajectoryPlanner);
+    new ExpandGlcFrame(trajectoryPlanner);
   }
 }

@@ -88,7 +88,7 @@ public class DefaultTrajectoryPlanner extends TrajectoryPlanner {
   }
 
   @Override
-  protected Node createRootNode(Tensor x) {
+  protected Node createRootNode(Tensor x) { // TODO check if time of root node should always be set to 0
     return new Node(null, new StateTime(x, ZeroScalar.get()), ZeroScalar.get(), costFunction.minCostToGoal(x));
   }
 

@@ -25,24 +25,23 @@ public abstract class TrajectoryPlanner implements ExpandInterface {
   private final Map<Tensor, Node> domainMap = new HashMap<>();
   /** best is a reference to a Node in the goal region, or null if such a node has not been identified */
   private Node best;
-  /** number of replacements in the domain map */
-  private int replaceCount = 0;
+  private int replaceCount = 0; // see getReplaceCount()
 
   TrajectoryPlanner(Tensor eta) {
-    this.eta = eta;
+    this.eta = eta.copy().unmodifiable();
   }
 
   public final Tensor getResolution() {
     // TODO not theoretically correct
-    return eta.unmodifiable();
+    return eta;
   }
 
-  protected Tensor convertToKey(Tensor x) {
+  Tensor convertToKey(Tensor x) {
     // TODO Theory: floor(eta*state) = floor(state / domain_size)
     return eta.pmul(x).map(Floor.function);
   }
 
-  protected abstract Node createRootNode(Tensor x);
+  abstract Node createRootNode(Tensor x);
 
   public final void insertRoot(Tensor x) {
     insert(convertToKey(x), createRootNode(x));
@@ -71,7 +70,7 @@ public abstract class TrajectoryPlanner implements ExpandInterface {
     return queue.peek();
   }
 
-  protected final void offerDestination(Node node) {
+  final void offerDestination(Node node) {
     if (best == null || Scalars.lessThan(node.cost(), best.cost())) {
       best = node;
       System.out.println("found goal");
@@ -83,11 +82,21 @@ public abstract class TrajectoryPlanner implements ExpandInterface {
     return best;
   }
 
-  public int getReplaceCount() {
+  /** @return number of replacements in the domain map caused by {@link TrajectoryPlanner#insert(Tensor, Node)} */
+  public final int getReplaceCount() {
     return replaceCount;
   }
 
+  /** @param node
+   * @return densely sampled trajectory from root to given node
+   * that is the result of integrating the flows between the nodes */
   public abstract List<StateTime> detailedTrajectoryTo(Node node);
+
+  /** @return obstacle query for the purpose of inspection, i.e. no alteration should be made */
+  public abstract TrajectoryRegionQuery getObstacleQuery();
+
+  /** @return goal query for the purpose of inspection, i.e. no alteration should be made */
+  public abstract TrajectoryRegionQuery getGoalQuery();
 
   public final Collection<Node> getQueue() {
     return Collections.unmodifiableCollection(queue);
@@ -97,16 +106,8 @@ public abstract class TrajectoryPlanner implements ExpandInterface {
     return Collections.unmodifiableCollection(domainMap.values());
   }
 
+  // TODO rename to coarse path ...
   public final List<StateTime> getPathFromRootToGoal() {
-    return getPathFromRootToGoal(Nodes.nodesFromRoot(best));
+    return Nodes.nodesFromRoot(best).stream().map(Node::stateTime).collect(Collectors.toList());
   }
-
-  // TODO function is only used once...
-  private static List<StateTime> getPathFromRootToGoal(List<Node> list) {
-    return list.stream().map(Node::stateTime).collect(Collectors.toList());
-  }
-
-  public abstract TrajectoryRegionQuery getObstacleQuery();
-
-  public abstract TrajectoryRegionQuery getGoalQuery();
 }
