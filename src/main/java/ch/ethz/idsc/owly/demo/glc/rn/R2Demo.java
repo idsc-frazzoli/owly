@@ -36,7 +36,7 @@ class R2Demo {
     TrajectoryPlanner trajectoryPlanner = new DefaultTrajectoryPlanner( //
         eta, stateIntegrator, controls, rnGoal, rnGoal, obstacleQuery);
     trajectoryPlanner.insertRoot(Tensors.vector(-2, -2));
-    int iters = Expand.maxSteps(trajectoryPlanner, 1400);
+    Expand.maxSteps(trajectoryPlanner, 1400);
     List<StateTime> trajectory = trajectoryPlanner.getPathFromRootToGoal();
     Trajectories.print(trajectory);
     GlcFrame glcFrame = new GlcFrame();

@@ -41,7 +41,8 @@ public class Parameters {
    * @param maxIter: maximum iterations */
   public Parameters( //
       int resolution, Scalar timeScale, Scalar depthScale, Tensor partitionScale, Scalar dtMax, int maxIter) {
-    // TODO add check that resolution > 0
+    if (resolution <= 0)
+      throw new RuntimeException();
     this.resolution = resolution;
     this.timeScale = timeScale;
     this.depthScale = depthScale;

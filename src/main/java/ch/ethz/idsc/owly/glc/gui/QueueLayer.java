@@ -34,7 +34,7 @@ class QueueLayer extends AbstractLayer {
         int radius = 3;
         graphics.setColor(new Color(255, 128, 128, 255));
         Point2D point2d = toPoint2D(node.stateTime().x());
-        graphics.draw(new Ellipse2D.Double(point2d.getX() - radius, point2d.getY() - radius, radius*2, radius*2));
+        graphics.draw(new Ellipse2D.Double(point2d.getX() - radius, point2d.getY() - radius, radius * 2, radius * 2));
       }
     }
   }
