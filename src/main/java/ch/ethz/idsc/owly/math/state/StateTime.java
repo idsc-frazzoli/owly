@@ -9,11 +9,14 @@ public final class StateTime {
   private final Tensor x;
   private final Scalar time;
 
+  /** @param x
+   * @param time */
   public StateTime(Tensor x, Scalar time) {
     this.x = x.unmodifiable();
     this.time = time;
   }
 
+  /** @return */
   public Tensor x() {
     return x;
   }
