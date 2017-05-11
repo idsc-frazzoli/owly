@@ -9,6 +9,7 @@ import ch.ethz.idsc.owly.data.RasterMap;
 import ch.ethz.idsc.owly.math.state.AbstractTrajectoryRegionQuery;
 import ch.ethz.idsc.owly.math.state.StateTime;
 import ch.ethz.idsc.owly.math.state.StateTimeRegion;
+import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
 
 public class SimpleTrajectoryRegionQuery extends AbstractTrajectoryRegionQuery {
@@ -26,7 +27,9 @@ public class SimpleTrajectoryRegionQuery extends AbstractTrajectoryRegionQuery {
     for (StateTime stateTime : trajectory) {
       ++index;
       if (stateTimeRegion.isMember(stateTime)) {
-        discoveredMembers.put(stateTime.x().extract(0, 2), stateTime);
+        Tensor x = stateTime.x();
+        if (1 < x.length())
+          discoveredMembers.put(x.extract(0, 2), stateTime);
         return index;
       }
     }
