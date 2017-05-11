@@ -17,10 +17,10 @@ class DomainLayer extends AbstractLayer {
 
   @Override
   void render(Graphics2D graphics, TrajectoryPlanner trajectoryPlanner) {
-    Tensor resolution = trajectoryPlanner.getResolution();
-    Tensor inv = resolution.map(Scalar::invert);
+    Tensor eta = trajectoryPlanner.getEta();
+    Tensor inv = eta.map(Scalar::invert);
     graphics.setColor(Color.LIGHT_GRAY);
-    Tensor ceiling = Ceiling.of(resolution);
+    Tensor ceiling = Ceiling.of(eta);
     for (int i = 0; i < ceiling.Get(1).number().intValue(); ++i) {
       double dy = i * inv.Get(1).number().doubleValue();
       graphics.draw(new Line2D.Double( //

@@ -31,7 +31,7 @@ public abstract class TrajectoryPlanner implements ExpandInterface {
     this.eta = eta.copy().unmodifiable();
   }
 
-  public final Tensor getResolution() {
+  public final Tensor getEta() {
     // TODO not theoretically correct
     return eta;
   }

@@ -62,7 +62,7 @@ public class Parameters {
     return depthScale //
         .multiply(RealScalar.of(resolution)) //
         .multiply(Log.function.apply(RealScalar.of(resolution))) //
-        .number().intValue(); // TODO add logarithm
+        .number().intValue();
   }
 
   /** @param Lipschitz
@@ -80,7 +80,7 @@ public class Parameters {
   /** @return trajectory size with current expandTime and dtMax */
   public int getTrajectorySize() {
     Scalar temp = (Scalar) Ceiling.of(expandTime.divide(dtMax));
-    return temp.number().intValue(); // TODO needs to be int
+    return temp.number().intValue();
   }
 
   public int getmaxIter() {
@@ -92,6 +92,6 @@ public class Parameters {
   }
 
   public void printResolution() {
-    System.out.println("Resolution = " + this.resolution);
+    System.out.println("Resolution = " + resolution);
   }
 }
