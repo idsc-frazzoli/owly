@@ -11,7 +11,7 @@ import ch.ethz.idsc.tensor.sca.Log;
 import ch.ethz.idsc.tensor.sca.Power;
 
 // TODO state origin of every formula in research paper
-public class Parameters {
+public abstract class Parameters {
   // Initial condition
   private Tensors x0;
   // Discretization resolution
@@ -69,13 +69,7 @@ public class Parameters {
    * ETA = 1/domainSize
    * @return if (Lipschitz ==0) R * log(R)²/partitionScale
    * @return else: R^(1+Lipschitz)/partitionScale */
-  public Tensor getEta(Scalar Lipschitz) {
-    if (Lipschitz.equals(ZeroScalar.get()))
-      return partitionScale.map(Scalar::invert) //
-          .multiply(RealScalar.of(resolution).multiply(Power.of(Log.function.apply(RealScalar.of(resolution)), 2)));
-    return partitionScale.map(Scalar::invert) //
-        .multiply(Power.of(RealScalar.of(resolution), RealScalar.ONE.add(Lipschitz)));
-  }
+  public abstract Tensor getEta();
 
   /** @return trajectory size with current expandTime and dtMax */
   public int getTrajectorySize() {
@@ -89,6 +83,10 @@ public class Parameters {
 
   public int getResolution() {
     return resolution;
+  }
+  
+  public Tensor getPartitionScale() {
+    return partitionScale.unmodifiable();
   }
 
   public void printResolution() {

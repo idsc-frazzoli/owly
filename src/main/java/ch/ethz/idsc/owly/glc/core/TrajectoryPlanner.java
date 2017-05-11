@@ -32,7 +32,6 @@ public abstract class TrajectoryPlanner implements ExpandInterface {
   }
 
   public final Tensor getEta() {
-    // TODO not theoretically correct
     return eta;
   }
 
@@ -97,6 +96,13 @@ public abstract class TrajectoryPlanner implements ExpandInterface {
 
   /** @return goal query for the purpose of inspection, i.e. no alteration should be made */
   public abstract TrajectoryRegionQuery getGoalQuery();
+
+  public final Collection<Node> queue() { // TODO make protected
+    return queue;
+  }
+  protected final Map<Tensor, Node> domainMap() {
+    return domainMap;
+  }
 
   public final Collection<Node> getQueue() {
     return Collections.unmodifiableCollection(queue);

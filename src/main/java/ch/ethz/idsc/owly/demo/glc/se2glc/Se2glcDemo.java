@@ -40,13 +40,15 @@ class Se2glcDemo {
     Tensor partitionScale = Tensors.vector(3, 3, 15);
     Scalar dtMax = RationalScalar.of(1, 6);
     int maxIter = 2000;
-    // --
-    Parameters parameters = new Parameters(resolution, timeScale, depthScale, partitionScale, dtMax, maxIter);
     StateSpaceModel stateSpaceModel = new Se2StateSpaceModel();
-    Scalar Lipschitz = stateSpaceModel.getLipschitz(); // TODO possible without creation of StateSpaceModel?
+    // --
+    Parameters parameters = new Se2Parameters( //
+        resolution, timeScale, depthScale, partitionScale, dtMax, maxIter, stateSpaceModel.getLipschitz());
+    
+     // TODO possible without creation of StateSpaceModel?
     StateIntegrator stateIntegrator = FixedStateIntegrator.createDefault(parameters.getdtMax(), parameters.getTrajectorySize());
     // ---
-    System.out.println("scale=" + parameters.getEta(Lipschitz));
+    System.out.println("scale=" + parameters.getEta());
     parameters.printResolution();
     Collection<Flow> controls = Se2Controls.createControls(Se2Utils.DEGREE(45), 6);
     Se2GoalManager se2GoalManager = new Se2GoalManager( //
@@ -62,14 +64,17 @@ class Se2glcDemo {
             )));
     // ---
     TrajectoryPlanner trajectoryPlanner = new DefaultTrajectoryPlanner( //
-        parameters.getEta(Lipschitz), stateIntegrator, controls, se2GoalManager, goalQuery, obstacleQuery);
+        parameters.getEta(), stateIntegrator, controls, se2GoalManager, goalQuery, obstacleQuery);
     // ---
     trajectoryPlanner.insertRoot(Tensors.vector(0, 0, 0));
     int iters = Expand.maxDepth(trajectoryPlanner, parameters.getDepthLimit());
     System.out.println("After " + iters + "iterations");
     List<StateTime> trajectory = trajectoryPlanner.getPathFromRootToGoal();
     Trajectories.print(trajectory);
+    // swtch root
+    // tree2 = ...
     GlcFrame glcFrame = new GlcFrame();
     glcFrame.glcComponent.setTrajectoryPlanner(trajectoryPlanner);
+    // glcFrame.glcComponent.addTrajectoryPlanner(trajectoryPlanner);
   }
 }
