@@ -16,7 +16,6 @@ public class Se2Parameters extends Parameters {
       Scalar lipschitz) {
     super(resolution, timeScale, depthScale, partitionScale, dtMax, maxIter);
     this.lipschitz = lipschitz;
-    // TODO Auto-generated constructor stub
   }
 
   @Override

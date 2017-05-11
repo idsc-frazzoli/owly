@@ -46,7 +46,8 @@ class Se2glcDemo {
         resolution, timeScale, depthScale, partitionScale, dtMax, maxIter, stateSpaceModel.getLipschitz());
     
      // TODO possible without creation of StateSpaceModel?
-    StateIntegrator stateIntegrator = FixedStateIntegrator.createDefault(parameters.getdtMax(), parameters.getTrajectorySize());
+    StateIntegrator stateIntegrator = FixedStateIntegrator.createDefault(parameters.getdtMax(),  //
+        parameters.getTrajectorySize());
     // ---
     System.out.println("scale=" + parameters.getEta());
     parameters.printResolution();
