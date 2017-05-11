@@ -20,11 +20,17 @@ public class Se2Parameters extends Parameters {
   }
 
   @Override
+  /**
+   * @return if Lipschitz == 0: R*log(R)²
+   * @return else             : R^(5/Pi)
+   */
   public Tensor getEta() {
     if (lipschitz.equals(ZeroScalar.get()))
       return getPartitionScale().map(Scalar::invert) //
           .multiply(RealScalar.of(getResolution()).multiply(Power.of(Log.function.apply(RealScalar.of(getResolution())), 2)));
     return getPartitionScale().map(Scalar::invert) //
-        .multiply(Power.of(RealScalar.of(getResolution()), RealScalar.ONE.add(lipschitz)));
+        .multiply(Power.of(RealScalar.of(getResolution()), RealScalar.of(5).divide(RealScalar.of(3.14))));
+    // TODO change 3.13 to PI
+    // TODO change to function depending on Lipschitz
   }
 }
