@@ -73,6 +73,7 @@ class Se2glcAnyDemo {
     Trajectories.print(trajectory);
     GlcFrame glcFrame = new GlcFrame();
     glcFrame.glcComponent.setTrajectoryPlanner(trajectoryPlanner);
+    // ---
     AnyTrajectoryPlanner trajectoryPlanner2 = trajectoryPlanner;
     StateTime newRootState = trajectory.get(1);
     trajectoryPlanner.switchRootToState(newRootState.x());
