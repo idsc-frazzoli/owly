@@ -75,8 +75,7 @@ public class Node {
   }
 
   public void printNodeState() {
-    System.out.println("("+ this.stateTime.x()+")");
+    System.out.println("(" + this.stateTime.x() + ")");
     return;
-    
   }
 }

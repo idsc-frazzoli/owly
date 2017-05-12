@@ -91,9 +91,11 @@ public class AnyTrajectoryPlanner extends TrajectoryPlanner {
 
   public void switchRootToState(Tensor state) {
     Node newRoot = domainMap().get(convertToKey(state));
-    if (newRoot != null) switchRootToNode(newRoot);
-    else System.out.println("This domain is not labelled yet");
-      return;
+    if (newRoot != null)
+      switchRootToNode(newRoot);
+    else
+      System.out.println("This domain is not labelled yet");
+    return;
   }
 
   private void switchRootToNode(Node newRoot) {

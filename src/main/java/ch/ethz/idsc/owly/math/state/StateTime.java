@@ -10,7 +10,7 @@ public final class StateTime {
   private final Scalar time;
 
   /** @param x the state
-   * @param time the time of the state*/
+   * @param time the time of the state */
   public StateTime(Tensor x, Scalar time) {
     this.x = x.unmodifiable();
     this.time = time;
