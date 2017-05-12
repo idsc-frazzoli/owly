@@ -7,7 +7,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Set;
 
 import ch.ethz.idsc.owly.math.flow.Flow;
 import ch.ethz.idsc.owly.math.state.CostFunction;
@@ -90,7 +89,7 @@ public class AnyTrajectoryPlanner extends TrajectoryPlanner {
   }
 
   public void switchRootToState(Tensor state) {
-    Node newRoot = domainMap().get(convertToKey(state));
+    Node newRoot = this.getNode(convertToKey(state));
     if (newRoot != null)
       switchRootToNode(newRoot);
     else
@@ -112,6 +111,7 @@ public class AnyTrajectoryPlanner extends TrajectoryPlanner {
         removedNodes++;
     }
     System.out.println(removedNodes + " Nodes removed from Tree");
+    newRoot.makeRoot();
     return;
   }
 

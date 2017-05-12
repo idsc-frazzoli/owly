@@ -70,6 +70,11 @@ public class Node {
     return parent == null;
   }
 
+  public void makeRoot() {
+    parent = null;
+    return;
+  }
+
   public int depth() {
     return depth;
   }
