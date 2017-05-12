@@ -1,5 +1,5 @@
 // code by jph
-package ch.ethz.idsc.owly.demo.glc.se2glc;
+package ch.ethz.idsc.owly.demo.glc.se2glcAny;
 
 import java.util.Collection;
 import java.util.List;
@@ -8,10 +8,10 @@ import ch.ethz.idsc.owly.demo.glc.se2.Se2Controls;
 import ch.ethz.idsc.owly.demo.glc.se2.Se2GoalManager;
 import ch.ethz.idsc.owly.demo.glc.se2.Se2StateSpaceModel;
 import ch.ethz.idsc.owly.demo.glc.se2.Se2Utils;
+import ch.ethz.idsc.owly.demo.glc.se2glc.Se2Parameters;
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
-import ch.ethz.idsc.owly.glc.core.DefaultTrajectoryPlanner;
+import ch.ethz.idsc.owly.glc.core.AnyTrajectoryPlanner;
 import ch.ethz.idsc.owly.glc.core.Expand;
-import ch.ethz.idsc.owly.glc.core.TrajectoryPlanner;
 import ch.ethz.idsc.owly.glc.gui.GlcFrame;
 import ch.ethz.idsc.owly.glc.wrap.Parameters;
 import ch.ethz.idsc.owly.math.StateSpaceModel;
@@ -32,7 +32,7 @@ import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
 
 /** (x,y,theta) */
-class Se2glcDemo {
+class Se2glcAnyDemo {
   public static void main(String[] args) throws Exception {
     int resolution = 8;
     Scalar timeScale = RealScalar.of(10);
@@ -63,7 +63,7 @@ class Se2glcDemo {
                 new HyperplaneRegion(Tensors.vector(0, +1, 0), RealScalar.of(2.0)) //
             )));
     // ---
-    TrajectoryPlanner trajectoryPlanner = new DefaultTrajectoryPlanner( //
+    AnyTrajectoryPlanner trajectoryPlanner = new AnyTrajectoryPlanner( //
         parameters.getEta(), stateIntegrator, controls, se2GoalManager, goalQuery, obstacleQuery);
     // ---
     trajectoryPlanner.insertRoot(Tensors.vector(0, 0, 0));
@@ -71,10 +71,13 @@ class Se2glcDemo {
     System.out.println("After " + iters + "iterations");
     List<StateTime> trajectory = trajectoryPlanner.getPathFromRootToGoal();
     Trajectories.print(trajectory);
-    // swtch root
-    // tree2 = ...
     GlcFrame glcFrame = new GlcFrame();
     glcFrame.glcComponent.setTrajectoryPlanner(trajectoryPlanner);
-    // glcFrame.glcComponent.addTrajectoryPlanner(trajectoryPlanner);
+    // ---
+    AnyTrajectoryPlanner trajectoryPlanner2 = trajectoryPlanner;
+    StateTime newRootState = trajectory.get(1);
+    trajectoryPlanner.switchRootToState(newRootState.x());
+    GlcFrame glcFrame2 = new GlcFrame();
+    glcFrame2.glcComponent.setTrajectoryPlanner(trajectoryPlanner2);
   }
 }

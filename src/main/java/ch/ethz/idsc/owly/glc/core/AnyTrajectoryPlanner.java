@@ -1,10 +1,13 @@
-// code by bapaden and jph
+// code by bapaden and jph and jl
 package ch.ethz.idsc.owly.glc.core;
 
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.PriorityQueue;
+import java.util.Queue;
 import java.util.Map.Entry;
 
 import ch.ethz.idsc.owly.math.flow.Flow;
@@ -23,6 +26,9 @@ public class AnyTrajectoryPlanner extends TrajectoryPlanner {
   private final CostFunction costFunction;
   private final TrajectoryRegionQuery goalQuery;
   private final TrajectoryRegionQuery obstacleQuery;
+  private final Map<Tensor, DomainQueue> domainCandidateMap = //
+      new HashMap<>();  
+  //private final Queue<Node> queue = new PriorityQueue<>(NodeMeritComparator.instance);
 
   public AnyTrajectoryPlanner( //
       Tensor partitionScale, //
@@ -43,7 +49,7 @@ public class AnyTrajectoryPlanner extends TrajectoryPlanner {
   @Override
   public void expand(final Node node) {
     // TODO count updates in cell based on costs for benchmarking
-    Map<Tensor, DomainQueue> candidates = new HashMap<>();
+    //Map<Tensor, DomainQueue> domainCandidateMap = new HashMap<>();
     Map<Node, List<StateTime>> connectors = new HashMap<>();
     for (final Flow flow : controls) {
       final List<StateTime> trajectory = stateIntegrator.trajectory(node.stateTime(), flow);
@@ -58,15 +64,16 @@ public class AnyTrajectoryPlanner extends TrajectoryPlanner {
       final Node former = getNode(domain_key);
       if (former != null) { // already some node present from previous exploration
         if (Scalars.lessThan(next.cost(), former.cost())) // new node is better than previous one
-          if (candidates.containsKey(domain_key))
-            candidates.get(domain_key).add(next);
+          if (domainCandidateMap.containsKey(domain_key))
+            domainCandidateMap.get(domain_key).add(next);
           else
-            candidates.put(domain_key, new DomainQueue(next));
+            domainCandidateMap.put(domain_key, new DomainQueue(next));
       } else
-        candidates.put(domain_key, new DomainQueue(next));
+        domainCandidateMap.put(domain_key, new DomainQueue(next));
     }
     // ---
-    processCandidates(node, candidates, connectors);
+    
+    processCandidates(node, domainCandidateMap, connectors);
   }
 
   private void processCandidates( //
@@ -86,13 +93,44 @@ public class AnyTrajectoryPlanner extends TrajectoryPlanner {
       }
     }
   }
-  
-  public void switchRootTo(Node node) {
-    queue().clear(); //
-    domainMap().clear();
+
+  public void switchRootToState(Tensor state) {
+    Node newRoot = this.getNode(convertToKey(state));
+    if (newRoot != null)
+      switchRootToNode(newRoot);
+    else
+      System.out.println("This domain is not labelled yet");
+    return;
   }
 
+  private void switchRootToNode(Node newRoot) {
+    System.out.println("changing to root:" + newRoot.stateTime().x());
+    // removes the new root from the child list of its parent
+    boolean test = newRoot.parent().children().remove(newRoot.flow(), newRoot);
+    HashSet<Node> oldtree = new HashSet<>();
+    addNodeToSet(newRoot.parent(), oldtree);
+    if (queue().removeAll(oldtree))
+      System.out.println("Removed oldtree from queue");
+    int removedNodes = 0;
+    for (Node tempNode : oldtree) {
+      if (domainMap().remove(convertToKey(tempNode.stateTime().x()), tempNode))
+        removedNodes++;
+    }
+    System.out.println(removedNodes + " Nodes removed from Tree");
+    newRoot.makeRoot();
+    return;
+  }
 
+  protected void addNodeToSet(Node node, HashSet<Node> subtree) {
+    subtree.add(node);
+    if (node.parent() != null && !subtree.contains(node.parent()))
+      addNodeToSet(node.parent(), subtree);
+    for (Entry<Flow, Node> tempChild : node.children().entrySet()) {
+      if (tempChild != null)
+        addNodeToSet(tempChild.getValue(), subtree);
+    }
+    return;
+  }
 
   @Override
   protected Node createRootNode(Tensor x) { // TODO check if time of root node should always be set to 0
