@@ -97,7 +97,7 @@ public abstract class TrajectoryPlanner implements ExpandInterface {
   /** @return goal query for the purpose of inspection, i.e. no alteration should be made */
   public abstract TrajectoryRegionQuery getGoalQuery();
 
-  public final Collection<Node> queue() { // TODO make protected
+  protected final Collection<Node> queue() { 
     return queue;
   }
   protected final Map<Tensor, Node> domainMap() {
