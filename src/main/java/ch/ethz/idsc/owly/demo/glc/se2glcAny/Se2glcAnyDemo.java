@@ -74,9 +74,7 @@ class Se2glcAnyDemo {
     Trajectories.print(trajectory);
     GlcFrame glcFrame = new GlcFrame();
     glcFrame.glcComponent.setTrajectoryPlanner(trajectoryPlanner);
-    // glcFrame.glcComponent.addTrajectoryPlanner(trajectoryPlanner);
     StateTime newRootState = trajectory.get(1);
-    System.out.println("changing to root:" + newRootState.x());
     trajectoryPlanner.switchRootToState(newRootState.x());
   }
 }

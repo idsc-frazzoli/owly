@@ -99,24 +99,25 @@ public class AnyTrajectoryPlanner extends TrajectoryPlanner {
   }
 
   private void switchRootToNode(Node newRoot) {
+    System.out.println("changing to root:" + newRoot.stateTime().x());
     // removes the new root from the child list of its parent
-    newRoot.parent().children().remove(newRoot.flow(), newRoot);
+    boolean test = newRoot.parent().children().remove(newRoot.flow(), newRoot);
     HashSet<Node> oldtree = new HashSet<>();
-    addNodeToSet(newRoot, oldtree);
+    addNodeToSet(newRoot.parent(), oldtree);
     if (queue().removeAll(oldtree))
       System.out.println("Removed oldtree from queue");
+    int removedNodes = 0;
     for (Node tempNode : oldtree) {
-      if (domainMap().remove(convertToKey(tempNode.stateTime().x()), tempNode)) {
-        System.out.println("Removed nodes:");
-        tempNode.printNodeState();
-      }
+      if (domainMap().remove(convertToKey(tempNode.stateTime().x()), tempNode))
+        removedNodes++;
     }
+    System.out.println(removedNodes + " Nodes removed from Tree");
     return;
   }
 
   protected void addNodeToSet(Node node, HashSet<Node> subtree) {
     subtree.add(node);
-    if (node.parent() != null)
+    if (node.parent() != null && !subtree.contains(node.parent()))
       addNodeToSet(node.parent(), subtree);
     for (Entry<Flow, Node> tempChild : node.children().entrySet()) {
       if (tempChild != null)
