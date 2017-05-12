@@ -5,10 +5,9 @@ import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
-import ch.ethz.idsc.tensor.ZeroScalar;
+
 import ch.ethz.idsc.tensor.sca.Ceiling;
 import ch.ethz.idsc.tensor.sca.Log;
-import ch.ethz.idsc.tensor.sca.Power;
 
 // TODO state origin of every formula in research paper
 public abstract class Parameters {
@@ -84,7 +83,7 @@ public abstract class Parameters {
   public int getResolution() {
     return resolution;
   }
-  
+
   public Tensor getPartitionScale() {
     return partitionScale.unmodifiable();
   }

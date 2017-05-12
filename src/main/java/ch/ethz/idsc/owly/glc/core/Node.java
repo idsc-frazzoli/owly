@@ -62,11 +62,21 @@ public class Node {
     return parent;
   }
 
+  public Map<Flow, Node> children() {
+    return children;
+  }
+
   public boolean isRoot() {
     return parent == null;
   }
 
   public int depth() {
     return depth;
+  }
+
+  public void printNodeState() {
+    System.out.println("("+ this.stateTime.x()+")");
+    return;
+    
   }
 }

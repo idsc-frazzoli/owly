@@ -3,9 +3,11 @@ package ch.ethz.idsc.owly.glc.core;
 
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import ch.ethz.idsc.owly.math.flow.Flow;
 import ch.ethz.idsc.owly.math.state.CostFunction;
@@ -86,13 +88,40 @@ public class AnyTrajectoryPlanner extends TrajectoryPlanner {
       }
     }
   }
-  
-  public void switchRootTo(Node node) {
-    queue().clear(); //
-    domainMap().clear();
+
+  public void switchRootToState(Tensor state) {
+    Node newRoot = domainMap().get(convertToKey(state));
+    if (newRoot != null) switchRootToNode(newRoot);
+    else System.out.println("This domain is not labelled yet");
+      return;
   }
 
+  private void switchRootToNode(Node newRoot) {
+    // removes the new root from the child list of its parent
+    newRoot.parent().children().remove(newRoot.flow(), newRoot);
+    HashSet<Node> oldtree = new HashSet<>();
+    addNodeToSet(newRoot, oldtree);
+    if (queue().removeAll(oldtree))
+      System.out.println("Removed oldtree from queue");
+    for (Node tempNode : oldtree) {
+      if (domainMap().remove(convertToKey(tempNode.stateTime().x()), tempNode)) {
+        System.out.println("Removed nodes:");
+        tempNode.printNodeState();
+      }
+    }
+    return;
+  }
 
+  protected void addNodeToSet(Node node, HashSet<Node> subtree) {
+    subtree.add(node);
+    if (node.parent() != null)
+      addNodeToSet(node.parent(), subtree);
+    for (Entry<Flow, Node> tempChild : node.children().entrySet()) {
+      if (tempChild != null)
+        addNodeToSet(tempChild.getValue(), subtree);
+    }
+    return;
+  }
 
   @Override
   protected Node createRootNode(Tensor x) { // TODO check if time of root node should always be set to 0
