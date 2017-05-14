@@ -3,13 +3,11 @@ package ch.ethz.idsc.owly.glc.core;
 
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.PriorityQueue;
-import java.util.Queue;
 import java.util.Map.Entry;
 
+import ch.ethz.idsc.owly.data.tree.Nodes;
 import ch.ethz.idsc.owly.math.flow.Flow;
 import ch.ethz.idsc.owly.math.state.CostFunction;
 import ch.ethz.idsc.owly.math.state.StateIntegrator;
@@ -27,8 +25,8 @@ public class AnyTrajectoryPlanner extends TrajectoryPlanner {
   private final TrajectoryRegionQuery goalQuery;
   private final TrajectoryRegionQuery obstacleQuery;
   private final Map<Tensor, DomainQueue> domainCandidateMap = //
-      new HashMap<>();  
-  //private final Queue<Node> queue = new PriorityQueue<>(NodeMeritComparator.instance);
+      new HashMap<>();
+  // private final Queue<Node> queue = new PriorityQueue<>(NodeMeritComparator.instance);
 
   public AnyTrajectoryPlanner( //
       Tensor partitionScale, //
@@ -47,23 +45,23 @@ public class AnyTrajectoryPlanner extends TrajectoryPlanner {
   }
 
   @Override
-  public void expand(final Node node) {
+  public void expand(final GlcNode node) {
     // TODO count updates in cell based on costs for benchmarking
-    //Map<Tensor, DomainQueue> domainCandidateMap = new HashMap<>();
-    Map<Node, List<StateTime>> connectors = new HashMap<>();
+    // Map<Tensor, DomainQueue> domainCandidateMap = new HashMap<>();
+    Map<GlcNode, List<StateTime>> connectors = new HashMap<>();
     for (final Flow flow : controls) {
       final List<StateTime> trajectory = stateIntegrator.trajectory(node.stateTime(), flow);
       final StateTime last = Trajectories.getLast(trajectory);
-      final Node next = new Node(flow, last, //
-          node.cost().add(costFunction.costIncrement(node.stateTime(), trajectory, flow)), //
+      final GlcNode next = new GlcNode(flow, last, //
+          node.costFromRoot().add(costFunction.costIncrement(node.stateTime(), trajectory, flow)), //
           costFunction.minCostToGoal(last.x()) //
       );
       connectors.put(next, trajectory);
       // ---
       final Tensor domain_key = convertToKey(next.stateTime().x());
-      final Node former = getNode(domain_key);
+      final GlcNode former = getNode(domain_key);
       if (former != null) { // already some node present from previous exploration
-        if (Scalars.lessThan(next.cost(), former.cost())) // new node is better than previous one
+        if (Scalars.lessThan(next.costFromRoot(), former.costFromRoot())) // new node is better than previous one
           if (domainCandidateMap.containsKey(domain_key))
             domainCandidateMap.get(domain_key).add(next);
           else
@@ -72,19 +70,18 @@ public class AnyTrajectoryPlanner extends TrajectoryPlanner {
         domainCandidateMap.put(domain_key, new DomainQueue(next));
     }
     // ---
-    
     processCandidates(node, domainCandidateMap, connectors);
   }
 
   private void processCandidates( //
-      Node node, Map<Tensor, DomainQueue> candidates, Map<Node, List<StateTime>> connectors) {
+      GlcNode node, Map<Tensor, DomainQueue> candidates, Map<GlcNode, List<StateTime>> connectors) {
     for (Entry<Tensor, DomainQueue> entry : candidates.entrySet()) {
       final Tensor domain_key = entry.getKey();
       final DomainQueue domainQueue = entry.getValue();
       while (!domainQueue.isEmpty()) {
-        Node next = domainQueue.poll(); // poll() Retrieves and removes the head of this queue
+        GlcNode next = domainQueue.poll(); // poll() Retrieves and removes the head of this queue
         if (obstacleQuery.isDisjoint(connectors.get(next))) { // no collision
-          node.addChild(next);
+          node.insertEdgeTo(next);
           insert(domain_key, next);
           if (!goalQuery.isDisjoint(connectors.get(next)))
             offerDestination(next);
@@ -95,51 +92,41 @@ public class AnyTrajectoryPlanner extends TrajectoryPlanner {
   }
 
   public void switchRootToState(Tensor state) {
-    Node newRoot = this.getNode(convertToKey(state));
+    GlcNode newRoot = this.getNode(convertToKey(state));
     if (newRoot != null)
       switchRootToNode(newRoot);
     else
       System.out.println("This domain is not labelled yet");
-    return;
   }
 
-  private void switchRootToNode(Node newRoot) {
-    System.out.println("changing to root:" + newRoot.stateTime().x());
+  private void switchRootToNode(GlcNode newRoot) {
+    System.out.println("changing to root:" + newRoot.state());
+    if (newRoot.isRoot()) {
+      System.out.println("node is already root");
+      return;
+    }
     // removes the new root from the child list of its parent
-    boolean test = newRoot.parent().children().remove(newRoot.flow(), newRoot);
-    HashSet<Node> oldtree = new HashSet<>();
-    addNodeToSet(newRoot.parent(), oldtree);
+    final GlcNode parent = newRoot.parent();
+    parent.removeEdgeTo(newRoot);
+    Collection<GlcNode> oldtree = Nodes.ofSubtree(parent);
     if (queue().removeAll(oldtree))
       System.out.println("Removed oldtree from queue");
     int removedNodes = 0;
-    for (Node tempNode : oldtree) {
-      if (domainMap().remove(convertToKey(tempNode.stateTime().x()), tempNode))
+    for (GlcNode tempNode : oldtree) {
+      if (domainMap().remove(convertToKey(tempNode.state()), tempNode))
         removedNodes++;
     }
-    System.out.println(removedNodes + " Nodes removed from Tree");
-    newRoot.makeRoot();
-    return;
-  }
-
-  protected void addNodeToSet(Node node, HashSet<Node> subtree) {
-    subtree.add(node);
-    if (node.parent() != null && !subtree.contains(node.parent()))
-      addNodeToSet(node.parent(), subtree);
-    for (Entry<Flow, Node> tempChild : node.children().entrySet()) {
-      if (tempChild != null)
-        addNodeToSet(tempChild.getValue(), subtree);
-    }
-    return;
+    System.out.println(removedNodes + " Nodes removed from Tree " + oldtree.size());
   }
 
   @Override
-  protected Node createRootNode(Tensor x) { // TODO check if time of root node should always be set to 0
-    return new Node(null, new StateTime(x, ZeroScalar.get()), ZeroScalar.get(), costFunction.minCostToGoal(x));
+  protected GlcNode createRootNode(Tensor x) { // TODO check if time of root node should always be set to 0
+    return new GlcNode(null, new StateTime(x, ZeroScalar.get()), ZeroScalar.get(), costFunction.minCostToGoal(x));
   }
 
   @Override
-  public List<StateTime> detailedTrajectoryTo(Node node) {
-    return Trajectories.connect(stateIntegrator, Nodes.nodesFromRoot(node));
+  public List<StateTime> detailedTrajectoryTo(GlcNode node) {
+    return Trajectories.connect(stateIntegrator, Nodes.fromRoot(node));
   }
 
   @Override

@@ -12,8 +12,8 @@ import ch.ethz.idsc.owly.demo.glc.se2glc.Se2Parameters;
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
 import ch.ethz.idsc.owly.glc.core.AnyTrajectoryPlanner;
 import ch.ethz.idsc.owly.glc.core.Expand;
-import ch.ethz.idsc.owly.glc.gui.GlcFrame;
 import ch.ethz.idsc.owly.glc.wrap.Parameters;
+import ch.ethz.idsc.owly.gui.Gui;
 import ch.ethz.idsc.owly.math.StateSpaceModel;
 import ch.ethz.idsc.owly.math.flow.Flow;
 import ch.ethz.idsc.owly.math.region.HyperplaneRegion;
@@ -71,13 +71,11 @@ class Se2glcAnyDemo {
     System.out.println("After " + iters + "iterations");
     List<StateTime> trajectory = trajectoryPlanner.getPathFromRootToGoal();
     Trajectories.print(trajectory);
-    GlcFrame glcFrame = new GlcFrame();
-    glcFrame.glcComponent.setTrajectoryPlanner(trajectoryPlanner);
+    Gui.glc(trajectoryPlanner);
     // ---
     AnyTrajectoryPlanner trajectoryPlanner2 = trajectoryPlanner;
     StateTime newRootState = trajectory.get(1);
     trajectoryPlanner.switchRootToState(newRootState.x());
-    GlcFrame glcFrame2 = new GlcFrame();
-    glcFrame2.glcComponent.setTrajectoryPlanner(trajectoryPlanner2);
+    Gui.glc(trajectoryPlanner2);
   }
 }

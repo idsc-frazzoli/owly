@@ -13,7 +13,7 @@ public enum Expand {
   public static int maxSteps(ExpandInterface expandInterface, int expandLimit) {
     int expandCount = 0;
     while (expandCount++ < expandLimit) {
-      Node node = expandInterface.pollNext();
+      GlcNode node = expandInterface.pollNext();
       if (node == null) // queue is empty
         break;
       expandInterface.expand(node);
@@ -31,7 +31,7 @@ public enum Expand {
     int expandCount = 0;
     while (true) {
       expandCount++;
-      Node node = expandInterface.pollNext();
+      GlcNode node = expandInterface.pollNext();
       if (node == null) // queue is empty
         break;
       expandInterface.expand(node);

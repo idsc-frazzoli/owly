@@ -3,8 +3,8 @@ package ch.ethz.idsc.owly.glc.core;
 
 import java.util.PriorityQueue;
 
-/* package */ class DomainQueue extends PriorityQueue<Node> {
-  public DomainQueue(Node node) {
+/* package */ class DomainQueue extends PriorityQueue<GlcNode> {
+  public DomainQueue(GlcNode node) {
     super(NodeMeritComparator.instance);
     add(node);
   }
