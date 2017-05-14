@@ -57,32 +57,29 @@ public class DefaultRrts implements Rrts {
   }
 
   private RrtsNode connectAlongMinimumCost(Tensor state, int k_nearest) {
-    Scalar min = null;
     RrtsNode parent = null;
-    Scalar costFromParent = null;
+    Scalar costFromRoot = null;
     for (RrtsNode node : nodeCollection.nearTo(state, k_nearest)) {
       Transition transition = transitionSpace.connect(node.state(), state);
       Scalar cost = transitionCostFunction.cost(transition);
-      Scalar costFromRoot = node.costFromRoot().add(cost);
-      if (min == null || Scalars.lessThan(costFromRoot, min)) {
+      Scalar compare = node.costFromRoot().add(cost);
+      if (costFromRoot == null || Scalars.lessThan(compare, costFromRoot))
         if (transitionRegionQuery.isDisjoint(transition)) {
-          min = costFromRoot;
           parent = node;
-          costFromParent = cost;
+          costFromRoot = compare;
         }
-      }
     }
-    return parent.connectTo(state, costFromParent);
+    return parent.connectTo(state, costFromRoot);
   }
 
   @Override
   public void rewireAround(RrtsNode parent, int k_nearest) {
     for (RrtsNode node : nodeCollection.nearFrom(parent.state(), k_nearest)) {
       Transition transition = transitionSpace.connect(parent.state(), node.state());
-      Scalar cost = transitionCostFunction.cost(transition);
-      if (Scalars.lessThan(parent.costFromRoot().add(cost), node.costFromRoot())) {
+      Scalar costFromParent = transitionCostFunction.cost(transition);
+      if (Scalars.lessThan(parent.costFromRoot().add(costFromParent), node.costFromRoot())) {
         if (transitionRegionQuery.isDisjoint(transition)) {
-          parent.rewireTo(node, cost);
+          parent.rewireTo(node, costFromParent);
           ++rewireCount;
         }
       }

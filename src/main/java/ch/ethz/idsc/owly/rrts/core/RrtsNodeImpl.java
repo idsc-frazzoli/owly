@@ -16,8 +16,8 @@ import ch.ethz.idsc.tensor.Tensor;
   }
 
   @Override
-  public RrtsNode connectTo(Tensor state, Scalar costFromParent) {
-    RrtsNodeImpl leaf = new RrtsNodeImpl(state, costFromRoot().add(costFromParent));
+  public RrtsNode connectTo(Tensor state, Scalar costFromRoot) {
+    RrtsNodeImpl leaf = new RrtsNodeImpl(state, costFromRoot);
     this.insertEdgeTo(leaf);
     return leaf;
   }

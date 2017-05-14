@@ -18,7 +18,7 @@ public interface RrtsNode extends StateCostNode {
   @Override // from Node
   Collection<? extends RrtsNode> children();
 
-  RrtsNode connectTo(Tensor state, Scalar costFromParent);
+  RrtsNode connectTo(Tensor state, Scalar costFromRoot);
 
   void rewireTo(RrtsNode child, Scalar costFromParent);
 }
