@@ -13,11 +13,19 @@ The references are
 by Sertac Karaman and Emilio Frazzoli,
 [IJRR11](http://ares.lids.mit.edu/papers/Karaman.Frazzoli.IJRR11.pdf)
 * *A Generalized Label Correcting Method for Optimal Kinodynamic Motion Planning*
-by Brian Paden, and Emilio Frazzoli, 
+by Brian Paden and Emilio Frazzoli, 
 [arXiv:1607.06966](http://www.arXiv.org/1607.06966)
 
 
 ## Examples
+
+### RRT*
+
+RRT* R^2
+
+![r2](https://cloud.githubusercontent.com/assets/4012178/25473192/c7cdd192-2b2e-11e7-8c9e-72d88d6723d3.png)
+
+### GLC
 
 Pendulum Swing Up
 

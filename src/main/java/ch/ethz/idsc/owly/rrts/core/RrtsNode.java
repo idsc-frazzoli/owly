@@ -12,7 +12,7 @@ public interface RrtsNode extends StateCostNode {
     return new RrtsNodeImpl(state, cost);
   }
 
-  @Override
+  @Override // from Node
   RrtsNode parent();
 
   @Override // from Node

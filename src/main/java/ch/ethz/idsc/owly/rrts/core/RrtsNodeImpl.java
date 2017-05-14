@@ -27,6 +27,7 @@ import ch.ethz.idsc.tensor.Tensor;
     child.parent().removeEdgeTo(child);
     insertEdgeTo(child);
     final Scalar nodeCostFromRoot = costFromRoot().add(costFromParent);
+    // the condition of cost reduction is not strictly necessary
     if (!Scalars.lessThan(nodeCostFromRoot, child.costFromRoot()))
       throw new RuntimeException();
     _propagate(child, nodeCostFromRoot);

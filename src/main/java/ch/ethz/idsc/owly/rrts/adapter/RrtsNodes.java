@@ -7,10 +7,12 @@ import ch.ethz.idsc.owly.rrts.core.TransitionCostFunction;
 import ch.ethz.idsc.owly.rrts.core.TransitionSpace;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.TensorRuntimeException;
+import ch.ethz.idsc.tensor.ZeroScalar;
+import ch.ethz.idsc.tensor.sca.Chop;
 
 public enum RrtsNodes {
   ;
-  public static boolean isCostConsistent( //
+  public static void costConsistency( //
       RrtsNode node, //
       TransitionSpace transitionSpace, //
       TransitionCostFunction transitionCostFunction) {
@@ -20,13 +22,14 @@ public enum RrtsNodes {
       Scalar tran = node.costFromRoot().subtract(parent.costFromRoot());
       Transition transition = transitionSpace.connect(parent.state(), node.state());
       Scalar tc = transitionCostFunction.cost(transition);
-      status &= tc.equals(tran);
+      status &= Chop.of(tc.subtract(tran)).equals(ZeroScalar.get());
       if (!status)
         throw TensorRuntimeException.of(tc, tran);
       status &= parent.costFromRoot().add(tran).equals(node.costFromRoot());
+      if (!status)
+        throw TensorRuntimeException.of(tc, tran);
     }
     for (RrtsNode child : node.children())
-      status &= isCostConsistent(child, transitionSpace, transitionCostFunction);
-    return status;
+      costConsistency(child, transitionSpace, transitionCostFunction);
   }
 }

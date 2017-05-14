@@ -8,7 +8,6 @@ import ch.ethz.idsc.owly.rrts.core.Transition;
 import ch.ethz.idsc.owly.rrts.core.TransitionCostFunction;
 import ch.ethz.idsc.owly.rrts.core.TransitionRegionQuery;
 import ch.ethz.idsc.owly.rrts.core.TransitionSpace;
-import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Scalars;
 import ch.ethz.idsc.tensor.Tensor;
@@ -58,32 +57,34 @@ public class DefaultRrts implements Rrts {
   }
 
   private RrtsNode connectAlongMinimumCost(Tensor state, int k_nearest) {
+    Scalar min = null;
     RrtsNode parent = null;
-    Scalar min = RealScalar.POSITIVE_INFINITY;
+    Scalar costFromParent = null;
     for (RrtsNode node : nodeCollection.nearTo(state, k_nearest)) {
       Transition transition = transitionSpace.connect(node.state(), state);
-      boolean noCollision = transitionRegionQuery.isDisjoint(transition);
       Scalar cost = transitionCostFunction.cost(transition);
-      Scalar cmp = node.costFromRoot().add(cost);
-      boolean isCostLower = Scalars.lessThan(cmp, min);
-      if (noCollision && isCostLower) {
-        parent = node;
-        min = cmp;
+      Scalar costFromRoot = node.costFromRoot().add(cost);
+      if (min == null || Scalars.lessThan(costFromRoot, min)) {
+        if (transitionRegionQuery.isDisjoint(transition)) {
+          min = costFromRoot;
+          parent = node;
+          costFromParent = cost;
+        }
       }
     }
-    return parent.connectTo(state, min);
+    return parent.connectTo(state, costFromParent);
   }
 
   @Override
   public void rewireAround(RrtsNode parent, int k_nearest) {
     for (RrtsNode node : nodeCollection.nearFrom(parent.state(), k_nearest)) {
       Transition transition = transitionSpace.connect(parent.state(), node.state());
-      boolean noCollision = transitionRegionQuery.isDisjoint(transition);
       Scalar cost = transitionCostFunction.cost(transition);
-      boolean isCostLower = Scalars.lessThan(parent.costFromRoot().add(cost), node.costFromRoot());
-      if (noCollision && isCostLower) {
-        parent.rewireTo(node, cost);
-        ++rewireCount;
+      if (Scalars.lessThan(parent.costFromRoot().add(cost), node.costFromRoot())) {
+        if (transitionRegionQuery.isDisjoint(transition)) {
+          parent.rewireTo(node, cost);
+          ++rewireCount;
+        }
       }
     }
   }

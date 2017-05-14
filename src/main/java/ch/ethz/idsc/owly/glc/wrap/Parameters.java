@@ -52,7 +52,7 @@ public abstract class Parameters {
 
   /** @return time_scale / Resolution */
   public Scalar getdtMax() {
-    return this.dtMax;
+    return dtMax;
   }
 
   /** @return depthScale * R * log(R) */
