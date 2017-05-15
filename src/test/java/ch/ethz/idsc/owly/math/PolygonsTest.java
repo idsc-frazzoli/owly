@@ -18,9 +18,5 @@ public class PolygonsTest extends TestCase {
     assertTrue(Polygons.isInside(polygon, Tensors.vector(.1, .1)));
     assertFalse(Polygons.isInside(polygon, Tensors.vector(.1, -.1)));
     assertFalse(Polygons.isInside(polygon, Tensors.vector(1, 1.1)));
-    // for (Tensor point : polygon) {
-    // boolean s = Polygons.isInside(polygon, point);
-    // System.out.println(s);
-    // }
   }
 }
