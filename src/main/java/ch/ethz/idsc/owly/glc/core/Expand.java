@@ -41,9 +41,10 @@ public enum Expand {
       expandInterface.expand(node);
       if (expandInterface.getBest() != null) // found node in goal region
         break;
-      if (depthLimit < node.depth())
+      if (depthLimit < node.depth()) {
         System.out.println("*** DepthLimit reached -- No Goal was found ***");
-      break;
+        break;
+      }
     }
     return expandCount;
   }
