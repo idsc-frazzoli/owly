@@ -118,7 +118,7 @@ public class AnyTrajectoryPlanner extends TrajectoryPlanner {
       if (domainMap().remove(convertToKey(tempNode.state()), tempNode))
         removedNodes++;
     }
-    System.out.println(removedNodes + " of " + oldDomainMapSize +" Nodes removed from Tree ");
+    System.out.println(removedNodes + " of " + oldDomainMapSize + " Nodes removed from Tree ");
     // TODO JONAS relabel domains and add to queue
   }
 

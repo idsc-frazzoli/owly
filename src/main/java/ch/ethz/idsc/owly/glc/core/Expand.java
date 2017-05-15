@@ -22,7 +22,8 @@ public enum Expand {
       if (expandInterface.getBest() != null) // found node in goal region
         break;
     }
-    if (expandCount==expandLimit) System.out.println("*** ExpandLimit reached -- No Goal was found ***");
+    if (expandCount == expandLimit)
+      System.out.println("*** ExpandLimit reached -- No Goal was found ***");
     return expandCount;
   }
 
