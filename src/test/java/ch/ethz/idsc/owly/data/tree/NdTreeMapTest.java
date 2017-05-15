@@ -5,6 +5,10 @@ package ch.ethz.idsc.owly.data.tree;
 import java.util.Arrays;
 import java.util.List;
 
+import ch.ethz.idsc.owly.data.cluster.Cluster;
+import ch.ethz.idsc.owly.data.cluster.DistanceInterface;
+import ch.ethz.idsc.owly.data.cluster.NdTreeMap;
+import ch.ethz.idsc.owly.data.cluster.Point;
 import ch.ethz.idsc.tensor.Tensors;
 import junit.framework.TestCase;
 

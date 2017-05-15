@@ -2,10 +2,30 @@
 
 The repository contains Java 8 implementations of motion planners and their variants.
 
-Presently available are
-* *A Generalized Label Correcting Method for Optimal Kinodynamic Motion Planning* by Brian Paden, and Emilio Frazzoli, arXiv:1607.06966 (2016)
+List of algorithms:
+
+* RRT*
+* GLC
+
+The references are
+
+* *Sampling-based algorithms for optimal motion planning*
+by Sertac Karaman and Emilio Frazzoli,
+[IJRR11](http://ares.lids.mit.edu/papers/Karaman.Frazzoli.IJRR11.pdf)
+* *A Generalized Label Correcting Method for Optimal Kinodynamic Motion Planning*
+by Brian Paden and Emilio Frazzoli, 
+[arXiv:1607.06966](http://www.arXiv.org/1607.06966)
+
 
 ## Examples
+
+### RRT*
+
+RRT* R^2
+
+![r2](https://cloud.githubusercontent.com/assets/4012178/26045794/16bd0a54-394c-11e7-9d11-19558bc3be88.png)
+
+### GLC
 
 Pendulum Swing Up
 

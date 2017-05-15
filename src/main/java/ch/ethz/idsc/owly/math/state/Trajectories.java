@@ -4,7 +4,7 @@ package ch.ethz.idsc.owly.math.state;
 import java.util.ArrayList;
 import java.util.List;
 
-import ch.ethz.idsc.owly.glc.core.Node;
+import ch.ethz.idsc.owly.glc.core.GlcNode;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Scalars;
 import ch.ethz.idsc.tensor.ZeroScalar;
@@ -30,13 +30,13 @@ public enum Trajectories {
   /** @param stateIntegrator
    * @param list
    * @return */
-  public static List<StateTime> connect(StateIntegrator stateIntegrator, List<Node> list) {
+  public static List<StateTime> connect(StateIntegrator stateIntegrator, List<GlcNode> list) {
     List<StateTime> trajectory = new ArrayList<>();
     if (!list.isEmpty()) {
       trajectory.add(list.get(0).stateTime()); // add first node
       for (int index = 1; index < list.size(); ++index) {
-        Node prevNode = list.get(index - 1);
-        Node nextNode = list.get(index);
+        GlcNode prevNode = list.get(index - 1);
+        GlcNode nextNode = list.get(index);
         if (prevNode != nextNode.parent())
           throw new RuntimeException();
         List<StateTime> part = stateIntegrator.trajectory(prevNode.stateTime(), nextNode.flow());

@@ -6,7 +6,7 @@ import java.util.Collection;
 import ch.ethz.idsc.owly.demo.glc.rn.R2Controls;
 import ch.ethz.idsc.owly.glc.core.DefaultTrajectoryPlanner;
 import ch.ethz.idsc.owly.glc.core.TrajectoryPlanner;
-import ch.ethz.idsc.owly.glc.gui.ExpandGlcFrame;
+import ch.ethz.idsc.owly.gui.ExpandGlcFrame;
 import ch.ethz.idsc.owly.math.flow.EulerIntegrator;
 import ch.ethz.idsc.owly.math.flow.Flow;
 import ch.ethz.idsc.owly.math.state.EmptyTrajectoryRegionQuery;

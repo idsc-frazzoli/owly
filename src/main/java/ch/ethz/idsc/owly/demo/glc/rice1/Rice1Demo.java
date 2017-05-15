@@ -8,7 +8,7 @@ import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
 import ch.ethz.idsc.owly.glc.core.DefaultTrajectoryPlanner;
 import ch.ethz.idsc.owly.glc.core.Expand;
 import ch.ethz.idsc.owly.glc.core.TrajectoryPlanner;
-import ch.ethz.idsc.owly.glc.gui.GlcFrame;
+import ch.ethz.idsc.owly.gui.Gui;
 import ch.ethz.idsc.owly.math.flow.Flow;
 import ch.ethz.idsc.owly.math.region.EllipsoidRegion;
 import ch.ethz.idsc.owly.math.region.RegionUnion;
@@ -46,7 +46,6 @@ class Rice1Demo {
     System.out.println(iters);
     List<StateTime> trajectory = trajectoryPlanner.getPathFromRootToGoal();
     Trajectories.print(trajectory);
-    GlcFrame glcFrame = new GlcFrame();
-    glcFrame.glcComponent.setTrajectoryPlanner(trajectoryPlanner);
+    Gui.glc(trajectoryPlanner);
   }
 }

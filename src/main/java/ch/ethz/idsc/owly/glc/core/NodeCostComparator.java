@@ -5,12 +5,12 @@ import java.util.Comparator;
 
 import ch.ethz.idsc.tensor.Scalars;
 
-/** compare two nodes based on {@link Node#cost()} */
-/* package */ enum NodeCostComparator implements Comparator<Node> {
+/** compare two nodes based on {@link GlcNode#cost()} */
+/* package */ enum NodeCostComparator implements Comparator<GlcNode> {
   instance;
   // ---
   @Override
-  public int compare(Node o1, Node o2) {
-    return Scalars.compare(o1.cost(), o2.cost());
+  public int compare(GlcNode o1, GlcNode o2) {
+    return Scalars.compare(o1.costFromRoot(), o2.costFromRoot());
   }
 }

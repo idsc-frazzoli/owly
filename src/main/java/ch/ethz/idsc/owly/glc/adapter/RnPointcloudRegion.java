@@ -1,9 +1,9 @@
 // code by jph
 package ch.ethz.idsc.owly.glc.adapter;
 
-import ch.ethz.idsc.owly.data.tree.Cluster;
-import ch.ethz.idsc.owly.data.tree.DistanceInterface;
-import ch.ethz.idsc.owly.data.tree.NdTreeMap;
+import ch.ethz.idsc.owly.data.cluster.Cluster;
+import ch.ethz.idsc.owly.data.cluster.DistanceInterface;
+import ch.ethz.idsc.owly.data.cluster.NdTreeMap;
 import ch.ethz.idsc.owly.math.region.EmptyRegion;
 import ch.ethz.idsc.owly.math.region.Region;
 import ch.ethz.idsc.tensor.Scalar;

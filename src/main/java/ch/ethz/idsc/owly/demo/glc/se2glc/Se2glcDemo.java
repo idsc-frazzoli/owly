@@ -12,8 +12,8 @@ import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
 import ch.ethz.idsc.owly.glc.core.DefaultTrajectoryPlanner;
 import ch.ethz.idsc.owly.glc.core.Expand;
 import ch.ethz.idsc.owly.glc.core.TrajectoryPlanner;
-import ch.ethz.idsc.owly.glc.gui.GlcFrame;
 import ch.ethz.idsc.owly.glc.wrap.Parameters;
+import ch.ethz.idsc.owly.gui.Gui;
 import ch.ethz.idsc.owly.math.StateSpaceModel;
 import ch.ethz.idsc.owly.math.flow.Flow;
 import ch.ethz.idsc.owly.math.region.HyperplaneRegion;
@@ -73,8 +73,7 @@ class Se2glcDemo {
     Trajectories.print(trajectory);
     // swtch root
     // tree2 = ...
-    GlcFrame glcFrame = new GlcFrame();
-    glcFrame.glcComponent.setTrajectoryPlanner(trajectoryPlanner);
+    Gui.glc(trajectoryPlanner);
     // glcFrame.glcComponent.addTrajectoryPlanner(trajectoryPlanner);
   }
 }

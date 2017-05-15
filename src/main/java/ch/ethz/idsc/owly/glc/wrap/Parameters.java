@@ -5,7 +5,6 @@ import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
-
 import ch.ethz.idsc.tensor.sca.Ceiling;
 import ch.ethz.idsc.tensor.sca.Log;
 
@@ -53,7 +52,7 @@ public abstract class Parameters {
 
   /** @return time_scale / Resolution */
   public Scalar getdtMax() {
-    return this.dtMax;
+    return dtMax;
   }
 
   /** @return depthScale * R * log(R) */
