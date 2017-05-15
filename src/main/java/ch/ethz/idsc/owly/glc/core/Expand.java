@@ -14,12 +14,15 @@ public enum Expand {
     int expandCount = 0;
     while (expandCount++ < expandLimit) {
       GlcNode node = expandInterface.pollNext();
-      if (node == null) // queue is empty
+      if (node == null) {// queue is empty
+        System.out.println("*** Queue is empty -- No Goal was found ***");
         break;
+      }
       expandInterface.expand(node);
       if (expandInterface.getBest() != null) // found node in goal region
         break;
     }
+    if (expandCount==expandLimit) System.out.println("*** ExpandLimit reached -- No Goal was found ***");
     return expandCount;
   }
 
@@ -38,8 +41,8 @@ public enum Expand {
       if (expandInterface.getBest() != null) // found node in goal region
         break;
       if (depthLimit < node.depth())
-        // TODO write limit sysout
-        break;
+        System.out.println("*** DepthLimit reached -- No Goal was found ***");
+      break;
     }
     return expandCount;
   }

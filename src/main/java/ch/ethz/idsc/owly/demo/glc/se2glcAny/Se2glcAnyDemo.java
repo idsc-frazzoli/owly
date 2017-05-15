@@ -78,10 +78,9 @@ class Se2glcAnyDemo {
     Se2GoalManager se2GoalManager2 = new Se2GoalManager( //
         Tensors.vector(-3, 1), RealScalar.of(Math.PI), //
         DoubleScalar.of(0.1), Se2Utils.DEGREE(10));
-    // Thread.sleep(4000);
+    Thread.sleep(4000);
     AnyTrajectoryPlanner trajectoryPlanner2 = trajectoryPlanner;
     trajectoryPlanner2.setGoalQuery(se2GoalManager2, se2GoalManager2.goalQuery());
-    // TODO Expand.maxdepth still checks for old goal
     StateTime newRootState = trajectory.get(1);
     trajectoryPlanner2.switchRootToState(newRootState.x());
     int iters2 = Expand.maxDepth(trajectoryPlanner2, parameters.getDepthLimit() + 2);
