@@ -25,7 +25,7 @@ public abstract class TrajectoryPlanner implements ExpandInterface {
   // TODO long-term use RasterMap instead of domainMap
   private final Map<Tensor, GlcNode> domainMap = new HashMap<>();
   /** best is a reference to a Node in the goal region, or null if such a node has not been identified */
-  private GlcNode best;
+  protected GlcNode best;
   private int replaceCount = 0;
 
   protected TrajectoryPlanner(Tensor eta) {

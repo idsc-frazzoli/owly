@@ -3,6 +3,7 @@ package ch.ethz.idsc.owly.glc.core;
 
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -21,22 +22,22 @@ import ch.ethz.idsc.tensor.ZeroScalar;
 public class AnyTrajectoryPlanner extends TrajectoryPlanner {
   private final StateIntegrator stateIntegrator;
   private final Collection<Flow> controls;
-  private final CostFunction costFunction;
-  private final TrajectoryRegionQuery goalQuery;
+  private CostFunction costFunction;
+  private TrajectoryRegionQuery goalQuery;
   private final TrajectoryRegionQuery obstacleQuery;
   private final Map<Tensor, DomainQueue> domainCandidateMap = //
       new HashMap<>();
   // private final Queue<Node> queue = new PriorityQueue<>(NodeMeritComparator.instance);
 
   public AnyTrajectoryPlanner( //
-      Tensor partitionScale, //
+      Tensor eta, //
       StateIntegrator stateIntegrator, //
       Collection<Flow> controls, //
       CostFunction costFunction, //
       TrajectoryRegionQuery goalQuery, //
       TrajectoryRegionQuery obstacleQuery //
   ) {
-    super(partitionScale);
+    super(eta);
     this.stateIntegrator = stateIntegrator;
     this.controls = controls;
     this.costFunction = costFunction;
@@ -117,11 +118,13 @@ public class AnyTrajectoryPlanner extends TrajectoryPlanner {
         removedNodes++;
     }
     System.out.println(removedNodes + " Nodes removed from Tree " + oldtree.size());
+    // TODO JONAS relabel domains and add to queue
   }
 
   @Override
   protected GlcNode createRootNode(Tensor x) { // TODO check if time of root node should always be set to 0
-    return new GlcNode(null, new StateTime(x, ZeroScalar.get()), ZeroScalar.get(), costFunction.minCostToGoal(x));
+    return new GlcNode(null, new StateTime(x, ZeroScalar.get()), ZeroScalar.get(), //
+        costFunction.minCostToGoal(x));
   }
 
   @Override
@@ -137,5 +140,20 @@ public class AnyTrajectoryPlanner extends TrajectoryPlanner {
   @Override
   public TrajectoryRegionQuery getGoalQuery() {
     return goalQuery;
+  }
+
+  /** @param newGoal is the new RegionQuery for the new Goalregion */
+  public void setGoalQuery(CostFunction newCostFunction, TrajectoryRegionQuery newGoal) {
+    this.goalQuery = newGoal;
+    costFunction = newCostFunction;
+    best = null;
+    long tic = System.nanoTime();
+    List<GlcNode> list = new LinkedList<>(queue());
+    queue().clear();
+    list.stream().parallel() //
+        .forEach(glcNode -> glcNode.setMinCostToGoal(costFunction.minCostToGoal(glcNode.state())));
+    queue().addAll(list);
+    long toc = System.nanoTime();
+    System.out.println("rebuild queue with " + list.size() + " nodes: " + ((toc - tic) * 1e-9));
   }
 }

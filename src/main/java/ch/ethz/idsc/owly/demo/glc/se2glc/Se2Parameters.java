@@ -26,8 +26,7 @@ public class Se2Parameters extends Parameters {
       return getPartitionScale().map(Scalar::invert) //
           .multiply(RealScalar.of(getResolution()).multiply(Power.of(Log.function.apply(RealScalar.of(getResolution())), 2)));
     return getPartitionScale().map(Scalar::invert) //
-        .multiply(Power.of(RealScalar.of(getResolution()), RealScalar.of(5).divide(RealScalar.of(3.14))));
-    // TODO change 3.13 to PI
+        .multiply(Power.of(RealScalar.of(getResolution()), RealScalar.of(5).divide(RealScalar.of(Math.PI))));
     // TODO change to function depending on Lipschitz
   }
 }

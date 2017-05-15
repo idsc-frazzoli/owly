@@ -15,7 +15,7 @@ import ch.ethz.idsc.owly.rrts.core.TransitionRegionQuery;
 public enum Gui {
   ;
   // ---
-  public static void glc(TrajectoryPlanner trajectoryPlanner) {
+  public static OwlyFrame glc(TrajectoryPlanner trajectoryPlanner) {
     OwlyFrame glcFrame = new OwlyFrame();
     OwlyComponent c = glcFrame.glcComponent;
     {
@@ -62,6 +62,7 @@ public enum Gui {
       c.layers.add(hudLayer);
     }
     glcFrame.jFrame.setVisible(true);
+    return glcFrame;
   }
 
   public static void rrts(RrtsNode root, TransitionRegionQuery transitionRegionQuery) {

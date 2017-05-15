@@ -14,6 +14,7 @@ import ch.ethz.idsc.owly.glc.core.AnyTrajectoryPlanner;
 import ch.ethz.idsc.owly.glc.core.Expand;
 import ch.ethz.idsc.owly.glc.wrap.Parameters;
 import ch.ethz.idsc.owly.gui.Gui;
+import ch.ethz.idsc.owly.gui.OwlyFrame;
 import ch.ethz.idsc.owly.math.StateSpaceModel;
 import ch.ethz.idsc.owly.math.flow.Flow;
 import ch.ethz.idsc.owly.math.region.HyperplaneRegion;
@@ -34,7 +35,7 @@ import ch.ethz.idsc.tensor.Tensors;
 /** (x,y,theta) */
 class Se2glcAnyDemo {
   public static void main(String[] args) throws Exception {
-    int resolution = 8;
+    int resolution = 12;
     Scalar timeScale = RealScalar.of(10);
     Scalar depthScale = RealScalar.of(5);
     Tensor partitionScale = Tensors.vector(3, 3, 15);
@@ -54,8 +55,8 @@ class Se2glcAnyDemo {
     Se2GoalManager se2GoalManager = new Se2GoalManager( //
         Tensors.vector(0, 1), RealScalar.of(Math.PI), //
         DoubleScalar.of(.1), Se2Utils.DEGREE(10));
-    TrajectoryRegionQuery goalQuery = //
-        new SimpleTrajectoryRegionQuery(new TimeInvariantRegion(se2GoalManager));
+    // TrajectoryRegionQuery goalQuery = //
+    // new SimpleTrajectoryRegionQuery(new TimeInvariantRegion(se2GoalManager));
     TrajectoryRegionQuery obstacleQuery = //
         new SimpleTrajectoryRegionQuery(new TimeInvariantRegion( //
             RegionUnion.of( //
@@ -64,18 +65,30 @@ class Se2glcAnyDemo {
             )));
     // ---
     AnyTrajectoryPlanner trajectoryPlanner = new AnyTrajectoryPlanner( //
-        parameters.getEta(), stateIntegrator, controls, se2GoalManager, goalQuery, obstacleQuery);
+        parameters.getEta(), stateIntegrator, controls, se2GoalManager, se2GoalManager.goalQuery(), obstacleQuery);
     // ---
     trajectoryPlanner.insertRoot(Tensors.vector(0, 0, 0));
     int iters = Expand.maxDepth(trajectoryPlanner, parameters.getDepthLimit());
-    System.out.println("After " + iters + "iterations");
+    System.out.println("After " + iters + " iterations");
     List<StateTime> trajectory = trajectoryPlanner.getPathFromRootToGoal();
     Trajectories.print(trajectory);
-    Gui.glc(trajectoryPlanner);
     // ---
+    long tic = System.nanoTime();
+    // TODO plots just replace, no 2 separate instances
+    Se2GoalManager se2GoalManager2 = new Se2GoalManager( //
+        Tensors.vector(-3, 1), RealScalar.of(Math.PI), //
+        DoubleScalar.of(0.1), Se2Utils.DEGREE(10));
+    // Thread.sleep(4000);
     AnyTrajectoryPlanner trajectoryPlanner2 = trajectoryPlanner;
+    trajectoryPlanner2.setGoalQuery(se2GoalManager2, se2GoalManager2.goalQuery());
+    // TODO Expand.maxdepth still checks for old goal
     StateTime newRootState = trajectory.get(1);
-    trajectoryPlanner.switchRootToState(newRootState.x());
-    Gui.glc(trajectoryPlanner2);
+    trajectoryPlanner2.switchRootToState(newRootState.x());
+    int iters2 = Expand.maxDepth(trajectoryPlanner2, parameters.getDepthLimit() + 2);
+    long toc = System.nanoTime();
+    System.out.println((toc - tic) * 1e-9);
+    System.out.println("After root switch needed " + iters2 + " iterations");
+    OwlyFrame owlyFrame = Gui.glc(trajectoryPlanner);
+    owlyFrame.repaint();
   }
 }

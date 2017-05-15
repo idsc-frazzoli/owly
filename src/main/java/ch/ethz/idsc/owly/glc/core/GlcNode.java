@@ -22,7 +22,7 @@ public class GlcNode extends AbstractNode<GlcNode> implements StateCostNode {
   private final Flow flow;
   private final StateTime stateTime;
   private final Scalar costFromRoot;
-  private final Scalar merit;
+  private Scalar merit; // TODO find solution with final
   /** depth == 0 for root node, otherwise depth > 0 */
   private int depth = 0;
 
@@ -71,6 +71,10 @@ public class GlcNode extends AbstractNode<GlcNode> implements StateCostNode {
 
   public Scalar merit() {
     return merit;
+  }
+
+  public void setMinCostToGoal(Scalar minCostToGoal) {
+    merit = costFromRoot.add(minCostToGoal);
   }
 
   public int depth() {
