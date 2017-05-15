@@ -38,6 +38,7 @@ public enum Expand {
       if (expandInterface.getBest() != null) // found node in goal region
         break;
       if (depthLimit < node.depth())
+        // TODO write limit sysout
         break;
     }
     return expandCount;

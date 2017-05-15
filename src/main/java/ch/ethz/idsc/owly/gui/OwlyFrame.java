@@ -8,7 +8,7 @@ import javax.swing.JPanel;
 import javax.swing.JToolBar;
 import javax.swing.WindowConstants;
 
-class OwlyFrame {
+public class OwlyFrame {
   JFrame jFrame = new JFrame();
   public final OwlyComponent glcComponent = new OwlyComponent();
 
@@ -19,5 +19,9 @@ class OwlyFrame {
     jFrame.setContentPane(jPanel);
     jFrame.setBounds(100, 50, 800, 800);
     jFrame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+  }
+
+  public void repaint() {
+    glcComponent.jComponent.repaint();
   }
 }

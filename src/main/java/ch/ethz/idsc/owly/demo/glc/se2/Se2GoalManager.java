@@ -3,11 +3,14 @@ package ch.ethz.idsc.owly.demo.glc.se2;
 
 import java.util.List;
 
+import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
 import ch.ethz.idsc.owly.math.flow.Flow;
 import ch.ethz.idsc.owly.math.region.Region;
 import ch.ethz.idsc.owly.math.state.CostFunction;
 import ch.ethz.idsc.owly.math.state.StateTime;
+import ch.ethz.idsc.owly.math.state.TimeInvariantRegion;
 import ch.ethz.idsc.owly.math.state.Trajectories;
+import ch.ethz.idsc.owly.math.state.TrajectoryRegionQuery;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Scalars;
@@ -57,5 +60,9 @@ public class Se2GoalManager implements Region, CostFunction {
     status &= Scalars.lessEquals(Norm._2.of(cur_xy.subtract(xy)), radius);
     status &= Scalars.lessEquals(PRINCIPAL.apply(cur_angle.subtract(angle)).abs(), angle_delta);
     return status;
+  }
+
+  public TrajectoryRegionQuery goalQuery() {
+    return new SimpleTrajectoryRegionQuery(new TimeInvariantRegion(this));
   }
 }

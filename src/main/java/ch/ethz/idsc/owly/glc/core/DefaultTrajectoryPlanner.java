@@ -26,14 +26,14 @@ public class DefaultTrajectoryPlanner extends TrajectoryPlanner {
   private final TrajectoryRegionQuery obstacleQuery;
 
   public DefaultTrajectoryPlanner( //
-      Tensor partitionScale, //
+      Tensor eta, //
       StateIntegrator stateIntegrator, //
       Collection<Flow> controls, //
       CostFunction costFunction, //
       TrajectoryRegionQuery goalQuery, //
       TrajectoryRegionQuery obstacleQuery //
   ) {
-    super(partitionScale);
+    super(eta);
     this.stateIntegrator = stateIntegrator;
     this.controls = controls;
     this.costFunction = costFunction;
@@ -81,7 +81,7 @@ public class DefaultTrajectoryPlanner extends TrajectoryPlanner {
           node.insertEdgeTo(next);
           insert(domain_key, next);
           if (!goalQuery.isDisjoint(connectors.get(next)))
-            offerDestination(next);
+            offerDestination(next); // TODO display computation time until goal was found
           break; // leaves the while loop, but not the for loop
         }
       }
