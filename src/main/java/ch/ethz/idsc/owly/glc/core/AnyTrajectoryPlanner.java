@@ -101,6 +101,7 @@ public class AnyTrajectoryPlanner extends TrajectoryPlanner {
   }
 
   private void switchRootToNode(GlcNode newRoot) {
+    int oldDomainMapSize = domainMap().size();
     System.out.println("changing to root:" + newRoot.state());
     if (newRoot.isRoot()) {
       System.out.println("node is already root");
@@ -117,7 +118,7 @@ public class AnyTrajectoryPlanner extends TrajectoryPlanner {
       if (domainMap().remove(convertToKey(tempNode.state()), tempNode))
         removedNodes++;
     }
-    System.out.println(removedNodes + " Nodes removed from Tree " + oldtree.size());
+    System.out.println(removedNodes + " of " + oldDomainMapSize +" Nodes removed from Tree ");
     // TODO JONAS relabel domains and add to queue
   }
 
