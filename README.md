@@ -23,7 +23,7 @@ by Brian Paden and Emilio Frazzoli,
 
 RRT* R^2
 
-![r2](https://cloud.githubusercontent.com/assets/4012178/25473192/c7cdd192-2b2e-11e7-8c9e-72d88d6723d3.png)
+![r2](https://cloud.githubusercontent.com/assets/4012178/26045794/16bd0a54-394c-11e7-9d11-19558bc3be88.png)
 
 ### GLC
 
