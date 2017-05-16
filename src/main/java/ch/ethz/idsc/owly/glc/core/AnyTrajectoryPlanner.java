@@ -62,6 +62,7 @@ public class AnyTrajectoryPlanner extends TrajectoryPlanner {
       final Tensor domain_key = convertToKey(next.stateTime().x());
       final GlcNode former = getNode(domain_key);
       if (former != null) { // already some node present from previous exploration
+        //TODO save all nodes in domainCandidateMap
         if (Scalars.lessThan(next.costFromRoot(), former.costFromRoot())) // new node is better than previous one
           if (domainCandidateMap.containsKey(domain_key))
             domainCandidateMap.get(domain_key).add(next);
@@ -71,6 +72,7 @@ public class AnyTrajectoryPlanner extends TrajectoryPlanner {
         domainCandidateMap.put(domain_key, new DomainQueue(next));
     }
     // ---
+    //TODO only process domains, in which I expanded
     processCandidates(node, domainCandidateMap, connectors);
   }
 
@@ -79,6 +81,7 @@ public class AnyTrajectoryPlanner extends TrajectoryPlanner {
     for (Entry<Tensor, DomainQueue> entry : candidates.entrySet()) {
       final Tensor domain_key = entry.getKey();
       final DomainQueue domainQueue = entry.getValue();
+      //TODO as all candidates are in: check here if candidates are better
       while (!domainQueue.isEmpty()) {
         GlcNode next = domainQueue.poll(); // poll() Retrieves and removes the head of this queue
         if (obstacleQuery.isDisjoint(connectors.get(next))) { // no collision
@@ -101,6 +104,7 @@ public class AnyTrajectoryPlanner extends TrajectoryPlanner {
   }
 
   private void switchRootToNode(GlcNode newRoot) {
+    int oldDomainMapSize = domainMap().size();
     System.out.println("changing to root:" + newRoot.state());
     if (newRoot.isRoot()) {
       System.out.println("node is already root");
@@ -117,7 +121,7 @@ public class AnyTrajectoryPlanner extends TrajectoryPlanner {
       if (domainMap().remove(convertToKey(tempNode.state()), tempNode))
         removedNodes++;
     }
-    System.out.println(removedNodes + " Nodes removed from Tree " + oldtree.size());
+    System.out.println(removedNodes + " of " + oldDomainMapSize + " Nodes removed from Tree ");
     // TODO JONAS relabel domains and add to queue
   }
 
