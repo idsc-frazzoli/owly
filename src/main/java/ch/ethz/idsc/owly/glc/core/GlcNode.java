@@ -27,8 +27,7 @@ public class GlcNode extends AbstractNode<GlcNode> implements StateCostNode {
   private int depth = 0;
 
   /** @param flow that got us to this Node from the parent, or null when this Node is the root
-   * @param x
-   * @param time
+   * @param stateTime
    * @param costFromRoot
    * @param minCostToGoal */
   public GlcNode(Flow flow, StateTime stateTime, Scalar costFromRoot, Scalar minCostToGoal) {
@@ -44,13 +43,13 @@ public class GlcNode extends AbstractNode<GlcNode> implements StateCostNode {
   }
 
   @Override // from StateCostNode
-  public Scalar costFromRoot() {
-    return costFromRoot;
+  public Tensor state() {
+    return stateTime.x();
   }
 
   @Override // from StateCostNode
-  public Tensor state() {
-    return stateTime.x();
+  public Scalar costFromRoot() {
+    return costFromRoot;
   }
 
   @Override // from AbstractNode

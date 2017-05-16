@@ -6,7 +6,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.concurrent.ConcurrentHashMap;
 
 import ch.ethz.idsc.owly.data.tree.Nodes;
 import ch.ethz.idsc.owly.math.flow.Flow;
@@ -44,23 +43,8 @@ public class DefaultTrajectoryPlanner extends TrajectoryPlanner {
 
   @Override
   public void expand(final GlcNode node) {
-    // integrate flow for each control
-    Map<GlcNode, List<StateTime>> connectors = new ConcurrentHashMap<>(); // <- for use of parallel()
-    controls.stream().parallel().forEach(flow -> { // parallel results in speedup of ~25% (rice2demo)
-      final List<StateTime> trajectory = stateIntegrator.trajectory(node.stateTime(), flow);
-      final StateTime last = Trajectories.getLast(trajectory);
-      final GlcNode next = new GlcNode(flow, last, //
-          node.costFromRoot().add(costFunction.costIncrement(node.stateTime(), trajectory, flow)), //
-          costFunction.minCostToGoal(last.x()) //
-      );
-      connectors.put(next, trajectory);
-    });
-    processConnectors(node, connectors);
-  }
-
-  // build and process candidates
-  private void processConnectors(GlcNode node, Map<GlcNode, List<StateTime>> connectors) {
-    // TODO count updates in cell based on costs for benchmarking
+    Map<GlcNode, List<StateTime>> connectors = // 
+        SharedUtils.integrate(node, controls, stateIntegrator, costFunction);
     Map<Tensor, DomainQueue> candidates = new HashMap<>();
     for (GlcNode next : connectors.keySet()) { // <- order of keys is non-deterministic
       final Tensor domain_key = convertToKey(next.stateTime().x());
