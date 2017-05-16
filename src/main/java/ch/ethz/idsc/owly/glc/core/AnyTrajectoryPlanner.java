@@ -152,6 +152,7 @@ public class AnyTrajectoryPlanner extends TrajectoryPlanner {
     costFunction = newCostFunction;
     best = null;
     long tic = System.nanoTime();
+    //Changing the Merit in Queue for each Node
     List<GlcNode> list = new LinkedList<>(queue());
     queue().clear();
     list.stream().parallel() //
