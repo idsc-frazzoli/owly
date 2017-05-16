@@ -24,7 +24,8 @@ public abstract class TrajectoryPlanner implements ExpandInterface {
   private final Queue<GlcNode> queue = new PriorityQueue<>(NodeMeritComparator.INSTANCE);
   // TODO long-term use RasterMap instead of domainMap
   private final Map<Tensor, GlcNode> domainMap = new HashMap<>();
-  /** best is a reference to a Node in the goal region, or null if such a node has not been identified */
+  /** best is a reference to a Node in the goal region,
+   *  or null if such a node has not been identified */
   protected GlcNode best;
   private int replaceCount = 0;
 

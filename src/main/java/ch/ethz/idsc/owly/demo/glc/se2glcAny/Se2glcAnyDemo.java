@@ -1,4 +1,4 @@
-// code by jph
+// code by jph and jl
 package ch.ethz.idsc.owly.demo.glc.se2glcAny;
 
 import java.util.Collection;
@@ -49,7 +49,7 @@ class Se2glcAnyDemo {
     StateIntegrator stateIntegrator = FixedStateIntegrator.createDefault(parameters.getdtMax(), //
         parameters.getTrajectorySize());
     // ---
-    System.out.println("scale=" + parameters.getEta());
+    System.out.println("1/Domainsize=" + parameters.getEta());
     parameters.printResolution();
     Collection<Flow> controls = Se2Controls.createControls(Se2Utils.DEGREE(45), 6);
     Se2GoalManager se2GoalManager = new Se2GoalManager( //
@@ -61,7 +61,7 @@ class Se2glcAnyDemo {
         new SimpleTrajectoryRegionQuery(new TimeInvariantRegion( //
             RegionUnion.of( //
                 new HyperplaneRegion(Tensors.vector(0, -1, 0), RealScalar.of(1.5)), //
-                new HyperplaneRegion(Tensors.vector(0, +1, 0), RealScalar.of(2.0)) //
+                new HyperplaneRegion(Tensors.vector(0, +1, 0), RealScalar.of(10.5)) //
             )));
     // ---
     AnyTrajectoryPlanner trajectoryPlanner = new AnyTrajectoryPlanner( //
@@ -72,21 +72,22 @@ class Se2glcAnyDemo {
     System.out.println("After " + iters + " iterations");
     List<StateTime> trajectory = trajectoryPlanner.getPathFromRootToGoal();
     Trajectories.print(trajectory);
+    // TODO plots just replace, no 2 separate instances
     OwlyFrame owlyFrame = Gui.glc(trajectoryPlanner);
     // ---
     Thread.sleep(4000);
     long tic = System.nanoTime();
-    // TODO plots just replace, no 2 separate instances
     // --
     Se2GoalManager se2GoalManager2 = new Se2GoalManager( //
         Tensors.vector(-3, 1), RealScalar.of(Math.PI), //
         DoubleScalar.of(0.1), Se2Utils.DEGREE(10));
     AnyTrajectoryPlanner trajectoryPlanner2 = trajectoryPlanner;
-//    trajectoryPlanner2.setGoalQuery(se2GoalManager2, se2GoalManager2.goalQuery());
     StateTime newRootState = trajectory.get(1);
+    // ---
     trajectoryPlanner2.switchRootToState(newRootState.x());
     trajectoryPlanner2.setGoalQuery(se2GoalManager2, se2GoalManager2.goalQuery());
-    int iters2 = Expand.maxDepth(trajectoryPlanner2, parameters.getDepthLimit() + 2);
+    int iters2 = Expand.maxDepth(trajectoryPlanner2, parameters.getDepthLimit());
+    // ---
     long toc = System.nanoTime();
     System.out.println((toc - tic) * 1e-9 + " Seconds needed to replan");
     System.out.println("After root switch needed " + iters2 + " iterations");
