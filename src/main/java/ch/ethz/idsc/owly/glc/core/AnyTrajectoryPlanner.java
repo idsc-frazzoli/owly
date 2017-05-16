@@ -3,10 +3,11 @@ package ch.ethz.idsc.owly.glc.core;
 
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
+import java.util.Set;
 
 import ch.ethz.idsc.owly.data.tree.Nodes;
 import ch.ethz.idsc.owly.math.flow.Flow;
@@ -49,6 +50,7 @@ public class AnyTrajectoryPlanner extends TrajectoryPlanner {
   public void expand(final GlcNode node) {
     // TODO count updates in cell based on costs for benchmarking
     // Map<Tensor, DomainQueue> domainCandidateMap = new HashMap<>();
+    Set<Tensor> domainsNeedingUpdate = new HashSet<>();
     Map<GlcNode, List<StateTime>> connectors = new HashMap<>();
     for (final Flow flow : controls) {
       final List<StateTime> trajectory = stateIntegrator.trajectory(node.stateTime(), flow);
@@ -57,41 +59,51 @@ public class AnyTrajectoryPlanner extends TrajectoryPlanner {
           node.costFromRoot().add(costFunction.costIncrement(node.stateTime(), trajectory, flow)), //
           costFunction.minCostToGoal(last.x()) //
       );
+      // TODO all Candidates need parent
+      next.setParent(node);
       connectors.put(next, trajectory);
       // ---
       final Tensor domain_key = convertToKey(next.stateTime().x());
+      domainsNeedingUpdate.add(domain_key);
       final GlcNode former = getNode(domain_key);
-      if (former != null) { // already some node present from previous exploration
-        // TODO save all nodes in domainCandidateMap
-        if (Scalars.lessThan(next.costFromRoot(), former.costFromRoot())) // new node is better than previous one
-          if (domainCandidateMap.containsKey(domain_key))
-            domainCandidateMap.get(domain_key).add(next);
-          else
-            domainCandidateMap.put(domain_key, new DomainQueue(next));
-      } else
+      if (former != null) { // Node present in Domain
+        // TODO save all nodes in domainCandidateMap-> following if to true
+        // if (Scalars.lessThan(next.costFromRoot(), former.costFromRoot()))
+        // new node is better than previous one
+        if (domainCandidateMap.containsKey(domain_key))
+          domainCandidateMap.get(domain_key).add(next);
+        else
+          domainCandidateMap.put(domain_key, new DomainQueue(next));
+      } else // No Node present in Domain
         domainCandidateMap.put(domain_key, new DomainQueue(next));
     }
     // ---
-    // TODO only process domains, in which I expanded
-    processCandidates(node, domainCandidateMap, connectors);
+    // make a keylist, through which I iterate and pass to processCandidates
+    processCandidates(node, domainsNeedingUpdate, connectors);
   }
 
-  private void processCandidates( //
-      GlcNode node, Map<Tensor, DomainQueue> candidates, Map<GlcNode, List<StateTime>> connectors) {
-    for (Entry<Tensor, DomainQueue> entry : candidates.entrySet()) {
-      final Tensor domain_key = entry.getKey();
-      final DomainQueue domainQueue = entry.getValue();
-      // TODO as all candidates are in: check here if candidates are better
-      while (!domainQueue.isEmpty()) {
-        GlcNode next = domainQueue.poll(); // poll() Retrieves and removes the head of this queue
-        if (obstacleQuery.isDisjoint(connectors.get(next))) { // no collision
-          node.insertEdgeTo(next);
-          insert(domain_key, next);
-          if (!goalQuery.isDisjoint(connectors.get(next)))
-            offerDestination(next);
-          break; // leaves the while loop, but not the for loop
+  private void processCandidates(GlcNode node, //
+      Set<Tensor> domainsNeedingUpdate, Map<GlcNode, List<StateTime>> connectors) {
+    for (Tensor domain_key : domainsNeedingUpdate) {
+      final DomainQueue domainQueue = domainCandidateMap.get(domain_key);
+      if (domainQueue != null)
+        while (!domainQueue.isEmpty()) {
+          final GlcNode next = domainQueue.element();
+          final GlcNode former = getNode(domain_key);
+          // If next node in domainQueue NOT better then former leave while loop
+          if (former != null)
+            if (!Scalars.lessThan(next.costFromRoot(), former.costFromRoot()))
+              break;
+          domainQueue.remove(); // removes the better head of this queue
+          if (obstacleQuery.isDisjoint(connectors.get(next))) { // no collision
+            node.insertEdgeTo(next);
+            insert(domain_key, next);
+            domainCandidateMap.get(domain_key).remove(next);
+            if (!goalQuery.isDisjoint(connectors.get(next)))
+              offerDestination(next);
+            break; // leaves the while loop, but not the for loop
+          }
         }
-      }
     }
   }
 
@@ -105,6 +117,8 @@ public class AnyTrajectoryPlanner extends TrajectoryPlanner {
 
   private void switchRootToNode(GlcNode newRoot) {
     int oldDomainMapSize = domainMap().size();
+    int oldCandidateMapSize = domainCandidateMap.size();
+    int oldQueueSize = queue().size();
     System.out.println("changing to root:" + newRoot.state());
     if (newRoot.isRoot()) {
       System.out.println("node is already root");
@@ -115,14 +129,39 @@ public class AnyTrajectoryPlanner extends TrajectoryPlanner {
     parent.removeEdgeTo(newRoot);
     Collection<GlcNode> oldtree = Nodes.ofSubtree(parent);
     if (queue().removeAll(oldtree))
-      System.out.println("Removed oldtree from queue");
+      System.out.println("Removed " + (oldQueueSize - queue().size()) + " nodes from Queue");
     int removedNodes = 0;
+    int removedCandidates = 0;
+    int addedNodesToQueue = 0;
     for (GlcNode tempNode : oldtree) {
-      if (domainMap().remove(convertToKey(tempNode.state()), tempNode))
+      Tensor tempDomain_key = convertToKey(tempNode.state());
+      if (domainMap().remove(tempDomain_key, tempNode))
         removedNodes++;
+      DomainQueue tempDomainQueue = domainCandidateMap.get(tempDomain_key);
+      if (tempDomainQueue != null) {
+        tempDomainQueue.removeIf(GlcNode::isRoot);
+        removedCandidates++;
+      }
+      // iterate through DomainQueue to find alternative
+      if (tempDomainQueue != null)
+        while (!tempDomainQueue.isEmpty()) {
+          final GlcNode next = tempDomainQueue.poll();
+          final GlcNode nextParent = next.parent();
+          final List<StateTime> trajectory = //
+              stateIntegrator.trajectory(nextParent.stateTime(), next.flow());
+          if (obstacleQuery.isDisjoint(trajectory)) { // no collision
+            nextParent.insertEdgeTo(next);
+            insert(tempDomain_key, next);
+            addedNodesToQueue++;
+            if (!goalQuery.isDisjoint(trajectory))
+              offerDestination(next);
+            break; // leaves the while loop, but not the for loop
+          }
+        }
     }
     System.out.println(removedNodes + " of " + oldDomainMapSize + " Nodes removed from Tree ");
-    // TODO JONAS relabel domains and add to queue
+    System.out.println(removedCandidates + " of " + oldCandidateMapSize + " Candidates removed from CandidateList ");
+    System.out.println(addedNodesToQueue + " Nodes added to Queue");
   }
 
   @Override
@@ -152,12 +191,13 @@ public class AnyTrajectoryPlanner extends TrajectoryPlanner {
     costFunction = newCostFunction;
     best = null;
     long tic = System.nanoTime();
+    // Changing the Merit in Queue for each Node
     List<GlcNode> list = new LinkedList<>(queue());
     queue().clear();
     list.stream().parallel() //
         .forEach(glcNode -> glcNode.setMinCostToGoal(costFunction.minCostToGoal(glcNode.state())));
     queue().addAll(list);
     long toc = System.nanoTime();
-    System.out.println("rebuild queue with " + list.size() + " nodes: " + ((toc - tic) * 1e-9));
+    System.out.println("Updated Merit of Queue with " + list.size() + " nodes: " + ((toc - tic) * 1e-9));
   }
 }
