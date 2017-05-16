@@ -132,6 +132,7 @@ public class AnyTrajectoryPlanner extends TrajectoryPlanner {
       System.out.println("Removed " + (oldQueueSize - queue().size()) + " nodes from Queue");
     int removedNodes = 0;
     int removedCandidates = 0;
+    int addedNodesToQueue = 0;
     for (GlcNode tempNode : oldtree) {
       Tensor tempDomain_key = convertToKey(tempNode.state());
       if (domainMap().remove(tempDomain_key, tempNode))
@@ -141,18 +142,6 @@ public class AnyTrajectoryPlanner extends TrajectoryPlanner {
         tempDomainQueue.removeIf(GlcNode::isRoot);
         removedCandidates++;
       }
-    }
-    System.out.println(removedNodes + " of " + oldDomainMapSize + " Nodes removed from Tree ");
-    System.out.println(removedCandidates + " of " + oldCandidateMapSize + " Candidates removed from CandidateList ");
-    // TODO JONAS relabel domains and add to queue
-    
-    
-    int addedNodesToQueue = 0;
-    for (GlcNode tempNode : oldtree) {
-      // TODO not sure if arraylist the best way
-      // get the domains of the removed nodes
-      Tensor tempDomain_key = convertToKey(tempNode.state());
-      DomainQueue tempDomainQueue = domainCandidateMap.get(tempDomain_key);
       // iterate through DomainQueue to find alternative
       if (tempDomainQueue != null)
         while (!tempDomainQueue.isEmpty()) {
@@ -170,8 +159,9 @@ public class AnyTrajectoryPlanner extends TrajectoryPlanner {
           }
         }
     }
+    System.out.println(removedNodes + " of " + oldDomainMapSize + " Nodes removed from Tree ");
+    System.out.println(removedCandidates + " of " + oldCandidateMapSize + " Candidates removed from CandidateList ");
     System.out.println(addedNodesToQueue + " Nodes added to Queue");
-    
   }
 
   @Override
