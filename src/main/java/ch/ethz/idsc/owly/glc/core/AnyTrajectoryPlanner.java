@@ -62,7 +62,7 @@ public class AnyTrajectoryPlanner extends TrajectoryPlanner {
       final Tensor domain_key = convertToKey(next.stateTime().x());
       final GlcNode former = getNode(domain_key);
       if (former != null) { // already some node present from previous exploration
-        //TODO save all nodes in domainCandidateMap
+        // TODO save all nodes in domainCandidateMap
         if (Scalars.lessThan(next.costFromRoot(), former.costFromRoot())) // new node is better than previous one
           if (domainCandidateMap.containsKey(domain_key))
             domainCandidateMap.get(domain_key).add(next);
@@ -72,7 +72,7 @@ public class AnyTrajectoryPlanner extends TrajectoryPlanner {
         domainCandidateMap.put(domain_key, new DomainQueue(next));
     }
     // ---
-    //TODO only process domains, in which I expanded
+    // TODO only process domains, in which I expanded
     processCandidates(node, domainCandidateMap, connectors);
   }
 
@@ -81,7 +81,7 @@ public class AnyTrajectoryPlanner extends TrajectoryPlanner {
     for (Entry<Tensor, DomainQueue> entry : candidates.entrySet()) {
       final Tensor domain_key = entry.getKey();
       final DomainQueue domainQueue = entry.getValue();
-      //TODO as all candidates are in: check here if candidates are better
+      // TODO as all candidates are in: check here if candidates are better
       while (!domainQueue.isEmpty()) {
         GlcNode next = domainQueue.poll(); // poll() Retrieves and removes the head of this queue
         if (obstacleQuery.isDisjoint(connectors.get(next))) { // no collision
