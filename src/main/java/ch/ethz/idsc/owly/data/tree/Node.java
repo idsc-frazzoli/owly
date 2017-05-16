@@ -3,6 +3,7 @@ package ch.ethz.idsc.owly.data.tree;
 
 import java.util.Collection;
 
+/** base functionality for a node in a tree */
 public interface Node {
   /** @return parent */
   Node parent();

@@ -7,7 +7,7 @@ import ch.ethz.idsc.tensor.Scalars;
 
 /** compare two nodes based on {@link GlcNode#merit()} */
 /* package */ enum NodeMeritComparator implements Comparator<GlcNode> {
-  instance;
+  INSTANCE;
   // ---
   @Override
   public int compare(GlcNode o1, GlcNode o2) {

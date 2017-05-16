@@ -35,7 +35,7 @@ public class GlcNode extends AbstractNode<GlcNode> implements StateCostNode {
     this.flow = flow;
     this.stateTime = stateTime;
     this.costFromRoot = costFromRoot;
-    this.merit = costFromRoot.add(minCostToGoal);
+    setMinCostToGoal(minCostToGoal);
   }
 
   @Override // from Node

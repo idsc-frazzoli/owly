@@ -5,7 +5,15 @@ public abstract class AbstractNode<T extends Node> implements Node {
   /** parent is null for root node */
   private T parent = null;
 
-  protected abstract boolean protected_registerChild(T node);
+  /** function has to be provided by deriving class that
+   * holds the data structure to store the child nodes.
+   * 
+   * function adds/inserts given child to collection children()
+   * 
+   * @param child
+   * @return true if child was added to children() as a result of calling the function,
+   * false if child was already present, or could not be added to children() */
+  protected abstract boolean protected_registerChild(T child);
 
   @Override // from Node
   public final T parent() {

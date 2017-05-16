@@ -5,7 +5,7 @@ import java.util.PriorityQueue;
 
 /* package */ class DomainQueue extends PriorityQueue<GlcNode> {
   public DomainQueue(GlcNode node) {
-    super(NodeMeritComparator.instance);
+    super(NodeMeritComparator.INSTANCE);
     add(node);
   }
 }

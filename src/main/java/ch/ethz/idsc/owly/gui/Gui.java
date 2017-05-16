@@ -16,8 +16,8 @@ public enum Gui {
   ;
   // ---
   public static OwlyFrame glc(TrajectoryPlanner trajectoryPlanner) {
-    OwlyFrame glcFrame = new OwlyFrame();
-    OwlyComponent c = glcFrame.glcComponent;
+    OwlyFrame owlyFrame = new OwlyFrame();
+    OwlyComponent c = owlyFrame.owlyComponent;
     {
       DomainLayer d = new DomainLayer(c);
       d.setEta(trajectoryPlanner.getEta());
@@ -61,13 +61,13 @@ public enum Gui {
       hudLayer.setTrajectoryPlanner(trajectoryPlanner);
       c.layers.add(hudLayer);
     }
-    glcFrame.jFrame.setVisible(true);
-    return glcFrame;
+    owlyFrame.jFrame.setVisible(true);
+    return owlyFrame;
   }
 
   public static void rrts(RrtsNode root, TransitionRegionQuery transitionRegionQuery) {
-    OwlyFrame glcFrame = new OwlyFrame();
-    OwlyComponent c = glcFrame.glcComponent;
+    OwlyFrame owlyFrame = new OwlyFrame();
+    OwlyComponent c = owlyFrame.owlyComponent;
     {
       if (transitionRegionQuery instanceof SampledTransitionRegionQuery) {
         SampledTransitionRegionQuery strq = (SampledTransitionRegionQuery) transitionRegionQuery;
@@ -82,6 +82,6 @@ public enum Gui {
       l.setCollection(nodes);
       c.layers.add(l);
     }
-    glcFrame.jFrame.setVisible(true);
+    owlyFrame.jFrame.setVisible(true);
   }
 }

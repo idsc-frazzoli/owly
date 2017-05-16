@@ -14,7 +14,7 @@ public class SetNode<T extends Node> extends AbstractNode<T> {
   }
 
   @Override // from AbstractNode
-  protected final boolean protected_registerChild(T node) {
-    return next.add(node);
+  protected final boolean protected_registerChild(T child) {
+    return next.add(child);
   }
 }

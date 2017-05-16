@@ -45,8 +45,12 @@ class Rice2Demo {
         eta, stateIntegrator, controls, rice2Goal, rice2Goal, obstacleQuery);
     // ---
     trajectoryPlanner.insertRoot(Tensors.vector(0, 0, 0, 0));
+    long tic = System.nanoTime();
     int iters = Expand.maxSteps(trajectoryPlanner, 1000);
-    System.out.println(iters);
+    long toc = System.nanoTime();
+    // 550 1.6898229210000002 without parallel integration of trajectories
+    // 555 1.149214356 with parallel integration of trajectories
+    System.out.println(iters + " " + ((toc - tic) * 1e-9));
     // TODO keep trying to improve path to goal for a few iterations...?
     List<StateTime> trajectory = trajectoryPlanner.getPathFromRootToGoal();
     Trajectories.print(trajectory);
