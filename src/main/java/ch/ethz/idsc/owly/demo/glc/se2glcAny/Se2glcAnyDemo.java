@@ -64,6 +64,7 @@ class Se2glcAnyDemo {
                 new HyperplaneRegion(Tensors.vector(0, +1, 0), RealScalar.of(10.5)) //
             )));
     // ---
+    long tic = System.nanoTime();
     AnyTrajectoryPlanner trajectoryPlanner = new AnyTrajectoryPlanner( //
         parameters.getEta(), stateIntegrator, controls, se2GoalManager, se2GoalManager.goalQuery(), obstacleQuery);
     // ---
@@ -71,12 +72,14 @@ class Se2glcAnyDemo {
     int iters = Expand.maxDepth(trajectoryPlanner, parameters.getDepthLimit());
     System.out.println("After " + iters + " iterations");
     List<StateTime> trajectory = trajectoryPlanner.getPathFromRootToGoal();
+    long toc = System.nanoTime();
+    System.out.println((toc - tic) * 1e-9 + " Seconds needed to plan");
     Trajectories.print(trajectory);
     // TODO plots just replace, no 2 separate instances
     OwlyFrame owlyFrame = Gui.glc(trajectoryPlanner);
     // ---
     Thread.sleep(4000);
-    long tic = System.nanoTime();
+    tic = System.nanoTime();
     // --
     Se2GoalManager se2GoalManager2 = new Se2GoalManager( //
         Tensors.vector(-3, 1), RealScalar.of(Math.PI), //
@@ -88,7 +91,7 @@ class Se2glcAnyDemo {
     trajectoryPlanner2.setGoalQuery(se2GoalManager2, se2GoalManager2.goalQuery());
     int iters2 = Expand.maxDepth(trajectoryPlanner2, parameters.getDepthLimit());
     // ---
-    long toc = System.nanoTime();
+    toc = System.nanoTime();
     System.out.println((toc - tic) * 1e-9 + " Seconds needed to replan");
     System.out.println("After root switch needed " + iters2 + " iterations");
     owlyFrame.repaint();

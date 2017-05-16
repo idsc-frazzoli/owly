@@ -59,6 +59,8 @@ public class AnyTrajectoryPlanner extends TrajectoryPlanner {
           node.costFromRoot().add(costFunction.costIncrement(node.stateTime(), trajectory, flow)), //
           costFunction.minCostToGoal(last.x()) //
       );
+      // TODO all Candidates need parent
+      next.setParent(node);
       connectors.put(next, trajectory);
       // ---
       final Tensor domain_key = convertToKey(next.stateTime().x());
@@ -66,11 +68,12 @@ public class AnyTrajectoryPlanner extends TrajectoryPlanner {
       final GlcNode former = getNode(domain_key);
       if (former != null) { // Node present in Domain
         // TODO save all nodes in domainCandidateMap-> following if to true
-        if (Scalars.lessThan(next.costFromRoot(), former.costFromRoot())) // new node is better than previous one
-          if (domainCandidateMap.containsKey(domain_key))
-            domainCandidateMap.get(domain_key).add(next);
-          else
-            domainCandidateMap.put(domain_key, new DomainQueue(next));
+        // if (Scalars.lessThan(next.costFromRoot(), former.costFromRoot()))
+        // new node is better than previous one
+        if (domainCandidateMap.containsKey(domain_key))
+          domainCandidateMap.get(domain_key).add(next);
+        else
+          domainCandidateMap.put(domain_key, new DomainQueue(next));
       } else // No Node present in Domain
         domainCandidateMap.put(domain_key, new DomainQueue(next));
     }
@@ -95,6 +98,7 @@ public class AnyTrajectoryPlanner extends TrajectoryPlanner {
           if (obstacleQuery.isDisjoint(connectors.get(next))) { // no collision
             node.insertEdgeTo(next);
             insert(domain_key, next);
+            domainCandidateMap.get(domain_key).remove(next);
             if (!goalQuery.isDisjoint(connectors.get(next)))
               offerDestination(next);
             break; // leaves the while loop, but not the for loop
@@ -147,15 +151,15 @@ public class AnyTrajectoryPlanner extends TrajectoryPlanner {
       // get the domains of the removed nodes
       Tensor tempDomain_key = convertToKey(tempNode.state());
       DomainQueue tempDomainQueue = domainCandidateMap.get(tempDomain_key);
-      //iterate through DomainQueue to find alternative
+      // iterate through DomainQueue to find alternative
       if (tempDomainQueue != null)
         while (!tempDomainQueue.isEmpty()) {
-          System.out.println("looking for candidates");
           final GlcNode next = tempDomainQueue.poll();
+          final GlcNode nextParent = next.parent();
           final List<StateTime> trajectory = //
-              stateIntegrator.trajectory(tempNode.stateTime(), next.flow());
+              stateIntegrator.trajectory(nextParent.stateTime(), next.flow());
           if (obstacleQuery.isDisjoint(trajectory)) { // no collision
-            tempNode.parent().insertEdgeTo(next);
+            nextParent.insertEdgeTo(next);
             insert(tempDomain_key, next);
             addedNodesToQueue++;
             if (!goalQuery.isDisjoint(trajectory))
