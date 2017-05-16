@@ -10,18 +10,18 @@ import javax.swing.WindowConstants;
 
 public class OwlyFrame {
   JFrame jFrame = new JFrame();
-  public final OwlyComponent glcComponent = new OwlyComponent();
+  public final OwlyComponent owlyComponent = new OwlyComponent();
 
   public OwlyFrame() {
     JPanel jPanel = new JPanel(new BorderLayout());
     jPanel.add(new JToolBar(), BorderLayout.NORTH);
-    jPanel.add(glcComponent.jComponent, BorderLayout.CENTER);
+    jPanel.add(owlyComponent.jComponent, BorderLayout.CENTER);
     jFrame.setContentPane(jPanel);
     jFrame.setBounds(100, 50, 800, 800);
     jFrame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
   }
 
   public void repaint() {
-    glcComponent.jComponent.repaint();
+    owlyComponent.jComponent.repaint();
   }
 }

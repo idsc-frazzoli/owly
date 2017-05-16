@@ -28,10 +28,10 @@ import ch.ethz.idsc.tensor.Tensors;
 
 class R2ImageDemo {
   public static void main(String[] args) throws ClassNotFoundException, DataFormatException, IOException {
-    Tensor partitionScale = Tensors.vector(5, 5);
+    Tensor partitionScale = Tensors.vector(6, 6);
     Region region = ImageRegions.loadFromRepository("/io/track0_100.png", Tensors.vector(10, 10));
     StateIntegrator stateIntegrator = FixedStateIntegrator.create(new EulerIntegrator(), RationalScalar.of(1, 8), 4);
-    Collection<Flow> controls = R2Controls.createControls(20);
+    Collection<Flow> controls = R2Controls.createControls(23);
     RnGoalManager rnGoal = new RnGoalManager(Tensors.vector(5, 10), DoubleScalar.of(.2));
     TrajectoryRegionQuery obstacleQuery = //
         new SimpleTrajectoryRegionQuery(new TimeInvariantRegion( //
@@ -40,8 +40,10 @@ class R2ImageDemo {
     TrajectoryPlanner trajectoryPlanner = new DefaultTrajectoryPlanner( //
         partitionScale, stateIntegrator, controls, rnGoal, rnGoal, obstacleQuery);
     trajectoryPlanner.insertRoot(Tensors.vector(0, 0));
-    int iters = Expand.maxSteps(trajectoryPlanner, 5000);
-    System.out.println(iters);
+    long tic = System.nanoTime();
+    int iters = Expand.maxSteps(trajectoryPlanner, 10000);
+    long toc = System.nanoTime();
+    System.out.println(iters + " " + ((toc - tic) * 1e-9));
     List<StateTime> trajectory = trajectoryPlanner.getPathFromRootToGoal();
     Trajectories.print(trajectory);
     Gui.glc(trajectoryPlanner);

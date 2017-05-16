@@ -21,7 +21,7 @@ import ch.ethz.idsc.tensor.sca.Floor;
 public abstract class TrajectoryPlanner implements ExpandInterface {
   private final Tensor eta;
   // ---
-  private final Queue<GlcNode> queue = new PriorityQueue<>(NodeMeritComparator.instance);
+  private final Queue<GlcNode> queue = new PriorityQueue<>(NodeMeritComparator.INSTANCE);
   // TODO long-term use RasterMap instead of domainMap
   private final Map<Tensor, GlcNode> domainMap = new HashMap<>();
   /** best is a reference to a Node in the goal region, or null if such a node has not been identified */
@@ -70,7 +70,7 @@ public abstract class TrajectoryPlanner implements ExpandInterface {
     return queue.peek();
   }
 
-  final void offerDestination(GlcNode node) {
+  protected final void offerDestination(GlcNode node) {
     if (best == null || Scalars.lessThan(node.costFromRoot(), best.costFromRoot())) {
       best = node;
       System.out.println("found goal");

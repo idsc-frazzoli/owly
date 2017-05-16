@@ -43,18 +43,10 @@ public class DefaultTrajectoryPlanner extends TrajectoryPlanner {
 
   @Override
   public void expand(final GlcNode node) {
-    // TODO count updates in cell based on costs for benchmarking
+    Map<GlcNode, List<StateTime>> connectors = // 
+        SharedUtils.integrate(node, controls, stateIntegrator, costFunction);
     Map<Tensor, DomainQueue> candidates = new HashMap<>();
-    Map<GlcNode, List<StateTime>> connectors = new HashMap<>();
-    for (final Flow flow : controls) {
-      final List<StateTime> trajectory = stateIntegrator.trajectory(node.stateTime(), flow);
-      final StateTime last = Trajectories.getLast(trajectory);
-      final GlcNode next = new GlcNode(flow, last, //
-          node.costFromRoot().add(costFunction.costIncrement(node.stateTime(), trajectory, flow)), //
-          costFunction.minCostToGoal(last.x()) //
-      );
-      connectors.put(next, trajectory);
-      // ---
+    for (GlcNode next : connectors.keySet()) { // <- order of keys is non-deterministic
       final Tensor domain_key = convertToKey(next.stateTime().x());
       final GlcNode former = getNode(domain_key);
       if (former != null) { // already some node present from previous exploration
@@ -66,13 +58,12 @@ public class DefaultTrajectoryPlanner extends TrajectoryPlanner {
       } else
         candidates.put(domain_key, new DomainQueue(next));
     }
-    // ---
-    processCandidates(node, candidates, connectors);
+    processCandidates(node, connectors, candidates);
   }
 
   private void processCandidates( //
-      GlcNode node, Map<Tensor, DomainQueue> candidates, Map<GlcNode, List<StateTime>> connectors) {
-    for (Entry<Tensor, DomainQueue> entry : candidates.entrySet()) {
+      GlcNode node, Map<GlcNode, List<StateTime>> connectors, Map<Tensor, DomainQueue> candidates) {
+    for (Entry<Tensor, DomainQueue> entry : candidates.entrySet()) { // parallel
       final Tensor domain_key = entry.getKey();
       final DomainQueue domainQueue = entry.getValue();
       while (!domainQueue.isEmpty()) {
