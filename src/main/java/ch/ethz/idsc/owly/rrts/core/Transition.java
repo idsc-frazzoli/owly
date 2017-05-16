@@ -8,10 +8,13 @@ import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
 
 public interface Transition {
+  /** @return start state of this transition */
   Tensor start();
 
+  /** @return end state of this transition */
   Tensor end();
 
+  /** @return length of this transition */
   Scalar length();
 
   /** @param t0 time at start()
