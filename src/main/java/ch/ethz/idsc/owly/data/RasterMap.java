@@ -1,13 +1,14 @@
 // code by jph
 package ch.ethz.idsc.owly.data;
 
+import java.io.Serializable;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
 import ch.ethz.idsc.tensor.Tensor;
 
-public abstract class RasterMap<T> {
+public abstract class RasterMap<T> implements Serializable {
   private final Map<Tensor, T> map = new HashMap<>(); // actual storage
 
   public abstract Tensor toKey(Tensor tensor);

@@ -1,11 +1,13 @@
 // code by bapaden and jph
 package ch.ethz.idsc.owly.math.state;
 
+import java.io.Serializable;
+
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
 
 /** StateTime is immutable, contents of instance do not change after construction */
-public final class StateTime {
+public final class StateTime implements Serializable {
   private final Tensor x;
   private final Scalar time;
 

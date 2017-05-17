@@ -1,6 +1,7 @@
 // code by bapaden and jph
 package ch.ethz.idsc.owly.glc.core;
 
+import java.io.Serializable;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -18,7 +19,7 @@ import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.sca.Floor;
 
 /** base class for generalized label correction implementation */
-public abstract class TrajectoryPlanner implements ExpandInterface {
+public abstract class TrajectoryPlanner implements ExpandInterface, Serializable {
   private final Tensor eta;
   // ---
   private final Queue<GlcNode> queue = new PriorityQueue<>(NodeMeritComparator.INSTANCE);
