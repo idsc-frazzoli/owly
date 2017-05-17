@@ -1,10 +1,11 @@
 // code by jph
 package ch.ethz.idsc.owly.data.tree;
 
+import java.io.Serializable;
 import java.util.Collection;
 
 /** base functionality for a node in a tree */
-public interface Node {
+public interface Node extends Serializable {
   /** @return parent */
   Node parent();
 

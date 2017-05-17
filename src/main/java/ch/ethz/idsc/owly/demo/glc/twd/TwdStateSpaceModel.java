@@ -6,7 +6,7 @@ import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
 
-/** two wheel drive 
+/** two wheel drive
  * non-holonomic wheeled mobile robot */
 public class TwdStateSpaceModel implements StateSpaceModel {
   @Override

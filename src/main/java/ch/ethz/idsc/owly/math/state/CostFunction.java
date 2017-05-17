@@ -1,13 +1,14 @@
 // code by bapaden and jph
 package ch.ethz.idsc.owly.math.state;
 
+import java.io.Serializable;
 import java.util.List;
 
 import ch.ethz.idsc.owly.math.flow.Flow;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
 
-public interface CostFunction {
+public interface CostFunction extends Serializable {
   /** @param from
    * @param trajectory
    * @param flow

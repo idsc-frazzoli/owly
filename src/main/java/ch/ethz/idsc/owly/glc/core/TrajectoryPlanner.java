@@ -1,6 +1,7 @@
 // code by bapaden and jph
 package ch.ethz.idsc.owly.glc.core;
 
+import java.io.Serializable;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -18,14 +19,14 @@ import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.sca.Floor;
 
 /** base class for generalized label correction implementation */
-public abstract class TrajectoryPlanner implements ExpandInterface {
+public abstract class TrajectoryPlanner implements ExpandInterface, Serializable {
   private final Tensor eta;
   // ---
   private final Queue<GlcNode> queue = new PriorityQueue<>(NodeMeritComparator.INSTANCE);
   // TODO long-term use RasterMap instead of domainMap
   private final Map<Tensor, GlcNode> domainMap = new HashMap<>();
   /** best is a reference to a Node in the goal region,
-   *  or null if such a node has not been identified */
+   * or null if such a node has not been identified */
   protected GlcNode best;
   private int replaceCount = 0;
 
