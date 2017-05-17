@@ -133,7 +133,7 @@ public class AnyTrajectoryPlanner extends TrajectoryPlanner {
     int removedNodes = 0;
     int removedCandidates = 0;
     int addedNodesToQueue = 0;
-    for (GlcNode tempNode : oldtree) {
+    for (GlcNode tempNode : oldtree) { // loop for each domain, where sth was deleted
       Tensor tempDomain_key = convertToKey(tempNode.state());
       if (domainMap().remove(tempDomain_key, tempNode))
         removedNodes++;

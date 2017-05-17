@@ -43,7 +43,7 @@ public class DefaultTrajectoryPlanner extends TrajectoryPlanner {
 
   @Override
   public void expand(final GlcNode node) {
-    Map<GlcNode, List<StateTime>> connectors = // 
+    Map<GlcNode, List<StateTime>> connectors = //
         SharedUtils.integrate(node, controls, stateIntegrator, costFunction);
     Map<Tensor, DomainQueue> candidates = new HashMap<>();
     for (GlcNode next : connectors.keySet()) { // <- order of keys is non-deterministic
