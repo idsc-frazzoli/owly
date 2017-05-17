@@ -134,13 +134,14 @@ public class AnyTrajectoryPlanner extends TrajectoryPlanner {
     int removedCandidates = 0;
     int addedNodesToQueue = 0;
     for (GlcNode tempNode : oldtree) { // loop for each domain, where sth was deleted
-      Tensor tempDomain_key = convertToKey(tempNode.state());
-      if (domainMap().remove(tempDomain_key, tempNode))
+      Tensor tempDomainKey = convertToKey(tempNode.state());
+      if (domainMap().remove(tempDomainKey, tempNode))
         removedNodes++;
-      DomainQueue tempDomainQueue = domainCandidateMap.get(tempDomain_key);
+      DomainQueue tempDomainQueue = domainCandidateMap.get(tempDomainKey);
       if (tempDomainQueue != null) {
-        tempDomainQueue.removeIf(GlcNode::isRoot);
-        removedCandidates++;
+        // TODO removeif(GlcNode.parent().isin(oldtree)
+        if (tempDomainQueue.removeIf(GlcNode::isRoot))
+          removedCandidates++;
       }
       // iterate through DomainQueue to find alternative
       if (tempDomainQueue != null)
@@ -151,7 +152,7 @@ public class AnyTrajectoryPlanner extends TrajectoryPlanner {
               stateIntegrator.trajectory(nextParent.stateTime(), next.flow());
           if (obstacleQuery.isDisjoint(trajectory)) { // no collision
             nextParent.insertEdgeTo(next);
-            insert(tempDomain_key, next);
+            insert(tempDomainKey, next);
             addedNodesToQueue++;
             if (!goalQuery.isDisjoint(trajectory))
               offerDestination(next);
