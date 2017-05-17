@@ -31,6 +31,7 @@ import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
+import ch.ethz.idsc.tensor.io.Serialization;
 
 /** (x,y,theta) */
 class Se2glcAnyDemo {
@@ -61,7 +62,7 @@ class Se2glcAnyDemo {
         new SimpleTrajectoryRegionQuery(new TimeInvariantRegion( //
             RegionUnion.of( //
                 new HyperplaneRegion(Tensors.vector(0, -1, 0), RealScalar.of(1.5)), //
-                new HyperplaneRegion(Tensors.vector(0, +1, 0), RealScalar.of(10.5)) //
+                new HyperplaneRegion(Tensors.vector(0, +1, 0), RealScalar.of(4.5)) //
             )));
     // ---
     long tic = System.nanoTime();
@@ -76,24 +77,26 @@ class Se2glcAnyDemo {
     System.out.println((toc - tic) * 1e-9 + " Seconds needed to plan");
     Trajectories.print(trajectory);
     // TODO plots just replace, no 2 separate instances
-    OwlyFrame owlyFrame = Gui.glc(trajectoryPlanner);
+    // OwlyFrame owlyFrame =
+    Gui.glc(Serialization.copy(trajectoryPlanner));
     // ---
-    Thread.sleep(4000);
+    //Thread.sleep(4000);
     tic = System.nanoTime();
     // --
     Se2GoalManager se2GoalManager2 = new Se2GoalManager( //
         Tensors.vector(-3, 1), RealScalar.of(Math.PI), //
         DoubleScalar.of(0.1), Se2Utils.DEGREE(10));
-    AnyTrajectoryPlanner trajectoryPlanner2 = trajectoryPlanner;
     StateTime newRootState = trajectory.get(1);
     // ---
-    trajectoryPlanner2.switchRootToState(newRootState.x());
-    trajectoryPlanner2.setGoalQuery(se2GoalManager2, se2GoalManager2.goalQuery());
-    int iters2 = Expand.maxDepth(trajectoryPlanner2, parameters.getDepthLimit());
+    trajectoryPlanner.switchRootToState(newRootState.x());
+    trajectoryPlanner.setGoalQuery(se2GoalManager2, se2GoalManager2.goalQuery());
+    int iters2 = Expand.maxDepth(trajectoryPlanner, parameters.getDepthLimit());
     // ---
     toc = System.nanoTime();
     System.out.println((toc - tic) * 1e-9 + " Seconds needed to replan");
     System.out.println("After root switch needed " + iters2 + " iterations");
-    owlyFrame.repaint();
+    //owlyFrame.repaint();
+    Gui.glc(Serialization.copy(trajectoryPlanner));
+    
   }
 }

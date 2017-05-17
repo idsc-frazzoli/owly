@@ -4,7 +4,7 @@ import junit.framework.TestCase;
 
 public class ParametersTest extends TestCase {
   public void testConfig1() {
-    // TODO implement checks
+    // TODO implement checks for Parameter
     // new Parameters(resolution, timeScale, depthScale, partitionScale, dtMax, maxIter)
   }
 }
