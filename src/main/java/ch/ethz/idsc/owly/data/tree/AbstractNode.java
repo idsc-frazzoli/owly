@@ -19,8 +19,8 @@ public abstract class AbstractNode<T extends Node> implements Node {
   public final T parent() {
     return parent;
   }
-  
-  public void setParent(T parent){
+
+  public void setParent(T parent) {
     this.parent = parent;
   }
 
@@ -41,8 +41,8 @@ public abstract class AbstractNode<T extends Node> implements Node {
     boolean modified = protected_registerChild((T) child);
     if (!modified)
       throw new RuntimeException();
-//    if (!child.isRoot()) // child has parent
-//      throw new RuntimeException();
+    // if (!child.isRoot()) // child has parent
+    // throw new RuntimeException();
     ((AbstractNode<T>) child).parent = (T) this;
   }
 

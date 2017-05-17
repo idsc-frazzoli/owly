@@ -1,10 +1,11 @@
 // code by bapaden and jph
 package ch.ethz.idsc.owly.math.state;
 
+import java.io.Serializable;
 import java.util.List;
 
 /** performs trajectory containment query */
-public interface TrajectoryRegionQuery {
+public interface TrajectoryRegionQuery extends Serializable {
   static final int NOMATCH = -1;
 
   /** @param trajectory
