@@ -6,8 +6,10 @@ import java.util.Collection;
 import ch.ethz.idsc.owly.demo.glc.se2.Se2Utils;
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
 import ch.ethz.idsc.owly.glc.core.DefaultTrajectoryPlanner;
+import ch.ethz.idsc.owly.glc.core.Expand;
 import ch.ethz.idsc.owly.glc.core.TrajectoryPlanner;
-import ch.ethz.idsc.owly.gui.ExpandGlcFrame;
+import ch.ethz.idsc.owly.gui.Gui;
+import ch.ethz.idsc.owly.gui.OwlyFrame;
 import ch.ethz.idsc.owly.math.flow.Flow;
 import ch.ethz.idsc.owly.math.region.HyperplaneRegion;
 import ch.ethz.idsc.owly.math.region.RegionUnion;
@@ -23,7 +25,7 @@ import ch.ethz.idsc.tensor.Tensors;
 
 /** (x,y,theta) */
 class Se2rExpandDemo {
-  public static void main(String[] args) {
+  public static void main(String[] args) throws Exception {
     Tensor eta = Tensors.vector(6, 6, 15); // TODO instead of 15 use multiple of PI...
     StateIntegrator stateIntegrator = FixedStateIntegrator.createDefault(RationalScalar.of(1, 6), 5);
     Collection<Flow> controls = Se2rControls.createControls(Se2Utils.DEGREE(45), 6);
@@ -44,6 +46,11 @@ class Se2rExpandDemo {
         eta, stateIntegrator, controls, se2GoalManager, goalQuery, obstacleQuery);
     // ---
     trajectoryPlanner.insertRoot(Tensors.vector(0, 0, 0));
-    new ExpandGlcFrame(trajectoryPlanner);
+    OwlyFrame owlyFrame = Gui.start();
+    while (trajectoryPlanner.getBest() == null) {
+      Expand.maxSteps(trajectoryPlanner, 1);
+      owlyFrame.setGlc(trajectoryPlanner);
+      Thread.sleep(100);
+    }
   }
 }

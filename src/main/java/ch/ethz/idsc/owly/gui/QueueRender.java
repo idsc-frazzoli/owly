@@ -11,24 +11,20 @@ import java.util.Collection;
 import ch.ethz.idsc.owly.glc.core.GlcNode;
 import ch.ethz.idsc.tensor.Tensor;
 
-class QueueLayer extends AbstractLayer {
-  QueueLayer(OwlyComponent glcComponent) {
-    super(glcComponent);
-  }
-
+class QueueRender extends AbstractRender {
   Collection<GlcNode> collection;
 
-  void setCollection(Collection<GlcNode> collection) {
+  QueueRender(Collection<GlcNode> collection) {
     this.collection = collection;
   }
 
   @Override
-  void render(Graphics2D graphics) {
+  void render(AbstractLayer abstractLayer, Graphics2D graphics) {
     {
       graphics.setColor(new Color(0, 192, 192, 128));
       for (GlcNode node : collection) {
         Tensor x = node.stateTime().x();
-        Point2D p = toPoint2D(x);
+        Point2D p = abstractLayer.toPoint2D(x);
         Shape shape = new Rectangle2D.Double(p.getX() - 1, p.getY() - 1, 3, 3);
         graphics.fill(shape);
       }

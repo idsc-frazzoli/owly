@@ -11,14 +11,11 @@ import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
 import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
-import java.util.LinkedList;
-import java.util.List;
 
 import javax.swing.JComponent;
 import javax.swing.event.MouseInputAdapter;
 import javax.swing.event.MouseInputListener;
 
-import ch.ethz.idsc.owly.glc.core.TrajectoryPlanner;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
@@ -37,8 +34,8 @@ class OwlyComponent {
   }
 
   private Tensor model2pixel;
-  TrajectoryPlanner trajectoryPlanner = null;
-  final List<AbstractLayer> layers = new LinkedList<>();
+  final AbstractLayer abstractLayer = new AbstractLayer(this);
+  RenderElements renderElements;
 
   public OwlyComponent() {
     model2pixel = Tensors.matrix(new Number[][] { //
@@ -97,14 +94,11 @@ class OwlyComponent {
         graphics.draw(new Line2D.Double(toPoint2D(Tensors.vector(-10, 0)), toPoint2D(Tensors.vector(10, 0))));
         graphics.draw(new Line2D.Double(toPoint2D(Tensors.vector(0, -10)), toPoint2D(Tensors.vector(0, 10))));
       }
-      layers.forEach(layer -> layer.render(graphics));
+      if (renderElements != null) {
+        renderElements.list.forEach(ar -> ar.render(abstractLayer, graphics));
+      }
     }
   };
-
-  public void setTrajectoryPlanner(TrajectoryPlanner trajectoryPlanner) {
-    this.trajectoryPlanner = trajectoryPlanner;
-    jComponent.repaint();
-  }
 
   public Point2D toPoint2D(Tensor x) {
     Tensor point = model2pixel.dot(toAffinePoint(x));

@@ -5,8 +5,10 @@ import java.util.Collection;
 
 import ch.ethz.idsc.owly.demo.glc.rn.R2Controls;
 import ch.ethz.idsc.owly.glc.core.DefaultTrajectoryPlanner;
+import ch.ethz.idsc.owly.glc.core.Expand;
 import ch.ethz.idsc.owly.glc.core.TrajectoryPlanner;
-import ch.ethz.idsc.owly.gui.ExpandGlcFrame;
+import ch.ethz.idsc.owly.gui.Gui;
+import ch.ethz.idsc.owly.gui.OwlyFrame;
 import ch.ethz.idsc.owly.math.flow.EulerIntegrator;
 import ch.ethz.idsc.owly.math.flow.Flow;
 import ch.ethz.idsc.owly.math.state.EmptyTrajectoryRegionQuery;
@@ -19,7 +21,7 @@ import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
 
 class R2nExpandDemo {
-  public static void main(String[] args) {
+  public static void main(String[] args) throws Exception {
     Tensor eta = Tensors.vector(4, 4);
     StateIntegrator stateIntegrator = FixedStateIntegrator.create(new EulerIntegrator(), RationalScalar.of(1, 5), 5);
     Collection<Flow> controls = R2Controls.createControls(16);
@@ -29,6 +31,11 @@ class R2nExpandDemo {
     TrajectoryPlanner trajectoryPlanner = new DefaultTrajectoryPlanner( //
         eta, stateIntegrator, controls, rnGoal, rnGoal, obstacleQuery);
     trajectoryPlanner.insertRoot(Tensors.vector(0, 0));
-    new ExpandGlcFrame(trajectoryPlanner);
+    OwlyFrame owlyFrame = Gui.start();
+    for (int c = 0; c < 100; ++c) {
+      Expand.maxSteps(trajectoryPlanner, 10);
+      owlyFrame.setGlc(trajectoryPlanner);
+      Thread.sleep(100);
+    }
   }
 }
