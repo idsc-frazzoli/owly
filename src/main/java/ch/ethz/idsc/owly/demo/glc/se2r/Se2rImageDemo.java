@@ -1,10 +1,8 @@
 // code by jph
 package ch.ethz.idsc.owly.demo.glc.se2r;
 
-import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
-import java.util.zip.DataFormatException;
 
 import ch.ethz.idsc.owly.demo.glc.se2.Se2Utils;
 import ch.ethz.idsc.owly.demo.util.ImageRegions;
@@ -13,6 +11,7 @@ import ch.ethz.idsc.owly.glc.core.DefaultTrajectoryPlanner;
 import ch.ethz.idsc.owly.glc.core.Expand;
 import ch.ethz.idsc.owly.glc.core.TrajectoryPlanner;
 import ch.ethz.idsc.owly.gui.Gui;
+import ch.ethz.idsc.owly.gui.OwlyFrame;
 import ch.ethz.idsc.owly.math.flow.Flow;
 import ch.ethz.idsc.owly.math.region.Region;
 import ch.ethz.idsc.owly.math.state.FixedStateIntegrator;
@@ -28,7 +27,7 @@ import ch.ethz.idsc.tensor.Tensors;
 
 /** (x,y,theta) */
 class Se2rImageDemo {
-  public static void main(String[] args) throws ClassNotFoundException, DataFormatException, IOException {
+  public static void main(String[] args) throws Exception {
     Region region = ImageRegions.loadFromRepository("/io/track0_100.png", Tensors.vector(10, 10));
     Tensor partitionScale = Tensors.vector(3, 3, 15); // TODO instead of 15 use multiple of PI...
     StateIntegrator stateIntegrator = FixedStateIntegrator.createDefault(RationalScalar.of(1, 6), 5);
@@ -45,10 +44,15 @@ class Se2rImageDemo {
         partitionScale, stateIntegrator, controls, se2GoalManager, goalQuery, obstacleQuery);
     // ---
     trajectoryPlanner.insertRoot(Tensors.vector(0, 0, 0));
-    int iters = Expand.maxSteps(trajectoryPlanner, 10000);
-    System.out.println(iters);
+    OwlyFrame owlyFrame = Gui.start();
+    owlyFrame.configCoordinateOffset(179, 448);
+    owlyFrame.jFrame.setBounds(100, 100, 700, 700);
+    while (trajectoryPlanner.getBest() == null && owlyFrame.jFrame.isVisible()) {
+      int iters = Expand.maxSteps(trajectoryPlanner, 100);
+      owlyFrame.setGlc(trajectoryPlanner);
+      Thread.sleep(200);
+    }
     List<StateTime> trajectory = trajectoryPlanner.getPathFromRootToGoal();
     Trajectories.print(trajectory);
-    Gui.glc(trajectoryPlanner);
   }
 }

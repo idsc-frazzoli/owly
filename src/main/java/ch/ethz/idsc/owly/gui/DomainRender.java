@@ -1,3 +1,4 @@
+// code by jph
 package ch.ethz.idsc.owly.gui;
 
 import java.awt.Color;
@@ -9,33 +10,29 @@ import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
 import ch.ethz.idsc.tensor.sca.Ceiling;
 
-class DomainLayer extends AbstractLayer {
+class DomainRender extends AbstractRender {
   Tensor eta;
 
-  DomainLayer(OwlyComponent glcComponent) {
-    super(glcComponent);
-  }
-
-  void setEta(Tensor eta) {
+  DomainRender(Tensor eta) {
     this.eta = eta;
   }
 
   @Override
-  void render(Graphics2D graphics) {
+  void render(AbstractLayer abstractLayer, Graphics2D graphics) {
     Tensor inv = eta.map(Scalar::invert);
     graphics.setColor(Color.LIGHT_GRAY);
     Tensor ceiling = Ceiling.of(eta);
     for (int i = 0; i < ceiling.Get(1).number().intValue(); ++i) {
       double dy = i * inv.Get(1).number().doubleValue();
       graphics.draw(new Line2D.Double( //
-          toPoint2D(Tensors.vector(0, dy)), //
-          toPoint2D(Tensors.vector(1, dy))));
+          abstractLayer.toPoint2D(Tensors.vector(0, dy)), //
+          abstractLayer.toPoint2D(Tensors.vector(1, dy))));
     }
     for (int i = 0; i < ceiling.Get(0).number().intValue(); ++i) {
       double dx = i * inv.Get(0).number().doubleValue();
       graphics.draw(new Line2D.Double( //
-          toPoint2D(Tensors.vector(dx, 0)), //
-          toPoint2D(Tensors.vector(dx, 1))));
+          abstractLayer.toPoint2D(Tensors.vector(dx, 0)), //
+          abstractLayer.toPoint2D(Tensors.vector(dx, 1))));
     }
   }
 }
