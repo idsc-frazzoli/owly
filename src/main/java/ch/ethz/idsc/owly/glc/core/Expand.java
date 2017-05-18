@@ -22,8 +22,8 @@ public enum Expand {
       if (expandInterface.getBest() != null) // found node in goal region
         break;
     }
-    // no printout here, since
-    // expand limit can deliberately set to a low number for animation
+    // no printout here, since expand limit can deliberately set to a low number for animation
+    // see Se2rExpandDemo
     return expandCount;
   }
 

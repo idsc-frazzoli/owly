@@ -1,7 +1,6 @@
 // code by jph
 package ch.ethz.idsc.owly.gui;
 
-import java.awt.Graphics2D;
 import java.awt.geom.Path2D;
 import java.awt.geom.Point2D;
 import java.util.List;
@@ -32,9 +31,5 @@ class AbstractLayer {
       }
     }
     return path2d;
-  }
-
-  @Deprecated
-  void render(Graphics2D graphics) {
   }
 }

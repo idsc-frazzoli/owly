@@ -11,6 +11,7 @@ import ch.ethz.idsc.owly.glc.core.TrajectoryPlanner;
 import ch.ethz.idsc.owly.gui.Gui;
 import ch.ethz.idsc.owly.gui.OwlyFrame;
 import ch.ethz.idsc.owly.math.flow.Flow;
+import ch.ethz.idsc.owly.math.flow.RungeKutta4Integrator;
 import ch.ethz.idsc.owly.math.region.HyperplaneRegion;
 import ch.ethz.idsc.owly.math.region.RegionUnion;
 import ch.ethz.idsc.owly.math.state.FixedStateIntegrator;
@@ -27,7 +28,8 @@ import ch.ethz.idsc.tensor.Tensors;
 class Se2rExpandDemo {
   public static void main(String[] args) throws Exception {
     Tensor eta = Tensors.vector(6, 6, 15); // TODO instead of 15 use multiple of PI...
-    StateIntegrator stateIntegrator = FixedStateIntegrator.createDefault(RationalScalar.of(1, 6), 5);
+    StateIntegrator stateIntegrator = FixedStateIntegrator.create( //
+        new RungeKutta4Integrator(), RationalScalar.of(1, 6), 5);
     Collection<Flow> controls = Se2rControls.createControls(Se2Utils.DEGREE(45), 6);
     // place holder for parameter class
     Se2rGoalManager se2GoalManager = new Se2rGoalManager( //

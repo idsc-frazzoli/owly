@@ -6,6 +6,7 @@ import java.util.Random;
 import ch.ethz.idsc.owly.demo.util.ImageRegions;
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
 import ch.ethz.idsc.owly.gui.Gui;
+import ch.ethz.idsc.owly.gui.OwlyFrame;
 import ch.ethz.idsc.owly.math.region.Region;
 import ch.ethz.idsc.owly.math.state.TimeInvariantRegion;
 import ch.ethz.idsc.owly.rrts.adapter.DefaultRrts;
@@ -32,15 +33,22 @@ class R2ImageDemo {
     // ---
     Rrts rrts = new DefaultRrts(rnss, nc, trq, LengthCostFunction.IDENTITY);
     RrtsNode root = rrts.insertAsNode(Tensors.vector(0, 0), 5);
+    OwlyFrame owlyFrame = Gui.start();
+    owlyFrame.configCoordinateOffset(60, 477);
     Random random = new Random();
-    for (int c = 0; c < 1000; ++c) {
-      Tensor pnt = Tensors.vector( //
-          random.nextDouble() * wid, //
-          random.nextDouble() * wid);
-      rrts.insertAsNode(pnt, 15);
+    int frame = 0;
+    while (frame++ < 20 && owlyFrame.jFrame.isVisible()) {
+      for (int c = 0; c < 50; ++c) {
+        Tensor pnt = Tensors.vector( //
+            random.nextDouble() * wid, //
+            random.nextDouble() * wid);
+        rrts.insertAsNode(pnt, 15);
+      }
+      owlyFrame.setRrts(root, trq);
+      Thread.sleep(200);
     }
     System.out.println(rrts.rewireCount());
     RrtsNodes.costConsistency(root, rnss, LengthCostFunction.IDENTITY);
-    Gui.rrts(root, trq);
+    // owlyFrame.setRrts(root, trq);
   }
 }

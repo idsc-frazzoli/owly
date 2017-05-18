@@ -38,7 +38,6 @@ class HudLayer extends AbstractLayer {
     this.trajectoryPlanner = trajectoryPlanner;
   }
 
-  @Override
   void render(Graphics2D graphics) {
     // ---
     graphics.setColor(new Color(0, 0, 0, 64));

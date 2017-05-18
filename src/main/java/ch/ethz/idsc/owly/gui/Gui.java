@@ -20,10 +20,10 @@ public enum Gui {
     return owlyFrame;
   }
 
-  public static void rrts(RrtsNode rrtsNode, TransitionRegionQuery transitionRegionQuery) {
+  public static OwlyFrame rrts(RrtsNode rrtsNode, TransitionRegionQuery transitionRegionQuery) {
     OwlyFrame owlyFrame = new OwlyFrame();
-    OwlyComponent c = owlyFrame.owlyComponent;
-    c.renderElements = new RenderElements(rrtsNode, transitionRegionQuery);
+    owlyFrame.setRrts(rrtsNode, transitionRegionQuery);
     owlyFrame.jFrame.setVisible(true);
+    return owlyFrame;
   }
 }

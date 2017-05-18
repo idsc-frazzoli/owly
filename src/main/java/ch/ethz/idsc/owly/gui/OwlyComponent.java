@@ -6,7 +6,9 @@ import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Point;
+import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
 import java.awt.geom.Line2D;
@@ -16,13 +18,16 @@ import javax.swing.JComponent;
 import javax.swing.event.MouseInputAdapter;
 import javax.swing.event.MouseInputListener;
 
+import ch.ethz.idsc.tensor.DecimalScalar;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
+import ch.ethz.idsc.tensor.io.Pretty;
 import ch.ethz.idsc.tensor.mat.DiagonalMatrix;
 import ch.ethz.idsc.tensor.mat.LinearSolve;
 import ch.ethz.idsc.tensor.sca.Power;
+import ch.ethz.idsc.tensor.sca.Round;
 
 class OwlyComponent {
   // function ignores all but the first and second entry of x
@@ -33,7 +38,7 @@ class OwlyComponent {
         RealScalar.ONE);
   }
 
-  private Tensor model2pixel;
+  Tensor model2pixel;
   final AbstractLayer abstractLayer = new AbstractLayer(this);
   RenderElements renderElements;
 
@@ -53,27 +58,47 @@ class OwlyComponent {
         jComponent.repaint();
       }
     });
-    MouseInputListener mouseInputListener = new MouseInputAdapter() {
-      Point down = null;
+    {
+      MouseInputListener mouseInputListener = new MouseInputAdapter() {
+        Point down = null;
 
-      @Override
-      public void mousePressed(MouseEvent event) {
-        down = event.getPoint();
-      }
+        @Override
+        public void mousePressed(MouseEvent event) {
+          down = event.getPoint();
+        }
 
-      @Override
-      public void mouseDragged(MouseEvent event) {
-        Point now = event.getPoint();
-        int dx = now.x - down.x;
-        int dy = now.y - down.y;
-        down = now;
-        model2pixel.set(s -> s.add(RealScalar.of(dx)), 0, 2);
-        model2pixel.set(s -> s.add(RealScalar.of(dy)), 1, 2);
-        jComponent.repaint();
-      }
-    };
-    jComponent.addMouseMotionListener(mouseInputListener);
-    jComponent.addMouseListener(mouseInputListener);
+        @Override
+        public void mouseDragged(MouseEvent event) {
+          Point now = event.getPoint();
+          int dx = now.x - down.x;
+          int dy = now.y - down.y;
+          down = now;
+          model2pixel.set(s -> s.add(RealScalar.of(dx)), 0, 2);
+          model2pixel.set(s -> s.add(RealScalar.of(dy)), 1, 2);
+          jComponent.repaint();
+        }
+      };
+      jComponent.addMouseMotionListener(mouseInputListener);
+      jComponent.addMouseListener(mouseInputListener);
+    }
+    {
+      MouseListener mouseListener = new MouseAdapter() {
+        @Override
+        public void mouseClicked(MouseEvent mouseEvent) {
+          System.out.println("model2pixel=");
+          System.out.println(Pretty.of(model2pixel));
+        }
+
+        @Override
+        public void mousePressed(MouseEvent mouseEvent) {
+          Tensor location = toTensor(mouseEvent.getPoint());
+          location = location.extract(0, 2);
+          // info for user to design obstacles or check distances
+          System.out.println(location.map(Round.toMultipleOf(DecimalScalar.of(0.001))) + ",");
+        }
+      };
+      jComponent.addMouseListener(mouseListener);
+    }
   }
 
   final JComponent jComponent = new JComponent() {
