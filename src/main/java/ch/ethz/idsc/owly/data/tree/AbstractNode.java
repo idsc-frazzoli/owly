@@ -20,10 +20,6 @@ public abstract class AbstractNode<T extends Node> implements Node {
     return parent;
   }
 
-  public void setParent(T parent) {
-    this.parent = parent;
-  }
-
   @SuppressWarnings("unchecked")
   @Override // from Node
   public final void removeEdgeTo(Node child) {
