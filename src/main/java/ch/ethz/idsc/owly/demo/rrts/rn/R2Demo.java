@@ -5,6 +5,7 @@ import java.util.Random;
 
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
 import ch.ethz.idsc.owly.gui.Gui;
+import ch.ethz.idsc.owly.gui.OwlyFrame;
 import ch.ethz.idsc.owly.math.region.PolygonRegion;
 import ch.ethz.idsc.owly.math.state.TimeInvariantRegion;
 import ch.ethz.idsc.owly.rrts.adapter.DefaultRrts;
@@ -33,7 +34,7 @@ class R2Demo {
                     { 4, 6 }, //
                     { 1, 6 }, //
                     { 1, 3 }, //
-                    { 3, 3 }//
+                    { 3, 3 } //
                 })))), RealScalar.of(.1));
     // ---
     Rrts rrts = new DefaultRrts(rnss, nc, trq, LengthCostFunction.IDENTITY);
@@ -47,6 +48,9 @@ class R2Demo {
     }
     System.out.println(rrts.rewireCount());
     RrtsNodes.costConsistency(root, rnss, LengthCostFunction.IDENTITY);
-    Gui.rrts(root, trq);
+    OwlyFrame owlyFrame = Gui.start();
+    owlyFrame.configCoordinateOffset(42, 456);
+    owlyFrame.jFrame.setBounds(100, 100, 500, 500);
+    owlyFrame.setRrts(root, trq);
   }
 }

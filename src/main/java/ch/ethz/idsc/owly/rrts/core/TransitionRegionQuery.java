@@ -1,7 +1,9 @@
 // code by jph
 package ch.ethz.idsc.owly.rrts.core;
 
-public interface TransitionRegionQuery {
+import java.io.Serializable;
+
+public interface TransitionRegionQuery extends Serializable {
   /** @param transition
    * @return true, if the transition does not intersect this region */
   boolean isDisjoint(Transition transition);

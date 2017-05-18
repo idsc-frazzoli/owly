@@ -14,7 +14,7 @@ public enum Expand {
     int expandCount = 0;
     while (expandCount++ < expandLimit) {
       GlcNode node = expandInterface.pollNext();
-      if (node == null) {// queue is empty
+      if (node == null) { // queue is empty
         System.out.println("*** Queue is empty -- No Goal was found ***");
         break;
       }
@@ -22,8 +22,8 @@ public enum Expand {
       if (expandInterface.getBest() != null) // found node in goal region
         break;
     }
-    if (expandCount == expandLimit)
-      System.out.println("*** ExpandLimit reached -- No Goal was found ***");
+    // no printout here, since expand limit can deliberately set to a low number for animation
+    // see Se2rExpandDemo
     return expandCount;
   }
 

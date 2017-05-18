@@ -1,13 +1,13 @@
 // code by jph
 package ch.ethz.idsc.owly.demo.rrts.rn;
 
+import java.io.File;
 import java.util.Random;
 
-import ch.ethz.idsc.owly.demo.util.ImageRegions;
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
 import ch.ethz.idsc.owly.gui.Gui;
 import ch.ethz.idsc.owly.gui.OwlyFrame;
-import ch.ethz.idsc.owly.math.region.Region;
+import ch.ethz.idsc.owly.math.region.PolygonRegion;
 import ch.ethz.idsc.owly.math.state.TimeInvariantRegion;
 import ch.ethz.idsc.owly.rrts.adapter.DefaultRrts;
 import ch.ethz.idsc.owly.rrts.adapter.LengthCostFunction;
@@ -20,34 +20,48 @@ import ch.ethz.idsc.owly.rrts.core.TransitionRegionQuery;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
+import ch.ethz.idsc.tensor.io.GifSequenceWriter;
 
-class R2ImageDemo {
+class R2ExpandDemo {
   public static void main(String[] args) throws Exception {
-    final int wid = 7;
+    int wid = 7;
     RnTransitionSpace rnss = new RnTransitionSpace();
     RrtsNodeCollection nc = new RnNodeCollection(Tensors.vector(0, 0), Tensors.vector(wid, wid));
-    Region region = ImageRegions.loadFromRepository("/io/track0_100.png", Tensors.vector(wid, wid));
     TransitionRegionQuery trq = //
         new SampledTransitionRegionQuery(new SimpleTrajectoryRegionQuery( //
-            new TimeInvariantRegion(region)), RealScalar.of(.1));
+            new TimeInvariantRegion( //
+                new PolygonRegion(Tensors.matrix(new Number[][] { //
+                    { 3, 1 }, //
+                    { 4, 1 }, //
+                    { 4, 6 }, //
+                    { 1, 6 }, //
+                    { 1, 3 }, //
+                    { 3, 3 } //
+                })))), RealScalar.of(.1));
     // ---
     Rrts rrts = new DefaultRrts(rnss, nc, trq, LengthCostFunction.IDENTITY);
     RrtsNode root = rrts.insertAsNode(Tensors.vector(0, 0), 5);
-    OwlyFrame owlyFrame = Gui.start();
-    owlyFrame.configCoordinateOffset(60, 477);
-    owlyFrame.jFrame.setBounds(100, 100, 550, 550);
     Random random = new Random();
+    GifSequenceWriter gsw = GifSequenceWriter.of(new File("/home/datahaki/r2rrts.gif"), 250);
+    OwlyFrame owlyFrame = Gui.start();
+    owlyFrame.configCoordinateOffset(42, 456);
+    owlyFrame.jFrame.setBounds(100, 100, 500, 500);
     int frame = 0;
-    while (frame++ < 20 && owlyFrame.jFrame.isVisible()) {
-      for (int c = 0; c < 50; ++c) {
+    while (frame++ < 40 && owlyFrame.jFrame.isVisible()) {
+      for (int c = 0; c < 10; ++c) {
         Tensor pnt = Tensors.vector( //
             random.nextDouble() * wid, //
             random.nextDouble() * wid);
-        rrts.insertAsNode(pnt, 15);
+        rrts.insertAsNode(pnt, 20);
       }
       owlyFrame.setRrts(root, trq);
-      Thread.sleep(200);
+      gsw.append(owlyFrame.offscreen());
+      Thread.sleep(100);
     }
+    int repeatLast = 3;
+    while (0 < repeatLast--)
+      gsw.append(owlyFrame.offscreen());
+    gsw.close();
     System.out.println(rrts.rewireCount());
     RrtsNodes.costConsistency(root, rnss, LengthCostFunction.IDENTITY);
   }

@@ -12,24 +12,20 @@ import ch.ethz.idsc.owly.glc.core.GlcNode;
 import ch.ethz.idsc.owly.glc.core.TrajectoryPlanner;
 import ch.ethz.idsc.owly.math.state.StateTime;
 
-public class TrajectoryLayer extends AbstractLayer {
+class TrajectoryRender extends AbstractRender {
   TrajectoryPlanner trajectoryPlanner;
 
-  TrajectoryLayer(OwlyComponent glcComponent) {
-    super(glcComponent);
-  }
-
-  void setTrajectoryPlanner(TrajectoryPlanner trajectoryPlanner) {
+  TrajectoryRender(TrajectoryPlanner trajectoryPlanner) {
     this.trajectoryPlanner = trajectoryPlanner;
   }
 
   @Override
-  void render(Graphics2D graphics) {
+  void render(AbstractLayer abstractLayer, Graphics2D graphics) {
     { // draw detailed trajectory from root to goal
       GlcNode best = trajectoryPlanner.getBest();
       if (best == null)
         best = trajectoryPlanner.peek();
-      Path2D path2d = toPath2D(trajectoryPlanner.detailedTrajectoryTo(best));
+      Path2D path2d = abstractLayer.toPath2D(trajectoryPlanner.detailedTrajectoryTo(best));
       graphics.setStroke(new BasicStroke(5.0f));
       graphics.setColor(new Color(255, 255, 255, 128));
       graphics.draw(path2d);
@@ -41,7 +37,7 @@ public class TrajectoryLayer extends AbstractLayer {
     { // draw boxes at nodes in path from root to goal
       graphics.setColor(new Color(255, 0, 0, 128));
       for (StateTime stateTime : trajectoryPlanner.getPathFromRootToGoal()) {
-        Point2D point2d = toPoint2D(stateTime.x());
+        Point2D point2d = abstractLayer.toPoint2D(stateTime.x());
         graphics.draw(new Rectangle2D.Double(point2d.getX() - 1, point2d.getY() - 1, 2, 2));
       }
     }

@@ -1,7 +1,6 @@
 // code by jph
 package ch.ethz.idsc.owly.gui;
 
-import java.awt.Graphics2D;
 import java.awt.geom.Path2D;
 import java.awt.geom.Point2D;
 import java.util.List;
@@ -9,8 +8,8 @@ import java.util.List;
 import ch.ethz.idsc.owly.math.state.StateTime;
 import ch.ethz.idsc.tensor.Tensor;
 
-abstract class AbstractLayer {
-  final OwlyComponent glcComponent;
+class AbstractLayer {
+  private final OwlyComponent glcComponent;
 
   AbstractLayer(OwlyComponent glcComponent) {
     this.glcComponent = glcComponent;
@@ -33,6 +32,4 @@ abstract class AbstractLayer {
     }
     return path2d;
   }
-
-  abstract void render(Graphics2D graphics);
 }
