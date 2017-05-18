@@ -28,6 +28,7 @@ public class AnyTrajectoryPlanner extends TrajectoryPlanner {
   private final TrajectoryRegionQuery obstacleQuery;
   private final Map<Tensor, DomainQueue> domainCandidateMap = //
       new HashMap<>();
+  //TODO make domainqueu to collection
   // private final Queue<Node> queue = new PriorityQueue<>(NodeMeritComparator.instance);
 
   public AnyTrajectoryPlanner( //
@@ -49,6 +50,7 @@ public class AnyTrajectoryPlanner extends TrajectoryPlanner {
   @Override
   public void expand(final GlcNode node) {
     // TODO count updates in cell based on costs for benchmarking
+    //TODO copy from Defaulttrajectory mit parralel
     // Map<Tensor, DomainQueue> domainCandidateMap = new HashMap<>();
     Set<Tensor> domainsNeedingUpdate = new HashSet<>();
     Map<GlcNode, List<StateTime>> connectors = new HashMap<>();
@@ -78,7 +80,6 @@ public class AnyTrajectoryPlanner extends TrajectoryPlanner {
         domainCandidateMap.put(domain_key, new DomainQueue(next));
     }
     // ---
-    // make a keylist, through which I iterate and pass to processCandidates
     processCandidates(node, domainsNeedingUpdate, connectors);
   }
 
@@ -98,7 +99,9 @@ public class AnyTrajectoryPlanner extends TrajectoryPlanner {
           if (obstacleQuery.isDisjoint(connectors.get(next))) { // no collision
             node.insertEdgeTo(next);
             insert(domain_key, next);
-            domainCandidateMap.get(domain_key).remove(next);
+            if (former != null)
+              domainQueue.add(former);
+            // domainCandidateMap.get(domain_key).remove(next);
             if (!goalQuery.isDisjoint(connectors.get(next)))
               offerDestination(next);
             break; // leaves the while loop, but not the for loop
@@ -109,6 +112,7 @@ public class AnyTrajectoryPlanner extends TrajectoryPlanner {
 
   public void switchRootToState(Tensor state) {
     GlcNode newRoot = this.getNode(convertToKey(state));
+    //TODO not nice, as we jump from state to startnode
     if (newRoot != null)
       switchRootToNode(newRoot);
     else
@@ -133,14 +137,15 @@ public class AnyTrajectoryPlanner extends TrajectoryPlanner {
     int removedNodes = 0;
     int removedCandidates = 0;
     int addedNodesToQueue = 0;
-    for (GlcNode tempNode : oldtree) {
-      Tensor tempDomain_key = convertToKey(tempNode.state());
-      if (domainMap().remove(tempDomain_key, tempNode))
+    for (GlcNode tempNode : oldtree) { // loop for each domain, where sth was deleted
+      Tensor tempDomainKey = convertToKey(tempNode.state());
+      if (domainMap().remove(tempDomainKey, tempNode))
         removedNodes++;
-      DomainQueue tempDomainQueue = domainCandidateMap.get(tempDomain_key);
+      DomainQueue tempDomainQueue = domainCandidateMap.get(tempDomainKey);
       if (tempDomainQueue != null) {
-        tempDomainQueue.removeIf(GlcNode::isRoot);
-        removedCandidates++;
+        // TODO removeif(GlcNode.parent().isin(oldtree)
+        if (tempDomainQueue.removeIf(glcNode -> oldtree.contains(glcNode.parent())))
+          removedCandidates++;
       }
       // iterate through DomainQueue to find alternative
       if (tempDomainQueue != null)
@@ -151,7 +156,7 @@ public class AnyTrajectoryPlanner extends TrajectoryPlanner {
               stateIntegrator.trajectory(nextParent.stateTime(), next.flow());
           if (obstacleQuery.isDisjoint(trajectory)) { // no collision
             nextParent.insertEdgeTo(next);
-            insert(tempDomain_key, next);
+            insert(tempDomainKey, next);
             addedNodesToQueue++;
             if (!goalQuery.isDisjoint(trajectory))
               offerDestination(next);
