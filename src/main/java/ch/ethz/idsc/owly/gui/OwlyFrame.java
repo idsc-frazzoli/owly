@@ -2,6 +2,8 @@
 package ch.ethz.idsc.owly.gui;
 
 import java.awt.BorderLayout;
+import java.awt.Dimension;
+import java.awt.image.BufferedImage;
 import java.io.Serializable;
 import java.util.Collection;
 
@@ -58,5 +60,12 @@ public class OwlyFrame {
   @Deprecated
   public void repaint() { // see Se2rExpandDemo for how to render updates
     owlyComponent.jComponent.repaint();
+  }
+
+  public BufferedImage offscreen() {
+    Dimension dimension = owlyComponent.jComponent.getSize();
+    BufferedImage myBufferedImage = new BufferedImage(dimension.width, dimension.height, BufferedImage.TYPE_INT_ARGB);
+    owlyComponent.render(myBufferedImage.createGraphics(), dimension);
+    return myBufferedImage;
   }
 }

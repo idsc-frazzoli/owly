@@ -104,26 +104,27 @@ class OwlyComponent {
   final JComponent jComponent = new JComponent() {
     @Override
     protected void paintComponent(Graphics g) {
-      g.setColor(Color.WHITE);
-      Dimension dimension = getSize();
-      g.fillRect(0, 0, dimension.width, dimension.height);
-      // ---
-      Graphics2D graphics = (Graphics2D) g;
-      {
-        graphics.setColor(Color.LIGHT_GRAY);
-        graphics.draw(new Line2D.Double(toPoint2D(Tensors.vector(-10, 1)), toPoint2D(Tensors.vector(10, 1))));
-        graphics.draw(new Line2D.Double(toPoint2D(Tensors.vector(1, -10)), toPoint2D(Tensors.vector(1, 10))));
-      }
-      {
-        graphics.setColor(Color.GRAY);
-        graphics.draw(new Line2D.Double(toPoint2D(Tensors.vector(-10, 0)), toPoint2D(Tensors.vector(10, 0))));
-        graphics.draw(new Line2D.Double(toPoint2D(Tensors.vector(0, -10)), toPoint2D(Tensors.vector(0, 10))));
-      }
-      if (renderElements != null) {
-        renderElements.list.forEach(ar -> ar.render(abstractLayer, graphics));
-      }
+      render((Graphics2D) g, getSize());
     }
   };
+
+  void render(Graphics2D graphics, Dimension dimension) {
+    graphics.setColor(Color.WHITE);
+    graphics.fillRect(0, 0, dimension.width, dimension.height);
+    {
+      graphics.setColor(Color.LIGHT_GRAY);
+      graphics.draw(new Line2D.Double(toPoint2D(Tensors.vector(-10, 1)), toPoint2D(Tensors.vector(10, 1))));
+      graphics.draw(new Line2D.Double(toPoint2D(Tensors.vector(1, -10)), toPoint2D(Tensors.vector(1, 10))));
+    }
+    {
+      graphics.setColor(Color.GRAY);
+      graphics.draw(new Line2D.Double(toPoint2D(Tensors.vector(-10, 0)), toPoint2D(Tensors.vector(10, 0))));
+      graphics.draw(new Line2D.Double(toPoint2D(Tensors.vector(0, -10)), toPoint2D(Tensors.vector(0, 10))));
+    }
+    if (renderElements != null) {
+      renderElements.list.forEach(ar -> ar.render(abstractLayer, graphics));
+    }
+  }
 
   public Point2D toPoint2D(Tensor x) {
     Tensor point = model2pixel.dot(toAffinePoint(x));

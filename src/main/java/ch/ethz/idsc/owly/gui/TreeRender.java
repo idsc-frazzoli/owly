@@ -40,7 +40,7 @@ class TreeRender extends AbstractRender {
       StateCostNode parent = node.parent();
       if (parent != null) {
         Point2D p2 = abstractLayer.toPoint2D(parent.state());
-        graphics.setColor(new Hue(interp, 1, 1, .1).rgba);
+        graphics.setColor(new Hue(interp, 1, 1, .2).rgba);
         Shape shape = new Line2D.Double(p1.getX(), p1.getY(), p2.getX(), p2.getY());
         graphics.draw(shape);
       }

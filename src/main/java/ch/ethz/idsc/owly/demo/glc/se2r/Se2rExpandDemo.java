@@ -1,6 +1,7 @@
 // code by jph
 package ch.ethz.idsc.owly.demo.glc.se2r;
 
+import java.io.File;
 import java.util.Collection;
 
 import ch.ethz.idsc.owly.demo.glc.se2.Se2Utils;
@@ -23,6 +24,7 @@ import ch.ethz.idsc.tensor.RationalScalar;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
+import ch.ethz.idsc.tensor.io.GifSequenceWriter;
 
 /** (x,y,theta) */
 class Se2rExpandDemo {
@@ -49,10 +51,20 @@ class Se2rExpandDemo {
     // ---
     trajectoryPlanner.insertRoot(Tensors.vector(0, 0, 0));
     OwlyFrame owlyFrame = Gui.start();
-    while (trajectoryPlanner.getBest() == null) {
+    owlyFrame.configCoordinateOffset(169, 71);
+    owlyFrame.jFrame.setBounds(100, 100, 300, 200);
+    // TODO user directory
+    GifSequenceWriter gsw = GifSequenceWriter.of(new File("/home/datahaki/se2r.gif"), 250);
+    while (trajectoryPlanner.getBest() == null && owlyFrame.jFrame.isVisible()) {
       Expand.maxSteps(trajectoryPlanner, 1);
       owlyFrame.setGlc(trajectoryPlanner);
+      gsw.append(owlyFrame.offscreen());
       Thread.sleep(100);
     }
+    int repeatLast = 6;
+    while (0 < repeatLast--)
+      gsw.append(owlyFrame.offscreen());
+    gsw.close();
+    System.out.println("created gif");
   }
 }
