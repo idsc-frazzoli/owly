@@ -14,7 +14,6 @@ import ch.ethz.idsc.owly.glc.core.AnyTrajectoryPlanner;
 import ch.ethz.idsc.owly.glc.core.Expand;
 import ch.ethz.idsc.owly.glc.wrap.Parameters;
 import ch.ethz.idsc.owly.gui.Gui;
-import ch.ethz.idsc.owly.gui.OwlyFrame;
 import ch.ethz.idsc.owly.math.StateSpaceModel;
 import ch.ethz.idsc.owly.math.flow.Flow;
 import ch.ethz.idsc.owly.math.region.HyperplaneRegion;
@@ -36,7 +35,7 @@ import ch.ethz.idsc.tensor.io.Serialization;
 /** (x,y,theta) */
 class Se2glcAnyDemo {
   public static void main(String[] args) throws Exception {
-    int resolution = 6;
+    int resolution = 12;
     Scalar timeScale = RealScalar.of(10);
     Scalar depthScale = RealScalar.of(5);
     Tensor partitionScale = Tensors.vector(3, 3, 15);
