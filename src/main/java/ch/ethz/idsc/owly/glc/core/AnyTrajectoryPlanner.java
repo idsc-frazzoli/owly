@@ -1,6 +1,7 @@
 // code by bapaden and jph and jl
 package ch.ethz.idsc.owly.glc.core;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -21,6 +22,7 @@ import ch.ethz.idsc.tensor.Scalars;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.ZeroScalar;
 
+/** TODO assumptions in order to use any... */
 public class AnyTrajectoryPlanner extends TrajectoryPlanner {
   private final StateIntegrator stateIntegrator;
   private final Collection<Flow> controls;
@@ -94,7 +96,7 @@ public class AnyTrajectoryPlanner extends TrajectoryPlanner {
     for (Entry<Tensor, PriorityQueue<CandidatePair>> entry : candidates.entrySet()) { // parallel
       final Tensor domain_key = entry.getKey();
       final PriorityQueue<CandidatePair> domainCandidateQueue = entry.getValue();
-      if (domainCandidateQueue != null)
+      if (domainCandidateQueue != null && best == null)
         while (!domainCandidateQueue.isEmpty()) {
           CandidatePair nextCandidatePair = domainCandidateQueue.element();
           final GlcNode former = getNode(domain_key);
@@ -174,6 +176,7 @@ public class AnyTrajectoryPlanner extends TrajectoryPlanner {
             addedNodesToQueue++;
             if (!goalQuery.isDisjoint(trajectory))
               offerDestination(next);
+            // TODO already finds goal here and then has runtimeexpectopn
             break; // leaves the while loop, but not the for loop
           }
         }
@@ -209,15 +212,23 @@ public class AnyTrajectoryPlanner extends TrajectoryPlanner {
   public void setGoalQuery(CostFunction newCostFunction, TrajectoryRegionQuery newGoal) {
     this.goalQuery = newGoal;
     costFunction = newCostFunction;
-    best = null;
-    long tic = System.nanoTime();
-    // Changing the Merit in Queue for each Node
-    List<GlcNode> list = new LinkedList<>(queue());
-    queue().clear();
-    list.stream().parallel() //
-        .forEach(glcNode -> glcNode.setMinCostToGoal(costFunction.minCostToGoal(glcNode.state())));
-    queue().addAll(list);
-    long toc = System.nanoTime();
-    System.out.println("Updated Merit of Queue with " + list.size() + " nodes: " + ((toc - tic) * 1e-9));
+    List<StateTime> bestList = new ArrayList<>();
+    bestList.add(best.stateTime());
+    if (newGoal.isDisjoint(bestList)) {
+      best = null;
+      // TODO Do I need to check entire tree if goal is already in it?
+      long tic = System.nanoTime();
+      // Changing the Merit in Queue for each Node
+      List<GlcNode> list = new LinkedList<>(queue());
+      queue().clear();
+      list.stream().parallel() //
+          .forEach(glcNode -> glcNode.setMinCostToGoal(costFunction.minCostToGoal(glcNode.state())));
+      queue().addAll(list);
+      long toc = System.nanoTime();
+      System.out.println("Updated Merit of Queue with " + list.size() + " nodes: " + ((toc - tic) * 1e-9));
+    } else {
+      System.out.println("Goal was already found in the existing tree");
+      offerDestination(best);
+    }
   }
 }
