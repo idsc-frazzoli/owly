@@ -67,7 +67,7 @@ public class AnyTrajectoryPlanner extends TrajectoryPlanner {
     }
     
     // save candidates in CandidateMap for RootSwitchlater
-    for (Entry<Tensor, CandidatePairQueue> entry : candidates.entrySet()) {
+    for (Entry<Tensor, CandidatePairQueue> entry : candidates.map.entrySet()) {
       if (!candidateMap.containsKey(entry.getKey()))
         candidateMap.put(entry.getKey(), new LinkedList<>());
       candidateMap.get(entry.getKey()).addAll(entry.getValue());
