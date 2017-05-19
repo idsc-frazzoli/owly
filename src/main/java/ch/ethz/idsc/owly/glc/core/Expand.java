@@ -36,8 +36,10 @@ public enum Expand {
     while (true) {
       expandCount++;
       GlcNode node = expandInterface.pollNext();
-      if (node == null) // queue is empty
+      if (node == null) {
+        System.out.println("**** Queue is empty -- No Goal was found");// queue is empty
         break;
+      }
       expandInterface.expand(node);
       if (expandInterface.getBest() != null) // found node in goal region
         break;

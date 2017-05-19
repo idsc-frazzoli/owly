@@ -62,12 +62,10 @@ public class AnyTrajectoryPlanner extends TrajectoryPlanner {
       CandidatePair nextCandidate = new CandidatePair(node, next);
       final Tensor domain_key = convertToKey(next.state());
       candidates.insert(domain_key, nextCandidate);
-      System.out.println("Candidatessize is: " + candidates.size());
       // System.out.println("Candidatessize is: " + candidates.size());
       // ALL Candidates are saved in CandidateList
     }
-    System.out.println("Candidatessize is: " + candidates.size());
-    System.out.println("connectorsssize is: " + connectors.size());
+    
     // save candidates in CandidateMap for RootSwitchlater
     for (Entry<Tensor, CandidatePairQueue> entry : candidates.entrySet()) {
       if (!candidateMap.containsKey(entry.getKey()))
@@ -79,7 +77,8 @@ public class AnyTrajectoryPlanner extends TrajectoryPlanner {
 
   private void processCandidates( //
       GlcNode node, Map<GlcNode, List<StateTime>> connectors, CandidatePairQueueMap candidates) {
-    for (Entry<Tensor, CandidatePairQueue> entry : candidates.entrySet()) { // parallel
+    
+    for (Entry<Tensor, CandidatePairQueue> entry : candidates.map.entrySet()) { 
       final Tensor domain_key = entry.getKey();
       final CandidatePairQueue domainCandidateQueue = entry.getValue();
       if (domainCandidateQueue != null && best == null)
