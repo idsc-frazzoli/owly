@@ -49,8 +49,9 @@ public class DefaultTrajectoryPlanner extends TrajectoryPlanner {
     for (GlcNode next : connectors.keySet()) { // <- order of keys is non-deterministic
       final Tensor domain_key = convertToKey(next.stateTime().x());
       final GlcNode former = getNode(domain_key);
-      if (former != null) { // is already some node present from previous exploration ?
-        // TODO comparison was changed from costFromRoot() to merit(), is this correct ?
+      if (former != null) { // TODO: if is useles? as both conditions do the same
+        // is already some node present from previous exploration ?
+        // TODO comparison was changed from costFromRoot() to merit(), is this correct ? YES
         if (Scalars.lessThan(next.merit(), former.merit())) // new node is potentially better than previous one
           domainQueueMap.insert(domain_key, next);
       } else

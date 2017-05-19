@@ -57,63 +57,46 @@ public class AnyTrajectoryPlanner extends TrajectoryPlanner {
         SharedUtils.integrate(node, controls, stateIntegrator, costFunction);
     // Set<Tensor> domainsNeedingUpdate = new HashSet<>();
     // Map<Tensor, DomainQueue> candidates = new HashMap<>();
-    Map<Tensor, PriorityQueue<CandidatePair>> candidates = new HashMap<>();
+    CandidatePairQueueMap candidates = new CandidatePairQueueMap();
     for (GlcNode next : connectors.keySet()) { // <- order of keys is non-deterministic
-      // final List<StateTime> trajectory = stateIntegrator.trajectory(node.stateTime(), flow);
-      // final StateTime last = Trajectories.getLast(trajectory);
-      // final GlcNode next = new GlcNode(flow, last, //
-      // node.costFromRoot().add(costFunction.costIncrement(node.stateTime(), trajectory, flow)), //
-      // costFunction.minCostToGoal(last.x()));
       CandidatePair nextCandidate = new CandidatePair(node, next);
-      final Tensor domain_key = convertToKey(next.stateTime().x());
-      final GlcNode former = getNode(domain_key);
-      if (former != null) {
-        // TODO explain/document (every) line in the subsequent conditions (there was a mistake in the DefaultTrajPlanner)
-        // if (Scalars.lessThan(next.costFromRoot(), former.costFromRoot())) // new node is better than previous one// already some node present from previous
-        // exploration
-        if (candidates.containsKey(domain_key))
-          candidates.get(domain_key).add(nextCandidate);
-        else {
-          candidates.put(domain_key, new PriorityQueue<CandidatePair>());
-          candidates.get(domain_key).add(nextCandidate);
-        }
-      } else {// No node present in domain
-        // TODO there was a mistake in the DefaultTrajPlanner
-        // ... now, you may be missing the case to check "if (candidates.containsKey(domain_key))" here ?
-        candidates.put(domain_key, new PriorityQueue<CandidatePair>());
-        candidates.get(domain_key).add(nextCandidate);
-      }
+      final Tensor domain_key = convertToKey(next.state());
+      candidates.insert(domain_key, nextCandidate);
+      System.out.println("Candidatessize is: " + candidates.size());
+      // System.out.println("Candidatessize is: " + candidates.size());
+      // ALL Candidates are saved in CandidateList
     }
-    // System.out.println("Size of candidates " + candidates.entrySet().size());
-    for (Entry<Tensor, PriorityQueue<CandidatePair>> entry : candidates.entrySet()) {
+    System.out.println("Candidatessize is: " + candidates.size());
+    System.out.println("connectorsssize is: " + connectors.size());
+    // save candidates in CandidateMap for RootSwitchlater
+    for (Entry<Tensor, CandidatePairQueue> entry : candidates.entrySet()) {
       if (!candidateMap.containsKey(entry.getKey()))
         candidateMap.put(entry.getKey(), new LinkedList<>());
       candidateMap.get(entry.getKey()).addAll(entry.getValue());
     }
-    // System.out.println("Size of candidatesMap " + candidateMap.entrySet().size());
     processCandidates(node, connectors, candidates);
   }
 
   private void processCandidates( //
-      GlcNode node, Map<GlcNode, List<StateTime>> connectors, Map<Tensor, PriorityQueue<CandidatePair>> candidates) {
-    for (Entry<Tensor, PriorityQueue<CandidatePair>> entry : candidates.entrySet()) { // parallel
+      GlcNode node, Map<GlcNode, List<StateTime>> connectors, CandidatePairQueueMap candidates) {
+    for (Entry<Tensor, CandidatePairQueue> entry : candidates.entrySet()) { // parallel
       final Tensor domain_key = entry.getKey();
-      final PriorityQueue<CandidatePair> domainCandidateQueue = entry.getValue();
+      final CandidatePairQueue domainCandidateQueue = entry.getValue();
       if (domainCandidateQueue != null && best == null)
         while (!domainCandidateQueue.isEmpty()) {
           CandidatePair nextCandidatePair = domainCandidateQueue.element();
           final GlcNode former = getNode(domain_key);
           final GlcNode next = nextCandidatePair.getCandidate();
           if (former != null)
-            if (!Scalars.lessThan(next.costFromRoot(), former.costFromRoot()))
-              break;
-          domainCandidateQueue.remove();
+            if (!Scalars.lessThan(next.merit(), former.merit()))
+              break; // if former is still the best, leave while loop
+          domainCandidateQueue.remove(); //
           if (obstacleQuery.isDisjoint(connectors.get(next))) { // no collision
             node.insertEdgeTo(next);
             insert(domain_key, next);
             if (!goalQuery.isDisjoint(connectors.get(next)))
-              offerDestination(next); // TODO display computation time until goal was found
-            break; // leaves the while loop, but not the for loop
+              offerDestination(next);
+            break; // leaves the while loop(Candidates in this domain), but not the for loop (over domains)
           }
         }
     }
@@ -130,7 +113,7 @@ public class AnyTrajectoryPlanner extends TrajectoryPlanner {
 
   private void switchRootToNode(GlcNode newRoot) {
     int oldDomainMapSize = domainMap().size();
-    long totalCandidates = candidateMap.values().stream().flatMap(Collection::stream).count();
+    long oldtotalCandidates = candidateMap.values().stream().flatMap(Collection::stream).count();
     int oldQueueSize = queue().size();
     System.out.println("changing to root:" + newRoot.state());
     if (newRoot.isRoot()) {
@@ -165,7 +148,9 @@ public class AnyTrajectoryPlanner extends TrajectoryPlanner {
           // if (tempCandidateQueue.removeIf(candidate -> oldtree.contains(candidate.getOrigin())))
           // removedCandidates++; // TODO Counter wrong, check candidate map vorher/nachher
         }
-        // iterate through DomainQueue to find alternative: RELABELING
+        // Iterate through DomainQueue to find alternative: RELABELING
+        // CandidatePairQueue queue = new CandidatePairQueue(tempCandidateQueue);
+        // TODO: Why does not work with CandidatePairQueue
         PriorityQueue<CandidatePair> queue = new PriorityQueue<>(tempCandidateQueue);
         while (!queue.isEmpty()) {
           final CandidatePair nextBestCandidate = queue.poll();
@@ -174,7 +159,7 @@ public class AnyTrajectoryPlanner extends TrajectoryPlanner {
           final List<StateTime> trajectory = //
               stateIntegrator.trajectory(nextParent.stateTime(), next.flow());
           if (obstacleQuery.isDisjoint(trajectory)) { // no collision
-            nextParent.insertEdgeTo(next);
+            nextParent.insertEdgeTo(next); // always replace as former was deleted
             insert(tempDomainKey, next);
             addedNodesToQueue++;
             if (!goalQuery.isDisjoint(trajectory))
@@ -185,8 +170,9 @@ public class AnyTrajectoryPlanner extends TrajectoryPlanner {
         }
       }
     }
+    long newtotalCandidates = candidateMap.values().stream().flatMap(Collection::stream).count();
     System.out.println(removedNodes + " out of " + oldDomainMapSize + " Nodes removed from Tree ");
-    System.out.println(removedCandidates + " of " + totalCandidates + " Candidates removed from CandidateList ");
+    System.out.println(oldtotalCandidates - newtotalCandidates + " of " + oldtotalCandidates + " Candidates removed from CandidateList ");
     System.out.println(addedNodesToQueue + " Nodes added to Queue");
   }
 
