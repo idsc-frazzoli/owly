@@ -37,7 +37,7 @@ import ch.ethz.idsc.tensor.Tensors;
 /** (x,y,theta) */
 class Se2IterateSimpleAnyCircleDemo {
   public static void main(String[] args) throws Exception {
-    int resolution = 12;
+    int resolution = 6;
     Scalar timeScale = RealScalar.of(10);
     Scalar depthScale = RealScalar.of(5);
     Tensor partitionScale = Tensors.vector(3, 3, 15);
@@ -55,20 +55,20 @@ class Se2IterateSimpleAnyCircleDemo {
     parameters.printResolution();
     Collection<Flow> controls = Se2Controls.createControls(Se2Utils.DEGREE(45), 6);
     Se2GoalManager se2GoalManager = new Se2GoalManager( //
-        Tensors.vector(-7, 0), RealScalar.of(0), //east
+        Tensors.vector(3, 0), RealScalar.of(1.5 * Math.PI), // east
         DoubleScalar.of(.1), Se2Utils.DEGREE(10));
     TrajectoryRegionQuery obstacleQuery = //
         new SimpleTrajectoryRegionQuery(new TimeInvariantRegion( //
             RegionUnion.of( //
-                new HyperplaneRegion(Tensors.vector(0, -1, 0), RealScalar.of(1)), //
-                new HyperplaneRegion(Tensors.vector(0, +1, 0), RealScalar.of(1)) //
+                new HyperplaneRegion(Tensors.vector(0, -1, 0), RealScalar.of(4)), //
+                new HyperplaneRegion(Tensors.vector(0, +1, 0), RealScalar.of(4)) //
             )));
     // ---
     long tic = System.nanoTime();
     SimpleAnyTrajectoryPlanner trajectoryPlanner = new SimpleAnyTrajectoryPlanner( //
         parameters.getEta(), stateIntegrator, controls, se2GoalManager, se2GoalManager.goalQuery(), obstacleQuery);
     // ---
-    trajectoryPlanner.insertRoot(Tensors.vector(-10, 0, 0));
+    trajectoryPlanner.insertRoot(Tensors.vector(0, 3, 0));
     int iters = Expand.maxDepth(trajectoryPlanner, parameters.getDepthLimit());
     System.out.println("After " + iters + " iterations");
     List<StateTime> trajectory = trajectoryPlanner.getPathFromRootToGoal();
@@ -78,28 +78,36 @@ class Se2IterateSimpleAnyCircleDemo {
     OwlyFrame owlyFrame = Gui.start();
     owlyFrame.setGlc(trajectoryPlanner);
     // ---
-    
+    List<Tensor> goalListPosition = new ArrayList<>();
+    goalListPosition.add(Tensors.vector(0, -3));// south
+    goalListPosition.add(Tensors.vector(-3, 0));// West
+    goalListPosition.add(Tensors.vector(0, 3)); // north
+    goalListPosition.add(Tensors.vector(3, 0));// east
+    List<RealScalar> goalListAngle = new ArrayList<>();
+    goalListAngle.add(RealScalar.of(Math.PI));// South
+    goalListAngle.add(RealScalar.of(0.5 * Math.PI));// west
+    goalListAngle.add(RealScalar.of(0)); // north
+    goalListAngle.add(RealScalar.of(-0.5 * Math.PI));// east
     // --
     Iterator<StateTime> trajectoryIterator = trajectory.iterator();
     trajectoryIterator.next();
     for (int iter = 0; iter < 100; iter++) {
       // while (trajectoryIterator.hasNext()) {
-      Thread.sleep(2000);
+      Thread.sleep(500);
       tic = System.nanoTime();
       int index = iter % 4;
-      System.out.println("index"+ index);
-      Se2GoalManager se2GoalManager2 = new Se2GoalManager( 
-          Tensors.vector(-7+iter, 0), RealScalar.of(0), 
-          DoubleScalar.of(.1), Se2Utils.DEGREE(10));
-      StateTime newRootState = trajectory.get(1);
+      System.out.println("index" + index);
+      Se2GoalManager se2GoalManager2 = new Se2GoalManager( //
+          goalListPosition.get(index), goalListAngle.get(index), //
+          DoubleScalar.of(0.1), Se2Utils.DEGREE(10));
+      StateTime newRootState = trajectory.get(2);
+      // System.out.println("trajectory at "+ (iter+1));
       // ---
       trajectoryPlanner.switchRootToState(newRootState.x());
       trajectoryPlanner.setGoalQuery(se2GoalManager2, se2GoalManager2.goalQuery());
       int iters2 = Expand.maxDepth(trajectoryPlanner, parameters.getDepthLimit());
-      
-      trajectory=trajectoryPlanner.getPathFromRootToGoal();
+      trajectory = trajectoryPlanner.getPathFromRootToGoal();
       Trajectories.print(trajectory);
-      
       // ---
       toc = System.nanoTime();
       System.out.println((toc - tic) * 1e-9 + " Seconds needed to replan");
