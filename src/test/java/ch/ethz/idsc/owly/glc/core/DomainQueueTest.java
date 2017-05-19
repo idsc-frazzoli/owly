@@ -11,7 +11,8 @@ import junit.framework.TestCase;
 
 public class DomainQueueTest extends TestCase {
   public void testQueue() {
-    DomainQueue dq = new DomainQueue(new GlcNode(null, null, RealScalar.of(1), ZeroScalar.get()));
+    DomainQueue dq = new DomainQueue();
+    dq.add(new GlcNode(null, null, RealScalar.of(1), ZeroScalar.get()));
     dq.add(new GlcNode(null, null, RealScalar.of(0), ZeroScalar.get()));
     dq.add(new GlcNode(null, null, RealScalar.of(9), ZeroScalar.get()));
     GlcNode n1 = dq.poll();

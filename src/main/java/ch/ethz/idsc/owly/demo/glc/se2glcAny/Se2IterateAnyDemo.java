@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Vector;
 
 import ch.ethz.idsc.owly.demo.glc.se2.Se2Controls;
 import ch.ethz.idsc.owly.demo.glc.se2.Se2GoalManager;

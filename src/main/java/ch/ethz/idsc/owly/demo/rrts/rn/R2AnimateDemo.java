@@ -1,7 +1,6 @@
 // code by jph
 package ch.ethz.idsc.owly.demo.rrts.rn;
 
-import java.io.File;
 import java.util.Random;
 
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
@@ -20,7 +19,6 @@ import ch.ethz.idsc.owly.rrts.core.TransitionRegionQuery;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
-import ch.ethz.idsc.tensor.io.GifSequenceWriter;
 
 class R2AnimateDemo {
   public static void main(String[] args) throws Exception {

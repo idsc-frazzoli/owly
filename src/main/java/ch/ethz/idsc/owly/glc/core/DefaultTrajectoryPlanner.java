@@ -2,7 +2,6 @@
 package ch.ethz.idsc.owly.glc.core;
 
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -45,25 +44,24 @@ public class DefaultTrajectoryPlanner extends TrajectoryPlanner {
   public void expand(final GlcNode node) {
     Map<GlcNode, List<StateTime>> connectors = //
         SharedUtils.integrate(node, controls, stateIntegrator, costFunction);
-    Map<Tensor, DomainQueue> candidates = new HashMap<>();
+    // ---
+    DomainQueueMap domainQueueMap = new DomainQueueMap(); // holds candidates from insertion
     for (GlcNode next : connectors.keySet()) { // <- order of keys is non-deterministic
       final Tensor domain_key = convertToKey(next.stateTime().x());
       final GlcNode former = getNode(domain_key);
-      if (former != null) { // already some node present from previous exploration
-        if (Scalars.lessThan(next.costFromRoot(), former.costFromRoot())) // new node is better than previous one
-          if (candidates.containsKey(domain_key))
-            candidates.get(domain_key).add(next);
-          else
-            candidates.put(domain_key, new DomainQueue(next));
+      if (former != null) { // is already some node present from previous exploration ?
+        // TODO comparison was changed from costFromRoot() to merit(), is this correct ?
+        if (Scalars.lessThan(next.merit(), former.merit())) // new node is potentially better than previous one
+          domainQueueMap.insert(domain_key, next);
       } else
-        candidates.put(domain_key, new DomainQueue(next));
+        domainQueueMap.insert(domain_key, next); // node is considered without comparison to any former node
     }
-    processCandidates(node, connectors, candidates);
+    processCandidates(node, connectors, domainQueueMap);
   }
 
   private void processCandidates( //
-      GlcNode node, Map<GlcNode, List<StateTime>> connectors, Map<Tensor, DomainQueue> candidates) {
-    for (Entry<Tensor, DomainQueue> entry : candidates.entrySet()) { // parallel
+      GlcNode node, Map<GlcNode, List<StateTime>> connectors, DomainQueueMap domainQueueMap) {
+    for (Entry<Tensor, DomainQueue> entry : domainQueueMap.map.entrySet()) {
       final Tensor domain_key = entry.getKey();
       final DomainQueue domainQueue = entry.getValue();
       while (!domainQueue.isEmpty()) {
@@ -72,7 +70,7 @@ public class DefaultTrajectoryPlanner extends TrajectoryPlanner {
           node.insertEdgeTo(next);
           insert(domain_key, next);
           if (!goalQuery.isDisjoint(connectors.get(next)))
-            offerDestination(next); // TODO display computation time until goal was found
+            offerDestination(next);
           break; // leaves the while loop, but not the for loop
         }
       }

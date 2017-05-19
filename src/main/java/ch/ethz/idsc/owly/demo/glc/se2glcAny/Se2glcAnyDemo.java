@@ -74,11 +74,10 @@ class Se2glcAnyDemo {
     long toc = System.nanoTime();
     System.out.println((toc - tic) * 1e-9 + " Seconds needed to plan");
     Trajectories.print(trajectory);
-    
     // OwlyFrame owlyFrame =
     Gui.glc(trajectoryPlanner);
     // ---
-    //Thread.sleep(4000);
+    // Thread.sleep(4000);
     tic = System.nanoTime();
     // --
     Se2GoalManager se2GoalManager2 = new Se2GoalManager( //
@@ -93,8 +92,7 @@ class Se2glcAnyDemo {
     toc = System.nanoTime();
     System.out.println((toc - tic) * 1e-9 + " Seconds needed to replan");
     System.out.println("After root switch needed " + iters2 + " iterations");
-    //owlyFrame.repaint();
+    // owlyFrame.repaint();
     Gui.glc(trajectoryPlanner);
-    
   }
 }
