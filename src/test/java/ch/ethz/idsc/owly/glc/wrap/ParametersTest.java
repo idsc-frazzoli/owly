@@ -9,6 +9,7 @@ import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Scalars;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
+import ch.ethz.idsc.tensor.sca.N;
 import junit.framework.TestCase;
 
 public class ParametersTest extends TestCase {
@@ -19,17 +20,27 @@ public class ParametersTest extends TestCase {
     Scalar dtMax = RationalScalar.of(1, 6);
     int maxIter = 2000;
     StateSpaceModel stateSpaceModel = new Se2StateSpaceModel();
-    int resolution = 0; // resolution is bound by Integer.MAX_VALUE
-    Scalar oldValue = RealScalar.POSITIVE_INFINITY;
+    Scalar resolution = RationalScalar.of(2, 1); // resolution is bound by Integer.MAX_VALUE
+    Scalar oldValue = RealScalar.of(1000);
     Scalar newValue = oldValue;
     long iter = 0;
-    do {
-      iter++;
-      resolution = resolution * 2; // TODO after 31 iterations this will become 0 due to integer overflow!
+    while (++iter < 1000) {
+      resolution = resolution.multiply(RealScalar.of(2)); // TODO after 31 iterations this will become 0 due to integer overflow!
       Parameters test = new Se2Parameters(//
-          resolution, timeScale, depthScale, partitionScale, dtMax, maxIter, stateSpaceModel.getLipschitz());
-      newValue = RealScalar.of(resolution).divide(RealScalar.of(test.getDepthLimit()));
-    } while (iter < 1000 && Scalars.lessThan(RealScalar.of(0.001), (oldValue.subtract(newValue))));
+          (RationalScalar) resolution, timeScale, depthScale, partitionScale, dtMax, maxIter, stateSpaceModel.getLipschitz());
+      oldValue = newValue;
+      newValue = resolution.divide(test.getDepthLimitExact());
+      System.out.println(resolution);
+      System.out.println("values:");
+      System.out.println(N.of(oldValue));
+      System.out.println(N.of(newValue));
+      System.out.println(oldValue);
+      System.out.println(newValue);
+      assertTrue(Scalars.lessEquals(newValue, oldValue));
+      if (Scalars.lessThan(newValue.abs(), RealScalar.of(0.001)))
+        break;
+    }
+    System.out.println(iter);
     assertTrue(iter < 1000);
   }
 }

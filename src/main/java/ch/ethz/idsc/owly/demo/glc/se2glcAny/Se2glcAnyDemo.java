@@ -34,7 +34,7 @@ import ch.ethz.idsc.tensor.Tensors;
 /** (x,y,theta) */
 class Se2glcAnyDemo {
   public static void main(String[] args) throws Exception {
-    int resolution = 12;
+    RationalScalar resolution = (RationalScalar) RealScalar.of(12);
     Scalar timeScale = RealScalar.of(10);
     Scalar depthScale = RealScalar.of(5);
     Tensor partitionScale = Tensors.vector(3, 3, 15);

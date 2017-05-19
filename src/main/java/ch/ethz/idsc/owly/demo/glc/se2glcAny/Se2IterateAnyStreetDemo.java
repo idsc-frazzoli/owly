@@ -11,8 +11,8 @@ import ch.ethz.idsc.owly.demo.glc.se2.Se2StateSpaceModel;
 import ch.ethz.idsc.owly.demo.glc.se2.Se2Utils;
 import ch.ethz.idsc.owly.demo.glc.se2glc.Se2Parameters;
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
+import ch.ethz.idsc.owly.glc.core.AnyTrajectoryPlanner;
 import ch.ethz.idsc.owly.glc.core.Expand;
-import ch.ethz.idsc.owly.glc.core.SimpleAnyTrajectoryPlanner;
 import ch.ethz.idsc.owly.glc.wrap.Parameters;
 import ch.ethz.idsc.owly.gui.Gui;
 import ch.ethz.idsc.owly.gui.OwlyFrame;
@@ -34,9 +34,9 @@ import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
 
 /** (x,y,theta) */
-class Se2IterateAnyStreetDemo2 {
+class Se2IterateAnyStreetDemo {
   public static void main(String[] args) throws Exception {
-    int resolution = 12;
+    RationalScalar resolution = (RationalScalar) RealScalar.of(12);
     Scalar timeScale = RealScalar.of(10);
     Scalar depthScale = RealScalar.of(5);
     Tensor partitionScale = Tensors.vector(3, 3, 15);
@@ -64,7 +64,7 @@ class Se2IterateAnyStreetDemo2 {
             )));
     // ---
     long tic = System.nanoTime();
-    SimpleAnyTrajectoryPlanner trajectoryPlanner = new SimpleAnyTrajectoryPlanner( //
+    AnyTrajectoryPlanner trajectoryPlanner = new AnyTrajectoryPlanner( //
         parameters.getEta(), stateIntegrator, controls, se2GoalManager, se2GoalManager.goalQuery(), obstacleQuery);
     // ---
     trajectoryPlanner.insertRoot(Tensors.vector(-10, 0, 0));

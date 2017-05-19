@@ -19,7 +19,9 @@ import ch.ethz.idsc.owly.gui.Gui;
 import ch.ethz.idsc.owly.gui.OwlyFrame;
 import ch.ethz.idsc.owly.math.StateSpaceModel;
 import ch.ethz.idsc.owly.math.flow.Flow;
+import ch.ethz.idsc.owly.math.region.EllipsoidRegion;
 import ch.ethz.idsc.owly.math.region.HyperplaneRegion;
+import ch.ethz.idsc.owly.math.region.InvertedRegion;
 import ch.ethz.idsc.owly.math.region.RegionUnion;
 import ch.ethz.idsc.owly.math.state.FixedStateIntegrator;
 import ch.ethz.idsc.owly.math.state.StateIntegrator;
@@ -37,7 +39,7 @@ import ch.ethz.idsc.tensor.Tensors;
 /** (x,y,theta) */
 class Se2IterateSimpleAnyCircleDemo {
   public static void main(String[] args) throws Exception {
-    int resolution = 6;
+    RationalScalar resolution = (RationalScalar) RealScalar.of(6);
     Scalar timeScale = RealScalar.of(10);
     Scalar depthScale = RealScalar.of(5);
     Tensor partitionScale = Tensors.vector(3, 3, 15);
@@ -60,6 +62,8 @@ class Se2IterateSimpleAnyCircleDemo {
     TrajectoryRegionQuery obstacleQuery = //
         new SimpleTrajectoryRegionQuery(new TimeInvariantRegion( //
             RegionUnion.of( //
+                new EllipsoidRegion(Tensors.vector(0, 0, 0), Tensors.vector(1, 1, 10)), //
+                new InvertedRegion(new EllipsoidRegion(Tensors.vector(0, 0, 0), Tensors.vector(5, 5, 10))), //
                 new HyperplaneRegion(Tensors.vector(0, -1, 0), RealScalar.of(4)), //
                 new HyperplaneRegion(Tensors.vector(0, +1, 0), RealScalar.of(4)) //
             )));
@@ -100,7 +104,7 @@ class Se2IterateSimpleAnyCircleDemo {
       Se2GoalManager se2GoalManager2 = new Se2GoalManager( //
           goalListPosition.get(index), goalListAngle.get(index), //
           DoubleScalar.of(0.1), Se2Utils.DEGREE(10));
-      StateTime newRootState = trajectory.get(2);
+      StateTime newRootState = trajectory.get(1);
       // System.out.println("trajectory at "+ (iter+1));
       // ---
       trajectoryPlanner.switchRootToState(newRootState.x());
