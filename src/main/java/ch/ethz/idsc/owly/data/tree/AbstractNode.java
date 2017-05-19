@@ -37,8 +37,8 @@ public abstract class AbstractNode<T extends Node> implements Node {
     boolean modified = protected_registerChild((T) child);
     if (!modified)
       throw new RuntimeException();
-    // if (!child.isRoot()) // child has parent
-    // throw new RuntimeException();
+    if (!child.isRoot()) // child has parent
+      throw new RuntimeException();
     ((AbstractNode<T>) child).parent = (T) this;
   }
 

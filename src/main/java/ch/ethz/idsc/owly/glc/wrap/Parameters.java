@@ -1,7 +1,9 @@
 // code by jl, theory by bp
 package ch.ethz.idsc.owly.glc.wrap;
 
-import ch.ethz.idsc.tensor.RealScalar;
+import java.math.BigInteger;
+
+import ch.ethz.idsc.tensor.RationalScalar;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
@@ -13,7 +15,7 @@ public abstract class Parameters {
   // Initial condition
   private Tensors x0;
   // Discretization resolution
-  private final int resolution;
+  private final RationalScalar resolution;
   // State space dimension
   private int stateDim;
   // Input space dimension
@@ -40,8 +42,8 @@ public abstract class Parameters {
    * @param dtMax: Maximum integrationstep size
    * @param maxIter: maximum iterations */
   public Parameters( //
-      int resolution, Scalar timeScale, Scalar depthScale, Tensor partitionScale, Scalar dtMax, int maxIter) {
-    if (resolution <= 0)
+      RationalScalar resolution, Scalar timeScale, Scalar depthScale, Tensor partitionScale, Scalar dtMax, int maxIter) {
+    if (resolution.signInt() <= 0 || !resolution.denominator().equals(BigInteger.ONE))
       throw new RuntimeException();
     this.resolution = resolution;
     this.timeScale = timeScale;
@@ -49,7 +51,7 @@ public abstract class Parameters {
     this.partitionScale = partitionScale;
     this.dtMax = dtMax;
     this.maxIter = maxIter;
-    this.expandTime = timeScale.divide(RealScalar.of(resolution));
+    this.expandTime = timeScale.divide(resolution);
   }
 
   /** @return time_scale / Resolution */
@@ -58,11 +60,14 @@ public abstract class Parameters {
   }
 
   /** @return depthScale * R * log(R) */
-  public int getDepthLimit() {
+  public Scalar getDepthLimitExact() {
     return depthScale //
-        .multiply(RealScalar.of(resolution)) //
-        .multiply(Log.function.apply(RealScalar.of(resolution))) //
-        .number().intValue();
+        .multiply(resolution) //
+        .multiply(Log.function.apply(resolution));
+  }
+
+  public int getDepthLimit() {
+    return getDepthLimitExact().number().intValue();
   }
 
   /** @param Lipschitz
@@ -81,7 +86,7 @@ public abstract class Parameters {
     return maxIter;
   }
 
-  public int getResolution() {
+  public RationalScalar getResolution() {
     return resolution;
   }
 
