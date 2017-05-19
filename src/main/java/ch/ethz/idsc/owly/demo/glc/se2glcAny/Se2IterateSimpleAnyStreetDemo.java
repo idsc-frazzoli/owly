@@ -83,7 +83,7 @@ class Se2IterateSimpleAnyStreetDemo {
     trajectoryIterator.next();
     for (int iter = 0; iter < 100; iter++) {
       // while (trajectoryIterator.hasNext()) {
-      Thread.sleep(2000);
+      Thread.sleep(500);
       tic = System.nanoTime();
       int index = iter % 4;
       System.out.println("index" + index);
