@@ -31,6 +31,8 @@ public abstract class Parameters {
   // Time between nodes
   private final Scalar expandTime;
 
+  // TODO due to resolution being of type "int", the max feasible resolution is 2^31
+  // ... one could use "long" until 2^63, or BigInteger, or RationalScalar for unlimited magnitude :-)
   /** @param resolution: resolution of algorithm
    * @param timeScale: Change time coordinate to be appropriate
    * @param depthScale: Adjust initial depth Limit

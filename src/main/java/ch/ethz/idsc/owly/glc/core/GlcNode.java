@@ -68,20 +68,19 @@ public class GlcNode extends AbstractNode<GlcNode> implements StateCostNode {
     return stateTime;
   }
 
+  /** @return cost from root plus min cost to goal */
   public Scalar merit() {
     return merit;
   }
 
-  public void setMinCostToGoal(Scalar minCostToGoal) {
+  // function is only called by motion planners.
+  // data structures that rely on the sorting by merit
+  // may become invalid once the merit is set to a new value
+  /* package */ void setMinCostToGoal(Scalar minCostToGoal) {
     merit = costFromRoot.add(minCostToGoal);
   }
 
   public int depth() {
     return depth;
-  }
-
-  @Deprecated
-  public void printNodeState() {
-    System.out.println("(" + this.stateTime.x() + ")");
   }
 }

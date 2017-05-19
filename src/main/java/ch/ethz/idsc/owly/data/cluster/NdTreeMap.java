@@ -2,6 +2,7 @@
 // adapted by jph and clruch
 package ch.ethz.idsc.owly.data.cluster;
 
+import java.io.Serializable;
 import java.util.LinkedList;
 import java.util.Queue;
 
@@ -10,7 +11,7 @@ import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Scalars;
 import ch.ethz.idsc.tensor.Tensor;
 
-public class NdTreeMap<V> {
+public class NdTreeMap<V> implements Serializable {
   private static final Scalar HALF = RationalScalar.of(1, 2);
   private final Node root;
   private final int maxDensity;
@@ -64,7 +65,7 @@ public class NdTreeMap<V> {
     uBounds = global_uBounds.copy();
   }
 
-  private class Node {
+  private class Node implements Serializable {
     private final int depth;
     private boolean internal = false;
     private Node lChild;

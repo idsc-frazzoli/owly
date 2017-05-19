@@ -1,4 +1,4 @@
-// code by bapaden and jph and jl
+// code by jl
 package ch.ethz.idsc.owly.glc.core;
 
 import java.util.ArrayList;
@@ -68,6 +68,7 @@ public class AnyTrajectoryPlanner extends TrajectoryPlanner {
       final Tensor domain_key = convertToKey(next.stateTime().x());
       final GlcNode former = getNode(domain_key);
       if (former != null) {
+        // TODO explain/document (every) line in the subsequent conditions (there was a mistake in the DefaultTrajPlanner)
         // if (Scalars.lessThan(next.costFromRoot(), former.costFromRoot())) // new node is better than previous one// already some node present from previous
         // exploration
         if (candidates.containsKey(domain_key))
@@ -77,6 +78,8 @@ public class AnyTrajectoryPlanner extends TrajectoryPlanner {
           candidates.get(domain_key).add(nextCandidate);
         }
       } else {// No node present in domain
+        // TODO there was a mistake in the DefaultTrajPlanner
+        // ... now, you may be missing the case to check "if (candidates.containsKey(domain_key))" here ?
         candidates.put(domain_key, new PriorityQueue<CandidatePair>());
         candidates.get(domain_key).add(nextCandidate);
       }
@@ -162,7 +165,7 @@ public class AnyTrajectoryPlanner extends TrajectoryPlanner {
           // if (tempCandidateQueue.removeIf(candidate -> oldtree.contains(candidate.getOrigin())))
           // removedCandidates++; // TODO Counter wrong, check candidate map vorher/nachher
         }
-        // iterate through DomainQueue to find alternative: RELABLING
+        // iterate through DomainQueue to find alternative: RELABELING
         PriorityQueue<CandidatePair> queue = new PriorityQueue<>(tempCandidateQueue);
         while (!queue.isEmpty()) {
           final CandidatePair nextBestCandidate = queue.poll();

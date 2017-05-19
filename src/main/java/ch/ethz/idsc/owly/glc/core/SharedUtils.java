@@ -12,7 +12,7 @@ import ch.ethz.idsc.owly.math.state.StateIntegrator;
 import ch.ethz.idsc.owly.math.state.StateTime;
 import ch.ethz.idsc.owly.math.state.Trajectories;
 
-enum SharedUtils {
+/* package */ enum SharedUtils {
   ;
   // integrate flow for each control
   public static Map<GlcNode, List<StateTime>> integrate( //
