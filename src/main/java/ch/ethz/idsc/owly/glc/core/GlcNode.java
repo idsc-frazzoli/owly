@@ -54,10 +54,10 @@ public class GlcNode extends AbstractNode<GlcNode> implements StateCostNode {
 
   @Override // from AbstractNode
   protected boolean protected_registerChild(GlcNode child) {
-    boolean inserted = !children.containsKey(child.flow);
+    // boolean inserted = !children.containsKey(child.flow);
     child.depth = depth + 1;
-    children.put(child.flow, child);
-    return inserted;
+    GlcNode former = children.put(child.flow, child);
+    return former == null;
   }
 
   public Flow flow() {
