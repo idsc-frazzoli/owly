@@ -17,7 +17,7 @@ class Rice2StateSpaceModel implements StateSpaceModel {
   }
 
   @Override
-  public Tensor createFlow(Tensor x, Tensor u) { // u.length() == 2
+  public Tensor f(Tensor x, Tensor u) { // u.length() == 2
     Tensor v = x.extract(2, 4);
     return Join.of(v, u.subtract(v).multiply(lambda));
   }

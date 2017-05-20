@@ -1,10 +1,10 @@
 // code by jph
 package ch.ethz.idsc.owly.demo.glc.se2r;
 
-import java.io.File;
 import java.util.Collection;
 
 import ch.ethz.idsc.owly.demo.glc.se2.Se2Utils;
+import ch.ethz.idsc.owly.demo.util.UserHome;
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
 import ch.ethz.idsc.owly.glc.core.DefaultTrajectoryPlanner;
 import ch.ethz.idsc.owly.glc.core.Expand;
@@ -53,8 +53,7 @@ class Se2rExpandDemo {
     OwlyFrame owlyFrame = Gui.start();
     owlyFrame.configCoordinateOffset(169, 71);
     owlyFrame.jFrame.setBounds(100, 100, 300, 200);
-    // TODO user directory
-    GifSequenceWriter gsw = GifSequenceWriter.of(new File("/home/datahaki/se2r.gif"), 250);
+    GifSequenceWriter gsw = GifSequenceWriter.of(UserHome.file("se2r.gif"), 250);
     while (trajectoryPlanner.getBest() == null && owlyFrame.jFrame.isVisible()) {
       Expand.maxSteps(trajectoryPlanner, 1);
       owlyFrame.setGlc(trajectoryPlanner);

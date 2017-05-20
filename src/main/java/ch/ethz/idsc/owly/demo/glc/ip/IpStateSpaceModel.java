@@ -31,7 +31,7 @@ class IpStateSpaceModel implements StateSpaceModel {
   }
 
   @Override
-  public Tensor createFlow(Tensor x, Tensor u) {
+  public Tensor f(Tensor x, Tensor u) {
     // x == [d v a w]
     Scalar v = x.Get(1);
     Scalar a = x.Get(2);

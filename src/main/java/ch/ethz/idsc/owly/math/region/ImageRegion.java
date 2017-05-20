@@ -15,13 +15,15 @@ public class ImageRegion implements Region {
   private final Tensor image;
   private final List<Integer> dimensions;
   private final Tensor scale;
+  private final boolean strict;
 
   /** @param image has to be a matrix
    * @param range */
-  public ImageRegion(Tensor image, Tensor range) {
+  public ImageRegion(Tensor image, Tensor range, boolean strict) {
     this.image = image;
     dimensions = Dimensions.of(image);
     scale = Tensors.vector(dimensions).pmul(range.map(Scalar::invert));
+    this.strict = strict;
   }
 
   // TODO not sure if coordinates should be "rotated"
@@ -34,6 +36,6 @@ public class ImageRegion implements Region {
     int piy = pixel.Get(1).number().intValue();
     if (0 <= pix && pix < dimensions.get(0) && 0 <= piy && piy < dimensions.get(1))
       return !image.Get(pix, piy).equals(ZeroScalar.get());
-    return false;
+    return strict;
   }
 }

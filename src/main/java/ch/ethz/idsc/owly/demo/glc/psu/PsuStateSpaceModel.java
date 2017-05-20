@@ -11,7 +11,7 @@ import ch.ethz.idsc.tensor.sca.Sin;
 /** Pendulum Swing-up state space model */
 class PsuStateSpaceModel implements StateSpaceModel {
   @Override
-  public Tensor createFlow(Tensor x, Tensor u) {
+  public Tensor f(Tensor x, Tensor u) {
     // equation (10)
     // x0' = x1
     // x1' = -sin(x0) + u

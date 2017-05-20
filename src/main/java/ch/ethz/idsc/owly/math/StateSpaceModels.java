@@ -15,7 +15,7 @@ public enum StateSpaceModels {
     return new Flow() {
       @Override
       public final Tensor at(Tensor x) {
-        return stateSpaceModel.createFlow(x, u);
+        return stateSpaceModel.f(x, u);
       }
 
       @Override

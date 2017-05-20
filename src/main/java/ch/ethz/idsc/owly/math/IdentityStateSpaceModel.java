@@ -9,7 +9,7 @@ import ch.ethz.idsc.tensor.ZeroScalar;
 public final class IdentityStateSpaceModel implements StateSpaceModel {
   /** f(x,u) == u */
   @Override
-  public Tensor createFlow(Tensor x, Tensor u) {
+  public Tensor f(Tensor x, Tensor u) {
     return u;
   }
 

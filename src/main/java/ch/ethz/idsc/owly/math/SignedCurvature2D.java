@@ -14,7 +14,8 @@ public class SignedCurvature2D {
    * 
    * @param vector
    * @return */
-  private static Tensor cross2d(Tensor vector) {
+  // TODO extract
+  public static Tensor cross2d(Tensor vector) {
     return Tensors.of(vector.Get(1).negate(), vector.Get(0));
   }
 

@@ -26,7 +26,7 @@ class R2ImageDemo {
     final int wid = 7;
     RnTransitionSpace rnss = new RnTransitionSpace();
     RrtsNodeCollection nc = new RnNodeCollection(Tensors.vector(0, 0), Tensors.vector(wid, wid));
-    Region region = ImageRegions.loadFromRepository("/io/track0_100.png", Tensors.vector(wid, wid));
+    Region region = ImageRegions.loadFromRepository("/io/track0_100.png", Tensors.vector(wid, wid), false);
     TransitionRegionQuery trq = //
         new SampledTransitionRegionQuery(new SimpleTrajectoryRegionQuery( //
             new TimeInvariantRegion(region)), RealScalar.of(.1));

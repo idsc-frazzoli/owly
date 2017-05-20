@@ -29,7 +29,7 @@ import ch.ethz.idsc.tensor.Tensors;
 /** (x,y,theta) */
 class Se2rImageDemo {
   public static void main(String[] args) throws Exception {
-    Region region = ImageRegions.loadFromRepository("/io/track0_100.png", Tensors.vector(10, 10));
+    Region region = ImageRegions.loadFromRepository("/io/track0_100.png", Tensors.vector(10, 10), false);
     Tensor partitionScale = Tensors.vector(3, 3, 15); // TODO instead of 15 use multiple of PI...
     StateIntegrator stateIntegrator = FixedStateIntegrator.create( //
         new RungeKutta45Integrator(), RationalScalar.of(1, 6), 5);

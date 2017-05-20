@@ -1,9 +1,9 @@
 // code by jph
 package ch.ethz.idsc.owly.demo.rrts.rn;
 
-import java.io.File;
 import java.util.Random;
 
+import ch.ethz.idsc.owly.demo.util.UserHome;
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
 import ch.ethz.idsc.owly.gui.Gui;
 import ch.ethz.idsc.owly.gui.OwlyFrame;
@@ -42,7 +42,7 @@ class R2ExpandDemo {
     Rrts rrts = new DefaultRrts(rnss, nc, trq, LengthCostFunction.IDENTITY);
     RrtsNode root = rrts.insertAsNode(Tensors.vector(0, 0), 5);
     Random random = new Random();
-    GifSequenceWriter gsw = GifSequenceWriter.of(new File("/home/datahaki/r2rrts.gif"), 250);
+    GifSequenceWriter gsw = GifSequenceWriter.of(UserHome.file("r2rrts.gif"), 250);
     OwlyFrame owlyFrame = Gui.start();
     owlyFrame.configCoordinateOffset(42, 456);
     owlyFrame.jFrame.setBounds(100, 100, 500, 500);
