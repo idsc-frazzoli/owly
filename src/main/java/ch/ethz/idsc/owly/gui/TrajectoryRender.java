@@ -12,15 +12,15 @@ import ch.ethz.idsc.owly.glc.core.GlcNode;
 import ch.ethz.idsc.owly.glc.core.TrajectoryPlanner;
 import ch.ethz.idsc.owly.math.state.StateTime;
 
-class TrajectoryRender extends AbstractRender {
-  TrajectoryPlanner trajectoryPlanner;
+class TrajectoryRender implements AbstractRender {
+  private TrajectoryPlanner trajectoryPlanner;
 
   TrajectoryRender(TrajectoryPlanner trajectoryPlanner) {
     this.trajectoryPlanner = trajectoryPlanner;
   }
 
   @Override
-  void render(AbstractLayer abstractLayer, Graphics2D graphics) {
+  public void render(AbstractLayer abstractLayer, Graphics2D graphics) {
     { // draw detailed trajectory from root to goal
       GlcNode best = trajectoryPlanner.getBest();
       if (best == null)

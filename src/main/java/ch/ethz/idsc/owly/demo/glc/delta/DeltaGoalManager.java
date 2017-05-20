@@ -33,6 +33,6 @@ public class DeltaGoalManager extends SimpleTrajectoryRegionQuery implements Cos
 
   @Override
   public Scalar minCostToGoal(Tensor x) {
-    return ZeroScalar.get(); // Norm._2.of(x.subtract(center)); // FIXME
+    return ZeroScalar.get();
   }
 }

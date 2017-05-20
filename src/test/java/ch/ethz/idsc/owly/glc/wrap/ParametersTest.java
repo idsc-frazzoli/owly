@@ -25,7 +25,7 @@ public class ParametersTest extends TestCase {
     Scalar newValue = oldValue;
     long iter = 0;
     while (++iter < 1000) {
-      resolution = resolution.multiply(RealScalar.of(2)); // TODO after 31 iterations this will become 0 due to integer overflow!
+      resolution = resolution.multiply(RealScalar.of(2));
       Parameters test = new Se2Parameters(//
           (RationalScalar) resolution, timeScale, depthScale, partitionScale, dtMax, maxIter, stateSpaceModel.getLipschitz());
       oldValue = newValue;

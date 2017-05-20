@@ -10,6 +10,7 @@ public enum Nodes {
   ;
   /** @param node
    * @return */
+  @SuppressWarnings("unchecked")
   public static <T extends Node> List<T> toRoot(T node) {
     List<T> list = new ArrayList<>();
     T next = node;
@@ -28,6 +29,7 @@ public enum Nodes {
     return list;
   }
 
+  @SuppressWarnings("unchecked")
   private static <T extends Node> void _ofSubtree(T node, Collection<T> collection) {
     collection.add(node);
     node.children().stream().forEach(child -> _ofSubtree((T) child, collection));
@@ -40,6 +42,7 @@ public enum Nodes {
   }
 
   public static <T extends Node> T disjoinAt(T node) {
+    @SuppressWarnings("unchecked")
     T parent = (T) node.parent();
     if (parent != null)
       parent.removeEdgeTo(node);

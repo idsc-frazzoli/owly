@@ -16,6 +16,13 @@ by Sertac Karaman and Emilio Frazzoli,
 by Brian Paden and Emilio Frazzoli, 
 [arXiv:1607.06966](https://arxiv.org/abs/1607.06966)
 
+The following integrators are available:
+
+* Runge-Kutta 5th order 
+* Runge-Kutta 4th order
+* Midpoint
+* Euler
+
 
 ## Examples
 

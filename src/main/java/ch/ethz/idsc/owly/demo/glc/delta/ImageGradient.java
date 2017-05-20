@@ -1,46 +1,53 @@
+// code by jph
 package ch.ethz.idsc.owly.demo.glc.delta;
 
 import java.io.Serializable;
 import java.util.List;
 
-import ch.ethz.idsc.owly.math.SignedCurvature2D;
+import ch.ethz.idsc.owly.math.Cross2D;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
+import ch.ethz.idsc.tensor.alg.Array;
 import ch.ethz.idsc.tensor.alg.Dimensions;
 import ch.ethz.idsc.tensor.opt.Interpolation;
 import ch.ethz.idsc.tensor.opt.LinearInterpolation;
-import ch.ethz.idsc.tensor.sca.Floor;
 
 /** rotated gradient of potential function */
-/* package */ class ImagePotentialRot implements Serializable {
+/* package */ class ImageGradient implements Serializable {
+  private static final Tensor ZEROS = Array.zeros(2);
+  private static final Tensor DUX = Tensors.vector(1, 0);
+  private static final Tensor DUY = Tensors.vector(0, 1);
+  // ---
   private final Interpolation interpolation;
   private final List<Integer> dimensions;
   private final Tensor scale;
   private final Scalar amp;
 
-  public ImagePotentialRot(Tensor image, Tensor range, Scalar amp) {
+  /** @param image
+   * @param range with length() == 2
+   * @param amp */
+  public ImageGradient(Tensor image, Tensor range, Scalar amp) {
     interpolation = LinearInterpolation.of(image);
     dimensions = Dimensions.of(image);
     scale = Tensors.vector(dimensions).pmul(range.map(Scalar::invert));
     this.amp = amp;
   }
 
-  // TODO check if coordinate rotation !?!?!
-  public Tensor at(Tensor tensor) {
+  public Tensor rotate(Tensor tensor) {
     if (tensor.length() != 2)
       tensor = tensor.extract(0, 2);
-    Tensor index = Floor.of(tensor.pmul(scale));
+    Tensor index = tensor.pmul(scale);
     try {
       Scalar f0 = interpolation.Get(index);
-      Scalar fx = interpolation.Get(index.add(Tensors.vector(1, 0)));
-      Scalar fy = interpolation.Get(index.add(Tensors.vector(0, 1)));
+      Scalar fx = interpolation.Get(index.add(DUX));
+      Scalar fy = interpolation.Get(index.add(DUY));
       Scalar dx = fx.subtract(f0);
       Scalar dy = fy.subtract(f0);
-      return SignedCurvature2D.cross2d(Tensors.of(dx, dy)).multiply(amp);
+      return Cross2D.of(Tensors.of(dx, dy)).multiply(amp);
     } catch (Exception exception) {
       // ---
     }
-    return Tensors.vector(0, 0);
+    return ZEROS;
   }
 }

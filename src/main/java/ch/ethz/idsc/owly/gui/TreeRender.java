@@ -13,15 +13,15 @@ import java.util.DoubleSummaryStatistics;
 import ch.ethz.idsc.owly.data.tree.StateCostNode;
 import ch.ethz.idsc.tensor.Scalar;
 
-class TreeRender extends AbstractRender {
-  Collection<? extends StateCostNode> collection;
+class TreeRender implements AbstractRender {
+  private Collection<? extends StateCostNode> collection;
 
   TreeRender(Collection<? extends StateCostNode> collection) {
     this.collection = collection;
   }
 
   @Override
-  void render(AbstractLayer abstractLayer, Graphics2D graphics) {
+  public void render(AbstractLayer abstractLayer, Graphics2D graphics) {
     DoubleSummaryStatistics dss = collection.stream() //
         .map(n -> n.costFromRoot()) //
         .map(Scalar::number) //

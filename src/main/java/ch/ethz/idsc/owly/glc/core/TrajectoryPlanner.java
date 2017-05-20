@@ -38,8 +38,11 @@ public abstract class TrajectoryPlanner implements ExpandInterface, Serializable
     return eta;
   }
 
-  Tensor convertToKey(Tensor x) {
-    // TODO Theory: floor(eta*state) = floor(state / domain_size)
+  /** Floor(eta * state) == Floor(state / domain_size)
+   * 
+   * @param x state
+   * @return */
+  /* package */ Tensor convertToKey(Tensor x) {
     return eta.pmul(x).map(Floor.function);
   }
 
@@ -56,6 +59,8 @@ public abstract class TrajectoryPlanner implements ExpandInterface, Serializable
       ++replaceCount;
   }
 
+  /** @param domain_key
+   * @return node in domain or null if domain has not been assigned a node yet */
   protected final GlcNode getNode(Tensor domain_key) {
     return domainMap.get(domain_key);
   }

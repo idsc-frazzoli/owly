@@ -10,15 +10,15 @@ import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
 import ch.ethz.idsc.tensor.sca.Ceiling;
 
-class DomainRender extends AbstractRender {
-  Tensor eta;
+class DomainRender implements AbstractRender {
+  private Tensor eta;
 
   DomainRender(Tensor eta) {
     this.eta = eta;
   }
 
   @Override
-  void render(AbstractLayer abstractLayer, Graphics2D graphics) {
+  public void render(AbstractLayer abstractLayer, Graphics2D graphics) {
     Tensor inv = eta.map(Scalar::invert);
     graphics.setColor(Color.LIGHT_GRAY);
     Tensor ceiling = Ceiling.of(eta);

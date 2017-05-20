@@ -8,25 +8,29 @@ import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
 import ch.ethz.idsc.tensor.ZeroScalar;
 import ch.ethz.idsc.tensor.alg.Dimensions;
+import ch.ethz.idsc.tensor.alg.TensorRank;
 import ch.ethz.idsc.tensor.sca.Floor;
 
-/** TODO describe conventions of {@link ImageRegion} */
+/** only the first two coordinates are tested for membership
+ * a location is available if the grayscale value of the pixel equals 0 */
 public class ImageRegion implements Region {
   private final Tensor image;
   private final List<Integer> dimensions;
   private final Tensor scale;
-  private final boolean strict;
+  private final boolean outside;
 
   /** @param image has to be a matrix
-   * @param range */
-  public ImageRegion(Tensor image, Tensor range, boolean strict) {
+   * @param range effective size of image in coordinate space
+   * @param outside point member status */
+  public ImageRegion(Tensor image, Tensor range, boolean outside) {
+    if (TensorRank.of(image) != 2)
+      throw new RuntimeException();
     this.image = image;
     dimensions = Dimensions.of(image);
     scale = Tensors.vector(dimensions).pmul(range.map(Scalar::invert));
-    this.strict = strict;
+    this.outside = outside;
   }
 
-  // TODO not sure if coordinates should be "rotated"
   @Override
   public boolean isMember(Tensor tensor) {
     if (tensor.length() != 2)
@@ -36,6 +40,6 @@ public class ImageRegion implements Region {
     int piy = pixel.Get(1).number().intValue();
     if (0 <= pix && pix < dimensions.get(0) && 0 <= piy && piy < dimensions.get(1))
       return !image.Get(pix, piy).equals(ZeroScalar.get());
-    return strict;
+    return outside;
   }
 }

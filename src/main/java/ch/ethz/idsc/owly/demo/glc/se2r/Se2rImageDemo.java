@@ -30,7 +30,7 @@ import ch.ethz.idsc.tensor.Tensors;
 class Se2rImageDemo {
   public static void main(String[] args) throws Exception {
     Region region = ImageRegions.loadFromRepository("/io/track0_100.png", Tensors.vector(10, 10), false);
-    Tensor partitionScale = Tensors.vector(3, 3, 15); // TODO instead of 15 use multiple of PI...
+    Tensor partitionScale = Tensors.vector(3, 3, 50 / Math.PI);
     StateIntegrator stateIntegrator = FixedStateIntegrator.create( //
         new RungeKutta45Integrator(), RationalScalar.of(1, 6), 5);
     Collection<Flow> controls = Se2rControls.createControls(Se2Utils.DEGREE(45), 6);
@@ -50,9 +50,9 @@ class Se2rImageDemo {
     owlyFrame.configCoordinateOffset(179, 448);
     owlyFrame.jFrame.setBounds(100, 100, 700, 700);
     while (trajectoryPlanner.getBest() == null && owlyFrame.jFrame.isVisible()) {
-      int iters = Expand.maxSteps(trajectoryPlanner, 100);
+      Expand.maxSteps(trajectoryPlanner, 100);
       owlyFrame.setGlc(trajectoryPlanner);
-      Thread.sleep(200);
+      Thread.sleep(10);
     }
     List<StateTime> trajectory = trajectoryPlanner.getPathFromRootToGoal();
     Trajectories.print(trajectory);

@@ -40,7 +40,7 @@ public class DefaultTrajectoryPlanner extends TrajectoryPlanner {
     this.obstacleQuery = obstacleQuery;
   }
 
-  @Override
+  @Override // from ExpandInterface
   public void expand(final GlcNode node) {
     Map<GlcNode, List<StateTime>> connectors = //
         SharedUtils.integrate(node, controls, stateIntegrator, costFunction);
@@ -56,14 +56,12 @@ public class DefaultTrajectoryPlanner extends TrajectoryPlanner {
       } else
         domainQueueMap.insert(domain_key, next); // node is considered without comparison to any former node
     }
-    // System.out.println("debug");
     processCandidates(node, connectors, domainQueueMap);
   }
 
   private void processCandidates( //
       GlcNode node, Map<GlcNode, List<StateTime>> connectors, DomainQueueMap domainQueueMap) {
     for (Entry<Tensor, DomainQueue> entry : domainQueueMap.map.entrySet()) {
-      // System.out.println("entry: " + entry);
       final Tensor domain_key = entry.getKey();
       final DomainQueue domainQueue = entry.getValue();
       while (!domainQueue.isEmpty()) {

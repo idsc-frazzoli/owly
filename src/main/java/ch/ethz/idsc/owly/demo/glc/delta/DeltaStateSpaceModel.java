@@ -2,24 +2,23 @@
 package ch.ethz.idsc.owly.demo.glc.delta;
 
 import ch.ethz.idsc.owly.math.StateSpaceModel;
-import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
 
 class DeltaStateSpaceModel implements StateSpaceModel {
-  private final ImagePotentialRot rot;
+  private final ImageGradient rot;
 
-  public DeltaStateSpaceModel(ImagePotentialRot rot) {
+  public DeltaStateSpaceModel(ImageGradient rot) {
     this.rot = rot;
   }
 
   @Override
   public Tensor f(Tensor x, Tensor u) {
-    return rot.at(x).add(u);
+    return rot.rotate(x).add(u);
   }
 
   @Override
   public Scalar getLipschitz() {
-    return RealScalar.ONE; // FIXME need max over gradient!
+    return null; // null since lipschitz is not provided
   }
 }

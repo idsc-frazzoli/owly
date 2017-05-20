@@ -19,7 +19,7 @@ import ch.ethz.idsc.tensor.Scalars;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.ZeroScalar;
 
-/** TODO assumptions in order to use any... */
+/** TODO assumptions in order to use SimpleAnyTrajectoryPlanner */
 public class SimpleAnyTrajectoryPlanner extends TrajectoryPlanner {
   private final StateIntegrator stateIntegrator;
   private final Collection<Flow> controls;
