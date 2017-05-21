@@ -6,9 +6,8 @@ package ch.ethz.idsc.owly.math;
  * input matrix b,
  * output matrix c, and
  * transmission matrix d */
-public class LinearStateSpaceModel {
-  // TODO
+class LinearStateSpaceModel {
   public LinearStateSpaceModel() {
-    // TODO Auto-generated constructor stub
+    // TODO implement
   }
 }

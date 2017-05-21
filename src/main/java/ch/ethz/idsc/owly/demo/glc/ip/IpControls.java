@@ -1,3 +1,4 @@
+// code by jph
 package ch.ethz.idsc.owly.demo.glc.ip;
 
 import java.util.ArrayList;
@@ -12,7 +13,7 @@ import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.alg.Partition;
 import ch.ethz.idsc.tensor.alg.Subdivide;
 
-public class IpControls {
+class IpControls {
   /** @param stateSpaceModel
    * @param amplitude maximum absolute radial acceleration of pendulum
    * @param num

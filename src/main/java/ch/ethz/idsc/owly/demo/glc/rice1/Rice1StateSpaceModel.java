@@ -16,7 +16,7 @@ class Rice1StateSpaceModel implements StateSpaceModel {
   }
 
   @Override
-  public Tensor createFlow(Tensor x, Tensor u) {
+  public Tensor f(Tensor x, Tensor u) {
     Scalar v = x.Get(1);
     return Tensors.of( //
         v, // x0' = v // v = x1

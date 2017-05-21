@@ -49,7 +49,7 @@ public class AnyTrajectoryPlanner extends TrajectoryPlanner {
     this.obstacleQuery = obstacleQuery;
   }
 
-  @Override
+  @Override // from ExpandInterface
   public void expand(final GlcNode node) {
     // TODO count updates in cell based on costs for benchmarking
     Map<GlcNode, List<StateTime>> connectors = //

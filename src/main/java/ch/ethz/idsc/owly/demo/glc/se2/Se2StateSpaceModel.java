@@ -11,7 +11,7 @@ import ch.ethz.idsc.tensor.sca.Sin;
 
 public class Se2StateSpaceModel implements StateSpaceModel {
   @Override
-  public Tensor createFlow(Tensor x, Tensor u) {
+  public Tensor f(Tensor x, Tensor u) {
     // u only contains angle, single elements
     Scalar angle = x.Get(2);
     return Tensors.of(Cos.of(angle), Sin.of(angle), u.Get(0));

@@ -4,10 +4,8 @@ package ch.ethz.idsc.owly.math.flow;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
 
-/** Bulirsch Stoer method
- * 
- * Numerical Recipes 3rd Edition Section 17.3.2 */
-class BulirschStoerIntegrator implements Integrator {
+/** Numerical Recipes 3rd Edition Section 17.3.1 */
+class ModifiedMidpointIntegrator implements Integrator {
   @Override
   public Tensor step(Flow flow, Tensor x, Scalar h) {
     // TODO implement

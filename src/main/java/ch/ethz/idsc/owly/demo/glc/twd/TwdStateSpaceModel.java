@@ -10,7 +10,7 @@ import ch.ethz.idsc.tensor.Tensor;
  * non-holonomic wheeled mobile robot */
 public class TwdStateSpaceModel implements StateSpaceModel {
   @Override
-  public Tensor createFlow(Tensor x, Tensor u) {
+  public Tensor f(Tensor x, Tensor u) {
     // u only contains angle, single elements
     // FIXME
     throw new RuntimeException();

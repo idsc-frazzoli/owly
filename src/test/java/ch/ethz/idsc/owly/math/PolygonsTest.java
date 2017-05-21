@@ -51,7 +51,5 @@ public class PolygonsTest extends TestCase {
       System.out.println(wo);
       System.out.println(wo2);
     }
-    {
-    }
   }
 }

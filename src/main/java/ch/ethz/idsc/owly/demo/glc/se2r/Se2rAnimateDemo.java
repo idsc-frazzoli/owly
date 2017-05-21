@@ -27,7 +27,7 @@ import ch.ethz.idsc.tensor.Tensors;
 /** (x,y,theta) */
 class Se2rAnimateDemo {
   public static void main(String[] args) throws Exception {
-    Tensor eta = Tensors.vector(6, 6, 15); // TODO instead of 15 use multiple of PI...
+    Tensor eta = Tensors.vector(6, 6, 50 / Math.PI);
     StateIntegrator stateIntegrator = FixedStateIntegrator.create( //
         new RungeKutta4Integrator(), RationalScalar.of(1, 6), 5);
     Collection<Flow> controls = Se2rControls.createControls(Se2Utils.DEGREE(45), 6);

@@ -5,10 +5,10 @@ package ch.ethz.idsc.owly.data.tree;
 import java.util.Arrays;
 import java.util.List;
 
-import ch.ethz.idsc.owly.data.cluster.Cluster;
-import ch.ethz.idsc.owly.data.cluster.DistanceInterface;
-import ch.ethz.idsc.owly.data.cluster.NdTreeMap;
-import ch.ethz.idsc.owly.data.cluster.Point;
+import ch.ethz.idsc.owly.data.nd.NdCluster;
+import ch.ethz.idsc.owly.data.nd.NdDistanceInterface;
+import ch.ethz.idsc.owly.data.nd.NdEntry;
+import ch.ethz.idsc.owly.data.nd.NdTreeMap;
 import ch.ethz.idsc.tensor.Tensors;
 import junit.framework.TestCase;
 
@@ -23,19 +23,19 @@ public class NdTreeMapTest extends TestCase {
     testTree.add(Tensors.vector(1, 1), "d4");
     testTree.add(Tensors.vector(0.1, 0.1), "d5");
     testTree.add(Tensors.vector(6, 7), "d6");
-    DistanceInterface distancer = DistanceInterface.EUCLIDEAN;
+    NdDistanceInterface distancer = NdDistanceInterface.EUCLIDEAN;
     {
-      Cluster<String> cluster = testTree.buildCluster(Tensors.vector(0, 0), 1, distancer);
+      NdCluster<String> cluster = testTree.buildCluster(Tensors.vector(0, 0), 1, distancer);
       assertTrue(cluster.iterator().next().value.equals("d5"));
     }
     {
-      Cluster<String> cluster = testTree.buildCluster(Tensors.vector(5, 5), 1, distancer);
+      NdCluster<String> cluster = testTree.buildCluster(Tensors.vector(5, 5), 1, distancer);
       assertTrue(cluster.iterator().next().value.equals("d6"));
     }
     {
-      Cluster<String> cluster = testTree.buildCluster(Tensors.vector(1.1, 0.9), 2, distancer);
+      NdCluster<String> cluster = testTree.buildCluster(Tensors.vector(1.1, 0.9), 2, distancer);
       List<String> list = Arrays.asList("d1", "d4");
-      for (Point<String> point : cluster)
+      for (NdEntry<String> point : cluster)
         assertTrue(list.contains(point.value));
     }
   }

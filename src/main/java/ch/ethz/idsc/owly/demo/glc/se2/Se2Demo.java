@@ -27,7 +27,7 @@ import ch.ethz.idsc.tensor.Tensors;
 /** (x,y,theta) */
 class Se2Demo {
   public static void main(String[] args) {
-    Tensor eta = Tensors.vector(3, 3, 15); // TODO instead of 15 use multiple of PI...
+    Tensor eta = Tensors.vector(3, 3, 50 / Math.PI);
     StateIntegrator stateIntegrator = FixedStateIntegrator.createDefault(RationalScalar.of(1, 6), 5);
     System.out.println("scale=" + eta);
     Collection<Flow> controls = Se2Controls.createControls(Se2Utils.DEGREE(45), 6);

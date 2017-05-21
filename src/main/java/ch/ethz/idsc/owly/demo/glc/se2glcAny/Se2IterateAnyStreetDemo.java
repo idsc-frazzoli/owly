@@ -1,4 +1,4 @@
-// code by jph and jl
+// code by jl
 package ch.ethz.idsc.owly.demo.glc.se2glcAny;
 
 import java.util.Collection;
@@ -39,7 +39,7 @@ class Se2IterateAnyStreetDemo {
     RationalScalar resolution = (RationalScalar) RealScalar.of(12);
     Scalar timeScale = RealScalar.of(10);
     Scalar depthScale = RealScalar.of(5);
-    Tensor partitionScale = Tensors.vector(3, 3, 15);
+    Tensor partitionScale = Tensors.vector(3, 3, 50 / Math.PI);
     Scalar dtMax = RationalScalar.of(1, 6);
     int maxIter = 2000;
     StateSpaceModel stateSpaceModel = new Se2StateSpaceModel();

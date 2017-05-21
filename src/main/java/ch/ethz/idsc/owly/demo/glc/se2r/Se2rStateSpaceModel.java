@@ -11,7 +11,7 @@ import ch.ethz.idsc.tensor.sca.Sin;
 
 class Se2rStateSpaceModel implements StateSpaceModel {
   @Override
-  public Tensor createFlow(Tensor x, Tensor u) {
+  public Tensor f(Tensor x, Tensor u) {
     // u.Get(0) contains angle
     // u.Get(1) should be 1 for forward motion or -1 for backward motion
     Scalar angle = x.Get(2);

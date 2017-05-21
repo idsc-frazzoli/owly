@@ -20,7 +20,6 @@ public interface CostFunction extends Serializable {
    * 
    * it is imperative that the function does not return a
    * greater number than is absolutely necessary to reach the goal
-   * TODO comment why
    * 
    * @param x
    * @return lower bound of cost to goal */

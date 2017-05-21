@@ -12,27 +12,30 @@ import ch.ethz.idsc.owly.glc.core.GlcNode;
 import ch.ethz.idsc.owly.glc.core.TrajectoryPlanner;
 import ch.ethz.idsc.owly.math.state.StateTime;
 
-class TrajectoryRender extends AbstractRender {
-  TrajectoryPlanner trajectoryPlanner;
+class TrajectoryRender implements AbstractRender {
+  private TrajectoryPlanner trajectoryPlanner;
 
   TrajectoryRender(TrajectoryPlanner trajectoryPlanner) {
     this.trajectoryPlanner = trajectoryPlanner;
   }
 
   @Override
-  void render(AbstractLayer abstractLayer, Graphics2D graphics) {
+  public void render(AbstractLayer abstractLayer, Graphics2D graphics) {
     { // draw detailed trajectory from root to goal
       GlcNode best = trajectoryPlanner.getBest();
       if (best == null)
         best = trajectoryPlanner.peek();
-      Path2D path2d = abstractLayer.toPath2D(trajectoryPlanner.detailedTrajectoryTo(best));
-      graphics.setStroke(new BasicStroke(5.0f));
-      graphics.setColor(new Color(255, 255, 255, 128));
-      graphics.draw(path2d);
-      graphics.setStroke(new BasicStroke(2.0f));
-      graphics.setColor(new Color(0, 192, 0, 192));
-      graphics.draw(path2d);
-      graphics.setStroke(new BasicStroke());
+      // if (best != null)
+      {
+        Path2D path2d = abstractLayer.toPath2D(trajectoryPlanner.detailedTrajectoryTo(best));
+        graphics.setStroke(new BasicStroke(5.0f));
+        graphics.setColor(new Color(255, 255, 255, 128));
+        graphics.draw(path2d);
+        graphics.setStroke(new BasicStroke(2.0f));
+        graphics.setColor(new Color(0, 192, 0, 192));
+        graphics.draw(path2d);
+        graphics.setStroke(new BasicStroke());
+      }
     }
     { // draw boxes at nodes in path from root to goal
       graphics.setColor(new Color(255, 0, 0, 128));

@@ -17,7 +17,7 @@ public interface StateSpaceModel extends Serializable {
    * @param x
    * @param u
    * @return */
-  Tensor createFlow(Tensor x, Tensor u);
+  Tensor f(Tensor x, Tensor u);
 
   /** | f(x_1, u) - f(x_2, u) | <= L | x_1 - x_2 |
    * 

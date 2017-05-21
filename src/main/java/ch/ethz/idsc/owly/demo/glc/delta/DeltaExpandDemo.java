@@ -1,9 +1,10 @@
 // code by jph
-package ch.ethz.idsc.owly.demo.glc.se2r;
+package ch.ethz.idsc.owly.demo.glc.delta;
 
 import java.util.Collection;
 
-import ch.ethz.idsc.owly.demo.glc.se2.Se2Utils;
+import ch.ethz.idsc.owly.demo.util.Images;
+import ch.ethz.idsc.owly.demo.util.Resources;
 import ch.ethz.idsc.owly.demo.util.UserHome;
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
 import ch.ethz.idsc.owly.glc.core.DefaultTrajectoryPlanner;
@@ -13,52 +14,46 @@ import ch.ethz.idsc.owly.gui.Gui;
 import ch.ethz.idsc.owly.gui.OwlyFrame;
 import ch.ethz.idsc.owly.math.flow.Flow;
 import ch.ethz.idsc.owly.math.flow.RungeKutta45Integrator;
-import ch.ethz.idsc.owly.math.region.HyperplaneRegion;
-import ch.ethz.idsc.owly.math.region.RegionUnion;
+import ch.ethz.idsc.owly.math.region.ImageRegion;
 import ch.ethz.idsc.owly.math.state.FixedStateIntegrator;
 import ch.ethz.idsc.owly.math.state.StateIntegrator;
 import ch.ethz.idsc.owly.math.state.TimeInvariantRegion;
 import ch.ethz.idsc.owly.math.state.TrajectoryRegionQuery;
-import ch.ethz.idsc.tensor.DoubleScalar;
 import ch.ethz.idsc.tensor.RationalScalar;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
 import ch.ethz.idsc.tensor.io.GifSequenceWriter;
+import ch.ethz.idsc.tensor.io.Import;
 
-/** (x,y,theta) */
-class Se2rExpandDemo {
+class DeltaExpandDemo {
   public static void main(String[] args) throws Exception {
-    Tensor eta = Tensors.vector(6, 6, 50 / Math.PI);
+    Tensor eta = Tensors.vector(8, 8);
     StateIntegrator stateIntegrator = FixedStateIntegrator.create( //
-        new RungeKutta45Integrator(), RationalScalar.of(1, 6), 5);
-    Collection<Flow> controls = Se2rControls.createControls(Se2Utils.DEGREE(45), 6);
-    // place holder for parameter class
-    Se2rGoalManager se2GoalManager = new Se2rGoalManager( //
-        Tensors.vector(-1, -1), RealScalar.of(Math.PI * 2), //
-        DoubleScalar.of(.1), Se2Utils.DEGREE(10));
-    TrajectoryRegionQuery goalQuery = //
-        new SimpleTrajectoryRegionQuery(new TimeInvariantRegion(se2GoalManager));
+        new RungeKutta45Integrator(), RationalScalar.of(1, 10), 4);
+    Tensor range = Tensors.vector(9, 6.5);
+    ImageGradient ipr = new ImageGradient( //
+        Images.displayOrientation(Import.of(Resources.fileFromRepository("/io/delta_uxy.png")).get(Tensor.ALL, Tensor.ALL, 0)), //
+        range, RealScalar.of(.5)); // -.25 .5
+    Collection<Flow> controls = DeltaControls.createControls( //
+        new DeltaStateSpaceModel(ipr), RealScalar.of(1), 25);
+    Tensor obstacleImage = Images.displayOrientation(Import.of(Resources.fileFromRepository("/io/delta_free.png")).get(Tensor.ALL, Tensor.ALL, 0)); //
     TrajectoryRegionQuery obstacleQuery = //
         new SimpleTrajectoryRegionQuery(new TimeInvariantRegion( //
-            RegionUnion.of( //
-                new HyperplaneRegion(Tensors.vector(0, -1, 0), RealScalar.of(1.5)), //
-                new HyperplaneRegion(Tensors.vector(0, +1, 0), RealScalar.of(2.0)) //
-            )));
-    // ---
+            new ImageRegion(obstacleImage, range, true)));
+    DeltaGoalManager deltaGoalManager = new DeltaGoalManager(Tensors.vector(2.1, 0.3), Tensors.vector(.3, .3));
     TrajectoryPlanner trajectoryPlanner = new DefaultTrajectoryPlanner( //
-        eta, stateIntegrator, controls, se2GoalManager, goalQuery, obstacleQuery);
-    // ---
-    trajectoryPlanner.insertRoot(Tensors.vector(0, 0, 0));
+        eta, stateIntegrator, controls, deltaGoalManager, deltaGoalManager, obstacleQuery);
+    trajectoryPlanner.insertRoot(Tensors.vector(8.8, 0.5));
     OwlyFrame owlyFrame = Gui.start();
-    owlyFrame.configCoordinateOffset(169, 71);
-    owlyFrame.jFrame.setBounds(100, 100, 300, 200);
-    GifSequenceWriter gsw = GifSequenceWriter.of(UserHome.file("se2r.gif"), 250);
+    owlyFrame.configCoordinateOffset(33, 416);
+    owlyFrame.jFrame.setBounds(100, 100, 620, 475);
+    GifSequenceWriter gsw = GifSequenceWriter.of(UserHome.file("delta_s.gif"), 250);
     while (trajectoryPlanner.getBest() == null && owlyFrame.jFrame.isVisible()) {
-      Expand.maxSteps(trajectoryPlanner, 1);
+      Expand.maxSteps(trajectoryPlanner, 40);
       owlyFrame.setGlc(trajectoryPlanner);
       gsw.append(owlyFrame.offscreen());
-      Thread.sleep(100);
+      Thread.sleep(5);
     }
     int repeatLast = 6;
     while (0 < repeatLast--)

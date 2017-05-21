@@ -10,15 +10,15 @@ import java.util.Collection;
 
 import ch.ethz.idsc.owly.math.state.StateTime;
 
-class ObstacleRender extends AbstractRender {
-  Collection<StateTime> collection;
+class ObstacleRender implements AbstractRender {
+  private Collection<StateTime> collection;
 
   ObstacleRender(Collection<StateTime> collection) {
     this.collection = collection;
   }
 
   @Override
-  void render(AbstractLayer abstractLayer, Graphics2D graphics) {
+  public void render(AbstractLayer abstractLayer, Graphics2D graphics) {
     graphics.setColor(new Color(0, 0, 0, 128));
     for (StateTime stateTime : collection) {
       Point2D point2d = abstractLayer.toPoint2D(stateTime.x());

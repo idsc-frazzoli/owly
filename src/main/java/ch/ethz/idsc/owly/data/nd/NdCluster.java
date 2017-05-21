@@ -1,6 +1,6 @@
 // code by Eric Simonton
 // adapted by jph and clruch
-package ch.ethz.idsc.owly.data.cluster;
+package ch.ethz.idsc.owly.data.nd;
 
 import java.util.Iterator;
 import java.util.PriorityQueue;
@@ -12,20 +12,20 @@ import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
 import ch.ethz.idsc.tensor.sca.Clip;
 
-public class Cluster<V> implements Iterable<Point<V>> {
+public class NdCluster<V> implements Iterable<NdEntry<V>> {
   final Tensor center;
   private final int size;
-  private final DistanceInterface distancer;
+  private final NdDistanceInterface distancer;
   // PriorityQueue uses canonic ordering of points: distance from center
-  private final Queue<Point<V>> points = new PriorityQueue<Point<V>>();
+  private final Queue<NdEntry<V>> points = new PriorityQueue<NdEntry<V>>();
 
-  Cluster(Tensor center, int size, DistanceInterface distancer) {
+  NdCluster(Tensor center, int size, NdDistanceInterface distancer) {
     this.center = center;
     this.size = size;
     this.distancer = distancer;
   }
 
-  void consider(Point<V> point) {
+  void consider(NdEntry<V> point) {
     point.setDistanceToCenter(distancer, center);
     if (points.size() < size) {
       points.add(point);
@@ -53,11 +53,11 @@ public class Cluster<V> implements Iterable<Point<V>> {
   }
 
   @Override
-  public Iterator<Point<V>> iterator() {
+  public Iterator<NdEntry<V>> iterator() {
     return points.iterator();
   }
 
-  public Stream<Point<V>> stream() {
+  public Stream<NdEntry<V>> stream() {
     return points.stream();
   }
 

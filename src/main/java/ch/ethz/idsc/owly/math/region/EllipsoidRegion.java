@@ -6,6 +6,7 @@ import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.red.Norm;
 
+/** evaluate does not correspond to Euclidean distance */
 public class EllipsoidRegion extends ImplicitFunctionRegion {
   protected final Tensor center;
   private final Tensor invert;
@@ -17,7 +18,6 @@ public class EllipsoidRegion extends ImplicitFunctionRegion {
 
   @Override
   public Scalar evaluate(Tensor tensor) {
-    // TODO perhaps this function should return the real euclidean distance in case ellipsoid is a sphere!!!
     // FIXME needs math derivation
     Tensor delta = center.subtract(tensor).pmul(invert);
     return Norm._2.of(delta).subtract(RealScalar.ONE);

@@ -29,7 +29,7 @@ import ch.ethz.idsc.tensor.Tensors;
 class R2ImageDemo {
   public static void main(String[] args) throws ClassNotFoundException, DataFormatException, IOException {
     Tensor partitionScale = Tensors.vector(6, 6);
-    Region region = ImageRegions.loadFromRepository("/io/track0_100.png", Tensors.vector(10, 10));
+    Region region = ImageRegions.loadFromRepository("/io/track0_100.png", Tensors.vector(10, 10), false);
     StateIntegrator stateIntegrator = FixedStateIntegrator.create(new EulerIntegrator(), RationalScalar.of(1, 8), 4);
     Collection<Flow> controls = R2Controls.createControls(23);
     RnGoalManager rnGoal = new RnGoalManager(Tensors.vector(5, 10), DoubleScalar.of(.2));
