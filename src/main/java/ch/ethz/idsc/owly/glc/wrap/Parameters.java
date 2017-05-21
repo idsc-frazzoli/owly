@@ -33,8 +33,6 @@ public abstract class Parameters {
   // Time between nodes
   private final Scalar expandTime;
 
-  // TODO due to resolution being of type "int", the max feasible resolution is 2^31
-  // ... one could use "long" until 2^63, or BigInteger, or RationalScalar for unlimited magnitude :-)
   /** @param resolution: resolution of algorithm
    * @param timeScale: Change time coordinate to be appropriate
    * @param depthScale: Adjust initial depth Limit
@@ -43,6 +41,7 @@ public abstract class Parameters {
    * @param maxIter: maximum iterations */
   public Parameters( //
       RationalScalar resolution, Scalar timeScale, Scalar depthScale, Tensor partitionScale, Scalar dtMax, int maxIter) {
+    // TODO why does resolution have to be an integer?
     if (resolution.signInt() <= 0 || !resolution.denominator().equals(BigInteger.ONE))
       throw new RuntimeException();
     this.resolution = resolution;

@@ -50,7 +50,7 @@ class Se2rImageDemo {
     owlyFrame.configCoordinateOffset(179, 448);
     owlyFrame.jFrame.setBounds(100, 100, 700, 700);
     while (trajectoryPlanner.getBest() == null && owlyFrame.jFrame.isVisible()) {
-      Expand.maxSteps(trajectoryPlanner, 100);
+      Expand.maxSteps(trajectoryPlanner, 1000);
       owlyFrame.setGlc(trajectoryPlanner);
       Thread.sleep(10);
     }
