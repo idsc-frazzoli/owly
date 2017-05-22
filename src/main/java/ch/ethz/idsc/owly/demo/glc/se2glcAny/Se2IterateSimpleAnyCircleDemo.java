@@ -62,8 +62,8 @@ class Se2IterateSimpleAnyCircleDemo {
     TrajectoryRegionQuery obstacleQuery = //
         new SimpleTrajectoryRegionQuery(new TimeInvariantRegion( //
             RegionUnion.of( //
-                new EllipsoidRegion(Tensors.vector(0, 0, 0), Tensors.vector(1, 1, 10)), //
-                new InvertedRegion(new EllipsoidRegion(Tensors.vector(0, 0, 0), Tensors.vector(5, 5, 10))), //
+                new EllipsoidRegion(Tensors.vector(0, 0, 0), Tensors.vector(1, 1, 0)), //
+                new InvertedRegion(new EllipsoidRegion(Tensors.vector(0, 0, 0), Tensors.vector(5, 5, 0))), //
                 new HyperplaneRegion(Tensors.vector(0, -1, 0), RealScalar.of(4)), //
                 new HyperplaneRegion(Tensors.vector(0, +1, 0), RealScalar.of(4)) //
             )));
@@ -100,7 +100,6 @@ class Se2IterateSimpleAnyCircleDemo {
       Thread.sleep(500);
       tic = System.nanoTime();
       int index = iter % 4;
-      System.out.println("index" + index);
       Se2GoalManager se2GoalManager2 = new Se2GoalManager( //
           goalListPosition.get(index), goalListAngle.get(index), //
           DoubleScalar.of(0.1), Se2Utils.DEGREE(10));
