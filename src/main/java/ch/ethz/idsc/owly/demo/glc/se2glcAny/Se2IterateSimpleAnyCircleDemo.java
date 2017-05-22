@@ -62,8 +62,8 @@ class Se2IterateSimpleAnyCircleDemo {
     TrajectoryRegionQuery obstacleQuery = //
         new SimpleTrajectoryRegionQuery(new TimeInvariantRegion( //
             RegionUnion.of( //
-                new EllipsoidRegion(Tensors.vector(0, 0, 0), Tensors.vector(1, 1, 10)), //
-                new InvertedRegion(new EllipsoidRegion(Tensors.vector(0, 0, 0), Tensors.vector(5, 5, 10))), //
+                new EllipsoidRegion(Tensors.vector(0, 0, 0), Tensors.vector(1, 1, 0)), //
+                new InvertedRegion(new EllipsoidRegion(Tensors.vector(0, 0, 0), Tensors.vector(5, 5, 0))), //
                 new HyperplaneRegion(Tensors.vector(0, -1, 0), RealScalar.of(4)), //
                 new HyperplaneRegion(Tensors.vector(0, +1, 0), RealScalar.of(4)) //
             )));
@@ -83,29 +83,26 @@ class Se2IterateSimpleAnyCircleDemo {
     owlyFrame.setGlc(trajectoryPlanner);
     // ---
     List<Tensor> goalListPosition = new ArrayList<>();
-    goalListPosition.add(Tensors.vector(0, -3));// south
+    goalListPosition.add(Tensors.vector(0, -3));// South
     goalListPosition.add(Tensors.vector(-3, 0));// West
-    goalListPosition.add(Tensors.vector(0, 3)); // north
-    goalListPosition.add(Tensors.vector(3, 0));// east
+    goalListPosition.add(Tensors.vector(0, 3)); // North
+    goalListPosition.add(Tensors.vector(3, 0)); // East
     List<RealScalar> goalListAngle = new ArrayList<>();
-    goalListAngle.add(RealScalar.of(Math.PI));// South
-    goalListAngle.add(RealScalar.of(0.5 * Math.PI));// west
-    goalListAngle.add(RealScalar.of(0)); // north
-    goalListAngle.add(RealScalar.of(-0.5 * Math.PI));// east
+    goalListAngle.add(RealScalar.of(Math.PI));        // South
+    goalListAngle.add(RealScalar.of(0.5 * Math.PI));  // West
+    goalListAngle.add(RealScalar.of(0));              // North
+    goalListAngle.add(RealScalar.of(-0.5 * Math.PI)); // East
     // --
     Iterator<StateTime> trajectoryIterator = trajectory.iterator();
     trajectoryIterator.next();
     for (int iter = 0; iter < 100; iter++) {
-      // while (trajectoryIterator.hasNext()) {
       Thread.sleep(500);
       tic = System.nanoTime();
       int index = iter % 4;
-      System.out.println("index" + index);
       Se2GoalManager se2GoalManager2 = new Se2GoalManager( //
           goalListPosition.get(index), goalListAngle.get(index), //
           DoubleScalar.of(0.1), Se2Utils.DEGREE(10));
       StateTime newRootState = trajectory.get(1);
-      // System.out.println("trajectory at "+ (iter+1));
       // ---
       trajectoryPlanner.switchRootToState(newRootState.x());
       trajectoryPlanner.setGoalQuery(se2GoalManager2, se2GoalManager2.goalQuery());

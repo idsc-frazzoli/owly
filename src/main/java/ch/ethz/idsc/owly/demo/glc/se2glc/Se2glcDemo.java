@@ -60,19 +60,18 @@ class Se2glcDemo {
         new SimpleTrajectoryRegionQuery(new TimeInvariantRegion( //
             RegionUnion.of( //
                 new HyperplaneRegion(Tensors.vector(0, -1, 0), RealScalar.of(1.5)), //
-                new HyperplaneRegion(Tensors.vector(0, +1, 0), RealScalar.of(2.0)) //
+                new HyperplaneRegion(Tensors.vector(0, +1, 0), RealScalar.of(1.5)) //
             )));
     // ---
     TrajectoryPlanner trajectoryPlanner = new DefaultTrajectoryPlanner( //
         parameters.getEta(), stateIntegrator, controls, se2GoalManager, goalQuery, obstacleQuery);
     // ---
-    trajectoryPlanner.insertRoot(Tensors.vector(0, 0, 0));
+    trajectoryPlanner.insertRoot(Tensors.vector(1, 0, -0.5 * Math.PI));
     int iters = Expand.maxDepth(trajectoryPlanner, parameters.getDepthLimit());
-    System.out.println("After " + iters + "iterations");
+    // int iters = Expand.maxTime(trajectoryPlanner, RealScalar.of(3));
+    System.out.println("After " + iters + " iterations");
     List<StateTime> trajectory = trajectoryPlanner.getPathFromRootToGoal();
     Trajectories.print(trajectory);
-    // swtch root
-    // tree2 = ...
     Gui.glc(trajectoryPlanner);
     // glcFrame.glcComponent.addTrajectoryPlanner(trajectoryPlanner);
   }

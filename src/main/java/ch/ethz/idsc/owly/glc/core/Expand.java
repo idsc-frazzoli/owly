@@ -1,6 +1,10 @@
 // code by jph and jl
 package ch.ethz.idsc.owly.glc.core;
 
+import ch.ethz.idsc.tensor.RealScalar;
+import ch.ethz.idsc.tensor.Scalar;
+import ch.ethz.idsc.tensor.Scalars;
+
 /** class contains static utility function that operate on instances of the
  * {@link ExpandInterface} */
 public enum Expand {
@@ -45,6 +49,35 @@ public enum Expand {
         break;
       if (depthLimit < node.depth()) {
         System.out.println("*** DepthLimit reached -- No Goal was found ***");
+        break;
+      }
+    }
+    return expandCount;
+  }
+
+  /** expands until the time of the running algorithm exceeds the maxTime
+   * 
+   * @param expandInterface
+   * @param timeLimit TimeLimit of expandfunction in [s] */
+  public static int maxTime(ExpandInterface expandInterface, RealScalar timeLimit) {
+    long tic = System.nanoTime();
+    timeLimit = (RealScalar) timeLimit.multiply(RealScalar.of(1e9));
+    int expandCount = 0;
+    while (true) {
+      expandCount++;
+      GlcNode node = expandInterface.pollNext();
+      if (node == null) {
+        System.out.println("**** Queue is empty -- No Goal was found");// queue is empty
+        break;
+      }
+      expandInterface.expand(node);
+      long toc = System.nanoTime();
+      if (expandInterface.getBest() != null) { // found node in goal region
+        System.out.println("after " + (toc - tic) * 1e-9 + "s");
+        break;
+      }
+      if (Scalars.lessThan(timeLimit, RealScalar.of(toc - tic))) {
+        System.out.println("*** TimeLimit reached -- No Goal was found ***");
         break;
       }
     }
