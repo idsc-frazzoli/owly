@@ -122,7 +122,11 @@ public abstract class TrajectoryPlanner implements ExpandInterface, Serializable
   }
 
   // TODO rename to coarse path ...
+  /** @return path to goal if found, or path to best Node in queue */
   public final List<StateTime> getPathFromRootToGoal() {
-    return Nodes.fromRoot(best).stream().map(GlcNode::stateTime).collect(Collectors.toList());
+    if (best != null)
+      return Nodes.fromRoot(best).stream().map(GlcNode::stateTime).collect(Collectors.toList());
+    else
+      return Nodes.fromRoot(peek()).stream().map(GlcNode::stateTime).collect(Collectors.toList());
   }
 }

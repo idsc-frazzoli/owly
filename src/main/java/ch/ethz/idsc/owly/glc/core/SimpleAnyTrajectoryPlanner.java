@@ -123,6 +123,14 @@ public class SimpleAnyTrajectoryPlanner extends TrajectoryPlanner {
       System.out.println("node is already root");
       return;
     }
+    if (best != null) {
+      List<StateTime> bestList = new ArrayList<>();
+      bestList.add(best.stateTime());
+      if (goalQuery.isDisjoint(bestList)) // if best not in goal, delete from best
+        best = null;
+      else
+        System.out.println("**** Goal already found ****");
+    }
     // removes the new root from the child list of its parent
     final GlcNode parent = newRoot.parent();
     parent.removeEdgeTo(newRoot);
@@ -170,11 +178,27 @@ public class SimpleAnyTrajectoryPlanner extends TrajectoryPlanner {
   public void setGoalQuery(CostFunction newCostFunction, TrajectoryRegionQuery newGoal) {
     this.goalQuery = newGoal;
     costFunction = newCostFunction;
-    List<StateTime> bestList = new ArrayList<>();
-    bestList.add(best.stateTime());
-    if (newGoal.isDisjoint(bestList)) {
-      best = null;
-      // TODO Do I need to check entire tree if goal is already in it?
+    //TODO refactoring as some code is double
+    if (best != null) {
+      List<StateTime> bestList = new ArrayList<>();
+      bestList.add(best.stateTime());
+      if (newGoal.isDisjoint(bestList)) {
+        best = null;
+        // TODO Do I need to check entire tree if goal is already in it? Yes (JL)
+        long tic = System.nanoTime();
+        // Changing the Merit in Queue for each Node
+        List<GlcNode> list = new LinkedList<>(queue());
+        queue().clear();
+        list.stream().parallel() //
+            .forEach(glcNode -> glcNode.setMinCostToGoal(costFunction.minCostToGoal(glcNode.state())));
+        queue().addAll(list);
+        long toc = System.nanoTime();
+        System.out.println("Updated Merit of Queue with " + list.size() + " nodes: " + ((toc - tic) * 1e-9));
+      } else {
+        System.out.println("Goal was already found in the existing tree");
+        offerDestination(best);
+      }
+    } else {
       long tic = System.nanoTime();
       // Changing the Merit in Queue for each Node
       List<GlcNode> list = new LinkedList<>(queue());
@@ -184,9 +208,6 @@ public class SimpleAnyTrajectoryPlanner extends TrajectoryPlanner {
       queue().addAll(list);
       long toc = System.nanoTime();
       System.out.println("Updated Merit of Queue with " + list.size() + " nodes: " + ((toc - tic) * 1e-9));
-    } else {
-      System.out.println("Goal was already found in the existing tree");
-      offerDestination(best);
     }
   }
 }

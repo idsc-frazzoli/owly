@@ -69,7 +69,7 @@ class Se2glcDemo {
     trajectoryPlanner.insertRoot(Tensors.vector(1, 0, -0.5 * Math.PI));
     int iters = Expand.maxDepth(trajectoryPlanner, parameters.getDepthLimit());
     // int iters = Expand.maxTime(trajectoryPlanner, RealScalar.of(3));
-    System.out.println("After " + iters + "iterations");
+    System.out.println("After " + iters + " iterations");
     List<StateTime> trajectory = trajectoryPlanner.getPathFromRootToGoal();
     Trajectories.print(trajectory);
     Gui.glc(trajectoryPlanner);
