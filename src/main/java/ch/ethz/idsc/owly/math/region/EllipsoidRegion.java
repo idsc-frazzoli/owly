@@ -5,6 +5,7 @@ import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
+import ch.ethz.idsc.tensor.ZeroScalar;
 import ch.ethz.idsc.tensor.red.Norm;
 
 /** evaluate does not correspond to Euclidean distance */
@@ -17,7 +18,7 @@ public class EllipsoidRegion extends ImplicitFunctionRegion {
   public EllipsoidRegion(Tensor center, Tensor radius) {
     this.center = center;
     for (int index = 0; index < radius.length(); index++)
-      if (radius.Get(index) == RealScalar.of(0))
+      if (radius.Get(index) == ZeroScalar.get())
         radius.set(RealScalar.POSITIVE_INFINITY, index);
     invert = radius.map(Scalar::invert);
   }
