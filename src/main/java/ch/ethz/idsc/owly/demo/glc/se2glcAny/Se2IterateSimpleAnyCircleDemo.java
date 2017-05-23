@@ -13,6 +13,7 @@ import ch.ethz.idsc.owly.demo.glc.se2.Se2Utils;
 import ch.ethz.idsc.owly.demo.glc.se2glc.Se2Parameters;
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
 import ch.ethz.idsc.owly.glc.core.Expand;
+import ch.ethz.idsc.owly.glc.core.GlcNode;
 import ch.ethz.idsc.owly.glc.core.SimpleAnyTrajectoryPlanner;
 import ch.ethz.idsc.owly.glc.wrap.Parameters;
 import ch.ethz.idsc.owly.gui.Gui;
@@ -93,29 +94,33 @@ class Se2IterateSimpleAnyCircleDemo {
     goalListAngle.add(RealScalar.of(0)); // North
     goalListAngle.add(RealScalar.of(-0.5 * Math.PI)); // East
     // --
+    int iter = 0;
     Iterator<StateTime> trajectoryIterator = trajectory.iterator();
     trajectoryIterator.next();
-    for (int iter = 0; iter < 100; iter++) {
-      Thread.sleep(500);
+    while (trajectoryIterator.hasNext()) {
+      Thread.sleep(000);
       tic = System.nanoTime();
       int index = iter % 4;
       Se2GoalManager se2GoalManager2 = new Se2GoalManager( //
           goalListPosition.get(index), goalListAngle.get(index), //
           DoubleScalar.of(0.1), Se2Utils.DEGREE(10));
-      StateTime newRootState = trajectory.get(1);
+      // StateTime newRootState = trajectory.get(1);
+      GlcNode newRootNode = trajectoryPlanner.getNodesfromRootToGoal().get(1);
       // ---
-      trajectoryPlanner.switchRootToState(newRootState.x());
+      // trajectoryPlanner.switchRootToState(newRootState.x());
+      trajectoryPlanner.switchRootToNode(newRootNode);
       trajectoryPlanner.setGoalQuery(se2GoalManager2, se2GoalManager2.goalQuery());
       int iters2 = Expand.maxDepth(trajectoryPlanner, parameters.getDepthLimit());
       trajectory = trajectoryPlanner.getPathFromRootToGoal();
       Trajectories.print(trajectory);
       // ---
       toc = System.nanoTime();
-      System.out.println((toc - tic) * 1e-9 + " Seconds needed to replan");
+      System.out.println("The " + iter + " iteration took " + (toc - tic) * 1e-9 + " Seconds need to replan");
       System.out.println("After root switch needed " + iters2 + " iterations");
       System.out.println("*****Finished*****");
       owlyFrame.setGlc(trajectoryPlanner);
       // owlyFrame.configCoordinateOffset(432, 273);
+      iter++;
     }
   }
 }

@@ -2,6 +2,7 @@
 package ch.ethz.idsc.owly.demo.glc.delta;
 
 import ch.ethz.idsc.owly.math.StateSpaceModel;
+import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
 
@@ -20,6 +21,6 @@ public class DeltaStateSpaceModel implements StateSpaceModel {
   @Override
   public Scalar getLipschitz() {
     // TODO ???Lipschitz = max(||rotate.rot||) + max (||u||)
-    return null; // null since lipschitz is not provided
+    return RealScalar.of(0); // null since lipschitz is not provided
   }
 }

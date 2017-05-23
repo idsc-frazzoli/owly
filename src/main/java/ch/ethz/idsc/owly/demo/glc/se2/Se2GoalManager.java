@@ -37,6 +37,7 @@ public class Se2GoalManager implements Region, CostFunction {
   }
 
   @Override
+  /** Cost Function */
   public Scalar costIncrement(StateTime from, List<StateTime> trajectory, Flow flow) {
     return Trajectories.timeIncrement(from, trajectory);
   }

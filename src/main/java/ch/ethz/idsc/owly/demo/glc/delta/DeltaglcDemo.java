@@ -28,10 +28,10 @@ import ch.ethz.idsc.tensor.io.Import;
 
 class DeltaglcDemo {
   public static void main(String[] args) throws Exception {
-    RationalScalar resolution = (RationalScalar) RationalScalar.of(10, 1);
+    RationalScalar resolution = (RationalScalar) RationalScalar.of(12, 1);
     Scalar timeScale = RealScalar.of(10);
-    Scalar depthScale = RealScalar.of(5);
-    Tensor partitionScale = Tensors.vector(3, 3, 50 / Math.PI);
+    Scalar depthScale = RealScalar.of(100);
+    Tensor partitionScale = Tensors.vector(32, 32);
     Scalar dtMax = RationalScalar.of(1, 6);
     int maxIter = 2000;
     Tensor range = Tensors.vector(9, 6.5);
@@ -40,7 +40,6 @@ class DeltaglcDemo {
         range, RealScalar.of(-.5)); // -.25 .5
     DeltaStateSpaceModel stateSpaceModel = new DeltaStateSpaceModel(ipr);
     Parameters parameters = new DeltaParameters(resolution, timeScale, depthScale, partitionScale, dtMax, maxIter, stateSpaceModel.getLipschitz());
-    Tensor eta = Tensors.vector(9, 9);
     StateIntegrator stateIntegrator = FixedStateIntegrator.create( //
         new RungeKutta45Integrator(), parameters.getdtMax(), parameters.getTrajectorySize());
     RealScalar maxInput = RealScalar.of(1);
@@ -51,7 +50,7 @@ class DeltaglcDemo {
         new SimpleTrajectoryRegionQuery(new TimeInvariantRegion( //
             new ImageRegion(obstacleImage, range, true)));
     DeltaGoalManager deltaGoalManager = new DeltaGoalManager( //
-        Tensors.vector(2.1, 0.3), Tensors.vector(.3, .3), maxInput);
+        Tensors.vector(2.9, 2.4), Tensors.vector(.3, .3), maxInput);
     TrajectoryPlanner trajectoryPlanner = new DefaultTrajectoryPlanner( //
         parameters.getEta(), stateIntegrator, controls, deltaGoalManager, deltaGoalManager, obstacleQuery);
     trajectoryPlanner.insertRoot(Tensors.vector(8.8, 0.5));
@@ -63,6 +62,9 @@ class DeltaglcDemo {
       Expand.maxSteps(trajectoryPlanner, 10);
       owlyFrame.setGlc(trajectoryPlanner);
       Thread.sleep(1);
+      if (trajectoryPlanner.getQueue().isEmpty()) {
+        break;
+      }
     }
   }
 }

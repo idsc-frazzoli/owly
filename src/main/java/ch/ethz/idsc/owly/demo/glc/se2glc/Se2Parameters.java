@@ -20,8 +20,8 @@ public class Se2Parameters extends Parameters {
   }
 
   @Override
-  /** @return if Lipschitz == 0: R*log(R)²
-   * @return else : R^(5/Pi) */
+  /** @return if Lipschitz == 0: R*log(R)²/partitionScale
+   * @return else : R^(5/Pi)/partitionScale */
   public Tensor getEta() {
     if (lipschitz.equals(ZeroScalar.get()))
       return getPartitionScale().map(Scalar::invert) //

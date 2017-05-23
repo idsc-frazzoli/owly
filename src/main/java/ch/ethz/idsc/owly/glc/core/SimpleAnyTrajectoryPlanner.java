@@ -3,6 +3,7 @@ package ch.ethz.idsc.owly.glc.core;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -57,7 +58,6 @@ public class SimpleAnyTrajectoryPlanner extends TrajectoryPlanner {
       CandidatePair nextCandidate = new CandidatePair(node, next);
       final Tensor domain_key = convertToKey(next.state());
       candidates.insert(domain_key, nextCandidate);
-      // System.out.println("Candidatessize is: " + candidates.size());
       // ALL Candidates are saved in CandidateList
     }
     // save candidates in CandidateMap for RootSwitchlater
@@ -115,27 +115,24 @@ public class SimpleAnyTrajectoryPlanner extends TrajectoryPlanner {
       System.out.println("This domain is not labelled yet");
   }
 
-  private void switchRootToNode(GlcNode newRoot) {
-    int oldDomainMapSize = domainMap().size();
-    int oldQueueSize = queue().size();
-    System.out.println("changing to root:" + newRoot.state());
+  public void switchRootToNode(GlcNode newRoot) {
     if (newRoot.isRoot()) {
       System.out.println("node is already root");
       return;
     }
-    if (best != null) {
-      List<StateTime> bestList = new ArrayList<>();
-      bestList.add(best.stateTime());
-      if (goalQuery.isDisjoint(bestList)) // if best not in goal, delete from best
-        best = null;
-      else
-        System.out.println("**** Goal already found ****");
-    }
-    // removes the new root from the child list of its parent
+    int oldDomainMapSize = domainMap().size();
+    int oldQueueSize = queue().size();
+    System.out.println("changing to root:" + newRoot.state());
     final GlcNode parent = newRoot.parent();
     parent.removeEdgeTo(newRoot);
     Collection<GlcNode> oldtree = Nodes.ofSubtree(parent);
-    if (queue().removeAll(oldtree))
+    if (best != null) {
+      if (oldtree.contains(best)) // check if goalnode was deleted
+        best = null;
+      //
+    }
+    // removes the new root from the child list of its parent
+    if (queue().removeAll(oldtree)) // removing from queue;
       System.out.println("Removed " + (oldQueueSize - queue().size()) + " nodes from Queue");
     int removedNodes = 0;
     int addedNodesToQueue = 0;
@@ -145,9 +142,8 @@ public class SimpleAnyTrajectoryPlanner extends TrajectoryPlanner {
         removedNodes++;
       // --
       // Iterate through DomainQueue to find alternative: RELABELING
-      // --
-      // CandidatePairQueue queue = new CandidatePairQueue(tempCandidateQueue);
-      // TODO: Why does not work with CandidatePairQueue
+      // TODO: Iterate through tree to find goal node?
+      //
     }
     System.out.println(removedNodes + " out of " + oldDomainMapSize + " Nodes removed from Tree ");
     System.out.println(addedNodesToQueue + " Nodes added to Queue");
@@ -182,9 +178,24 @@ public class SimpleAnyTrajectoryPlanner extends TrajectoryPlanner {
     if (best != null) {
       List<StateTime> bestList = new ArrayList<>();
       bestList.add(best.stateTime());
-      if (newGoal.isDisjoint(bestList)) {
+      if (newGoal.isDisjoint(bestList)) { // oldBest not in new Goal
         best = null;
-        // TODO Do I need to check entire tree if goal is already in it? Yes (JL)
+        {
+          Collection<GlcNode> TreeCollection = Nodes.ofSubtree(getNodesfromRootToGoal().get(1));
+          // TODO more efficient way then going through entire tree?
+          Iterator<GlcNode> TreeCollectionIterator = TreeCollection.iterator();
+          while (TreeCollectionIterator.hasNext()) {
+            GlcNode current = TreeCollectionIterator.next();
+            List<StateTime> currentList = new ArrayList<>();
+            bestList.add(current.stateTime());
+            if (!newGoal.isDisjoint(currentList)) { // current Node in Goal
+              System.out.println("New Goal was found in current tree");
+              offerDestination(current);
+            }
+          }
+        }
+        if (best != null)
+          System.out.println("Goal was already found in the existing tree");
         long tic = System.nanoTime();
         // Changing the Merit in Queue for each Node
         List<GlcNode> list = new LinkedList<>(queue());
@@ -195,7 +206,7 @@ public class SimpleAnyTrajectoryPlanner extends TrajectoryPlanner {
         long toc = System.nanoTime();
         System.out.println("Updated Merit of Queue with " + list.size() + " nodes: " + ((toc - tic) * 1e-9));
       } else {
-        System.out.println("Goal was already found in the existing tree");
+        System.out.println("Old Goal Node is in New Goal");
         offerDestination(best);
       }
     } else {

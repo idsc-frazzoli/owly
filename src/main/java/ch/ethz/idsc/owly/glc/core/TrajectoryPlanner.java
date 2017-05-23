@@ -129,4 +129,11 @@ public abstract class TrajectoryPlanner implements ExpandInterface, Serializable
     else
       return Nodes.fromRoot(peek()).stream().map(GlcNode::stateTime).collect(Collectors.toList());
   }
+
+  public final List<GlcNode> getNodesfromRootToGoal() {
+    if (best != null)
+      return Nodes.fromRoot(best);
+    else
+      return Nodes.fromRoot(peek());
+  }
 }
