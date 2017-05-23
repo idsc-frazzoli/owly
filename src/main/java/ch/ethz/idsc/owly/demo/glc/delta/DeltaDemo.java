@@ -33,13 +33,15 @@ class DeltaDemo {
     ImageGradient ipr = new ImageGradient( //
         Images.displayOrientation(Import.of(Resources.fileFromRepository("/io/delta_uxy.png")).get(Tensor.ALL, Tensor.ALL, 0)), //
         range, RealScalar.of(-.5)); // -.25 .5
+    RealScalar maxInput = RealScalar.of(1);
     Collection<Flow> controls = DeltaControls.createControls( //
-        new DeltaStateSpaceModel(ipr), RealScalar.of(1), 35);
+        new DeltaStateSpaceModel(ipr), maxInput, 35);
     Tensor obstacleImage = Images.displayOrientation(Import.of(Resources.fileFromRepository("/io/delta_free.png")).get(Tensor.ALL, Tensor.ALL, 0)); //
     TrajectoryRegionQuery obstacleQuery = //
         new SimpleTrajectoryRegionQuery(new TimeInvariantRegion( //
             new ImageRegion(obstacleImage, range, true)));
-    DeltaGoalManager deltaGoalManager = new DeltaGoalManager(Tensors.vector(2.1, 0.3), Tensors.vector(.3, .3));
+    DeltaGoalManager deltaGoalManager = new DeltaGoalManager( //
+        Tensors.vector(2.1, 0.3), Tensors.vector(.3, .3), maxInput);
     TrajectoryPlanner trajectoryPlanner = new DefaultTrajectoryPlanner( //
         eta, stateIntegrator, controls, deltaGoalManager, deltaGoalManager, obstacleQuery);
     trajectoryPlanner.insertRoot(Tensors.vector(8.8, 0.5));

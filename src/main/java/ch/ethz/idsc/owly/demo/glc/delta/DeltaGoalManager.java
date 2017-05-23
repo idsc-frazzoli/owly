@@ -19,10 +19,12 @@ import ch.ethz.idsc.tensor.red.Norm;
 public class DeltaGoalManager extends SimpleTrajectoryRegionQuery implements CostFunction {
   final Tensor center;
   final Scalar radius;
+  final Scalar maxSpeed;
 
-  public DeltaGoalManager(Tensor center, Tensor radius) {
+  public DeltaGoalManager(Tensor center, Tensor radius, Scalar maxSpeed) {
     super(new TimeInvariantRegion(new EllipsoidRegion(center, radius)));
     this.center = center;
+    this.maxSpeed = maxSpeed;
     if (!radius.Get(0).equals(radius.Get(1)))
       throw new RuntimeException(); // x-y radius have to be equal
     this.radius = radius.Get(0);
@@ -43,8 +45,9 @@ public class DeltaGoalManager extends SimpleTrajectoryRegionQuery implements Cos
   @Override
   public Scalar minCostToGoal(Tensor x) {
     Tensor cur_xy = x.extract(0, 2);
-    Scalar dxy = Norm._2.of(cur_xy.subtract(center)).subtract(radius);
-    // Scalar dangle = PRINCIPAL.apply(cur_angle.subtract(angle)).abs().subtract(angle_delta);
+    // Heuristic needs to be underestimating: (Euclideandistance-radius) / (MaxControl+Max(|Vectorfield|)
+    Scalar dxy = Norm._2.of(cur_xy.subtract(center)).subtract(radius).divide(RealScalar.ONE);
+    // Scalar dxy = Norm._2.of(cur_xy.subtract(center)).subtract(radius).divide(maxSpeed);
     return Max.of(dxy, ZeroScalar.get());
     // return ZeroScalar.get();
   }

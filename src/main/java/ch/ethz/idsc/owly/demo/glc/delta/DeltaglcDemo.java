@@ -5,11 +5,11 @@ import java.util.Collection;
 
 import ch.ethz.idsc.owly.demo.util.Images;
 import ch.ethz.idsc.owly.demo.util.Resources;
-import ch.ethz.idsc.owly.demo.util.UserHome;
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
 import ch.ethz.idsc.owly.glc.core.DefaultTrajectoryPlanner;
 import ch.ethz.idsc.owly.glc.core.Expand;
 import ch.ethz.idsc.owly.glc.core.TrajectoryPlanner;
+import ch.ethz.idsc.owly.glc.wrap.Parameters;
 import ch.ethz.idsc.owly.gui.Gui;
 import ch.ethz.idsc.owly.gui.OwlyFrame;
 import ch.ethz.idsc.owly.math.flow.Flow;
@@ -21,45 +21,48 @@ import ch.ethz.idsc.owly.math.state.TimeInvariantRegion;
 import ch.ethz.idsc.owly.math.state.TrajectoryRegionQuery;
 import ch.ethz.idsc.tensor.RationalScalar;
 import ch.ethz.idsc.tensor.RealScalar;
+import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
-import ch.ethz.idsc.tensor.io.GifSequenceWriter;
 import ch.ethz.idsc.tensor.io.Import;
 
-class DeltaExpandDemo {
+class DeltaglcDemo {
   public static void main(String[] args) throws Exception {
-    Tensor eta = Tensors.vector(8, 8);
-    StateIntegrator stateIntegrator = FixedStateIntegrator.create( //
-        new RungeKutta45Integrator(), RationalScalar.of(1, 10), 4);
+    RationalScalar resolution = (RationalScalar) RationalScalar.of(10, 1);
+    Scalar timeScale = RealScalar.of(10);
+    Scalar depthScale = RealScalar.of(5);
+    Tensor partitionScale = Tensors.vector(3, 3, 50 / Math.PI);
+    Scalar dtMax = RationalScalar.of(1, 6);
+    int maxIter = 2000;
     Tensor range = Tensors.vector(9, 6.5);
     ImageGradient ipr = new ImageGradient( //
         Images.displayOrientation(Import.of(Resources.fileFromRepository("/io/delta_uxy.png")).get(Tensor.ALL, Tensor.ALL, 0)), //
-        range, RealScalar.of(.5)); // -.25 .5
+        range, RealScalar.of(-.5)); // -.25 .5
+    DeltaStateSpaceModel stateSpaceModel = new DeltaStateSpaceModel(ipr);
+    Parameters parameters = new DeltaParameters(resolution, timeScale, depthScale, partitionScale, dtMax, maxIter, stateSpaceModel.getLipschitz());
+    Tensor eta = Tensors.vector(9, 9);
+    StateIntegrator stateIntegrator = FixedStateIntegrator.create( //
+        new RungeKutta45Integrator(), parameters.getdtMax(), parameters.getTrajectorySize());
+    RealScalar maxInput = RealScalar.of(1);
     Collection<Flow> controls = DeltaControls.createControls( //
-        new DeltaStateSpaceModel(ipr), RealScalar.of(1), 25);
+        stateSpaceModel, maxInput, 35);
     Tensor obstacleImage = Images.displayOrientation(Import.of(Resources.fileFromRepository("/io/delta_free.png")).get(Tensor.ALL, Tensor.ALL, 0)); //
     TrajectoryRegionQuery obstacleQuery = //
         new SimpleTrajectoryRegionQuery(new TimeInvariantRegion( //
             new ImageRegion(obstacleImage, range, true)));
-    // TODO modify constructor below
-    DeltaGoalManager deltaGoalManager = new DeltaGoalManager(Tensors.vector(2.1, 0.3), Tensors.vector(.3, .3), RealScalar.of(1));
+    DeltaGoalManager deltaGoalManager = new DeltaGoalManager( //
+        Tensors.vector(2.1, 0.3), Tensors.vector(.3, .3), maxInput);
     TrajectoryPlanner trajectoryPlanner = new DefaultTrajectoryPlanner( //
-        eta, stateIntegrator, controls, deltaGoalManager, deltaGoalManager, obstacleQuery);
+        parameters.getEta(), stateIntegrator, controls, deltaGoalManager, deltaGoalManager, obstacleQuery);
     trajectoryPlanner.insertRoot(Tensors.vector(8.8, 0.5));
     OwlyFrame owlyFrame = Gui.start();
     owlyFrame.configCoordinateOffset(33, 416);
     owlyFrame.jFrame.setBounds(100, 100, 620, 475);
-    GifSequenceWriter gsw = GifSequenceWriter.of(UserHome.file("delta_s.gif"), 250);
+    // TODO build depthlimit in for loop
     while (trajectoryPlanner.getBest() == null && owlyFrame.jFrame.isVisible()) {
-      Expand.maxSteps(trajectoryPlanner, 40);
+      Expand.maxSteps(trajectoryPlanner, 10);
       owlyFrame.setGlc(trajectoryPlanner);
-      gsw.append(owlyFrame.offscreen());
-      Thread.sleep(5);
+      Thread.sleep(1);
     }
-    int repeatLast = 6;
-    while (0 < repeatLast--)
-      gsw.append(owlyFrame.offscreen());
-    gsw.close();
-    System.out.println("created gif");
   }
 }

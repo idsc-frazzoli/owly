@@ -5,7 +5,7 @@ import ch.ethz.idsc.owly.math.StateSpaceModel;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
 
-class DeltaStateSpaceModel implements StateSpaceModel {
+public class DeltaStateSpaceModel implements StateSpaceModel {
   private final ImageGradient rot;
 
   public DeltaStateSpaceModel(ImageGradient rot) {
@@ -19,6 +19,7 @@ class DeltaStateSpaceModel implements StateSpaceModel {
 
   @Override
   public Scalar getLipschitz() {
+    // TODO ???Lipschitz = max(||rotate.rot||) + max (||u||)
     return null; // null since lipschitz is not provided
   }
 }
