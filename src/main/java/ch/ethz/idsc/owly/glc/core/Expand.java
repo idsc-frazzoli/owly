@@ -2,7 +2,6 @@
 package ch.ethz.idsc.owly.glc.core;
 
 import ch.ethz.idsc.tensor.RealScalar;
-import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Scalars;
 
 /** class contains static utility function that operate on instances of the

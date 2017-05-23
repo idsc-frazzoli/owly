@@ -32,7 +32,7 @@ class DeltaDemo {
     Tensor range = Tensors.vector(9, 6.5);
     ImageGradient ipr = new ImageGradient( //
         Images.displayOrientation(Import.of(Resources.fileFromRepository("/io/delta_uxy.png")).get(Tensor.ALL, Tensor.ALL, 0)), //
-        range, RealScalar.of(.5)); // -.25 .5
+        range, RealScalar.of(-.5)); // -.25 .5
     Collection<Flow> controls = DeltaControls.createControls( //
         new DeltaStateSpaceModel(ipr), RealScalar.of(1), 35);
     Tensor obstacleImage = Images.displayOrientation(Import.of(Resources.fileFromRepository("/io/delta_free.png")).get(Tensor.ALL, Tensor.ALL, 0)); //

@@ -88,9 +88,9 @@ class Se2IterateSimpleAnyCircleDemo {
     goalListPosition.add(Tensors.vector(0, 3)); // North
     goalListPosition.add(Tensors.vector(3, 0)); // East
     List<RealScalar> goalListAngle = new ArrayList<>();
-    goalListAngle.add(RealScalar.of(Math.PI));        // South
-    goalListAngle.add(RealScalar.of(0.5 * Math.PI));  // West
-    goalListAngle.add(RealScalar.of(0));              // North
+    goalListAngle.add(RealScalar.of(Math.PI)); // South
+    goalListAngle.add(RealScalar.of(0.5 * Math.PI)); // West
+    goalListAngle.add(RealScalar.of(0)); // North
     goalListAngle.add(RealScalar.of(-0.5 * Math.PI)); // East
     // --
     Iterator<StateTime> trajectoryIterator = trajectory.iterator();

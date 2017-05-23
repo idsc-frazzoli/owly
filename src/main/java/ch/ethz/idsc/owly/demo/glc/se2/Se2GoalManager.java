@@ -42,9 +42,7 @@ public class Se2GoalManager implements Region, CostFunction {
   }
 
   @Override
-  /**
-   * Heuristic function
-   */
+  /** Heuristic function */
   public Scalar minCostToGoal(Tensor x) {
     Tensor cur_xy = x.extract(0, 2);
     Scalar cur_angle = x.Get(2);
