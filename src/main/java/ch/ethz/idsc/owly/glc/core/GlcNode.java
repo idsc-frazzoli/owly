@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import ch.ethz.idsc.owly.data.tree.AbstractNode;
+import ch.ethz.idsc.owly.data.tree.Nodes;
 import ch.ethz.idsc.owly.data.tree.StateCostNode;
 import ch.ethz.idsc.owly.math.flow.Flow;
 import ch.ethz.idsc.owly.math.state.StateTime;
@@ -82,5 +83,9 @@ public class GlcNode extends AbstractNode<GlcNode> implements StateCostNode {
 
   public int depth() {
     return depth;
+  }
+
+  /* package */ void calculateDepth() {
+    this.depth = Nodes.toRoot(this).size() - 1; // as RootNode has depth 0 (NOT 1)
   }
 }

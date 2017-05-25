@@ -203,22 +203,25 @@ public class SimpleAnyTrajectoryPlanner extends TrajectoryPlanner {
         list.stream().parallel() //
             .forEach(glcNode -> glcNode.setMinCostToGoal(costFunction.minCostToGoal(glcNode.state())));
         queue().addAll(list);
+        list.stream().parallel().forEach(glcNode -> glcNode.calculateDepth());
+        queue().addAll(list);
         long toc = System.nanoTime();
-        System.out.println("Updated Merit of Queue with " + list.size() + " nodes: " + ((toc - tic) * 1e-9));
+        System.out.println("Updated Merit & depth of Queue with " //
+            + list.size() + " nodes: " + ((toc - tic) * 1e-9));
       } else {
         System.out.println("Old Goal Node is in New Goal");
         offerDestination(best);
       }
     } else {
       long tic = System.nanoTime();
-      // Changing the Merit in Queue for each Node
       List<GlcNode> list = new LinkedList<>(queue());
       queue().clear();
-      list.stream().parallel() //
+      list.stream().parallel() // Changing the Merit in Queue for each Node
           .forEach(glcNode -> glcNode.setMinCostToGoal(costFunction.minCostToGoal(glcNode.state())));
+      list.stream().parallel().forEach(glcNode -> glcNode.calculateDepth()); // Changing the depth of queue
       queue().addAll(list);
       long toc = System.nanoTime();
-      System.out.println("Updated Merit of Queue with " + list.size() + " nodes: " + ((toc - tic) * 1e-9));
+      System.out.println("Updated Merit and Depth of Queue with " + list.size() + " nodes: " + ((toc - tic) * 1e-9));
     }
   }
 }

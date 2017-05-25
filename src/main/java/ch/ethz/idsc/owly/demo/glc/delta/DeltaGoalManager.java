@@ -9,6 +9,7 @@ import ch.ethz.idsc.owly.math.region.EllipsoidRegion;
 import ch.ethz.idsc.owly.math.state.CostFunction;
 import ch.ethz.idsc.owly.math.state.StateTime;
 import ch.ethz.idsc.owly.math.state.TimeInvariantRegion;
+import ch.ethz.idsc.owly.math.state.Trajectories;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
@@ -35,17 +36,18 @@ public class DeltaGoalManager extends SimpleTrajectoryRegionQuery implements Cos
     // return RealScalar.of(trajectory.size());
     Scalar sum = RealScalar.of(0);
     for (int i = 0; i < flow.getU().length(); i++) {
-      // Costfunction: integrate (u² +0.1, t)
-      // TODO: check theory
       sum = sum.add(Norm._2.of(flow.getU()).add(RealScalar.of(0.1)));
     }
-    return sum;
+    // Costfunction: integrate (u² +0.1, t)
+    // TODO multiply with time needed?, as trajectorytimelength always the same
+    return sum.multiply(Trajectories.timeIncrement(from, trajectory));
   }
 
   @Override
   public Scalar minCostToGoal(Tensor x) {
     Tensor cur_xy = x.extract(0, 2);
     // Heuristic needs to be underestimating: (Euclideandistance-radius) / (MaxControl+Max(|Vectorfield|)
+    // TODO find maximumspeed of Vectorfield
     Scalar dxy = Norm._2.of(cur_xy.subtract(center)).subtract(radius).divide(RealScalar.ONE);
     // Scalar dxy = Norm._2.of(cur_xy.subtract(center)).subtract(radius).divide(maxSpeed);
     return Max.of(dxy, ZeroScalar.get());

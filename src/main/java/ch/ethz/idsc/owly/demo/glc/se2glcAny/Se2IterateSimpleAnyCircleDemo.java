@@ -41,8 +41,8 @@ import ch.ethz.idsc.tensor.Tensors;
 class Se2IterateSimpleAnyCircleDemo {
   public static void main(String[] args) throws Exception {
     RationalScalar resolution = (RationalScalar) RealScalar.of(6);
-    Scalar timeScale = RealScalar.of(10);
-    Scalar depthScale = RealScalar.of(5);
+    Scalar timeScale = RealScalar.of(6);
+    Scalar depthScale = RealScalar.of(10);
     Tensor partitionScale = Tensors.vector(3, 3, 50 / Math.PI);
     Scalar dtMax = RationalScalar.of(1, 6);
     int maxIter = 2000;
@@ -95,9 +95,10 @@ class Se2IterateSimpleAnyCircleDemo {
     goalListAngle.add(RealScalar.of(-0.5 * Math.PI)); // East
     // --
     int iter = 0;
+    Scalar timeSum = RealScalar.of(0);
     Iterator<StateTime> trajectoryIterator = trajectory.iterator();
     trajectoryIterator.next();
-    while (trajectoryIterator.hasNext()) {
+    while (trajectoryIterator.hasNext() && owlyFrame.jFrame.isVisible()) {
       Thread.sleep(000);
       tic = System.nanoTime();
       int index = iter % 4;
@@ -110,14 +111,17 @@ class Se2IterateSimpleAnyCircleDemo {
       // trajectoryPlanner.switchRootToState(newRootState.x());
       trajectoryPlanner.switchRootToNode(newRootNode);
       trajectoryPlanner.setGoalQuery(se2GoalManager2, se2GoalManager2.goalQuery());
-      int iters2 = Expand.maxDepth(trajectoryPlanner, parameters.getDepthLimit());
+      int expandIter = Expand.maxDepth(trajectoryPlanner, parameters.getDepthLimit());
       trajectory = trajectoryPlanner.getPathFromRootToGoal();
-      Trajectories.print(trajectory);
+      // Trajectories.print(trajectory);
       // ---
       toc = System.nanoTime();
-      System.out.println("The " + iter + " iteration took " + (toc - tic) * 1e-9 + " Seconds need to replan");
-      System.out.println("After root switch needed " + iters2 + " iterations");
+      timeSum = RealScalar.of(toc - tic).multiply(RealScalar.of(1e-9)).add(timeSum);
+      System.out.println((iter + 1) + " iteration: " + (toc - tic) * 1e-9);
+      System.out.println("Average: " + timeSum.divide(RealScalar.of(iter + 1)));
+      System.out.println("After root switch needed " + expandIter + " iterations");
       System.out.println("*****Finished*****");
+      System.out.println("");
       owlyFrame.setGlc(trajectoryPlanner);
       // owlyFrame.configCoordinateOffset(432, 273);
       iter++;

@@ -58,13 +58,20 @@ class DeltaglcDemo {
     owlyFrame.configCoordinateOffset(33, 416);
     owlyFrame.jFrame.setBounds(100, 100, 620, 475);
     // TODO build depthlimit in for loop
+    // GifSequenceWriter gsw = GifSequenceWriter.of(UserHome.file("delta_glc.gif"), 250);
     while (trajectoryPlanner.getBest() == null && owlyFrame.jFrame.isVisible()) {
       Expand.maxSteps(trajectoryPlanner, 10);
       owlyFrame.setGlc(trajectoryPlanner);
-      Thread.sleep(1);
+      // gsw.append(owlyFrame.offscreen());
+      Thread.sleep(5);
       if (trajectoryPlanner.getQueue().isEmpty()) {
         break;
       }
     }
+    // int repeatLast = 6;
+    // while (0 < repeatLast--)
+    // gsw.append(owlyFrame.offscreen());
+    // gsw.close();
+    // System.out.println("created gif");
   }
 }

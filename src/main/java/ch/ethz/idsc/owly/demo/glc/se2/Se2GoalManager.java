@@ -4,6 +4,7 @@ package ch.ethz.idsc.owly.demo.glc.se2;
 import java.util.List;
 
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
+import ch.ethz.idsc.owly.math.SignedCurvature2D;
 import ch.ethz.idsc.owly.math.flow.Flow;
 import ch.ethz.idsc.owly.math.region.Region;
 import ch.ethz.idsc.owly.math.state.CostFunction;
@@ -18,7 +19,9 @@ import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.ZeroScalar;
 import ch.ethz.idsc.tensor.red.Max;
 import ch.ethz.idsc.tensor.red.Norm;
+import ch.ethz.idsc.tensor.sca.Floor;
 import ch.ethz.idsc.tensor.sca.Mod;
+import ch.ethz.idsc.tensor.sca.Power;
 
 /** Se2 goal region is not elliptic, therefore we implement {@link Region} */
 public class Se2GoalManager implements Region, CostFunction {
@@ -39,7 +42,16 @@ public class Se2GoalManager implements Region, CostFunction {
   @Override
   /** Cost Function */
   public Scalar costIncrement(StateTime from, List<StateTime> trajectory, Flow flow) {
-    return Trajectories.timeIncrement(from, trajectory);
+    int endIndex = trajectory.size() - 1;
+    if (endIndex < 3) // can not calculated curvature with 2 points
+      throw new RuntimeException();
+    Scalar middleIndex = Floor.of(RealScalar.of(endIndex / 2)).Get(1);
+    Scalar curvature = SignedCurvature2D.of(from.x(), //
+        trajectory.get(middleIndex.number().intValue()).x(), trajectory.get(endIndex).x());
+    // integrate(1 +w², t)
+    return RealScalar.ONE.add(Power.of(curvature, 2)).multiply(Trajectories.timeIncrement(from, trajectory));
+    // integrate(1,t)
+    // return Trajectories.timeIncrement(from, trajectory);
   }
 
   @Override
