@@ -1,6 +1,7 @@
 // code by jph
 package ch.ethz.idsc.owly.demo.glc.se2;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
@@ -45,11 +46,23 @@ public class Se2GoalManager implements Region, CostFunction {
     int endIndex = trajectory.size() - 1;
     if (endIndex < 3) // can not calculated curvature with 2 points
       throw new RuntimeException();
-    Scalar middleIndex = Floor.of(RealScalar.of(endIndex / 2)).Get(1);
-    Scalar curvature = SignedCurvature2D.of(from.x(), //
-        trajectory.get(middleIndex.number().intValue()).x(), trajectory.get(endIndex).x());
+    int middleIndex = Floor.of(RealScalar.of(endIndex / 2)).Get().number().intValue();
+    List<Integer> indices1 = new ArrayList<Integer>();
+    List<Integer> indices2 = new ArrayList<Integer>();
+    indices1.add(0);
+    indices2.add(2);
+    Tensor a = from.x().block(indices1, indices2);
+    Tensor b = trajectory.get(middleIndex).x().block(indices1, indices2);
+    Tensor c = trajectory.get(endIndex).x().block(indices1, indices2);
+    // System.out.println("length of tensors: "+ a.length()+", "+b.length()+", "+c.length());
+    Scalar curvature = SignedCurvature2D.of(a, b, c);
+    System.out.println("curvature " + curvature);
+    // System.out.println("curvature²" +Power.of(curvature.abs(), RealScalar.of(2)));
     // integrate(1 +w², t)
-    return RealScalar.ONE.add(Power.of(curvature, 2)).multiply(Trajectories.timeIncrement(from, trajectory));
+    // TODO Tensor libary needs to be fixed
+    if (curvature.equals(RealScalar.of(0)))
+      return RealScalar.ONE.multiply(Trajectories.timeIncrement(from, trajectory));
+    return (RealScalar.ONE.add(Power.of(curvature.abs(), 2))).multiply(Trajectories.timeIncrement(from, trajectory));
     // integrate(1,t)
     // return Trajectories.timeIncrement(from, trajectory);
   }

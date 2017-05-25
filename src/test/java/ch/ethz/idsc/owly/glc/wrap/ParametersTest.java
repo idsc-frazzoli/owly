@@ -10,6 +10,7 @@ import ch.ethz.idsc.tensor.Scalars;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
 import ch.ethz.idsc.tensor.sca.N;
+import ch.ethz.idsc.tensor.sca.Power;
 import junit.framework.TestCase;
 
 public class ParametersTest extends TestCase {
@@ -42,5 +43,11 @@ public class ParametersTest extends TestCase {
     }
     System.out.println(iter);
     assertTrue(iter < 1000);
+  }
+
+  public void testPowerofScalar() {
+    Scalar scalar = RealScalar.of(0);
+    Scalar exponent = RealScalar.of(2);
+    Power.of(scalar, exponent);
   }
 }
