@@ -34,8 +34,8 @@ public abstract class AbstractNode<T extends Node> implements Node {
   @SuppressWarnings("unchecked")
   @Override // from Node
   public final void insertEdgeTo(Node child) {
-    boolean modified = protected_registerChild((T) child);
-    if (!modified)
+    boolean newEntry = protected_registerChild((T) child);
+    if (!newEntry) // for this flow there already was a child
       throw new RuntimeException();
     if (!child.isRoot()) // child has parent
       throw new RuntimeException();

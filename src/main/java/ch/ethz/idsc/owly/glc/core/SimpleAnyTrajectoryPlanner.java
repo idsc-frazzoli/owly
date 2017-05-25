@@ -123,15 +123,14 @@ public class SimpleAnyTrajectoryPlanner extends TrajectoryPlanner {
     int oldDomainMapSize = domainMap().size();
     int oldQueueSize = queue().size();
     System.out.println("changing to root:" + newRoot.state());
+    // removes the new root from the child list of its parent
     final GlcNode parent = newRoot.parent();
     parent.removeEdgeTo(newRoot);
     Collection<GlcNode> oldtree = Nodes.ofSubtree(parent);
     if (best != null) {
       if (oldtree.contains(best)) // check if goalnode was deleted
         best = null;
-      //
     }
-    // removes the new root from the child list of its parent
     if (queue().removeAll(oldtree)) // removing from queue;
       System.out.println("Removed " + (oldQueueSize - queue().size()) + " nodes from Queue");
     int removedNodes = 0;

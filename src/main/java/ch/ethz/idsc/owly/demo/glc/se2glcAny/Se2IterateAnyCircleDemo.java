@@ -14,6 +14,7 @@ import ch.ethz.idsc.owly.demo.glc.se2glc.Se2Parameters;
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
 import ch.ethz.idsc.owly.glc.core.AnyTrajectoryPlanner;
 import ch.ethz.idsc.owly.glc.core.Expand;
+import ch.ethz.idsc.owly.glc.core.GlcNode;
 import ch.ethz.idsc.owly.glc.wrap.Parameters;
 import ch.ethz.idsc.owly.gui.Gui;
 import ch.ethz.idsc.owly.gui.OwlyFrame;
@@ -40,8 +41,8 @@ import ch.ethz.idsc.tensor.Tensors;
 class Se2IterateAnyCircleDemo {
   public static void main(String[] args) throws Exception {
     RationalScalar resolution = (RationalScalar) RealScalar.of(6);
-    Scalar timeScale = RealScalar.of(10);
-    Scalar depthScale = RealScalar.of(5);
+    Scalar timeScale = RealScalar.of(6);
+    Scalar depthScale = RealScalar.of(10);
     Tensor partitionScale = Tensors.vector(3, 3, 50 / Math.PI);
     Scalar dtMax = RationalScalar.of(1, 6);
     int maxIter = 2000;
@@ -57,7 +58,7 @@ class Se2IterateAnyCircleDemo {
     parameters.printResolution();
     Collection<Flow> controls = Se2Controls.createControls(Se2Utils.DEGREE(45), 6);
     Se2GoalManager se2GoalManager = new Se2GoalManager( //
-        Tensors.vector(2, -2), RealScalar.of(-0.5 * Math.PI), //
+        Tensors.vector(3, 0), RealScalar.of(1.5 * Math.PI), // east
         DoubleScalar.of(.1), Se2Utils.DEGREE(10));
     TrajectoryRegionQuery obstacleQuery = //
         new SimpleTrajectoryRegionQuery(new TimeInvariantRegion( //
@@ -72,7 +73,7 @@ class Se2IterateAnyCircleDemo {
     AnyTrajectoryPlanner trajectoryPlanner = new AnyTrajectoryPlanner( //
         parameters.getEta(), stateIntegrator, controls, se2GoalManager, se2GoalManager.goalQuery(), obstacleQuery);
     // ---
-    trajectoryPlanner.insertRoot(Tensors.vector(0, 0, 0));
+    trajectoryPlanner.insertRoot(Tensors.vector(0, 3, 0));
     int iters = Expand.maxDepth(trajectoryPlanner, parameters.getDepthLimit());
     System.out.println("After " + iters + " iterations");
     List<StateTime> trajectory = trajectoryPlanner.getPathFromRootToGoal();
@@ -82,42 +83,48 @@ class Se2IterateAnyCircleDemo {
     OwlyFrame owlyFrame = Gui.start();
     owlyFrame.setGlc(trajectoryPlanner);
     // ---
-    // --
     List<Tensor> goalListPosition = new ArrayList<>();
-    goalListPosition.add(Tensors.vector(0, -6));// south
-    goalListPosition.add(Tensors.vector(-3, -3));// west
-    goalListPosition.add(Tensors.vector(0, 0));// north
-    goalListPosition.add(Tensors.vector(3, -3)); // east
+    goalListPosition.add(Tensors.vector(0, -3));// South
+    goalListPosition.add(Tensors.vector(-3, 0));// West
+    goalListPosition.add(Tensors.vector(0, 3)); // North
+    goalListPosition.add(Tensors.vector(3, 0)); // East
     List<RealScalar> goalListAngle = new ArrayList<>();
-    goalListAngle.add(RealScalar.of(Math.PI));// south
-    goalListAngle.add(RealScalar.of(0.5 * Math.PI));// west
-    goalListAngle.add(RealScalar.of(0));// north
-    goalListAngle.add(RealScalar.of(-0.5 * Math.PI)); // east
+    goalListAngle.add(RealScalar.of(Math.PI)); // South
+    goalListAngle.add(RealScalar.of(0.5 * Math.PI)); // West
+    goalListAngle.add(RealScalar.of(0)); // North
+    goalListAngle.add(RealScalar.of(-0.5 * Math.PI)); // East
     // --
-    Iterator<StateTime> trajectoryIterator = trajectory.iterator();
     int iter = 0;
+    Scalar timeSum = RealScalar.of(0);
+    Iterator<StateTime> trajectoryIterator = trajectory.iterator();
     trajectoryIterator.next();
-    // for (int iter = 0; iter < 100; iter++) {
-    while (trajectoryIterator.hasNext()) {
-      Thread.sleep(4000);
+    while (trajectoryIterator.hasNext() && owlyFrame.jFrame.isVisible()) {
+      Thread.sleep(000);
       tic = System.nanoTime();
       int index = iter % 4;
       Se2GoalManager se2GoalManager2 = new Se2GoalManager( //
           goalListPosition.get(index), goalListAngle.get(index), //
-          DoubleScalar.of(0.3), Se2Utils.DEGREE(20));
-      // StateTime newRootState = trajectory.get(iter + 1);
-      StateTime newRootState = trajectoryIterator.next();
+          DoubleScalar.of(0.1), Se2Utils.DEGREE(10));
+      // StateTime newRootState = trajectory.get(1);
+      GlcNode newRootNode = trajectoryPlanner.getNodesfromRootToGoal().get(1);
       // ---
-      trajectoryPlanner.switchRootToState(newRootState.x());
+      // trajectoryPlanner.switchRootToState(newRootState.x());
+      trajectoryPlanner.switchRootToNode(newRootNode);
       trajectoryPlanner.setGoalQuery(se2GoalManager2, se2GoalManager2.goalQuery());
-      int iters2 = Expand.maxDepth(trajectoryPlanner, parameters.getDepthLimit());
+      int expandIter = Expand.maxDepth(trajectoryPlanner, parameters.getDepthLimit());
+      trajectory = trajectoryPlanner.getPathFromRootToGoal();
+      // Trajectories.print(trajectory);
       // ---
       toc = System.nanoTime();
-      System.out.println((toc - tic) * 1e-9 + " Seconds needed to replan");
-      System.out.println("After root switch needed " + iters2 + " iterations");
+      timeSum = RealScalar.of(toc - tic).multiply(RealScalar.of(1e-9)).add(timeSum);
+      System.out.println((iter + 1) + ". iteration took: "+ (toc - tic) * 1e-9 +"s");
+      System.out.println("Average: " + timeSum.divide(RealScalar.of(iter + 1)));
+      System.out.println("After root switch needed " + expandIter + " iterations");
       System.out.println("*****Finished*****");
+      System.out.println("");
       owlyFrame.setGlc(trajectoryPlanner);
       // owlyFrame.configCoordinateOffset(432, 273);
+      iter++;
     }
   }
 }

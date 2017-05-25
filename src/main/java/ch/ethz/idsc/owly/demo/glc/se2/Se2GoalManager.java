@@ -54,11 +54,7 @@ public class Se2GoalManager implements Region, CostFunction {
     Tensor a = from.x().block(indices1, indices2);
     Tensor b = trajectory.get(middleIndex).x().block(indices1, indices2);
     Tensor c = trajectory.get(endIndex).x().block(indices1, indices2);
-    // System.out.println("length of tensors: "+ a.length()+", "+b.length()+", "+c.length());
     Scalar curvature = SignedCurvature2D.of(a, b, c);
-    System.out.println("curvature " + curvature);
-    // System.out.println("curvature²" +Power.of(curvature.abs(), RealScalar.of(2)));
-    // integrate(1 +w², t)
     // TODO Tensor libary needs to be fixed
     if (curvature.equals(RealScalar.of(0)))
       return RealScalar.ONE.multiply(Trajectories.timeIncrement(from, trajectory));
