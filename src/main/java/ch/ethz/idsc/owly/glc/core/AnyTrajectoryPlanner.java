@@ -82,19 +82,19 @@ public class AnyTrajectoryPlanner extends TrajectoryPlanner {
       GlcNode node, Map<GlcNode, List<StateTime>> connectors, CandidatePairQueueMap candidates) {
     for (Entry<Tensor, CandidatePairQueue> entry : candidates.map.entrySet()) {
       final Tensor domain_key = entry.getKey();
-      final CandidatePairQueue domainCandidateQueue = entry.getValue();
-      if (domainCandidateQueue != null && best == null) {
-        int Candidatesleft = domainCandidateQueue.size();
-        while (Candidatesleft > 0) {
-          // while (!domainCandidateQueue.isEmpty()) {
-          CandidatePair nextCandidatePair = domainCandidateQueue.element();
+      final CandidatePairQueue candidateQueue = entry.getValue();
+      if (candidateQueue != null && best == null) {
+        int Candidatesleft = candidateQueue.size();
+        // while (Candidatesleft > 0) {
+        while (!candidateQueue.isEmpty()) {
+          CandidatePair nextCandidatePair = candidateQueue.element();
           Candidatesleft--;
           final GlcNode formerLabel = getNode(domain_key);
           final GlcNode next = nextCandidatePair.getCandidate();
           if (formerLabel != null) {
             if (Scalars.lessThan(next.merit(), formerLabel.merit())) {
               // collision check only if new node is better
-              domainCandidateQueue.remove(); // remove next from DomainQueue
+              // remove next from DomainQueue
               if (obstacleQuery.isDisjoint(connectors.get(next))) {// better node not collision
                 // current label back in Candidatelist
                 // GlcNode formerLabelParent = formerLabel.parent();
@@ -103,21 +103,25 @@ public class AnyTrajectoryPlanner extends TrajectoryPlanner {
                 // current label disconnecting
                 node.insertEdgeTo(next);
                 insert(domain_key, next);
+              //removing the newnode from candidate list from this domain
+                candidateMap.get(domain_key).remove(next); 
                 if (!goalQuery.isDisjoint(connectors.get(next)))
                   offerDestination(next);
+                candidateQueue.remove();
                 break;
               }
             }
           } else {
-            domainCandidateQueue.remove();
             if (obstacleQuery.isDisjoint(connectors.get(next))) {
               node.insertEdgeTo(next);
               insert(domain_key, next);
               if (!goalQuery.isDisjoint(connectors.get(next)))
                 offerDestination(next);
+              candidateQueue.remove();
               break;
             }
           }
+          candidateQueue.remove();// remove from Queue as was not better
         }
       }
     }
@@ -159,19 +163,19 @@ public class AnyTrajectoryPlanner extends TrajectoryPlanner {
       if (domainMap().remove(tempDomainKey, tempLabel)) // removing from DomainMap
         removedNodes++;
       if (candidateMap.containsKey(tempDomainKey)) {
-        Collection<CandidatePair> tempCandidateQueue = candidateMap.get(tempDomainKey);
-        if (tempCandidateQueue != null) {
-          tempCandidateQueue.removeIf(candidate -> oldtree.contains(candidate.getOrigin()));
+        Set<CandidatePair> tempCandidateSet = candidateMap.get(tempDomainKey);
+        if (tempCandidateSet != null) {
+          tempCandidateSet.removeIf(candidate -> oldtree.contains(candidate.getOrigin()));
           // --
           // Iterate through DomainQueue to find alternative: RELABELING
           // --
           // CandidatePairQueue queue = new CandidatePairQueue(tempCandidateQueue);
           // TODO: Why does not work with CandidatePairQueue
-          PriorityQueue<CandidatePair> queue = new PriorityQueue<>(tempCandidateQueue);
-          while (!queue.isEmpty()) {
-            final CandidatePair nextBestCandidate = queue.poll();
-            final GlcNode next = nextBestCandidate.getCandidate();
-            final GlcNode nextParent = nextBestCandidate.getOrigin();
+          PriorityQueue<CandidatePair> candidateQueue = new PriorityQueue<>(tempCandidateSet);
+          while (!candidateQueue.isEmpty()) {
+            final CandidatePair nextCandidate = candidateQueue.element();
+            final GlcNode next = nextCandidate.getCandidate();
+            final GlcNode nextParent = nextCandidate.getOrigin();
             final List<StateTime> trajectory = //
                 stateIntegrator.trajectory(nextParent.stateTime(), next.flow());
             if (obstacleQuery.isDisjoint(trajectory)) { // no collision
@@ -183,6 +187,7 @@ public class AnyTrajectoryPlanner extends TrajectoryPlanner {
               // TODO already finds goal here and then has runtimeexpectopn
               break; // leaves the while loop, but not the for loop
             }
+            candidateQueue.remove();
           }
         }
       }

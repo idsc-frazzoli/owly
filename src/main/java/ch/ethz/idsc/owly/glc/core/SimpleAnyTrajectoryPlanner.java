@@ -68,19 +68,16 @@ public class SimpleAnyTrajectoryPlanner extends TrajectoryPlanner {
       GlcNode node, Map<GlcNode, List<StateTime>> connectors, CandidatePairQueueMap candidates) {
     for (Entry<Tensor, CandidatePairQueue> entry : candidates.map.entrySet()) {
       final Tensor domain_key = entry.getKey();
-      final CandidatePairQueue domainCandidateQueue = entry.getValue();
-      if (domainCandidateQueue != null && best == null) {
-        int Candidatesleft = domainCandidateQueue.size();
-        while (Candidatesleft > 0) {
-          // while (!domainCandidateQueue.isEmpty()) {
-          CandidatePair nextCandidatePair = domainCandidateQueue.element();
-          Candidatesleft--;
+      final CandidatePairQueue candidateQueue = entry.getValue();
+      if (candidateQueue != null && best == null) {
+        while (!candidateQueue.isEmpty()) {
+          CandidatePair nextCandidatePair = candidateQueue.element();
           final GlcNode former = getNode(domain_key);
           final GlcNode next = nextCandidatePair.getCandidate();
           if (former != null) {
             if (Scalars.lessThan(next.merit(), former.merit())) {
               // collision check only if new node is better
-              domainCandidateQueue.remove(); // remove next from DomainQueue
+              
               if (obstacleQuery.isDisjoint(connectors.get(next))) {// better node not collision
                 // current label disconnecting,
                 // current label back in Candidatelist
@@ -91,16 +88,19 @@ public class SimpleAnyTrajectoryPlanner extends TrajectoryPlanner {
                 break;
               }
             }
+//            candidateQueue.remove();
           } else {
-            domainCandidateQueue.remove();
+//            candidateQueue.remove();
             if (obstacleQuery.isDisjoint(connectors.get(next))) {
               node.insertEdgeTo(next);
               insert(domain_key, next);
               if (!goalQuery.isDisjoint(connectors.get(next)))
                 offerDestination(next);
+              candidateQueue.remove();
               break;
             }
           }
+          candidateQueue.remove();
         }
       }
     }
