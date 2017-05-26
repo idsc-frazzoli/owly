@@ -4,12 +4,14 @@ package ch.ethz.idsc.owly.glc.core;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.PriorityQueue;
+import java.util.Set;
 
 import ch.ethz.idsc.owly.data.tree.Nodes;
 import ch.ethz.idsc.owly.math.flow.Flow;
@@ -29,7 +31,7 @@ public class AnyTrajectoryPlanner extends TrajectoryPlanner {
   private CostFunction costFunction;
   private TrajectoryRegionQuery goalQuery;
   private final TrajectoryRegionQuery obstacleQuery;
-  private final Map<Tensor, Collection<CandidatePair>> candidateMap = //
+  private final Map<Tensor, Set<CandidatePair>> candidateMap = //
       new HashMap<>();
   // private final Map<Tensor, DomainQueue> domainCandidateMap = new HashMap<>();
 
@@ -66,9 +68,11 @@ public class AnyTrajectoryPlanner extends TrajectoryPlanner {
       // ALL Candidates are saved in CandidateList
     }
     // save candidates in CandidateMap for RootSwitchlater
+    // does buzllshit
+    // goes backwards with it (the root)
     for (Entry<Tensor, CandidatePairQueue> entry : candidates.map.entrySet()) {
       if (!candidateMap.containsKey(entry.getKey()))
-        candidateMap.put(entry.getKey(), new LinkedList<>());
+        candidateMap.put(entry.getKey(), new HashSet<CandidatePair>());
       candidateMap.get(entry.getKey()).addAll(entry.getValue());
     }
     processCandidates(node, connectors, candidates);
@@ -85,17 +89,18 @@ public class AnyTrajectoryPlanner extends TrajectoryPlanner {
           // while (!domainCandidateQueue.isEmpty()) {
           CandidatePair nextCandidatePair = domainCandidateQueue.element();
           Candidatesleft--;
-          final GlcNode former = getNode(domain_key);
+          final GlcNode formerLabel = getNode(domain_key);
           final GlcNode next = nextCandidatePair.getCandidate();
-          if (former != null) {
-            if (Scalars.lessThan(next.merit(), former.merit())) {
+          if (formerLabel != null) {
+            if (Scalars.lessThan(next.merit(), formerLabel.merit())) {
               // collision check only if new node is better
               domainCandidateQueue.remove(); // remove next from DomainQueue
               if (obstacleQuery.isDisjoint(connectors.get(next))) {// better node not collision
-                // current label disconnecting,
-                candidateMap.get(domain_key).add(new CandidatePair(former.parent(), former));
-                former.parent().removeEdgeTo(former);
                 // current label back in Candidatelist
+                // GlcNode formerLabelParent = formerLabel.parent();
+                // formerLabel.parent().removeEdgeTo(formerLabel);
+                // candidateMap.get(domain_key).add(new CandidatePair(formerLabel.parent(), formerLabel));
+                // current label disconnecting
                 node.insertEdgeTo(next);
                 insert(domain_key, next);
                 if (!goalQuery.isDisjoint(connectors.get(next)))
@@ -144,38 +149,40 @@ public class AnyTrajectoryPlanner extends TrajectoryPlanner {
       if (oldtree.contains(best)) // check if goalnode was deleted
         best = null;
     }
+    System.out.println("size of oldtree: " + oldtree.size());
     if (queue().removeAll(oldtree))
       System.out.println("Removed " + (oldQueueSize - queue().size()) + " nodes from Queue");
     int removedNodes = 0;
     int addedNodesToQueue = 0;
-    for (GlcNode tempNode : oldtree) { // loop for each domain, where sth was deleted
-      Tensor tempDomainKey = convertToKey(tempNode.state());
-      if (domainMap().remove(tempDomainKey, tempNode)) // removing from DomainMap
+    for (GlcNode tempLabel : oldtree) { // loop for each domain, where sth was deleted
+      Tensor tempDomainKey = convertToKey(tempLabel.state());
+      if (domainMap().remove(tempDomainKey, tempLabel)) // removing from DomainMap
         removedNodes++;
       if (candidateMap.containsKey(tempDomainKey)) {
         Collection<CandidatePair> tempCandidateQueue = candidateMap.get(tempDomainKey);
-        if (tempCandidateQueue != null)
+        if (tempCandidateQueue != null) {
           tempCandidateQueue.removeIf(candidate -> oldtree.contains(candidate.getOrigin()));
-        // --
-        // Iterate through DomainQueue to find alternative: RELABELING
-        // --
-        // CandidatePairQueue queue = new CandidatePairQueue(tempCandidateQueue);
-        // TODO: Why does not work with CandidatePairQueue
-        PriorityQueue<CandidatePair> queue = new PriorityQueue<>(tempCandidateQueue);
-        while (!queue.isEmpty()) {
-          final CandidatePair nextBestCandidate = queue.poll();
-          final GlcNode next = nextBestCandidate.getCandidate();
-          final GlcNode nextParent = nextBestCandidate.getOrigin();
-          final List<StateTime> trajectory = //
-              stateIntegrator.trajectory(nextParent.stateTime(), next.flow());
-          if (obstacleQuery.isDisjoint(trajectory)) { // no collision
-            nextParent.insertEdgeTo(next); // always replace as former was deleted
-            insert(tempDomainKey, next);
-            addedNodesToQueue++;
-            if (!goalQuery.isDisjoint(trajectory))
-              offerDestination(next);
-            // TODO already finds goal here and then has runtimeexpectopn
-            break; // leaves the while loop, but not the for loop
+          // --
+          // Iterate through DomainQueue to find alternative: RELABELING
+          // --
+          // CandidatePairQueue queue = new CandidatePairQueue(tempCandidateQueue);
+          // TODO: Why does not work with CandidatePairQueue
+          PriorityQueue<CandidatePair> queue = new PriorityQueue<>(tempCandidateQueue);
+          while (!queue.isEmpty()) {
+            final CandidatePair nextBestCandidate = queue.poll();
+            final GlcNode next = nextBestCandidate.getCandidate();
+            final GlcNode nextParent = nextBestCandidate.getOrigin();
+            final List<StateTime> trajectory = //
+                stateIntegrator.trajectory(nextParent.stateTime(), next.flow());
+            if (obstacleQuery.isDisjoint(trajectory)) { // no collision
+              nextParent.insertEdgeTo(next); // always replace as former was deleted
+              insert(tempDomainKey, next);
+              addedNodesToQueue++;
+              if (!goalQuery.isDisjoint(trajectory))
+                offerDestination(next);
+              // TODO already finds goal here and then has runtimeexpectopn
+              break; // leaves the while loop, but not the for loop
+            }
           }
         }
       }
@@ -240,7 +247,9 @@ public class AnyTrajectoryPlanner extends TrajectoryPlanner {
           offerDestination(current);
         }
       }
-      System.out.println("Checked current tree for goal in " + (System.nanoTime() - tic) * 1e-9);
+      long toc = System.nanoTime();
+      System.out.println("Checked current tree for goal in "//
+          + (toc - tic) * 1e-9 + "s");
     }
     // -- Updating the Queue
     long tic = System.nanoTime();

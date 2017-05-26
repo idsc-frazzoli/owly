@@ -23,7 +23,8 @@ public class GlcNode extends AbstractNode<GlcNode> implements StateCostNode {
   private final Flow flow;
   private final StateTime stateTime;
   private final Scalar costFromRoot;
-  private Scalar merit; // TODO find solution with final
+  private Scalar merit;
+  private volatile int hashCode;// TODO find solution with final
   /** depth == 0 for root node, otherwise depth > 0 */
   private int depth = 0;
 
@@ -87,5 +88,36 @@ public class GlcNode extends AbstractNode<GlcNode> implements StateCostNode {
 
   /* package */ void calculateDepth() {
     this.depth = Nodes.toRoot(this).size() - 1; // as RootNode has depth 0 (NOT 1)
+  }
+
+  @Override
+  public boolean equals(Object obj) {
+    if (obj == null)
+      return false;
+    // TODO implement class check, like this blocks everything
+    if (!GlcNode.class.isAssignableFrom(obj.getClass()))
+      return false;
+    final GlcNode other = (GlcNode) obj;
+    if (this.stateTime != other.stateTime)
+      return false;
+    if (this.costFromRoot != other.costFromRoot)
+      return false;
+    // Not sure if works with flow
+    if (this.flow != other.flow)
+      return false;
+    return true;
+  }
+
+  @Override
+  public int hashCode() {
+    int result = hashCode;
+    if (result == 0) {
+      result = 17;
+      result = 31 * result + stateTime.hashCode();
+      result = 31 * result + costFromRoot.hashCode();
+      result = 31 * result + flow.hashCode();
+      hashCode = result;
+    }
+    return result;
   }
 }

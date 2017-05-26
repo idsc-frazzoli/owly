@@ -96,28 +96,26 @@ class Se2IterateAnyCircleDemo {
     // --
     int iter = 0;
     Scalar timeSum = RealScalar.of(0);
-    Iterator<StateTime> trajectoryIterator = trajectory.iterator();
-    trajectoryIterator.next();
-    while (trajectoryIterator.hasNext() && owlyFrame.jFrame.isVisible()) {
+    while (owlyFrame.jFrame.isVisible()) {
       Thread.sleep(000);
       tic = System.nanoTime();
       int index = iter % 4;
       Se2GoalManager se2GoalManager2 = new Se2GoalManager( //
           goalListPosition.get(index), goalListAngle.get(index), //
           DoubleScalar.of(0.1), Se2Utils.DEGREE(10));
-      // StateTime newRootState = trajectory.get(1);
-      GlcNode newRootNode = trajectoryPlanner.getNodesfromRootToGoal().get(1);
+      StateTime newRootState = trajectory.get(1);
+      GlcNode newRootNode = trajectoryPlanner.getNodesfromRootToGoal().get(2);
       // ---
       // trajectoryPlanner.switchRootToState(newRootState.x());
-      trajectoryPlanner.switchRootToNode(newRootNode);
+      trajectoryPlanner.switchRootToState(newRootState.x());;
       trajectoryPlanner.setGoalQuery(se2GoalManager2, se2GoalManager2.goalQuery());
       int expandIter = Expand.maxDepth(trajectoryPlanner, parameters.getDepthLimit());
-      trajectory = trajectoryPlanner.getPathFromRootToGoal();
-      // Trajectories.print(trajectory);
       // ---
       toc = System.nanoTime();
+      trajectory = trajectoryPlanner.getPathFromRootToGoal();
+      Trajectories.print(trajectory);
       timeSum = RealScalar.of(toc - tic).multiply(RealScalar.of(1e-9)).add(timeSum);
-      System.out.println((iter + 1) + ". iteration took: "+ (toc - tic) * 1e-9 +"s");
+      System.out.println((iter + 1) + ". iteration took: " + (toc - tic) * 1e-9 + "s");
       System.out.println("Average: " + timeSum.divide(RealScalar.of(iter + 1)));
       System.out.println("After root switch needed " + expandIter + " iterations");
       System.out.println("*****Finished*****");
