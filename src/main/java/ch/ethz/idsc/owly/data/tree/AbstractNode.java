@@ -35,10 +35,10 @@ public abstract class AbstractNode<T extends Node> implements Node {
   @Override // from Node
   public final void insertEdgeTo(Node child) {
     boolean newEntry = protected_registerChild((T) child);
-//    if (!newEntry) // for this flow there already was a child
-    //      throw new RuntimeException();
-//    if (!child.isRoot()) // child already has parent
-//      throw new RuntimeException();
+    // if (!newEntry) // for this flow there already was a child
+    // throw new RuntimeException();
+    // if (!child.isRoot()) // child already has parent
+    // throw new RuntimeException();
     ((AbstractNode<T>) child).parent = (T) this;
   }
 

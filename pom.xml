@@ -18,7 +18,6 @@
 		<dependency>
 			<groupId>ch.ethz.idsc</groupId>
 			<artifactId>tensor</artifactId>
-			<version>0.2.1</version>
 		</dependency>
 
 		<dependency>
@@ -75,4 +74,13 @@
 		</plugins>
 	</build>
 
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>ch.ethz.idsc</groupId>
+				<artifactId>tensor</artifactId>
+				<version>0.2.2</version>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
 </project>

@@ -96,18 +96,19 @@ class Se2IterateAnyCircleDemo {
     int iter = 0;
     Scalar timeSum = RealScalar.of(0);
     while (owlyFrame.jFrame.isVisible()) {
-      Thread.sleep(000);
+      Thread.sleep(3000);
       tic = System.nanoTime();
       int index = iter % 4;
       Se2GoalManager se2GoalManager2 = new Se2GoalManager( //
           goalListPosition.get(index), goalListAngle.get(index), //
           DoubleScalar.of(0.1), Se2Utils.DEGREE(10));
       StateTime newRootState = trajectory.get(1);
-      GlcNode newRootNode = trajectoryPlanner.getNodesfromRootToGoal().get(2);
+      GlcNode newRootNode = trajectoryPlanner.getNodesfromRootToGoal().get(1);
       // ---
       // trajectoryPlanner.switchRootToState(newRootState.x());
-      trajectoryPlanner.switchRootToState(newRootState.x());;
-      trajectoryPlanner.setGoalQuery(se2GoalManager2, se2GoalManager2.goalQuery());
+      trajectoryPlanner.switchRootToState(newRootState.x());
+      ;
+      // trajectoryPlanner.setGoalQuery(se2GoalManager2, se2GoalManager2.goalQuery());
       int expandIter = Expand.maxDepth(trajectoryPlanner, parameters.getDepthLimit());
       // ---
       toc = System.nanoTime();

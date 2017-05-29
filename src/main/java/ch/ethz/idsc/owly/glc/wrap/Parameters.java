@@ -41,7 +41,6 @@ public abstract class Parameters {
    * @param maxIter: maximum iterations */
   public Parameters( //
       RationalScalar resolution, Scalar timeScale, Scalar depthScale, Tensor partitionScale, Scalar dtMax, int maxIter) {
-    // TODO why does resolution have to be an integer?
     if (resolution.signInt() <= 0 || !resolution.denominator().equals(BigInteger.ONE))
       throw new RuntimeException();
     this.resolution = resolution;

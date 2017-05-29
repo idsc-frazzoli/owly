@@ -36,7 +36,8 @@ class TreeRender implements AbstractRender {
       final double interp = (val - min) / (max - min);
       graphics.setColor(new Hue(interp, 1, 1, 1).rgba);
       final Point2D p1 = abstractLayer.toPoint2D(node.state());
-      graphics.fill(new Rectangle2D.Double(p1.getX(), p1.getY(), 1, 1));
+      // TODO change Size of rectangel back for not debugging
+      graphics.fill(new Rectangle2D.Double(p1.getX(), p1.getY(), 5, 5));
       StateCostNode parent = node.parent();
       if (parent != null) {
         Point2D p2 = abstractLayer.toPoint2D(parent.state());

@@ -109,6 +109,7 @@ public class GlcNode extends AbstractNode<GlcNode> implements StateCostNode {
   }
 
   @Override
+  // TODO Valid hashcode?
   public int hashCode() {
     int result = hashCode;
     if (result == 0) {

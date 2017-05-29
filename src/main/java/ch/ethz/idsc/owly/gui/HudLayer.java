@@ -27,7 +27,6 @@ class HudLayer extends AbstractLayer {
       public void mousePressed(MouseEvent mouseEvent) {
         Tensor location = glcComponent.toTensor(mouseEvent.getPoint());
         location = location.extract(0, 2);
-        // TODO Why do you print out where I clicked?
         System.out.println(location.map(Round.toMultipleOf(DecimalScalar.of(0.001))) + ",");
       }
     };

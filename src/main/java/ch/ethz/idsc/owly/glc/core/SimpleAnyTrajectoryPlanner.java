@@ -77,7 +77,6 @@ public class SimpleAnyTrajectoryPlanner extends TrajectoryPlanner {
           if (former != null) {
             if (Scalars.lessThan(next.merit(), former.merit())) {
               // collision check only if new node is better
-              
               if (obstacleQuery.isDisjoint(connectors.get(next))) {// better node not collision
                 // current label disconnecting,
                 // current label back in Candidatelist
@@ -88,9 +87,9 @@ public class SimpleAnyTrajectoryPlanner extends TrajectoryPlanner {
                 break;
               }
             }
-//            candidateQueue.remove();
+            // candidateQueue.remove();
           } else {
-//            candidateQueue.remove();
+            // candidateQueue.remove();
             if (obstacleQuery.isDisjoint(connectors.get(next))) {
               node.insertEdgeTo(next);
               insert(domain_key, next);
@@ -141,7 +140,6 @@ public class SimpleAnyTrajectoryPlanner extends TrajectoryPlanner {
         removedNodes++;
       // --
       // Iterate through DomainQueue to find alternative: RELABELING
-      // TODO: Iterate through tree to find goal node?
       //
     }
     System.out.println(removedNodes + " out of " + oldDomainMapSize + " Nodes removed from Tree ");
@@ -173,13 +171,12 @@ public class SimpleAnyTrajectoryPlanner extends TrajectoryPlanner {
   public void setGoalQuery(CostFunction newCostFunction, TrajectoryRegionQuery newGoal) {
     this.goalQuery = newGoal;
     costFunction = newCostFunction;
-    // TODO refactoring as some code is double
     if (best != null) {
       List<StateTime> bestList = new ArrayList<>();
       bestList.add(best.stateTime());
       if (newGoal.isDisjoint(bestList)) { // oldBest not in new Goal
         best = null;
-        {
+        {// Checking if goal is already in tree?
           Collection<GlcNode> TreeCollection = Nodes.ofSubtree(getNodesfromRootToGoal().get(1));
           // TODO more efficient way then going through entire tree?
           Iterator<GlcNode> TreeCollectionIterator = TreeCollection.iterator();

@@ -50,6 +50,7 @@ public final class StateTime implements Serializable {
   }
 
   @Override
+  // TODO Valid Hashcode ?
   public int hashCode() {
     int result = hashCode;
     if (result == 0) {

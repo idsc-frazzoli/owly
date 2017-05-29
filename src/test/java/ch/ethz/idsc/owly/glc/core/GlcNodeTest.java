@@ -19,12 +19,11 @@ public class GlcNodeTest extends TestCase {
     GlcNode test2 = new GlcNode(null, state1, cost1, heuristic1);
     assertTrue(state1.equals(state1));
     assertTrue(state1.equals(state2));
-    
-    //reflexiv
+    // reflexiv
     assertFalse(test1.equals(null));
     // Nodes are completely identical
     assertTrue(test1.equals(test1));
-// Symetrie check
+    // Symetrie check
     assertTrue(test1.equals(test2));
     assertTrue(test2.equals(test1));
     test2.setMinCostToGoal(heuristic2);
