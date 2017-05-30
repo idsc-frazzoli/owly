@@ -95,7 +95,7 @@ public class GlcNode extends AbstractNode<GlcNode> implements StateCostNode {
   public boolean equals(Object object) {
     if (object instanceof GlcNode) {
       GlcNode glcNode = (GlcNode) object;
-      //TODO nicer solution then with null check (problem at root)
+      // TODO nicer solution then with null check (problem at root)
       if (flow == null && glcNode.flow == null)
         return stateTime.equals(glcNode.stateTime) && //
             costFromRoot.equals(glcNode.costFromRoot);

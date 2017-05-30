@@ -52,11 +52,17 @@ public abstract class TrajectoryPlanner implements ExpandInterface, Serializable
     insert(convertToKey(x), createRootNode(x));
   }
 
-  protected final void insert(Tensor domain_key, GlcNode node) {
+  /** @param domain_key
+   * @param node
+   * @return false if Key was already occupied, otherwise true */
+  protected final boolean insert(Tensor domain_key, GlcNode node) {
     queue.add(node);
     GlcNode prev = domainMap.put(domain_key, node);
-    if (prev != null)
+    if (prev != null) {
       ++replaceCount;
+      return false;
+    }
+    return true;
   }
 
   /** @param domain_key

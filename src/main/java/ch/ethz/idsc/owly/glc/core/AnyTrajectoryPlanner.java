@@ -142,31 +142,33 @@ public class AnyTrajectoryPlanner extends TrajectoryPlanner {
       return;
     }
     GlcNode oldRoot = getNodesfromRootToGoal().get(0);
-    System.out.println("Old Root: " + oldRoot.state());
+    Collection<GlcNode> oldTreeCollection = Nodes.ofSubtree(oldRoot);
     int oldDomainMapSize = domainMap().size();
     long oldtotalCandidates = candidateMap.values().stream().flatMap(Collection::stream).count();
     int oldQueueSize = queue().size();
-    System.out.println("changing to root:" + newRoot.state());
     // removes the new root from the child list of its parent
     final GlcNode parent = newRoot.parent();
     parent.removeEdgeTo(newRoot);
-    Collection<GlcNode> oldtree = Nodes.ofSubtree(parent);
-    if (oldtree.contains(oldRoot))
+    Collection<GlcNode> deleteTreeCollection = Nodes.ofSubtree(parent);
+    if (deleteTreeCollection.contains(oldRoot))
       System.out.println("oldtree contains old root: " + oldRoot.state());
     // Deleting old nodes from best
     if (best != null) {
-      if (oldtree.contains(best)) // check if goalnode was deleted
+      if (deleteTreeCollection.contains(best)) // check if goalnode was deleted
         best = null;
     }
-    int removedNodes = 0;
-    int addedNodesToQueue = 0;
-    System.out.println("size of oldtree: " + oldtree.size());
+    System.out.println("Nodes to be deleted: " + deleteTreeCollection.size());
     // Deleting oldnodes from Queue
-    if (queue().removeAll(oldtree))
-      System.out.println("Removed " + (oldQueueSize - queue().size()) + " nodes from Queue");
+    if (queue().removeAll(deleteTreeCollection))
+      System.out.println("Removed " + (oldQueueSize - queue().size()) + " out of " + oldQueueSize + " nodes from Queue = " + queue().size());
     // Deleting old nodes from domainMap
-    domainMap().entrySet().removeIf(node -> oldtree.contains(node.getValue()));
-    System.out.println(oldDomainMapSize - domainMap().size() + " out of " + oldDomainMapSize + " Nodes removed from Tree ");
+    // TODO parralelizable?
+    domainMap().entrySet().removeIf(node -> deleteTreeCollection.contains(node.getValue()));
+    Collection<GlcNode> newTreeCollection = Nodes.ofSubtree(getNodesfromRootToGoal().get(0));
+    System.out.println(oldDomainMapSize - domainMap().size() + " out of " + oldDomainMapSize + //
+        " Domains removed from DomainMap = " + domainMap().size());
+    System.out.println(deleteTreeCollection.size() + " out of " + oldTreeCollection.size() + " Nodes removed from Tree = " + newTreeCollection.size());
+    System.out.println("QueueSize is: " + queue().size());
     // if (domainMap().entrySet().removeIf(node -> ( //
     // node.getValue().isRoot() ? //
     // false : (node.getValue().parent() == newRoot ? false : node.getValue().parent().isRoot())))) {
@@ -174,10 +176,14 @@ public class AnyTrajectoryPlanner extends TrajectoryPlanner {
     // removedNodes++;
     // }
     // Deleting old nodes from candidateSet
-    candidateMap.entrySet().forEach(//
-        CandidateSet -> CandidateSet.getValue().removeIf(cp -> oldtree.contains(cp.getOrigin())));
+    // TODO check parallelization and time gain
+    candidateMap.entrySet().parallelStream().forEach( //
+        CandidateSet -> CandidateSet.getValue().removeIf(cp -> deleteTreeCollection.contains(cp.getOrigin())));
+    // candidateMap.entrySet().forEach(//
+    // CandidateSet -> CandidateSet.getValue().removeIf(cp -> oldtree.contains(cp.getOrigin())));
     long newtotalCandidates = candidateMap.values().stream().flatMap(Collection::stream).count();
-    System.out.println(oldtotalCandidates - newtotalCandidates + " of " + oldtotalCandidates + " Candidates removed from CandidateList ");
+    System.out.println(oldtotalCandidates - newtotalCandidates + " of " + oldtotalCandidates + //
+        " Candidates removed from CandidateList ");
     /* if (queue().removeAll(oldtree))
      * System.out.println("Removed " + (oldQueueSize - queue().size()) + " nodes from Queue");
      * if (domainMap().containsKey(convertToKey(oldRoot.state())))
@@ -231,7 +237,8 @@ public class AnyTrajectoryPlanner extends TrajectoryPlanner {
      * }
      * }
      * } */
-    for (GlcNode tempLabel : oldtree) {
+    int addedNodesToQueue = 0;
+    for (GlcNode tempLabel : deleteTreeCollection) {
       Tensor tempDomainKey = convertToKey(tempLabel.state());
       if (candidateMap.containsKey(tempDomainKey)) {
         Set<CandidatePair> tempCandidateSet = candidateMap.get(tempDomainKey);
@@ -240,7 +247,7 @@ public class AnyTrajectoryPlanner extends TrajectoryPlanner {
           final CandidatePair nextCandidate = candidateQueue.element();
           final GlcNode next = nextCandidate.getCandidate();
           final GlcNode nextParent = nextCandidate.getOrigin();
-          if (oldtree.contains(nextParent)) {
+          if (deleteTreeCollection.contains(nextParent)) {
             System.out.println("parent of node will be deleted --> not in QUEUE ");
             break;
           }
@@ -253,7 +260,8 @@ public class AnyTrajectoryPlanner extends TrajectoryPlanner {
               stateIntegrator.trajectory(nextParent.stateTime(), next.flow());
           if (obstacleQuery.isDisjoint(trajectory)) { // no collision
             nextParent.insertEdgeTo(next); // always replace as former was deleted
-            insert(tempDomainKey, next);
+            boolean test = insert(tempDomainKey, next);
+            System.out.println("false if sth was replaced, true if first time " + test);
             addedNodesToQueue++;
             if (!goalQuery.isDisjoint(trajectory))
               offerDestination(next);
@@ -267,7 +275,7 @@ public class AnyTrajectoryPlanner extends TrajectoryPlanner {
     // System.out.println(oldDomainMapSize - domainMap().size() + " out of " + oldDomainMapSize + " Nodes removed from Tree ");
     // System.out.println(oldtotalCandidates - newtotalCandidates + " of " + oldtotalCandidates + " Candidates removed from CandidateList ");
     System.out.println(addedNodesToQueue + " Nodes added to Queue");
-    System.out.println("Rootswitch finished");
+    System.out.println("**Rootswitch finished**");
   }
 
   @Override
@@ -308,9 +316,11 @@ public class AnyTrajectoryPlanner extends TrajectoryPlanner {
     // Best is either not in newGoal or Null
     best = null;
     // Checking if goal is already in tree
+    // TODO check if tree has right size TreeCollection
     {
       long tic = System.nanoTime();
-      Collection<GlcNode> TreeCollection = Nodes.ofSubtree(getNodesfromRootToGoal().get(1));
+      Collection<GlcNode> TreeCollection = Nodes.ofSubtree(getNodesfromRootToGoal().get(0));
+      System.out.println("treesize for goal checking:" + TreeCollection.size());
       // TODO more efficient way then going through entire tree?
       Iterator<GlcNode> TreeCollectionIterator = TreeCollection.iterator();
       while (TreeCollectionIterator.hasNext()) {
