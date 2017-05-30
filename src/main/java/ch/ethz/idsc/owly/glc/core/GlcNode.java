@@ -4,6 +4,7 @@ package ch.ethz.idsc.owly.glc.core;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 import ch.ethz.idsc.owly.data.tree.AbstractNode;
 import ch.ethz.idsc.owly.data.tree.Nodes;
@@ -91,34 +92,24 @@ public class GlcNode extends AbstractNode<GlcNode> implements StateCostNode {
   }
 
   @Override
-  public boolean equals(Object obj) {
-    if (obj == null)
-      return false;
-    // TODO implement class check, like this blocks everything
-    if (!GlcNode.class.isAssignableFrom(obj.getClass()))
-      return false;
-    final GlcNode other = (GlcNode) obj;
-    if (this.stateTime != other.stateTime)
-      return false;
-    if (this.costFromRoot != other.costFromRoot)
-      return false;
-    // Not sure if works with flow
-    if (this.flow != other.flow)
-      return false;
-    return true;
+  public boolean equals(Object object) {
+    if (object instanceof GlcNode) {
+      GlcNode glcNode = (GlcNode) object;
+      //TODO nicer solution then with null check (problem at root)
+      if (flow == null && glcNode.flow == null)
+        return stateTime.equals(glcNode.stateTime) && //
+            costFromRoot.equals(glcNode.costFromRoot);
+      if (flow != null && glcNode.flow != null)
+        return stateTime.equals(glcNode.stateTime) && //
+            costFromRoot.equals(glcNode.costFromRoot) && //
+            flow.equals(glcNode.flow);
+      // TODO workd with flow? as flow class has no equal?
+    }
+    return false;
   }
 
   @Override
-  // TODO Valid hashcode?
   public int hashCode() {
-    int result = hashCode;
-    if (result == 0) {
-      result = 17;
-      result = 31 * result + stateTime.hashCode();
-      result = 31 * result + costFromRoot.hashCode();
-      result = 31 * result + flow.hashCode();
-      hashCode = result;
-    }
-    return result;
+    return Objects.hash(stateTime, costFromRoot, flow);
   }
 }
