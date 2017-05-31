@@ -57,6 +57,7 @@ public abstract class TrajectoryPlanner implements ExpandInterface, Serializable
    * @return false if Key was already occupied, otherwise true */
   protected final boolean insert(Tensor domain_key, GlcNode node) {
     queue.add(node);
+    // TODO could be small tree
     GlcNode prev = domainMap.put(domain_key, node);
     if (prev != null) {
       ++replaceCount;

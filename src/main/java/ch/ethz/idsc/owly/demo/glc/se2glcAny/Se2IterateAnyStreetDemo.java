@@ -82,10 +82,9 @@ class Se2IterateAnyStreetDemo {
     trajectoryIterator.next();
     for (int iter = 0; iter < 100; iter++) {
       // while (trajectoryIterator.hasNext()) {
-      Thread.sleep(500);
+      // Thread.sleep(500);
       tic = System.nanoTime();
       int index = iter % 4;
-      System.out.println("index" + index);
       Se2GoalManager se2GoalManager2 = new Se2GoalManager(Tensors.vector(-7 + iter, 0), RealScalar.of(0), DoubleScalar.of(.1), Se2Utils.DEGREE(10));
       StateTime newRootState = trajectory.get(1);
       // ---

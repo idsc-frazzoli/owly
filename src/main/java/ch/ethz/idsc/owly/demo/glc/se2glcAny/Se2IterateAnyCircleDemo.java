@@ -39,8 +39,8 @@ import ch.ethz.idsc.tensor.Tensors;
 /** (x,y,theta) */
 class Se2IterateAnyCircleDemo {
   public static void main(String[] args) throws Exception {
-    RationalScalar resolution = (RationalScalar) RealScalar.of(6);
-    Scalar timeScale = RealScalar.of(6);
+    RationalScalar resolution = (RationalScalar) RealScalar.of(4);
+    Scalar timeScale = RealScalar.of(4);
     Scalar depthScale = RealScalar.of(10);
     Tensor partitionScale = Tensors.vector(3, 3, 50 / Math.PI);
     Scalar dtMax = RationalScalar.of(1, 6);

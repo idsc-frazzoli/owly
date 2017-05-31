@@ -35,6 +35,7 @@ public enum Expand {
    * @param expandInterface
    * @param depthLimit */
   public static int maxDepth(ExpandInterface expandInterface, int depthLimit) {
+    System.out.println("Expanding");
     int expandCount = 0;
     while (true) {
       expandCount++;
