@@ -91,6 +91,7 @@ public class AnyTrajectoryPlanner extends TrajectoryPlanner {
                 // removing the nextCandidtae from candidate list from this domain
                 candidateMap.get(domain_key).remove(nextCandidatePair);
                 // current label disconnecting
+                // 15:30
                 formerLabel.parent().removeEdgeTo(formerLabel);
                 // adding next to tree and DomainMap
                 node.insertEdgeTo(next);
@@ -161,7 +162,7 @@ public class AnyTrajectoryPlanner extends TrajectoryPlanner {
         keyNotInMap++;
     }
     for (GlcNode tempNode : DebugCollection) {
-      System.out.println("Nodes wrong in Domain?: state: " + tempNode.state() + "cost" + tempNode.costFromRoot());
+      System.out.println("additional Nodes not in a Domain: state: " + tempNode.state() + "cost" + tempNode.costFromRoot());
       if (!tempNode.isRoot())
         System.out.println("has a parent");
       if (tempNode.isLeaf())
@@ -172,7 +173,6 @@ public class AnyTrajectoryPlanner extends TrajectoryPlanner {
     System.out.println("Nodes In Map: " + nodesInMap + //
         " /Nodes with no key in map: " + keyNotInMap + " /wrong object at key: " + wrongObjectInMap);
     // removes the new root from the child list of its parent
-    System.out.println("replace count: " + replaceCount());
     // Disconnecting newRoot and collecting DeleteTree
     newRoot.parent().removeEdgeTo(newRoot);
     Collection<GlcNode> deleteTreeCollection = Nodes.ofSubtree(oldRoot);

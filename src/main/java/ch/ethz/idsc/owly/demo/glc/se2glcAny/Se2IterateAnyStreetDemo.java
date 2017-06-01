@@ -2,7 +2,6 @@
 package ch.ethz.idsc.owly.demo.glc.se2glcAny;
 
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
 
 import ch.ethz.idsc.owly.demo.glc.se2.Se2Controls;
@@ -78,8 +77,6 @@ class Se2IterateAnyStreetDemo {
     owlyFrame.setGlc(trajectoryPlanner);
     // ---
     // --
-    Iterator<StateTime> trajectoryIterator = trajectory.iterator();
-    trajectoryIterator.next();
     for (int iter = 0; iter < 300; iter++) {
       // while (trajectoryIterator.hasNext()) {
       // Thread.sleep(500);
