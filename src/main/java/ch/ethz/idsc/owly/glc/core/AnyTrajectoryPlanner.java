@@ -183,7 +183,7 @@ public class AnyTrajectoryPlanner extends TrajectoryPlanner {
     }
     System.out.println("Nodes to be deleted: " + deleteTreeCollection.size());
     // QUEUE: Deleting Nodes from Queue
-    // TODO paralizable?
+    // TODO paraliszable?
     if (queue().removeAll(deleteTreeCollection))
       System.out.println("Removed " + (oldQueueSize - queue().size()) + " out of " + oldQueueSize + " nodes from Queue = " + queue().size());
     // EDGE: Removing Edges between Nodes in DeleteTree
@@ -194,6 +194,7 @@ public class AnyTrajectoryPlanner extends TrajectoryPlanner {
     }
     // DOMAINMAP: Removing Nodes (DeleteTree) from DomainMap
     domainMap().values().removeAll(deleteTreeCollection);
+    // TODO Domain map grows unboundly
     // DEBUGING
     Collection<GlcNode> newTreeCollection = Nodes.ofSubtree(getNodesfromRootToGoal().get(0));
     System.out.println(oldDomainMapSize - domainMap().size() + " out of " + oldDomainMapSize + //
@@ -240,9 +241,12 @@ public class AnyTrajectoryPlanner extends TrajectoryPlanner {
           candidateQueue.remove();
         }
       }
+      
     }
     System.out.println(addedNodesToQueue + " Nodes added to Queue");
+    System.out.println("Domains in DomainMap AFTER RELABEL = " + domainMap().size());
     System.out.println("**Rootswitch finished**");
+    
     return increasedDepthBy;
   }
 
@@ -282,13 +286,14 @@ public class AnyTrajectoryPlanner extends TrajectoryPlanner {
       } // Old Goal is in new Goalregion
     }
     // Best is either not in newGoal or Null
+    // TODO am I deleting the Node? or just kiling the pointer
     best = null;
     // Checking if goal is already in tree
     // TODO check if tree has right size TreeCollection
     {
       long tic = System.nanoTime();
       Collection<GlcNode> TreeCollection = Nodes.ofSubtree(getNodesfromRootToGoal().get(0));
-      System.out.println("treesize for goal checking:" + TreeCollection.size());
+      System.out.println("treesize for goal checking: " + TreeCollection.size());
       // TODO more efficient way then going through entire tree?
       Iterator<GlcNode> TreeCollectionIterator = TreeCollection.iterator();
       while (TreeCollectionIterator.hasNext()) {
@@ -316,7 +321,7 @@ public class AnyTrajectoryPlanner extends TrajectoryPlanner {
     // forEach(glcNode -> glcNode.reCalculateDepth());
     queue().addAll(list);
     long toc = System.nanoTime();
-    System.out.println("Updated Merit & Depth of Queue with " + list.size() + " nodes in: " //
+    System.out.println("Updated Merit of Queue with " + list.size() + " nodes in: " //
         + ((toc - tic) * 1e-9) + "s");
     System.out.println("Goal switch finished");
   }

@@ -9,7 +9,6 @@ import ch.ethz.idsc.owly.glc.core.AnyTrajectoryPlanner;
 import ch.ethz.idsc.owly.glc.core.Expand;
 import ch.ethz.idsc.owly.glc.wrap.Parameters;
 import ch.ethz.idsc.owly.gui.Gui;
-import ch.ethz.idsc.owly.gui.OwlyFrame;
 import ch.ethz.idsc.owly.math.flow.EulerIntegrator;
 import ch.ethz.idsc.owly.math.flow.Flow;
 import ch.ethz.idsc.owly.math.region.EmptyRegion;
@@ -28,7 +27,7 @@ import ch.ethz.idsc.tensor.Tensors;
 
 class R2glcAnyDemo {
   public static void main(String[] args) {
-    RationalScalar resolution = (RationalScalar) RealScalar.of(4);
+    RationalScalar resolution = (RationalScalar) RealScalar.of(5);
     Scalar timeScale = RealScalar.of(10);
     Scalar depthScale = RealScalar.of(100);
     Tensor partitionScale = Tensors.vector(3, 3);
@@ -52,17 +51,21 @@ class R2glcAnyDemo {
     Expand.maxDepth(trajectoryPlanner, parameters.getDepthLimit());
     List<StateTime> trajectory = trajectoryPlanner.getPathFromRootToGoal();
     Trajectories.print(trajectory);
-    OwlyFrame owlyFrame = Gui.start();
-    owlyFrame.setGlc(trajectoryPlanner);
+    Gui.glc(trajectoryPlanner);
+    int oldReplace = 0;
     for (int iter = 0; iter < 3; iter++) {
       long tic = System.nanoTime();
       RnGoalManager rnGoal2 = new RnGoalManager(Tensors.vector(6 + iter, 6 + iter), DoubleScalar.of(.25));
       StateTime newRootState = trajectory.get(1);
       // ---
       int increment = trajectoryPlanner.switchRootToState(newRootState.x());
+      Gui.glc(trajectoryPlanner);
       parameters.increaseDepthLimit(increment);
       trajectoryPlanner.setGoalQuery(rnGoal2, rnGoal2.goalQuery());
       int iters2 = Expand.maxDepth(trajectoryPlanner, parameters.getDepthLimit());
+      System.out.println("Replaced "+ (trajectoryPlanner.replaceCount()-oldReplace)//
+          +" Labels with better Nodes in run: "+ iter+1);
+      oldReplace = trajectoryPlanner.replaceCount();
       trajectory = trajectoryPlanner.getPathFromRootToGoal();
       Trajectories.print(trajectory);
       // ---
@@ -70,10 +73,11 @@ class R2glcAnyDemo {
       System.out.println((toc - tic) * 1e-9 + " Seconds needed to replan");
       System.out.println("After root switch needed " + iters2 + " iterations");
       System.out.println("*****Finished*****");
-      owlyFrame.setGlc(trajectoryPlanner);
-      owlyFrame.configCoordinateOffset(150 - iter * 30, 450 + iter * 30);
-      if (!owlyFrame.jFrame.isVisible())
-        break;
+      
+      // owlyFrame.setGlc(trajectoryPlanner);
+      // owlyFrame.configCoordinateOffset(150 - iter * 30, 450 + iter * 30);
+      // if (!owlyFrame.jFrame.isVisible())
+      // break;
     }
   }
 }
