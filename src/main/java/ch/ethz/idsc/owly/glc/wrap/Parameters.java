@@ -4,6 +4,7 @@ package ch.ethz.idsc.owly.glc.wrap;
 import java.math.BigInteger;
 
 import ch.ethz.idsc.tensor.RationalScalar;
+import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
@@ -32,6 +33,8 @@ public abstract class Parameters {
   private final Scalar dtMax;
   // Time between nodes
   private final Scalar expandTime;
+  // depth limit
+  private Scalar depthLimit = RealScalar.of(0);
 
   /** @param resolution: resolution of algorithm
    * @param timeScale: Change time coordinate to be appropriate
@@ -50,6 +53,9 @@ public abstract class Parameters {
     this.dtMax = dtMax;
     this.maxIter = maxIter;
     this.expandTime = timeScale.divide(resolution);
+    this.depthLimit = depthScale //
+        .multiply(resolution) //
+        .multiply(Log.function.apply(resolution));
   }
 
   /** @return time_scale / Resolution */
@@ -59,13 +65,15 @@ public abstract class Parameters {
 
   /** @return depthScale * R * log(R) */
   public Scalar getDepthLimitExact() {
-    return depthScale //
-        .multiply(resolution) //
-        .multiply(Log.function.apply(resolution));
+    return depthLimit;
   }
 
   public int getDepthLimit() {
-    return getDepthLimitExact().number().intValue();
+    return depthLimit.number().intValue();
+  }
+
+  public void increaseDepthLimit(int increment) {
+    depthLimit.add(RationalScalar.of(increment, 1));
   }
 
   /** @param Lipschitz

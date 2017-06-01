@@ -39,7 +39,7 @@ import ch.ethz.idsc.tensor.Tensors;
 /** (x,y,theta) */
 class Se2IterateAnyCircleDemo {
   public static void main(String[] args) throws Exception {
-    RationalScalar resolution = (RationalScalar) RealScalar.of(4);
+    RationalScalar resolution = (RationalScalar) RealScalar.of(6);
     Scalar timeScale = RealScalar.of(4);
     Scalar depthScale = RealScalar.of(10);
     Tensor partitionScale = Tensors.vector(3, 3, 50 / Math.PI);
@@ -96,24 +96,26 @@ class Se2IterateAnyCircleDemo {
     int iter = 0;
     Scalar timeSum = RealScalar.of(0);
     while (owlyFrame.jFrame.isVisible()) {
+      Scalar delay = RealScalar.of(6000);
       Thread.sleep(3000);
       tic = RealScalar.of(System.nanoTime());
       int index = iter % 4;
       Se2GoalManager se2GoalManager2 = new Se2GoalManager( //
           goalListPosition.get(index), goalListAngle.get(index), //
           DoubleScalar.of(0.1), Se2Utils.DEGREE(10));
+      // --
       StateTime newRootState = trajectory.get(1);
-      GlcNode newRootNode = trajectoryPlanner.getNodesfromRootToGoal().get(1);
-      // ---
-      trajectoryPlanner.switchRootToNode(newRootNode);
-      ;
-      // trajectoryPlanner.switchRootToState(newRootState.x());
-      Scalar delay = RealScalar.of(6000);
+      // GlcNode newRootNode = trajectoryPlanner.getNodesfromRootToGoal().get(1);
+      // trajectoryPlanner.switchRootToNode(newRootNode);
+      int increment = trajectoryPlanner.switchRootToState(newRootState.x());
+      parameters.increaseDepthLimit(increment);
       owlyFrame.setGlc(trajectoryPlanner);
       Thread.sleep(delay.number().intValue() / 2);
+      // --
       trajectoryPlanner.setGoalQuery(se2GoalManager2, se2GoalManager2.goalQuery());
       owlyFrame.setGlc(trajectoryPlanner);
       Thread.sleep(delay.number().intValue() / 2);
+      // --
       int expandIter = Expand.maxDepth(trajectoryPlanner, parameters.getDepthLimit());
       // ---
       toc = RealScalar.of(System.nanoTime());

@@ -87,8 +87,9 @@ public class GlcNode extends AbstractNode<GlcNode> implements StateCostNode {
     return depth;
   }
 
-  /* package */ void calculateDepth() {
-    this.depth = Nodes.toRoot(this).size() - 1; // as RootNode has depth 0 (NOT 1)
+  /* package */ int reCalculateDepth() {
+    this.depth = Nodes.toRoot(this).size() - 1;
+    return depth;// as RootNode has depth 0 (NOT 1)
   }
 
   @Override

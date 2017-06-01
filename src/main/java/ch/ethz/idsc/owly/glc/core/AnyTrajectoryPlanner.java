@@ -76,18 +76,16 @@ public class AnyTrajectoryPlanner extends TrajectoryPlanner {
       final Tensor domain_key = entry.getKey();
       final CandidatePairQueue candidateQueue = entry.getValue();
       if (candidateQueue != null && best == null) {
-        int Candidatesleft = candidateQueue.size();
         // while (Candidatesleft > 0) {
         while (!candidateQueue.isEmpty()) {
           final CandidatePair nextCandidatePair = candidateQueue.element();
-          Candidatesleft--;
           final GlcNode formerLabel = getNode(domain_key);
           final GlcNode next = nextCandidatePair.getCandidate();
           if (formerLabel != null) {
             if (Scalars.lessThan(next.merit(), formerLabel.merit())) {
               // collision check only if new node is better
               if (obstacleQuery.isDisjoint(connectors.get(next))) {// better node not collision
-                // current label back in Candidatelist
+                // current label back in Candidatelist, is also in Queue
                 CandidatePair formerCandidate = new CandidatePair(formerLabel.parent(), formerLabel);
                 candidateMap.get(domain_key).add(formerCandidate);
                 // removing the nextCandidtae from candidate list from this domain
@@ -121,20 +119,25 @@ public class AnyTrajectoryPlanner extends TrajectoryPlanner {
     }
   }
 
-  public void switchRootToState(Tensor state) {
+  /** @param state the new Rootstate
+   * @return The value,by which the depth limit needs to be increased as of the RootSwitch */
+  public int switchRootToState(Tensor state) {
     GlcNode newRoot = this.getNode(convertToKey(state));
     // TODO not nice, as we jump from state to startnode
     if (newRoot != null)
-      switchRootToNode(newRoot);
-    else
+      return switchRootToNode(newRoot);
+    else { // TODO WHY dead Code?
       System.out.println("This domain is not labelled yet");
+      return 0;
+    }
   }
 
-  public void switchRootToNode(GlcNode newRoot) {
+  public int switchRootToNode(GlcNode newRoot) {
     if (newRoot.isRoot()) {
       System.out.println("node is already root");
-      return;
+      return 0;
     }
+    int increasedDepthBy = newRoot.reCalculateDepth();
     // Collecting Oldtree
     GlcNode oldRoot = getNodesfromRootToGoal().get(0);
     Collection<GlcNode> oldTreeCollection = Nodes.ofSubtree(oldRoot);
@@ -240,6 +243,7 @@ public class AnyTrajectoryPlanner extends TrajectoryPlanner {
     }
     System.out.println(addedNodesToQueue + " Nodes added to Queue");
     System.out.println("**Rootswitch finished**");
+    return increasedDepthBy;
   }
 
   @Override
@@ -308,8 +312,8 @@ public class AnyTrajectoryPlanner extends TrajectoryPlanner {
     queue().clear();
     list.stream().parallel() //
         .forEach(glcNode -> glcNode.setMinCostToGoal(costFunction.minCostToGoal(glcNode.state())));
-    list.stream().parallel().// Changing the depth of queue
-        forEach(glcNode -> glcNode.calculateDepth());
+    // list.stream().parallel().// Changing the depth of queue
+    // forEach(glcNode -> glcNode.reCalculateDepth());
     queue().addAll(list);
     long toc = System.nanoTime();
     System.out.println("Updated Merit & Depth of Queue with " + list.size() + " nodes in: " //
