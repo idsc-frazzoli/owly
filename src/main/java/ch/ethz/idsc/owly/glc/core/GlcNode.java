@@ -4,7 +4,6 @@ package ch.ethz.idsc.owly.glc.core;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 
 import ch.ethz.idsc.owly.data.tree.AbstractNode;
 import ch.ethz.idsc.owly.data.tree.Nodes;
