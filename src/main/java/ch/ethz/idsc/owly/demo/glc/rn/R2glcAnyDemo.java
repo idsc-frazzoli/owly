@@ -27,7 +27,7 @@ import ch.ethz.idsc.tensor.Tensors;
 
 class R2glcAnyDemo {
   public static void main(String[] args) {
-    RationalScalar resolution = (RationalScalar) RealScalar.of(5);
+    RationalScalar resolution = (RationalScalar) RealScalar.of(4);
     Scalar timeScale = RealScalar.of(10);
     Scalar depthScale = RealScalar.of(100);
     Tensor partitionScale = Tensors.vector(3, 3);
@@ -37,7 +37,7 @@ class R2glcAnyDemo {
     Parameters parameters = new R2Parameters( //
         resolution, timeScale, depthScale, partitionScale, dtMax, maxIter, lipschitz);
     StateIntegrator stateIntegrator = FixedStateIntegrator.create(new EulerIntegrator(), RationalScalar.of(1, 5), 5);
-    Collection<Flow> controls = R2Controls.createControls(parameters.getResolution().number().intValue());
+    Collection<Flow> controls = R2Controls.createControls(parameters.getResolution());
     RnGoalManager rnGoal = new RnGoalManager(Tensors.vector(5, 5), DoubleScalar.of(.25));
     // performance depends on heuristic: zeroHeuristic vs rnGoal
     // Heuristic heuristic = new ZeroHeuristic(); // rnGoal

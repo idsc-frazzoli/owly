@@ -36,7 +36,7 @@ import ch.ethz.idsc.tensor.Tensors;
 /** (x,y,theta) */
 class Se2IterateSimpleAnyStreetDemo {
   public static void main(String[] args) throws Exception {
-    RationalScalar resolution = (RationalScalar) RealScalar.of(1);
+    RationalScalar resolution = (RationalScalar) RealScalar.of(5);
     Scalar timeScale = RealScalar.of(10);
     Scalar depthScale = RealScalar.of(5);
     Tensor partitionScale = Tensors.vector(3, 3, 50 / Math.PI);
@@ -52,7 +52,7 @@ class Se2IterateSimpleAnyStreetDemo {
     // ---
     System.out.println("1/Domainsize=" + parameters.getEta());
     parameters.printResolution();
-    Collection<Flow> controls = Se2Controls.createControls(Se2Utils.DEGREE(45), 6);
+    Collection<Flow> controls = Se2Controls.createControls(Se2Utils.DEGREE(45), parameters.getResolution());
     Se2GoalManager se2GoalManager = new Se2GoalManager( //
         Tensors.vector(-7, 0), RealScalar.of(0), // east
         DoubleScalar.of(.1), Se2Utils.DEGREE(10));

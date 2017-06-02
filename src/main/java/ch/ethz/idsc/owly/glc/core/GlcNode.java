@@ -91,26 +91,4 @@ public class GlcNode extends AbstractNode<GlcNode> implements StateCostNode {
     this.depth = Nodes.toRoot(this).size() - 1;
     return depth;// as RootNode has depth 0 (NOT 1)
   }
-
-  @Override
-  public boolean equals(Object object) {
-    if (object instanceof GlcNode) {
-      GlcNode glcNode = (GlcNode) object;
-      // TODO nicer solution then with null check (problem at root)
-      if (flow == null && glcNode.flow == null)
-        return stateTime.equals(glcNode.stateTime) && //
-            costFromRoot.equals(glcNode.costFromRoot);
-      if (flow != null && glcNode.flow != null)
-        return stateTime.equals(glcNode.stateTime) && //
-            costFromRoot.equals(glcNode.costFromRoot) && //
-            flow.equals(glcNode.flow);
-      // TODO workd with flow? as flow class has no equal?
-    }
-    return false;
-  }
-
-  @Override
-  public int hashCode() {
-    return Objects.hash(stateTime, costFromRoot, flow);
-  }
 }

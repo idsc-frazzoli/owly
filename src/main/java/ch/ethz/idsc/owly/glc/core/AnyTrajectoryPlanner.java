@@ -91,7 +91,7 @@ public class AnyTrajectoryPlanner extends TrajectoryPlanner {
                 // removing the nextCandidtae from candidate list from this domain
                 candidateMap.get(domain_key).remove(nextCandidatePair);
                 // current label disconnecting
-                // 15:30
+                // TODO: causes problem
                 formerLabel.parent().removeEdgeTo(formerLabel);
                 // adding next to tree and DomainMap
                 node.insertEdgeTo(next);
@@ -146,22 +146,11 @@ public class AnyTrajectoryPlanner extends TrajectoryPlanner {
     int oldDomainMapSize = domainMap().size();
     long oldtotalCandidates = candidateMap.values().stream().flatMap(Collection::stream).count();
     int oldQueueSize = queue().size();
-    int nodesInMap = 0;
-    int keyNotInMap = 0;
-    int wrongObjectInMap = 0;
-    Set<GlcNode> DebugCollection = new HashSet<>();
-    for (GlcNode tempNode : oldTreeCollection) {
-      Tensor tempKey = convertToKey(tempNode.state());
-      if (domainMap().containsKey(tempKey)) {
-        nodesInMap++;
-        if (!domainMap().get(tempKey).equals(tempNode)) {
-          wrongObjectInMap++;
-          DebugCollection.add(tempNode);
-        }
-      } else
-        keyNotInMap++;
-    }
-    for (GlcNode tempNode : DebugCollection) {
+    int nodesWithoutDomain = 0;
+    Collection<GlcNode> debugCollection = new ArrayList<GlcNode>(oldTreeCollection);
+    debugCollection.removeIf(temp -> (domainMap().get(convertToKey(temp.state()))).equals(temp));
+    nodesWithoutDomain = debugCollection.size();
+    for (GlcNode tempNode : debugCollection) {
       System.out.println("additional Nodes not in a Domain: state: " + tempNode.state() + "cost" + tempNode.costFromRoot());
       if (!tempNode.isRoot())
         System.out.println("has a parent");
@@ -170,8 +159,9 @@ public class AnyTrajectoryPlanner extends TrajectoryPlanner {
       if (tempNode.flow() != null)
         System.out.println("has flow");
     }
-    System.out.println("Nodes In Map: " + nodesInMap + //
-        " /Nodes with no key in map: " + keyNotInMap + " /wrong object at key: " + wrongObjectInMap);
+    System.out.println(nodesWithoutDomain + " Nodes have no Domain");
+    if (nodesWithoutDomain != 0)
+      throw new RuntimeException();
     // removes the new root from the child list of its parent
     // Disconnecting newRoot and collecting DeleteTree
     newRoot.parent().removeEdgeTo(newRoot);
@@ -186,20 +176,26 @@ public class AnyTrajectoryPlanner extends TrajectoryPlanner {
     // TODO paraliszable?
     if (queue().removeAll(deleteTreeCollection))
       System.out.println("Removed " + (oldQueueSize - queue().size()) + " out of " + oldQueueSize + " nodes from Queue = " + queue().size());
-    // EDGE: Removing Edges between Nodes in DeleteTree
-    // TODO paralizable?
-    for (GlcNode tempNode : deleteTreeCollection) {
-      if (!tempNode.isRoot())
-        tempNode.parent().removeEdgeTo(tempNode);
-    }
     // DOMAINMAP: Removing Nodes (DeleteTree) from DomainMap
     domainMap().values().removeAll(deleteTreeCollection);
     // TODO Domain map grows unboundly
+    // EDGE: Removing Edges between Nodes in DeleteTree
+    // for (GlcNode tempNode : deleteTreeCollection) {
+    // if (!tempNode.isRoot())
+    // tempNode.parent().removeEdgeTo(tempNode);
+    // }
+    // for Null error of root
+    // TODO: edge removal Needed?
+    deleteTreeCollection.remove(oldRoot);
+    // TODO: parralizable?
+    deleteTreeCollection.forEach(tempNode -> tempNode.parent().removeEdgeTo(tempNode));
+    deleteTreeCollection.add(oldRoot);
     // DEBUGING
     Collection<GlcNode> newTreeCollection = Nodes.ofSubtree(getNodesfromRootToGoal().get(0));
     System.out.println(oldDomainMapSize - domainMap().size() + " out of " + oldDomainMapSize + //
         " Domains removed from DomainMap = " + domainMap().size());
-    System.out.println(deleteTreeCollection.size() + " out of " + oldTreeCollection.size() + " Nodes removed from Tree = " + newTreeCollection.size());
+    System.out.println(deleteTreeCollection.size() + " out of " + oldTreeCollection.size()//
+        + " Nodes removed from Tree = " + newTreeCollection.size());
     // CANDIDATEMAP: Deleting Candidates, if Origin includes in DeleteTree
     // TODO What is the time gain by parallization?
     candidateMap.entrySet().parallelStream().forEach( //
@@ -242,8 +238,7 @@ public class AnyTrajectoryPlanner extends TrajectoryPlanner {
         }
       }
     }
-    System.out.println(addedNodesToQueue + " Nodes added to Queue");
-    System.out.println("Domains in DomainMap AFTER RELABEL = " + domainMap().size());
+    System.out.println(addedNodesToQueue + " Nodes added to Domain = " + domainMap().size());
     System.out.println("**Rootswitch finished**");
     return increasedDepthBy;
   }
@@ -285,7 +280,7 @@ public class AnyTrajectoryPlanner extends TrajectoryPlanner {
     }
     // Best is either not in newGoal or Null
     // TODO am I deleting the Node? or just kiling the pointer
-    best = null;
+    best = null; /// TODO BUGGG
     // Checking if goal is already in tree
     // TODO check if tree has right size TreeCollection
     {
@@ -321,6 +316,6 @@ public class AnyTrajectoryPlanner extends TrajectoryPlanner {
     long toc = System.nanoTime();
     System.out.println("Updated Merit of Queue with " + list.size() + " nodes in: " //
         + ((toc - tic) * 1e-9) + "s");
-    System.out.println("Goal switch finished");
+    System.out.println("**Goalswitch finished**");
   }
 }

@@ -44,7 +44,7 @@ class DeltaglcDemo {
         new RungeKutta45Integrator(), parameters.getdtMax(), parameters.getTrajectorySize());
     RealScalar maxInput = RealScalar.of(1);
     Collection<Flow> controls = DeltaControls.createControls( //
-        stateSpaceModel, maxInput, 35);
+        stateSpaceModel, maxInput, parameters.getResolution());
     Tensor obstacleImage = Images.displayOrientation(Import.of(Resources.fileFromRepository("/io/delta_free.png")).get(Tensor.ALL, Tensor.ALL, 0)); //
     TrajectoryRegionQuery obstacleQuery = //
         new SimpleTrajectoryRegionQuery(new TimeInvariantRegion( //

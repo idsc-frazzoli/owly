@@ -25,9 +25,9 @@ public class Se2Parameters extends Parameters {
   public Tensor getEta() {
     if (lipschitz.equals(ZeroScalar.get()))
       return getPartitionScale().map(Scalar::invert) //
-          .multiply(getResolution().multiply(Power.of(Log.function.apply(getResolution()), 2)));
+          .multiply(RealScalar.of(getResolution()).multiply(Power.of(Log.function.apply(RealScalar.of(getResolution())), 2)));
     return getPartitionScale().map(Scalar::invert) //
-        .multiply(Power.of(getResolution(), RealScalar.of(5).divide(RealScalar.of(Math.PI))));
+        .multiply(Power.of(RealScalar.of(getResolution()), RealScalar.of(5).divide(RealScalar.of(Math.PI))));
     // TODO change to function depending on Lipschitz
   }
 }

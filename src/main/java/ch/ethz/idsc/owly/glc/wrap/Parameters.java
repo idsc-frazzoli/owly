@@ -34,7 +34,7 @@ public abstract class Parameters {
   // Time between nodes
   private final Scalar expandTime;
   // depth limit
-  private Scalar depthLimit = RealScalar.of(0);
+  private Scalar depthLimit;
 
   /** @param resolution: resolution of algorithm
    * @param timeScale: Change time coordinate to be appropriate
@@ -44,6 +44,8 @@ public abstract class Parameters {
    * @param maxIter: maximum iterations */
   public Parameters( //
       RationalScalar resolution, Scalar timeScale, Scalar depthScale, Tensor partitionScale, Scalar dtMax, int maxIter) {
+    // Resolution needs to be a Integer as of A Generalized Label Correcting Algorithm, p.35, B. Paden
+    // The input space is indexed by the resolution
     if (resolution.signInt() <= 0 || !resolution.denominator().equals(BigInteger.ONE))
       throw new RuntimeException();
     this.resolution = resolution;
@@ -72,8 +74,9 @@ public abstract class Parameters {
     return depthLimit.number().intValue();
   }
 
+  /** @param increment value by which to increase the depthlimit */
   public void increaseDepthLimit(int increment) {
-    depthLimit.add(RationalScalar.of(increment, 1));
+    depthLimit = depthLimit.add(RealScalar.of(increment));
   }
 
   /** @param Lipschitz
@@ -92,8 +95,8 @@ public abstract class Parameters {
     return maxIter;
   }
 
-  public RationalScalar getResolution() {
-    return resolution;
+  public int getResolution() {
+    return resolution.number().intValue();
   }
 
   public Tensor getPartitionScale() {
