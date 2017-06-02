@@ -1,4 +1,4 @@
-// code by bapaden and jph
+// code by bapaden, jl and jph
 package ch.ethz.idsc.owly.glc.core;
 
 import java.util.Collection;

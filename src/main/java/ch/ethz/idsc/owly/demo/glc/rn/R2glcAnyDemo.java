@@ -1,4 +1,4 @@
-// code by jph
+// code by jl
 package ch.ethz.idsc.owly.demo.glc.rn;
 
 import java.util.Collection;
@@ -63,8 +63,8 @@ class R2glcAnyDemo {
       parameters.increaseDepthLimit(increment);
       trajectoryPlanner.setGoalQuery(rnGoal2, rnGoal2.goalQuery());
       int iters2 = Expand.maxDepth(trajectoryPlanner, parameters.getDepthLimit());
-      System.out.println("Replaced "+ (trajectoryPlanner.replaceCount()-oldReplace)//
-          +" Labels with better Nodes in run: "+ iter+1);
+      System.out.println("Replaced " + (trajectoryPlanner.replaceCount() - oldReplace)//
+          + " Labels with better Nodes in run: " + iter + 1);
       oldReplace = trajectoryPlanner.replaceCount();
       trajectory = trajectoryPlanner.getPathFromRootToGoal();
       Trajectories.print(trajectory);
@@ -73,7 +73,6 @@ class R2glcAnyDemo {
       System.out.println((toc - tic) * 1e-9 + " Seconds needed to replan");
       System.out.println("After root switch needed " + iters2 + " iterations");
       System.out.println("*****Finished*****");
-      
       // owlyFrame.setGlc(trajectoryPlanner);
       // owlyFrame.configCoordinateOffset(150 - iter * 30, 450 + iter * 30);
       // if (!owlyFrame.jFrame.isVisible())

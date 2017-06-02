@@ -241,12 +241,10 @@ public class AnyTrajectoryPlanner extends TrajectoryPlanner {
           candidateQueue.remove();
         }
       }
-      
     }
     System.out.println(addedNodesToQueue + " Nodes added to Queue");
     System.out.println("Domains in DomainMap AFTER RELABEL = " + domainMap().size());
     System.out.println("**Rootswitch finished**");
-    
     return increasedDepthBy;
   }
 
