@@ -20,9 +20,9 @@ import ch.ethz.idsc.owly.math.state.StateIntegrator;
 import ch.ethz.idsc.owly.math.state.StateTime;
 import ch.ethz.idsc.owly.math.state.Trajectories;
 import ch.ethz.idsc.owly.math.state.TrajectoryRegionQuery;
+import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalars;
 import ch.ethz.idsc.tensor.Tensor;
-import ch.ethz.idsc.tensor.ZeroScalar;
 
 /** TODO assumptions in order to use any... */
 public class AnyTrajectoryPlanner extends TrajectoryPlanner {
@@ -252,7 +252,7 @@ public class AnyTrajectoryPlanner extends TrajectoryPlanner {
 
   @Override
   protected GlcNode createRootNode(Tensor x) { // TODO check if time of root node should always be set to 0
-    return new GlcNode(null, new StateTime(x, ZeroScalar.get()), ZeroScalar.get(), //
+    return new GlcNode(null, new StateTime(x, RealScalar.ZERO), RealScalar.ZERO, //
         costFunction.minCostToGoal(x));
   }
 

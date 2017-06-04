@@ -10,8 +10,8 @@ import ch.ethz.idsc.owly.math.state.StateTime;
 import ch.ethz.idsc.owly.math.state.TrajectoryRegionQuery;
 import ch.ethz.idsc.owly.rrts.core.Transition;
 import ch.ethz.idsc.owly.rrts.core.TransitionRegionQuery;
+import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
-import ch.ethz.idsc.tensor.ZeroScalar;
 
 public class SampledTransitionRegionQuery implements TransitionRegionQuery {
   private final TrajectoryRegionQuery trajectoryRegionQuery;
@@ -24,7 +24,7 @@ public class SampledTransitionRegionQuery implements TransitionRegionQuery {
 
   @Override
   public boolean isDisjoint(Transition transition) {
-    List<StateTime> list = transition.sampled(ZeroScalar.get(), ZeroScalar.get(), dt);
+    List<StateTime> list = transition.sampled(RealScalar.ZERO, RealScalar.ZERO, dt);
     return trajectoryRegionQuery.isDisjoint(list);
   }
 

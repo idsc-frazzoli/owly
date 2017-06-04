@@ -8,10 +8,10 @@ import ch.ethz.idsc.owly.rrts.core.Transition;
 import ch.ethz.idsc.owly.rrts.core.TransitionCostFunction;
 import ch.ethz.idsc.owly.rrts.core.TransitionRegionQuery;
 import ch.ethz.idsc.owly.rrts.core.TransitionSpace;
+import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Scalars;
 import ch.ethz.idsc.tensor.Tensor;
-import ch.ethz.idsc.tensor.ZeroScalar;
 
 /** "Sampling-based algorithms for optimal motion planning"
  * by Sertac Karaman and Emilio Frazzoli */
@@ -37,7 +37,7 @@ public class DefaultRrts implements Rrts {
     // TODO check if state is in collision
     int size = nodeCollection.size();
     if (size == 0) {
-      RrtsNode rrtsNode = RrtsNode.createRoot(state, ZeroScalar.get());
+      RrtsNode rrtsNode = RrtsNode.createRoot(state, RealScalar.ZERO);
       nodeCollection.insert(rrtsNode);
       return rrtsNode;
     }

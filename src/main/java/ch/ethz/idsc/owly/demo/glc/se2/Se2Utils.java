@@ -11,7 +11,6 @@ import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
-import ch.ethz.idsc.tensor.ZeroScalar;
 import ch.ethz.idsc.tensor.sca.ArgInterface;
 import ch.ethz.idsc.tensor.sca.Cos;
 import ch.ethz.idsc.tensor.sca.Sin;
@@ -28,7 +27,7 @@ public enum Se2Utils {
     return Tensors.matrix(new Tensor[][] { //
         { Cos.of(angle), Sin.of(angle).negate(), x.Get(0) }, //
         { Sin.of(angle), Cos.of(angle), x.Get(1) }, //
-        { ZeroScalar.get(), ZeroScalar.get(), RealScalar.ONE }, //
+        { RealScalar.ZERO, RealScalar.ZERO, RealScalar.ONE }, //
     });
   }
 

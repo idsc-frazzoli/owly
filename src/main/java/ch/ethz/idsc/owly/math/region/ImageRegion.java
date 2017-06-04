@@ -4,9 +4,9 @@ package ch.ethz.idsc.owly.math.region;
 import java.util.List;
 
 import ch.ethz.idsc.tensor.Scalar;
+import ch.ethz.idsc.tensor.Scalars;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
-import ch.ethz.idsc.tensor.ZeroScalar;
 import ch.ethz.idsc.tensor.alg.Dimensions;
 import ch.ethz.idsc.tensor.alg.TensorRank;
 import ch.ethz.idsc.tensor.sca.Floor;
@@ -39,7 +39,7 @@ public class ImageRegion implements Region {
     int pix = pixel.Get(0).number().intValue();
     int piy = pixel.Get(1).number().intValue();
     if (0 <= pix && pix < dimensions.get(0) && 0 <= piy && piy < dimensions.get(1))
-      return !image.Get(pix, piy).equals(ZeroScalar.get());
+      return Scalars.nonZero(image.Get(pix, piy));
     return outside;
   }
 }

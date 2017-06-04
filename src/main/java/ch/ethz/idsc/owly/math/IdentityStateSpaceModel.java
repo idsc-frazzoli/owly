@@ -1,9 +1,9 @@
 // code by bapaden and jph
 package ch.ethz.idsc.owly.math;
 
+import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
-import ch.ethz.idsc.tensor.ZeroScalar;
 
 // formerly "SingleIntegrator"
 public final class IdentityStateSpaceModel implements StateSpaceModel {
@@ -15,6 +15,6 @@ public final class IdentityStateSpaceModel implements StateSpaceModel {
 
   @Override
   public Scalar getLipschitz() {
-    return ZeroScalar.get();
+    return RealScalar.ZERO;
   }
 }

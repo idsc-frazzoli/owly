@@ -13,7 +13,6 @@ import ch.ethz.idsc.owly.math.state.Trajectories;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
-import ch.ethz.idsc.tensor.ZeroScalar;
 import ch.ethz.idsc.tensor.red.Max;
 import ch.ethz.idsc.tensor.red.Norm;
 
@@ -50,7 +49,7 @@ public class DeltaGoalManager extends SimpleTrajectoryRegionQuery implements Cos
     // TODO find maximumspeed of Vectorfield
     Scalar dxy = Norm._2.of(cur_xy.subtract(center)).subtract(radius).divide(RealScalar.ONE);
     // Scalar dxy = Norm._2.of(cur_xy.subtract(center)).subtract(radius).divide(maxSpeed);
-    return Max.of(dxy, ZeroScalar.get());
+    return Max.of(dxy, RealScalar.ZERO);
     // return ZeroScalar.get();
   }
 }

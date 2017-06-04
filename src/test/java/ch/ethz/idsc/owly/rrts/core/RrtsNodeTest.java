@@ -3,12 +3,11 @@ package ch.ethz.idsc.owly.rrts.core;
 
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Tensors;
-import ch.ethz.idsc.tensor.ZeroScalar;
 import junit.framework.TestCase;
 
 public class RrtsNodeTest extends TestCase {
   public void testSome() {
-    RrtsNode root = RrtsNode.createRoot(Tensors.vector(0), ZeroScalar.get());
+    RrtsNode root = RrtsNode.createRoot(Tensors.vector(0), RealScalar.ZERO);
     RrtsNode n1 = root.connectTo(Tensors.vector(1), RealScalar.of(10));
     RrtsNode n2 = n1.connectTo(Tensors.vector(2), RealScalar.of(10 + 1));
     RrtsNode n4 = n2.connectTo(Tensors.vector(4), RealScalar.of(10 + 1 + 2));

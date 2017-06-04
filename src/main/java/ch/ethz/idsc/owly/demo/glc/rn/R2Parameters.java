@@ -5,8 +5,8 @@ import ch.ethz.idsc.owly.glc.wrap.Parameters;
 import ch.ethz.idsc.tensor.RationalScalar;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
+import ch.ethz.idsc.tensor.Scalars;
 import ch.ethz.idsc.tensor.Tensor;
-import ch.ethz.idsc.tensor.ZeroScalar;
 import ch.ethz.idsc.tensor.sca.Log;
 import ch.ethz.idsc.tensor.sca.Power;
 
@@ -24,7 +24,7 @@ public class R2Parameters extends Parameters {
   /** @return if Lipschitz == 0: R*log(R)²/partitionScale
    * @return else : R²/partitionScale */
   public Tensor getEta() {
-    if (lipschitz.equals(ZeroScalar.get()))
+    if (Scalars.isZero(lipschitz))
       return getPartitionScale().map(Scalar::invert) //
           .multiply(RealScalar.of(getResolution()).multiply(Power.of(Log.function.apply(RealScalar.of(getResolution())), 2)));
     return getPartitionScale().map(Scalar::invert) //

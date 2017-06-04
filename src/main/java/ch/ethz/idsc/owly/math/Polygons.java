@@ -4,7 +4,6 @@ package ch.ethz.idsc.owly.math;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Scalars;
 import ch.ethz.idsc.tensor.Tensor;
-import ch.ethz.idsc.tensor.ZeroScalar;
 
 public class Polygons {
   /** @param polygon
@@ -21,7 +20,7 @@ public class Polygons {
       Scalar vyj = polygon.Get(j, 1);
       if (Scalars.lessThan(ty, vyi) != Scalars.lessThan(ty, vyj)) {
         Scalar div = vyj.subtract(vyi);
-        if (!div.equals(ZeroScalar.get())) {
+        if (Scalars.nonZero(div)) {
           Scalar vxi = polygon.Get(i, 0);
           Scalar vxj = polygon.Get(j, 0);
           Scalar r1 = vxj.subtract(vxi).multiply(ty.subtract(vyi));

@@ -4,8 +4,8 @@ import ch.ethz.idsc.owly.glc.wrap.Parameters;
 import ch.ethz.idsc.tensor.RationalScalar;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
+import ch.ethz.idsc.tensor.Scalars;
 import ch.ethz.idsc.tensor.Tensor;
-import ch.ethz.idsc.tensor.ZeroScalar;
 import ch.ethz.idsc.tensor.sca.Power;
 
 public class DeltaParameters extends Parameters {
@@ -22,7 +22,7 @@ public class DeltaParameters extends Parameters {
   /** @return if Lipschitz == 0: R*log(R)²
    * @return else : R^(5/Pi) */
   public Tensor getEta() {
-    if (lipschitz.equals(ZeroScalar.get()))
+    if (Scalars.isZero(lipschitz))
       return getPartitionScale().map(Scalar::invert) //
           .multiply(Power.of(RealScalar.of(getResolution()), 2));
     return getPartitionScale().map(Scalar::invert) //

@@ -9,7 +9,6 @@ import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Scalars;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
-import ch.ethz.idsc.tensor.sca.N;
 import ch.ethz.idsc.tensor.sca.Power;
 import junit.framework.TestCase;
 
@@ -31,12 +30,12 @@ public class ParametersTest extends TestCase {
           (RationalScalar) resolution, timeScale, depthScale, partitionScale, dtMax, maxIter, stateSpaceModel.getLipschitz());
       oldValue = newValue;
       newValue = resolution.divide(test.getDepthLimitExact());
-      System.out.println(resolution);
-      System.out.println("values:");
-      System.out.println(N.of(oldValue));
-      System.out.println(N.of(newValue));
-      System.out.println(oldValue);
-      System.out.println(newValue);
+      // System.out.println(resolution);
+      // System.out.println("values:");
+      // System.out.println(N.of(oldValue));
+      // System.out.println(N.of(newValue));
+      // System.out.println(oldValue);
+      // System.out.println(newValue);
       assertTrue(Scalars.lessEquals(newValue, oldValue));
       if (Scalars.lessThan(newValue.abs(), RealScalar.of(0.001)))
         break;
