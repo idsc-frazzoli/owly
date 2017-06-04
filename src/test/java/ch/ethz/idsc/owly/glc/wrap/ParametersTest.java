@@ -47,6 +47,7 @@ public class ParametersTest extends TestCase {
   public void testPowerofScalar() {
     Scalar scalar = RealScalar.of(0);
     Scalar exponent = RealScalar.of(2);
-    Power.of(scalar, exponent);
+    Scalar power = Power.of(scalar, exponent);
+    assertTrue(Scalars.isZero(power)); // 0 * 0 == 0
   }
 }

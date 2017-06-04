@@ -32,17 +32,17 @@ public final class StateTime implements Serializable {
     return String.format("t=%s  x=%s", time, x.toString());
   }
 
-  @Override
+  @Override // from Object
+  public int hashCode() {
+    return Objects.hash(x, time);
+  }
+
+  @Override // from Object
   public boolean equals(Object object) {
     if (object instanceof StateTime) {
       StateTime stateTime = (StateTime) object;
       return x.equals(stateTime.x) && time.equals(stateTime.time);
     }
     return false;
-  }
-
-  @Override
-  public int hashCode() {
-    return Objects.hash(x, time);
   }
 }

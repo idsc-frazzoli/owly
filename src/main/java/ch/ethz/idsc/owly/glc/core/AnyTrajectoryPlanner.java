@@ -233,6 +233,7 @@ public class AnyTrajectoryPlanner extends TrajectoryPlanner {
           if (obstacleQuery.isDisjoint(trajectory)) { // no collision
             nextParent.insertEdgeTo(next);
             // DomainMap at this key should not be sempty
+            // TODO do not put data structure changing statement in if clause!
             if (!insert(tempDomainKey, next))
               System.out.println("Something was replaced --> BUG");
             addedNodesToQueue++;

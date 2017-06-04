@@ -61,7 +61,7 @@ class R2glcAnyDemo {
       int increment = trajectoryPlanner.switchRootToState(newRootState.x());
       Gui.glc(trajectoryPlanner);
       parameters.increaseDepthLimit(increment);
-      trajectoryPlanner.setGoalQuery(rnGoal2, rnGoal2.goalQuery());
+      trajectoryPlanner.setGoalQuery(rnGoal2, rnGoal2);
       int iters2 = Expand.maxDepth(trajectoryPlanner, parameters.getDepthLimit());
       System.out.println("Replaced " + (trajectoryPlanner.replaceCount() - oldReplace)//
           + " Labels with better Nodes in run: " + iter + 1);

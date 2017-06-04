@@ -1,8 +1,7 @@
 // code by jl, theory by bp
 package ch.ethz.idsc.owly.glc.wrap;
 
-import java.math.BigInteger;
-
+import ch.ethz.idsc.tensor.IntegerQ;
 import ch.ethz.idsc.tensor.RationalScalar;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
@@ -44,9 +43,9 @@ public abstract class Parameters {
    * @param maxIter: maximum iterations */
   public Parameters( //
       RationalScalar resolution, Scalar timeScale, Scalar depthScale, Tensor partitionScale, Scalar dtMax, int maxIter) {
-    // Resolution needs to be a Integer as of A Generalized Label Correcting Algorithm, p.35, B. Paden
+    // resolution needs to be a Integer as of A Generalized Label Correcting Algorithm, p.35, B. Paden
     // The input space is indexed by the resolution
-    if (resolution.signInt() <= 0 || !resolution.denominator().equals(BigInteger.ONE))
+    if (resolution.signInt() <= 0 || !IntegerQ.of(resolution))
       throw new RuntimeException();
     this.resolution = resolution;
     this.timeScale = timeScale;

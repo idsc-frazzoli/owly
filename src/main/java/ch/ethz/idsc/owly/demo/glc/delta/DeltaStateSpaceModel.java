@@ -6,7 +6,7 @@ import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
 
-public class DeltaStateSpaceModel implements StateSpaceModel {
+class DeltaStateSpaceModel implements StateSpaceModel {
   private final ImageGradient rot;
 
   public DeltaStateSpaceModel(ImageGradient rot) {

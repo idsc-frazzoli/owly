@@ -17,11 +17,11 @@ import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Scalars;
 import ch.ethz.idsc.tensor.Tensor;
-import ch.ethz.idsc.tensor.red.Max;
 import ch.ethz.idsc.tensor.red.Norm;
 import ch.ethz.idsc.tensor.sca.Floor;
 import ch.ethz.idsc.tensor.sca.Mod;
 import ch.ethz.idsc.tensor.sca.Power;
+import ch.ethz.idsc.tensor.sca.Ramp;
 
 /** Se2 goal region is not elliptic, therefore we implement {@link Region} */
 public class Se2GoalManager implements Region, CostFunction {
@@ -42,6 +42,8 @@ public class Se2GoalManager implements Region, CostFunction {
   @Override
   /** Cost Function */
   public Scalar costIncrement(StateTime from, List<StateTime> trajectory, Flow flow) {
+    // return Trajectories.timeIncrement(from, trajectory); <- this cost is another version of goalManager
+    // TODO extract cost computation by curvature to separate function
     int endIndex = trajectory.size() - 1;
     if (endIndex < 3) // can not calculated curvature with 2 points
       throw new RuntimeException();
@@ -54,11 +56,10 @@ public class Se2GoalManager implements Region, CostFunction {
     Tensor b = trajectory.get(middleIndex).x().block(indices1, indices2);
     Tensor c = trajectory.get(endIndex).x().block(indices1, indices2);
     Scalar curvature = SignedCurvature2D.of(a, b, c);
-    // TODO Tensor libary needs to be fixed Power(0,1) = 0 NOT 1
-    if (curvature.equals(RealScalar.of(0)))
+    if (Scalars.isZero(curvature))
       return RealScalar.ONE.multiply(Trajectories.timeIncrement(from, trajectory));
-    return (RealScalar.ONE.add //
-    (Power.of(curvature.abs(), 2))).multiply(Trajectories.timeIncrement(from, trajectory));
+    return RealScalar.ONE.add(Power.of(curvature.abs(), 2)) //
+        .multiply(Trajectories.timeIncrement(from, trajectory));
     // integrate(1,t)
     // return Trajectories.timeIncrement(from, trajectory);
   }
@@ -70,7 +71,7 @@ public class Se2GoalManager implements Region, CostFunction {
     Scalar cur_angle = x.Get(2);
     Scalar dxy = Norm._2.of(cur_xy.subtract(xy)).subtract(radius);
     // Scalar dangle = PRINCIPAL.apply(cur_angle.subtract(angle)).abs().subtract(angle_delta);
-    return Max.of(dxy, RealScalar.ZERO); // TODO use ramp
+    return Ramp.of(dxy);
     // return Max.of(Norm._2.of(tensor.subtract(center)).subtract(radius), ZeroScalar.get());
     // return ZeroScalar.get();
   }

@@ -17,9 +17,10 @@ import ch.ethz.idsc.tensor.red.Max;
 import ch.ethz.idsc.tensor.red.Norm;
 
 public class DeltaGoalManager extends SimpleTrajectoryRegionQuery implements CostFunction {
-  final Tensor center;
-  final Scalar radius;
-  final Scalar maxSpeed;
+  private final Tensor center;
+  private final Scalar radius;
+  @Deprecated
+  private final Scalar maxSpeed; // TODO not used
 
   public DeltaGoalManager(Tensor center, Tensor radius, Scalar maxSpeed) {
     super(new TimeInvariantRegion(new EllipsoidRegion(center, radius)));
@@ -37,7 +38,7 @@ public class DeltaGoalManager extends SimpleTrajectoryRegionQuery implements Cos
     for (int i = 0; i < flow.getU().length(); i++) {
       sum = sum.add(Norm._2.of(flow.getU()).add(RealScalar.of(0.1)));
     }
-    // Costfunction: integrate (u² +0.1, t)
+    // Costfunction: integrate (u^2 +0.1, t)
     // TODO multiply with time needed?, as trajectorytimelength always the same
     return sum.multiply(Trajectories.timeIncrement(from, trajectory));
   }
