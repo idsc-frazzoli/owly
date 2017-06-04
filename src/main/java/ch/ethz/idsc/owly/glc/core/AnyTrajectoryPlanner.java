@@ -253,7 +253,7 @@ public class AnyTrajectoryPlanner extends TrajectoryPlanner {
 
   @Override
   protected GlcNode createRootNode(Tensor x) { // TODO check if time of root node should always be set to 0
-    return new GlcNode(null, new StateTime(x, RealScalar.ZERO), RealScalar.ZERO, //
+    return GlcNodes.of(null, new StateTime(x, RealScalar.ZERO), RealScalar.ZERO, //
         costFunction.minCostToGoal(x));
   }
 

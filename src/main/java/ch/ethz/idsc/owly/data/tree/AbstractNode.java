@@ -13,8 +13,15 @@ public abstract class AbstractNode<T extends Node> implements Node {
    * @param child
    * @return true if child was added to children() as a result of calling the function,
    * false if child was already present, or could not be added to children() */
-  protected abstract boolean protected_registerChild(T child);
+  protected abstract boolean protected_insertChild(T child);
 
+  /** function has to be provided by deriving class that
+   * holds the data structure to store the child nodes.
+   * 
+   * function removes given child from collection children()
+   * 
+   * @param child
+   * @return true if child was removed from collection of children */
   protected abstract boolean protected_removeChild(T child);
 
   @Override // from Node
@@ -25,8 +32,8 @@ public abstract class AbstractNode<T extends Node> implements Node {
   @SuppressWarnings("unchecked")
   @Override // from Node
   public final void removeEdgeTo(Node child) {
-    boolean modified = protected_removeChild((T) child);
-    if (!modified)
+    boolean removed = protected_removeChild((T) child);
+    if (!removed)
       throw new RuntimeException();
     if (child.isRoot())
       throw new RuntimeException();
@@ -36,8 +43,8 @@ public abstract class AbstractNode<T extends Node> implements Node {
   @SuppressWarnings("unchecked")
   @Override // from Node
   public final void insertEdgeTo(Node child) {
-    boolean modified = protected_registerChild((T) child);
-    if (!modified) // for this flow there already was a child
+    boolean inserted = protected_insertChild((T) child);
+    if (!inserted) // for this flow there already was a child
       throw new RuntimeException();
     if (!child.isRoot()) // child already has parent
       throw new RuntimeException();
