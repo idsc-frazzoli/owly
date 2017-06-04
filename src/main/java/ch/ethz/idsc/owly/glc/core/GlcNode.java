@@ -2,6 +2,7 @@
 package ch.ethz.idsc.owly.glc.core;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -40,7 +41,7 @@ public class GlcNode extends AbstractNode<GlcNode> implements StateCostNode {
 
   @Override // from Node
   public Collection<GlcNode> children() {
-    return children.values();
+    return Collections.unmodifiableCollection(children.values());
   }
 
   @Override // from StateCostNode
@@ -59,6 +60,13 @@ public class GlcNode extends AbstractNode<GlcNode> implements StateCostNode {
     child.depth = depth + 1;
     children.put(child.flow, child);
     return inserted;
+  }
+
+  @Override
+  protected final boolean protected_removeChild(GlcNode child) {
+    boolean removed = children.containsKey(child.flow);
+    children.remove(child.flow);
+    return removed;
   }
 
   public Flow flow() {

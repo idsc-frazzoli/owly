@@ -1,14 +1,10 @@
 // code by Eric Simonton
 // adapted by jph
-package ch.ethz.idsc.owly.data.tree;
+package ch.ethz.idsc.owly.data.nd;
 
 import java.util.Arrays;
 import java.util.List;
 
-import ch.ethz.idsc.owly.data.nd.NdCluster;
-import ch.ethz.idsc.owly.data.nd.NdDistanceInterface;
-import ch.ethz.idsc.owly.data.nd.NdEntry;
-import ch.ethz.idsc.owly.data.nd.NdTreeMap;
 import ch.ethz.idsc.tensor.Tensors;
 import junit.framework.TestCase;
 

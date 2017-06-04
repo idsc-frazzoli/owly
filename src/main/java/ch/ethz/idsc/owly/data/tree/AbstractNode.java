@@ -15,6 +15,8 @@ public abstract class AbstractNode<T extends Node> implements Node {
    * false if child was already present, or could not be added to children() */
   protected abstract boolean protected_registerChild(T child);
 
+  protected abstract boolean protected_removeChild(T child);
+
   @Override // from Node
   public final T parent() {
     return parent;
@@ -23,7 +25,7 @@ public abstract class AbstractNode<T extends Node> implements Node {
   @SuppressWarnings("unchecked")
   @Override // from Node
   public final void removeEdgeTo(Node child) {
-    boolean modified = children().remove(child);
+    boolean modified = protected_removeChild((T) child);
     if (!modified)
       throw new RuntimeException();
     if (child.isRoot())

@@ -1,4 +1,4 @@
-# owly
+# ch.ethz.idsc.owly
 
 The repository contains Java 8 implementations of motion planners and their variants.
 
