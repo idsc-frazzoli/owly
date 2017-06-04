@@ -3,6 +3,7 @@ package ch.ethz.idsc.owly.glc.core;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -15,9 +16,9 @@ import ch.ethz.idsc.owly.math.state.StateIntegrator;
 import ch.ethz.idsc.owly.math.state.StateTime;
 import ch.ethz.idsc.owly.math.state.Trajectories;
 import ch.ethz.idsc.owly.math.state.TrajectoryRegionQuery;
+import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalars;
 import ch.ethz.idsc.tensor.Tensor;
-import ch.ethz.idsc.tensor.ZeroScalar;
 
 /** TODO assumptions in order to use SimpleAnyTrajectoryPlanner */
 public class SimpleAnyTrajectoryPlanner extends TrajectoryPlanner {
@@ -57,7 +58,6 @@ public class SimpleAnyTrajectoryPlanner extends TrajectoryPlanner {
       CandidatePair nextCandidate = new CandidatePair(node, next);
       final Tensor domain_key = convertToKey(next.state());
       candidates.insert(domain_key, nextCandidate);
-      // System.out.println("Candidatessize is: " + candidates.size());
       // ALL Candidates are saved in CandidateList
     }
     // save candidates in CandidateMap for RootSwitchlater
@@ -68,19 +68,15 @@ public class SimpleAnyTrajectoryPlanner extends TrajectoryPlanner {
       GlcNode node, Map<GlcNode, List<StateTime>> connectors, CandidatePairQueueMap candidates) {
     for (Entry<Tensor, CandidatePairQueue> entry : candidates.map.entrySet()) {
       final Tensor domain_key = entry.getKey();
-      final CandidatePairQueue domainCandidateQueue = entry.getValue();
-      if (domainCandidateQueue != null && best == null) {
-        int Candidatesleft = domainCandidateQueue.size();
-        while (Candidatesleft > 0) {
-          // while (!domainCandidateQueue.isEmpty()) {
-          CandidatePair nextCandidatePair = domainCandidateQueue.element();
-          Candidatesleft--;
+      final CandidatePairQueue candidateQueue = entry.getValue();
+      if (candidateQueue != null && best == null) {
+        while (!candidateQueue.isEmpty()) {
+          final CandidatePair nextCandidatePair = candidateQueue.element();
           final GlcNode former = getNode(domain_key);
           final GlcNode next = nextCandidatePair.getCandidate();
           if (former != null) {
             if (Scalars.lessThan(next.merit(), former.merit())) {
               // collision check only if new node is better
-              domainCandidateQueue.remove(); // remove next from DomainQueue
               if (obstacleQuery.isDisjoint(connectors.get(next))) {// better node not collision
                 // current label disconnecting,
                 // current label back in Candidatelist
@@ -91,71 +87,78 @@ public class SimpleAnyTrajectoryPlanner extends TrajectoryPlanner {
                 break;
               }
             }
+            // candidateQueue.remove();
           } else {
-            domainCandidateQueue.remove();
+            // candidateQueue.remove();
             if (obstacleQuery.isDisjoint(connectors.get(next))) {
               node.insertEdgeTo(next);
               insert(domain_key, next);
               if (!goalQuery.isDisjoint(connectors.get(next)))
                 offerDestination(next);
+              candidateQueue.remove();
               break;
             }
           }
+          candidateQueue.remove();
         }
       }
     }
   }
 
-  public void switchRootToState(Tensor state) {
+  public int switchRootToState(Tensor state) {
     GlcNode newRoot = this.getNode(convertToKey(state));
+    int increaseDepthBy = 0;
     // TODO not nice, as we jump from state to startnode
     if (newRoot != null)
-      switchRootToNode(newRoot);
+      increaseDepthBy = switchRootToNode(newRoot);
     else
       System.out.println("This domain is not labelled yet");
+    return increaseDepthBy;
   }
 
-  private void switchRootToNode(GlcNode newRoot) {
+  public int switchRootToNode(GlcNode newRoot) {
+    GlcNode oldRoot = getNodesfromRootToGoal().get(0);
+    if (newRoot.isRoot()) {
+      System.out.println("node is already root");
+      return 0;
+    }
+    int increaseDepthBy = newRoot.reCalculateDepth();
     int oldDomainMapSize = domainMap().size();
     int oldQueueSize = queue().size();
     System.out.println("changing to root:" + newRoot.state());
-    if (newRoot.isRoot()) {
-      System.out.println("node is already root");
-      return;
-    }
-    if (best != null) {
-      List<StateTime> bestList = new ArrayList<>();
-      bestList.add(best.stateTime());
-      if (goalQuery.isDisjoint(bestList)) // if best not in goal, delete from best
-        best = null;
-      else
-        System.out.println("**** Goal already found ****");
-    }
     // removes the new root from the child list of its parent
     final GlcNode parent = newRoot.parent();
     parent.removeEdgeTo(newRoot);
-    Collection<GlcNode> oldtree = Nodes.ofSubtree(parent);
-    if (queue().removeAll(oldtree))
-      System.out.println("Removed " + (oldQueueSize - queue().size()) + " nodes from Queue");
-    int removedNodes = 0;
-    int addedNodesToQueue = 0;
-    for (GlcNode tempNode : oldtree) { // loop for each domain, where sth was deleted
-      Tensor tempDomainKey = convertToKey(tempNode.state());
-      if (domainMap().remove(tempDomainKey, tempNode)) // removing from DomainMap
-        removedNodes++;
-      // --
-      // Iterate through DomainQueue to find alternative: RELABELING
-      // --
-      // CandidatePairQueue queue = new CandidatePairQueue(tempCandidateQueue);
-      // TODO: Why does not work with CandidatePairQueue
+    // Collecting deletetree
+    Collection<GlcNode> deleteTreeCollection = Nodes.ofSubtree(oldRoot);
+    // GOAL deleted?
+    if (best != null) {
+      if (deleteTreeCollection.contains(best)) // check if goalnode was deleted
+        best = null;
     }
-    System.out.println(removedNodes + " out of " + oldDomainMapSize + " Nodes removed from Tree ");
-    System.out.println(addedNodesToQueue + " Nodes added to Queue");
+    // QUEUE removal
+    // TODO Parallizable?
+    if (queue().removeAll(deleteTreeCollection)) // removing from queue;
+      System.out.println("Removed " + (oldQueueSize - queue().size()) + " nodes from Queue");
+    // DOMAIN removal
+    domainMap().values().removeAll(deleteTreeCollection);
+    System.out.println(oldDomainMapSize - domainMap().size() + " out of " + oldDomainMapSize + //
+        " Domains removed from DomainMap = " + domainMap().size());
+    // EDGE: Removing Edges between Nodes in DeleteTree
+    // TODO paralizable?
+    for (GlcNode tempNode : deleteTreeCollection) {
+      if (!tempNode.isRoot())
+        tempNode.parent().removeEdgeTo(tempNode);
+    }
+    // --
+    System.out.println(0 + " Nodes added to Queue");
+    System.out.println("**Rootswitch finished**");
+    return increaseDepthBy;
   }
 
   @Override
   protected GlcNode createRootNode(Tensor x) { // TODO check if time of root node should always be set to 0
-    return new GlcNode(null, new StateTime(x, ZeroScalar.get()), ZeroScalar.get(), //
+    return new GlcNode(null, new StateTime(x, RealScalar.ZERO), RealScalar.ZERO, //
         costFunction.minCostToGoal(x));
   }
 
@@ -178,36 +181,52 @@ public class SimpleAnyTrajectoryPlanner extends TrajectoryPlanner {
   public void setGoalQuery(CostFunction newCostFunction, TrajectoryRegionQuery newGoal) {
     this.goalQuery = newGoal;
     costFunction = newCostFunction;
-    //TODO refactoring as some code is double
     if (best != null) {
       List<StateTime> bestList = new ArrayList<>();
       bestList.add(best.stateTime());
-      if (newGoal.isDisjoint(bestList)) {
-        best = null;
-        // TODO Do I need to check entire tree if goal is already in it? Yes (JL)
-        long tic = System.nanoTime();
-        // Changing the Merit in Queue for each Node
-        List<GlcNode> list = new LinkedList<>(queue());
-        queue().clear();
-        list.stream().parallel() //
-            .forEach(glcNode -> glcNode.setMinCostToGoal(costFunction.minCostToGoal(glcNode.state())));
-        queue().addAll(list);
-        long toc = System.nanoTime();
-        System.out.println("Updated Merit of Queue with " + list.size() + " nodes: " + ((toc - tic) * 1e-9));
-      } else {
-        System.out.println("Goal was already found in the existing tree");
+      if (!newGoal.isDisjoint(bestList)) {
         offerDestination(best);
-      }
-    } else {
-      long tic = System.nanoTime();
-      // Changing the Merit in Queue for each Node
-      List<GlcNode> list = new LinkedList<>(queue());
-      queue().clear();
-      list.stream().parallel() //
-          .forEach(glcNode -> glcNode.setMinCostToGoal(costFunction.minCostToGoal(glcNode.state())));
-      queue().addAll(list);
-      long toc = System.nanoTime();
-      System.out.println("Updated Merit of Queue with " + list.size() + " nodes: " + ((toc - tic) * 1e-9));
+        System.out.println("Goal was already found in the existing tree");
+        return;
+      } // Old Goal is in new Goalregion
     }
+    // Best is either not in newGoal or Null
+    best = null;
+    // Checking if goal is already in tree
+    // TODO check if tree has right size TreeCollection
+    {
+      long tic = System.nanoTime();
+      Collection<GlcNode> TreeCollection = Nodes.ofSubtree(getNodesfromRootToGoal().get(0));
+      System.out.println("treesize for goal checking:" + TreeCollection.size());
+      // TODO more efficient way then going through entire tree?
+      Iterator<GlcNode> TreeCollectionIterator = TreeCollection.iterator();
+      while (TreeCollectionIterator.hasNext()) {
+        GlcNode current = TreeCollectionIterator.next();
+        List<StateTime> currentList = new ArrayList<>();
+        List<StateTime> bestList = new ArrayList<>();
+        bestList.add(current.stateTime());
+        if (!newGoal.isDisjoint(currentList)) { // current Node in Goal
+          System.out.println("New Goal was found in current tree");
+          offerDestination(current);
+        }
+      }
+      long toc = System.nanoTime();
+      System.out.println("Checked current tree for goal in "//
+          + (toc - tic) * 1e-9 + "s");
+    }
+    // -- Updating the Queue
+    long tic = System.nanoTime();
+    // Changing the Merit in Queue for each Node
+    List<GlcNode> list = new LinkedList<>(queue());
+    queue().clear();
+    list.stream().parallel() //
+        .forEach(glcNode -> glcNode.setMinCostToGoal(costFunction.minCostToGoal(glcNode.state())));
+    // list.stream().parallel().// Changing the depth of queue
+    // forEach(glcNode -> glcNode.reCalculateDepth());
+    queue().addAll(list);
+    long toc = System.nanoTime();
+    System.out.println("Updated Merit & Depth of Queue with " + list.size() + " nodes in: " //
+        + ((toc - tic) * 1e-9) + "s");
+    System.out.println("Goal switch finished");
   }
 }

@@ -2,7 +2,6 @@
 package ch.ethz.idsc.owly.glc.core;
 
 import ch.ethz.idsc.tensor.RealScalar;
-import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Scalars;
 
 /** class contains static utility function that operate on instances of the
@@ -36,19 +35,20 @@ public enum Expand {
    * @param expandInterface
    * @param depthLimit */
   public static int maxDepth(ExpandInterface expandInterface, int depthLimit) {
+    System.out.println("Expanding");
     int expandCount = 0;
     while (true) {
       expandCount++;
       GlcNode node = expandInterface.pollNext();
       if (node == null) {
-        System.out.println("**** Queue is empty -- No Goal was found");// queue is empty
+        System.err.println("**** Queue is empty -- No Goal was found");// queue is empty
         break;
       }
       expandInterface.expand(node);
       if (expandInterface.getBest() != null) // found node in goal region
         break;
       if (depthLimit < node.depth()) {
-        System.out.println("*** DepthLimit reached -- No Goal was found ***");
+        System.err.println("*** DepthLimit reached -- No Goal was found ***");
         break;
       }
     }
@@ -67,7 +67,7 @@ public enum Expand {
       expandCount++;
       GlcNode node = expandInterface.pollNext();
       if (node == null) {
-        System.out.println("**** Queue is empty -- No Goal was found");// queue is empty
+        System.err.println("**** Queue is empty -- No Goal was found");// queue is empty
         break;
       }
       expandInterface.expand(node);

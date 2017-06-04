@@ -2,6 +2,7 @@
 package ch.ethz.idsc.owly.math.state;
 
 import java.io.Serializable;
+import java.util.Objects;
 
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
@@ -29,5 +30,19 @@ public final class StateTime implements Serializable {
 
   public String info() {
     return String.format("t=%s  x=%s", time, x.toString());
+  }
+
+  @Override // from Object
+  public int hashCode() {
+    return Objects.hash(x, time);
+  }
+
+  @Override // from Object
+  public boolean equals(Object object) {
+    if (object instanceof StateTime) {
+      StateTime stateTime = (StateTime) object;
+      return x.equals(stateTime.x) && time.equals(stateTime.time);
+    }
+    return false;
   }
 }

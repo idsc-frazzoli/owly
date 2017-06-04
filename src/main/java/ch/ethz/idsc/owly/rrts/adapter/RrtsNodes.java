@@ -6,8 +6,8 @@ import ch.ethz.idsc.owly.rrts.core.Transition;
 import ch.ethz.idsc.owly.rrts.core.TransitionCostFunction;
 import ch.ethz.idsc.owly.rrts.core.TransitionSpace;
 import ch.ethz.idsc.tensor.Scalar;
+import ch.ethz.idsc.tensor.Scalars;
 import ch.ethz.idsc.tensor.TensorRuntimeException;
-import ch.ethz.idsc.tensor.ZeroScalar;
 import ch.ethz.idsc.tensor.sca.Chop;
 
 public enum RrtsNodes {
@@ -22,7 +22,7 @@ public enum RrtsNodes {
       Scalar tran = node.costFromRoot().subtract(parent.costFromRoot());
       Transition transition = transitionSpace.connect(parent.state(), node.state());
       Scalar tc = transitionCostFunction.cost(transition);
-      status &= Chop.of(tc.subtract(tran)).equals(ZeroScalar.get());
+      status &= Scalars.isZero(Chop.of(tc.subtract(tran)));
       if (!status)
         throw TensorRuntimeException.of(tc, tran);
       status &= parent.costFromRoot().add(tran).equals(node.costFromRoot());

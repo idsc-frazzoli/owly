@@ -52,11 +52,18 @@ public abstract class TrajectoryPlanner implements ExpandInterface, Serializable
     insert(convertToKey(x), createRootNode(x));
   }
 
-  protected final void insert(Tensor domain_key, GlcNode node) {
+  /** @param domain_key
+   * @param node
+   * @return false if Key was already occupied, otherwise true */
+  // TODO return value only used once for check -> different API
+  protected final boolean insert(Tensor domain_key, GlcNode node) {
     queue.add(node);
-    GlcNode prev = domainMap.put(domain_key, node);
-    if (prev != null)
+    // TODO could be small tree <- ???
+    boolean replaced = !domainMap.containsKey(domain_key);
+    domainMap.put(domain_key, node);
+    if (replaced)
       ++replaceCount;
+    return !replaced;
   }
 
   /** @param domain_key
@@ -124,9 +131,11 @@ public abstract class TrajectoryPlanner implements ExpandInterface, Serializable
   // TODO rename to coarse path ...
   /** @return path to goal if found, or path to best Node in queue */
   public final List<StateTime> getPathFromRootToGoal() {
-    if (best != null)
-      return Nodes.fromRoot(best).stream().map(GlcNode::stateTime).collect(Collectors.toList());
-    else
-      return Nodes.fromRoot(peek()).stream().map(GlcNode::stateTime).collect(Collectors.toList());
+    return Nodes.fromRoot(best == null ? peek() : best).stream() //
+        .map(GlcNode::stateTime).collect(Collectors.toList());
+  }
+
+  public final List<GlcNode> getNodesfromRootToGoal() {
+    return Nodes.fromRoot(best == null ? best : peek());
   }
 }

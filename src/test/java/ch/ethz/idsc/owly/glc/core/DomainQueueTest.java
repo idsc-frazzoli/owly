@@ -6,15 +6,14 @@ import java.util.HashMap;
 import java.util.Map;
 
 import ch.ethz.idsc.tensor.RealScalar;
-import ch.ethz.idsc.tensor.ZeroScalar;
 import junit.framework.TestCase;
 
 public class DomainQueueTest extends TestCase {
   public void testQueue() {
     DomainQueue dq = new DomainQueue();
-    dq.add(new GlcNode(null, null, RealScalar.of(1), ZeroScalar.get()));
-    dq.add(new GlcNode(null, null, RealScalar.of(0), ZeroScalar.get()));
-    dq.add(new GlcNode(null, null, RealScalar.of(9), ZeroScalar.get()));
+    dq.add(new GlcNode(null, null, RealScalar.of(1), RealScalar.ZERO));
+    dq.add(new GlcNode(null, null, RealScalar.of(0), RealScalar.ZERO));
+    dq.add(new GlcNode(null, null, RealScalar.of(9), RealScalar.ZERO));
     GlcNode n1 = dq.poll();
     assertEquals(n1.costFromRoot().number(), 0);
     GlcNode n2 = dq.poll();

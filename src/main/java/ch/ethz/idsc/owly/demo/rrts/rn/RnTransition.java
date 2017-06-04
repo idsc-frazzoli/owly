@@ -10,7 +10,6 @@ import ch.ethz.idsc.owly.rrts.adapter.AbstractTransition;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Scalars;
 import ch.ethz.idsc.tensor.Tensor;
-import ch.ethz.idsc.tensor.ZeroScalar;
 import ch.ethz.idsc.tensor.red.Norm;
 
 class RnTransition extends AbstractTransition {
@@ -28,7 +27,7 @@ class RnTransition extends AbstractTransition {
     if (Scalars.lessEquals(dt, ofs))
       throw new RuntimeException();
     final Scalar length = length();
-    if (length.equals(ZeroScalar.get()))
+    if (Scalars.isZero(length))
       return Collections.emptyList();
     List<StateTime> list = new ArrayList<>();
     while (Scalars.lessThan(ofs, length)) {

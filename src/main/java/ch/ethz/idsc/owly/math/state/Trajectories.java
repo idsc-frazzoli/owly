@@ -5,9 +5,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import ch.ethz.idsc.owly.glc.core.GlcNode;
+import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Scalars;
-import ch.ethz.idsc.tensor.ZeroScalar;
 
 /** utility functions that operate on List<StateTime> */
 public enum Trajectories {
@@ -18,7 +18,7 @@ public enum Trajectories {
    * @return time increment between given from State and end of trajectory */
   public static Scalar timeIncrement(StateTime from, List<StateTime> trajectory) {
     Scalar dt = getLast(trajectory).time().subtract(from.time());
-    if (Scalars.lessEquals(dt, ZeroScalar.get()))
+    if (Scalars.lessEquals(dt, RealScalar.ZERO))
       throw new RuntimeException();
     return dt;
   }

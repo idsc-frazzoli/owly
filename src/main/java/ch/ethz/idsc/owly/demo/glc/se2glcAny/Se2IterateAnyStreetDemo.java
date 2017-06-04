@@ -2,7 +2,6 @@
 package ch.ethz.idsc.owly.demo.glc.se2glcAny;
 
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
 
 import ch.ethz.idsc.owly.demo.glc.se2.Se2Controls;
@@ -78,18 +77,16 @@ class Se2IterateAnyStreetDemo {
     owlyFrame.setGlc(trajectoryPlanner);
     // ---
     // --
-    Iterator<StateTime> trajectoryIterator = trajectory.iterator();
-    trajectoryIterator.next();
-    for (int iter = 0; iter < 100; iter++) {
+    for (int iter = 0; iter < 300; iter++) {
       // while (trajectoryIterator.hasNext()) {
-      Thread.sleep(500);
+      // Thread.sleep(500);
       tic = System.nanoTime();
-      int index = iter % 4;
-      System.out.println("index" + index);
       Se2GoalManager se2GoalManager2 = new Se2GoalManager(Tensors.vector(-7 + iter, 0), RealScalar.of(0), DoubleScalar.of(.1), Se2Utils.DEGREE(10));
       StateTime newRootState = trajectory.get(1);
       // ---
-      trajectoryPlanner.switchRootToState(newRootState.x());
+      int increment = trajectoryPlanner.switchRootToState(newRootState.x());
+      parameters.increaseDepthLimit(increment);
+      System.out.println("New depthLimit is: " + parameters.getDepthLimit() + " after increment of " + increment);
       trajectoryPlanner.setGoalQuery(se2GoalManager2, se2GoalManager2.goalQuery());
       int iters2 = Expand.maxDepth(trajectoryPlanner, parameters.getDepthLimit());
       trajectory = trajectoryPlanner.getPathFromRootToGoal();

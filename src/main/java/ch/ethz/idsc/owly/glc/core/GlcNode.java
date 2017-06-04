@@ -1,4 +1,4 @@
-// code by bapaden and jph
+// code by bapaden, jl and jph
 package ch.ethz.idsc.owly.glc.core;
 
 import java.util.Collection;
@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import ch.ethz.idsc.owly.data.tree.AbstractNode;
+import ch.ethz.idsc.owly.data.tree.Nodes;
 import ch.ethz.idsc.owly.data.tree.StateCostNode;
 import ch.ethz.idsc.owly.math.flow.Flow;
 import ch.ethz.idsc.owly.math.state.StateTime;
@@ -22,7 +23,7 @@ public class GlcNode extends AbstractNode<GlcNode> implements StateCostNode {
   private final Flow flow;
   private final StateTime stateTime;
   private final Scalar costFromRoot;
-  private Scalar merit; // TODO find solution with final
+  private Scalar merit;
   /** depth == 0 for root node, otherwise depth > 0 */
   private int depth = 0;
 
@@ -54,10 +55,10 @@ public class GlcNode extends AbstractNode<GlcNode> implements StateCostNode {
 
   @Override // from AbstractNode
   protected boolean protected_registerChild(GlcNode child) {
-    // boolean inserted = !children.containsKey(child.flow);
+    boolean inserted = !children.containsKey(child.flow);
     child.depth = depth + 1;
-    GlcNode former = children.put(child.flow, child);
-    return former == null;
+    children.put(child.flow, child);
+    return inserted;
   }
 
   public Flow flow() {
@@ -82,5 +83,10 @@ public class GlcNode extends AbstractNode<GlcNode> implements StateCostNode {
 
   public int depth() {
     return depth;
+  }
+
+  /* package */ int reCalculateDepth() {
+    depth = Nodes.toRoot(this).size() - 1;
+    return depth; // as RootNode has depth 0 (NOT 1)
   }
 }

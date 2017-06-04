@@ -18,8 +18,8 @@ import ch.ethz.idsc.tensor.sca.Ramp;
 
 /** objective is minimum path length */
 class RnGoalManager extends SimpleTrajectoryRegionQuery implements CostFunction {
-  final Tensor center;
-  final Scalar radius;
+  private final Tensor center;
+  private final Scalar radius;
 
   public RnGoalManager(Tensor center, Scalar radius) {
     super(new TimeInvariantRegion(new EllipsoidRegion(center, Array.of(l -> radius, center.length()))));
@@ -34,6 +34,6 @@ class RnGoalManager extends SimpleTrajectoryRegionQuery implements CostFunction 
 
   @Override
   public Scalar minCostToGoal(Tensor x) {
-    return (Scalar) Ramp.of(Norm._2.of(x.subtract(center)).subtract(radius));
+    return Ramp.of(Norm._2.of(x.subtract(center)).subtract(radius));
   }
 }

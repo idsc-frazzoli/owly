@@ -50,7 +50,7 @@ class Se2glcDemo {
     // ---
     System.out.println("scale=" + parameters.getEta());
     parameters.printResolution();
-    Collection<Flow> controls = Se2Controls.createControls(Se2Utils.DEGREE(45), 6);
+    Collection<Flow> controls = Se2Controls.createControls(Se2Utils.DEGREE(45), parameters.getResolution());
     Se2GoalManager se2GoalManager = new Se2GoalManager( //
         Tensors.vector(0, 1), RealScalar.of(Math.PI), //
         DoubleScalar.of(.1), Se2Utils.DEGREE(10));

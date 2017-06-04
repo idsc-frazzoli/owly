@@ -1,9 +1,9 @@
 // code by jl, theory by bp
 package ch.ethz.idsc.owly.glc.wrap;
 
-import java.math.BigInteger;
-
+import ch.ethz.idsc.tensor.IntegerQ;
 import ch.ethz.idsc.tensor.RationalScalar;
+import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
@@ -32,6 +32,8 @@ public abstract class Parameters {
   private final Scalar dtMax;
   // Time between nodes
   private final Scalar expandTime;
+  // depth limit
+  private Scalar depthLimit;
 
   /** @param resolution: resolution of algorithm
    * @param timeScale: Change time coordinate to be appropriate
@@ -41,8 +43,9 @@ public abstract class Parameters {
    * @param maxIter: maximum iterations */
   public Parameters( //
       RationalScalar resolution, Scalar timeScale, Scalar depthScale, Tensor partitionScale, Scalar dtMax, int maxIter) {
-    // TODO why does resolution have to be an integer?
-    if (resolution.signInt() <= 0 || !resolution.denominator().equals(BigInteger.ONE))
+    // resolution needs to be a Integer as of A Generalized Label Correcting Algorithm, p.35, B. Paden
+    // The input space is indexed by the resolution
+    if (resolution.signInt() <= 0 || !IntegerQ.of(resolution))
       throw new RuntimeException();
     this.resolution = resolution;
     this.timeScale = timeScale;
@@ -51,6 +54,9 @@ public abstract class Parameters {
     this.dtMax = dtMax;
     this.maxIter = maxIter;
     this.expandTime = timeScale.divide(resolution);
+    this.depthLimit = depthScale //
+        .multiply(resolution) //
+        .multiply(Log.function.apply(resolution));
   }
 
   /** @return time_scale / Resolution */
@@ -60,13 +66,16 @@ public abstract class Parameters {
 
   /** @return depthScale * R * log(R) */
   public Scalar getDepthLimitExact() {
-    return depthScale //
-        .multiply(resolution) //
-        .multiply(Log.function.apply(resolution));
+    return depthLimit;
   }
 
   public int getDepthLimit() {
-    return getDepthLimitExact().number().intValue();
+    return depthLimit.number().intValue();
+  }
+
+  /** @param increment value by which to increase the depthlimit */
+  public void increaseDepthLimit(int increment) {
+    depthLimit = depthLimit.add(RealScalar.of(increment));
   }
 
   /** @param Lipschitz
@@ -85,8 +94,8 @@ public abstract class Parameters {
     return maxIter;
   }
 
-  public RationalScalar getResolution() {
-    return resolution;
+  public int getResolution() {
+    return resolution.number().intValue();
   }
 
   public Tensor getPartitionScale() {

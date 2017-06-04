@@ -3,7 +3,6 @@ package ch.ethz.idsc.owly.demo.glc.se2glcAny;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
 
 import ch.ethz.idsc.owly.demo.glc.se2.Se2Controls;
@@ -40,8 +39,8 @@ import ch.ethz.idsc.tensor.Tensors;
 class Se2IterateSimpleAnyCircleDemo {
   public static void main(String[] args) throws Exception {
     RationalScalar resolution = (RationalScalar) RealScalar.of(6);
-    Scalar timeScale = RealScalar.of(10);
-    Scalar depthScale = RealScalar.of(5);
+    Scalar timeScale = RealScalar.of(6);
+    Scalar depthScale = RealScalar.of(10);
     Tensor partitionScale = Tensors.vector(3, 3, 50 / Math.PI);
     Scalar dtMax = RationalScalar.of(1, 6);
     int maxIter = 2000;
@@ -55,7 +54,7 @@ class Se2IterateSimpleAnyCircleDemo {
     // ---
     System.out.println("1/Domainsize=" + parameters.getEta());
     parameters.printResolution();
-    Collection<Flow> controls = Se2Controls.createControls(Se2Utils.DEGREE(45), 6);
+    Collection<Flow> controls = Se2Controls.createControls(Se2Utils.DEGREE(45), parameters.getResolution());
     Se2GoalManager se2GoalManager = new Se2GoalManager( //
         Tensors.vector(3, 0), RealScalar.of(1.5 * Math.PI), // east
         DoubleScalar.of(.1), Se2Utils.DEGREE(10));
@@ -88,34 +87,41 @@ class Se2IterateSimpleAnyCircleDemo {
     goalListPosition.add(Tensors.vector(0, 3)); // North
     goalListPosition.add(Tensors.vector(3, 0)); // East
     List<RealScalar> goalListAngle = new ArrayList<>();
-    goalListAngle.add(RealScalar.of(Math.PI));        // South
-    goalListAngle.add(RealScalar.of(0.5 * Math.PI));  // West
-    goalListAngle.add(RealScalar.of(0));              // North
+    goalListAngle.add(RealScalar.of(Math.PI)); // South
+    goalListAngle.add(RealScalar.of(0.5 * Math.PI)); // West
+    goalListAngle.add(RealScalar.of(0)); // North
     goalListAngle.add(RealScalar.of(-0.5 * Math.PI)); // East
     // --
-    Iterator<StateTime> trajectoryIterator = trajectory.iterator();
-    trajectoryIterator.next();
-    for (int iter = 0; iter < 100; iter++) {
-      Thread.sleep(500);
+    int iter = 0;
+    Scalar timeSum = RealScalar.of(0);
+    while (owlyFrame.jFrame.isVisible()) {
+      Thread.sleep(3000);
       tic = System.nanoTime();
       int index = iter % 4;
       Se2GoalManager se2GoalManager2 = new Se2GoalManager( //
           goalListPosition.get(index), goalListAngle.get(index), //
           DoubleScalar.of(0.1), Se2Utils.DEGREE(10));
-      StateTime newRootState = trajectory.get(1);
-      // ---
-      trajectoryPlanner.switchRootToState(newRootState.x());
+      StateTime newRootState = trajectory.get(2);
+      // GlcNode newRootNode = trajectoryPlanner.getNodesfromRootToGoal().get(1);
+      int increment = trajectoryPlanner.switchRootToState(newRootState.x());
+      parameters.increaseDepthLimit(increment);
+      // trajectoryPlanner.switchRootToNode(newRootNode);
       trajectoryPlanner.setGoalQuery(se2GoalManager2, se2GoalManager2.goalQuery());
-      int iters2 = Expand.maxDepth(trajectoryPlanner, parameters.getDepthLimit());
+      int expandIter = Expand.maxDepth(trajectoryPlanner, parameters.getDepthLimit());
       trajectory = trajectoryPlanner.getPathFromRootToGoal();
       Trajectories.print(trajectory);
+      // Trajectories.print(trajectory);
       // ---
       toc = System.nanoTime();
-      System.out.println((toc - tic) * 1e-9 + " Seconds needed to replan");
-      System.out.println("After root switch needed " + iters2 + " iterations");
+      timeSum = RealScalar.of(toc - tic).multiply(RealScalar.of(1e-9)).add(timeSum);
+      System.out.println((iter + 1) + " iteration: " + (toc - tic) * 1e-9);
+      System.out.println("Average: " + timeSum.divide(RealScalar.of(iter + 1)));
+      System.out.println("After root switch needed " + expandIter + " iterations");
       System.out.println("*****Finished*****");
+      System.out.println("");
       owlyFrame.setGlc(trajectoryPlanner);
       // owlyFrame.configCoordinateOffset(432, 273);
+      iter++;
     }
   }
 }

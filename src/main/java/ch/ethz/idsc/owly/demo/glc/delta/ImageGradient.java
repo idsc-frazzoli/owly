@@ -50,4 +50,9 @@ import ch.ethz.idsc.tensor.opt.LinearInterpolation;
     }
     return ZEROS;
   }
+
+  public Tensor getMax() {
+    // TODO return max(||gradient||)
+    return null;
+  }
 }
