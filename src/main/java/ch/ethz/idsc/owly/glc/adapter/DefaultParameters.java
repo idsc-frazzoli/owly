@@ -14,7 +14,9 @@ public abstract class DefaultParameters extends Parameters {
 
   @Override
   public final Tensor getEta() {
+    // TODO JONAS implement default formula for eta
     return null;
   }
-  // TODO provide required methods for obtaining magic constants that allow the computation of eta
+  // TODO JONAS define abstract methods for obtaining magic constants
+  // ... that allow the computation of eta.
 }

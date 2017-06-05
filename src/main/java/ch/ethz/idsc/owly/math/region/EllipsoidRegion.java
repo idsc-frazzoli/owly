@@ -25,7 +25,7 @@ public class EllipsoidRegion extends ImplicitFunctionRegion {
 
   @Override
   public Scalar evaluate(Tensor tensor) {
-    // FIXME needs math derivation
+    // TODO needs math derivation
     Tensor delta = center.subtract(tensor).pmul(invert);
     return Norm._2.of(delta).subtract(RealScalar.ONE);
   }

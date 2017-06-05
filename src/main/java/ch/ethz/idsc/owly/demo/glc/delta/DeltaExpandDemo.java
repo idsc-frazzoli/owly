@@ -9,7 +9,9 @@ import ch.ethz.idsc.owly.gui.OwlyFrame;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.io.GifSequenceWriter;
 
-// records to gif
+/** simple animation of small boat driving upstream, or downstream in a river delta
+ * 
+ * records to animated gif */
 class DeltaExpandDemo {
   public static void main(String[] args) throws Exception {
     TrajectoryPlanner trajectoryPlanner = DeltaHelper.createDefault(RealScalar.of(.5)); // -.25 .5

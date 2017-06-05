@@ -89,13 +89,11 @@ import ch.ethz.idsc.tensor.Tensor;
     return depth;
   }
 
-  // TODO during development, function is public, but later it would be nice to hide this function
   @Override // from GlcNode
   public void setMinCostToGoal(Scalar minCostToGoal) {
     merit = costFromRoot.add(minCostToGoal);
   }
 
-  // TODO during development, function is public, but later it would be nice to hide this function
   @Override // from GlcNode
   public int reCalculateDepth() {
     depth = Nodes.toRoot(this).size() - 1;

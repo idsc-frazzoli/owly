@@ -9,11 +9,13 @@ import ch.ethz.idsc.owly.math.region.EllipsoidRegion;
 import ch.ethz.idsc.owly.math.state.CostFunction;
 import ch.ethz.idsc.owly.math.state.StateTime;
 import ch.ethz.idsc.owly.math.state.TimeInvariantRegion;
+import ch.ethz.idsc.owly.math.state.Trajectories;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
 
-public class DeltaGoalManager extends SimpleTrajectoryRegionQuery implements CostFunction {
+/** default goal manager for delta example that does not make use of max norm of flow */
+class DeltaGoalManager extends SimpleTrajectoryRegionQuery implements CostFunction {
   final Tensor center;
   final Scalar radius;
 
@@ -27,11 +29,11 @@ public class DeltaGoalManager extends SimpleTrajectoryRegionQuery implements Cos
 
   @Override
   public Scalar costIncrement(StateTime from, List<StateTime> trajectory, Flow flow) {
-    return RealScalar.of(trajectory.size()); // TODO
+    return Trajectories.timeIncrement(from, trajectory);
   }
 
   @Override
   public Scalar minCostToGoal(Tensor x) {
-    return RealScalar.ZERO;
+    return RealScalar.ZERO; // no heuristic, for simplicity
   }
 }

@@ -1,4 +1,4 @@
-// code by jph
+// code by jl
 package ch.ethz.idsc.owly.demo.glc.delta;
 
 import java.util.List;
@@ -16,7 +16,7 @@ import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.red.Max;
 import ch.ethz.idsc.tensor.red.Norm;
 
-public class ExtDeltaGoalManager extends SimpleTrajectoryRegionQuery implements CostFunction {
+class ExtDeltaGoalManager extends SimpleTrajectoryRegionQuery implements CostFunction {
   private final Tensor center;
   private final Scalar radius;
   @Deprecated
@@ -47,7 +47,6 @@ public class ExtDeltaGoalManager extends SimpleTrajectoryRegionQuery implements 
   public Scalar minCostToGoal(Tensor x) {
     Tensor cur_xy = x.extract(0, 2);
     // Heuristic needs to be underestimating: (Euclideandistance-radius) / (MaxControl+Max(|Vectorfield|)
-    // TODO find maximumspeed of Vectorfield
     Scalar dxy = Norm._2.of(cur_xy.subtract(center)).subtract(radius).divide(RealScalar.ONE);
     // Scalar dxy = Norm._2.of(cur_xy.subtract(center)).subtract(radius).divide(maxSpeed);
     return Max.of(dxy, RealScalar.ZERO);

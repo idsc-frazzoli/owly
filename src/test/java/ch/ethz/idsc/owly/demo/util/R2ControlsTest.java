@@ -5,14 +5,17 @@ import java.util.Collection;
 
 import ch.ethz.idsc.owly.math.flow.Flow;
 import ch.ethz.idsc.tensor.Tensor;
+import ch.ethz.idsc.tensor.alg.Dimensions;
+import ch.ethz.idsc.tensor.opt.ConvexHull;
 import junit.framework.TestCase;
 
 public class R2ControlsTest extends TestCase {
   public void testSimple() {
-    Collection<Flow> flows = R2Controls.createRadial(3);
-    assertEquals(flows.size(), 3);
+    int n = 100;
+    Collection<Flow> flows = R2Controls.createRadial(n);
+    assertEquals(flows.size(), n);
     Tensor tflow = Tensor.of(flows.stream().map(Flow::getU));
-    tflow.copy();
-    // TODO test flows in general
+    Tensor hul = ConvexHull.of(tflow);
+    assertEquals(Dimensions.of(tflow), Dimensions.of(hul));
   }
 }

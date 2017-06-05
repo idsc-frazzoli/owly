@@ -9,7 +9,8 @@ import ch.ethz.idsc.tensor.Scalars;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.sca.Power;
 
-public class DeltaParameters extends Parameters {
+// TODO JONAS class should extend from DefaultParameters
+class DeltaParameters extends Parameters {
   private final Scalar lipschitz;
 
   public DeltaParameters( //

@@ -36,7 +36,9 @@ public interface GlcNode extends StateCostNode {
   // function is only called by motion planners.
   // data structures that rely on the sorting by merit
   // may become invalid once the merit is set to a new value
+  // during development, function is public, but later it would be nice to hide this function
   void setMinCostToGoal(Scalar minCostToGoal);
 
+  // during development, function is public, but later it would be nice to hide this function
   int reCalculateDepth();
 }

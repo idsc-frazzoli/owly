@@ -7,6 +7,7 @@ import ch.ethz.idsc.owly.gui.Gui;
 import ch.ethz.idsc.owly.gui.OwlyFrame;
 import ch.ethz.idsc.tensor.RealScalar;
 
+/** simple animation of small boat driving upstream, or downstream in a river delta */
 class DeltaDemo {
   public static void main(String[] args) throws Exception {
     TrajectoryPlanner trajectoryPlanner = DeltaHelper.createDefault(RealScalar.of(-.25)); // -.25 .5

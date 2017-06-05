@@ -1,4 +1,4 @@
-// code by jph
+// code by ?
 package ch.ethz.idsc.owly.demo.glc.delta;
 
 import java.util.Collection;
@@ -26,7 +26,7 @@ import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
 import ch.ethz.idsc.tensor.io.Import;
 
-class DeltaglcDemo {
+class GlcDeltaDemo {
   public static void main(String[] args) throws Exception {
     RationalScalar resolution = (RationalScalar) RationalScalar.of(12, 1);
     Scalar timeScale = RealScalar.of(10);

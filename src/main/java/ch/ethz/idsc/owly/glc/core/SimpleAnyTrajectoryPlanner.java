@@ -16,7 +16,6 @@ import ch.ethz.idsc.owly.math.state.StateIntegrator;
 import ch.ethz.idsc.owly.math.state.StateTime;
 import ch.ethz.idsc.owly.math.state.Trajectories;
 import ch.ethz.idsc.owly.math.state.TrajectoryRegionQuery;
-import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalars;
 import ch.ethz.idsc.tensor.Tensor;
 
@@ -24,7 +23,6 @@ import ch.ethz.idsc.tensor.Tensor;
 public class SimpleAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
   private final StateIntegrator stateIntegrator;
   private final Collection<Flow> controls;
-  private CostFunction costFunction;
   private TrajectoryRegionQuery goalQuery;
   private final TrajectoryRegionQuery obstacleQuery;
   // private final Map<Tensor, DomainQueue> domainCandidateMap = new HashMap<>();
@@ -38,10 +36,9 @@ public class SimpleAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
       TrajectoryRegionQuery goalQuery, //
       TrajectoryRegionQuery obstacleQuery //
   ) {
-    super(eta);
+    super(eta, costFunction);
     this.stateIntegrator = stateIntegrator;
     this.controls = controls;
-    this.costFunction = costFunction;
     this.goalQuery = goalQuery;
     this.obstacleQuery = obstacleQuery;
   }
@@ -156,12 +153,6 @@ public class SimpleAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
     System.out.println(0 + " Nodes added to Queue");
     System.out.println("**Rootswitch finished**");
     return increaseDepthBy;
-  }
-
-  @Override
-  protected GlcNode createRootNode(Tensor x) { // TODO check if time of root node should always be set to 0
-    return GlcNode.of(null, new StateTime(x, RealScalar.ZERO), RealScalar.ZERO, //
-        costFunction.minCostToGoal(x));
   }
 
   @Override

@@ -35,6 +35,7 @@ public abstract class TrajectoryPlanner implements ExpandInterface, Serializable
     this.eta = eta.copy().unmodifiable();
   }
 
+  /** @return eta as unmodifiable tensor */
   public final Tensor getEta() {
     return eta;
   }
@@ -50,6 +51,11 @@ public abstract class TrajectoryPlanner implements ExpandInterface, Serializable
     return eta.pmul(represent.apply(x)).map(Floor.function);
   }
 
+  /** the current API assumes that the root node will be assigned a {@link StateTime} with
+   * state == x and time == 0. should another time be required, the API can be extended.
+   * 
+   * @param x
+   * @return */
   abstract GlcNode createRootNode(Tensor x);
 
   public final void insertRoot(Tensor x) {
@@ -66,7 +72,7 @@ public abstract class TrajectoryPlanner implements ExpandInterface, Serializable
    * false if the domain map did not have a pre-existing mapping from given domain_key */
   /* package */ final boolean insert(Tensor domain_key, GlcNode node) {
     queue.add(node);
-    // TODO could be small tree <- ???
+    // TODO JONAS comment what you mean by: "could be small tree"
     final boolean replaced = domainMap.containsKey(domain_key);
     domainMap.put(domain_key, node);
     if (replaced)
