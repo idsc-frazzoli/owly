@@ -6,9 +6,9 @@ import ch.ethz.idsc.tensor.Scalars;
 import ch.ethz.idsc.tensor.Tensor;
 
 public class Polygons {
-  /** @param polygon
-   * @param point
-   * @return */
+  /** @param polygon in the 2d-plane
+   * @param point of which only the first two coordinates will be considered
+   * @return true, if point is inside polygon, otherwise false */
   // code adapted from PNPOLY - Point Inclusion in Polygon Test W. Randolph Franklin (WRF)
   public static boolean isInside(Tensor polygon, Tensor point) {
     final Scalar tx = point.Get(0);

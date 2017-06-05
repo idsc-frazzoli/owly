@@ -12,6 +12,8 @@ import ch.ethz.idsc.owly.math.state.StateTime;
 import ch.ethz.idsc.owly.math.state.TrajectoryRegionQuery;
 
 class HudRender implements AbstractRender {
+  private static final Color SHADING = new Color(0, 0, 0, 64);
+  // ---
   private final TrajectoryPlanner trajectoryPlanner;
 
   HudRender(TrajectoryPlanner trajectoryPlanner) {
@@ -20,7 +22,7 @@ class HudRender implements AbstractRender {
 
   @Override
   public void render(OwlyLayer abstractLayer, Graphics2D graphics) {
-    graphics.setColor(new Color(0, 0, 0, 64));
+    graphics.setColor(SHADING);
     {
       Collection<GlcNode> collection = trajectoryPlanner.getDomainMap().values();
       graphics.drawString("nodes:" + collection.size(), 0, 10);
@@ -31,10 +33,7 @@ class HudRender implements AbstractRender {
         SimpleTrajectoryRegionQuery strq = (SimpleTrajectoryRegionQuery) trq;
         Collection<StateTime> collection = strq.getDiscoveredMembers();
         graphics.drawString("obstacles:" + collection.size(), 0, 20);
-        // LruCache.create(maxSize)
       }
-      // Collection<Node> collection = trajectoryPlanner.getNodes();
-      // graphics.drawString("nodes:" + collection.size(), 0, 10);
     }
     {
       graphics.drawString("replacements:" + trajectoryPlanner.replaceCount(), 0, 30);

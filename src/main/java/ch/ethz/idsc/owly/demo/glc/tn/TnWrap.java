@@ -15,12 +15,13 @@ import ch.ethz.idsc.tensor.sca.Mod;
 public class TnWrap implements CoordinateWrap {
   private static final Scalar NEGATIVE_HALF = RationalScalar.of(-1, 2);
   // ---
-  private final Tensor wrap;
+  private final Tensor extension;
   private final List<Mod> mod_distance = new ArrayList<>();
 
-  public TnWrap(Tensor wrap) {
-    this.wrap = wrap;
-    for (Tensor _n : wrap) {
+  /** @param extension of torus along each axis */
+  public TnWrap(Tensor extension) {
+    this.extension = extension;
+    for (Tensor _n : extension) {
       Scalar n = (Scalar) _n;
       mod_distance.add(Mod.function(n, n.multiply(NEGATIVE_HALF)));
     }
@@ -28,7 +29,7 @@ public class TnWrap implements CoordinateWrap {
 
   @Override
   public Tensor represent(Tensor x) {
-    return Tensors.vector(i -> Mod.function(wrap.Get(i)).apply(x.Get(i)), x.length());
+    return Tensors.vector(i -> Mod.function(extension.Get(i)).apply(x.Get(i)), x.length());
   }
 
   @Override
