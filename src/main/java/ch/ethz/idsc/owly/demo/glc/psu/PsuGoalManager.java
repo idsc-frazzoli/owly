@@ -4,25 +4,28 @@ package ch.ethz.idsc.owly.demo.glc.psu;
 import java.util.List;
 
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
+import ch.ethz.idsc.owly.math.CoordinateWrap;
 import ch.ethz.idsc.owly.math.flow.Flow;
-import ch.ethz.idsc.owly.math.region.EllipsoidRegion;
-import ch.ethz.idsc.owly.math.region.RegionUnion;
+import ch.ethz.idsc.owly.math.region.Region;
 import ch.ethz.idsc.owly.math.state.CostFunction;
 import ch.ethz.idsc.owly.math.state.StateTime;
 import ch.ethz.idsc.owly.math.state.TimeInvariantRegion;
 import ch.ethz.idsc.owly.math.state.Trajectories;
+import ch.ethz.idsc.owly.math.state.TrajectoryRegionQuery;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
+import ch.ethz.idsc.tensor.Scalars;
 import ch.ethz.idsc.tensor.Tensor;
-import ch.ethz.idsc.tensor.Tensors;
 
-class PsuGoalManager extends SimpleTrajectoryRegionQuery implements CostFunction {
-  public PsuGoalManager(Tensor radius) {
-    super(new TimeInvariantRegion( //
-        RegionUnion.of( //
-            new EllipsoidRegion(Tensors.vector(+Math.PI, 0), radius), //
-            new EllipsoidRegion(Tensors.vector(-Math.PI, 0), radius) //
-        )));
+class PsuGoalManager implements Region, CostFunction {
+  private final CoordinateWrap coordinateWrap;
+  private final Tensor center;
+  private final Tensor radius;
+
+  public PsuGoalManager(CoordinateWrap coordinateWrap, Tensor center, Tensor radius) {
+    this.coordinateWrap = coordinateWrap;
+    this.center = center;
+    this.radius = radius;
   }
 
   @Override
@@ -33,5 +36,14 @@ class PsuGoalManager extends SimpleTrajectoryRegionQuery implements CostFunction
   @Override
   public Scalar minCostToGoal(Tensor x) {
     return RealScalar.ZERO;
+  }
+
+  @Override
+  public boolean isMember(Tensor x) {
+    return Scalars.lessThan(coordinateWrap.distance(x, center).subtract(radius), RealScalar.ZERO);
+  }
+
+  public TrajectoryRegionQuery goalQuery() {
+    return new SimpleTrajectoryRegionQuery(new TimeInvariantRegion(this));
   }
 }

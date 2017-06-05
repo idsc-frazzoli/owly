@@ -4,6 +4,7 @@ package ch.ethz.idsc.owly.demo.glc.tn;
 import java.util.ArrayList;
 import java.util.List;
 
+import ch.ethz.idsc.owly.math.CoordinateWrap;
 import ch.ethz.idsc.tensor.RationalScalar;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
@@ -11,7 +12,7 @@ import ch.ethz.idsc.tensor.Tensors;
 import ch.ethz.idsc.tensor.red.Norm;
 import ch.ethz.idsc.tensor.sca.Mod;
 
-public class TnWrap {
+public class TnWrap implements CoordinateWrap {
   private static final Scalar NEGATIVE_HALF = RationalScalar.of(-1, 2);
   // ---
   private final Tensor wrap;
@@ -25,10 +26,12 @@ public class TnWrap {
     }
   }
 
+  @Override
   public Tensor represent(Tensor x) {
     return Tensors.vector(i -> Mod.function(wrap.Get(i)).apply(x.Get(i)), x.length());
   }
 
+  @Override
   public Scalar distance(Tensor p, Tensor q) {
     Tensor d = p.subtract(q);
     Tensor m = Tensors.vector(i -> mod_distance.get(i).apply(d.Get(i)), d.length());

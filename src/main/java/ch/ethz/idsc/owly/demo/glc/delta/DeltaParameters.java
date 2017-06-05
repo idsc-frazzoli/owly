@@ -1,6 +1,6 @@
 package ch.ethz.idsc.owly.demo.glc.delta;
 
-import ch.ethz.idsc.owly.glc.wrap.Parameters;
+import ch.ethz.idsc.owly.glc.adapter.Parameters;
 import ch.ethz.idsc.tensor.RationalScalar;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;

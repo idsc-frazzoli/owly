@@ -4,6 +4,7 @@ package ch.ethz.idsc.owly.demo.glc.tn;
 import java.util.List;
 
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
+import ch.ethz.idsc.owly.math.CoordinateWrap;
 import ch.ethz.idsc.owly.math.flow.Flow;
 import ch.ethz.idsc.owly.math.region.Region;
 import ch.ethz.idsc.owly.math.state.CostFunction;
@@ -21,11 +22,11 @@ import ch.ethz.idsc.tensor.sca.Ramp;
  * 
  * objective is minimum path length */
 class TnGoalManager implements Region, CostFunction {
-  private transient final TnWrap tnWarp;
+  private final CoordinateWrap tnWarp;
   private final Tensor center;
   private final Scalar radius;
 
-  public TnGoalManager(TnWrap tnWarp, Tensor center, Scalar radius) {
+  public TnGoalManager(CoordinateWrap tnWarp, Tensor center, Scalar radius) {
     this.tnWarp = tnWarp;
     this.center = center;
     this.radius = radius;

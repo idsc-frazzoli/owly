@@ -9,6 +9,7 @@ import ch.ethz.idsc.owly.glc.core.DefaultTrajectoryPlanner;
 import ch.ethz.idsc.owly.glc.core.Expand;
 import ch.ethz.idsc.owly.glc.core.TrajectoryPlanner;
 import ch.ethz.idsc.owly.gui.Gui;
+import ch.ethz.idsc.owly.math.CoordinateWrap;
 import ch.ethz.idsc.owly.math.flow.EulerIntegrator;
 import ch.ethz.idsc.owly.math.flow.Flow;
 import ch.ethz.idsc.owly.math.state.EmptyTrajectoryRegionQuery;
@@ -24,18 +25,20 @@ import ch.ethz.idsc.tensor.Tensors;
 
 class T2Demo {
   public static void main(String[] args) {
-    Tensor eta = Tensors.vector(4, 4);
+    Tensor eta = Tensors.vector(4, 5);
     StateIntegrator stateIntegrator = FixedStateIntegrator.create(new EulerIntegrator(), RationalScalar.of(1, 10), 5);
     Collection<Flow> controls = R2Controls.createRadial(36);
-    TnWrap tnWrap = new TnWrap(Tensors.vector(5, 7));
-    TnGoalManager rnGoal = new TnGoalManager(tnWrap, Tensors.vector(4, 6), RealScalar.of(.25));
+    CoordinateWrap coordinateWrap;
+    coordinateWrap = new TnWrap(Tensors.vector(5, 7));
+    coordinateWrap = new IdentityWrap();
+    TnGoalManager rnGoal = new TnGoalManager(coordinateWrap, Tensors.vector(4, 6), RealScalar.of(.25));
     // performance depends on heuristic: zeroHeuristic vs rnGoal
     // Heuristic heuristic = new ZeroHeuristic(); // rnGoal
     TrajectoryRegionQuery obstacleQuery = new EmptyTrajectoryRegionQuery();
     // ---
     TrajectoryPlanner trajectoryPlanner = new DefaultTrajectoryPlanner( //
         eta, stateIntegrator, controls, rnGoal, rnGoal.goalQuery(), obstacleQuery);
-    trajectoryPlanner.represent = tnWrap::represent;
+    trajectoryPlanner.represent = coordinateWrap::represent;
     trajectoryPlanner.insertRoot(Tensors.vector(0, 0));
     Expand.maxSteps(trajectoryPlanner, 1400);
     List<StateTime> trajectory = trajectoryPlanner.getPathFromRootToGoal();
