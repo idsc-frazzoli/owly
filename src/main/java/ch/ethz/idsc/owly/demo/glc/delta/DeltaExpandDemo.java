@@ -42,7 +42,7 @@ class DeltaExpandDemo {
         new SimpleTrajectoryRegionQuery(new TimeInvariantRegion( //
             new ImageRegion(obstacleImage, range, true)));
     // TODO modify constructor below
-    DeltaGoalManager deltaGoalManager = new DeltaGoalManager(Tensors.vector(2.1, 0.3), Tensors.vector(.3, .3), RealScalar.of(1));
+    DeltaGoalManager deltaGoalManager = new DeltaGoalManager(Tensors.vector(2.1, 0.3), Tensors.vector(.3, .3));
     TrajectoryPlanner trajectoryPlanner = new DefaultTrajectoryPlanner( //
         eta, stateIntegrator, controls, deltaGoalManager, deltaGoalManager, obstacleQuery);
     trajectoryPlanner.insertRoot(Tensors.vector(8.8, 0.5));

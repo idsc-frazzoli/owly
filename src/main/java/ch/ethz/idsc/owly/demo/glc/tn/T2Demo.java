@@ -23,6 +23,7 @@ import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
 
+/** topological torus */
 class T2Demo {
   public static void main(String[] args) {
     Tensor eta = Tensors.vector(4, 5);
@@ -30,7 +31,7 @@ class T2Demo {
     Collection<Flow> controls = R2Controls.createRadial(36);
     CoordinateWrap coordinateWrap;
     coordinateWrap = new TnWrap(Tensors.vector(5, 7));
-    coordinateWrap = new IdentityWrap();
+    // coordinateWrap = new IdentityWrap();
     TnGoalManager rnGoal = new TnGoalManager(coordinateWrap, Tensors.vector(4, 6), RealScalar.of(.25));
     // performance depends on heuristic: zeroHeuristic vs rnGoal
     // Heuristic heuristic = new ZeroHeuristic(); // rnGoal

@@ -18,9 +18,8 @@ import ch.ethz.idsc.tensor.sca.Sin;
 class DeltaControls {
   public static Collection<Flow> createControls(DeltaStateSpaceModel dssm, Scalar amp, int num) {
     Collection<Flow> collection = new ArrayList<>();
-    // Scalar amp = ;
     for (Tensor angle : Range.of(0, num).multiply(DoubleScalar.of(2 * Math.PI / num))) {
-      Tensor u = Chop.of(Tensors.of(Cos.of(angle), Sin.of(angle)).multiply(amp.Get()));
+      Tensor u = Chop.of(Tensors.of(Cos.of(angle), Sin.of(angle)).multiply(amp));
       collection.add(StateSpaceModels.createFlow(dssm, u));
     }
     return collection;

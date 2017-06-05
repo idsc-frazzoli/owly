@@ -10,6 +10,7 @@ import ch.ethz.idsc.owly.glc.core.Expand;
 import ch.ethz.idsc.owly.glc.core.TrajectoryPlanner;
 import ch.ethz.idsc.owly.gui.Gui;
 import ch.ethz.idsc.owly.math.flow.Flow;
+import ch.ethz.idsc.owly.math.flow.MidpointIntegrator;
 import ch.ethz.idsc.owly.math.region.HyperplaneRegion;
 import ch.ethz.idsc.owly.math.region.RegionUnion;
 import ch.ethz.idsc.owly.math.state.FixedStateIntegrator;
@@ -28,23 +29,24 @@ class Rice2Demo {
   // TODO in general ensure that goal region contains at least 1 domain etc.
   public static void main(String[] args) {
     Tensor eta = Tensors.vector(3, 3, 6, 6);
-    StateIntegrator stateIntegrator = FixedStateIntegrator.createDefault(RationalScalar.of(1, 2), 5);
+    StateIntegrator stateIntegrator = FixedStateIntegrator.create( //
+        new MidpointIntegrator(), RationalScalar.of(1, 2), 5);
     Collection<Flow> controls = Rice2Controls.createControls(RealScalar.of(.5), 3, 15);
     Rice2GoalManager rice2Goal = new Rice2GoalManager( //
         Tensors.vector(3, 3, -1, 0), Tensors.vector(.5, .5, .4, .4));
     TrajectoryRegionQuery obstacleQuery = //
         new SimpleTrajectoryRegionQuery(new TimeInvariantRegion( //
             RegionUnion.of( //
-                new HyperplaneRegion(Tensors.vector(1, +0, 0, 0), RealScalar.of(0.01)), //
-                new HyperplaneRegion(Tensors.vector(0, +1, 0, 0), RealScalar.of(0.01)), //
+                new HyperplaneRegion(Tensors.vector(1, +0, 0, 0), RealScalar.ZERO), //
+                new HyperplaneRegion(Tensors.vector(0, +1, 0, 0), RealScalar.ZERO), //
                 new HyperplaneRegion(Tensors.vector(0, -1, 0, 0), RealScalar.of(3.2)), //
-                new HyperplaneRegion(Tensors.vector(0, +0, 0, 1), RealScalar.of(0.01)) //
+                new HyperplaneRegion(Tensors.vector(0, +0, 0, 1), RealScalar.ZERO) //
             )));
     // ---
     TrajectoryPlanner trajectoryPlanner = new DefaultTrajectoryPlanner( //
         eta, stateIntegrator, controls, rice2Goal, rice2Goal, obstacleQuery);
     // ---
-    trajectoryPlanner.insertRoot(Tensors.vector(0, 0, 0, 0));
+    trajectoryPlanner.insertRoot(Tensors.vector(0.1, 0.1, 0, 0));
     long tic = System.nanoTime();
     int iters = Expand.maxSteps(trajectoryPlanner, 1000);
     long toc = System.nanoTime();

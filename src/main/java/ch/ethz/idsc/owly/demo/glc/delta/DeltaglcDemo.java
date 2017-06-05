@@ -49,7 +49,7 @@ class DeltaglcDemo {
     TrajectoryRegionQuery obstacleQuery = //
         new SimpleTrajectoryRegionQuery(new TimeInvariantRegion( //
             new ImageRegion(obstacleImage, range, true)));
-    DeltaGoalManager deltaGoalManager = new DeltaGoalManager( //
+    ExtDeltaGoalManager deltaGoalManager = new ExtDeltaGoalManager( //
         Tensors.vector(2.9, 2.4), Tensors.vector(.3, .3), maxInput);
     TrajectoryPlanner trajectoryPlanner = new DefaultTrajectoryPlanner( //
         parameters.getEta(), stateIntegrator, controls, deltaGoalManager, deltaGoalManager, obstacleQuery);

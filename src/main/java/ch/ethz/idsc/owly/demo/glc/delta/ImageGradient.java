@@ -9,29 +9,39 @@ import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
 import ch.ethz.idsc.tensor.alg.Array;
+import ch.ethz.idsc.tensor.alg.Differences;
 import ch.ethz.idsc.tensor.alg.Dimensions;
+import ch.ethz.idsc.tensor.alg.TensorMap;
+import ch.ethz.idsc.tensor.alg.Transpose;
 import ch.ethz.idsc.tensor.opt.Interpolation;
 import ch.ethz.idsc.tensor.opt.LinearInterpolation;
+import ch.ethz.idsc.tensor.red.Max;
+import ch.ethz.idsc.tensor.red.Norm;
+import ch.ethz.idsc.tensor.sca.N;
 
 /** rotated gradient of potential function */
 /* package */ class ImageGradient implements Serializable {
-  private static final Tensor ZEROS = Array.zeros(2);
-  private static final Tensor DUX = Tensors.vector(1, 0);
-  private static final Tensor DUY = Tensors.vector(0, 1);
+  private static final Tensor ZEROS = N.of(Array.zeros(2));
   // ---
-  private final Interpolation interpolation;
-  private final List<Integer> dimensions;
   private final Tensor scale;
-  private final Scalar amp;
+  private final Interpolation interpolation;
+  private final Scalar maxNorm;
 
-  /** @param image
+  /** @param image with rank 2. For instance, Dimensions.of(image) == [179, 128]
    * @param range with length() == 2
-   * @param amp */
+   * @param amp factor */
   public ImageGradient(Tensor image, Tensor range, Scalar amp) {
-    interpolation = LinearInterpolation.of(image);
-    dimensions = Dimensions.of(image);
-    scale = Tensors.vector(dimensions).pmul(range.map(Scalar::invert));
-    this.amp = amp;
+    List<Integer> dims = Dimensions.of(image);
+    scale = Tensors.vector(dims).pmul(range.map(Scalar::invert));
+    Tensor diffx = Differences.of(image);
+    diffx = TensorMap.of(t -> t.extract(0, dims.get(1) - 1), diffx, 1);
+    Tensor diffy = Transpose.of(Differences.of(Transpose.of(image)));
+    diffy = diffy.extract(0, dims.get(0) - 1);
+    Tensor field = Transpose.of(Tensors.of(diffx, diffy), 2, 0, 1);
+    field = TensorMap.of(Cross2D::of, field, 2).multiply(amp);
+    field = N.of(field);
+    interpolation = LinearInterpolation.of(field);
+    maxNorm = field.flatten(2).map(Norm._2::of).reduce(Max::of).get();
   }
 
   public Tensor rotate(Tensor tensor) {
@@ -39,20 +49,15 @@ import ch.ethz.idsc.tensor.opt.LinearInterpolation;
       tensor = tensor.extract(0, 2);
     Tensor index = tensor.pmul(scale);
     try {
-      Scalar f0 = interpolation.Get(index);
-      Scalar fx = interpolation.Get(index.add(DUX));
-      Scalar fy = interpolation.Get(index.add(DUY));
-      Scalar dx = fx.subtract(f0);
-      Scalar dy = fy.subtract(f0);
-      return Cross2D.of(Tensors.of(dx, dy)).multiply(amp);
+      return interpolation.get(index);
     } catch (Exception exception) {
       // ---
     }
     return ZEROS;
   }
 
-  public Tensor getMax() {
-    // TODO return max(||gradient||)
-    return null;
+  /** @return max(||gradient||) */
+  public Scalar maxNorm() {
+    return maxNorm;
   }
 }

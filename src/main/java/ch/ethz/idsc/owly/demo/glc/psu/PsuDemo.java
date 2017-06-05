@@ -9,6 +9,7 @@ import ch.ethz.idsc.owly.glc.core.Expand;
 import ch.ethz.idsc.owly.glc.core.TrajectoryPlanner;
 import ch.ethz.idsc.owly.gui.Gui;
 import ch.ethz.idsc.owly.math.flow.Flow;
+import ch.ethz.idsc.owly.math.flow.RungeKutta45Integrator;
 import ch.ethz.idsc.owly.math.state.EmptyTrajectoryRegionQuery;
 import ch.ethz.idsc.owly.math.state.FixedStateIntegrator;
 import ch.ethz.idsc.owly.math.state.StateIntegrator;
@@ -27,7 +28,8 @@ import ch.ethz.idsc.tensor.Tensors;
 public class PsuDemo {
   public static void main(String[] args) {
     Tensor eta = Tensors.vector(5, 7);
-    StateIntegrator stateIntegrator = FixedStateIntegrator.createDefault(RationalScalar.of(1, 4), 5);
+    StateIntegrator stateIntegrator = FixedStateIntegrator.create( //
+        new RungeKutta45Integrator(), RationalScalar.of(1, 4), 5);
     Collection<Flow> controls = PsuControls.createControls(0.2, 6);
     PsuWrap psuWrap = new PsuWrap();
     PsuGoalManager psuGoalManager = new PsuGoalManager(psuWrap, //
