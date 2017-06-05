@@ -4,6 +4,7 @@ package ch.ethz.idsc.owly.demo.glc.rn;
 import java.util.Collection;
 import java.util.List;
 
+import ch.ethz.idsc.owly.demo.util.R2Controls;
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
 import ch.ethz.idsc.owly.glc.core.DefaultTrajectoryPlanner;
 import ch.ethz.idsc.owly.glc.core.Expand;
@@ -28,7 +29,7 @@ class R2SphereDemo {
   public static void main(String[] args) {
     Tensor partitionScale = Tensors.vector(3.5, 4);
     StateIntegrator stateIntegrator = FixedStateIntegrator.create(new EulerIntegrator(), RationalScalar.of(1, 8), 5);
-    Collection<Flow> controls = R2Controls.createControls(20);
+    Collection<Flow> controls = R2Controls.createRadial(20);
     RnGoalManager rnGoal = new RnGoalManager(Tensors.vector(5, 0), DoubleScalar.of(.5));
     TrajectoryRegionQuery obstacleQuery = //
         new SimpleTrajectoryRegionQuery(new TimeInvariantRegion( //

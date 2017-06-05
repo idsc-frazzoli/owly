@@ -79,7 +79,7 @@ public class DefaultTrajectoryPlanner extends TrajectoryPlanner {
 
   @Override
   protected GlcNode createRootNode(Tensor x) { // TODO check if time of root node should always be set to 0
-    return GlcNodes.of(null, new StateTime(x, RealScalar.ZERO), RealScalar.ZERO, costFunction.minCostToGoal(x));
+    return GlcNode.of(null, new StateTime(x, RealScalar.ZERO), RealScalar.ZERO, costFunction.minCostToGoal(x));
   }
 
   @Override

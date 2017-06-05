@@ -3,7 +3,7 @@ package ch.ethz.idsc.owly.demo.glc.rnn;
 
 import java.util.Collection;
 
-import ch.ethz.idsc.owly.demo.glc.rn.R2Controls;
+import ch.ethz.idsc.owly.demo.util.R2Controls;
 import ch.ethz.idsc.owly.glc.core.DefaultTrajectoryPlanner;
 import ch.ethz.idsc.owly.glc.core.Expand;
 import ch.ethz.idsc.owly.glc.core.TrajectoryPlanner;
@@ -24,7 +24,7 @@ class R2nExpandDemo {
   public static void main(String[] args) throws Exception {
     Tensor eta = Tensors.vector(4, 4);
     StateIntegrator stateIntegrator = FixedStateIntegrator.create(new EulerIntegrator(), RationalScalar.of(1, 5), 5);
-    Collection<Flow> controls = R2Controls.createControls(16);
+    Collection<Flow> controls = R2Controls.createRadial(16);
     RnnGoalManager rnGoal = new RnnGoalManager(Tensors.vector(4, 4), DoubleScalar.of(.25));
     TrajectoryRegionQuery obstacleQuery = new EmptyTrajectoryRegionQuery();
     // ---

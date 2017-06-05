@@ -21,7 +21,7 @@ import ch.ethz.idsc.owly.math.state.Trajectories;
     controls.stream().parallel().forEach(flow -> { // parallel results in speedup of ~25% (rice2demo)
       final List<StateTime> trajectory = stateIntegrator.trajectory(node.stateTime(), flow);
       final StateTime last = Trajectories.getLast(trajectory);
-      final GlcNode next = GlcNodes.of(flow, last, //
+      final GlcNode next = GlcNode.of(flow, last, //
           node.costFromRoot().add(costFunction.costIncrement(node.stateTime(), trajectory, flow)), //
           costFunction.minCostToGoal(last.x()) //
       );

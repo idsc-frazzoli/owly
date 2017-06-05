@@ -54,16 +54,16 @@ public abstract class TrajectoryPlanner implements ExpandInterface, Serializable
 
   /** @param domain_key
    * @param node
-   * @return false if Key was already occupied, otherwise true */
-  // TODO return value only used once for check -> different API
+   * @return true if node replaces a existing entry in the domain map,
+   * false if the domain map did not have a preexisting mapping from given domain_key */
   protected final boolean insert(Tensor domain_key, GlcNode node) {
     queue.add(node);
     // TODO could be small tree <- ???
-    boolean replaced = !domainMap.containsKey(domain_key);
+    final boolean replaced = domainMap.containsKey(domain_key);
     domainMap.put(domain_key, node);
     if (replaced)
       ++replaceCount;
-    return !replaced;
+    return replaced;
   }
 
   /** @param domain_key

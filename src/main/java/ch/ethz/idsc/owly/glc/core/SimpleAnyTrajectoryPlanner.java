@@ -21,7 +21,7 @@ import ch.ethz.idsc.tensor.Scalars;
 import ch.ethz.idsc.tensor.Tensor;
 
 /** TODO assumptions in order to use SimpleAnyTrajectoryPlanner */
-public class SimpleAnyTrajectoryPlanner extends TrajectoryPlanner {
+public class SimpleAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
   private final StateIntegrator stateIntegrator;
   private final Collection<Flow> controls;
   private CostFunction costFunction;
@@ -105,6 +105,7 @@ public class SimpleAnyTrajectoryPlanner extends TrajectoryPlanner {
     }
   }
 
+  @Override
   public int switchRootToState(Tensor state) {
     GlcNode newRoot = this.getNode(convertToKey(state));
     int increaseDepthBy = 0;
@@ -116,6 +117,7 @@ public class SimpleAnyTrajectoryPlanner extends TrajectoryPlanner {
     return increaseDepthBy;
   }
 
+  @Override
   public int switchRootToNode(GlcNode newRoot) {
     GlcNode oldRoot = getNodesfromRootToGoal().get(0);
     if (newRoot.isRoot()) {
@@ -158,7 +160,7 @@ public class SimpleAnyTrajectoryPlanner extends TrajectoryPlanner {
 
   @Override
   protected GlcNode createRootNode(Tensor x) { // TODO check if time of root node should always be set to 0
-    return GlcNodes.of(null, new StateTime(x, RealScalar.ZERO), RealScalar.ZERO, //
+    return GlcNode.of(null, new StateTime(x, RealScalar.ZERO), RealScalar.ZERO, //
         costFunction.minCostToGoal(x));
   }
 
