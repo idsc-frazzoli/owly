@@ -1,4 +1,4 @@
-// code by jph, and jl
+// code by jph and jl
 package ch.ethz.idsc.owly.glc.core;
 
 import ch.ethz.idsc.owly.data.tree.StateCostNode;
@@ -31,12 +31,12 @@ public interface GlcNode extends StateCostNode {
   /** @return cost from root plus min cost to goal */
   Scalar merit();
 
+  int depth();
+
   // function is only called by motion planners.
   // data structures that rely on the sorting by merit
   // may become invalid once the merit is set to a new value
   void setMinCostToGoal(Scalar minCostToGoal);
-
-  int depth();
 
   int reCalculateDepth();
 }

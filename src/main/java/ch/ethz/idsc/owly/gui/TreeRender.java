@@ -23,7 +23,7 @@ class TreeRender implements AbstractRender {
   @Override
   public void render(AbstractLayer abstractLayer, Graphics2D graphics) {
     DoubleSummaryStatistics dss = collection.stream() //
-        .map(n -> n.costFromRoot()) //
+        .map(StateCostNode::costFromRoot) //
         .map(Scalar::number) //
         .mapToDouble(Number::doubleValue) //
         .filter(Double::isFinite) //

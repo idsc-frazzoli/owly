@@ -41,7 +41,7 @@ class HudLayer extends AbstractLayer {
     // ---
     graphics.setColor(new Color(0, 0, 0, 64));
     {
-      Collection<GlcNode> collection = trajectoryPlanner.getNodes();
+      Collection<GlcNode> collection = trajectoryPlanner.getDomainMap().values();
       graphics.drawString("nodes:" + collection.size(), 0, 10);
     }
     {

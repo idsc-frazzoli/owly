@@ -27,14 +27,16 @@ class T2Demo {
     Tensor eta = Tensors.vector(4, 4);
     StateIntegrator stateIntegrator = FixedStateIntegrator.create(new EulerIntegrator(), RationalScalar.of(1, 10), 5);
     Collection<Flow> controls = R2Controls.createRadial(36);
-    TnGoalManager rnGoal = new TnGoalManager(Tensors.vector(2, 2), RealScalar.of(.25), null); // TODO
+    TnWrap tnWrap = new TnWrap(Tensors.vector(5, 7));
+    TnGoalManager rnGoal = new TnGoalManager(tnWrap, Tensors.vector(4, 6), RealScalar.of(.25));
     // performance depends on heuristic: zeroHeuristic vs rnGoal
     // Heuristic heuristic = new ZeroHeuristic(); // rnGoal
     TrajectoryRegionQuery obstacleQuery = new EmptyTrajectoryRegionQuery();
     // ---
     TrajectoryPlanner trajectoryPlanner = new DefaultTrajectoryPlanner( //
-        eta, stateIntegrator, controls, rnGoal, rnGoal, obstacleQuery);
-    trajectoryPlanner.insertRoot(Tensors.vector(-2, -2));
+        eta, stateIntegrator, controls, rnGoal, rnGoal.goalQuery(), obstacleQuery);
+    trajectoryPlanner.represent = tnWrap::represent;
+    trajectoryPlanner.insertRoot(Tensors.vector(0, 0));
     Expand.maxSteps(trajectoryPlanner, 1400);
     List<StateTime> trajectory = trajectoryPlanner.getPathFromRootToGoal();
     Trajectories.print(trajectory);

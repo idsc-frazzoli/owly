@@ -8,7 +8,7 @@ import java.util.List;
 import ch.ethz.idsc.owly.math.state.StateTime;
 import ch.ethz.idsc.tensor.Tensor;
 
-class AbstractLayer {
+class AbstractLayer { // TODO misnomer
   private final OwlyComponent glcComponent;
 
   AbstractLayer(OwlyComponent glcComponent) {

@@ -1,4 +1,4 @@
-// code by bapaden, jph, and jl
+// code by bapaden, jph and jl
 package ch.ethz.idsc.owly.glc.core;
 
 import java.util.Collection;
@@ -17,8 +17,8 @@ import ch.ethz.idsc.tensor.Tensor;
  * 
  * immutable except for children, parent, and depth which are only modified in
  * {@link GlcNodeImpl#addChild(GlcNodeImpl)} */
-/* package */ class GlcNodeImpl extends AbstractNode<GlcNodeImpl> implements GlcNode {
-  private final Map<Flow, GlcNodeImpl> children = new HashMap<>();
+/* package */ class GlcNodeImpl extends AbstractNode<GlcNode> implements GlcNode {
+  private final Map<Flow, GlcNode> children = new HashMap<>();
   /** flow is null for root node */
   private final Flow flow;
   private final StateTime stateTime;
@@ -39,7 +39,7 @@ import ch.ethz.idsc.tensor.Tensor;
   }
 
   @Override // from Node
-  public Collection<GlcNodeImpl> children() {
+  public Collection<GlcNode> children() {
     return Collections.unmodifiableCollection(children.values());
   }
 
@@ -54,50 +54,49 @@ import ch.ethz.idsc.tensor.Tensor;
   }
 
   @Override // from AbstractNode
-  protected boolean protected_insertChild(GlcNodeImpl child) {
-    boolean inserted = !children.containsKey(child.flow);
-    child.depth = depth + 1;
-    children.put(child.flow, child);
+  protected boolean protected_insertChild(GlcNode child) {
+    boolean inserted = !children.containsKey(child.flow());
+    children.put(child.flow(), child);
+    ((GlcNodeImpl) child).depth = depth + 1;
     return inserted;
   }
 
   @Override // from AbstractNode
-  protected final boolean protected_removeChild(GlcNodeImpl child) {
-    boolean removed = children.containsKey(child.flow);
-    children.remove(child.flow);
+  protected final boolean protected_removeChild(GlcNode child) {
+    boolean removed = children.containsKey(child.flow());
+    children.remove(child.flow());
     return removed;
   }
 
-  @Override
+  @Override // from GlcNode
   public Flow flow() {
     return flow;
   }
 
-  @Override
+  @Override // from GlcNode
   public StateTime stateTime() {
     return stateTime;
   }
 
   /** @return cost from root plus min cost to goal */
-  @Override
+  @Override // from GlcNode
   public Scalar merit() {
     return merit;
   }
 
-  // function is only called by motion planners.
-  // data structures that rely on the sorting by merit
-  // may become invalid once the merit is set to a new value
-  /* package */ @Override
-  public void setMinCostToGoal(Scalar minCostToGoal) {
-    merit = costFromRoot.add(minCostToGoal);
-  }
-
-  @Override
+  @Override // from GlcNode
   public int depth() {
     return depth;
   }
 
-  @Override
+  // TODO during development, function is public, but later it would be nice to hide this function
+  @Override // from GlcNode
+  public void setMinCostToGoal(Scalar minCostToGoal) {
+    merit = costFromRoot.add(minCostToGoal);
+  }
+
+  // TODO during development, function is public, but later it would be nice to hide this function
+  @Override // from GlcNode
   public int reCalculateDepth() {
     depth = Nodes.toRoot(this).size() - 1;
     return depth; // as RootNode has depth 0 (NOT 1)

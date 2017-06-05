@@ -41,10 +41,12 @@ class GoalRender implements AbstractRender {
       }
     }
     { // draw discovered points
+      double radius = 9;
+      double offset = -radius * 0.5;
       graphics.setColor(new Color(224, 168, 0, 224));
       for (StateTime stateTime : collection) {
         Point2D point2d = abstractLayer.toPoint2D(stateTime.x());
-        graphics.fill(new Ellipse2D.Double(point2d.getX() - 2.5, point2d.getY() - 2.5, 4, 4));
+        graphics.draw(new Ellipse2D.Double(point2d.getX() + offset, point2d.getY() + offset, radius, radius));
       }
     }
   }
