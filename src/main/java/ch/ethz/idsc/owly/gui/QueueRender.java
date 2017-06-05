@@ -19,7 +19,7 @@ class QueueRender implements AbstractRender {
   }
 
   @Override
-  public void render(AbstractLayer abstractLayer, Graphics2D graphics) {
+  public void render(OwlyLayer abstractLayer, Graphics2D graphics) {
     graphics.setColor(new Color(0, 192, 192, 128));
     for (GlcNode node : collection) {
       Tensor x = node.stateTime().x();

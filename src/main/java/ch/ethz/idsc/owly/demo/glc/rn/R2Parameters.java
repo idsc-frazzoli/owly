@@ -1,4 +1,4 @@
-//code by jl
+// code by jl
 package ch.ethz.idsc.owly.demo.glc.rn;
 
 import ch.ethz.idsc.owly.glc.adapter.Parameters;

@@ -39,7 +39,7 @@ class OwlyComponent {
   }
 
   Tensor model2pixel;
-  final AbstractLayer abstractLayer = new AbstractLayer(this);
+  final OwlyLayer abstractLayer = new OwlyLayer(this);
   RenderElements renderElements;
 
   public OwlyComponent() {

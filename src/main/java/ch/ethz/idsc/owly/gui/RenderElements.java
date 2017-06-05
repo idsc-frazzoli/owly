@@ -35,6 +35,7 @@ class RenderElements {
         list.add(new GoalRender(strq.getDiscoveredMembers()));
       }
     }
+    list.add(new HudRender(trajectoryPlanner));
   }
 
   public RenderElements(Collection<? extends StateCostNode> collection, TransitionRegionQuery transitionRegionQuery) {

@@ -25,7 +25,7 @@ class DomainRender implements AbstractRender {
   }
 
   @Override
-  public void render(AbstractLayer abstractLayer, Graphics2D graphics) {
+  public void render(OwlyLayer abstractLayer, Graphics2D graphics) {
     graphics.setColor(SHADING);
     Point2D h1 = abstractLayer.toPoint2D(Tensors.vector(0, 0));
     Point2D h2 = abstractLayer.toPoint2D(eta_invert);

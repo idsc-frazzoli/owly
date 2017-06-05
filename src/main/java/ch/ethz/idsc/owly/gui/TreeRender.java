@@ -14,14 +14,14 @@ import ch.ethz.idsc.owly.data.tree.StateCostNode;
 import ch.ethz.idsc.tensor.Scalar;
 
 class TreeRender implements AbstractRender {
-  private Collection<? extends StateCostNode> collection;
+  private final Collection<? extends StateCostNode> collection;
 
   TreeRender(Collection<? extends StateCostNode> collection) {
     this.collection = collection;
   }
 
   @Override
-  public void render(AbstractLayer abstractLayer, Graphics2D graphics) {
+  public void render(OwlyLayer abstractLayer, Graphics2D graphics) {
     DoubleSummaryStatistics dss = collection.stream() //
         .map(StateCostNode::costFromRoot) //
         .map(Scalar::number) //

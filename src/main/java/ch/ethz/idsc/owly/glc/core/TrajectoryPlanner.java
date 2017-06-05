@@ -53,7 +53,11 @@ public abstract class TrajectoryPlanner implements ExpandInterface, Serializable
   abstract GlcNode createRootNode(Tensor x);
 
   public final void insertRoot(Tensor x) {
-    insert(convertToKey(x), createRootNode(x));
+    if (!queue.isEmpty() || !domainMap.isEmpty())
+      throw new RuntimeException(); // root insertion requires empty planner
+    boolean replaced = insert(convertToKey(x), createRootNode(x));
+    if (replaced)
+      throw new RuntimeException(); // root insertion should not replace any other node
   }
 
   /** @param domain_key

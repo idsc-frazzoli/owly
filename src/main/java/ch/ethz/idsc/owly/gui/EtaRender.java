@@ -11,14 +11,14 @@ import ch.ethz.idsc.tensor.Tensors;
 import ch.ethz.idsc.tensor.sca.Ceiling;
 
 class EtaRender implements AbstractRender {
-  private Tensor eta;
+  private final Tensor eta;
 
   EtaRender(Tensor eta) {
     this.eta = eta;
   }
 
   @Override
-  public void render(AbstractLayer abstractLayer, Graphics2D graphics) {
+  public void render(OwlyLayer abstractLayer, Graphics2D graphics) {
     Tensor inv = eta.map(Scalar::invert);
     graphics.setColor(Color.LIGHT_GRAY);
     Tensor ceiling = Ceiling.of(eta);
