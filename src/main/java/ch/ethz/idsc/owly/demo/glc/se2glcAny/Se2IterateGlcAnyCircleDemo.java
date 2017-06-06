@@ -36,7 +36,7 @@ import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
 
 /** (x,y,theta) */
-class Se2IterateAnyCircleDemo {
+class Se2IterateGlcAnyCircleDemo {
   public static void main(String[] args) throws Exception {
     RationalScalar resolution = (RationalScalar) RealScalar.of(10);
     Scalar timeScale = RealScalar.of(4);

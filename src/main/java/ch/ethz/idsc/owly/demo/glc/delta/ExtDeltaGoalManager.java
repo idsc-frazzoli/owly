@@ -19,7 +19,6 @@ import ch.ethz.idsc.tensor.red.Norm;
 class ExtDeltaGoalManager extends SimpleTrajectoryRegionQuery implements CostFunction {
   private final Tensor center;
   private final Scalar radius;
-  @Deprecated
   private final Scalar maxSpeed; // TODO not used
 
   public ExtDeltaGoalManager(Tensor center, Tensor radius, Scalar maxSpeed) {
@@ -47,9 +46,7 @@ class ExtDeltaGoalManager extends SimpleTrajectoryRegionQuery implements CostFun
   public Scalar minCostToGoal(Tensor x) {
     Tensor cur_xy = x.extract(0, 2);
     // Heuristic needs to be underestimating: (Euclideandistance-radius) / (MaxControl+Max(|Vectorfield|)
-    Scalar dxy = Norm._2.of(cur_xy.subtract(center)).subtract(radius).divide(RealScalar.ONE);
-    // Scalar dxy = Norm._2.of(cur_xy.subtract(center)).subtract(radius).divide(maxSpeed);
+    Scalar dxy = Norm._2.of(cur_xy.subtract(center)).subtract(radius).divide(maxSpeed);
     return Max.of(dxy, RealScalar.ZERO);
-    // return ZeroScalar.get();
   }
 }

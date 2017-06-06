@@ -26,7 +26,7 @@ import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
 import ch.ethz.idsc.tensor.io.Import;
 
-class GlcDeltaDemo {
+class DeltaGlcDemo {
   public static void main(String[] args) throws Exception {
     RationalScalar resolution = (RationalScalar) RationalScalar.of(12, 1);
     Scalar timeScale = RealScalar.of(10);
@@ -42,7 +42,8 @@ class GlcDeltaDemo {
     Parameters parameters = new DeltaParameters(resolution, timeScale, depthScale, partitionScale, dtMax, maxIter, stateSpaceModel.getLipschitz());
     StateIntegrator stateIntegrator = FixedStateIntegrator.create( //
         new RungeKutta45Integrator(), parameters.getdtMax(), parameters.getTrajectorySize());
-    RealScalar maxInput = RealScalar.of(1);
+    Scalar maxInput = RealScalar.of(1);
+    maxInput = ipr.maxNorm();
     Collection<Flow> controls = DeltaControls.createControls( //
         stateSpaceModel, maxInput, parameters.getResolution());
     Tensor obstacleImage = Images.displayOrientation(Import.of(Resources.fileFromRepository("/io/delta_free.png")).get(Tensor.ALL, Tensor.ALL, 0)); //
@@ -50,7 +51,7 @@ class GlcDeltaDemo {
         new SimpleTrajectoryRegionQuery(new TimeInvariantRegion( //
             new ImageRegion(obstacleImage, range, true)));
     ExtDeltaGoalManager deltaGoalManager = new ExtDeltaGoalManager( //
-        Tensors.vector(2.9, 2.4), Tensors.vector(.3, .3), maxInput);
+        Tensors.vector(2.9, 2.4), Tensors.vector(.3, .3), maxInput.add(ipr.maxNorm()));
     TrajectoryPlanner trajectoryPlanner = new DefaultTrajectoryPlanner( //
         parameters.getEta(), stateIntegrator, controls, deltaGoalManager, deltaGoalManager, obstacleQuery);
     trajectoryPlanner.insertRoot(Tensors.vector(8.8, 0.5));
