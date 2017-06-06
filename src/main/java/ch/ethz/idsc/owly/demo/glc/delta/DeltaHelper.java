@@ -5,6 +5,7 @@ import java.util.Collection;
 
 import ch.ethz.idsc.owly.demo.util.Images;
 import ch.ethz.idsc.owly.demo.util.Resources;
+import ch.ethz.idsc.owly.glc.adapter.Parameters;
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
 import ch.ethz.idsc.owly.glc.core.DefaultTrajectoryPlanner;
 import ch.ethz.idsc.owly.glc.core.TrajectoryPlanner;
@@ -44,6 +45,39 @@ enum DeltaHelper {
         Tensors.vector(2.1, 0.3), Tensors.vector(.3, .3));
     TrajectoryPlanner trajectoryPlanner = new DefaultTrajectoryPlanner( //
         eta, stateIntegrator, controls, deltaGoalManager, deltaGoalManager, obstacleQuery);
+    trajectoryPlanner.insertRoot(Tensors.vector(8.8, 0.5));
+    return trajectoryPlanner;
+  }
+
+  static TrajectoryPlanner createGlc(Scalar gradientAmp, RationalScalar resolution) throws Exception {
+    Scalar timeScale = RealScalar.of(5);
+    Scalar depthScale = RealScalar.of(10);
+    Tensor partitionScale = Tensors.vector(5, 5);
+    Scalar dtMax = RationalScalar.of(1, 6);
+    int maxIter = 2000;
+    Tensor range = Tensors.vector(9, 6.5);
+    ImageGradient ipr = new ImageGradient( //
+        Images.displayOrientation(Import.of(Resources.fileFromRepository("/io/delta_uxy.png")).get(Tensor.ALL, Tensor.ALL, 0)), //
+        range, RealScalar.of(-.5)); // -.25 .5
+    DeltaStateSpaceModel stateSpaceModel = new DeltaStateSpaceModel(ipr);
+    Parameters parameters = new DeltaParameters(resolution, timeScale, depthScale, //
+        partitionScale, dtMax, maxIter, stateSpaceModel.getLipschitz());
+    StateIntegrator stateIntegrator = FixedStateIntegrator.create( //
+        new RungeKutta45Integrator(), parameters.getdtMax(), parameters.getTrajectorySize());
+    Scalar maxInput = RealScalar.ONE;
+    maxInput = ipr.maxNorm();
+    Collection<Flow> controls = DeltaControls.createControls( //
+        stateSpaceModel, maxInput, parameters.getResolution());
+    Tensor obstacleImage = Images.displayOrientation(Import.of(Resources.fileFromRepository("/io/delta_free.png")).get(Tensor.ALL, Tensor.ALL, 0)); //
+    TrajectoryRegionQuery obstacleQuery = //
+        new SimpleTrajectoryRegionQuery(new TimeInvariantRegion( //
+            new ImageRegion(obstacleImage, range, true)));
+    // ExtDeltaGoalManager deltaGoalManager = new ExtDeltaGoalManager( //
+    // Tensors.vector(2.9, 2.4), Tensors.vector(.3, .3), maxInput.add(ipr.maxNorm()));
+    DeltaGoalManager deltaGoalManager = new DeltaGoalManager( //
+        Tensors.vector(2.1, 0.3), Tensors.vector(.3, .3));
+    TrajectoryPlanner trajectoryPlanner = new DefaultTrajectoryPlanner( //
+        parameters.getEta(), stateIntegrator, controls, deltaGoalManager, deltaGoalManager, obstacleQuery);
     trajectoryPlanner.insertRoot(Tensors.vector(8.8, 0.5));
     return trajectoryPlanner;
   }

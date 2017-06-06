@@ -1,34 +1,30 @@
 // code by jl
 package ch.ethz.idsc.owly.demo.glc.delta;
 
-import ch.ethz.idsc.owly.glc.adapter.Parameters;
+import ch.ethz.idsc.owly.glc.adapter.DefaultParameters;
 import ch.ethz.idsc.tensor.RationalScalar;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
-import ch.ethz.idsc.tensor.Scalars;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.sca.Power;
 
-// TODO JONAS class should extend from DefaultParameters
-class DeltaParameters extends Parameters {
-  private final Scalar lipschitz;
-
+class DeltaParameters extends DefaultParameters {
   public DeltaParameters( //
       RationalScalar resolution, Scalar timeScale, Scalar depthScale, Tensor partitionScale, Scalar dtMax, int maxIter, //
       Scalar lipschitz) {
-    super(resolution, timeScale, depthScale, partitionScale, dtMax, maxIter);
-    this.lipschitz = lipschitz;
+    super(resolution, timeScale, depthScale, partitionScale, dtMax, maxIter, lipschitz);
   }
 
   @Override
-  /** @return if Lipschitz == 0: R*log(R)²
-   * @return else : R^(5/Pi) */
-  public Tensor getEta() {
-    if (Scalars.isZero(lipschitz))
-      return getPartitionScale().map(Scalar::invert) //
-          .multiply(Power.of(RealScalar.of(getResolution()), 2));
+  /** @return if Lipschitz == 0: R²/partitionScale */
+  protected final Tensor EtaLfZero() {
+    return getPartitionScale().map(Scalar::invert); //
+  }
+
+  @Override
+  /** @return R²/partitionScale */
+  protected final Tensor EtaLfNonZero(Scalar lipschitz) {
     return getPartitionScale().map(Scalar::invert) //
         .multiply(Power.of(RealScalar.of(getResolution()), RealScalar.ONE.add(lipschitz)));
-    // TODO change to function depending on Lipschitz
   }
 }

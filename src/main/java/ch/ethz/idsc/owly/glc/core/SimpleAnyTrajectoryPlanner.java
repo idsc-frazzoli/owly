@@ -14,7 +14,6 @@ import ch.ethz.idsc.owly.math.flow.Flow;
 import ch.ethz.idsc.owly.math.state.CostFunction;
 import ch.ethz.idsc.owly.math.state.StateIntegrator;
 import ch.ethz.idsc.owly.math.state.StateTime;
-import ch.ethz.idsc.owly.math.state.Trajectories;
 import ch.ethz.idsc.owly.math.state.TrajectoryRegionQuery;
 import ch.ethz.idsc.tensor.Scalars;
 import ch.ethz.idsc.tensor.Tensor;
@@ -36,7 +35,7 @@ public class SimpleAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
       TrajectoryRegionQuery goalQuery, //
       TrajectoryRegionQuery obstacleQuery //
   ) {
-    super(eta, costFunction);
+    super(eta, stateIntegrator, costFunction, goalQuery, obstacleQuery);
     this.stateIntegrator = stateIntegrator;
     this.controls = controls;
     this.goalQuery = goalQuery;
@@ -103,18 +102,6 @@ public class SimpleAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
   }
 
   @Override
-  public int switchRootToState(Tensor state) {
-    GlcNode newRoot = this.getNode(convertToKey(state));
-    int increaseDepthBy = 0;
-    // TODO not nice, as we jump from state to startnode
-    if (newRoot != null)
-      increaseDepthBy = switchRootToNode(newRoot);
-    else
-      System.out.println("This domain is not labelled yet");
-    return increaseDepthBy;
-  }
-
-  @Override
   public int switchRootToNode(GlcNode newRoot) {
     GlcNode oldRoot = getNodesfromRootToGoal().get(0);
     if (newRoot.isRoot()) {
@@ -153,21 +140,6 @@ public class SimpleAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
     System.out.println(0 + " Nodes added to Queue");
     System.out.println("**Rootswitch finished**");
     return increaseDepthBy;
-  }
-
-  @Override
-  public List<StateTime> detailedTrajectoryTo(GlcNode node) {
-    return Trajectories.connect(stateIntegrator, Nodes.fromRoot(node));
-  }
-
-  @Override
-  public TrajectoryRegionQuery getObstacleQuery() {
-    return obstacleQuery;
-  }
-
-  @Override
-  public TrajectoryRegionQuery getGoalQuery() {
-    return goalQuery;
   }
 
   /** @param newGoal is the new RegionQuery for the new Goalregion */

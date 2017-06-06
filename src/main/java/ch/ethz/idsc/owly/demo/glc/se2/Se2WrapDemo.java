@@ -35,7 +35,7 @@ class Se2WrapDemo {
     final CoordinateWrap identity = new IdentityWrap();
     CoordinateWrap coordinateWrap;
     coordinateWrap = new Se2Wrap(Tensors.vector(1, 1, 1));
-    coordinateWrap = identity;
+    // coordinateWrap = identity;
     Se2WrapGoalManager se2GoalManager = new Se2WrapGoalManager( //
         coordinateWrap, //
         Tensors.vector(-.5, 0, 0), RealScalar.of(.25));

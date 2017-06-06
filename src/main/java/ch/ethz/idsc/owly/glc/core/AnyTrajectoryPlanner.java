@@ -18,7 +18,6 @@ import ch.ethz.idsc.owly.math.flow.Flow;
 import ch.ethz.idsc.owly.math.state.CostFunction;
 import ch.ethz.idsc.owly.math.state.StateIntegrator;
 import ch.ethz.idsc.owly.math.state.StateTime;
-import ch.ethz.idsc.owly.math.state.Trajectories;
 import ch.ethz.idsc.owly.math.state.TrajectoryRegionQuery;
 import ch.ethz.idsc.tensor.Scalars;
 import ch.ethz.idsc.tensor.Tensor;
@@ -41,7 +40,7 @@ public class AnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
       TrajectoryRegionQuery goalQuery, //
       TrajectoryRegionQuery obstacleQuery //
   ) {
-    super(eta, costFunction);
+    super(eta, stateIntegrator, costFunction, goalQuery, obstacleQuery);
     this.stateIntegrator = stateIntegrator;
     this.controls = controls;
     this.goalQuery = goalQuery;
@@ -118,21 +117,6 @@ public class AnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
           candidateQueue.remove();// remove from TemporyQueue as was not better
         }
       }
-    }
-  }
-
-  /** @param state the new Rootstate
-   * @return The value,by which the depth limit needs to be increased as of the RootSwitch */
-  @Override
-  public int switchRootToState(Tensor state) {
-    GlcNode newRoot = this.getNode(convertToKey(state));
-    // TODO not nice, as we jump from state to startnode
-    if (newRoot != null)
-      return switchRootToNode(newRoot);
-    else {
-      System.out.println("This domain is not labelled yet");
-      return 0;
-      // TODO this case should throw an exception!
     }
   }
 
@@ -250,21 +234,6 @@ public class AnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
     System.out.println(addedNodesToQueue + " Nodes added to Domain = " + domainMap().size());
     System.out.println("**Rootswitch finished**");
     return increasedDepthBy;
-  }
-
-  @Override
-  public List<StateTime> detailedTrajectoryTo(GlcNode node) {
-    return Trajectories.connect(stateIntegrator, Nodes.fromRoot(node));
-  }
-
-  @Override
-  public TrajectoryRegionQuery getObstacleQuery() {
-    return obstacleQuery;
-  }
-
-  @Override
-  public TrajectoryRegionQuery getGoalQuery() {
-    return goalQuery;
   }
 
   /** @param newCostFunction is the new CostFunction to the new Goal
