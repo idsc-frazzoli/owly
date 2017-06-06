@@ -1,3 +1,4 @@
+// code by jl
 package ch.ethz.idsc.owly.demo.glc.se2glc;
 
 import ch.ethz.idsc.owly.glc.adapter.DefaultParameters;

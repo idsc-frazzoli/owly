@@ -35,7 +35,7 @@ import ch.ethz.idsc.tensor.Tensor;
 
   /** @param state the new Rootstate
    * @return The value,by which the depth limit needs to be increased as of the RootSwitch */
-  public int switchRootToState(Tensor state) {
+  public final int switchRootToState(Tensor state) {
     GlcNode newRoot = this.getNode(convertToKey(state));
     int increaseDepthBy = 0;
     // TODO not nice, as we jump from state to startnode
@@ -50,17 +50,17 @@ import ch.ethz.idsc.tensor.Tensor;
   public abstract int switchRootToNode(GlcNode newRoot);
 
   @Override
-  public List<StateTime> detailedTrajectoryTo(GlcNode node) {
+  public final List<StateTime> detailedTrajectoryTo(GlcNode node) {
     return Trajectories.connect(stateIntegrator, Nodes.fromRoot(node));
   }
 
   @Override
-  public TrajectoryRegionQuery getObstacleQuery() {
+  public final TrajectoryRegionQuery getObstacleQuery() {
     return obstacleQuery;
   }
 
   @Override
-  public TrajectoryRegionQuery getGoalQuery() {
+  public final TrajectoryRegionQuery getGoalQuery() {
     return goalQuery;
   }
 

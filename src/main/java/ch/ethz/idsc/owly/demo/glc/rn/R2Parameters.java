@@ -10,13 +10,10 @@ import ch.ethz.idsc.tensor.sca.Log;
 import ch.ethz.idsc.tensor.sca.Power;
 
 public class R2Parameters extends DefaultParameters {
-  private final Scalar lipschitz;
-
   public R2Parameters( //
       RationalScalar resolution, Scalar timeScale, Scalar depthScale, Tensor partitionScale, Scalar dtMax, int maxIter, //
       Scalar lipschitz) {
     super(resolution, timeScale, depthScale, partitionScale, dtMax, maxIter, lipschitz);
-    this.lipschitz = lipschitz;
   }
 
   @Override
