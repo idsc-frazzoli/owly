@@ -72,7 +72,6 @@ public abstract class TrajectoryPlanner implements ExpandInterface, Serializable
    * false if the domain map did not have a pre-existing mapping from given domain_key */
   /* package */ final boolean insert(Tensor domain_key, GlcNode node) {
     queue.add(node);
-    // TODO JONAS comment what you mean by: "could be small tree"
     final boolean replaced = domainMap.containsKey(domain_key);
     domainMap.put(domain_key, node);
     if (replaced)

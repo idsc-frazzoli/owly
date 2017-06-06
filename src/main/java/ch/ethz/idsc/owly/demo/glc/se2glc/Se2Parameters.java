@@ -8,7 +8,6 @@ import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.sca.Log;
 import ch.ethz.idsc.tensor.sca.Power;
 
-// TODO JONAS class should extend from DefaultParameters
 public class Se2Parameters extends DefaultParameters {
   public Se2Parameters( //
       RationalScalar resolution, Scalar timeScale, Scalar depthScale, Tensor partitionScale, Scalar dtMax, int maxIter, //

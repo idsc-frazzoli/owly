@@ -9,7 +9,6 @@ import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.sca.Log;
 import ch.ethz.idsc.tensor.sca.Power;
 
-//TODO JONAS class should extend from DefaultParameters
 public class R2Parameters extends DefaultParameters {
   private final Scalar lipschitz;
 

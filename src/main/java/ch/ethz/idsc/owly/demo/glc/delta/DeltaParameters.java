@@ -8,7 +8,6 @@ import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.sca.Power;
 
-// TODO JONAS class should extend from DefaultParameters
 class DeltaParameters extends DefaultParameters {
   public DeltaParameters( //
       RationalScalar resolution, Scalar timeScale, Scalar depthScale, Tensor partitionScale, Scalar dtMax, int maxIter, //
