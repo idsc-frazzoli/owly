@@ -46,6 +46,7 @@ public class OwlyFrame {
     }
   }
 
+  @SuppressWarnings("unchecked")
   public void setRrts(RrtsNode root, TransitionRegionQuery transitionRegionQuery) {
     try {
       Collection<RrtsNode> nodes = Nodes.ofSubtree(root);
@@ -55,11 +56,6 @@ public class OwlyFrame {
     } catch (Exception exception) {
       exception.printStackTrace();
     }
-  }
-
-  @Deprecated
-  public void repaint() { // see Se2rExpandDemo for how to render updates
-    owlyComponent.jComponent.repaint();
   }
 
   public BufferedImage offscreen() {

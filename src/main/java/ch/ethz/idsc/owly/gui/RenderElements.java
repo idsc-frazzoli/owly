@@ -16,7 +16,8 @@ class RenderElements {
   final List<AbstractRender> list = new LinkedList<>();
 
   public RenderElements(TrajectoryPlanner trajectoryPlanner) {
-    list.add(new DomainRender(trajectoryPlanner.getEta()));
+    list.add(new EtaRender(trajectoryPlanner.getEta()));
+    list.add(new DomainRender(trajectoryPlanner.getDomainMap(), trajectoryPlanner.getEta()));
     {
       TrajectoryRegionQuery trq = trajectoryPlanner.getObstacleQuery();
       if (trq instanceof SimpleTrajectoryRegionQuery) {
@@ -25,7 +26,7 @@ class RenderElements {
       }
     }
     list.add(new QueueRender(trajectoryPlanner.getQueue()));
-    list.add(new TreeRender(trajectoryPlanner.getNodes()));
+    list.add(new TreeRender(trajectoryPlanner.getDomainMap().values()));
     list.add(new TrajectoryRender(trajectoryPlanner));
     {
       TrajectoryRegionQuery trq = trajectoryPlanner.getGoalQuery();
@@ -34,6 +35,7 @@ class RenderElements {
         list.add(new GoalRender(strq.getDiscoveredMembers()));
       }
     }
+    list.add(new HudRender(trajectoryPlanner));
   }
 
   public RenderElements(Collection<? extends StateCostNode> collection, TransitionRegionQuery transitionRegionQuery) {

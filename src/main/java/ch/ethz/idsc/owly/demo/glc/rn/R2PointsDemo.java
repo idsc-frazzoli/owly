@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Random;
 import java.util.stream.IntStream;
 
+import ch.ethz.idsc.owly.demo.util.R2Controls;
 import ch.ethz.idsc.owly.glc.adapter.RnPointcloudRegion;
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
 import ch.ethz.idsc.owly.glc.core.DefaultTrajectoryPlanner;
@@ -38,7 +39,7 @@ class R2PointsDemo {
   public static void main(String[] args) {
     Tensor partitionScale = Tensors.vector(5, 5);
     StateIntegrator stateIntegrator = FixedStateIntegrator.create(new EulerIntegrator(), RationalScalar.of(1, 8), 4);
-    Collection<Flow> controls = R2Controls.createControls(20);
+    Collection<Flow> controls = R2Controls.createRadial(20);
     RnGoalManager rnGoal = new RnGoalManager(Tensors.vector(5, 5), DoubleScalar.of(.2));
     Tensor points = createRandom(10, Tensors.vector(4, 4));
     // Tensors.matrix(new Number[][] { //

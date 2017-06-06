@@ -9,7 +9,7 @@ public interface Node extends Serializable {
   /** @return parent */
   Node parent();
 
-  /** @return collection of child nodes */
+  /** @return unmodifiable collection of child nodes */
   Collection<? extends Node> children();
 
   /** disconnects this node from given child.

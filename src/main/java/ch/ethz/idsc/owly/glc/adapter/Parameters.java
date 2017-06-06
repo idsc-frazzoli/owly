@@ -1,5 +1,5 @@
 // code by jl, theory by bp
-package ch.ethz.idsc.owly.glc.wrap;
+package ch.ethz.idsc.owly.glc.adapter;
 
 import ch.ethz.idsc.tensor.IntegerQ;
 import ch.ethz.idsc.tensor.RationalScalar;
@@ -10,7 +10,6 @@ import ch.ethz.idsc.tensor.Tensors;
 import ch.ethz.idsc.tensor.sca.Ceiling;
 import ch.ethz.idsc.tensor.sca.Log;
 
-// TODO state origin of every formula in research paper
 public abstract class Parameters {
   // Initial condition
   private Tensors x0;
@@ -56,7 +55,7 @@ public abstract class Parameters {
     this.expandTime = timeScale.divide(resolution);
     this.depthLimit = depthScale //
         .multiply(resolution) //
-        .multiply(Log.function.apply(resolution));
+        .multiply(Log.of(resolution));
   }
 
   /** @return time_scale / Resolution */
@@ -86,7 +85,7 @@ public abstract class Parameters {
 
   /** @return trajectory size with current expandTime and dtMax */
   public int getTrajectorySize() {
-    Scalar temp = (Scalar) Ceiling.of(expandTime.divide(dtMax));
+    Scalar temp = Ceiling.of(expandTime.divide(dtMax));
     return temp.number().intValue();
   }
 

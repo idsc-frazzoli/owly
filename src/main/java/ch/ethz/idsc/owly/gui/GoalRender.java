@@ -13,14 +13,14 @@ import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.opt.ConvexHull;
 
 class GoalRender implements AbstractRender {
-  private Collection<StateTime> collection;
+  private final Collection<StateTime> collection;
 
   GoalRender(Collection<StateTime> collection) {
     this.collection = collection;
   }
 
   @Override
-  public void render(AbstractLayer abstractLayer, Graphics2D graphics) {
+  public void render(OwlyLayer abstractLayer, Graphics2D graphics) {
     { // draw convex hull of goal points
       Tensor points = Tensor.of(collection.stream().map(StateTime::x).map(x -> x.extract(0, 2)));
       if (2 < points.length()) {
@@ -41,10 +41,12 @@ class GoalRender implements AbstractRender {
       }
     }
     { // draw discovered points
+      double radius = 9;
+      double offset = -radius * 0.5;
       graphics.setColor(new Color(224, 168, 0, 224));
       for (StateTime stateTime : collection) {
         Point2D point2d = abstractLayer.toPoint2D(stateTime.x());
-        graphics.fill(new Ellipse2D.Double(point2d.getX() - 2.5, point2d.getY() - 2.5, 4, 4));
+        graphics.draw(new Ellipse2D.Double(point2d.getX() + offset, point2d.getY() + offset, radius, radius));
       }
     }
   }

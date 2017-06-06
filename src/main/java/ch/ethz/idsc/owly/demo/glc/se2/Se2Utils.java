@@ -1,9 +1,6 @@
 // code by jph
 package ch.ethz.idsc.owly.demo.glc.se2;
 
-import java.util.Collection;
-
-import ch.ethz.idsc.owly.math.flow.Flow;
 import ch.ethz.idsc.tensor.ComplexScalar;
 import ch.ethz.idsc.tensor.DoubleScalar;
 import ch.ethz.idsc.tensor.RationalScalar;
@@ -11,7 +8,7 @@ import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
-import ch.ethz.idsc.tensor.sca.ArgInterface;
+import ch.ethz.idsc.tensor.sca.Arg;
 import ch.ethz.idsc.tensor.sca.Cos;
 import ch.ethz.idsc.tensor.sca.Sin;
 
@@ -22,7 +19,8 @@ public enum Se2Utils {
   }
 
   // ---
-  public static Tensor vec2mat(Tensor x) {
+  // function not called
+  static Tensor vec2mat(Tensor x) {
     Scalar angle = x.Get(2);
     return Tensors.matrix(new Tensor[][] { //
         { Cos.of(angle), Sin.of(angle).negate(), x.Get(0) }, //
@@ -31,17 +29,9 @@ public enum Se2Utils {
     });
   }
 
-  public static Tensor mat2vec(Tensor mat) {
-    Scalar arg = ((ArgInterface) ComplexScalar.of(mat.Get(0, 0), mat.Get(1, 0))).arg();
+  // function not called
+  static Tensor mat2vec(Tensor mat) {
+    Scalar arg = Arg.of(ComplexScalar.of(mat.Get(0, 0), mat.Get(1, 0)));
     return Tensors.of(mat.get(0, 2), mat.get(1, 2), arg);
-  }
-
-  public static void main(String[] args) {
-    Collection<Flow> c = Se2Controls.createControls(DEGREE(10), 2);
-    Flow um1 = c.iterator().next();
-    System.out.println(um1.getU());
-    Tensor x = Tensors.vector(0, 0, 0.0);
-    Tensor x1 = um1.at(um1.at(x));
-    System.out.println(x1);
   }
 }

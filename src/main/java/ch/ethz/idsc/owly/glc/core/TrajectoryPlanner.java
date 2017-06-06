@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.PriorityQueue;
 import java.util.Queue;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import ch.ethz.idsc.owly.data.tree.Nodes;
@@ -34,41 +35,54 @@ public abstract class TrajectoryPlanner implements ExpandInterface, Serializable
     this.eta = eta.copy().unmodifiable();
   }
 
+  /** @return eta as unmodifiable tensor */
   public final Tensor getEta() {
     return eta;
   }
+
+  // EXPERIMENTAL
+  public transient Function<Tensor, Tensor> represent = Function.identity();
 
   /** Floor(eta * state) == Floor(state / domain_size)
    * 
    * @param x state
    * @return */
   /* package */ Tensor convertToKey(Tensor x) {
-    return eta.pmul(x).map(Floor.function);
+    return eta.pmul(represent.apply(x)).map(Floor.function);
   }
 
+  /** the current API assumes that the root node will be assigned a {@link StateTime} with
+   * state == x and time == 0. should another time be required, the API can be extended.
+   * 
+   * @param x
+   * @return */
   abstract GlcNode createRootNode(Tensor x);
 
   public final void insertRoot(Tensor x) {
-    insert(convertToKey(x), createRootNode(x));
+    if (!queue.isEmpty() || !domainMap.isEmpty())
+      throw new RuntimeException(); // root insertion requires empty planner
+    boolean replaced = insert(convertToKey(x), createRootNode(x));
+    if (replaced)
+      throw new RuntimeException(); // root insertion should not replace any other node
   }
 
   /** @param domain_key
    * @param node
-   * @return false if Key was already occupied, otherwise true */
-  // TODO return value only used once for check -> different API
-  protected final boolean insert(Tensor domain_key, GlcNode node) {
+   * @return true if node replaces a existing entry in the domain map,
+   * false if the domain map did not have a pre-existing mapping from given domain_key */
+  /* package */ final boolean insert(Tensor domain_key, GlcNode node) {
     queue.add(node);
-    // TODO could be small tree <- ???
-    boolean replaced = !domainMap.containsKey(domain_key);
+    // TODO JONAS comment what you mean by: "could be small tree"
+    final boolean replaced = domainMap.containsKey(domain_key);
     domainMap.put(domain_key, node);
     if (replaced)
       ++replaceCount;
-    return !replaced;
+    return replaced;
   }
 
   /** @param domain_key
    * @return node in domain or null if domain has not been assigned a node yet */
-  protected final GlcNode getNode(Tensor domain_key) {
+  /* package */ final GlcNode getNode(Tensor domain_key) {
     return domainMap.get(domain_key);
   }
 
@@ -84,7 +98,7 @@ public abstract class TrajectoryPlanner implements ExpandInterface, Serializable
     return queue.peek();
   }
 
-  protected final void offerDestination(GlcNode node) {
+  /* package */ final void offerDestination(GlcNode node) {
     if (best == null || Scalars.lessThan(node.costFromRoot(), best.costFromRoot())) {
       best = node;
       System.out.println("found goal");
@@ -112,20 +126,12 @@ public abstract class TrajectoryPlanner implements ExpandInterface, Serializable
   /** @return goal query for the purpose of inspection, i.e. no alteration should be made */
   public abstract TrajectoryRegionQuery getGoalQuery();
 
-  protected final Collection<GlcNode> queue() {
+  /* package */ final Collection<GlcNode> queue() {
     return queue;
   }
 
-  protected final Map<Tensor, GlcNode> domainMap() {
+  /* package */ final Map<Tensor, GlcNode> domainMap() {
     return domainMap;
-  }
-
-  public final Collection<GlcNode> getQueue() {
-    return Collections.unmodifiableCollection(queue);
-  }
-
-  public final Collection<GlcNode> getNodes() {
-    return Collections.unmodifiableCollection(domainMap.values());
   }
 
   // TODO rename to coarse path ...
@@ -137,5 +143,15 @@ public abstract class TrajectoryPlanner implements ExpandInterface, Serializable
 
   public final List<GlcNode> getNodesfromRootToGoal() {
     return Nodes.fromRoot(best == null ? best : peek());
+  }
+
+  /** @return unmodifiable view on queue for display and tests */
+  public final Collection<GlcNode> getQueue() {
+    return Collections.unmodifiableCollection(queue);
+  }
+
+  /** @return unmodifiable view on domain map for display and tests */
+  public final Map<Tensor, GlcNode> getDomainMap() {
+    return Collections.unmodifiableMap(domainMap);
   }
 }

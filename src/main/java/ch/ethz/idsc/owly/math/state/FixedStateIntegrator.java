@@ -9,7 +9,13 @@ import ch.ethz.idsc.owly.math.flow.Integrator;
 import ch.ethz.idsc.owly.math.flow.MidpointIntegrator;
 import ch.ethz.idsc.tensor.Scalar;
 
+/** trajectory integration with fixed step size over given time period */
 public class FixedStateIntegrator implements StateIntegrator {
+  /** uses {@link MidpointIntegrator}
+   * 
+   * @param timeStep
+   * @param trajectorySize
+   * @return */
   public static StateIntegrator createDefault(Scalar timeStep, int trajectorySize) {
     return new FixedStateIntegrator(new MidpointIntegrator(), timeStep, trajectorySize);
   }
@@ -22,13 +28,10 @@ public class FixedStateIntegrator implements StateIntegrator {
   private final Scalar timeStep;
   private final int trajectorySize;
 
-  /** constructor is private
-   * constructor is invoked from static functions
-   * 
-   * @param integrator
-   * @param timeStep
-   * @param trajectorySize */
-  FixedStateIntegrator(Integrator integrator, Scalar timeStep, int trajectorySize) {
+  /** @param integrator
+   * @param timeStep period of one step
+   * @param trajectorySize number of steps */
+  private FixedStateIntegrator(Integrator integrator, Scalar timeStep, int trajectorySize) {
     this.integrator = integrator;
     this.timeStep = timeStep;
     this.trajectorySize = trajectorySize;

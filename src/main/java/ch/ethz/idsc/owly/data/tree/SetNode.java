@@ -2,6 +2,7 @@
 package ch.ethz.idsc.owly.data.tree;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -10,11 +11,16 @@ public class SetNode<T extends Node> extends AbstractNode<T> {
 
   @Override // from Node
   public final Collection<T> children() {
-    return next;
+    return Collections.unmodifiableCollection(next);
   }
 
   @Override // from AbstractNode
-  protected final boolean protected_registerChild(T child) {
+  protected final boolean protected_insertChild(T child) {
     return next.add(child);
+  }
+
+  @Override
+  protected final boolean protected_removeChild(T child) {
+    return next.remove(child);
   }
 }

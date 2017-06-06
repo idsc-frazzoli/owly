@@ -1,5 +1,5 @@
 // code by jph
-package ch.ethz.idsc.owly.demo.glc.rn;
+package ch.ethz.idsc.owly.demo.util;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -19,9 +19,10 @@ import ch.ethz.idsc.tensor.sca.Sin;
 
 // create radial controls
 // class is intentionally public 
-public class R2Controls {
+public enum R2Controls {
+  ;
   // ---
-  public static Collection<Flow> createControls(final int num) {
+  public static Collection<Flow> createRadial(final int num) {
     StateSpaceModel stateSpaceModel = new IdentityStateSpaceModel();
     List<Flow> list = new ArrayList<>();
     for (Tensor angle : Range.of(0, num).multiply(DoubleScalar.of(2 * Math.PI / num))) {

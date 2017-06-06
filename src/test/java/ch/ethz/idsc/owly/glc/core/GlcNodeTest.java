@@ -15,8 +15,8 @@ public class GlcNodeTest extends TestCase {
     Scalar cost2 = RealScalar.of(1);
     Scalar heuristic1 = RealScalar.of(0);
     Scalar heuristic2 = RealScalar.of(0);
-    GlcNode test1 = new GlcNode(null, state1, cost1, heuristic1);
-    GlcNode test2 = new GlcNode(null, state1, cost1, heuristic1);
+    GlcNode test1 = GlcNode.of(null, state1, cost1, heuristic1);
+    GlcNode test2 = GlcNode.of(null, state1, cost1, heuristic1);
     assertTrue(state1.equals(state1));
     assertTrue(state1.equals(state2));
     // reflexiv
@@ -30,10 +30,10 @@ public class GlcNodeTest extends TestCase {
     // Nodes are identically except heuristic
     // assertTrue(test1.equals(test2));
     // Cost is different ==> different node
-    GlcNode test3 = new GlcNode(null, state1, cost2, heuristic1);
+    GlcNode test3 = GlcNode.of(null, state1, cost2, heuristic1);
     // assertFalse(test1.equals(test3));
     // Nodes are different in state ==> different
-    GlcNode test4 = new GlcNode(null, state2, cost1, heuristic1);
+    GlcNode test4 = GlcNode.of(null, state2, cost1, heuristic1);
     // assertFalse(test1.equals(test4));
   }
 }

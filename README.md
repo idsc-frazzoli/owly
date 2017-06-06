@@ -1,4 +1,4 @@
-# owly
+# ch.ethz.idsc.owly
 
 The repository contains Java 8 implementations of motion planners and their variants.
 
@@ -72,3 +72,7 @@ against the direction of current
 current reversed
 
 ![delta_s](https://cloud.githubusercontent.com/assets/4012178/26282191/59dafa84-3e0c-11e7-9602-2ece6f417bc1.gif)
+
+## References
+
+The repository has over `30` unit tests.

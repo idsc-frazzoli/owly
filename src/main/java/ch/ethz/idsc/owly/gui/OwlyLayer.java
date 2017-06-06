@@ -8,10 +8,10 @@ import java.util.List;
 import ch.ethz.idsc.owly.math.state.StateTime;
 import ch.ethz.idsc.tensor.Tensor;
 
-class AbstractLayer {
+class OwlyLayer {
   private final OwlyComponent glcComponent;
 
-  AbstractLayer(OwlyComponent glcComponent) {
+  OwlyLayer(OwlyComponent glcComponent) {
     this.glcComponent = glcComponent;
   }
 

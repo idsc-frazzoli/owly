@@ -23,7 +23,6 @@ import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
-import ch.ethz.idsc.tensor.io.Pretty;
 import ch.ethz.idsc.tensor.mat.DiagonalMatrix;
 import ch.ethz.idsc.tensor.mat.LinearSolve;
 import ch.ethz.idsc.tensor.sca.Power;
@@ -39,7 +38,7 @@ class OwlyComponent {
   }
 
   Tensor model2pixel;
-  final AbstractLayer abstractLayer = new AbstractLayer(this);
+  final OwlyLayer abstractLayer = new OwlyLayer(this);
   RenderElements renderElements;
 
   public OwlyComponent() {
@@ -85,8 +84,8 @@ class OwlyComponent {
       MouseListener mouseListener = new MouseAdapter() {
         @Override
         public void mouseClicked(MouseEvent mouseEvent) {
-          System.out.println("model2pixel=");
-          System.out.println(Pretty.of(model2pixel));
+          // System.out.println("model2pixel=");
+          // System.out.println(Pretty.of(model2pixel));
         }
 
         @Override

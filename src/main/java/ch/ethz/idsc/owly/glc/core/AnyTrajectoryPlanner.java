@@ -20,15 +20,13 @@ import ch.ethz.idsc.owly.math.state.StateIntegrator;
 import ch.ethz.idsc.owly.math.state.StateTime;
 import ch.ethz.idsc.owly.math.state.Trajectories;
 import ch.ethz.idsc.owly.math.state.TrajectoryRegionQuery;
-import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalars;
 import ch.ethz.idsc.tensor.Tensor;
 
 /** TODO assumptions in order to use any... */
-public class AnyTrajectoryPlanner extends TrajectoryPlanner {
+public class AnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
   private final StateIntegrator stateIntegrator;
   private final Collection<Flow> controls;
-  private CostFunction costFunction;
   private TrajectoryRegionQuery goalQuery;
   private final TrajectoryRegionQuery obstacleQuery;
   // CandidateMap saves neglected/pruned Nodes in a bucket for each domain
@@ -43,10 +41,9 @@ public class AnyTrajectoryPlanner extends TrajectoryPlanner {
       TrajectoryRegionQuery goalQuery, //
       TrajectoryRegionQuery obstacleQuery //
   ) {
-    super(eta);
+    super(eta, costFunction);
     this.stateIntegrator = stateIntegrator;
     this.controls = controls;
-    this.costFunction = costFunction;
     this.goalQuery = goalQuery;
     this.obstacleQuery = obstacleQuery;
   }
@@ -126,6 +123,7 @@ public class AnyTrajectoryPlanner extends TrajectoryPlanner {
 
   /** @param state the new Rootstate
    * @return The value,by which the depth limit needs to be increased as of the RootSwitch */
+  @Override
   public int switchRootToState(Tensor state) {
     GlcNode newRoot = this.getNode(convertToKey(state));
     // TODO not nice, as we jump from state to startnode
@@ -134,9 +132,11 @@ public class AnyTrajectoryPlanner extends TrajectoryPlanner {
     else {
       System.out.println("This domain is not labelled yet");
       return 0;
+      // TODO this case should throw an exception!
     }
   }
 
+  @Override
   public int switchRootToNode(GlcNode newRoot) {
     if (newRoot.isRoot()) {
       System.out.println("node is already root");
@@ -232,9 +232,10 @@ public class AnyTrajectoryPlanner extends TrajectoryPlanner {
               stateIntegrator.trajectory(nextParent.stateTime(), next.flow());
           if (obstacleQuery.isDisjoint(trajectory)) { // no collision
             nextParent.insertEdgeTo(next);
-            // DomainMap at this key should not be sempty
-            // TODO do not put data structure changing statement in if clause!
-            if (!insert(tempDomainKey, next))
+            // data structure changing statement shall not be in if clause:
+            final boolean replaced = insert(tempDomainKey, next);
+            // DomainMap at this key should not (<-???) be empty
+            if (replaced)
               System.out.println("Something was replaced --> BUG");
             addedNodesToQueue++;
             if (!goalQuery.isDisjoint(trajectory))
@@ -249,12 +250,6 @@ public class AnyTrajectoryPlanner extends TrajectoryPlanner {
     System.out.println(addedNodesToQueue + " Nodes added to Domain = " + domainMap().size());
     System.out.println("**Rootswitch finished**");
     return increasedDepthBy;
-  }
-
-  @Override
-  protected GlcNode createRootNode(Tensor x) { // TODO check if time of root node should always be set to 0
-    return new GlcNode(null, new StateTime(x, RealScalar.ZERO), RealScalar.ZERO, //
-        costFunction.minCostToGoal(x));
   }
 
   @Override

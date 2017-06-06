@@ -1,7 +1,7 @@
-//code by jl
+// code by jl
 package ch.ethz.idsc.owly.demo.glc.rn;
 
-import ch.ethz.idsc.owly.glc.wrap.Parameters;
+import ch.ethz.idsc.owly.glc.adapter.Parameters;
 import ch.ethz.idsc.tensor.RationalScalar;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
@@ -10,6 +10,7 @@ import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.sca.Log;
 import ch.ethz.idsc.tensor.sca.Power;
 
+//TODO JONAS class should extend from DefaultParameters
 public class R2Parameters extends Parameters {
   private final Scalar lipschitz;
 
@@ -26,7 +27,7 @@ public class R2Parameters extends Parameters {
   public Tensor getEta() {
     if (Scalars.isZero(lipschitz))
       return getPartitionScale().map(Scalar::invert) //
-          .multiply(RealScalar.of(getResolution()).multiply(Power.of(Log.function.apply(RealScalar.of(getResolution())), 2)));
+          .multiply(RealScalar.of(getResolution()).multiply(Power.of(Log.of(RealScalar.of(getResolution())), 2)));
     return getPartitionScale().map(Scalar::invert) //
         .multiply(Power.of(RealScalar.of(getResolution()), RealScalar.ONE.add(lipschitz)));
     // TODO change to function depending on Lipschitz
