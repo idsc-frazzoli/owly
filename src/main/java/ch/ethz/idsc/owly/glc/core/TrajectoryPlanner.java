@@ -142,7 +142,7 @@ public abstract class TrajectoryPlanner implements ExpandInterface, Serializable
   }
 
   public final List<GlcNode> getNodesfromRootToGoal() {
-    return Nodes.fromRoot(best == null ? best : peek());
+    return Nodes.fromRoot(best == null ? peek() : best);
   }
 
   /** @return unmodifiable view on queue for display and tests */
