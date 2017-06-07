@@ -117,7 +117,7 @@ public abstract class TrajectoryPlanner implements ExpandInterface, Serializable
   /** @param node
    * @return densely sampled trajectory from root to given node
    * that is the result of integrating the flows between the nodes */
-  public abstract List<StateTime> detailedTrajectoryTo(GlcNode node);
+  public abstract List<TrajectorySample> detailedTrajectoryTo(GlcNode node);
 
   /** @return obstacle query for the purpose of inspection, i.e. no alteration should be made */
   public abstract TrajectoryRegionQuery getObstacleQuery();

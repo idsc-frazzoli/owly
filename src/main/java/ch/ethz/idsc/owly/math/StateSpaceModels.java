@@ -8,10 +8,14 @@ import ch.ethz.idsc.tensor.Tensor;
 public enum StateSpaceModels {
   ;
   // ---
-  /** @param stateSpaceModel
+  /** creates an implementation of flow.
+   * flow is made identifiable via u.
+   * 
+   * @param stateSpaceModel
    * @param u
    * @return flow defined by stateSpaceModel using control parameter u */
   public static Flow createFlow(StateSpaceModel stateSpaceModel, Tensor u) {
+    final Tensor u_unmodifiable = u.unmodifiable();
     return new Flow() {
       @Override
       public final Tensor at(Tensor x) {
@@ -20,7 +24,7 @@ public enum StateSpaceModels {
 
       @Override
       public final Tensor getU() {
-        return u;
+        return u_unmodifiable;
       }
 
       @Override
