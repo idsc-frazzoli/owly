@@ -45,7 +45,6 @@ class Se2IterateGlcAnyStreetDemo {
     // --
     Parameters parameters = new Se2Parameters( //
         resolution, timeScale, depthScale, partitionScale, dtMax, maxIter, stateSpaceModel.getLipschitz());
-    // TODO JONAS what do you mean: possible without creation of StateSpaceModel?
     StateIntegrator stateIntegrator = FixedStateIntegrator.createDefault(parameters.getdtMax(), //
         parameters.getTrajectorySize());
     // ---
