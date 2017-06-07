@@ -106,7 +106,7 @@ class Se2IterateSimpleGlcAnyCircleDemo {
       int increment = trajectoryPlanner.switchRootToState(newRootState.x());
       parameters.increaseDepthLimit(increment);
       // trajectoryPlanner.switchRootToNode(newRootNode);
-      trajectoryPlanner.setGoalQuery(se2GoalManager2, se2GoalManager2.goalQuery());
+      trajectoryPlanner.changeGoal(se2GoalManager2, se2GoalManager2.goalQuery());
       int expandIter = Expand.maxDepth(trajectoryPlanner, parameters.getDepthLimit());
       trajectory = trajectoryPlanner.getPathFromRootToGoal();
       Trajectories.print(trajectory);

@@ -86,7 +86,7 @@ class Se2IterateGlcAnyStreetDemo {
       int increment = trajectoryPlanner.switchRootToState(newRootState.x());
       parameters.increaseDepthLimit(increment);
       System.out.println("New depthLimit is: " + parameters.getDepthLimit() + " after increment of " + increment);
-      trajectoryPlanner.setGoalQuery(se2GoalManager2, se2GoalManager2.goalQuery());
+      trajectoryPlanner.changeGoal(se2GoalManager2, se2GoalManager2.goalQuery());
       int iters2 = Expand.maxDepth(trajectoryPlanner, parameters.getDepthLimit());
       trajectory = trajectoryPlanner.getPathFromRootToGoal();
       Trajectories.print(trajectory);

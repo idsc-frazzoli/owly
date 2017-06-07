@@ -146,9 +146,10 @@ public class SimpleAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
    * rechecks the tree if expanding is needed, updates Merit of Nodes in Queue
    * @param newCostFunction modified Costfunction for heuristic
    * @param newGoal New GoalRegion */
-  public void setGoalQuery(CostFunction newCostFunction, TrajectoryRegionQuery newGoal) {
+  public void changeGoal(CostFunction newCostFunction, TrajectoryRegionQuery newGoal) {
+    // TODO should return if replanning is needed
     this.goalQuery = newGoal;
-    costFunction = newCostFunction;
+    this.costFunction = newCostFunction;
     // -- GOALCHECK BEST
     // TODO needed? as tree check will find it anyways, (maybe a better best), Pros: maybe timegain
     if (best != null) {

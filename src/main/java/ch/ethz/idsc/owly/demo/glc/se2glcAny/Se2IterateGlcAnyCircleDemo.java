@@ -109,7 +109,7 @@ class Se2IterateGlcAnyCircleDemo {
       parameters.increaseDepthLimit(increment);
       Thread.sleep(delay.number().intValue() / 2);
       // --
-      trajectoryPlanner.setGoalQuery(se2GoalManager2, se2GoalManager2.goalQuery());
+      trajectoryPlanner.changeGoal(se2GoalManager2, se2GoalManager2.goalQuery());
       Thread.sleep(delay.number().intValue() / 2);
       // --
       int expandIter = Expand.maxDepth(trajectoryPlanner, parameters.getDepthLimit());
