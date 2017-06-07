@@ -24,6 +24,7 @@ public interface GlcNode extends StateCostNode {
   @Override // from Node
   GlcNode parent();
 
+  /** @return flow between parent and this node. if this node is root, flow == null */
   Flow flow();
 
   StateTime stateTime();

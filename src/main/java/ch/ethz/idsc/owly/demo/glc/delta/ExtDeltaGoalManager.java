@@ -35,6 +35,7 @@ class ExtDeltaGoalManager extends SimpleTrajectoryRegionQuery implements CostFun
     // return RealScalar.of(trajectory.size());
     Scalar sum = RealScalar.of(0);
     for (int i = 0; i < flow.getU().length(); i++) {
+      // FIXME i is not used in loop. "flow.getU().length()" etc.
       sum = sum.add(Norm._2.of(flow.getU()).add(RealScalar.of(0.1)));
     }
     // Costfunction: integrate (u^2 +0.1, t)

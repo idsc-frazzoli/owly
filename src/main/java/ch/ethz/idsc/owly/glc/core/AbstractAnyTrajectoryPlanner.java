@@ -7,7 +7,6 @@ import ch.ethz.idsc.owly.data.tree.Nodes;
 import ch.ethz.idsc.owly.math.state.CostFunction;
 import ch.ethz.idsc.owly.math.state.StateIntegrator;
 import ch.ethz.idsc.owly.math.state.StateTime;
-import ch.ethz.idsc.owly.math.state.Trajectories;
 import ch.ethz.idsc.owly.math.state.TrajectoryRegionQuery;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Tensor;
@@ -50,8 +49,8 @@ import ch.ethz.idsc.tensor.Tensor;
   public abstract int switchRootToNode(GlcNode newRoot);
 
   @Override
-  public final List<StateTime> detailedTrajectoryTo(GlcNode node) {
-    return Trajectories.connect(stateIntegrator, Nodes.fromRoot(node));
+  public final List<TrajectorySample> detailedTrajectoryTo(GlcNode node) {
+    return GlcTrajectories.connect(stateIntegrator, Nodes.fromRoot(node));
   }
 
   @Override

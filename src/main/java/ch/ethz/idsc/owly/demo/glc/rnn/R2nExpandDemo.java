@@ -32,7 +32,7 @@ class R2nExpandDemo {
         eta, stateIntegrator, controls, rnGoal, rnGoal, obstacleQuery);
     trajectoryPlanner.insertRoot(Tensors.vector(0, 0));
     OwlyFrame owlyFrame = Gui.start();
-    for (int c = 0; c < 100; ++c) {
+    for (int c = 0; c < 100 && owlyFrame.jFrame.isVisible(); ++c) {
       Expand.maxSteps(trajectoryPlanner, 10);
       owlyFrame.setGlc(trajectoryPlanner);
       Thread.sleep(100);

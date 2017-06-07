@@ -19,6 +19,17 @@ class OwlyLayer {
     return glcComponent.toPoint2D(x);
   }
 
+  final Path2D toVector(Tensor x, Tensor dx) {
+    x = x.extract(0, 2);
+    dx = dx.extract(0, 2);
+    Path2D path2d = new Path2D.Double();
+    Point2D p1 = toPoint2D(x);
+    Point2D p2 = toPoint2D(x.add(dx));
+    path2d.moveTo(p1.getX(), p1.getY());
+    path2d.lineTo(p2.getX(), p2.getY());
+    return path2d;
+  }
+
   final Path2D toPath2D(List<StateTime> trajectory) {
     Path2D path2d = new Path2D.Double();
     if (!trajectory.isEmpty()) {
