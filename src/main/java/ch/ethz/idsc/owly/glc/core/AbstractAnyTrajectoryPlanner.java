@@ -28,11 +28,10 @@ import ch.ethz.idsc.tensor.Tensor;
     this.goalQuery = goalQuery;
     this.obstacleQuery = obstacleQuery;
   }
-  // TODO JONAS extract functions here that are common to both:
-  // simpleAny and Any traj planner
-  // DOCUMENT what functions do
 
-  /** @param state the new Rootstate
+  /** Includes all the functionality of the RootSwitch
+   * (deleting of the useless nodes and relabling of modified Domains)
+   * @param state the new Rootstate
    * @return The value,by which the depth limit needs to be increased as of the RootSwitch */
   public final int switchRootToState(Tensor state) {
     GlcNode newRoot = this.getNode(convertToKey(state));
@@ -46,6 +45,10 @@ import ch.ethz.idsc.tensor.Tensor;
     // TODO this case should throw an exception!
   }
 
+  /** Includes all the functionality of the RootSwitch
+   * (deleting of the useless nodes and relabling of modified Domains)
+   * @param newRoot Node to Switch
+   * @return The value,by which the depth limit needs to be increased as of the RootSwitch */
   public abstract int switchRootToNode(GlcNode newRoot);
 
   @Override
