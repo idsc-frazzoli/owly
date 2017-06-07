@@ -102,7 +102,7 @@ class Se2IterateGlcAnyCircleDemo {
           goalListPosition.get(index), goalListAngle.get(index), //
           DoubleScalar.of(0.1), Se2Utils.DEGREE(10));
       // --
-      StateTime newRootState = trajectory.get(8);
+      StateTime newRootState = trajectory.get(1);
       // GlcNode newRootNode = trajectoryPlanner.getNodesfromRootToGoal().get(1);
       // trajectoryPlanner.switchRootToNode(newRootNode);
       int increment = trajectoryPlanner.switchRootToState(newRootState.x());

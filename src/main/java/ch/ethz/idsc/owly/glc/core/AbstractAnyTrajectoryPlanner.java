@@ -13,7 +13,7 @@ import ch.ethz.idsc.tensor.Tensor;
 
 /* package */ abstract class AbstractAnyTrajectoryPlanner extends TrajectoryPlanner {
   private final StateIntegrator stateIntegrator;
-  private final TrajectoryRegionQuery goalQuery;
+  private TrajectoryRegionQuery goalQuery;
   private final TrajectoryRegionQuery obstacleQuery;
   /* not final */ CostFunction costFunction;
 
@@ -39,10 +39,12 @@ import ch.ethz.idsc.tensor.Tensor;
     // TODO not nice, as we jump from state to startnode
     if (newRoot != null)
       increaseDepthBy = switchRootToNode(newRoot);
-    else
+    else {
       System.out.println("This domain is not labelled yet");
+      throw new RuntimeException();
+      // TODO: should replan everything, as we left old trajectory
+    }
     return increaseDepthBy;
-    // TODO this case should throw an exception!
   }
 
   /** Includes all the functionality of the RootSwitch

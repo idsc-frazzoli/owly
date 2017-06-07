@@ -142,56 +142,58 @@ public class SimpleAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
     return increaseDepthBy;
   }
 
-  /** @param newGoal is the new RegionQuery for the new Goalregion */
+  /** Changes the Goal of the current planner:
+   * rechecks the tree if expanding is needed, updates Merit of Nodes in Queue
+   * @param newCostFunction modified Costfunction for heuristic
+   * @param newGoal New GoalRegion */
   public void setGoalQuery(CostFunction newCostFunction, TrajectoryRegionQuery newGoal) {
     this.goalQuery = newGoal;
     costFunction = newCostFunction;
+    // -- GOALCHECK BEST
+    // TODO needed? as tree check will find it anyways, (maybe a better best), Pros: maybe timegain
     if (best != null) {
-      List<StateTime> bestList = new ArrayList<>();
-      bestList.add(best.stateTime());
-      if (!newGoal.isDisjoint(bestList)) {
+      List<StateTime> bestState = new ArrayList<>();
+      bestState.add(best.stateTime());
+      if (!newGoal.isDisjoint(bestState)) {
         offerDestination(best);
-        System.out.println("Goal was already found in the existing tree");
+        System.out.println("Old Goal is in new Goalregion");
         return;
       } // Old Goal is in new Goalregion
     }
     // Best is either not in newGoal or Null
     best = null;
-    // Checking if goal is already in tree
-    // TODO check if tree has right size TreeCollection
+    // -- GOALCHECK TREE
     {
       long tic = System.nanoTime();
       Collection<GlcNode> TreeCollection = Nodes.ofSubtree(getNodesfromRootToGoal().get(0));
-      System.out.println("treesize for goal checking:" + TreeCollection.size());
+      System.out.println("treesize for goal checking: " + TreeCollection.size());
       // TODO more efficient way then going through entire tree?
       Iterator<GlcNode> TreeCollectionIterator = TreeCollection.iterator();
       while (TreeCollectionIterator.hasNext()) {
         GlcNode current = TreeCollectionIterator.next();
-        List<StateTime> currentList = new ArrayList<>();
-        List<StateTime> bestList = new ArrayList<>();
-        bestList.add(current.stateTime());
-        if (!newGoal.isDisjoint(currentList)) { // current Node in Goal
-          System.out.println("New Goal was found in current tree");
+        List<StateTime> currentState = new ArrayList<>();
+        currentState.add(current.stateTime());
+        if (!newGoal.isDisjoint(currentState)) { // current Node in Goal
           offerDestination(current);
+          System.out.println("New Goal was found in current tree --> No new search needed");
         }
       }
       long toc = System.nanoTime();
       System.out.println("Checked current tree for goal in "//
           + (toc - tic) * 1e-9 + "s");
     }
-    // -- Updating the Queue
+    // -- QUEUE
+    // Updating the Queue
     long tic = System.nanoTime();
     // Changing the Merit in Queue for each Node
     List<GlcNode> list = new LinkedList<>(queue());
     queue().clear();
     list.stream().parallel() //
         .forEach(glcNode -> glcNode.setMinCostToGoal(costFunction.minCostToGoal(glcNode.state())));
-    // list.stream().parallel().// Changing the depth of queue
-    // forEach(glcNode -> glcNode.reCalculateDepth());
     queue().addAll(list);
     long toc = System.nanoTime();
-    System.out.println("Updated Merit & Depth of Queue with " + list.size() + " nodes in: " //
+    System.out.println("Updated Merit of Queue with " + list.size() + " nodes in: " //
         + ((toc - tic) * 1e-9) + "s");
-    System.out.println("Goal switch finished");
+    System.out.println("**Goalswitch finished**");
   }
 }
