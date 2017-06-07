@@ -264,8 +264,7 @@ public class AnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
       while (TreeCollectionIterator.hasNext()) {
         GlcNode current = TreeCollectionIterator.next();
         List<StateTime> currentList = new ArrayList<>();
-        List<StateTime> bestList = new ArrayList<>();
-        bestList.add(current.stateTime());
+        currentList.add(current.stateTime());
         if (!newGoal.isDisjoint(currentList)) { // current Node in Goal
           System.out.println("New Goal was found in current tree");
           offerDestination(current);
