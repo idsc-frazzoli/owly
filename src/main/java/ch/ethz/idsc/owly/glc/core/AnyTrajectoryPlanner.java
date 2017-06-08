@@ -24,10 +24,7 @@ import ch.ethz.idsc.tensor.Tensor;
 
 /** TODO assumptions in order to use any... */
 public class AnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
-  private final StateIntegrator stateIntegrator;
   private final Collection<Flow> controls;
-  private TrajectoryRegionQuery goalQuery;
-  private final TrajectoryRegionQuery obstacleQuery;
   // CandidateMap saves neglected/pruned Nodes in a bucket for each domain
   private final Map<Tensor, Set<CandidatePair>> candidateMap = //
       new HashMap<>();
@@ -41,10 +38,8 @@ public class AnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
       TrajectoryRegionQuery obstacleQuery //
   ) {
     super(eta, stateIntegrator, costFunction, goalQuery, obstacleQuery);
-    this.stateIntegrator = stateIntegrator;
     this.controls = controls;
     this.goalQuery = goalQuery;
-    this.obstacleQuery = obstacleQuery;
   }
 
   @Override // from ExpandInterface
@@ -52,69 +47,74 @@ public class AnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
     // TODO count updates in cell based on costs for benchmarking
     Map<GlcNode, List<StateTime>> connectors = //
         SharedUtils.integrate(node, controls, stateIntegrator, costFunction);
-    CandidatePairQueueMap candidates = new CandidatePairQueueMap();
+    CandidatePairQueueMap candidatePairQueueMap = new CandidatePairQueueMap();
     for (GlcNode next : connectors.keySet()) { // <- order of keys is non-deterministic
-      // ALL Candidates are saved in temporaray CandidateList
+      // ALL Candidates are saved in temporary CandidateList
       CandidatePair nextCandidate = new CandidatePair(node, next);
-      final Tensor domain_key = convertToKey(next.state());
-      candidates.insert(domain_key, nextCandidate);
+      final Tensor domainKey = convertToKey(next.state());
+      candidatePairQueueMap.insert(domainKey, nextCandidate);
     }
     // saving the candidates in the corresponding Buckets
-    for (Entry<Tensor, CandidatePairQueue> entry : candidates.map.entrySet()) {
+    for (Entry<Tensor, CandidatePairQueue> entry : candidatePairQueueMap.map.entrySet()) {
       if (!candidateMap.containsKey(entry.getKey()))
         candidateMap.put(entry.getKey(), new HashSet<CandidatePair>());
       candidateMap.get(entry.getKey()).addAll(entry.getValue());
     }
-    processCandidates(node, connectors, candidates);
+    processCandidates(node, connectors, candidatePairQueueMap);
   }
 
+  // TODO BUG: if big numbers of nodes are expanded, nodes =/= domains
   private void processCandidates( //
-      GlcNode node, Map<GlcNode, List<StateTime>> connectors, CandidatePairQueueMap candidates) {
-    for (Entry<Tensor, CandidatePairQueue> entry : candidates.map.entrySet()) {
-      final Tensor domain_key = entry.getKey();
+      GlcNode node, Map<GlcNode, List<StateTime>> connectors, CandidatePairQueueMap candidatePairQueueMap) {
+    for (Entry<Tensor, CandidatePairQueue> entry : candidatePairQueueMap.map.entrySet()) {
+      final Tensor domainKey = entry.getKey();
       final CandidatePairQueue candidateQueue = entry.getValue();
       if (candidateQueue != null && best == null) {
-        // while (Candidatesleft > 0) {
         while (!candidateQueue.isEmpty()) {
           // retrieving the Candidates
           final CandidatePair nextCandidatePair = candidateQueue.element();
-          final GlcNode formerLabel = getNode(domain_key);
+          final GlcNode formerLabel = getNode(domainKey);
           final GlcNode next = nextCandidatePair.getCandidate();
           if (formerLabel != null) {
             if (Scalars.lessThan(next.merit(), formerLabel.merit())) {
               // collision check only if new node is better
               if (obstacleQuery.isDisjoint(connectors.get(next))) {// better node not collision
-                // current label back in bucket fo this domains,
+                // current label back in bucket for this domains,
                 CandidatePair formerCandidate = new CandidatePair(formerLabel.parent(), formerLabel);
-                candidateMap.get(domain_key).add(formerCandidate);
-                // Removing the Candidate from the Queue, if in it
+                candidateMap.get(domainKey).add(formerCandidate);
+                // Removing the formerLabel from the Queue, if in it
                 queue().remove(formerLabel);
                 // removing the nextCandidate from bucket of this domain
-                candidateMap.get(domain_key).remove(nextCandidatePair);
-                // current label disconnecting
+                // formerLabel disconnecting
                 formerLabel.parent().removeEdgeTo(formerLabel);
                 // adding next to tree and DomainMap
                 node.insertEdgeTo(next);
-                insert(domain_key, next);
+                insert(domainKey, next);
+                candidateMap.get(domainKey).remove(nextCandidatePair);
+                candidateQueue.remove();
                 // GOAL check
                 if (!goalQuery.isDisjoint(connectors.get(next)))
                   offerDestination(next);
-                // remove next from DomainQueue
-                candidateQueue.remove();
                 break;
               }
             }
-          } else {
+          } else { // No formerLabel, so definitely adding a Node
             if (obstacleQuery.isDisjoint(connectors.get(next))) {
+              // removing the nextCandidate from bucket of this domain
+              // adding next to tree and DomainMap
               node.insertEdgeTo(next);
-              insert(domain_key, next);
+              insert(domainKey, next);
+              candidateMap.get(domainKey).remove(nextCandidatePair);
+              candidateQueue.remove();
+              // GOAL check
               if (!goalQuery.isDisjoint(connectors.get(next)))
                 offerDestination(next);
-              candidateQueue.remove();
               break;
             }
           }
-          candidateQueue.remove();// remove from TemporyQueue as was not better
+          // remove from CandidateMap and TemporaryQueue as was not better/or in Collision
+          candidateMap.get(domainKey).remove(nextCandidatePair); // !not if new environment
+          candidateQueue.remove();
         }
       }
     }
@@ -128,10 +128,10 @@ public class AnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
     }
     // needed for change of depthlimit
     int increasedDepthBy = newRoot.reCalculateDepth();
-    // Collecting Oldtree
+    // -- DEBUGING Values
+    // -- Collecting Oldtree
     GlcNode oldRoot = getNodesfromRootToGoal().get(0);
     Collection<GlcNode> oldTreeCollection = Nodes.ofSubtree(oldRoot);
-    // DEBUGING Values
     int oldDomainMapSize = domainMap().size();
     long oldtotalCandidates = candidateMap.values().stream().flatMap(Collection::stream).count();
     int oldQueueSize = queue().size();
@@ -148,144 +148,74 @@ public class AnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
       if (tempNode.flow() != null)
         System.out.println("has flow");
     }
-    System.out.println(nodesWithoutDomain + " Nodes have no Domain");
     if (nodesWithoutDomain != 0)
       throw new RuntimeException();
+    // -- BASIC REROOTING
     // removes the new root from the child list of its parent
     // Disconnecting newRoot from Old Tree and collecting DeleteTree
     newRoot.parent().removeEdgeTo(newRoot);
-    Collection<GlcNode> deleteTreeCollection = Nodes.ofSubtree(oldRoot);
-    // GOAL: goal deleted?
-    if (best != null) {
-      if (deleteTreeCollection.contains(best))
-        best = null;
-    }
-    System.out.println("Nodes to be deleted: " + deleteTreeCollection.size());
-    // QUEUE: Deleting Nodes from Queue
-    if (queue().removeAll(deleteTreeCollection))
-      System.out.println("Removed " + (oldQueueSize - queue().size()) + " out of " + oldQueueSize + " nodes from Queue = " + queue().size());
-    // DOMAINMAP: Removing Nodes (DeleteTree) from DomainMap
-    domainMap().values().removeAll(deleteTreeCollection);
-    // TODO Domain map grows unboundly
-    // EDGE: Removing Edges between Nodes in DeleteTree
-    // for (GlcNode tempNode : deleteTreeCollection) {
-    // if (!tempNode.isRoot())
-    // tempNode.parent().removeEdgeTo(tempNode);
-    // }
-    // for Null error of root
-    // TODO: edge removal Needed?
-    // oldRoot has no parent, therefore is skipped
-    deleteTreeCollection.remove(oldRoot);
-    // TODO: parralizable?
-    deleteTreeCollection.forEach(tempNode -> tempNode.parent().removeEdgeTo(tempNode));
-    deleteTreeCollection.add(oldRoot);
-    // DEBUGING
-    Collection<GlcNode> newTreeCollection = Nodes.ofSubtree(getNodesfromRootToGoal().get(0));
+    Collection<GlcNode> deleteTreeCollection = deleteChildrenOf(oldRoot);
+    // -- DEBUGING
+    System.out.println("Removed " + (oldQueueSize - queue().size()) + " out of " + oldQueueSize + " nodes from Queue = " + queue().size());
     System.out.println(oldDomainMapSize - domainMap().size() + " out of " + oldDomainMapSize + //
         " Domains removed from DomainMap = " + domainMap().size());
+    Collection<GlcNode> newTreeCollection = Nodes.ofSubtree(getNodesfromRootToGoal().get(0));
     System.out.println(deleteTreeCollection.size() + " out of " + oldTreeCollection.size()//
         + " Nodes removed from Tree = " + newTreeCollection.size());
-    // CANDIDATEMAP: Deleting Candidates, if Origin is included in DeleteTree
+    // -- CANDIDATEMAP: Deleting Candidates, if Origin is included in DeleteTree
     // TODO What is the time gain by parallization?
     candidateMap.entrySet().parallelStream().forEach( //
         CandidateSet -> CandidateSet.getValue().removeIf(cp -> deleteTreeCollection.contains(cp.getOrigin())));
-    // DEBUGING
+    // -- DEBUGING
     long newtotalCandidates = candidateMap.values().stream().flatMap(Collection::stream).count();
     System.out.println(oldtotalCandidates - newtotalCandidates + " of " + oldtotalCandidates + //
         " Candidates removed from CandidateList ");
-    // RELABELING:
+    // -- RELABELING:
     int addedNodesToQueue = 0;
-    for (GlcNode tempLabel : deleteTreeCollection) {
-      Tensor tempDomainKey = convertToKey(tempLabel.state());
+    for (GlcNode formerLabel : deleteTreeCollection) {
+      Tensor domainKey = convertToKey(formerLabel.state());
       // if a bucket exists do Relabeling otherwise not
-      if (candidateMap.containsKey(tempDomainKey)) {
-        Set<CandidatePair> tempCandidateSet = candidateMap.get(tempDomainKey);
+      if (candidateMap.containsKey(domainKey)) {
+        Set<CandidatePair> tempCandidateSet = candidateMap.get(domainKey);
         // TODO modify constructor of CandidatePairQueue so below statement works
         // CandidatePairQueue candidateQueue = new CandidatePairQueue(tempCandidateSet);
         PriorityQueue<CandidatePair> candidateQueue = new PriorityQueue<>(tempCandidateSet);
         while (!candidateQueue.isEmpty()) {
-          final CandidatePair nextCandidate = candidateQueue.element();
-          final GlcNode next = nextCandidate.getCandidate();
-          final GlcNode nextParent = nextCandidate.getOrigin();
+          // retrieving the Candidates
+          final CandidatePair nextCandidatePair = candidateQueue.element();
+          final GlcNode next = nextCandidatePair.getCandidate();
+          final GlcNode nextParent = nextCandidatePair.getOrigin();
           // check if Delete was properly conducted
           if (deleteTreeCollection.contains(nextParent)) {
             System.out.println("parent of node will be deleted --> not in QUEUE ");
             break;
           }
-          final List<StateTime> trajectory = //
+          final List<StateTime> connector = //
               stateIntegrator.trajectory(nextParent.stateTime(), next.flow());
-          if (obstacleQuery.isDisjoint(trajectory)) { // no collision
+          if (obstacleQuery.isDisjoint(connector)) { // no collision
             nextParent.insertEdgeTo(next);
             // data structure changing statement shall not be in if clause:
-            final boolean replaced = insert(tempDomainKey, next);
-            // DomainMap at this key should not (<-???) be empty
-            if (replaced)
+            final boolean replaced = insert(domainKey, next);
+            // DomainMap at this key should be empty
+            candidateMap.get(domainKey).remove(nextCandidatePair);
+            candidateQueue.remove();
+            if (replaced) {
               System.out.println("Something was replaced --> BUG");
+              throw new RuntimeException();
+            }
             addedNodesToQueue++;
-            if (!goalQuery.isDisjoint(trajectory))
+            if (!goalQuery.isDisjoint(connector))
               offerDestination(next);
             break; // leaves the while loop, but not the for loop
           }
-          // TODO: remove in collision candidates from CandidateMAP?
-          candidateQueue.remove();// remove from TemporyQueue as was not better/or in Collision
+          // remove from CandidateMap and TemporaryQueue as was not better/or in Collision
+          candidateMap.get(domainKey).remove(nextCandidatePair);// !not if new environment
+          candidateQueue.remove();
         }
       }
     }
     System.out.println(addedNodesToQueue + " Nodes added to Domain = " + domainMap().size());
     System.out.println("**Rootswitch finished**");
     return increasedDepthBy;
-  }
-
-  /** @param newCostFunction is the new CostFunction to the new Goal
-   * @param newGoal newGoal is the new RegionQuery for the new Goalregion */
-  public void setGoalQuery(CostFunction newCostFunction, TrajectoryRegionQuery newGoal) {
-    this.goalQuery = newGoal;
-    costFunction = newCostFunction;
-    // Checking if current best is still in GOAL
-    // TODO needed? as tree check will find it anyways, (maybe better best)
-    if (best != null) {
-      List<StateTime> bestList = new ArrayList<>();
-      bestList.add(best.stateTime());
-      if (!newGoal.isDisjoint(bestList)) {
-        offerDestination(best);
-        System.out.println("Goal was already found in the existing tree");
-        return;
-      } // Old Goal is in new Goalregion
-    }
-    // Best is either not in newGoal or Null
-    best = null;
-    // Checking if goal is already in tree
-    {
-      long tic = System.nanoTime();
-      Collection<GlcNode> TreeCollection = Nodes.ofSubtree(getNodesfromRootToGoal().get(0));
-      System.out.println("treesize for goal checking: " + TreeCollection.size());
-      // TODO more efficient way then going through entire tree?
-      Iterator<GlcNode> TreeCollectionIterator = TreeCollection.iterator();
-      while (TreeCollectionIterator.hasNext()) {
-        GlcNode current = TreeCollectionIterator.next();
-        List<StateTime> currentList = new ArrayList<>();
-        List<StateTime> bestList = new ArrayList<>();
-        bestList.add(current.stateTime());
-        if (!newGoal.isDisjoint(currentList)) { // current Node in Goal
-          System.out.println("New Goal was found in current tree");
-          offerDestination(current);
-        }
-      }
-      long toc = System.nanoTime();
-      System.out.println("Checked current tree for goal in "//
-          + (toc - tic) * 1e-9 + "s");
-    }
-    // -- Updating the Queue
-    long tic = System.nanoTime();
-    // Changing the Merit in Queue for each Node
-    List<GlcNode> list = new LinkedList<>(queue());
-    queue().clear();
-    list.stream().parallel() //
-        .forEach(glcNode -> glcNode.setMinCostToGoal(costFunction.minCostToGoal(glcNode.state())));
-    queue().addAll(list);
-    long toc = System.nanoTime();
-    System.out.println("Updated Merit of Queue with " + list.size() + " nodes in: " //
-        + ((toc - tic) * 1e-9) + "s");
-    System.out.println("**Goalswitch finished**");
   }
 }

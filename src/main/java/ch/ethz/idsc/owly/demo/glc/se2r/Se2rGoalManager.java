@@ -40,7 +40,7 @@ class Se2rGoalManager implements Region, CostFunction {
   @Override
   public Scalar minCostToGoal(Tensor x) {
     Tensor cur_xy = x.extract(0, 2);
-    Scalar cur_angle = x.Get(2);
+    // Scalar cur_angle = x.Get(2);
     Scalar dxy = Norm._2.of(cur_xy.subtract(xy)).subtract(radius);
     // Scalar dangle = PRINCIPAL.apply(cur_angle.subtract(angle)).abs().subtract(angle_delta);
     return Max.of(dxy, RealScalar.ZERO);

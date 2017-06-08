@@ -18,15 +18,17 @@ import ch.ethz.idsc.owly.math.state.Trajectories;
   public static Map<GlcNode, List<StateTime>> integrate( //
       GlcNode node, Collection<Flow> controls, StateIntegrator stateIntegrator, CostFunction costFunction) {
     Map<GlcNode, List<StateTime>> map = new ConcurrentHashMap<>(); // <- for use of parallel()
-    controls.stream().parallel().forEach(flow -> { // parallel results in speedup of ~25% (rice2demo)
-      final List<StateTime> trajectory = stateIntegrator.trajectory(node.stateTime(), flow);
-      final StateTime last = Trajectories.getLast(trajectory);
-      final GlcNode next = GlcNode.of(flow, last, //
-          node.costFromRoot().add(costFunction.costIncrement(node.stateTime(), trajectory, flow)), //
-          costFunction.minCostToGoal(last.x()) //
-      );
-      map.put(next, trajectory);
-    });
+    controls.stream() //
+        // .parallel() //
+        .forEach(flow -> { // parallel results in speedup of ~25% (rice2demo)
+          final List<StateTime> trajectory = stateIntegrator.trajectory(node.stateTime(), flow);
+          final StateTime last = Trajectories.getLast(trajectory);
+          final GlcNode next = GlcNode.of(flow, last, //
+              node.costFromRoot().add(costFunction.costIncrement(node.stateTime(), trajectory, flow)), //
+              costFunction.minCostToGoal(last.x()) //
+          );
+          map.put(next, trajectory);
+        });
     return map;
   }
 }

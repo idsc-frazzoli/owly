@@ -86,7 +86,7 @@ class Se2glcAnyDemo {
     StateTime newRootState = trajectory.get(1);
     // ---
     trajectoryPlanner.switchRootToState(newRootState.x());
-    trajectoryPlanner.setGoalQuery(se2GoalManager2, se2GoalManager2.goalQuery());
+    trajectoryPlanner.changeGoal(se2GoalManager2, se2GoalManager2.goalQuery());
     int iters2 = Expand.maxDepth(trajectoryPlanner, parameters.getDepthLimit());
     // ---
     toc = System.nanoTime();

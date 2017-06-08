@@ -13,6 +13,7 @@ import ch.ethz.idsc.owly.demo.glc.se2glc.Se2Parameters;
 import ch.ethz.idsc.owly.glc.adapter.Parameters;
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
 import ch.ethz.idsc.owly.glc.core.AnyTrajectoryPlanner;
+import ch.ethz.idsc.owly.glc.core.DefaultTrajectoryPlanner;
 import ch.ethz.idsc.owly.glc.core.Expand;
 import ch.ethz.idsc.owly.gui.Gui;
 import ch.ethz.idsc.owly.gui.OwlyFrame;
@@ -36,7 +37,7 @@ import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
 
 /** (x,y,theta) */
-class Se2IterateGlcAnyCircleDemo {
+class Se2IterateGlcAnyCircleCompareDemo {
   public static void main(String[] args) throws Exception {
     RationalScalar resolution = (RationalScalar) RealScalar.of(10);
     Scalar timeScale = RealScalar.of(4);
@@ -65,22 +66,6 @@ class Se2IterateGlcAnyCircleDemo {
                 new HyperplaneRegion(Tensors.vector(0, -1, 0), RealScalar.of(4)), //
                 new HyperplaneRegion(Tensors.vector(0, +1, 0), RealScalar.of(4)) //
             )));
-    // ---
-    Scalar tic = RealScalar.of(System.nanoTime());
-    AnyTrajectoryPlanner trajectoryPlanner = new AnyTrajectoryPlanner( //
-        parameters.getEta(), stateIntegrator, controls, se2GoalManager, se2GoalManager.goalQuery(), obstacleQuery);
-    // ---
-    trajectoryPlanner.insertRoot(Tensors.vector(0, 3, 0));
-    int iters = Expand.maxDepth(trajectoryPlanner, parameters.getDepthLimit());
-    trajectoryPlanner.nodeAmountCompare();
-    System.out.println("After " + iters + " iterations");
-    List<StateTime> trajectory = trajectoryPlanner.getPathFromRootToGoal();
-    Scalar toc = RealScalar.of(System.nanoTime());
-    System.out.println(toc.subtract(tic).multiply(RealScalar.of(1e-9)) + " Seconds needed to plan");
-    Trajectories.print(trajectory);
-    OwlyFrame owlyFrame = Gui.start();
-    owlyFrame.setGlc(trajectoryPlanner);
-    // ---
     List<Tensor> goalListPosition = new ArrayList<>();
     goalListPosition.add(Tensors.vector(0, -3));// South
     goalListPosition.add(Tensors.vector(-3, 0));// West
@@ -91,48 +76,86 @@ class Se2IterateGlcAnyCircleDemo {
     goalListAngle.add(RealScalar.of(0.5 * Math.PI)); // West
     goalListAngle.add(RealScalar.of(0)); // North
     goalListAngle.add(RealScalar.of(-0.5 * Math.PI)); // East
+    // ---
+    Scalar tic = RealScalar.of(System.nanoTime());
+    System.out.println("***ANY***");
+    // {
+    AnyTrajectoryPlanner anyTrajectoryPlanner = new AnyTrajectoryPlanner( //
+        parameters.getEta(), stateIntegrator, controls, se2GoalManager, se2GoalManager.goalQuery(), obstacleQuery);
+    anyTrajectoryPlanner.insertRoot(Tensors.vector(0, 3, 0));
+    int iters = Expand.maxDepth(anyTrajectoryPlanner, parameters.getDepthLimit());
+    anyTrajectoryPlanner.nodeAmountCompare();
+    System.out.println("After " + iters + " iterations");
+    Scalar toc = RealScalar.of(System.nanoTime());
+    // }
+    List<StateTime> anyTrajectory = anyTrajectoryPlanner.getPathFromRootToGoal();
+    System.out.println(toc.subtract(tic).multiply(RealScalar.of(1e-9)) + " Seconds needed to plan");
+    OwlyFrame owlyFrameAny = Gui.start();
+    owlyFrameAny.setGlc(anyTrajectoryPlanner);
+    // ---
+    System.out.println("***DEFAULT**");
+    // ---
+    OwlyFrame owlyFrameDefault = Gui.start();
+    {
+      DefaultTrajectoryPlanner defaultTrajectoryPlanner = new DefaultTrajectoryPlanner( //
+          parameters.getEta(), stateIntegrator, controls, se2GoalManager, se2GoalManager.goalQuery(), obstacleQuery);
+      defaultTrajectoryPlanner.insertRoot(Tensors.vector(0, 3, 0));
+      iters = Expand.maxDepth(defaultTrajectoryPlanner, parameters.getDepthLimit());
+      defaultTrajectoryPlanner.nodeAmountCompare();
+      System.out.println("After " + iters + " iterations");
+      toc = RealScalar.of(System.nanoTime());
+      System.out.println(toc.subtract(tic).multiply(RealScalar.of(1e-9)) + " Seconds needed to plan");
+      owlyFrameDefault.setGlc(defaultTrajectoryPlanner);
+    }
     // --
     int iter = 0;
-    Scalar timeSum = RealScalar.of(0);
+    Scalar timeSumAny = RealScalar.of(0);
+    Scalar timeSumDefault = RealScalar.of(0);
     boolean goalFound = false;
     int expandIter = 0;
-    while (owlyFrame.jFrame.isVisible()) {
-      Scalar delay = RealScalar.of(3000);
-      Thread.sleep(1000);
-      tic = RealScalar.of(System.nanoTime());
+    System.out.println("****STARTING COMPARISON****");
+    while (owlyFrameAny.jFrame.isVisible()) {
       int index = iter % 4;
       Se2GoalManager se2GoalManager2 = new Se2GoalManager( //
           goalListPosition.get(index), goalListAngle.get(index), //
           DoubleScalar.of(0.1), Se2Utils.DEGREE(10));
       // --
-      StateTime newRootState = trajectory.get(5);
-      int increment = trajectoryPlanner.switchRootToState(newRootState.x());
-      trajectoryPlanner.nodeAmountCompare();
-      parameters.increaseDepthLimit(increment);
-      owlyFrame.setGlc(trajectoryPlanner);
-      Thread.sleep(delay.number().intValue() / 2);
-      // --
-      goalFound = trajectoryPlanner.changeGoal(se2GoalManager2, se2GoalManager2.goalQuery());
-      trajectoryPlanner.nodeAmountCompare();
-      owlyFrame.setGlc(trajectoryPlanner);
-      Thread.sleep(delay.number().intValue() / 2);
-      // --
-      if (!goalFound)
-        expandIter = Expand.maxDepth(trajectoryPlanner, parameters.getDepthLimit());
-      // TODO BUG after expanding 2848 Nodes on a 10083 Domain
-      trajectoryPlanner.nodeAmountCompare();
-      // ---
+      StateTime newRootState = anyTrajectory.get(5);
+      System.out.println("***ANY***");
+      tic = RealScalar.of(System.nanoTime());
+      {
+        int increment = anyTrajectoryPlanner.switchRootToState(newRootState.x());
+        parameters.increaseDepthLimit(increment);
+        // --
+        goalFound = anyTrajectoryPlanner.changeGoal(se2GoalManager2, se2GoalManager2.goalQuery());
+        // --
+        if (!goalFound)
+          expandIter = Expand.maxDepth(anyTrajectoryPlanner, parameters.getDepthLimit());
+        anyTrajectoryPlanner.nodeAmountCompare();
+        owlyFrameAny.setGlc(anyTrajectoryPlanner);
+        // ---
+      }
       toc = RealScalar.of(System.nanoTime());
-      trajectory = trajectoryPlanner.getPathFromRootToGoal();
-      Trajectories.print(trajectory);
-      timeSum = toc.subtract(tic).multiply(RealScalar.of(1e-9)).add(timeSum);
+      timeSumAny = toc.subtract(tic).multiply(RealScalar.of(1e-9)).add(timeSumAny);
       System.out.println((iter + 1) + ". iteration took: " + toc.subtract(tic).multiply(RealScalar.of(1e-9)) + "s");
-      System.out.println("Average: " + timeSum.divide(RealScalar.of(iter + 1)));
-      System.out.println("After root switch needed " + expandIter + " iterations");
-      System.out.println("*****Finished*****");
-      System.out.println("");
-      owlyFrame.setGlc(trajectoryPlanner);
-      // owlyFrame.configCoordinateOffset(432, 273);
+      System.out.println("Average: " + timeSumAny.divide(RealScalar.of(iter + 1)));
+      System.out.println("***DEFAULT***");
+      tic = RealScalar.of(System.nanoTime());
+      {
+        DefaultTrajectoryPlanner defaultTrajectoryPlanner = new DefaultTrajectoryPlanner( //
+            parameters.getEta(), stateIntegrator, controls, se2GoalManager2, se2GoalManager2.goalQuery(), obstacleQuery);
+        defaultTrajectoryPlanner.insertRoot(newRootState.x());
+        iters = Expand.maxDepth(defaultTrajectoryPlanner, parameters.getDepthLimit());
+        System.out.println("After " + iters + " iterations");
+        toc = RealScalar.of(System.nanoTime());
+        System.out.println(toc.subtract(tic).multiply(RealScalar.of(1e-9)) + " Seconds needed to plan");
+        owlyFrameDefault.setGlc(defaultTrajectoryPlanner);
+      }
+      toc = RealScalar.of(System.nanoTime());
+      timeSumDefault = toc.subtract(tic).multiply(RealScalar.of(1e-9)).add(timeSumDefault);
+      System.out.println((iter + 1) + ". iteration took: " + toc.subtract(tic).multiply(RealScalar.of(1e-9)) + "s");
+      System.out.println("Average: " + timeSumDefault.divide(RealScalar.of(iter + 1)));
+      anyTrajectory = anyTrajectoryPlanner.getPathFromRootToGoal();
       iter++;
     }
   }

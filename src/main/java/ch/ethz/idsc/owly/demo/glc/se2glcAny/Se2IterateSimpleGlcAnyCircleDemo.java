@@ -13,6 +13,7 @@ import ch.ethz.idsc.owly.demo.glc.se2glc.Se2Parameters;
 import ch.ethz.idsc.owly.glc.adapter.Parameters;
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
 import ch.ethz.idsc.owly.glc.core.Expand;
+import ch.ethz.idsc.owly.glc.core.GlcNode;
 import ch.ethz.idsc.owly.glc.core.SimpleAnyTrajectoryPlanner;
 import ch.ethz.idsc.owly.gui.Gui;
 import ch.ethz.idsc.owly.gui.OwlyFrame;
@@ -73,6 +74,7 @@ class Se2IterateSimpleGlcAnyCircleDemo {
     // ---
     trajectoryPlanner.insertRoot(Tensors.vector(0, 3, 0));
     int iters = Expand.maxDepth(trajectoryPlanner, parameters.getDepthLimit());
+    trajectoryPlanner.nodeAmountCompare();
     System.out.println("After " + iters + " iterations");
     List<StateTime> trajectory = trajectoryPlanner.getPathFromRootToGoal();
     long toc = System.nanoTime();
@@ -95,18 +97,20 @@ class Se2IterateSimpleGlcAnyCircleDemo {
     int iter = 0;
     Scalar timeSum = RealScalar.of(0);
     while (owlyFrame.jFrame.isVisible()) {
-      Thread.sleep(3000);
+      Thread.sleep(000);
       tic = System.nanoTime();
       int index = iter % 4;
       Se2GoalManager se2GoalManager2 = new Se2GoalManager( //
           goalListPosition.get(index), goalListAngle.get(index), //
           DoubleScalar.of(0.1), Se2Utils.DEGREE(10));
-      StateTime newRootState = trajectory.get(2);
-      // GlcNode newRootNode = trajectoryPlanner.getNodesfromRootToGoal().get(1);
-      int increment = trajectoryPlanner.switchRootToState(newRootState.x());
+      GlcNode newRootNode = trajectoryPlanner.getNodesfromRootToGoal().get(2);
+      int increment = trajectoryPlanner.switchRootToNode(newRootNode);
+      // TODO BUG: below runs in domain not label
+      // StateTime newRootState = trajectory.get(2);
+      // int increment = trajectoryPlanner.switchRootToState(newRootState.x());
       parameters.increaseDepthLimit(increment);
       // trajectoryPlanner.switchRootToNode(newRootNode);
-      trajectoryPlanner.setGoalQuery(se2GoalManager2, se2GoalManager2.goalQuery());
+      trajectoryPlanner.changeGoal(se2GoalManager2, se2GoalManager2.goalQuery());
       int expandIter = Expand.maxDepth(trajectoryPlanner, parameters.getDepthLimit());
       trajectory = trajectoryPlanner.getPathFromRootToGoal();
       Trajectories.print(trajectory);

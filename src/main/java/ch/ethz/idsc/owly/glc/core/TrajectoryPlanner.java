@@ -40,6 +40,7 @@ public abstract class TrajectoryPlanner implements ExpandInterface, Serializable
     return eta;
   }
 
+  // TODO defined expand function already as the same in simple and default
   // EXPERIMENTAL
   public transient Function<Tensor, Tensor> represent = Function.identity();
 
@@ -112,6 +113,16 @@ public abstract class TrajectoryPlanner implements ExpandInterface, Serializable
   /** @return number of replacements in the domain map caused by {@link TrajectoryPlanner#insert(Tensor, GlcNode)} */
   public final int replaceCount() {
     return replaceCount;
+  }
+
+  // TODO shift to debuging class
+  public final void nodeAmountCompare() {
+    System.out.println("****NODE CHECK****");
+    System.out.println("Nodes in DomainMap: " + domainMap().size());
+    System.out.println("Nodes in Tree from Root: " + Nodes.ofSubtree(//
+        getNodesfromRootToGoal().get(0)).size());
+    if (domainMap().size() != Nodes.ofSubtree(getNodesfromRootToGoal().get(0)).size())
+      throw new RuntimeException();
   }
 
   /** @param node

@@ -62,10 +62,8 @@ class Se2GlcDemo {
                 new HyperplaneRegion(Tensors.vector(0, -1, 0), RealScalar.of(1.5)), //
                 new HyperplaneRegion(Tensors.vector(0, +1, 0), RealScalar.of(1.5)) //
             )));
-    // ---
     TrajectoryPlanner trajectoryPlanner = new DefaultTrajectoryPlanner( //
         parameters.getEta(), stateIntegrator, controls, se2GoalManager, goalQuery, obstacleQuery);
-    // ---
     trajectoryPlanner.insertRoot(Tensors.vector(1, 0, -0.5 * Math.PI));
     int iters = Expand.maxDepth(trajectoryPlanner, parameters.getDepthLimit());
     // int iters = Expand.maxTime(trajectoryPlanner, RealScalar.of(3));

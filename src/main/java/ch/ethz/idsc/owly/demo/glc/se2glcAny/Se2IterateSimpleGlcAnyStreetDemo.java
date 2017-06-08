@@ -91,7 +91,7 @@ class Se2IterateSimpleGlcAnyStreetDemo {
       StateTime newRootState = trajectory.get(1);
       // ---
       trajectoryPlanner.switchRootToState(newRootState.x());
-      trajectoryPlanner.setGoalQuery(se2GoalManager2, se2GoalManager2.goalQuery());
+      trajectoryPlanner.changeGoal(se2GoalManager2, se2GoalManager2.goalQuery());
       int iters2 = Expand.maxDepth(trajectoryPlanner, parameters.getDepthLimit());
       trajectory = trajectoryPlanner.getPathFromRootToGoal();
       Trajectories.print(trajectory);
