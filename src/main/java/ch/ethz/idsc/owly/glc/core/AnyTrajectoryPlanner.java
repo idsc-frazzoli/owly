@@ -89,13 +89,13 @@ public class AnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
                 // Removing the formerLabel from the Queue, if in it
                 queue().remove(formerLabel);
                 // removing the nextCandidate from bucket of this domain
-                candidateMap.get(domainKey).remove(nextCandidatePair);
-                candidateQueue.remove();
                 // formerLabel disconnecting
                 formerLabel.parent().removeEdgeTo(formerLabel);
                 // adding next to tree and DomainMap
                 node.insertEdgeTo(next);
                 insert(domainKey, next);
+                candidateMap.get(domainKey).remove(nextCandidatePair);
+                candidateQueue.remove();
                 // GOAL check
                 if (!goalQuery.isDisjoint(connectors.get(next)))
                   offerDestination(next);
@@ -105,11 +105,11 @@ public class AnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
           } else { // No formerLabel, so definitely adding a Node
             if (obstacleQuery.isDisjoint(connectors.get(next))) {
               // removing the nextCandidate from bucket of this domain
-              candidateMap.get(domainKey).remove(nextCandidatePair);
-              candidateQueue.remove();
               // adding next to tree and DomainMap
               node.insertEdgeTo(next);
               insert(domainKey, next);
+              candidateMap.get(domainKey).remove(nextCandidatePair);
+              candidateQueue.remove();
               // GOAL check
               if (!goalQuery.isDisjoint(connectors.get(next)))
                 offerDestination(next);
@@ -224,6 +224,8 @@ public class AnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
             // data structure changing statement shall not be in if clause:
             final boolean replaced = insert(domainKey, next);
             // DomainMap at this key should be empty
+            candidateMap.get(domainKey).remove(nextCandidatePair);
+            candidateQueue.remove();
             if (replaced) {
               System.out.println("Something was replaced --> BUG");
               throw new RuntimeException();

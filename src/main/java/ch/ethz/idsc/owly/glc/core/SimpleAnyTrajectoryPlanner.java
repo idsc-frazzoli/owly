@@ -92,7 +92,12 @@ public class SimpleAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
     int increaseDepthBy = newRoot.reCalculateDepth();
     // -- DEBUGING Values
     // -- Collecting oldTree
+    int oldTreeSize = 0;
     GlcNode oldRoot = getNodesfromRootToGoal().get(0);
+    {
+      Collection<GlcNode> oldTreeCollection = Nodes.ofSubtree(oldRoot);
+      oldTreeSize = oldTreeCollection.size();
+    }
     int oldDomainMapSize = domainMap().size();
     int oldQueueSize = queue().size();
     // -- BASIC REROOTING
@@ -114,6 +119,9 @@ public class SimpleAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
     domainMap().values().removeAll(deleteTreeCollection);
     System.out.println(oldDomainMapSize - domainMap().size() + " out of " + oldDomainMapSize + //
         " Domains removed from DomainMap = " + domainMap().size());
+    Collection<GlcNode> newTreeCollection = Nodes.ofSubtree(getNodesfromRootToGoal().get(0));
+    System.out.println(deleteTreeCollection.size() + " out of " + oldTreeSize//
+        + " Nodes removed from Tree = " + newTreeCollection.size());
     System.out.println("**Rootswitch finished**");
     return increaseDepthBy;
   }
