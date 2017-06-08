@@ -98,7 +98,7 @@ class Se2IterateGlcAnyCircleDemo {
     int expandIter = 0;
     while (owlyFrame.jFrame.isVisible()) {
       Scalar delay = RealScalar.of(3000);
-      Thread.sleep(3000);
+      Thread.sleep(1000);
       tic = RealScalar.of(System.nanoTime());
       int index = iter % 4;
       Se2GoalManager se2GoalManager2 = new Se2GoalManager( //

@@ -34,6 +34,7 @@ class ExtDeltaGoalManager extends SimpleTrajectoryRegionQuery implements CostFun
   public Scalar costIncrement(StateTime from, List<StateTime> trajectory, Flow flow) {
     // return RealScalar.of(trajectory.size());
     Scalar sum = Norm._2.of(flow.getU()).add(RealScalar.of(0.1));
+    // TODO magic const in input
     // Costfunction: integrate (u^2 +0.1, t)
     // TODO multiply with time needed?, as trajectorytimelength always the same
     return sum.multiply(Trajectories.timeIncrement(from, trajectory));

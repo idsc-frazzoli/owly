@@ -70,10 +70,12 @@ public class DefaultTrajectoryPlanner extends TrajectoryPlanner {
           if (formerLabel != null) {
             if (Scalars.lessThan(next.merit(), formerLabel.merit())) {
               if (obstacleQuery.isDisjoint(connectors.get(next))) { // no collision
-                queue().remove(getNode(domainKey));
+                queue().remove(formerLabel);
                 formerLabel.parent().removeEdgeTo(formerLabel);
                 node.insertEdgeTo(next);
-                insert(domainKey, next);
+                boolean replaced = insert(domainKey, next);
+                if (!replaced)
+                  throw new RuntimeException();
                 domainQueue.remove();
                 if (!goalQuery.isDisjoint(connectors.get(next)))
                   offerDestination(next);

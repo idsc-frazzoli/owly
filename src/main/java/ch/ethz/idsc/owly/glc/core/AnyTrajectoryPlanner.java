@@ -24,10 +24,7 @@ import ch.ethz.idsc.tensor.Tensor;
 
 /** TODO assumptions in order to use any... */
 public class AnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
-  private final StateIntegrator stateIntegrator;
   private final Collection<Flow> controls;
-  private TrajectoryRegionQuery goalQuery;
-  private final TrajectoryRegionQuery obstacleQuery;
   // CandidateMap saves neglected/pruned Nodes in a bucket for each domain
   private final Map<Tensor, Set<CandidatePair>> candidateMap = //
       new HashMap<>();
@@ -41,10 +38,8 @@ public class AnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
       TrajectoryRegionQuery obstacleQuery //
   ) {
     super(eta, stateIntegrator, costFunction, goalQuery, obstacleQuery);
-    this.stateIntegrator = stateIntegrator;
     this.controls = controls;
     this.goalQuery = goalQuery;
-    this.obstacleQuery = obstacleQuery;
   }
 
   @Override // from ExpandInterface
@@ -222,68 +217,5 @@ public class AnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
     System.out.println(addedNodesToQueue + " Nodes added to Domain = " + domainMap().size());
     System.out.println("**Rootswitch finished**");
     return increasedDepthBy;
-  }
-
-  /** Changes the Goal of the current planner:
-   * rechecks the tree if expanding is needed, updates Merit of Nodes in Queue
-   * @param newCostFunction modified Costfunction for heuristic
-   * @param newGoal New GoalRegion
-   * @return */
-  // TODO: already defined in abstract, why does not work from Abstract
-  @Override
-  public boolean changeGoal(CostFunction newCostFunction, TrajectoryRegionQuery newGoal) {
-    this.goalQuery = newGoal;
-    this.costFunction = newCostFunction;
-    // -- GOALCHECK BEST
-    // TODO needed? as tree check will find it anyways, (maybe a better best), Pros: maybe timegain
-    if (best != null) {
-      List<StateTime> bestState = new ArrayList<>();
-      bestState.add(best.stateTime());
-      if (!newGoal.isDisjoint(bestState)) {
-        offerDestination(best);
-        System.out.println("Old Goal is in new Goalregion");
-        return true;
-      } // Old Goal is in new Goalregion
-    }
-    // Best is either not in newGoal or Null
-    best = null;
-    // -- GOALCHECK TREE
-    {
-      long tic = System.nanoTime();
-      Collection<GlcNode> TreeCollection = Nodes.ofSubtree(getNodesfromRootToGoal().get(0));
-      System.out.println("treesize for goal checking: " + TreeCollection.size());
-      // TODO more efficient way then going through entire tree?
-      Iterator<GlcNode> TreeCollectionIterator = TreeCollection.iterator();
-      while (TreeCollectionIterator.hasNext()) {
-        GlcNode current = TreeCollectionIterator.next();
-        List<StateTime> currentState = new ArrayList<>();
-        currentState.add(current.stateTime());
-        if (!newGoal.isDisjoint(currentState)) { // current Node in Goal
-          offerDestination(current);
-          long toc = System.nanoTime();
-          System.out.println("New Goal was found in current tree --> No new search needed");
-          System.out.println("Checked current tree for goal in "//
-              + (toc - tic) * 1e-9 + "s");
-          return true;
-        }
-      }
-      long toc = System.nanoTime();
-      System.out.println("Checked current tree for goal in "//
-          + (toc - tic) * 1e-9 + "s");
-    }
-    // -- QUEUE
-    // Updating the Queue
-    long tic = System.nanoTime();
-    // Changing the Merit in Queue for each Node
-    List<GlcNode> list = new LinkedList<>(queue());
-    queue().clear();
-    list.stream().parallel() //
-        .forEach(glcNode -> glcNode.setMinCostToGoal(costFunction.minCostToGoal(glcNode.state())));
-    queue().addAll(list);
-    long toc = System.nanoTime();
-    System.out.println("Updated Merit of Queue with " + list.size() + " nodes in: " //
-        + ((toc - tic) * 1e-9) + "s");
-    System.out.println("**Goalswitch finished**");
-    return false;
   }
 }

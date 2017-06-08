@@ -16,9 +16,9 @@ import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Tensor;
 
 /* package */ abstract class AbstractAnyTrajectoryPlanner extends TrajectoryPlanner {
-  private final StateIntegrator stateIntegrator;
-  private TrajectoryRegionQuery goalQuery;
-  private final TrajectoryRegionQuery obstacleQuery;
+  final StateIntegrator stateIntegrator;
+  TrajectoryRegionQuery goalQuery;
+  final TrajectoryRegionQuery obstacleQuery;
   /* not final */ CostFunction costFunction;
 
   protected AbstractAnyTrajectoryPlanner(Tensor eta, //

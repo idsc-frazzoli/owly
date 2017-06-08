@@ -1,10 +1,7 @@
 // code by jl
 package ch.ethz.idsc.owly.glc.core;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -20,10 +17,7 @@ import ch.ethz.idsc.tensor.Tensor;
 
 /** TODO assumptions in order to use SimpleAnyTrajectoryPlanner */
 public class SimpleAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
-  private final StateIntegrator stateIntegrator;
   private final Collection<Flow> controls;
-  private TrajectoryRegionQuery goalQuery;
-  private final TrajectoryRegionQuery obstacleQuery;
   // private final Map<Tensor, DomainQueue> domainCandidateMap = new HashMap<>();
 
   // private final Queue<Node> queue = new PriorityQueue<>(NodeMeritComparator.instance);
@@ -36,10 +30,7 @@ public class SimpleAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
       TrajectoryRegionQuery obstacleQuery //
   ) {
     super(eta, stateIntegrator, costFunction, goalQuery, obstacleQuery);
-    this.stateIntegrator = stateIntegrator;
     this.controls = controls;
-    this.goalQuery = goalQuery;
-    this.obstacleQuery = obstacleQuery;
   }
 
   @Override // from ExpandInterface
@@ -127,57 +118,5 @@ public class SimpleAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
     // --
     System.out.println("**Rootswitch finished**");
     return increaseDepthBy;
-  }
-
-  /** @param newGoal is the new RegionQuery for the new Goalregion */
-  public void setGoalQuery(CostFunction newCostFunction, TrajectoryRegionQuery newGoal) {
-    this.goalQuery = newGoal;
-    costFunction = newCostFunction;
-    if (best != null) {
-      List<StateTime> bestList = new ArrayList<>();
-      bestList.add(best.stateTime());
-      if (!newGoal.isDisjoint(bestList)) {
-        offerDestination(best);
-        System.out.println("Goal was already found in the existing tree");
-        return;
-      } // Old Goal is in new Goalregion
-    }
-    // Best is either not in newGoal or Null
-    best = null;
-    // Checking if goal is already in tree
-    {
-      long tic = System.nanoTime();
-      Collection<GlcNode> TreeCollection = Nodes.ofSubtree(getNodesfromRootToGoal().get(0));
-      System.out.println("treesize for goal checking:" + TreeCollection.size());
-      // TODO more efficient way then going through entire tree?
-      Iterator<GlcNode> TreeCollectionIterator = TreeCollection.iterator();
-      while (TreeCollectionIterator.hasNext()) {
-        GlcNode current = TreeCollectionIterator.next();
-        List<StateTime> currentList = new ArrayList<>();
-        List<StateTime> bestList = new ArrayList<>();
-        bestList.add(current.stateTime());
-        if (!newGoal.isDisjoint(currentList)) { // current Node in Goal
-          System.out.println("New Goal was found in current tree");
-          offerDestination(current);
-        }
-      }
-      long toc = System.nanoTime();
-      System.out.println("Checked current tree for goal in "//
-          + (toc - tic) * 1e-9 + "s");
-    }
-    // -- Updating the Queue
-    long tic = System.nanoTime();
-    // Changing the Merit in Queue for each Node
-    List<GlcNode> list = new LinkedList<>(queue());
-    queue().clear();
-    list.stream().parallel() //
-        .forEach(glcNode -> glcNode.setMinCostToGoal(costFunction.minCostToGoal(glcNode.state())));
-    // list.stream().parallel().// Changing the depth of queue
-    // forEach(glcNode -> glcNode.reCalculateDepth());
-    queue().addAll(list);
-    long toc = System.nanoTime();
-    System.out.println("Updated Merit & Depth of Queue with " + list.size() + " nodes in: " //
-        + ((toc - tic) * 1e-9) + "s");
-    System.out.println("Goal switch finished");
   }
 }
