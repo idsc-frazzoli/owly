@@ -46,7 +46,7 @@ public class DefaultTrajectoryPlanner extends TrajectoryPlanner {
     // ---
     DomainQueueMap domainQueueMap = new DomainQueueMap(); // holds candidates from insertion
     for (GlcNode next : connectors.keySet()) { // <- order of keys is non-deterministic
-      final Tensor domain_key = convertToKey(next.stateTime().x());
+      final Tensor domain_key = convertToKey(next.state());
       final GlcNode former = getNode(domain_key);
       if (former != null) {
         // is already some node present from previous exploration ?

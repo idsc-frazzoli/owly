@@ -15,7 +15,7 @@ import ch.ethz.idsc.tensor.Tensor;
    * @param domain_key
    * @param glcNode */
   public void insert(Tensor domain_key, GlcNode glcNode) {
-    if (!map.containsKey(domain_key)) // has another candidate has already reached this domain ?
+    if (!map.containsKey(domain_key)) // has another node has already reached this domain ?
       map.put(domain_key, new DomainQueue()); // if not, create a new empty queue
     map.get(domain_key).add(glcNode); // <- add node to queue (always)
   }

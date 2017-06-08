@@ -93,6 +93,8 @@ class Se2IterateGlcAnyCircleDemo {
     // --
     int iter = 0;
     Scalar timeSum = RealScalar.of(0);
+    boolean goalFound = false;
+    int expandIter = 0;
     while (owlyFrame.jFrame.isVisible()) {
       Scalar delay = RealScalar.of(1000);
       Thread.sleep(500);
@@ -103,16 +105,15 @@ class Se2IterateGlcAnyCircleDemo {
           DoubleScalar.of(0.1), Se2Utils.DEGREE(10));
       // --
       StateTime newRootState = trajectory.get(1);
-      // GlcNode newRootNode = trajectoryPlanner.getNodesfromRootToGoal().get(1);
-      // trajectoryPlanner.switchRootToNode(newRootNode);
       int increment = trajectoryPlanner.switchRootToState(newRootState.x());
       parameters.increaseDepthLimit(increment);
       Thread.sleep(delay.number().intValue() / 2);
       // --
-      trajectoryPlanner.changeGoal(se2GoalManager2, se2GoalManager2.goalQuery());
+      goalFound = trajectoryPlanner.changeGoal(se2GoalManager2, se2GoalManager2.goalQuery());
       Thread.sleep(delay.number().intValue() / 2);
       // --
-      int expandIter = Expand.maxDepth(trajectoryPlanner, parameters.getDepthLimit());
+      if (!goalFound)
+        expandIter = Expand.maxDepth(trajectoryPlanner, parameters.getDepthLimit());
       // ---
       toc = RealScalar.of(System.nanoTime());
       trajectory = trajectoryPlanner.getPathFromRootToGoal();

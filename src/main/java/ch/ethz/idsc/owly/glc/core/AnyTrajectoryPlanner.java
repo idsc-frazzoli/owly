@@ -152,7 +152,6 @@ public class AnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
       if (tempNode.flow() != null)
         System.out.println("has flow");
     }
-    System.out.println(nodesWithoutDomain + " Nodes have no Domain");
     if (nodesWithoutDomain != 0)
       throw new RuntimeException();
     // -- BASIC REROOTING
@@ -175,15 +174,7 @@ public class AnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
     // either value in domainMap is overwritten by new best,
     // or, if Bucket empty & nothing found delete oldlabel ==>
     // Would this save time?
-    // --
-    // EDGE: Removing Edges between Nodes in DeleteTree
-    /* // TODO: edge removal Needed? check if memory increases as program runs without this
-     * // oldRoot has no parent, therefore is skipped
-     * deleteTreeCollection.remove(oldRoot);
-     * // TODO: parralizable?
-     * deleteTreeCollection.forEach(tempNode -> tempNode.parent().removeEdgeTo(tempNode));
-     * deleteTreeCollection.add(oldRoot); */
-    // DEBUGING
+    // -- DEBUGING
     Collection<GlcNode> newTreeCollection = Nodes.ofSubtree(getNodesfromRootToGoal().get(0));
     System.out.println(oldDomainMapSize - domainMap().size() + " out of " + oldDomainMapSize + //
         " Domains removed from DomainMap = " + domainMap().size());
@@ -247,10 +238,11 @@ public class AnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
   /** Changes the Goal of the current planner:
    * rechecks the tree if expanding is needed, updates Merit of Nodes in Queue
    * @param newCostFunction modified Costfunction for heuristic
-   * @param newGoal New GoalRegion */
-  // TODO: already defined in abstract, why does not work
-  public void changeGoal(CostFunction newCostFunction, TrajectoryRegionQuery newGoal) {
-    // TODO should return if replanning is needed
+   * @param newGoal New GoalRegion
+   * @return */
+  // TODO: already defined in abstract, why does not work from Abstract
+  @Override
+  public boolean changeGoal(CostFunction newCostFunction, TrajectoryRegionQuery newGoal) {
     this.goalQuery = newGoal;
     this.costFunction = newCostFunction;
     // -- GOALCHECK BEST
@@ -261,7 +253,7 @@ public class AnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
       if (!newGoal.isDisjoint(bestState)) {
         offerDestination(best);
         System.out.println("Old Goal is in new Goalregion");
-        return;
+        return true;
       } // Old Goal is in new Goalregion
     }
     // Best is either not in newGoal or Null
@@ -279,7 +271,11 @@ public class AnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
         currentState.add(current.stateTime());
         if (!newGoal.isDisjoint(currentState)) { // current Node in Goal
           offerDestination(current);
+          long toc = System.nanoTime();
           System.out.println("New Goal was found in current tree --> No new search needed");
+          System.out.println("Checked current tree for goal in "//
+              + (toc - tic) * 1e-9 + "s");
+          return true;
         }
       }
       long toc = System.nanoTime();
@@ -299,5 +295,6 @@ public class AnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
     System.out.println("Updated Merit of Queue with " + list.size() + " nodes in: " //
         + ((toc - tic) * 1e-9) + "s");
     System.out.println("**Goalswitch finished**");
+    return false;
   }
 }

@@ -47,55 +47,36 @@ public class SimpleAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
     // TODO count updates in cell based on costs for benchmarking
     Map<GlcNode, List<StateTime>> connectors = //
         SharedUtils.integrate(node, controls, stateIntegrator, costFunction);
-    // Set<Tensor> domainsNeedingUpdate = new HashSet<>();
-    // Map<Tensor, DomainQueue> candidates = new HashMap<>();
-    CandidatePairQueueMap candidates = new CandidatePairQueueMap();
+    // --
+    DomainQueueMap domainQueueMap = new DomainQueueMap(); // holds candidates from insertion
     for (GlcNode next : connectors.keySet()) { // <- order of keys is non-deterministic
-      CandidatePair nextCandidate = new CandidatePair(node, next);
-      final Tensor domain_key = convertToKey(next.state());
-      candidates.insert(domain_key, nextCandidate);
-      // ALL Candidates are saved in CandidateList
+      final Tensor domainKey = convertToKey(next.state());
+      final GlcNode former = getNode(domainKey);
+      if (former != null) {
+        // is already some node present from previous exploration ?
+        if (Scalars.lessThan(next.merit(), former.merit())) // new node is potentially better than previous one
+          domainQueueMap.insert(domainKey, next); // no Relabeling, therefore do not need to keep worse nodes
+      } else // candidate is considered without comparison to any former node
+        domainQueueMap.insert(domainKey, next);
     }
     // save candidates in CandidateMap for RootSwitchlater
-    processCandidates(node, connectors, candidates);
+    processCandidates(node, connectors, domainQueueMap);
   }
 
   private void processCandidates( //
-      GlcNode node, Map<GlcNode, List<StateTime>> connectors, CandidatePairQueueMap candidates) {
-    for (Entry<Tensor, CandidatePairQueue> entry : candidates.map.entrySet()) {
+      GlcNode node, Map<GlcNode, List<StateTime>> connectors, DomainQueueMap candidates) {
+    for (Entry<Tensor, DomainQueue> entry : candidates.map.entrySet()) {
       final Tensor domain_key = entry.getKey();
-      final CandidatePairQueue candidateQueue = entry.getValue();
-      if (candidateQueue != null && best == null) {
-        while (!candidateQueue.isEmpty()) {
-          final CandidatePair nextCandidatePair = candidateQueue.element();
-          final GlcNode former = getNode(domain_key);
-          final GlcNode next = nextCandidatePair.getCandidate();
-          if (former != null) {
-            if (Scalars.lessThan(next.merit(), former.merit())) {
-              // collision check only if new node is better
-              if (obstacleQuery.isDisjoint(connectors.get(next))) {// better node not collision
-                // current label disconnecting,
-                // current label back in Candidatelist
-                node.insertEdgeTo(next);
-                insert(domain_key, next);
-                if (!goalQuery.isDisjoint(connectors.get(next)))
-                  offerDestination(next);
-                break;
-              }
-            }
-            // candidateQueue.remove();
-          } else {
-            // candidateQueue.remove();
-            if (obstacleQuery.isDisjoint(connectors.get(next))) {
-              node.insertEdgeTo(next);
-              insert(domain_key, next);
-              if (!goalQuery.isDisjoint(connectors.get(next)))
-                offerDestination(next);
-              candidateQueue.remove();
-              break;
-            }
-          }
-          candidateQueue.remove();
+      final DomainQueue domainQueue = entry.getValue();
+      while (!domainQueue.isEmpty()) {
+        final GlcNode next = domainQueue.poll();
+        // collision check only if new node is better
+        if (obstacleQuery.isDisjoint(connectors.get(next))) {// better node not collision
+          node.insertEdgeTo(next);
+          insert(domain_key, next);
+          if (!goalQuery.isDisjoint(connectors.get(next)))
+            offerDestination(next);
+          break;
         }
       }
     }
@@ -103,41 +84,36 @@ public class SimpleAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
 
   @Override
   public int switchRootToNode(GlcNode newRoot) {
-    GlcNode oldRoot = getNodesfromRootToGoal().get(0);
     if (newRoot.isRoot()) {
       System.out.println("node is already root");
       return 0;
     }
+    // needed for change of depthlimit
     int increaseDepthBy = newRoot.reCalculateDepth();
+    // -- DEBUGING Values
+    // -- Collecting oldTree
+    GlcNode oldRoot = getNodesfromRootToGoal().get(0);
     int oldDomainMapSize = domainMap().size();
     int oldQueueSize = queue().size();
-    System.out.println("changing to root:" + newRoot.state());
+    // -- BASIC REROOTING
     // removes the new root from the child list of its parent
+    // Disconnecting newRoot from Old Tree and collecting DeleteTree
     final GlcNode parent = newRoot.parent();
     parent.removeEdgeTo(newRoot);
-    // Collecting deletetree
+    // Collecting deleteTree
     Collection<GlcNode> deleteTreeCollection = Nodes.ofSubtree(oldRoot);
-    // GOAL deleted?
+    // -- GOAL: goaldeleted?
     if (best != null) {
       if (deleteTreeCollection.contains(best)) // check if goalnode was deleted
         best = null;
     }
-    // QUEUE removal
-    // TODO Parallizable?
+    // -- QUEUE: Deleting Nodes from Queue
     if (queue().removeAll(deleteTreeCollection)) // removing from queue;
       System.out.println("Removed " + (oldQueueSize - queue().size()) + " nodes from Queue");
-    // DOMAIN removal
+    // -- DOMAINMAP: Removing Nodes (DeleteTree) from DomainMap
     domainMap().values().removeAll(deleteTreeCollection);
     System.out.println(oldDomainMapSize - domainMap().size() + " out of " + oldDomainMapSize + //
         " Domains removed from DomainMap = " + domainMap().size());
-    // EDGE: Removing Edges between Nodes in DeleteTree
-    // TODO paralizable?
-    for (GlcNode tempNode : deleteTreeCollection) {
-      if (!tempNode.isRoot())
-        tempNode.parent().removeEdgeTo(tempNode);
-    }
-    // --
-    System.out.println(0 + " Nodes added to Queue");
     System.out.println("**Rootswitch finished**");
     return increaseDepthBy;
   }
@@ -146,8 +122,8 @@ public class SimpleAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
    * rechecks the tree if expanding is needed, updates Merit of Nodes in Queue
    * @param newCostFunction modified Costfunction for heuristic
    * @param newGoal New GoalRegion */
-  public void changeGoal(CostFunction newCostFunction, TrajectoryRegionQuery newGoal) {
-    // TODO should return if replanning is needed
+  @Override
+  public boolean changeGoal(CostFunction newCostFunction, TrajectoryRegionQuery newGoal) {
     this.goalQuery = newGoal;
     this.costFunction = newCostFunction;
     // -- GOALCHECK BEST
@@ -158,7 +134,7 @@ public class SimpleAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
       if (!newGoal.isDisjoint(bestState)) {
         offerDestination(best);
         System.out.println("Old Goal is in new Goalregion");
-        return;
+        return true;
       } // Old Goal is in new Goalregion
     }
     // Best is either not in newGoal or Null
@@ -177,6 +153,10 @@ public class SimpleAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
         if (!newGoal.isDisjoint(currentState)) { // current Node in Goal
           offerDestination(current);
           System.out.println("New Goal was found in current tree --> No new search needed");
+          long toc = System.nanoTime();
+          System.out.println("Checked current tree for goal in "//
+              + (toc - tic) * 1e-9 + "s");
+          return true;
         }
       }
       long toc = System.nanoTime();
@@ -196,5 +176,6 @@ public class SimpleAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
     System.out.println("Updated Merit of Queue with " + list.size() + " nodes in: " //
         + ((toc - tic) * 1e-9) + "s");
     System.out.println("**Goalswitch finished**");
+    return false;
   }
 }

@@ -44,7 +44,8 @@ import ch.ethz.idsc.tensor.Tensor;
     if (newRoot != null)
       increaseDepthBy = switchRootToNode(newRoot);
     else {
-      System.out.println("This domain is not labelled yet");
+      System.out.println("This domain  is not labelled yet:");
+      System.out.println(state);
       throw new RuntimeException();
       // TODO: should replan everything, as we left old trajectory
     }
@@ -81,9 +82,9 @@ import ch.ethz.idsc.tensor.Tensor;
   /** Changes the Goal of the current planner:
    * rechecks the tree if expanding is needed, updates Merit of Nodes in Queue
    * @param newCostFunction modified Costfunction for heuristic
-   * @param newGoal New GoalRegion */
-  public void changeGoal(CostFunction newCostFunction, TrajectoryRegionQuery newGoal) {
-    // TODO should return if replanning is needed
+   * @param newGoal New GoalRegion
+   * @return boolean, true if Goal was already found in oldTree */
+  public boolean changeGoal(CostFunction newCostFunction, TrajectoryRegionQuery newGoal) {
     this.goalQuery = newGoal;
     this.costFunction = newCostFunction;
     // -- GOALCHECK BEST
@@ -94,7 +95,7 @@ import ch.ethz.idsc.tensor.Tensor;
       if (!newGoal.isDisjoint(bestState)) {
         offerDestination(best);
         System.out.println("Old Goal is in new Goalregion");
-        return;
+        return true;
       } // Old Goal is in new Goalregion
     }
     // Best is either not in newGoal or Null
@@ -112,7 +113,11 @@ import ch.ethz.idsc.tensor.Tensor;
         currentState.add(current.stateTime());
         if (!newGoal.isDisjoint(currentState)) { // current Node in Goal
           offerDestination(current);
+          long toc = System.nanoTime();
           System.out.println("New Goal was found in current tree --> No new search needed");
+          System.out.println("Checked current tree for goal in "//
+              + (toc - tic) * 1e-9 + "s");
+          return true;
         }
       }
       long toc = System.nanoTime();
@@ -132,5 +137,6 @@ import ch.ethz.idsc.tensor.Tensor;
     System.out.println("Updated Merit of Queue with " + list.size() + " nodes in: " //
         + ((toc - tic) * 1e-9) + "s");
     System.out.println("**Goalswitch finished**");
+    return false;
   }
 }

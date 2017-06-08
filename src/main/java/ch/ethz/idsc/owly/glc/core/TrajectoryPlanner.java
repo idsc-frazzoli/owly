@@ -40,6 +40,7 @@ public abstract class TrajectoryPlanner implements ExpandInterface, Serializable
     return eta;
   }
 
+  // TODO defined expand function already as the same in simple and default
   // EXPERIMENTAL
   public transient Function<Tensor, Tensor> represent = Function.identity();
 
