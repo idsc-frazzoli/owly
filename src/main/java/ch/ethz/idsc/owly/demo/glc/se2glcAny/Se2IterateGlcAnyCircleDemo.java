@@ -107,16 +107,19 @@ class Se2IterateGlcAnyCircleDemo {
       // --
       StateTime newRootState = trajectory.get(5);
       int increment = trajectoryPlanner.switchRootToState(newRootState.x());
+      trajectoryPlanner.nodeAmountCompare();
       parameters.increaseDepthLimit(increment);
       owlyFrame.setGlc(trajectoryPlanner);
       Thread.sleep(delay.number().intValue() / 2);
       // --
       goalFound = trajectoryPlanner.changeGoal(se2GoalManager2, se2GoalManager2.goalQuery());
+      trajectoryPlanner.nodeAmountCompare();
       owlyFrame.setGlc(trajectoryPlanner);
       Thread.sleep(delay.number().intValue() / 2);
       // --
       if (!goalFound)
         expandIter = Expand.maxDepth(trajectoryPlanner, parameters.getDepthLimit());
+      // TODO BUG after expanding 2848 Nodes on a 10083 Domain
       trajectoryPlanner.nodeAmountCompare();
       // ---
       toc = RealScalar.of(System.nanoTime());

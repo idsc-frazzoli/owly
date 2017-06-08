@@ -115,12 +115,14 @@ public abstract class TrajectoryPlanner implements ExpandInterface, Serializable
     return replaceCount;
   }
 
-  //TODO shift to debuging class
+  // TODO shift to debuging class
   public final void nodeAmountCompare() {
     System.out.println("****NODE CHECK****");
     System.out.println("Nodes in DomainMap: " + domainMap().size());
     System.out.println("Nodes in Tree from Root: " + Nodes.ofSubtree(//
         getNodesfromRootToGoal().get(0)).size());
+    if (domainMap().size() != Nodes.ofSubtree(getNodesfromRootToGoal().get(0)).size())
+      throw new RuntimeException();
   }
 
   /** @param node

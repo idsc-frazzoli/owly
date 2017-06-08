@@ -119,33 +119,12 @@ public class SimpleAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
     // removes the new root from the child list of its parent
     final GlcNode parent = newRoot.parent();
     parent.removeEdgeTo(newRoot);
-    // Collecting deletetree
-    {
-      Collection<GlcNode> deleteTreeCollection = Nodes.ofSubtree(oldRoot);
-      // -- GOAL deleted?
-      if (best != null) {
-        if (deleteTreeCollection.contains(best)) // check if goalnode was deleted
-          best = null;
-      }
-      // -- QUEUE removal
-      // TODO Parallizable?
-      if (queue().removeAll(deleteTreeCollection)) // removing from queue;
-        System.out.println("Removed " + (oldQueueSize - queue().size()) + " nodes from Queue");
-      // -- DOMAIN removal
-      domainMap().values().removeAll(deleteTreeCollection);
-      // -- EDGE: Removing Edges between Nodes in DeleteTree
-      // TODO paralizable?
-      for (GlcNode tempNode : deleteTreeCollection) {
-        if (!tempNode.isRoot())
-          tempNode.parent().removeEdgeTo(tempNode);
-      }
-      System.out.println(oldDomainMapSize - domainMap().size() + " out of " + oldDomainMapSize + //
-          " Domains removed from DomainMap = " + domainMap().size());
-      System.out.println(deleteTreeCollection.size() + " out of " + oldTreeSize//
-          + " Nodes removed from Tree = " + Nodes.ofSubtree(getNodesfromRootToGoal().get(0)).size());
-    }
+    Collection<GlcNode> deleteTreeCollection = deleteChildrenOf(oldRoot);
+    System.out.println(oldDomainMapSize - domainMap().size() + " out of " + oldDomainMapSize + //
+        " Domains removed from DomainMap = " + domainMap().size());
+    System.out.println(deleteTreeCollection.size() + " out of " + oldTreeSize//
+        + " Nodes removed from Tree = " + Nodes.ofSubtree(getNodesfromRootToGoal().get(0)).size());
     // --
-    System.out.println(0 + " Nodes added to Queue");
     System.out.println("**Rootswitch finished**");
     return increaseDepthBy;
   }
@@ -166,7 +145,6 @@ public class SimpleAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
     // Best is either not in newGoal or Null
     best = null;
     // Checking if goal is already in tree
-    // TODO check if tree has right size TreeCollection
     {
       long tic = System.nanoTime();
       Collection<GlcNode> TreeCollection = Nodes.ofSubtree(getNodesfromRootToGoal().get(0));

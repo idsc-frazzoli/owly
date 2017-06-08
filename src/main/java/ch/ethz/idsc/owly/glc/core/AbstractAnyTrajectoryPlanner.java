@@ -70,6 +70,13 @@ import ch.ethz.idsc.tensor.Tensor;
     // -- DOMAINMAP: Removing Nodes (DeleteTree) from DomainMap
     domainMap().values().removeAll(deleteTreeCollection);
     // --
+    // -- EDGE: Removing Edges between Nodes in DeleteTree
+    // TODO: edge removal Needed?
+    // oldRoot has no parent, therefore is skipped
+    deleteTreeCollection.remove(oldRoot);
+    // TODO: parralizable?
+    deleteTreeCollection.forEach(tempNode -> tempNode.parent().removeEdgeTo(tempNode));
+    deleteTreeCollection.add(oldRoot);
     return deleteTreeCollection;
   }
 
