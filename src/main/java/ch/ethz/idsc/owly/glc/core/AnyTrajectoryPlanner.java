@@ -56,8 +56,8 @@ public class AnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
     for (GlcNode next : connectors.keySet()) { // <- order of keys is non-deterministic
       // ALL Candidates are saved in temporary CandidateList
       CandidatePair nextCandidate = new CandidatePair(node, next);
-      final Tensor domain_key = convertToKey(next.state());
-      candidates.insert(domain_key, nextCandidate);
+      final Tensor domainKey = convertToKey(next.state());
+      candidates.insert(domainKey, nextCandidate);
     }
     // saving the candidates in the corresponding Buckets
     for (Entry<Tensor, CandidatePairQueue> entry : candidates.map.entrySet()) {
@@ -158,6 +158,7 @@ public class AnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
     // removes the new root from the child list of its parent
     // Disconnecting newRoot from Old Tree and collecting DeleteTree
     newRoot.parent().removeEdgeTo(newRoot);
+    // Collection<GlcNode> deleteTreeCollection = deleteChildrenOf(oldRoot);
     Collection<GlcNode> deleteTreeCollection = Nodes.ofSubtree(oldRoot);
     // -- GOAL: goal deleted?
     if (best != null) {
@@ -166,18 +167,26 @@ public class AnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
     }
     System.out.println("Nodes to be deleted: " + deleteTreeCollection.size());
     // -- QUEUE: Deleting Nodes from Queue
-    if (queue().removeAll(deleteTreeCollection))
-      System.out.println("Removed " + (oldQueueSize - queue().size()) + " out of " + oldQueueSize + " nodes from Queue = " + queue().size());
+    queue().removeAll(deleteTreeCollection);
     // -- DOMAINMAP: Removing Nodes (DeleteTree) from DomainMap
     domainMap().values().removeAll(deleteTreeCollection);
-    // TODO not needed, if Relabeling is modified:
-    // either value in domainMap is overwritten by new best,
-    // or, if Bucket empty & nothing found delete oldlabel ==>
-    // Would this save time?
+    // EDGE: Removing Edges between Nodes in DeleteTree
+    // for (GlcNode tempNode : deleteTreeCollection) {
+    // if (!tempNode.isRoot())
+    // tempNode.parent().removeEdgeTo(tempNode);
+    // }
+    // for Null error of root
+    // TODO: edge removal Needed?
+    // oldRoot has no parent, therefore is skipped
+    deleteTreeCollection.remove(oldRoot);
+    // TODO: parralizable?
+    deleteTreeCollection.forEach(tempNode -> tempNode.parent().removeEdgeTo(tempNode));
+    deleteTreeCollection.add(oldRoot);
     // -- DEBUGING
-    Collection<GlcNode> newTreeCollection = Nodes.ofSubtree(getNodesfromRootToGoal().get(0));
+    System.out.println("Removed " + (oldQueueSize - queue().size()) + " out of " + oldQueueSize + " nodes from Queue = " + queue().size());
     System.out.println(oldDomainMapSize - domainMap().size() + " out of " + oldDomainMapSize + //
         " Domains removed from DomainMap = " + domainMap().size());
+    Collection<GlcNode> newTreeCollection = Nodes.ofSubtree(getNodesfromRootToGoal().get(0));
     System.out.println(deleteTreeCollection.size() + " out of " + oldTreeCollection.size()//
         + " Nodes removed from Tree = " + newTreeCollection.size());
     // -- CANDIDATEMAP: Deleting Candidates, if Origin is included in DeleteTree

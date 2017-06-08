@@ -96,20 +96,22 @@ class Se2IterateGlcAnyCircleDemo {
     boolean goalFound = false;
     int expandIter = 0;
     while (owlyFrame.jFrame.isVisible()) {
-      Scalar delay = RealScalar.of(1000);
-      Thread.sleep(500);
+      Scalar delay = RealScalar.of(3000);
+      Thread.sleep(3000);
       tic = RealScalar.of(System.nanoTime());
       int index = iter % 4;
       Se2GoalManager se2GoalManager2 = new Se2GoalManager( //
           goalListPosition.get(index), goalListAngle.get(index), //
           DoubleScalar.of(0.1), Se2Utils.DEGREE(10));
       // --
-      StateTime newRootState = trajectory.get(1);
+      StateTime newRootState = trajectory.get(5);
       int increment = trajectoryPlanner.switchRootToState(newRootState.x());
       parameters.increaseDepthLimit(increment);
+      owlyFrame.setGlc(trajectoryPlanner);
       Thread.sleep(delay.number().intValue() / 2);
       // --
       goalFound = trajectoryPlanner.changeGoal(se2GoalManager2, se2GoalManager2.goalQuery());
+      owlyFrame.setGlc(trajectoryPlanner);
       Thread.sleep(delay.number().intValue() / 2);
       // --
       if (!goalFound)

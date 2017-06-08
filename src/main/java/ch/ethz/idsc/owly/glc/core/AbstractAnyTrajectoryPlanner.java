@@ -58,6 +58,21 @@ import ch.ethz.idsc.tensor.Tensor;
    * @return The value,by which the depth limit needs to be increased as of the RootSwitch */
   public abstract int switchRootToNode(GlcNode newRoot);
 
+  protected final Collection<GlcNode> deleteChildrenOf(GlcNode oldRoot) {
+    Collection<GlcNode> deleteTreeCollection = Nodes.ofSubtree(oldRoot);
+    // -- GOAL: goal deleted?
+    if (best != null)
+      if (deleteTreeCollection.contains(best))
+        best = null;
+    System.out.println("Nodes to be deleted: " + deleteTreeCollection.size());
+    // -- QUEUE: Deleting Nodes from Queue
+    queue().removeAll(deleteTreeCollection);
+    // -- DOMAINMAP: Removing Nodes (DeleteTree) from DomainMap
+    domainMap().values().removeAll(deleteTreeCollection);
+    // --
+    return deleteTreeCollection;
+  }
+
   @Override
   public final List<TrajectorySample> detailedTrajectoryTo(GlcNode node) {
     return GlcTrajectories.connect(stateIntegrator, Nodes.fromRoot(node));

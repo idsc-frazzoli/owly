@@ -102,7 +102,7 @@ public class SimpleAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
     parent.removeEdgeTo(newRoot);
     // Collecting deleteTree
     Collection<GlcNode> deleteTreeCollection = Nodes.ofSubtree(oldRoot);
-    // -- GOAL: goaldeleted?
+    // -- GOAL: goal deleted?
     if (best != null) {
       if (deleteTreeCollection.contains(best)) // check if goalnode was deleted
         best = null;
