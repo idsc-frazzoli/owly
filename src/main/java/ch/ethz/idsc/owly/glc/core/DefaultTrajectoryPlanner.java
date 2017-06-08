@@ -46,14 +46,14 @@ public class DefaultTrajectoryPlanner extends TrajectoryPlanner {
     // ---
     DomainQueueMap domainQueueMap = new DomainQueueMap(); // holds candidates from insertion
     for (GlcNode next : connectors.keySet()) { // <- order of keys is non-deterministic
-      final Tensor domain_key = convertToKey(next.state());
-      final GlcNode former = getNode(domain_key);
+      final Tensor domainKey = convertToKey(next.state());
+      final GlcNode former = getNode(domainKey);
       if (former != null) {
         // is already some node present from previous exploration ?
         if (Scalars.lessThan(next.merit(), former.merit())) // new node is potentially better than previous one
-          domainQueueMap.insert(domain_key, next);
+          domainQueueMap.insert(domainKey, next);
       } else
-        domainQueueMap.insert(domain_key, next); // node is considered without comparison to any former node
+        domainQueueMap.insert(domainKey, next); // node is considered without comparison to any former node
     }
     processCandidates(node, connectors, domainQueueMap);
   }
@@ -61,16 +61,39 @@ public class DefaultTrajectoryPlanner extends TrajectoryPlanner {
   private void processCandidates( //
       GlcNode node, Map<GlcNode, List<StateTime>> connectors, DomainQueueMap domainQueueMap) {
     for (Entry<Tensor, DomainQueue> entry : domainQueueMap.map.entrySet()) {
-      final Tensor domain_key = entry.getKey();
+      final Tensor domainKey = entry.getKey();
       final DomainQueue domainQueue = entry.getValue();
-      while (!domainQueue.isEmpty()) {
-        GlcNode next = domainQueue.poll(); // poll() Retrieves and removes the head of this queue
-        if (obstacleQuery.isDisjoint(connectors.get(next))) { // no collision
-          node.insertEdgeTo(next);
-          insert(domain_key, next);
-          if (!goalQuery.isDisjoint(connectors.get(next)))
-            offerDestination(next);
-          break; // leaves the while loop, but not the for loop
+      if (domainQueueMap != null && best == null) {
+        while (!domainQueue.isEmpty()) {
+          final GlcNode next = domainQueue.element();
+          final GlcNode formerLabel = getNode(domainKey);
+          if (formerLabel != null) {
+            if (Scalars.lessThan(next.merit(), formerLabel.merit())) {
+              if (obstacleQuery.isDisjoint(connectors.get(next))) { // no collision
+                queue().remove(getNode(domainKey));
+                formerLabel.parent().removeEdgeTo(formerLabel);
+                node.insertEdgeTo(next);
+                insert(domainKey, next);
+                domainQueue.remove();
+                if (!goalQuery.isDisjoint(connectors.get(next)))
+                  offerDestination(next);
+                break; // leaves the while loop, but not the for loop
+              }
+            }
+          } else {// No formerLabel, so definitely adding a Node
+            if (obstacleQuery.isDisjoint(connectors.get(next))) {
+              // removing the nextCandidate from bucket of this domain
+              // adding next to tree and DomainMap
+              node.insertEdgeTo(next);
+              insert(domainKey, next);
+              domainQueue.remove();
+              // GOAL check
+              if (!goalQuery.isDisjoint(connectors.get(next)))
+                offerDestination(next);
+              break;
+            }
+          }
+          domainQueue.remove();
         }
       }
     }

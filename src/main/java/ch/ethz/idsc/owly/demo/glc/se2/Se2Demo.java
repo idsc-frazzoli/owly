@@ -46,6 +46,7 @@ class Se2Demo {
     // ---
     trajectoryPlanner.insertRoot(Tensors.vector(0, 0, 0));
     int iters = Expand.maxSteps(trajectoryPlanner, 2000);
+    trajectoryPlanner.nodeAmountCompare();
     System.out.println(iters);
     List<StateTime> trajectory = trajectoryPlanner.getPathFromRootToGoal();
     Trajectories.print(trajectory);

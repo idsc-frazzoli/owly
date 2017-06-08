@@ -115,6 +115,14 @@ public abstract class TrajectoryPlanner implements ExpandInterface, Serializable
     return replaceCount;
   }
 
+  //TODO shift to debuging class
+  public final void nodeAmountCompare() {
+    System.out.println("****NODE CHECK****");
+    System.out.println("Nodes in DomainMap: " + domainMap().size());
+    System.out.println("Nodes in Tree from Root: " + Nodes.ofSubtree(//
+        getNodesfromRootToGoal().get(0)).size());
+  }
+
   /** @param node
    * @return densely sampled trajectory from root to given node
    * that is the result of integrating the flows between the nodes */

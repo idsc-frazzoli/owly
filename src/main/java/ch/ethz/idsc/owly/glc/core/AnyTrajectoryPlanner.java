@@ -52,25 +52,25 @@ public class AnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
     // TODO count updates in cell based on costs for benchmarking
     Map<GlcNode, List<StateTime>> connectors = //
         SharedUtils.integrate(node, controls, stateIntegrator, costFunction);
-    CandidatePairQueueMap candidates = new CandidatePairQueueMap();
+    CandidatePairQueueMap candidatePairQueueMap = new CandidatePairQueueMap();
     for (GlcNode next : connectors.keySet()) { // <- order of keys is non-deterministic
       // ALL Candidates are saved in temporary CandidateList
       CandidatePair nextCandidate = new CandidatePair(node, next);
       final Tensor domainKey = convertToKey(next.state());
-      candidates.insert(domainKey, nextCandidate);
+      candidatePairQueueMap.insert(domainKey, nextCandidate);
     }
     // saving the candidates in the corresponding Buckets
-    for (Entry<Tensor, CandidatePairQueue> entry : candidates.map.entrySet()) {
+    for (Entry<Tensor, CandidatePairQueue> entry : candidatePairQueueMap.map.entrySet()) {
       if (!candidateMap.containsKey(entry.getKey()))
         candidateMap.put(entry.getKey(), new HashSet<CandidatePair>());
       candidateMap.get(entry.getKey()).addAll(entry.getValue());
     }
-    processCandidates(node, connectors, candidates);
+    processCandidates(node, connectors, candidatePairQueueMap);
   }
 
   private void processCandidates( //
-      GlcNode node, Map<GlcNode, List<StateTime>> connectors, CandidatePairQueueMap candidates) {
-    for (Entry<Tensor, CandidatePairQueue> entry : candidates.map.entrySet()) {
+      GlcNode node, Map<GlcNode, List<StateTime>> connectors, CandidatePairQueueMap candidatePairQueueMap) {
+    for (Entry<Tensor, CandidatePairQueue> entry : candidatePairQueueMap.map.entrySet()) {
       final Tensor domainKey = entry.getKey();
       final CandidatePairQueue candidateQueue = entry.getValue();
       if (candidateQueue != null && best == null) {
@@ -170,7 +170,7 @@ public class AnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
     queue().removeAll(deleteTreeCollection);
     // -- DOMAINMAP: Removing Nodes (DeleteTree) from DomainMap
     domainMap().values().removeAll(deleteTreeCollection);
-    // EDGE: Removing Edges between Nodes in DeleteTree
+    // -- EDGE: Removing Edges between Nodes in DeleteTree
     // for (GlcNode tempNode : deleteTreeCollection) {
     // if (!tempNode.isRoot())
     // tempNode.parent().removeEdgeTo(tempNode);

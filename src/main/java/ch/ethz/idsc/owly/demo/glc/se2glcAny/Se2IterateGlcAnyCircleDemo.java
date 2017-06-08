@@ -72,6 +72,7 @@ class Se2IterateGlcAnyCircleDemo {
     // ---
     trajectoryPlanner.insertRoot(Tensors.vector(0, 3, 0));
     int iters = Expand.maxDepth(trajectoryPlanner, parameters.getDepthLimit());
+    trajectoryPlanner.nodeAmountCompare();
     System.out.println("After " + iters + " iterations");
     List<StateTime> trajectory = trajectoryPlanner.getPathFromRootToGoal();
     Scalar toc = RealScalar.of(System.nanoTime());
@@ -116,6 +117,7 @@ class Se2IterateGlcAnyCircleDemo {
       // --
       if (!goalFound)
         expandIter = Expand.maxDepth(trajectoryPlanner, parameters.getDepthLimit());
+      trajectoryPlanner.nodeAmountCompare();
       // ---
       toc = RealScalar.of(System.nanoTime());
       trajectory = trajectoryPlanner.getPathFromRootToGoal();
