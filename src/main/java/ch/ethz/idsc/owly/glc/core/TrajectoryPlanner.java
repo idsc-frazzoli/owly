@@ -1,4 +1,4 @@
-// code by bapaden and jph
+// code by bapaden, jph, and jl
 package ch.ethz.idsc.owly.glc.core;
 
 import java.io.Serializable;
@@ -9,10 +9,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.PriorityQueue;
 import java.util.Queue;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import ch.ethz.idsc.owly.data.tree.Nodes;
+import ch.ethz.idsc.owly.math.TensorUnaryOperator;
 import ch.ethz.idsc.owly.math.state.StateTime;
 import ch.ethz.idsc.owly.math.state.TrajectoryRegionQuery;
 import ch.ethz.idsc.tensor.Scalars;
@@ -42,7 +42,7 @@ public abstract class TrajectoryPlanner implements ExpandInterface, Serializable
 
   // TODO defined expand function already as the same in simple and default
   // EXPERIMENTAL
-  public transient Function<Tensor, Tensor> represent = Function.identity();
+  public TensorUnaryOperator represent = TensorUnaryOperator.IDENTITY;
 
   /** Floor(eta * state) == Floor(state / domain_size)
    * 
