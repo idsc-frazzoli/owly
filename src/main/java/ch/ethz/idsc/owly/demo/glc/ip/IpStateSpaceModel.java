@@ -48,7 +48,7 @@ class IpStateSpaceModel implements StateSpaceModel {
 
   @Override
   public Scalar getLipschitz() {
-    // TODO
+    // TODO implement
     return null;
   }
 }

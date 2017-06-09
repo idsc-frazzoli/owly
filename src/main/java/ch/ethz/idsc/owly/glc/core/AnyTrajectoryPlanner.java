@@ -5,8 +5,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -22,7 +20,10 @@ import ch.ethz.idsc.owly.math.state.TrajectoryRegionQuery;
 import ch.ethz.idsc.tensor.Scalars;
 import ch.ethz.idsc.tensor.Tensor;
 
-/** TODO assumptions in order to use any... */
+/** An anytime, Resolution asymptotically optimal and probabilitistic complete MotionPlanning Algorithm,
+ * after: [B. Paden] A Generalized Label Correcting Method for Optimal Kinodynamic Motion Planning
+ * Assumptions: -All states of all obstacles are known at all times
+ * -No new Obstacles are discovered */
 public class AnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
   private final Collection<Flow> controls;
   // CandidateMap saves neglected/pruned Nodes in a bucket for each domain

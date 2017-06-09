@@ -31,7 +31,7 @@ class Se2Demo {
     StateIntegrator stateIntegrator = FixedStateIntegrator.createDefault(RationalScalar.of(1, 6), 5);
     System.out.println("scale=" + eta);
     Collection<Flow> controls = Se2Controls.createControls(Se2Utils.DEGREE(45), 6);
-    Se2GoalManager se2GoalManager = new Se2GoalManager( //
+    Se2DefaultGoalManager se2GoalManager = new Se2DefaultGoalManager( //
         Tensors.vector(0, 1), RealScalar.of(Math.PI), //
         DoubleScalar.of(.1), Se2Utils.DEGREE(10));
     TrajectoryRegionQuery obstacleQuery = //

@@ -5,7 +5,7 @@ import java.util.Collection;
 import java.util.List;
 
 import ch.ethz.idsc.owly.demo.glc.se2.Se2Controls;
-import ch.ethz.idsc.owly.demo.glc.se2.Se2GoalManager;
+import ch.ethz.idsc.owly.demo.glc.se2.Se2DefaultGoalManager;
 import ch.ethz.idsc.owly.demo.glc.se2.Se2StateSpaceModel;
 import ch.ethz.idsc.owly.demo.glc.se2.Se2Utils;
 import ch.ethz.idsc.owly.demo.glc.se2glc.Se2Parameters;
@@ -51,7 +51,7 @@ class Se2glcAnyDemo {
     System.out.println("1/Domainsize=" + parameters.getEta());
     parameters.printResolution();
     Collection<Flow> controls = Se2Controls.createControls(Se2Utils.DEGREE(45), parameters.getResolution());
-    Se2GoalManager se2GoalManager = new Se2GoalManager( //
+    Se2DefaultGoalManager se2GoalManager = new Se2DefaultGoalManager( //
         Tensors.vector(0, 1), RealScalar.of(Math.PI), //
         DoubleScalar.of(.1), Se2Utils.DEGREE(10));
     // TrajectoryRegionQuery goalQuery = //
@@ -80,7 +80,7 @@ class Se2glcAnyDemo {
     // Thread.sleep(4000);
     tic = System.nanoTime();
     // --
-    Se2GoalManager se2GoalManager2 = new Se2GoalManager( //
+    Se2DefaultGoalManager se2GoalManager2 = new Se2DefaultGoalManager( //
         Tensors.vector(-3, 1), RealScalar.of(Math.PI), //
         DoubleScalar.of(0.1), Se2Utils.DEGREE(10));
     StateTime newRootState = trajectory.get(1);

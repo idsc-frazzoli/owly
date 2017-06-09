@@ -15,7 +15,10 @@ import ch.ethz.idsc.owly.math.state.TrajectoryRegionQuery;
 import ch.ethz.idsc.tensor.Scalars;
 import ch.ethz.idsc.tensor.Tensor;
 
-/** TODO assumptions in order to use SimpleAnyTrajectoryPlanner */
+/** An anytime MotionPlanning Algorithm, not optimal/ complete
+ * after: [B. Paden] A Generalized Label Correcting Method for Optimal Kinodynamic Motion Planning
+ * Assumptions: -All states of all obstacles are known at all times
+ * -No new Obstacles are discovered */
 public class SimpleAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
   private final Collection<Flow> controls;
   // private final Map<Tensor, DomainQueue> domainCandidateMap = new HashMap<>();

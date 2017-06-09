@@ -6,7 +6,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import ch.ethz.idsc.owly.demo.glc.se2.Se2Controls;
-import ch.ethz.idsc.owly.demo.glc.se2.Se2GoalManager;
+import ch.ethz.idsc.owly.demo.glc.se2.Se2DefaultGoalManager;
 import ch.ethz.idsc.owly.demo.glc.se2.Se2StateSpaceModel;
 import ch.ethz.idsc.owly.demo.glc.se2.Se2Utils;
 import ch.ethz.idsc.owly.demo.glc.se2glc.Se2Parameters;
@@ -53,7 +53,7 @@ class Se2IterateSimpleGlcAnyStreetDemo {
     System.out.println("1/Domainsize=" + parameters.getEta());
     parameters.printResolution();
     Collection<Flow> controls = Se2Controls.createControls(Se2Utils.DEGREE(45), parameters.getResolution());
-    Se2GoalManager se2GoalManager = new Se2GoalManager( //
+    Se2DefaultGoalManager se2GoalManager = new Se2DefaultGoalManager( //
         Tensors.vector(-7, 0), RealScalar.of(0), // east
         DoubleScalar.of(.1), Se2Utils.DEGREE(10));
     TrajectoryRegionQuery obstacleQuery = //
@@ -87,7 +87,8 @@ class Se2IterateSimpleGlcAnyStreetDemo {
       int index = iter % 4;
       System.out.println("index" + index);
       // saw toothtrajectory for goals
-      Se2GoalManager se2GoalManager2 = new Se2GoalManager(Tensors.vector(-7 + iter, index), RealScalar.of(0), DoubleScalar.of(.1), Se2Utils.DEGREE(10));
+      Se2DefaultGoalManager se2GoalManager2 = new Se2DefaultGoalManager(Tensors.vector(-7 + iter, index), RealScalar.of(0), DoubleScalar.of(.1),
+          Se2Utils.DEGREE(10));
       StateTime newRootState = trajectory.get(1);
       // ---
       trajectoryPlanner.switchRootToState(newRootState.x());
