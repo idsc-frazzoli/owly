@@ -62,6 +62,7 @@ public class AnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
       candidateMap.get(entry.getKey()).addAll(entry.getValue());
     }
     processCandidates(node, connectors, candidatePairQueueMap);
+    nodeAmountCheck(node);
   }
 
   // TODO BUG: if big numbers of nodes are expanded, nodes =/= domains

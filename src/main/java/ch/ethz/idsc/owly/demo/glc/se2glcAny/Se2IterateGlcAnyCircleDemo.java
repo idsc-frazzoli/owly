@@ -6,7 +6,6 @@ import java.util.Collection;
 import java.util.List;
 
 import ch.ethz.idsc.owly.demo.glc.se2.Se2Controls;
-import ch.ethz.idsc.owly.demo.glc.se2.Se2DefaultGoalManager;
 import ch.ethz.idsc.owly.demo.glc.se2.Se2MinCurvatureGoalManager;
 import ch.ethz.idsc.owly.demo.glc.se2.Se2StateSpaceModel;
 import ch.ethz.idsc.owly.demo.glc.se2.Se2Utils;
@@ -121,7 +120,6 @@ class Se2IterateGlcAnyCircleDemo {
       if (!goalFound)
         expandIter = Expand.maxDepth(trajectoryPlanner, parameters.getDepthLimit());
       // TODO BUG after expanding 2848 Nodes on a 10083 Domain
-      trajectoryPlanner.nodeAmountCompare();
       // ---
       toc = RealScalar.of(System.nanoTime());
       trajectory = trajectoryPlanner.getPathFromRootToGoal();

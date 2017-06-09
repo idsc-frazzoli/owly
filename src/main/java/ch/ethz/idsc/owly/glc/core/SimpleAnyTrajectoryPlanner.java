@@ -52,6 +52,7 @@ public class SimpleAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
     }
     // save candidates in CandidateMap for RootSwitchlater
     processCandidates(node, connectors, candidates);
+    nodeAmountCheck(node);
   }
 
   private void processCandidates( //

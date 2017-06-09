@@ -115,16 +115,6 @@ public abstract class TrajectoryPlanner implements ExpandInterface, Serializable
     return replaceCount;
   }
 
-  // TODO shift to debuging class
-  public final void nodeAmountCompare() {
-    System.out.println("****NODE CHECK****");
-    System.out.println("Nodes in DomainMap: " + domainMap().size());
-    System.out.println("Nodes in Tree from Root: " + Nodes.ofSubtree(//
-        getNodesfromRootToGoal().get(0)).size());
-    if (domainMap().size() != Nodes.ofSubtree(getNodesfromRootToGoal().get(0)).size())
-      throw new RuntimeException();
-  }
-
   /** @param node
    * @return densely sampled trajectory from root to given node
    * that is the result of integrating the flows between the nodes */
@@ -153,6 +143,32 @@ public abstract class TrajectoryPlanner implements ExpandInterface, Serializable
 
   public final List<GlcNode> getNodesfromRootToGoal() {
     return Nodes.fromRoot(best == null ? peek() : best);
+  }
+
+  // TODO shift to debuging class
+  public final void nodeAmountCompare() {
+    if (domainMap().size() != Nodes.ofSubtree(getNodesfromRootToGoal().get(0)).size()) {
+      System.out.println("****NODE CHECK****");
+      System.out.println("Nodes in DomainMap: " + domainMap().size());
+      System.out.println("Nodes in Tree from Root: " + Nodes.ofSubtree(//
+          getNodesfromRootToGoal().get(0)).size());
+      throw new RuntimeException();
+    }
+  }
+
+  /* package */ final void nodeAmountCheck(GlcNode node) {
+    int treeSize = Nodes.ofSubtree(getNodesfromRootToGoal().get(0)).size();
+    if (domainMap().size() != treeSize) {
+      System.err.println("DomainMap  != TreeSize:");
+      System.err.println(domainMap().size() + " =/= " + treeSize + " after expanding of Node: ");
+      System.err.println("DEPTH: " + node.depth());
+      System.err.println("State: " + node.state());
+      if (node.isRoot())
+        System.err.println("Node has no parents");
+      if (node.isLeaf())
+        System.err.println("Node is leaf");
+      throw new RuntimeException();
+    }
   }
 
   /** @return unmodifiable view on queue for display and tests */

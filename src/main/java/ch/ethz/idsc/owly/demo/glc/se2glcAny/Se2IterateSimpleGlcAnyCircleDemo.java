@@ -7,13 +7,13 @@ import java.util.List;
 
 import ch.ethz.idsc.owly.demo.glc.se2.Se2Controls;
 import ch.ethz.idsc.owly.demo.glc.se2.Se2DefaultGoalManager;
+import ch.ethz.idsc.owly.demo.glc.se2.Se2MinCurvatureGoalManager;
 import ch.ethz.idsc.owly.demo.glc.se2.Se2StateSpaceModel;
 import ch.ethz.idsc.owly.demo.glc.se2.Se2Utils;
 import ch.ethz.idsc.owly.demo.glc.se2glc.Se2Parameters;
 import ch.ethz.idsc.owly.glc.adapter.Parameters;
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
 import ch.ethz.idsc.owly.glc.core.Expand;
-import ch.ethz.idsc.owly.glc.core.GlcNode;
 import ch.ethz.idsc.owly.glc.core.SimpleAnyTrajectoryPlanner;
 import ch.ethz.idsc.owly.gui.Gui;
 import ch.ethz.idsc.owly.gui.OwlyFrame;
@@ -100,7 +100,7 @@ class Se2IterateSimpleGlcAnyCircleDemo {
       Thread.sleep(000);
       tic = System.nanoTime();
       int index = iter % 4;
-      Se2DefaultGoalManager se2GoalManager2 = new Se2DefaultGoalManager( //
+      Se2MinCurvatureGoalManager se2GoalManager2 = new Se2MinCurvatureGoalManager( //
           goalListPosition.get(index), goalListAngle.get(index), //
           DoubleScalar.of(0.1), Se2Utils.DEGREE(10));
       // GlcNode newRootNode = trajectoryPlanner.getNodesfromRootToGoal().get(2);
