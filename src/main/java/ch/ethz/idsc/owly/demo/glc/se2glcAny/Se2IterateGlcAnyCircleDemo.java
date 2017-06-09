@@ -6,7 +6,7 @@ import java.util.Collection;
 import java.util.List;
 
 import ch.ethz.idsc.owly.demo.glc.se2.Se2Controls;
-import ch.ethz.idsc.owly.demo.glc.se2.Se2GoalManager;
+import ch.ethz.idsc.owly.demo.glc.se2.Se2MinCurvatureGoalManager;
 import ch.ethz.idsc.owly.demo.glc.se2.Se2StateSpaceModel;
 import ch.ethz.idsc.owly.demo.glc.se2.Se2Utils;
 import ch.ethz.idsc.owly.demo.glc.se2glc.Se2Parameters;
@@ -54,7 +54,7 @@ class Se2IterateGlcAnyCircleDemo {
     System.out.println("1/Domainsize=" + parameters.getEta());
     parameters.printResolution();
     Collection<Flow> controls = Se2Controls.createControls(Se2Utils.DEGREE(45), parameters.getResolution());
-    Se2GoalManager se2GoalManager = new Se2GoalManager( //
+    Se2MinCurvatureGoalManager se2GoalManager = new Se2MinCurvatureGoalManager( //
         Tensors.vector(3, 0), RealScalar.of(1.5 * Math.PI), // east
         DoubleScalar.of(.1), Se2Utils.DEGREE(10));
     TrajectoryRegionQuery obstacleQuery = //
@@ -101,7 +101,7 @@ class Se2IterateGlcAnyCircleDemo {
       Thread.sleep(1000);
       tic = RealScalar.of(System.nanoTime());
       int index = iter % 4;
-      Se2GoalManager se2GoalManager2 = new Se2GoalManager( //
+      Se2MinCurvatureGoalManager se2GoalManager2 = new Se2MinCurvatureGoalManager( //
           goalListPosition.get(index), goalListAngle.get(index), //
           DoubleScalar.of(0.1), Se2Utils.DEGREE(10));
       // --
@@ -120,7 +120,6 @@ class Se2IterateGlcAnyCircleDemo {
       if (!goalFound)
         expandIter = Expand.maxDepth(trajectoryPlanner, parameters.getDepthLimit());
       // TODO BUG after expanding 2848 Nodes on a 10083 Domain
-      trajectoryPlanner.nodeAmountCompare();
       // ---
       toc = RealScalar.of(System.nanoTime());
       trajectory = trajectoryPlanner.getPathFromRootToGoal();

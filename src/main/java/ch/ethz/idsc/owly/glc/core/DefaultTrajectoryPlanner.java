@@ -56,6 +56,7 @@ public class DefaultTrajectoryPlanner extends TrajectoryPlanner {
         domainQueueMap.insert(domainKey, next); // node is considered without comparison to any former node
     }
     processCandidates(node, connectors, domainQueueMap);
+    nodeAmountCheck(node);
   }
 
   private void processCandidates( //
