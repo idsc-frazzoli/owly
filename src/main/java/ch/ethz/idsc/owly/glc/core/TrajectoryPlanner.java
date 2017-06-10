@@ -145,19 +145,8 @@ public abstract class TrajectoryPlanner implements ExpandInterface, Serializable
     return Nodes.listFromRoot(getBestOrElsePeek());
   }
 
-  // TODO shift to debuging class
-  public final void nodeAmountCompare() {
-    final GlcNode root = Nodes.rootOf(getBestOrElsePeek());
-    if (domainMap().size() != Nodes.ofSubtree(root).size()) {
-      System.out.println("****NODE CHECK****");
-      System.out.println("Nodes in DomainMap: " + domainMap().size());
-      System.out.println("Nodes in Tree from Root: " + Nodes.ofSubtree(root).size());
-      throw new RuntimeException();
-    }
-  }
-
   /* package */ final void nodeAmountCheck(GlcNode node) {
-    final GlcNode root = Nodes.rootOf(getBestOrElsePeek());
+    final GlcNode root = Nodes.rootFrom(getBestOrElsePeek());
     int treeSize = Nodes.ofSubtree(root).size();
     if (domainMap().size() != treeSize) {
       System.err.println("DomainMap  != TreeSize:");

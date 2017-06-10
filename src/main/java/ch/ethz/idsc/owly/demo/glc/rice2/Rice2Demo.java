@@ -24,7 +24,6 @@ import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
 
-/** "Mobility and Autonomous Reconfiguration of Marsokhod" */
 class Rice2Demo {
   // TODO in general ensure that goal region contains at least 1 domain etc.
   public static void main(String[] args) {

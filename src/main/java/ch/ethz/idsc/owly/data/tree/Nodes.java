@@ -10,9 +10,9 @@ public enum Nodes {
   ;
   // ---
   /** @param node
-   * @return */
+   * @return root that is the result of visiting the parents from given start node */
   @SuppressWarnings("unchecked")
-  public static <T extends Node> T rootOf(T node) {
+  public static <T extends Node> T rootFrom(T node) {
     T root = node;
     while (root.parent() != null)
       root = (T) root.parent();
@@ -24,10 +24,9 @@ public enum Nodes {
   @SuppressWarnings("unchecked")
   public static <T extends Node> List<T> listToRoot(T node) {
     List<T> list = new ArrayList<>();
-    T next = node;
-    while (next != null) {
-      list.add(next);
-      next = (T) next.parent();
+    while (node != null) {
+      list.add(node);
+      node = (T) node.parent();
     }
     return list;
   }
