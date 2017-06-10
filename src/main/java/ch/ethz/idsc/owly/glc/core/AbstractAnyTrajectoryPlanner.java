@@ -82,7 +82,7 @@ import ch.ethz.idsc.tensor.Tensor;
 
   @Override
   public final List<TrajectorySample> detailedTrajectoryTo(GlcNode node) {
-    return GlcTrajectories.connect(stateIntegrator, Nodes.fromRoot(node));
+    return GlcTrajectories.connect(stateIntegrator, Nodes.listFromRoot(node));
   }
 
   @Override
@@ -125,7 +125,8 @@ import ch.ethz.idsc.tensor.Tensor;
     // -- GOALCHECK TREE
     {
       long tic = System.nanoTime();
-      Collection<GlcNode> TreeCollection = Nodes.ofSubtree(getNodesfromRootToGoal().get(0));
+      final GlcNode root = Nodes.rootOf(getBestOrElsePeek());
+      Collection<GlcNode> TreeCollection = Nodes.ofSubtree(root);
       System.out.println("treesize for goal checking: " + TreeCollection.size());
       // TODO more efficient way then going through entire tree?
       Iterator<GlcNode> TreeCollectionIterator = TreeCollection.iterator();

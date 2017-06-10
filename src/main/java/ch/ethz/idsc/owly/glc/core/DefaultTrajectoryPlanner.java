@@ -109,7 +109,7 @@ public class DefaultTrajectoryPlanner extends TrajectoryPlanner {
 
   @Override
   public List<TrajectorySample> detailedTrajectoryTo(GlcNode node) {
-    return GlcTrajectories.connect(stateIntegrator, Nodes.fromRoot(node));
+    return GlcTrajectories.connect(stateIntegrator, Nodes.listFromRoot(node));
   }
 
   @Override
@@ -120,5 +120,12 @@ public class DefaultTrajectoryPlanner extends TrajectoryPlanner {
   @Override
   public TrajectoryRegionQuery getGoalQuery() {
     return goalQuery;
+  }
+
+  @Override
+  public String infoString() {
+    StringBuilder stringBuilder = new StringBuilder(super.infoString() + ", ");
+    stringBuilder.append("default...");
+    return stringBuilder.toString();
   }
 }

@@ -51,7 +51,7 @@ class Se2rAnimateDemo {
     OwlyFrame owlyFrame = Gui.start();
     owlyFrame.configCoordinateOffset(169, 71);
     owlyFrame.jFrame.setBounds(100, 100, 300, 200);
-    while (trajectoryPlanner.getBest() == null && owlyFrame.jFrame.isVisible()) {
+    while (!trajectoryPlanner.getBest().isPresent() && owlyFrame.jFrame.isVisible()) {
       Expand.maxSteps(trajectoryPlanner, 1);
       owlyFrame.setGlc(trajectoryPlanner);
       Thread.sleep(100);

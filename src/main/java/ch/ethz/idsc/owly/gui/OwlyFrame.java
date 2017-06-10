@@ -3,16 +3,22 @@ package ch.ethz.idsc.owly.gui;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 import java.io.Serializable;
 import java.util.Collection;
 
+import javax.imageio.ImageIO;
+import javax.swing.JButton;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JToolBar;
 import javax.swing.WindowConstants;
 
 import ch.ethz.idsc.owly.data.tree.Nodes;
+import ch.ethz.idsc.owly.demo.util.UserHome;
 import ch.ethz.idsc.owly.glc.core.TrajectoryPlanner;
 import ch.ethz.idsc.owly.rrts.core.RrtsNode;
 import ch.ethz.idsc.owly.rrts.core.TransitionRegionQuery;
@@ -22,11 +28,31 @@ import ch.ethz.idsc.tensor.io.Serialization;
 public class OwlyFrame {
   public final JFrame jFrame = new JFrame();
   private final OwlyComponent owlyComponent = new OwlyComponent();
+  private final JLabel jLabel = new JLabel();
 
   public OwlyFrame() {
     JPanel jPanel = new JPanel(new BorderLayout());
-    jPanel.add(new JToolBar(), BorderLayout.NORTH);
+    {
+      JToolBar jToolBar = new JToolBar();
+      jToolBar.setFloatable(false);
+      JButton jButton = new JButton("save2png");
+      jButton.setToolTipText("file is created in Pictures/...");
+      jButton.addActionListener(new ActionListener() {
+        @Override
+        public void actionPerformed(ActionEvent actionEvent) {
+          try {
+            BufferedImage bufferedImage = offscreen();
+            ImageIO.write(bufferedImage, "PNG", UserHome.file("Pictures/owly_" + System.currentTimeMillis() + ".png"));
+          } catch (Exception exception) {
+            exception.printStackTrace();
+          }
+        }
+      });
+      jToolBar.add(jButton);
+      jPanel.add(jToolBar, BorderLayout.NORTH);
+    }
     jPanel.add(owlyComponent.jComponent, BorderLayout.CENTER);
+    jPanel.add(jLabel, BorderLayout.SOUTH);
     jFrame.setContentPane(jPanel);
     jFrame.setBounds(100, 50, 800, 800);
     jFrame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
@@ -40,6 +66,7 @@ public class OwlyFrame {
   public void setGlc(TrajectoryPlanner trajectoryPlanner) {
     try {
       owlyComponent.renderElements = new RenderElements(Serialization.copy(trajectoryPlanner));
+      jLabel.setText(trajectoryPlanner.infoString());
       owlyComponent.jComponent.repaint();
     } catch (Exception exception) {
       exception.printStackTrace();

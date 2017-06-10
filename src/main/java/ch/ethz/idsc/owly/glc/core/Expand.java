@@ -1,6 +1,8 @@
 // code by jph and jl
 package ch.ethz.idsc.owly.glc.core;
 
+import java.util.Optional;
+
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalars;
 
@@ -16,13 +18,13 @@ public enum Expand {
   public static int maxSteps(ExpandInterface expandInterface, int expandLimit) {
     int expandCount = 0;
     while (expandCount++ < expandLimit) {
-      GlcNode node = expandInterface.pollNext();
-      if (node == null) { // queue is empty
+      Optional<GlcNode> next = expandInterface.pollNext();
+      if (!next.isPresent()) { // queue is empty
         System.out.println("*** Queue is empty -- No Goal was found ***");
         break;
       }
-      expandInterface.expand(node);
-      if (expandInterface.getBest() != null) // found node in goal region
+      expandInterface.expand(next.get());
+      if (expandInterface.getBest().isPresent()) // found node in goal region
         break;
     }
     // no printout here, since expand limit can deliberately set to a low number for animation
@@ -39,15 +41,15 @@ public enum Expand {
     int expandCount = 0;
     while (true) {
       expandCount++;
-      GlcNode node = expandInterface.pollNext();
-      if (node == null) {
+      Optional<GlcNode> next = expandInterface.pollNext();
+      if (!next.isPresent()) { // queue is empty
         System.err.println("**** Queue is empty -- No Goal was found");// queue is empty
         break;
       }
-      expandInterface.expand(node);
-      if (expandInterface.getBest() != null) // found node in goal region
+      expandInterface.expand(next.get());
+      if (expandInterface.getBest().isPresent()) // found node in goal region
         break;
-      if (depthLimit < node.depth()) {
+      if (depthLimit < next.get().depth()) {
         System.err.println("*** DepthLimit reached -- No Goal was found ***");
         break;
       }
@@ -65,14 +67,14 @@ public enum Expand {
     int expandCount = 0;
     while (true) {
       expandCount++;
-      GlcNode node = expandInterface.pollNext();
-      if (node == null) {
+      Optional<GlcNode> next = expandInterface.pollNext();
+      if (!next.isPresent()) {
         System.err.println("**** Queue is empty -- No Goal was found");// queue is empty
         break;
       }
-      expandInterface.expand(node);
+      expandInterface.expand(next.get());
       long toc = System.nanoTime();
-      if (expandInterface.getBest() != null) { // found node in goal region
+      if (expandInterface.getBest().isPresent()) { // found node in goal region
         System.out.println("after " + (toc - tic) * 1e-9 + "s");
         break;
       }

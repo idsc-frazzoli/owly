@@ -30,11 +30,8 @@ class TrajectoryRender implements AbstractRender {
   @Override
   public void render(OwlyLayer owlyLayer, Graphics2D graphics) {
     { // draw detailed trajectory from root to goal
-      GlcNode best = trajectoryPlanner.getBest();
-      if (best == null)
-        best = trajectoryPlanner.peek();
-      // if (best != null)
-      final List<TrajectorySample> list = trajectoryPlanner.detailedTrajectoryTo(best);
+      GlcNode node = trajectoryPlanner.getBestOrElsePeek();
+      final List<TrajectorySample> list = trajectoryPlanner.detailedTrajectoryTo(node);
       { // draw control vectors u along trajectory
         int rgb = 64;
         graphics.setColor(new Color(rgb, rgb, rgb, 192));

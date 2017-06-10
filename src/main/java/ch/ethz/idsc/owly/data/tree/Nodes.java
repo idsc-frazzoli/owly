@@ -8,10 +8,21 @@ import java.util.List;
 
 public enum Nodes {
   ;
+  // ---
   /** @param node
    * @return */
   @SuppressWarnings("unchecked")
-  public static <T extends Node> List<T> toRoot(T node) {
+  public static <T extends Node> T rootOf(T node) {
+    T root = node;
+    while (root.parent() != null)
+      root = (T) root.parent();
+    return root;
+  }
+
+  /** @param node
+   * @return */
+  @SuppressWarnings("unchecked")
+  public static <T extends Node> List<T> listToRoot(T node) {
     List<T> list = new ArrayList<>();
     T next = node;
     while (next != null) {
@@ -23,8 +34,8 @@ public enum Nodes {
 
   /** @param node
    * @return */
-  public static <T extends Node> List<T> fromRoot(T node) {
-    List<T> list = toRoot(node);
+  public static <T extends Node> List<T> listFromRoot(T node) {
+    List<T> list = listToRoot(node);
     Collections.reverse(list);
     return list;
   }

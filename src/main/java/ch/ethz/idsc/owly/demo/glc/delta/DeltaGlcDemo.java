@@ -20,7 +20,7 @@ class DeltaGlcDemo {
     owlyFrame.configCoordinateOffset(33, 416);
     owlyFrame.jFrame.setBounds(100, 100, 620, 475);
     // TODO build depthlimit in for loops
-    while (trajectoryPlanner.getBest() == null && owlyFrame.jFrame.isVisible()) {
+    while (!trajectoryPlanner.getBest().isPresent() && owlyFrame.jFrame.isVisible()) {
       Expand.maxSteps(trajectoryPlanner, 30);
       // TODO BUG: finds goal, but nothing is plotted
       owlyFrame.setGlc(trajectoryPlanner);

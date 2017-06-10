@@ -132,7 +132,7 @@ public class AnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
     int increasedDepthBy = newRoot.reCalculateDepth();
     // -- DEBUGING Values
     // -- Collecting Oldtree
-    GlcNode oldRoot = getNodesfromRootToGoal().get(0);
+    GlcNode oldRoot = Nodes.rootOf(getBestOrElsePeek());
     Collection<GlcNode> oldTreeCollection = Nodes.ofSubtree(oldRoot);
     int oldDomainMapSize = domainMap().size();
     long oldtotalCandidates = candidateMap.values().stream().flatMap(Collection::stream).count();
@@ -161,7 +161,8 @@ public class AnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
     System.out.println("Removed " + (oldQueueSize - queue().size()) + " out of " + oldQueueSize + " nodes from Queue = " + queue().size());
     System.out.println(oldDomainMapSize - domainMap().size() + " out of " + oldDomainMapSize + //
         " Domains removed from DomainMap = " + domainMap().size());
-    Collection<GlcNode> newTreeCollection = Nodes.ofSubtree(getNodesfromRootToGoal().get(0));
+    final GlcNode root = Nodes.rootOf(getBestOrElsePeek());
+    Collection<GlcNode> newTreeCollection = Nodes.ofSubtree(root);
     System.out.println(deleteTreeCollection.size() + " out of " + oldTreeCollection.size()//
         + " Nodes removed from Tree = " + newTreeCollection.size());
     // -- CANDIDATEMAP: Deleting Candidates, if Origin is included in DeleteTree
