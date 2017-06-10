@@ -71,7 +71,7 @@ public class AnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
     for (Entry<Tensor, CandidatePairQueue> entry : candidatePairQueueMap.map.entrySet()) {
       final Tensor domainKey = entry.getKey();
       final CandidatePairQueue candidateQueue = entry.getValue();
-      if (candidateQueue != null && best == null) {
+      if (candidateQueue != null && !getBest().isPresent()) {
         while (!candidateQueue.isEmpty()) {
           // retrieving the Candidates
           final CandidatePair nextCandidatePair = candidateQueue.element();

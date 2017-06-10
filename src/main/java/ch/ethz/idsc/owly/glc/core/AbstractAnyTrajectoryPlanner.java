@@ -6,6 +6,7 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 
 import ch.ethz.idsc.owly.data.tree.Nodes;
 import ch.ethz.idsc.owly.math.state.CostFunction;
@@ -61,9 +62,12 @@ import ch.ethz.idsc.tensor.Tensor;
   protected final Collection<GlcNode> deleteChildrenOf(GlcNode oldRoot) {
     Collection<GlcNode> deleteTreeCollection = Nodes.ofSubtree(oldRoot);
     // -- GOAL: goal deleted?
-    if (best != null)
-      if (deleteTreeCollection.contains(best))
-        best = null;
+    {
+      Optional<GlcNode> optional = getBest();
+      if (optional.isPresent())
+        if (deleteTreeCollection.contains(optional.get()))
+          setBestNull();
+    }
     System.out.println("Nodes to be deleted: " + deleteTreeCollection.size());
     // -- QUEUE: Deleting Nodes from Queue
     queue().removeAll(deleteTreeCollection);
@@ -74,7 +78,7 @@ import ch.ethz.idsc.tensor.Tensor;
     // TODO: edge removal Needed?
     // oldRoot has no parent, therefore is skipped
     deleteTreeCollection.remove(oldRoot);
-    // TODO: parralizable?
+    // TODO: can parallelize?
     deleteTreeCollection.forEach(tempNode -> tempNode.parent().removeEdgeTo(tempNode));
     deleteTreeCollection.add(oldRoot);
     return deleteTreeCollection;
@@ -111,17 +115,21 @@ import ch.ethz.idsc.tensor.Tensor;
     this.costFunction = newCostFunction;
     // -- GOALCHECK BEST
     // TODO needed? as tree check will find it anyways, (maybe a better best), Pros: maybe timegain
-    if (best != null) {
-      List<StateTime> bestState = new ArrayList<>();
-      bestState.add(best.stateTime());
-      if (!newGoal.isDisjoint(bestState)) {
-        offerDestination(best);
-        System.out.println("Old Goal is in new Goalregion");
-        return true;
-      } // Old Goal is in new Goalregion
+    {
+      Optional<GlcNode> optional = getBest();
+      if (optional.isPresent()) {
+        GlcNode best = optional.get();
+        List<StateTime> bestState = new ArrayList<>();
+        bestState.add(best.stateTime());
+        if (!newGoal.isDisjoint(bestState)) {
+          offerDestination(best);
+          System.out.println("Old Goal is in new Goalregion");
+          return true;
+        } // Old Goal is in new Goalregion
+      }
     }
     // Best is either not in newGoal or Null
-    best = null;
+    setBestNull();
     // -- GOALCHECK TREE
     {
       long tic = System.nanoTime();

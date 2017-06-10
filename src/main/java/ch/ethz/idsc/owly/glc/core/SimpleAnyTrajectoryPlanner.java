@@ -60,7 +60,7 @@ public class SimpleAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
     for (Entry<Tensor, CandidatePairQueue> entry : candidates.map.entrySet()) {
       final Tensor domain_key = entry.getKey();
       final CandidatePairQueue candidateQueue = entry.getValue();
-      if (candidateQueue != null && best == null) {
+      if (candidateQueue != null && !getBest().isPresent()) {
         while (!candidateQueue.isEmpty()) {
           final CandidatePair nextCandidatePair = candidateQueue.element();
           final GlcNode formerLabel = getNode(domain_key);

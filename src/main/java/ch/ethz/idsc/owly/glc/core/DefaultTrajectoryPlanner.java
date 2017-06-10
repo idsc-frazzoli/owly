@@ -64,7 +64,7 @@ public class DefaultTrajectoryPlanner extends TrajectoryPlanner {
     for (Entry<Tensor, DomainQueue> entry : domainQueueMap.map.entrySet()) {
       final Tensor domainKey = entry.getKey();
       final DomainQueue domainQueue = entry.getValue();
-      if (domainQueueMap != null && best == null) {
+      if (domainQueueMap != null && !getBest().isPresent()) {
         while (!domainQueue.isEmpty()) {
           final GlcNode next = domainQueue.element();
           final GlcNode formerLabel = getNode(domainKey);

@@ -29,8 +29,10 @@ public abstract class TrajectoryPlanner implements ExpandInterface, Serializable
   // TODO long-term use RasterMap instead of domainMap
   private final Map<Tensor, GlcNode> domainMap = new HashMap<>();
   /** best is a reference to a Node in the goal region,
-   * or null if such a node has not been identified */
-  protected GlcNode best;
+   * or null if such a node has not been identified
+   * 
+   * use function setBestNull() to reset best to null */
+  private GlcNode best = null;
   private int replaceCount = 0;
 
   protected TrajectoryPlanner(Tensor eta) {
@@ -105,6 +107,10 @@ public abstract class TrajectoryPlanner implements ExpandInterface, Serializable
     return Optional.ofNullable(best);
   }
 
+  /* package */ final void setBestNull() {
+    best = null;
+  }
+
   public final GlcNode getBestOrElsePeek() {
     return getBest().orElse(queue.peek()); // Queue#peek() returns the head of queue, or null if queue is empty
   }
@@ -145,6 +151,7 @@ public abstract class TrajectoryPlanner implements ExpandInterface, Serializable
     return Nodes.listFromRoot(getBestOrElsePeek());
   }
 
+  // TODO JONAS extract function to DebugUtils
   /* package */ final void nodeAmountCheck(GlcNode node) {
     final GlcNode root = Nodes.rootFrom(getBestOrElsePeek());
     int treeSize = Nodes.ofSubtree(root).size();
