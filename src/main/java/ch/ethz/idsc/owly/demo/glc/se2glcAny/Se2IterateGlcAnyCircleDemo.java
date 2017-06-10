@@ -69,7 +69,7 @@ class Se2IterateGlcAnyCircleDemo {
     // ---
     Scalar tic = RealScalar.of(System.nanoTime());
     AnyTrajectoryPlanner trajectoryPlanner = new AnyTrajectoryPlanner( //
-        parameters.getEta(), stateIntegrator, controls, se2GoalManager, se2GoalManager.goalQuery(), obstacleQuery);
+        parameters.getEta(), stateIntegrator, controls, obstacleQuery, se2GoalManager.getGoalInterface());
     // ---
     trajectoryPlanner.insertRoot(Tensors.vector(0, 3, 0));
     int iters = Expand.maxDepth(trajectoryPlanner, parameters.getDepthLimit());
@@ -113,7 +113,7 @@ class Se2IterateGlcAnyCircleDemo {
       owlyFrame.setGlc(trajectoryPlanner);
       Thread.sleep(delay.number().intValue() / 2);
       // --
-      goalFound = trajectoryPlanner.changeGoal(se2GoalManager2, se2GoalManager2.goalQuery());
+      goalFound = trajectoryPlanner.changeGoal(se2GoalManager2.getGoalInterface());
       DebugUtils.nodeAmountCompare(trajectoryPlanner);
       owlyFrame.setGlc(trajectoryPlanner);
       Thread.sleep(delay.number().intValue() / 2);

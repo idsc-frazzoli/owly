@@ -63,7 +63,7 @@ class Se2IterateGlcAnyStreetDemo {
     // ---
     long tic = System.nanoTime();
     AnyTrajectoryPlanner trajectoryPlanner = new AnyTrajectoryPlanner( //
-        parameters.getEta(), stateIntegrator, controls, se2GoalManager, se2GoalManager.goalQuery(), obstacleQuery);
+        parameters.getEta(), stateIntegrator, controls, obstacleQuery, se2GoalManager.getGoalInterface());
     // ---
     trajectoryPlanner.insertRoot(Tensors.vector(-10, 0, 0));
     int iters = Expand.maxDepth(trajectoryPlanner, parameters.getDepthLimit());
@@ -87,7 +87,7 @@ class Se2IterateGlcAnyStreetDemo {
       int increment = trajectoryPlanner.switchRootToState(newRootState.x());
       parameters.increaseDepthLimit(increment);
       System.out.println("New depthLimit is: " + parameters.getDepthLimit() + " after increment of " + increment);
-      trajectoryPlanner.changeGoal(se2GoalManager2, se2GoalManager2.goalQuery());
+      trajectoryPlanner.changeGoal(se2GoalManager2.getGoalInterface());
       int iters2 = Expand.maxDepth(trajectoryPlanner, parameters.getDepthLimit());
       trajectory = trajectoryPlanner.getPathFromRootToGoal();
       Trajectories.print(trajectory);

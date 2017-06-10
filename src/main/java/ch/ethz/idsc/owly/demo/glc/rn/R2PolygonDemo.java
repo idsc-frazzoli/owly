@@ -42,7 +42,7 @@ class R2PolygonDemo {
             }))));
     // ---
     TrajectoryPlanner trajectoryPlanner = new DefaultTrajectoryPlanner( //
-        partitionScale, stateIntegrator, controls, rnGoal, rnGoal, obstacleQuery);
+        partitionScale, stateIntegrator, controls, obstacleQuery, rnGoal);
     trajectoryPlanner.insertRoot(Tensors.vector(0, 0));
     int iters = Expand.maxSteps(trajectoryPlanner, 1500);
     System.out.println(iters);

@@ -7,7 +7,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import ch.ethz.idsc.owly.math.flow.Flow;
-import ch.ethz.idsc.owly.math.state.CostFunction;
 import ch.ethz.idsc.owly.math.state.StateIntegrator;
 import ch.ethz.idsc.owly.math.state.StateTime;
 import ch.ethz.idsc.owly.math.state.TrajectoryRegionQuery;
@@ -21,18 +20,16 @@ public class DefaultTrajectoryPlanner extends StandardTrajectoryPlanner {
       Tensor eta, //
       StateIntegrator stateIntegrator, //
       Collection<Flow> controls, //
-      CostFunction costFunction, //
-      TrajectoryRegionQuery goalQuery, //
-      TrajectoryRegionQuery obstacleQuery //
-  ) {
-    super(eta, stateIntegrator, obstacleQuery, goalQuery, costFunction);
+      TrajectoryRegionQuery obstacleQuery, //
+      GoalInterface destinationInterface) {
+    super(eta, stateIntegrator, obstacleQuery, destinationInterface);
     this.controls = controls;
   }
 
   @Override // from ExpandInterface
   public void expand(final GlcNode node) {
     Map<GlcNode, List<StateTime>> connectors = //
-        SharedUtils.integrate(node, controls, stateIntegrator, costFunction);
+        SharedUtils.integrate(node, controls, getStateIntegrator(), goalInterface);
     // ---
     DomainQueueMap domainQueueMap = new DomainQueueMap(); // holds candidates from insertion
     for (GlcNode next : connectors.keySet()) { // <- order of keys is non-deterministic
@@ -60,7 +57,7 @@ public class DefaultTrajectoryPlanner extends StandardTrajectoryPlanner {
           final GlcNode formerLabel = getNode(domainKey);
           if (formerLabel != null) {
             if (Scalars.lessThan(next.merit(), formerLabel.merit())) {
-              if (obstacleQuery.isDisjoint(connectors.get(next))) { // no collision
+              if (getObstacleQuery().isDisjoint(connectors.get(next))) { // no collision
                 queue().remove(formerLabel);
                 formerLabel.parent().removeEdgeTo(formerLabel);
                 node.insertEdgeTo(next);
@@ -68,20 +65,20 @@ public class DefaultTrajectoryPlanner extends StandardTrajectoryPlanner {
                 if (!replaced)
                   throw new RuntimeException();
                 domainQueue.remove();
-                if (!goalQuery.isDisjoint(connectors.get(next)))
+                if (!goalInterface.isDisjoint(connectors.get(next)))
                   offerDestination(next);
                 break; // leaves the while loop, but not the for loop
               }
             }
           } else {// No formerLabel, so definitely adding a Node
-            if (obstacleQuery.isDisjoint(connectors.get(next))) {
+            if (getObstacleQuery().isDisjoint(connectors.get(next))) {
               // removing the nextCandidate from bucket of this domain
               // adding next to tree and DomainMap
               node.insertEdgeTo(next);
               insert(domainKey, next);
               domainQueue.remove();
               // GOAL check
-              if (!goalQuery.isDisjoint(connectors.get(next)))
+              if (!goalInterface.isDisjoint(connectors.get(next)))
                 offerDestination(next);
               break;
             }

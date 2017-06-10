@@ -35,7 +35,7 @@ class R2Demo {
         new TimeInvariantRegion(new R2Bubbles()));
     // ---
     TrajectoryPlanner trajectoryPlanner = new DefaultTrajectoryPlanner( //
-        eta, stateIntegrator, controls, rnGoal, rnGoal, obstacleQuery);
+        eta, stateIntegrator, controls, obstacleQuery, rnGoal);
     trajectoryPlanner.insertRoot(Tensors.vector(-2, -2));
     Expand.maxSteps(trajectoryPlanner, 1400);
     List<StateTime> trajectory = trajectoryPlanner.getPathFromRootToGoal();

@@ -4,7 +4,6 @@ package ch.ethz.idsc.owly.glc.core;
 import java.util.List;
 
 import ch.ethz.idsc.owly.data.tree.Nodes;
-import ch.ethz.idsc.owly.math.state.CostFunction;
 import ch.ethz.idsc.owly.math.state.StateIntegrator;
 import ch.ethz.idsc.owly.math.state.StateTime;
 import ch.ethz.idsc.owly.math.state.TrajectoryRegionQuery;
@@ -12,29 +11,29 @@ import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Tensor;
 
 /** planner is shared between default and abstract-any */
-abstract class StandardTrajectoryPlanner extends TrajectoryPlanner {
-  final StateIntegrator stateIntegrator;
-  final TrajectoryRegionQuery obstacleQuery;
-  /* not final */ TrajectoryRegionQuery goalQuery;
-  /* not final */ CostFunction costFunction;
+public abstract class StandardTrajectoryPlanner extends TrajectoryPlanner {
+  private final StateIntegrator stateIntegrator;
+  private final TrajectoryRegionQuery obstacleQuery;
+  /* not final */ GoalInterface goalInterface;
 
-  StandardTrajectoryPlanner( //
+  protected StandardTrajectoryPlanner( //
       Tensor eta, //
       StateIntegrator stateIntegrator, //
       TrajectoryRegionQuery obstacleQuery, //
-      TrajectoryRegionQuery goalQuery, //
-      CostFunction costFunction //
-  ) {
+      GoalInterface goalInterface) {
     super(eta);
     this.stateIntegrator = stateIntegrator;
     this.obstacleQuery = obstacleQuery;
-    this.goalQuery = goalQuery;
-    this.costFunction = costFunction;
+    this.goalInterface = goalInterface;
   }
 
   @Override
   public final List<TrajectorySample> detailedTrajectoryTo(GlcNode node) {
     return GlcTrajectories.connect(stateIntegrator, Nodes.listFromRoot(node));
+  }
+
+  public final StateIntegrator getStateIntegrator() {
+    return stateIntegrator;
   }
 
   @Override
@@ -44,12 +43,12 @@ abstract class StandardTrajectoryPlanner extends TrajectoryPlanner {
 
   @Override
   public final TrajectoryRegionQuery getGoalQuery() {
-    return goalQuery;
+    return goalInterface;
   }
 
   @Override
   /* package */ final GlcNode createRootNode(Tensor x) {
     return GlcNode.of(null, new StateTime(x, RealScalar.ZERO), RealScalar.ZERO, //
-        costFunction.minCostToGoal(x));
+        goalInterface.minCostToGoal(x));
   }
 }

@@ -81,7 +81,7 @@ class Se2IterateGlcAnyCircleCompareDemo {
     System.out.println("***ANY***");
     // {
     AnyTrajectoryPlanner anyTrajectoryPlanner = new AnyTrajectoryPlanner( //
-        parameters.getEta(), stateIntegrator, controls, se2GoalManager, se2GoalManager.goalQuery(), obstacleQuery);
+        parameters.getEta(), stateIntegrator, controls, obstacleQuery, se2GoalManager.getGoalInterface());
     anyTrajectoryPlanner.insertRoot(Tensors.vector(0, 3, 0));
     int iters = Expand.maxDepth(anyTrajectoryPlanner, parameters.getDepthLimit());
     System.out.println("After " + iters + " iterations");
@@ -97,7 +97,7 @@ class Se2IterateGlcAnyCircleCompareDemo {
     OwlyFrame owlyFrameDefault = Gui.start();
     {
       DefaultTrajectoryPlanner defaultTrajectoryPlanner = new DefaultTrajectoryPlanner( //
-          parameters.getEta(), stateIntegrator, controls, se2GoalManager, se2GoalManager.goalQuery(), obstacleQuery);
+          parameters.getEta(), stateIntegrator, controls, obstacleQuery, se2GoalManager.getGoalInterface());
       defaultTrajectoryPlanner.insertRoot(Tensors.vector(0, 3, 0));
       iters = Expand.maxDepth(defaultTrajectoryPlanner, parameters.getDepthLimit());
       DebugUtils.nodeAmountCompare(defaultTrajectoryPlanner);
@@ -126,7 +126,7 @@ class Se2IterateGlcAnyCircleCompareDemo {
         int increment = anyTrajectoryPlanner.switchRootToState(newRootState.x());
         parameters.increaseDepthLimit(increment);
         // --
-        goalFound = anyTrajectoryPlanner.changeGoal(se2GoalManager2, se2GoalManager2.goalQuery());
+        goalFound = anyTrajectoryPlanner.changeGoal(se2GoalManager2.getGoalInterface());
         // --
         if (!goalFound)
           expandIter = Expand.maxDepth(anyTrajectoryPlanner, parameters.getDepthLimit());
@@ -143,7 +143,7 @@ class Se2IterateGlcAnyCircleCompareDemo {
       tic = RealScalar.of(System.nanoTime());
       {
         DefaultTrajectoryPlanner defaultTrajectoryPlanner = new DefaultTrajectoryPlanner( //
-            parameters.getEta(), stateIntegrator, controls, se2GoalManager2, se2GoalManager2.goalQuery(), obstacleQuery);
+            parameters.getEta(), stateIntegrator, controls, obstacleQuery, se2GoalManager.getGoalInterface());
         defaultTrajectoryPlanner.insertRoot(newRootState.x());
         iters = Expand.maxDepth(defaultTrajectoryPlanner, parameters.getDepthLimit());
         System.out.println("After " + iters + " iterations");

@@ -44,7 +44,7 @@ enum DeltaHelper {
     DeltaGoalManager deltaGoalManager = new DeltaGoalManager( //
         Tensors.vector(2.1, 0.3), Tensors.vector(.3, .3));
     TrajectoryPlanner trajectoryPlanner = new DefaultTrajectoryPlanner( //
-        eta, stateIntegrator, controls, deltaGoalManager, deltaGoalManager, obstacleQuery);
+        eta, stateIntegrator, controls, obstacleQuery, deltaGoalManager);
     trajectoryPlanner.insertRoot(Tensors.vector(8.8, 0.5));
     return trajectoryPlanner;
   }
@@ -77,7 +77,7 @@ enum DeltaHelper {
     // DeltaGoalManager deltaGoalManager = new DeltaGoalManager( //
     // Tensors.vector(2.1, 0.3), Tensors.vector(.3, .3));
     TrajectoryPlanner trajectoryPlanner = new DefaultTrajectoryPlanner( //
-        parameters.getEta(), stateIntegrator, controls, deltaGoalManager, deltaGoalManager, obstacleQuery);
+        parameters.getEta(), stateIntegrator, controls, obstacleQuery, deltaGoalManager);
     trajectoryPlanner.insertRoot(Tensors.vector(8.8, 0.5));
     return trajectoryPlanner;
   }

@@ -29,7 +29,7 @@ class R2nExpandDemo {
     TrajectoryRegionQuery obstacleQuery = new EmptyTrajectoryRegionQuery();
     // ---
     TrajectoryPlanner trajectoryPlanner = new DefaultTrajectoryPlanner( //
-        eta, stateIntegrator, controls, rnGoal, rnGoal, obstacleQuery);
+        eta, stateIntegrator, controls, obstacleQuery, rnGoal);
     trajectoryPlanner.insertRoot(Tensors.vector(0, 0));
     OwlyFrame owlyFrame = Gui.start();
     for (int c = 0; c < 100 && owlyFrame.jFrame.isVisible(); ++c) {

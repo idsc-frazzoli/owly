@@ -48,7 +48,7 @@ class IpDemo {
                 )));
     // ---
     TrajectoryPlanner trajectoryPlanner = new DefaultTrajectoryPlanner( //
-        eta, stateIntegrator, controls, ipGoalManager, ipGoalManager, obstacleQuery);
+        eta, stateIntegrator, controls, obstacleQuery, ipGoalManager);
     // ---
     trajectoryPlanner.insertRoot(Tensors.vector(0, 0, 0, 0));
     // new ExpandGlcFrame(trajectoryPlanner);

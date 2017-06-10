@@ -39,7 +39,7 @@ class Rice1Demo {
             )));
     // ---
     TrajectoryPlanner trajectoryPlanner = new DefaultTrajectoryPlanner( //
-        eta, stateIntegrator, controls, rice1Goal, rice1Goal, obstacleQuery);
+        eta, stateIntegrator, controls, obstacleQuery, rice1Goal);
     // ---
     trajectoryPlanner.insertRoot(Tensors.vector(0, 0));
     int iters = Expand.maxSteps(trajectoryPlanner, 1000);

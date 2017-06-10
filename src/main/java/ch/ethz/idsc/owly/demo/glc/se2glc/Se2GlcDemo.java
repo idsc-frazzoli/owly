@@ -54,8 +54,6 @@ class Se2GlcDemo {
     Se2DefaultGoalManager se2GoalManager = new Se2DefaultGoalManager( //
         Tensors.vector(0, 1), RealScalar.of(Math.PI), //
         DoubleScalar.of(.1), Se2Utils.DEGREE(10));
-    TrajectoryRegionQuery goalQuery = //
-        new SimpleTrajectoryRegionQuery(new TimeInvariantRegion(se2GoalManager));
     TrajectoryRegionQuery obstacleQuery = //
         new SimpleTrajectoryRegionQuery(new TimeInvariantRegion( //
             RegionUnion.of( //
@@ -63,7 +61,7 @@ class Se2GlcDemo {
                 new HyperplaneRegion(Tensors.vector(0, +1, 0), RealScalar.of(1.5)) //
             )));
     TrajectoryPlanner trajectoryPlanner = new DefaultTrajectoryPlanner( //
-        parameters.getEta(), stateIntegrator, controls, se2GoalManager, goalQuery, obstacleQuery);
+        parameters.getEta(), stateIntegrator, controls, obstacleQuery, se2GoalManager.getGoalInterface());
     trajectoryPlanner.insertRoot(Tensors.vector(1, 0, -0.5 * Math.PI));
     int iters = Expand.maxDepth(trajectoryPlanner, parameters.getDepthLimit());
     // int iters = Expand.maxTime(trajectoryPlanner, RealScalar.of(3));

@@ -38,7 +38,7 @@ class T2Demo {
     TrajectoryRegionQuery obstacleQuery = new EmptyTrajectoryRegionQuery();
     // ---
     TrajectoryPlanner trajectoryPlanner = new DefaultTrajectoryPlanner( //
-        eta, stateIntegrator, controls, rnGoal, rnGoal.goalQuery(), obstacleQuery);
+        eta, stateIntegrator, controls, obstacleQuery, rnGoal.getGoalInterface());
     trajectoryPlanner.represent = coordinateWrap::represent;
     trajectoryPlanner.insertRoot(Tensors.vector(0, 0));
     Expand.maxSteps(trajectoryPlanner, 1400);

@@ -56,7 +56,7 @@ class Se2WrapDemo {
         )));
     // ---
     TrajectoryPlanner trajectoryPlanner = new DefaultTrajectoryPlanner( //
-        eta, stateIntegrator, controls, se2GoalManager, se2GoalManager.goalQuery(), obstacleQuery);
+        eta, stateIntegrator, controls, obstacleQuery, se2GoalManager.getGoalInterface());
     trajectoryPlanner.represent = coordinateWrap::represent;
     // ---
     trajectoryPlanner.insertRoot(Tensors.vector(.1, 0, 0));

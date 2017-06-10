@@ -9,19 +9,19 @@ import java.util.List;
 import java.util.Optional;
 
 import ch.ethz.idsc.owly.data.tree.Nodes;
-import ch.ethz.idsc.owly.math.state.CostFunction;
 import ch.ethz.idsc.owly.math.state.StateIntegrator;
 import ch.ethz.idsc.owly.math.state.StateTime;
 import ch.ethz.idsc.owly.math.state.TrajectoryRegionQuery;
 import ch.ethz.idsc.tensor.Tensor;
 
 /* package */ abstract class AbstractAnyTrajectoryPlanner extends StandardTrajectoryPlanner {
-  protected AbstractAnyTrajectoryPlanner(Tensor eta, //
+  protected AbstractAnyTrajectoryPlanner( //
+      Tensor eta, //
       StateIntegrator stateIntegrator, //
-      CostFunction costFunction, //
-      TrajectoryRegionQuery goalQuery, //
-      TrajectoryRegionQuery obstacleQuery) {
-    super(eta, stateIntegrator, obstacleQuery, goalQuery, costFunction);
+      TrajectoryRegionQuery obstacleQuery, //
+      GoalInterface destinationInterface //
+  ) {
+    super(eta, stateIntegrator, obstacleQuery, destinationInterface);
   }
 
   /** Includes all the functionality of the RootSwitch
@@ -79,9 +79,8 @@ import ch.ethz.idsc.tensor.Tensor;
    * @param newCostFunction modified Costfunction for heuristic
    * @param newGoal New GoalRegion
    * @return boolean, true if Goal was already found in oldTree */
-  public boolean changeGoal(CostFunction newCostFunction, TrajectoryRegionQuery newGoal) {
-    this.goalQuery = newGoal;
-    this.costFunction = newCostFunction;
+  public boolean changeGoal(final GoalInterface newGoal) {
+    this.goalInterface = newGoal;
     // -- GOALCHECK BEST
     // TODO needed? as tree check will find it anyways, (maybe a better best), Pros: maybe timegain
     {
@@ -131,7 +130,7 @@ import ch.ethz.idsc.tensor.Tensor;
     List<GlcNode> list = new LinkedList<>(queue());
     queue().clear();
     list.stream().parallel() //
-        .forEach(glcNode -> glcNode.setMinCostToGoal(costFunction.minCostToGoal(glcNode.state())));
+        .forEach(glcNode -> glcNode.setMinCostToGoal(newGoal.minCostToGoal(glcNode.state())));
     queue().addAll(list);
     long toc = System.nanoTime();
     System.out.println("Updated Merit of Queue with " + list.size() + " nodes in: " //

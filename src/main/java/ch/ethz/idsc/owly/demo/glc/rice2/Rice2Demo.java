@@ -43,7 +43,7 @@ class Rice2Demo {
             )));
     // ---
     TrajectoryPlanner trajectoryPlanner = new DefaultTrajectoryPlanner( //
-        eta, stateIntegrator, controls, rice2Goal, rice2Goal, obstacleQuery);
+        eta, stateIntegrator, controls, obstacleQuery, rice2Goal);
     // ---
     trajectoryPlanner.insertRoot(Tensors.vector(0.1, 0.1, 0, 0));
     long tic = System.nanoTime();

@@ -37,13 +37,11 @@ class Se2rImageDemo {
     Se2rGoalManager se2GoalManager = new Se2rGoalManager( //
         Tensors.vector(5.3, 4.4), RealScalar.of(0), //
         RealScalar.of(.1), Se2Utils.DEGREE(10));
-    TrajectoryRegionQuery goalQuery = //
-        new SimpleTrajectoryRegionQuery(new TimeInvariantRegion(se2GoalManager));
     TrajectoryRegionQuery obstacleQuery = //
         new SimpleTrajectoryRegionQuery(new TimeInvariantRegion(region));
     // ---
     TrajectoryPlanner trajectoryPlanner = new DefaultTrajectoryPlanner( //
-        partitionScale, stateIntegrator, controls, se2GoalManager, goalQuery, obstacleQuery);
+        partitionScale, stateIntegrator, controls, obstacleQuery, se2GoalManager.getGoalInterface());
     // ---
     trajectoryPlanner.insertRoot(Tensors.vector(0, 0, 0));
     OwlyFrame owlyFrame = Gui.start();

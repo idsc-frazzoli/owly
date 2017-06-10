@@ -4,6 +4,8 @@ package ch.ethz.idsc.owly.demo.glc.tn;
 import java.util.List;
 
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
+import ch.ethz.idsc.owly.glc.core.GoalAdapter;
+import ch.ethz.idsc.owly.glc.core.GoalInterface;
 import ch.ethz.idsc.owly.math.CoordinateWrap;
 import ch.ethz.idsc.owly.math.flow.Flow;
 import ch.ethz.idsc.owly.math.region.Region;
@@ -11,7 +13,6 @@ import ch.ethz.idsc.owly.math.state.CostFunction;
 import ch.ethz.idsc.owly.math.state.StateTime;
 import ch.ethz.idsc.owly.math.state.TimeInvariantRegion;
 import ch.ethz.idsc.owly.math.state.Trajectories;
-import ch.ethz.idsc.owly.math.state.TrajectoryRegionQuery;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Scalars;
 import ch.ethz.idsc.tensor.Tensor;
@@ -47,7 +48,7 @@ class TnGoalManager implements Region, CostFunction {
     return Scalars.isZero(minCostToGoal(tensor));
   }
 
-  public TrajectoryRegionQuery goalQuery() {
-    return new SimpleTrajectoryRegionQuery(new TimeInvariantRegion(this));
+  public GoalInterface getGoalInterface() {
+    return new GoalAdapter(this, new SimpleTrajectoryRegionQuery(new TimeInvariantRegion(this)));
   }
 }
