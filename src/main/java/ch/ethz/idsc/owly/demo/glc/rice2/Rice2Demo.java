@@ -52,7 +52,6 @@ class Rice2Demo {
     // 550 1.6898229210000002 without parallel integration of trajectories
     // 555 1.149214356 with parallel integration of trajectories
     System.out.println(iters + " " + ((toc - tic) * 1e-9));
-    // TODO keep trying to improve path to goal for a few iterations...?
     List<StateTime> trajectory = trajectoryPlanner.getPathFromRootToGoal();
     Trajectories.print(trajectory);
     Gui.glc(trajectoryPlanner);

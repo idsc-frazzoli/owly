@@ -21,8 +21,8 @@ public class DefaultTrajectoryPlanner extends StandardTrajectoryPlanner {
       StateIntegrator stateIntegrator, //
       Collection<Flow> controls, //
       TrajectoryRegionQuery obstacleQuery, //
-      GoalInterface destinationInterface) {
-    super(eta, stateIntegrator, obstacleQuery, destinationInterface);
+      GoalInterface goalInterface) {
+    super(eta, stateIntegrator, obstacleQuery, goalInterface);
     this.controls = controls;
   }
 

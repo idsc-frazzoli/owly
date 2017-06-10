@@ -19,9 +19,9 @@ import ch.ethz.idsc.tensor.Tensor;
       Tensor eta, //
       StateIntegrator stateIntegrator, //
       TrajectoryRegionQuery obstacleQuery, //
-      GoalInterface destinationInterface //
+      GoalInterface goalInterface //
   ) {
-    super(eta, stateIntegrator, obstacleQuery, destinationInterface);
+    super(eta, stateIntegrator, obstacleQuery, goalInterface);
   }
 
   /** Includes all the functionality of the RootSwitch
@@ -102,12 +102,12 @@ import ch.ethz.idsc.tensor.Tensor;
     {
       long tic = System.nanoTime();
       final GlcNode root = Nodes.rootFrom(getBestOrElsePeek());
-      Collection<GlcNode> TreeCollection = Nodes.ofSubtree(root);
-      System.out.println("treesize for goal checking: " + TreeCollection.size());
+      Collection<GlcNode> treeCollection = Nodes.ofSubtree(root);
+      System.out.println("treesize for goal checking: " + treeCollection.size());
       // TODO more efficient way then going through entire tree?
-      Iterator<GlcNode> TreeCollectionIterator = TreeCollection.iterator();
-      while (TreeCollectionIterator.hasNext()) {
-        GlcNode current = TreeCollectionIterator.next();
+      Iterator<GlcNode> treeCollectionIterator = treeCollection.iterator();
+      while (treeCollectionIterator.hasNext()) {
+        GlcNode current = treeCollectionIterator.next();
         List<StateTime> currentState = new ArrayList<>();
         currentState.add(current.stateTime());
         if (!newGoal.isDisjoint(currentState)) { // current Node in Goal

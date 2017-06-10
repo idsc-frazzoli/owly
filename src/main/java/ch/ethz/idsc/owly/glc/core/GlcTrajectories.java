@@ -8,7 +8,7 @@ import ch.ethz.idsc.owly.math.state.StateIntegrator;
 import ch.ethz.idsc.owly.math.state.StateTime;
 
 /** utility functions that operate on List<GlcNode> */
-enum GlcTrajectories {
+/* package */ enum GlcTrajectories {
   ;
   /** @param stateIntegrator
    * @param list

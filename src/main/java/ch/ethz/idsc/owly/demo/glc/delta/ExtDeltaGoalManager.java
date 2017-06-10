@@ -19,7 +19,7 @@ import ch.ethz.idsc.tensor.red.Norm;
 class ExtDeltaGoalManager extends SimpleTrajectoryRegionQuery implements GoalInterface {
   private final Tensor center;
   private final Scalar radius;
-  private final Scalar maxSpeed; // TODO not used
+  private final Scalar maxSpeed;
 
   public ExtDeltaGoalManager(Tensor center, Tensor radius, Scalar maxSpeed) {
     super(new TimeInvariantRegion(new EllipsoidRegion(center, radius)));

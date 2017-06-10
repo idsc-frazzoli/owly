@@ -4,8 +4,8 @@ package ch.ethz.idsc.owly.demo.glc.se2;
 import java.util.List;
 
 import ch.ethz.idsc.owly.demo.glc.tn.IdentityWrap;
+import ch.ethz.idsc.owly.glc.adapter.GoalAdapter;
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
-import ch.ethz.idsc.owly.glc.core.GoalAdapter;
 import ch.ethz.idsc.owly.glc.core.GoalInterface;
 import ch.ethz.idsc.owly.math.CoordinateWrap;
 import ch.ethz.idsc.owly.math.flow.Flow;

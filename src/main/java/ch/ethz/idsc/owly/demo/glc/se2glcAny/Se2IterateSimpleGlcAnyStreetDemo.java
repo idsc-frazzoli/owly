@@ -46,12 +46,12 @@ class Se2IterateSimpleGlcAnyStreetDemo {
     // --
     Parameters parameters = new Se2Parameters( //
         resolution, timeScale, depthScale, partitionScale, dtMax, maxIter, stateSpaceModel.getLipschitz());
-    // TODO possible without creation of StateSpaceModel?
     StateIntegrator stateIntegrator = FixedStateIntegrator.createDefault(parameters.getdtMax(), //
         parameters.getTrajectorySize());
     // ---
     System.out.println("1/Domainsize=" + parameters.getEta());
     parameters.printResolution();
+    // Se2Controls uses Se2StateSpaceModel
     Collection<Flow> controls = Se2Controls.createControls(Se2Utils.DEGREE(45), parameters.getResolution());
     Se2DefaultGoalManager se2GoalManager = new Se2DefaultGoalManager( //
         Tensors.vector(-7, 0), RealScalar.of(0), // east

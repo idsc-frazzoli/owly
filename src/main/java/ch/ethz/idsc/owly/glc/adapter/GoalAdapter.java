@@ -1,8 +1,9 @@
 // code by jph
-package ch.ethz.idsc.owly.glc.core;
+package ch.ethz.idsc.owly.glc.adapter;
 
 import java.util.List;
 
+import ch.ethz.idsc.owly.glc.core.GoalInterface;
 import ch.ethz.idsc.owly.math.flow.Flow;
 import ch.ethz.idsc.owly.math.state.CostFunction;
 import ch.ethz.idsc.owly.math.state.StateTime;

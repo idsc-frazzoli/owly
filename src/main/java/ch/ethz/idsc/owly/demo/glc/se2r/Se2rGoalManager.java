@@ -3,8 +3,8 @@ package ch.ethz.idsc.owly.demo.glc.se2r;
 
 import java.util.List;
 
+import ch.ethz.idsc.owly.glc.adapter.GoalAdapter;
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
-import ch.ethz.idsc.owly.glc.core.GoalAdapter;
 import ch.ethz.idsc.owly.glc.core.GoalInterface;
 import ch.ethz.idsc.owly.math.flow.Flow;
 import ch.ethz.idsc.owly.math.region.Region;
