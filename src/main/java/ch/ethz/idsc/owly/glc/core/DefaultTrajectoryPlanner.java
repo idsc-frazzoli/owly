@@ -6,22 +6,16 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import ch.ethz.idsc.owly.data.tree.Nodes;
 import ch.ethz.idsc.owly.math.flow.Flow;
 import ch.ethz.idsc.owly.math.state.CostFunction;
 import ch.ethz.idsc.owly.math.state.StateIntegrator;
 import ch.ethz.idsc.owly.math.state.StateTime;
 import ch.ethz.idsc.owly.math.state.TrajectoryRegionQuery;
-import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalars;
 import ch.ethz.idsc.tensor.Tensor;
 
-public class DefaultTrajectoryPlanner extends TrajectoryPlanner {
-  private final StateIntegrator stateIntegrator;
+public class DefaultTrajectoryPlanner extends StandardTrajectoryPlanner {
   private final Collection<Flow> controls;
-  private final CostFunction costFunction;
-  private final TrajectoryRegionQuery goalQuery;
-  private final TrajectoryRegionQuery obstacleQuery;
 
   public DefaultTrajectoryPlanner( //
       Tensor eta, //
@@ -31,12 +25,8 @@ public class DefaultTrajectoryPlanner extends TrajectoryPlanner {
       TrajectoryRegionQuery goalQuery, //
       TrajectoryRegionQuery obstacleQuery //
   ) {
-    super(eta);
-    this.stateIntegrator = stateIntegrator;
+    super(eta, stateIntegrator, obstacleQuery, goalQuery, costFunction);
     this.controls = controls;
-    this.costFunction = costFunction;
-    this.goalQuery = goalQuery;
-    this.obstacleQuery = obstacleQuery;
   }
 
   @Override // from ExpandInterface
@@ -100,26 +90,6 @@ public class DefaultTrajectoryPlanner extends TrajectoryPlanner {
         }
       }
     }
-  }
-
-  @Override
-  protected GlcNode createRootNode(Tensor x) {
-    return GlcNode.of(null, new StateTime(x, RealScalar.ZERO), RealScalar.ZERO, costFunction.minCostToGoal(x));
-  }
-
-  @Override
-  public List<TrajectorySample> detailedTrajectoryTo(GlcNode node) {
-    return GlcTrajectories.connect(stateIntegrator, Nodes.listFromRoot(node));
-  }
-
-  @Override
-  public TrajectoryRegionQuery getObstacleQuery() {
-    return obstacleQuery;
-  }
-
-  @Override
-  public TrajectoryRegionQuery getGoalQuery() {
-    return goalQuery;
   }
 
   @Override

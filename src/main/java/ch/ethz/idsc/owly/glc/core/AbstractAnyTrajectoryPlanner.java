@@ -13,25 +13,15 @@ import ch.ethz.idsc.owly.math.state.CostFunction;
 import ch.ethz.idsc.owly.math.state.StateIntegrator;
 import ch.ethz.idsc.owly.math.state.StateTime;
 import ch.ethz.idsc.owly.math.state.TrajectoryRegionQuery;
-import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Tensor;
 
-/* package */ abstract class AbstractAnyTrajectoryPlanner extends TrajectoryPlanner {
-  final StateIntegrator stateIntegrator;
-  TrajectoryRegionQuery goalQuery;
-  final TrajectoryRegionQuery obstacleQuery;
-  /* not final */ CostFunction costFunction;
-
+/* package */ abstract class AbstractAnyTrajectoryPlanner extends StandardTrajectoryPlanner {
   protected AbstractAnyTrajectoryPlanner(Tensor eta, //
       StateIntegrator stateIntegrator, //
       CostFunction costFunction, //
       TrajectoryRegionQuery goalQuery, //
       TrajectoryRegionQuery obstacleQuery) {
-    super(eta);
-    this.stateIntegrator = stateIntegrator;
-    this.costFunction = costFunction;
-    this.goalQuery = goalQuery;
-    this.obstacleQuery = obstacleQuery;
+    super(eta, stateIntegrator, obstacleQuery, goalQuery, costFunction);
   }
 
   /** Includes all the functionality of the RootSwitch
@@ -82,27 +72,6 @@ import ch.ethz.idsc.tensor.Tensor;
     deleteTreeCollection.forEach(tempNode -> tempNode.parent().removeEdgeTo(tempNode));
     deleteTreeCollection.add(oldRoot);
     return deleteTreeCollection;
-  }
-
-  @Override
-  public final List<TrajectorySample> detailedTrajectoryTo(GlcNode node) {
-    return GlcTrajectories.connect(stateIntegrator, Nodes.listFromRoot(node));
-  }
-
-  @Override
-  public final TrajectoryRegionQuery getObstacleQuery() {
-    return obstacleQuery;
-  }
-
-  @Override
-  public final TrajectoryRegionQuery getGoalQuery() {
-    return goalQuery;
-  }
-
-  @Override
-  protected final GlcNode createRootNode(Tensor x) {
-    return GlcNode.of(null, new StateTime(x, RealScalar.ZERO), RealScalar.ZERO, //
-        costFunction.minCostToGoal(x));
   }
 
   /** Changes the Goal of the current planner:
