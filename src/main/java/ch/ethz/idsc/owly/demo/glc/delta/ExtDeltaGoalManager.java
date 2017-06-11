@@ -4,9 +4,9 @@ package ch.ethz.idsc.owly.demo.glc.delta;
 import java.util.List;
 
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
+import ch.ethz.idsc.owly.glc.core.GoalInterface;
 import ch.ethz.idsc.owly.math.flow.Flow;
 import ch.ethz.idsc.owly.math.region.EllipsoidRegion;
-import ch.ethz.idsc.owly.math.state.CostFunction;
 import ch.ethz.idsc.owly.math.state.StateTime;
 import ch.ethz.idsc.owly.math.state.TimeInvariantRegion;
 import ch.ethz.idsc.owly.math.state.Trajectories;
@@ -16,10 +16,10 @@ import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.red.Max;
 import ch.ethz.idsc.tensor.red.Norm;
 
-class ExtDeltaGoalManager extends SimpleTrajectoryRegionQuery implements CostFunction {
+class ExtDeltaGoalManager extends SimpleTrajectoryRegionQuery implements GoalInterface {
   private final Tensor center;
   private final Scalar radius;
-  private final Scalar maxSpeed; // TODO not used
+  private final Scalar maxSpeed;
 
   public ExtDeltaGoalManager(Tensor center, Tensor radius, Scalar maxSpeed) {
     super(new TimeInvariantRegion(new EllipsoidRegion(center, radius)));

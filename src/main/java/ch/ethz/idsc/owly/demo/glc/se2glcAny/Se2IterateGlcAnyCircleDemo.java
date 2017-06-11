@@ -13,6 +13,7 @@ import ch.ethz.idsc.owly.demo.glc.se2glc.Se2Parameters;
 import ch.ethz.idsc.owly.glc.adapter.Parameters;
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
 import ch.ethz.idsc.owly.glc.core.AnyTrajectoryPlanner;
+import ch.ethz.idsc.owly.glc.core.DebugUtils;
 import ch.ethz.idsc.owly.glc.core.Expand;
 import ch.ethz.idsc.owly.gui.Gui;
 import ch.ethz.idsc.owly.gui.OwlyFrame;
@@ -53,7 +54,7 @@ class Se2IterateGlcAnyCircleDemo {
     // ---
     System.out.println("1/Domainsize=" + parameters.getEta());
     parameters.printResolution();
-    Collection<Flow> controls = Se2Controls.createControls(Se2Utils.DEGREE(45), parameters.getResolution());
+    Collection<Flow> controls = Se2Controls.createControls(Se2Utils.DEGREE(45), parameters.getResolutionInt());
     Se2MinCurvatureGoalManager se2GoalManager = new Se2MinCurvatureGoalManager( //
         Tensors.vector(3, 0), RealScalar.of(1.5 * Math.PI), // east
         DoubleScalar.of(.1), Se2Utils.DEGREE(10));
@@ -68,11 +69,11 @@ class Se2IterateGlcAnyCircleDemo {
     // ---
     Scalar tic = RealScalar.of(System.nanoTime());
     AnyTrajectoryPlanner trajectoryPlanner = new AnyTrajectoryPlanner( //
-        parameters.getEta(), stateIntegrator, controls, se2GoalManager, se2GoalManager.goalQuery(), obstacleQuery);
+        parameters.getEta(), stateIntegrator, controls, obstacleQuery, se2GoalManager.getGoalInterface());
     // ---
     trajectoryPlanner.insertRoot(Tensors.vector(0, 3, 0));
     int iters = Expand.maxDepth(trajectoryPlanner, parameters.getDepthLimit());
-    trajectoryPlanner.nodeAmountCompare();
+    DebugUtils.nodeAmountCompare(trajectoryPlanner);
     System.out.println("After " + iters + " iterations");
     List<StateTime> trajectory = trajectoryPlanner.getPathFromRootToGoal();
     Scalar toc = RealScalar.of(System.nanoTime());
@@ -86,7 +87,7 @@ class Se2IterateGlcAnyCircleDemo {
     goalListPosition.add(Tensors.vector(-3, 0));// West
     goalListPosition.add(Tensors.vector(0, 3)); // North
     goalListPosition.add(Tensors.vector(3, 0)); // East
-    List<RealScalar> goalListAngle = new ArrayList<>();
+    List<Scalar> goalListAngle = new ArrayList<>();
     goalListAngle.add(RealScalar.of(Math.PI)); // South
     goalListAngle.add(RealScalar.of(0.5 * Math.PI)); // West
     goalListAngle.add(RealScalar.of(0)); // North
@@ -107,13 +108,13 @@ class Se2IterateGlcAnyCircleDemo {
       // --
       StateTime newRootState = trajectory.get(5);
       int increment = trajectoryPlanner.switchRootToState(newRootState.x());
-      trajectoryPlanner.nodeAmountCompare();
+      DebugUtils.nodeAmountCompare(trajectoryPlanner);
       parameters.increaseDepthLimit(increment);
       owlyFrame.setGlc(trajectoryPlanner);
       Thread.sleep(delay.number().intValue() / 2);
       // --
-      goalFound = trajectoryPlanner.changeGoal(se2GoalManager2, se2GoalManager2.goalQuery());
-      trajectoryPlanner.nodeAmountCompare();
+      goalFound = trajectoryPlanner.changeGoal(se2GoalManager2.getGoalInterface());
+      DebugUtils.nodeAmountCompare(trajectoryPlanner);
       owlyFrame.setGlc(trajectoryPlanner);
       Thread.sleep(delay.number().intValue() / 2);
       // --

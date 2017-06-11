@@ -41,7 +41,7 @@ R^2
 
 Pendulum Swing Up
 
-![psu](https://cloud.githubusercontent.com/assets/4012178/25422498/57803d08-2a61-11e7-94c1-87fd1f87e694.png)
+![owly_psu1](https://user-images.githubusercontent.com/4012178/27012135-8979aae6-4eca-11e7-815e-95dd9b9ee0ea.png)
 
 ---
 
@@ -53,13 +53,15 @@ SE(2)
 
 Rice1
 
-![rice1](https://cloud.githubusercontent.com/assets/4012178/25473189/c505917a-2b2e-11e7-8799-0d3bcc32c1d5.png)
+![owly_rice1](https://user-images.githubusercontent.com/4012178/27012136-8979beaa-4eca-11e7-880f-7274c807c2b8.png)
 
 ---
 
 R^2
 
 ![r2](https://cloud.githubusercontent.com/assets/4012178/25473192/c7cdd192-2b2e-11e7-8c9e-72d88d6723d3.png)
+
+![owly_r2sphere](https://user-images.githubusercontent.com/4012178/27012137-897c3702-4eca-11e7-9665-72ffb87136ac.png)
 
 ---
 

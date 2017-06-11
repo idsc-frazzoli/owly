@@ -8,23 +8,33 @@ import java.util.List;
 
 public enum Nodes {
   ;
+  // ---
+  /** @param node
+   * @return root that is the result of visiting the parents from given start node */
+  @SuppressWarnings("unchecked")
+  public static <T extends Node> T rootFrom(T node) {
+    T root = node;
+    while (root.parent() != null)
+      root = (T) root.parent();
+    return root;
+  }
+
   /** @param node
    * @return */
   @SuppressWarnings("unchecked")
-  public static <T extends Node> List<T> toRoot(T node) {
+  public static <T extends Node> List<T> listToRoot(T node) {
     List<T> list = new ArrayList<>();
-    T next = node;
-    while (next != null) {
-      list.add(next);
-      next = (T) next.parent();
+    while (node != null) {
+      list.add(node);
+      node = (T) node.parent();
     }
     return list;
   }
 
   /** @param node
    * @return */
-  public static <T extends Node> List<T> fromRoot(T node) {
-    List<T> list = toRoot(node);
+  public static <T extends Node> List<T> listFromRoot(T node) {
+    List<T> list = listToRoot(node);
     Collections.reverse(list);
     return list;
   }

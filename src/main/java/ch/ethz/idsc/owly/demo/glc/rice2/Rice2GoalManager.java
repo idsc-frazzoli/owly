@@ -4,9 +4,9 @@ package ch.ethz.idsc.owly.demo.glc.rice2;
 import java.util.List;
 
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
+import ch.ethz.idsc.owly.glc.core.GoalInterface;
 import ch.ethz.idsc.owly.math.flow.Flow;
 import ch.ethz.idsc.owly.math.region.EllipsoidRegion;
-import ch.ethz.idsc.owly.math.state.CostFunction;
 import ch.ethz.idsc.owly.math.state.StateTime;
 import ch.ethz.idsc.owly.math.state.TimeInvariantRegion;
 import ch.ethz.idsc.owly.math.state.Trajectories;
@@ -15,9 +15,9 @@ import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.red.Norm;
 import ch.ethz.idsc.tensor.sca.Ramp;
 
-class Rice2GoalManager extends SimpleTrajectoryRegionQuery implements CostFunction {
-  final Tensor center;
-  final Scalar radius;
+class Rice2GoalManager extends SimpleTrajectoryRegionQuery implements GoalInterface {
+  private final Tensor center;
+  private final Scalar radius;
 
   public Rice2GoalManager(Tensor center, Tensor radius) {
     super(new TimeInvariantRegion(new EllipsoidRegion(center, radius)));

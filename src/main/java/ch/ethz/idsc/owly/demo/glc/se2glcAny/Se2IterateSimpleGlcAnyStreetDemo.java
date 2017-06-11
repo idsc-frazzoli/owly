@@ -46,13 +46,13 @@ class Se2IterateSimpleGlcAnyStreetDemo {
     // --
     Parameters parameters = new Se2Parameters( //
         resolution, timeScale, depthScale, partitionScale, dtMax, maxIter, stateSpaceModel.getLipschitz());
-    // TODO possible without creation of StateSpaceModel?
     StateIntegrator stateIntegrator = FixedStateIntegrator.createDefault(parameters.getdtMax(), //
         parameters.getTrajectorySize());
     // ---
     System.out.println("1/Domainsize=" + parameters.getEta());
     parameters.printResolution();
-    Collection<Flow> controls = Se2Controls.createControls(Se2Utils.DEGREE(45), parameters.getResolution());
+    // Se2Controls uses Se2StateSpaceModel
+    Collection<Flow> controls = Se2Controls.createControls(Se2Utils.DEGREE(45), parameters.getResolutionInt());
     Se2DefaultGoalManager se2GoalManager = new Se2DefaultGoalManager( //
         Tensors.vector(-7, 0), RealScalar.of(0), // east
         DoubleScalar.of(.1), Se2Utils.DEGREE(10));
@@ -65,7 +65,7 @@ class Se2IterateSimpleGlcAnyStreetDemo {
     // ---
     long tic = System.nanoTime();
     SimpleAnyTrajectoryPlanner trajectoryPlanner = new SimpleAnyTrajectoryPlanner( //
-        parameters.getEta(), stateIntegrator, controls, se2GoalManager, se2GoalManager.goalQuery(), obstacleQuery);
+        parameters.getEta(), stateIntegrator, controls, obstacleQuery, se2GoalManager.getGoalInterface());
     // ---
     trajectoryPlanner.insertRoot(Tensors.vector(-10, 0, 0));
     int iters = Expand.maxDepth(trajectoryPlanner, parameters.getDepthLimit());
@@ -92,7 +92,7 @@ class Se2IterateSimpleGlcAnyStreetDemo {
       StateTime newRootState = trajectory.get(1);
       // ---
       trajectoryPlanner.switchRootToState(newRootState.x());
-      trajectoryPlanner.changeGoal(se2GoalManager2, se2GoalManager2.goalQuery());
+      trajectoryPlanner.changeGoal(se2GoalManager2.getGoalInterface());
       int iters2 = Expand.maxDepth(trajectoryPlanner, parameters.getDepthLimit());
       trajectory = trajectoryPlanner.getPathFromRootToGoal();
       Trajectories.print(trajectory);

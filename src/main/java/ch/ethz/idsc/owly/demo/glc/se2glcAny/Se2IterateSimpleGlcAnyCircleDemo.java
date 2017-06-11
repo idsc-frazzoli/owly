@@ -13,6 +13,7 @@ import ch.ethz.idsc.owly.demo.glc.se2.Se2Utils;
 import ch.ethz.idsc.owly.demo.glc.se2glc.Se2Parameters;
 import ch.ethz.idsc.owly.glc.adapter.Parameters;
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
+import ch.ethz.idsc.owly.glc.core.DebugUtils;
 import ch.ethz.idsc.owly.glc.core.Expand;
 import ch.ethz.idsc.owly.glc.core.SimpleAnyTrajectoryPlanner;
 import ch.ethz.idsc.owly.gui.Gui;
@@ -49,13 +50,13 @@ class Se2IterateSimpleGlcAnyCircleDemo {
     // --
     Parameters parameters = new Se2Parameters( //
         resolution, timeScale, depthScale, partitionScale, dtMax, maxIter, stateSpaceModel.getLipschitz());
-    // TODO possible without creation of StateSpaceModel?
     StateIntegrator stateIntegrator = FixedStateIntegrator.createDefault(parameters.getdtMax(), //
         parameters.getTrajectorySize());
     // ---
     System.out.println("1/Domainsize=" + parameters.getEta());
     parameters.printResolution();
-    Collection<Flow> controls = Se2Controls.createControls(Se2Utils.DEGREE(45), parameters.getResolution());
+    // Se2Controls uses Se2StateSpaceModel
+    Collection<Flow> controls = Se2Controls.createControls(Se2Utils.DEGREE(45), parameters.getResolutionInt());
     Se2DefaultGoalManager se2GoalManager = new Se2DefaultGoalManager( //
         Tensors.vector(3, 0), RealScalar.of(1.5 * Math.PI), // east
         DoubleScalar.of(.1), Se2Utils.DEGREE(10));
@@ -70,11 +71,11 @@ class Se2IterateSimpleGlcAnyCircleDemo {
     // ---
     long tic = System.nanoTime();
     SimpleAnyTrajectoryPlanner trajectoryPlanner = new SimpleAnyTrajectoryPlanner( //
-        parameters.getEta(), stateIntegrator, controls, se2GoalManager, se2GoalManager.goalQuery(), obstacleQuery);
+        parameters.getEta(), stateIntegrator, controls, obstacleQuery, se2GoalManager.getGoalInterface());
     // ---
     trajectoryPlanner.insertRoot(Tensors.vector(0, 3, 0));
     int iters = Expand.maxDepth(trajectoryPlanner, parameters.getDepthLimit());
-    trajectoryPlanner.nodeAmountCompare();
+    DebugUtils.nodeAmountCompare(trajectoryPlanner);
     System.out.println("After " + iters + " iterations");
     List<StateTime> trajectory = trajectoryPlanner.getPathFromRootToGoal();
     long toc = System.nanoTime();
@@ -88,7 +89,7 @@ class Se2IterateSimpleGlcAnyCircleDemo {
     goalListPosition.add(Tensors.vector(-3, 0));// West
     goalListPosition.add(Tensors.vector(0, 3)); // North
     goalListPosition.add(Tensors.vector(3, 0)); // East
-    List<RealScalar> goalListAngle = new ArrayList<>();
+    List<Scalar> goalListAngle = new ArrayList<>();
     goalListAngle.add(RealScalar.of(Math.PI)); // South
     goalListAngle.add(RealScalar.of(0.5 * Math.PI)); // West
     goalListAngle.add(RealScalar.of(0)); // North
@@ -109,7 +110,7 @@ class Se2IterateSimpleGlcAnyCircleDemo {
       int increment = trajectoryPlanner.switchRootToState(newRootState.x());
       parameters.increaseDepthLimit(increment);
       // trajectoryPlanner.switchRootToNode(newRootNode);
-      trajectoryPlanner.changeGoal(se2GoalManager2, se2GoalManager2.goalQuery());
+      trajectoryPlanner.changeGoal(se2GoalManager2.getGoalInterface());
       int expandIter = Expand.maxDepth(trajectoryPlanner, parameters.getDepthLimit());
       trajectory = trajectoryPlanner.getPathFromRootToGoal();
       Trajectories.print(trajectory);

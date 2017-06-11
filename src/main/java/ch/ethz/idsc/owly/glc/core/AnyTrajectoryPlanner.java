@@ -13,7 +13,6 @@ import java.util.Set;
 
 import ch.ethz.idsc.owly.data.tree.Nodes;
 import ch.ethz.idsc.owly.math.flow.Flow;
-import ch.ethz.idsc.owly.math.state.CostFunction;
 import ch.ethz.idsc.owly.math.state.StateIntegrator;
 import ch.ethz.idsc.owly.math.state.StateTime;
 import ch.ethz.idsc.owly.math.state.TrajectoryRegionQuery;
@@ -34,20 +33,18 @@ public class AnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
       Tensor eta, //
       StateIntegrator stateIntegrator, //
       Collection<Flow> controls, //
-      CostFunction costFunction, //
-      TrajectoryRegionQuery goalQuery, //
-      TrajectoryRegionQuery obstacleQuery //
+      TrajectoryRegionQuery obstacleQuery, //
+      GoalInterface goalInterface //
   ) {
-    super(eta, stateIntegrator, costFunction, goalQuery, obstacleQuery);
+    super(eta, stateIntegrator, obstacleQuery, goalInterface);
     this.controls = controls;
-    this.goalQuery = goalQuery;
   }
 
   @Override // from ExpandInterface
   public void expand(final GlcNode node) {
     // TODO count updates in cell based on costs for benchmarking
     Map<GlcNode, List<StateTime>> connectors = //
-        SharedUtils.integrate(node, controls, stateIntegrator, costFunction);
+        SharedUtils.integrate(node, controls, getStateIntegrator(), goalInterface);
     CandidatePairQueueMap candidatePairQueueMap = new CandidatePairQueueMap();
     for (GlcNode next : connectors.keySet()) { // <- order of keys is non-deterministic
       // ALL Candidates are saved in temporary CandidateList
@@ -71,7 +68,7 @@ public class AnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
     for (Entry<Tensor, CandidatePairQueue> entry : candidatePairQueueMap.map.entrySet()) {
       final Tensor domainKey = entry.getKey();
       final CandidatePairQueue candidateQueue = entry.getValue();
-      if (candidateQueue != null && best == null) {
+      if (candidateQueue != null && !getBest().isPresent()) {
         while (!candidateQueue.isEmpty()) {
           // retrieving the Candidates
           final CandidatePair nextCandidatePair = candidateQueue.element();
@@ -80,7 +77,7 @@ public class AnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
           if (formerLabel != null) {
             if (Scalars.lessThan(next.merit(), formerLabel.merit())) {
               // collision check only if new node is better
-              if (obstacleQuery.isDisjoint(connectors.get(next))) {// better node not collision
+              if (getObstacleQuery().isDisjoint(connectors.get(next))) {// better node not collision
                 // current label back in bucket for this domains,
                 CandidatePair formerCandidate = new CandidatePair(formerLabel.parent(), formerLabel);
                 candidateMap.get(domainKey).add(formerCandidate);
@@ -95,13 +92,13 @@ public class AnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
                 candidateMap.get(domainKey).remove(nextCandidatePair);
                 candidateQueue.remove();
                 // GOAL check
-                if (!goalQuery.isDisjoint(connectors.get(next)))
+                if (!goalInterface.isDisjoint(connectors.get(next)))
                   offerDestination(next);
                 break;
               }
             }
           } else { // No formerLabel, so definitely adding a Node
-            if (obstacleQuery.isDisjoint(connectors.get(next))) {
+            if (getObstacleQuery().isDisjoint(connectors.get(next))) {
               // removing the nextCandidate from bucket of this domain
               // adding next to tree and DomainMap
               node.insertEdgeTo(next);
@@ -109,7 +106,7 @@ public class AnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
               candidateMap.get(domainKey).remove(nextCandidatePair);
               candidateQueue.remove();
               // GOAL check
-              if (!goalQuery.isDisjoint(connectors.get(next)))
+              if (!goalInterface.isDisjoint(connectors.get(next)))
                 offerDestination(next);
               break;
             }
@@ -132,7 +129,7 @@ public class AnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
     int increasedDepthBy = newRoot.reCalculateDepth();
     // -- DEBUGING Values
     // -- Collecting Oldtree
-    GlcNode oldRoot = getNodesfromRootToGoal().get(0);
+    GlcNode oldRoot = Nodes.rootFrom(getBestOrElsePeek());
     Collection<GlcNode> oldTreeCollection = Nodes.ofSubtree(oldRoot);
     int oldDomainMapSize = domainMap().size();
     long oldtotalCandidates = candidateMap.values().stream().flatMap(Collection::stream).count();
@@ -161,7 +158,8 @@ public class AnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
     System.out.println("Removed " + (oldQueueSize - queue().size()) + " out of " + oldQueueSize + " nodes from Queue = " + queue().size());
     System.out.println(oldDomainMapSize - domainMap().size() + " out of " + oldDomainMapSize + //
         " Domains removed from DomainMap = " + domainMap().size());
-    Collection<GlcNode> newTreeCollection = Nodes.ofSubtree(getNodesfromRootToGoal().get(0));
+    final GlcNode root = Nodes.rootFrom(getBestOrElsePeek());
+    Collection<GlcNode> newTreeCollection = Nodes.ofSubtree(root);
     System.out.println(deleteTreeCollection.size() + " out of " + oldTreeCollection.size()//
         + " Nodes removed from Tree = " + newTreeCollection.size());
     // -- CANDIDATEMAP: Deleting Candidates, if Origin is included in DeleteTree
@@ -193,8 +191,8 @@ public class AnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
             break;
           }
           final List<StateTime> connector = //
-              stateIntegrator.trajectory(nextParent.stateTime(), next.flow());
-          if (obstacleQuery.isDisjoint(connector)) { // no collision
+              getStateIntegrator().trajectory(nextParent.stateTime(), next.flow());
+          if (getObstacleQuery().isDisjoint(connector)) { // no collision
             nextParent.insertEdgeTo(next);
             // data structure changing statement shall not be in if clause:
             final boolean replaced = insert(domainKey, next);
@@ -206,7 +204,7 @@ public class AnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
               throw new RuntimeException();
             }
             addedNodesToQueue++;
-            if (!goalQuery.isDisjoint(connector))
+            if (!goalInterface.isDisjoint(connector))
               offerDestination(next);
             break; // leaves the while loop, but not the for loop
           }

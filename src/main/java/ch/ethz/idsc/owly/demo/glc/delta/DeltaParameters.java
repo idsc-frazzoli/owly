@@ -2,7 +2,6 @@
 package ch.ethz.idsc.owly.demo.glc.delta;
 
 import ch.ethz.idsc.owly.glc.adapter.DefaultParameters;
-import ch.ethz.idsc.tensor.RationalScalar;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
@@ -10,7 +9,7 @@ import ch.ethz.idsc.tensor.sca.Power;
 
 class DeltaParameters extends DefaultParameters {
   public DeltaParameters( //
-      RationalScalar resolution, Scalar timeScale, Scalar depthScale, Tensor partitionScale, Scalar dtMax, int maxIter, //
+      Scalar resolution, Scalar timeScale, Scalar depthScale, Tensor partitionScale, Scalar dtMax, int maxIter, //
       Scalar lipschitz) {
     super(resolution, timeScale, depthScale, partitionScale, dtMax, maxIter, lipschitz);
   }
@@ -25,6 +24,6 @@ class DeltaParameters extends DefaultParameters {
   /** @return R²/partitionScale */
   protected final Tensor EtaLfNonZero(Scalar lipschitz) {
     return getPartitionScale().map(Scalar::invert) //
-        .multiply(Power.of(RealScalar.of(getResolution()), RealScalar.ONE.add(lipschitz)));
+        .multiply(Power.of(getResolution(), RealScalar.ONE.add(lipschitz)));
   }
 }

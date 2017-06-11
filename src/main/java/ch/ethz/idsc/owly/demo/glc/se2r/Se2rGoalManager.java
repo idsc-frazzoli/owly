@@ -3,10 +3,14 @@ package ch.ethz.idsc.owly.demo.glc.se2r;
 
 import java.util.List;
 
+import ch.ethz.idsc.owly.glc.adapter.GoalAdapter;
+import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
+import ch.ethz.idsc.owly.glc.core.GoalInterface;
 import ch.ethz.idsc.owly.math.flow.Flow;
 import ch.ethz.idsc.owly.math.region.Region;
 import ch.ethz.idsc.owly.math.state.CostFunction;
 import ch.ethz.idsc.owly.math.state.StateTime;
+import ch.ethz.idsc.owly.math.state.TimeInvariantRegion;
 import ch.ethz.idsc.owly.math.state.Trajectories;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
@@ -56,5 +60,9 @@ class Se2rGoalManager implements Region, CostFunction {
     status &= Scalars.lessEquals(Norm._2.of(cur_xy.subtract(xy)), radius);
     status &= Scalars.lessEquals(PRINCIPAL.apply(cur_angle.subtract(angle)).abs(), angle_delta);
     return status;
+  }
+
+  public GoalInterface getGoalInterface() {
+    return new GoalAdapter(this, new SimpleTrajectoryRegionQuery(new TimeInvariantRegion(this)));
   }
 }

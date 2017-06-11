@@ -38,7 +38,7 @@ class R2glcAnyDemo {
     Parameters parameters = new R2Parameters( //
         resolution, timeScale, depthScale, partitionScale, dtMax, maxIter, lipschitz);
     StateIntegrator stateIntegrator = FixedStateIntegrator.create(new EulerIntegrator(), RationalScalar.of(1, 5), 5);
-    Collection<Flow> controls = R2Controls.createRadial(parameters.getResolution());
+    Collection<Flow> controls = R2Controls.createRadial(parameters.getResolutionInt());
     RnGoalManager rnGoal = new RnGoalManager(Tensors.vector(5, 5), DoubleScalar.of(.25));
     // performance depends on heuristic: zeroHeuristic vs rnGoal
     // Heuristic heuristic = new ZeroHeuristic(); // rnGoal
@@ -47,7 +47,7 @@ class R2glcAnyDemo {
     // new TimeInvariantRegion(new R2Bubbles()));
     // ---
     AnyTrajectoryPlanner trajectoryPlanner = new AnyTrajectoryPlanner( //
-        parameters.getEta(), stateIntegrator, controls, rnGoal, rnGoal, obstacleQuery);
+        parameters.getEta(), stateIntegrator, controls, obstacleQuery, rnGoal);
     trajectoryPlanner.insertRoot(Tensors.vector(0, 0));
     Expand.maxDepth(trajectoryPlanner, parameters.getDepthLimit());
     List<StateTime> trajectory = trajectoryPlanner.getPathFromRootToGoal();
@@ -62,7 +62,7 @@ class R2glcAnyDemo {
       int increment = trajectoryPlanner.switchRootToState(newRootState.x());
       Gui.glc(trajectoryPlanner);
       parameters.increaseDepthLimit(increment);
-      trajectoryPlanner.changeGoal(rnGoal2, rnGoal2);
+      trajectoryPlanner.changeGoal(rnGoal2);
       int iters2 = Expand.maxDepth(trajectoryPlanner, parameters.getDepthLimit());
       System.out.println("Replaced " + (trajectoryPlanner.replaceCount() - oldReplace)//
           + " Labels with better Nodes in run: " + iter + 1);

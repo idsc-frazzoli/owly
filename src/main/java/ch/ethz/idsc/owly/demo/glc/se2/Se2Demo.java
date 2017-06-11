@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.List;
 
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
+import ch.ethz.idsc.owly.glc.core.DebugUtils;
 import ch.ethz.idsc.owly.glc.core.DefaultTrajectoryPlanner;
 import ch.ethz.idsc.owly.glc.core.Expand;
 import ch.ethz.idsc.owly.glc.core.TrajectoryPlanner;
@@ -42,11 +43,11 @@ class Se2Demo {
             )));
     // ---
     TrajectoryPlanner trajectoryPlanner = new DefaultTrajectoryPlanner( //
-        eta, stateIntegrator, controls, se2GoalManager, se2GoalManager.goalQuery(), obstacleQuery);
+        eta, stateIntegrator, controls, obstacleQuery, se2GoalManager.getGoalInterface());
     // ---
     trajectoryPlanner.insertRoot(Tensors.vector(0, 0, 0));
     int iters = Expand.maxSteps(trajectoryPlanner, 2000);
-    trajectoryPlanner.nodeAmountCompare();
+    DebugUtils.nodeAmountCompare(trajectoryPlanner);
     System.out.println(iters);
     List<StateTime> trajectory = trajectoryPlanner.getPathFromRootToGoal();
     Trajectories.print(trajectory);

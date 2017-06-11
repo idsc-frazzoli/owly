@@ -7,11 +7,13 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.PriorityQueue;
 import java.util.Queue;
 import java.util.stream.Collectors;
 
 import ch.ethz.idsc.owly.data.tree.Nodes;
+import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
 import ch.ethz.idsc.owly.math.TensorUnaryOperator;
 import ch.ethz.idsc.owly.math.state.StateTime;
 import ch.ethz.idsc.owly.math.state.TrajectoryRegionQuery;
@@ -27,8 +29,10 @@ public abstract class TrajectoryPlanner implements ExpandInterface, Serializable
   // TODO long-term use RasterMap instead of domainMap
   private final Map<Tensor, GlcNode> domainMap = new HashMap<>();
   /** best is a reference to a Node in the goal region,
-   * or null if such a node has not been identified */
-  protected GlcNode best;
+   * or null if such a node has not been identified
+   * 
+   * use function setBestNull() to reset best to null */
+  private GlcNode best = null;
   private int replaceCount = 0;
 
   protected TrajectoryPlanner(Tensor eta) {
@@ -87,15 +91,8 @@ public abstract class TrajectoryPlanner implements ExpandInterface, Serializable
   }
 
   @Override // from ExpandInterface
-  public final GlcNode pollNext() {
-    return queue.isEmpty() ? null : queue.poll();
-  }
-
-  /** peek does not change the queue state
-   * 
-   * @return next node in the queue */
-  public final GlcNode peek() {
-    return queue.peek();
+  public final Optional<GlcNode> pollNext() {
+    return Optional.ofNullable(queue.poll()); // Queue#poll() returns the head of queue, or null if queue is empty
   }
 
   /* package */ final void offerDestination(GlcNode node) {
@@ -106,10 +103,19 @@ public abstract class TrajectoryPlanner implements ExpandInterface, Serializable
   }
 
   @Override // from ExpandInterface
-  public final GlcNode getBest() {
-    return best;
+  public final Optional<GlcNode> getBest() {
+    return Optional.ofNullable(best);
   }
 
+  /* package */ final void setBestNull() {
+    best = null;
+  }
+
+  public final GlcNode getBestOrElsePeek() {
+    return getBest().orElse(queue.peek()); // Queue#peek() returns the head of queue, or null if queue is empty
+  }
+
+  // public final GlcNode getBestOr
   /** @return number of replacements in the domain map caused by {@link TrajectoryPlanner#insert(Tensor, GlcNode)} */
   public final int replaceCount() {
     return replaceCount;
@@ -134,30 +140,21 @@ public abstract class TrajectoryPlanner implements ExpandInterface, Serializable
     return domainMap;
   }
 
-  // TODO rename to coarse path ...
-  /** @return path to goal if found, or path to best Node in queue */
+  // TODO perhaps rename to coarse path ...
+  /** @return path to goal if found, or path to current Node in queue */
   public final List<StateTime> getPathFromRootToGoal() {
-    return Nodes.fromRoot(best == null ? peek() : best).stream() //
+    return Nodes.listFromRoot(getBestOrElsePeek()).stream() //
         .map(GlcNode::stateTime).collect(Collectors.toList());
   }
 
-  public final List<GlcNode> getNodesfromRootToGoal() {
-    return Nodes.fromRoot(best == null ? peek() : best);
+  public final List<GlcNode> getNodesfromRootToGoal() { // <- check here
+    return Nodes.listFromRoot(getBestOrElsePeek());
   }
 
-  // TODO shift to debuging class
-  public final void nodeAmountCompare() {
-    if (domainMap().size() != Nodes.ofSubtree(getNodesfromRootToGoal().get(0)).size()) {
-      System.out.println("****NODE CHECK****");
-      System.out.println("Nodes in DomainMap: " + domainMap().size());
-      System.out.println("Nodes in Tree from Root: " + Nodes.ofSubtree(//
-          getNodesfromRootToGoal().get(0)).size());
-      throw new RuntimeException();
-    }
-  }
-
+  // TODO JONAS extract function to DebugUtils
   /* package */ final void nodeAmountCheck(GlcNode node) {
-    int treeSize = Nodes.ofSubtree(getNodesfromRootToGoal().get(0)).size();
+    final GlcNode root = Nodes.rootFrom(getBestOrElsePeek());
+    int treeSize = Nodes.ofSubtree(root).size();
     if (domainMap().size() != treeSize) {
       System.err.println("DomainMap  != TreeSize:");
       System.err.println(domainMap().size() + " =/= " + treeSize + " after expanding of Node: ");
@@ -179,5 +176,24 @@ public abstract class TrajectoryPlanner implements ExpandInterface, Serializable
   /** @return unmodifiable view on domain map for display and tests */
   public final Map<Tensor, GlcNode> getDomainMap() {
     return Collections.unmodifiableMap(domainMap);
+  }
+
+  public String infoString() {
+    StringBuilder stringBuilder = new StringBuilder();
+    {
+      stringBuilder.append("nodes:" + domainMap.values().size() + ", ");
+    }
+    {
+      TrajectoryRegionQuery trq = getObstacleQuery();
+      if (trq instanceof SimpleTrajectoryRegionQuery) {
+        SimpleTrajectoryRegionQuery strq = (SimpleTrajectoryRegionQuery) trq;
+        Collection<StateTime> collection = strq.getDiscoveredMembers();
+        stringBuilder.append("obstacles:" + collection.size() + ", ");
+      }
+    }
+    {
+      stringBuilder.append("replacements:" + replaceCount());
+    }
+    return stringBuilder.toString();
   }
 }

@@ -35,8 +35,6 @@ class Se2rAnimateDemo {
     Se2rGoalManager se2GoalManager = new Se2rGoalManager( //
         Tensors.vector(-1, -1), RealScalar.of(Math.PI * 2), //
         DoubleScalar.of(.1), Se2Utils.DEGREE(10));
-    TrajectoryRegionQuery goalQuery = //
-        new SimpleTrajectoryRegionQuery(new TimeInvariantRegion(se2GoalManager));
     TrajectoryRegionQuery obstacleQuery = //
         new SimpleTrajectoryRegionQuery(new TimeInvariantRegion( //
             RegionUnion.of( //
@@ -45,13 +43,13 @@ class Se2rAnimateDemo {
             )));
     // ---
     TrajectoryPlanner trajectoryPlanner = new DefaultTrajectoryPlanner( //
-        eta, stateIntegrator, controls, se2GoalManager, goalQuery, obstacleQuery);
+        eta, stateIntegrator, controls, obstacleQuery, se2GoalManager.getGoalInterface());
     // ---
     trajectoryPlanner.insertRoot(Tensors.vector(0, 0, 0));
     OwlyFrame owlyFrame = Gui.start();
     owlyFrame.configCoordinateOffset(169, 71);
     owlyFrame.jFrame.setBounds(100, 100, 300, 200);
-    while (trajectoryPlanner.getBest() == null && owlyFrame.jFrame.isVisible()) {
+    while (!trajectoryPlanner.getBest().isPresent() && owlyFrame.jFrame.isVisible()) {
       Expand.maxSteps(trajectoryPlanner, 1);
       owlyFrame.setGlc(trajectoryPlanner);
       Thread.sleep(100);

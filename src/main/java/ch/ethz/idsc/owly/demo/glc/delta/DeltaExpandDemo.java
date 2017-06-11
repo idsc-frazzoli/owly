@@ -19,7 +19,7 @@ class DeltaExpandDemo {
     owlyFrame.configCoordinateOffset(33, 416);
     owlyFrame.jFrame.setBounds(100, 100, 620, 475);
     GifSequenceWriter gsw = GifSequenceWriter.of(UserHome.file("delta_s.gif"), 250);
-    while (trajectoryPlanner.getBest() == null && owlyFrame.jFrame.isVisible()) {
+    while (!trajectoryPlanner.getBest().isPresent() && owlyFrame.jFrame.isVisible()) {
       Expand.maxSteps(trajectoryPlanner, 40);
       owlyFrame.setGlc(trajectoryPlanner);
       gsw.append(owlyFrame.offscreen());

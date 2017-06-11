@@ -25,10 +25,11 @@ public class ParametersTest extends TestCase {
     Scalar oldValue = RealScalar.of(1000);
     Scalar newValue = oldValue;
     long iter = 0;
-    while (++iter < 1000) {
+    while (++iter < 30) {
+      // TODO jan had to change the limit from 1000 to 30 otherwise scalar cannot be correctly converted to int...
       resolution = resolution.multiply(RealScalar.of(2));
       Parameters test = new Se2Parameters(//
-          (RationalScalar) resolution, timeScale, depthScale, partitionScale, dtMax, maxIter, stateSpaceModel.getLipschitz());
+          resolution, timeScale, depthScale, partitionScale, dtMax, maxIter, stateSpaceModel.getLipschitz());
       oldValue = newValue;
       newValue = resolution.divide(test.getDepthLimitExact());
       // System.out.println(resolution);

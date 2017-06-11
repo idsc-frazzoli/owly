@@ -8,7 +8,6 @@ import java.util.Map.Entry;
 
 import ch.ethz.idsc.owly.data.tree.Nodes;
 import ch.ethz.idsc.owly.math.flow.Flow;
-import ch.ethz.idsc.owly.math.state.CostFunction;
 import ch.ethz.idsc.owly.math.state.StateIntegrator;
 import ch.ethz.idsc.owly.math.state.StateTime;
 import ch.ethz.idsc.owly.math.state.TrajectoryRegionQuery;
@@ -28,11 +27,10 @@ public class SimpleAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
       Tensor eta, //
       StateIntegrator stateIntegrator, //
       Collection<Flow> controls, //
-      CostFunction costFunction, //
-      TrajectoryRegionQuery goalQuery, //
-      TrajectoryRegionQuery obstacleQuery //
+      TrajectoryRegionQuery obstacleQuery, //
+      GoalInterface goalInterface //
   ) {
-    super(eta, stateIntegrator, costFunction, goalQuery, obstacleQuery);
+    super(eta, stateIntegrator, obstacleQuery, goalInterface);
     this.controls = controls;
   }
 
@@ -40,7 +38,7 @@ public class SimpleAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
   public void expand(final GlcNode node) {
     // TODO count updates in cell based on costs for benchmarking
     Map<GlcNode, List<StateTime>> connectors = //
-        SharedUtils.integrate(node, controls, stateIntegrator, costFunction);
+        SharedUtils.integrate(node, controls, getStateIntegrator(), goalInterface);
     // Set<Tensor> domainsNeedingUpdate = new HashSet<>();
     // Map<Tensor, DomainQueue> candidates = new HashMap<>();
     CandidatePairQueueMap candidates = new CandidatePairQueueMap();
@@ -60,7 +58,7 @@ public class SimpleAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
     for (Entry<Tensor, CandidatePairQueue> entry : candidates.map.entrySet()) {
       final Tensor domain_key = entry.getKey();
       final CandidatePairQueue candidateQueue = entry.getValue();
-      if (candidateQueue != null && best == null) {
+      if (candidateQueue != null && !getBest().isPresent()) {
         while (!candidateQueue.isEmpty()) {
           final CandidatePair nextCandidatePair = candidateQueue.element();
           final GlcNode formerLabel = getNode(domain_key);
@@ -68,14 +66,14 @@ public class SimpleAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
           if (formerLabel != null) {
             if (Scalars.lessThan(next.merit(), formerLabel.merit())) {
               // collision check only if new node is better
-              if (obstacleQuery.isDisjoint(connectors.get(next))) {// better node not collision
+              if (getObstacleQuery().isDisjoint(connectors.get(next))) {// better node not collision
                 // remove former Label from QUEUE
                 queue().remove(formerLabel);
                 // formerLabel disconnecting
                 formerLabel.parent().removeEdgeTo(formerLabel);
                 node.insertEdgeTo(next);
                 insert(domain_key, next);
-                if (!goalQuery.isDisjoint(connectors.get(next)))
+                if (!goalInterface.isDisjoint(connectors.get(next)))
                   offerDestination(next);
                 candidateQueue.remove();
                 break;
@@ -84,10 +82,10 @@ public class SimpleAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
             // candidateQueue.remove();
           } else {
             // candidateQueue.remove();
-            if (obstacleQuery.isDisjoint(connectors.get(next))) {
+            if (getObstacleQuery().isDisjoint(connectors.get(next))) {
               node.insertEdgeTo(next);
               insert(domain_key, next);
-              if (!goalQuery.isDisjoint(connectors.get(next)))
+              if (!goalInterface.isDisjoint(connectors.get(next)))
                 offerDestination(next);
               candidateQueue.remove();
               break;
@@ -101,7 +99,7 @@ public class SimpleAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
 
   @Override
   public int switchRootToNode(GlcNode newRoot) {
-    GlcNode oldRoot = getNodesfromRootToGoal().get(0);
+    GlcNode oldRoot = Nodes.rootFrom(getBestOrElsePeek());
     if (newRoot.isRoot()) {
       System.out.println("node is already root");
       return 0;
@@ -117,8 +115,9 @@ public class SimpleAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
     Collection<GlcNode> deleteTreeCollection = deleteChildrenOf(oldRoot);
     System.out.println(oldDomainMapSize - domainMap().size() + " out of " + oldDomainMapSize + //
         " Domains removed from DomainMap = " + domainMap().size());
+    GlcNode root = Nodes.rootFrom(getBestOrElsePeek());
     System.out.println(deleteTreeCollection.size() + " out of " + oldTreeSize//
-        + " Nodes removed from Tree = " + Nodes.ofSubtree(getNodesfromRootToGoal().get(0)).size());
+        + " Nodes removed from Tree = " + Nodes.ofSubtree(root).size());
     // --
     System.out.println("**Rootswitch finished**");
     return increaseDepthBy;

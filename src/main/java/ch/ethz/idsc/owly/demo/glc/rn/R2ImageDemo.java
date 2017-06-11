@@ -39,7 +39,7 @@ class R2ImageDemo {
             region));
     // ---
     TrajectoryPlanner trajectoryPlanner = new DefaultTrajectoryPlanner( //
-        partitionScale, stateIntegrator, controls, rnGoal, rnGoal, obstacleQuery);
+        partitionScale, stateIntegrator, controls, obstacleQuery, rnGoal);
     trajectoryPlanner.insertRoot(Tensors.vector(0, 0));
     long tic = System.nanoTime();
     int iters = Expand.maxSteps(trajectoryPlanner, 10000);

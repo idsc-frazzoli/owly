@@ -24,7 +24,6 @@ import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
 
-/** "Mobility and Autonomous Reconfiguration of Marsokhod" */
 class Rice2Demo {
   // TODO in general ensure that goal region contains at least 1 domain etc.
   public static void main(String[] args) {
@@ -44,7 +43,7 @@ class Rice2Demo {
             )));
     // ---
     TrajectoryPlanner trajectoryPlanner = new DefaultTrajectoryPlanner( //
-        eta, stateIntegrator, controls, rice2Goal, rice2Goal, obstacleQuery);
+        eta, stateIntegrator, controls, obstacleQuery, rice2Goal);
     // ---
     trajectoryPlanner.insertRoot(Tensors.vector(0.1, 0.1, 0, 0));
     long tic = System.nanoTime();
@@ -53,7 +52,6 @@ class Rice2Demo {
     // 550 1.6898229210000002 without parallel integration of trajectories
     // 555 1.149214356 with parallel integration of trajectories
     System.out.println(iters + " " + ((toc - tic) * 1e-9));
-    // TODO keep trying to improve path to goal for a few iterations...?
     List<StateTime> trajectory = trajectoryPlanner.getPathFromRootToGoal();
     Trajectories.print(trajectory);
     Gui.glc(trajectoryPlanner);

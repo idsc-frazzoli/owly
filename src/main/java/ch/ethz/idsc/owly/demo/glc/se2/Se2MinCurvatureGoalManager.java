@@ -1,3 +1,4 @@
+// code by jl
 package ch.ethz.idsc.owly.demo.glc.se2;
 
 import java.util.ArrayList;
@@ -23,7 +24,6 @@ public class Se2MinCurvatureGoalManager extends Se2DefaultGoalManager {
   @Override
   /** Cost Function */
   public Scalar costIncrement(StateTime from, List<StateTime> trajectory, Flow flow) {
-    // TODO extract cost computation by curvature to separate function
     int endIndex = trajectory.size() - 1;
     if (endIndex < 3) // can not calculated curvature with 2 points
       throw new RuntimeException();

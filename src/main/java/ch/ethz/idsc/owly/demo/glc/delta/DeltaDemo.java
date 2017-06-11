@@ -14,7 +14,7 @@ class DeltaDemo {
     OwlyFrame owlyFrame = Gui.start();
     owlyFrame.configCoordinateOffset(33, 416);
     owlyFrame.jFrame.setBounds(100, 100, 620, 475);
-    while (trajectoryPlanner.getBest() == null && owlyFrame.jFrame.isVisible()) {
+    while (!trajectoryPlanner.getBest().isPresent() && owlyFrame.jFrame.isVisible()) {
       Expand.maxSteps(trajectoryPlanner, 30);
       owlyFrame.setGlc(trajectoryPlanner);
       Thread.sleep(1);

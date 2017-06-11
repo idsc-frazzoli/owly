@@ -37,7 +37,7 @@ public class PsuDemo {
     TrajectoryRegionQuery obstacleQuery = new EmptyTrajectoryRegionQuery();
     // ---
     TrajectoryPlanner trajectoryPlanner = new DefaultTrajectoryPlanner( //
-        eta, stateIntegrator, controls, psuGoalManager, psuGoalManager.goalQuery(), obstacleQuery);
+        eta, stateIntegrator, controls, obstacleQuery, psuGoalManager.getGoalInterface());
     trajectoryPlanner.represent = psuWrap::represent;
     // ---
     trajectoryPlanner.insertRoot(Tensors.vector(0, 0));

@@ -34,7 +34,7 @@ import ch.ethz.idsc.tensor.Tensors;
 /** (x,y,theta) */
 class Se2GlcDemo {
   public static void main(String[] args) throws Exception {
-    RationalScalar resolution = (RationalScalar) RealScalar.of(10);
+    RationalScalar resolution = (RationalScalar) RealScalar.of(4);
     Scalar timeScale = RealScalar.of(10);
     Scalar depthScale = RealScalar.of(5);
     Tensor partitionScale = Tensors.vector(3, 3, 50 / Math.PI);
@@ -44,18 +44,16 @@ class Se2GlcDemo {
     // --
     Parameters parameters = new Se2Parameters( //
         resolution, timeScale, depthScale, partitionScale, dtMax, maxIter, stateSpaceModel.getLipschitz());
-    // TODO possible without creation of StateSpaceModel?
     StateIntegrator stateIntegrator = FixedStateIntegrator.createDefault(parameters.getdtMax(), //
         parameters.getTrajectorySize());
     // ---
     System.out.println("scale=" + parameters.getEta());
     parameters.printResolution();
-    Collection<Flow> controls = Se2Controls.createControls(Se2Utils.DEGREE(45), parameters.getResolution());
+    // Se2Controls uses Se2StateSpaceModel
+    Collection<Flow> controls = Se2Controls.createControls(Se2Utils.DEGREE(45), parameters.getResolutionInt());
     Se2DefaultGoalManager se2GoalManager = new Se2DefaultGoalManager( //
         Tensors.vector(0, 1), RealScalar.of(Math.PI), //
         DoubleScalar.of(.1), Se2Utils.DEGREE(10));
-    TrajectoryRegionQuery goalQuery = //
-        new SimpleTrajectoryRegionQuery(new TimeInvariantRegion(se2GoalManager));
     TrajectoryRegionQuery obstacleQuery = //
         new SimpleTrajectoryRegionQuery(new TimeInvariantRegion( //
             RegionUnion.of( //
@@ -63,7 +61,7 @@ class Se2GlcDemo {
                 new HyperplaneRegion(Tensors.vector(0, +1, 0), RealScalar.of(1.5)) //
             )));
     TrajectoryPlanner trajectoryPlanner = new DefaultTrajectoryPlanner( //
-        parameters.getEta(), stateIntegrator, controls, se2GoalManager, goalQuery, obstacleQuery);
+        parameters.getEta(), stateIntegrator, controls, obstacleQuery, se2GoalManager.getGoalInterface());
     trajectoryPlanner.insertRoot(Tensors.vector(1, 0, -0.5 * Math.PI));
     int iters = Expand.maxDepth(trajectoryPlanner, parameters.getDepthLimit());
     // int iters = Expand.maxTime(trajectoryPlanner, RealScalar.of(3));

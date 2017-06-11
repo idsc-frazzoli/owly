@@ -44,7 +44,7 @@ enum DeltaHelper {
     DeltaGoalManager deltaGoalManager = new DeltaGoalManager( //
         Tensors.vector(2.1, 0.3), Tensors.vector(.3, .3));
     TrajectoryPlanner trajectoryPlanner = new DefaultTrajectoryPlanner( //
-        eta, stateIntegrator, controls, deltaGoalManager, deltaGoalManager, obstacleQuery);
+        eta, stateIntegrator, controls, obstacleQuery, deltaGoalManager);
     trajectoryPlanner.insertRoot(Tensors.vector(8.8, 0.5));
     return trajectoryPlanner;
   }
@@ -67,7 +67,7 @@ enum DeltaHelper {
     Scalar maxInput = RealScalar.ONE;
     Scalar maxSpeed = maxInput.add(ipr.maxNorm());
     Collection<Flow> controls = DeltaControls.createControls( //
-        stateSpaceModel, maxInput, parameters.getResolution());
+        stateSpaceModel, maxInput, parameters.getResolutionInt());
     Tensor obstacleImage = Images.displayOrientation(Import.of(Resources.fileFromRepository("/io/delta_free.png")).get(Tensor.ALL, Tensor.ALL, 0)); //
     TrajectoryRegionQuery obstacleQuery = //
         new SimpleTrajectoryRegionQuery(new TimeInvariantRegion( //
@@ -77,7 +77,7 @@ enum DeltaHelper {
     // DeltaGoalManager deltaGoalManager = new DeltaGoalManager( //
     // Tensors.vector(2.1, 0.3), Tensors.vector(.3, .3));
     TrajectoryPlanner trajectoryPlanner = new DefaultTrajectoryPlanner( //
-        parameters.getEta(), stateIntegrator, controls, deltaGoalManager, deltaGoalManager, obstacleQuery);
+        parameters.getEta(), stateIntegrator, controls, obstacleQuery, deltaGoalManager);
     trajectoryPlanner.insertRoot(Tensors.vector(8.8, 0.5));
     return trajectoryPlanner;
   }
