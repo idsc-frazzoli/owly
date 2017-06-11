@@ -67,7 +67,7 @@ enum DeltaHelper {
     Scalar maxInput = RealScalar.ONE;
     Scalar maxSpeed = maxInput.add(ipr.maxNorm());
     Collection<Flow> controls = DeltaControls.createControls( //
-        stateSpaceModel, maxInput, parameters.getResolution());
+        stateSpaceModel, maxInput, parameters.getResolutionInt());
     Tensor obstacleImage = Images.displayOrientation(Import.of(Resources.fileFromRepository("/io/delta_free.png")).get(Tensor.ALL, Tensor.ALL, 0)); //
     TrajectoryRegionQuery obstacleQuery = //
         new SimpleTrajectoryRegionQuery(new TimeInvariantRegion( //

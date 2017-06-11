@@ -38,7 +38,7 @@ class R2glcAnyDemo {
     Parameters parameters = new R2Parameters( //
         resolution, timeScale, depthScale, partitionScale, dtMax, maxIter, lipschitz);
     StateIntegrator stateIntegrator = FixedStateIntegrator.create(new EulerIntegrator(), RationalScalar.of(1, 5), 5);
-    Collection<Flow> controls = R2Controls.createRadial(parameters.getResolution());
+    Collection<Flow> controls = R2Controls.createRadial(parameters.getResolutionInt());
     RnGoalManager rnGoal = new RnGoalManager(Tensors.vector(5, 5), DoubleScalar.of(.25));
     // performance depends on heuristic: zeroHeuristic vs rnGoal
     // Heuristic heuristic = new ZeroHeuristic(); // rnGoal

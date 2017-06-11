@@ -1,11 +1,11 @@
 // code by jl, theory by bp
 package ch.ethz.idsc.owly.glc.adapter;
 
-import ch.ethz.idsc.tensor.IntegerQ;
-import ch.ethz.idsc.tensor.RationalScalar;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
+import ch.ethz.idsc.tensor.Scalars;
 import ch.ethz.idsc.tensor.Tensor;
+import ch.ethz.idsc.tensor.TensorRuntimeException;
 import ch.ethz.idsc.tensor.Tensors;
 import ch.ethz.idsc.tensor.sca.Ceiling;
 import ch.ethz.idsc.tensor.sca.Log;
@@ -14,7 +14,7 @@ public abstract class Parameters {
   // Initial condition
   private Tensors x0;
   // Discretization resolution
-  private final RationalScalar resolution;
+  private final Scalar resolution;
   // State space dimension
   private int stateDim;
   // Input space dimension
@@ -34,18 +34,19 @@ public abstract class Parameters {
   // depth limit
   private Scalar depthLimit;
 
-  /** @param resolution: resolution of algorithm
+  /** @param resolution: resolution of algorithm, has to be an integer, i.e. satisfy IntegerQ::of
    * @param timeScale: Change time coordinate to be appropriate
    * @param depthScale: Adjust initial depth Limit
    * @param partitionScale: Initial Partition Scale
    * @param dtMax: Maximum integrationstep size
    * @param maxIter: maximum iterations */
   public Parameters( //
-      RationalScalar resolution, Scalar timeScale, Scalar depthScale, Tensor partitionScale, Scalar dtMax, int maxIter) {
+      Scalar resolution, Scalar timeScale, Scalar depthScale, Tensor partitionScale, Scalar dtMax, int maxIter) {
     // resolution needs to be a Integer as of A Generalized Label Correcting Algorithm, p.35, B. Paden
     // The input space is indexed by the resolution
-    if (resolution.signInt() <= 0 || !IntegerQ.of(resolution))
-      throw new RuntimeException();
+    int intResolution = Scalars.intValueExact(resolution);
+    if (intResolution <= 0)
+      throw TensorRuntimeException.of(resolution);
     this.resolution = resolution;
     this.timeScale = timeScale;
     this.depthScale = depthScale;
@@ -73,7 +74,7 @@ public abstract class Parameters {
   }
 
   /** @param increment value by which to increase the depthlimit */
-  public void increaseDepthLimit(int increment) {
+  public final void increaseDepthLimit(int increment) {
     depthLimit = depthLimit.add(RealScalar.of(increment));
   }
 
@@ -84,24 +85,28 @@ public abstract class Parameters {
   public abstract Tensor getEta();
 
   /** @return trajectory size with current expandTime and dtMax */
-  public int getTrajectorySize() {
+  public final int getTrajectorySize() {
     Scalar temp = Ceiling.of(expandTime.divide(dtMax));
     return temp.number().intValue();
   }
 
-  public int getmaxIter() {
+  public final int getmaxIter() {
     return maxIter;
   }
 
-  public int getResolution() {
-    return resolution.number().intValue();
+  public final int getResolutionInt() {
+    return Scalars.intValueExact(resolution);
   }
 
-  public Tensor getPartitionScale() {
+  public final Scalar getResolution() {
+    return resolution;
+  }
+
+  public final Tensor getPartitionScale() {
     return partitionScale.unmodifiable();
   }
 
-  public void printResolution() {
+  public final void printResolution() {
     System.out.println("Resolution = " + resolution);
   }
 }

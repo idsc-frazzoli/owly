@@ -1,4 +1,4 @@
-// code by jph & jl
+// code by jph and jl
 package ch.ethz.idsc.owly.demo.glc.se2;
 
 import java.util.List;

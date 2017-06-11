@@ -36,6 +36,7 @@ public class Se2Wrap implements CoordinateWrap {
   public Scalar distance(Tensor p, Tensor q) {
     Tensor d = p.subtract(q);
     d.set(mod_distance, 2);
+    // TODO inf norm may be more canonic?
     return Norm._2.of(d.pmul(scale));
   }
 }

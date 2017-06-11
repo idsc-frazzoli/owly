@@ -35,7 +35,7 @@ class Se2WrapDemo {
     final CoordinateWrap identity = new IdentityWrap();
     CoordinateWrap coordinateWrap;
     coordinateWrap = new Se2Wrap(Tensors.vector(1, 1, 1));
-    // coordinateWrap = identity;
+    coordinateWrap = identity;
     Se2WrapGoalManager se2GoalManager = new Se2WrapGoalManager( //
         coordinateWrap, //
         Tensors.vector(-.5, 0, 0), RealScalar.of(.25));
@@ -50,8 +50,7 @@ class Se2WrapDemo {
             })), //
             new PolygonRegion(Tensors.matrixDouble(new double[][] { //
                 { -6.933, 0.300 }, { -4.700, 0.250 }, { -4.617, -2.950 }, { 0.433, -3.217 }, //
-                { 1.050, -0.300 }, { 1.867, -0.417 }, { 2.150, -5.300 }, { -6.900, -4.900 }
-            //
+                { 1.050, -0.300 }, { 1.867, -0.417 }, { 2.150, -5.300 }, { -6.900, -4.900 } //
             })) //
         )));
     // ---

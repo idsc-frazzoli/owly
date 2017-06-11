@@ -34,7 +34,7 @@ import ch.ethz.idsc.tensor.Tensors;
 /** (x,y,theta) */
 class Se2GlcDemo {
   public static void main(String[] args) throws Exception {
-    RationalScalar resolution = (RationalScalar) RealScalar.of(10);
+    RationalScalar resolution = (RationalScalar) RealScalar.of(4);
     Scalar timeScale = RealScalar.of(10);
     Scalar depthScale = RealScalar.of(5);
     Tensor partitionScale = Tensors.vector(3, 3, 50 / Math.PI);
@@ -50,7 +50,7 @@ class Se2GlcDemo {
     System.out.println("scale=" + parameters.getEta());
     parameters.printResolution();
     // Se2Controls uses Se2StateSpaceModel
-    Collection<Flow> controls = Se2Controls.createControls(Se2Utils.DEGREE(45), parameters.getResolution());
+    Collection<Flow> controls = Se2Controls.createControls(Se2Utils.DEGREE(45), parameters.getResolutionInt());
     Se2DefaultGoalManager se2GoalManager = new Se2DefaultGoalManager( //
         Tensors.vector(0, 1), RealScalar.of(Math.PI), //
         DoubleScalar.of(.1), Se2Utils.DEGREE(10));

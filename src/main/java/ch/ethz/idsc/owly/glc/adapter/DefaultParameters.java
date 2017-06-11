@@ -1,7 +1,6 @@
 // code by jl
 package ch.ethz.idsc.owly.glc.adapter;
 
-import ch.ethz.idsc.tensor.RationalScalar;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Scalars;
 import ch.ethz.idsc.tensor.Tensor;
@@ -10,7 +9,7 @@ public abstract class DefaultParameters extends Parameters {
   private final Scalar lipschitz;
 
   public DefaultParameters( //
-      RationalScalar resolution, Scalar timeScale, Scalar depthScale, //
+      Scalar resolution, Scalar timeScale, Scalar depthScale, //
       Tensor partitionScale, Scalar dtMax, int maxIter, Scalar lipschitz) {
     super(resolution, timeScale, depthScale, partitionScale, dtMax, maxIter);
     this.lipschitz = lipschitz;

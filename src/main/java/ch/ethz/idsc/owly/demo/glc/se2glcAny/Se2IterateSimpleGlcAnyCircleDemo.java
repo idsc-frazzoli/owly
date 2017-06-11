@@ -56,7 +56,7 @@ class Se2IterateSimpleGlcAnyCircleDemo {
     System.out.println("1/Domainsize=" + parameters.getEta());
     parameters.printResolution();
     // Se2Controls uses Se2StateSpaceModel
-    Collection<Flow> controls = Se2Controls.createControls(Se2Utils.DEGREE(45), parameters.getResolution());
+    Collection<Flow> controls = Se2Controls.createControls(Se2Utils.DEGREE(45), parameters.getResolutionInt());
     Se2DefaultGoalManager se2GoalManager = new Se2DefaultGoalManager( //
         Tensors.vector(3, 0), RealScalar.of(1.5 * Math.PI), // east
         DoubleScalar.of(.1), Se2Utils.DEGREE(10));
@@ -89,7 +89,7 @@ class Se2IterateSimpleGlcAnyCircleDemo {
     goalListPosition.add(Tensors.vector(-3, 0));// West
     goalListPosition.add(Tensors.vector(0, 3)); // North
     goalListPosition.add(Tensors.vector(3, 0)); // East
-    List<RealScalar> goalListAngle = new ArrayList<>();
+    List<Scalar> goalListAngle = new ArrayList<>();
     goalListAngle.add(RealScalar.of(Math.PI)); // South
     goalListAngle.add(RealScalar.of(0.5 * Math.PI)); // West
     goalListAngle.add(RealScalar.of(0)); // North
