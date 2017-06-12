@@ -42,7 +42,7 @@ public class OwlyFrame {
         public void actionPerformed(ActionEvent actionEvent) {
           try {
             BufferedImage bufferedImage = offscreen();
-            ImageIO.write(bufferedImage, "PNG", UserHome.file("Pictures/owly_" + System.currentTimeMillis() + ".png"));
+            ImageIO.write(bufferedImage, "PNG", UserHome.Pictures("owly_" + System.currentTimeMillis() + ".png"));
           } catch (Exception exception) {
             exception.printStackTrace();
           }
