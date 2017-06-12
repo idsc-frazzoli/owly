@@ -6,36 +6,25 @@ The repository contains Java 8 implementations of motion planners and their vari
 
 List of algorithms:
 
-* RRT*
 * GLC
+* RRT*
 
 The references are
 
-* *Sampling-based algorithms for optimal motion planning*
-by Sertac Karaman and Emilio Frazzoli,
-[IJRR11](http://ares.lids.mit.edu/papers/Karaman.Frazzoli.IJRR11.pdf)
 * *A Generalized Label Correcting Method for Optimal Kinodynamic Motion Planning*
 by Brian Paden and Emilio Frazzoli, 
 [arXiv:1607.06966](https://arxiv.org/abs/1607.06966)
+* *Sampling-based algorithms for optimal motion planning*
+by Sertac Karaman and Emilio Frazzoli,
+[IJRR11](http://ares.lids.mit.edu/papers/Karaman.Frazzoli.IJRR11.pdf)
 
 The following integrators are available:
 
-* Euler
-* Midpoint
-* Runge-Kutta 4th order
-* Runge-Kutta 5th order 
+* Euler, Midpoint
+* Runge-Kutta 4th order, and 5th order 
 
 
 ## Examples
-
-### RRT*
-
-R^2
-
-![r2ani](https://cloud.githubusercontent.com/assets/4012178/26282173/06dccee8-3e0c-11e7-930f-fedab34fe396.gif)
-
-![r2](https://cloud.githubusercontent.com/assets/4012178/26045794/16bd0a54-394c-11e7-9d11-19558bc3be88.png)
-
 
 ### GLC
 
@@ -76,6 +65,14 @@ against the direction of current
 current reversed
 
 ![delta_s](https://cloud.githubusercontent.com/assets/4012178/26282191/59dafa84-3e0c-11e7-9602-2ece6f417bc1.gif)
+
+### RRT*
+
+R^2
+
+![r2ani](https://cloud.githubusercontent.com/assets/4012178/26282173/06dccee8-3e0c-11e7-930f-fedab34fe396.gif)
+
+![r2](https://cloud.githubusercontent.com/assets/4012178/26045794/16bd0a54-394c-11e7-9d11-19558bc3be88.png)
 
 ## References
 

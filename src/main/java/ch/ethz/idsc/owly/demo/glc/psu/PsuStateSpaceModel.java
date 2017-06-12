@@ -8,7 +8,9 @@ import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
 import ch.ethz.idsc.tensor.sca.Sin;
 
-/** Pendulum Swing-up state space model */
+/** Pendulum Swing-up state space model
+ * 
+ * bapaden phd thesis: (5.5.4) */
 class PsuStateSpaceModel implements StateSpaceModel {
   @Override
   public Tensor f(Tensor x, Tensor u) {

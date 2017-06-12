@@ -51,7 +51,7 @@ class Se2rExpandDemo {
     OwlyFrame owlyFrame = Gui.start();
     owlyFrame.configCoordinateOffset(169, 71);
     owlyFrame.jFrame.setBounds(100, 100, 300, 200);
-    GifSequenceWriter gsw = GifSequenceWriter.of(UserHome.file("se2r.gif"), 250);
+    GifSequenceWriter gsw = GifSequenceWriter.of(UserHome.Pictures("se2r.gif"), 250);
     while (!trajectoryPlanner.getBest().isPresent() && owlyFrame.jFrame.isVisible()) {
       Expand.maxSteps(trajectoryPlanner, 1);
       owlyFrame.setGlc(trajectoryPlanner);

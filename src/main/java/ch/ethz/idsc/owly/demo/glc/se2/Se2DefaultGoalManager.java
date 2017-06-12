@@ -19,7 +19,9 @@ import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.red.Norm;
 import ch.ethz.idsc.tensor.sca.Mod;
 
-/** Se2 goal region is not elliptic, therefore we implement {@link Region} */
+/** Se2 goal region is not elliptic, therefore we implement {@link Region}
+ * 
+ * bapaden phd thesis: (6.4.10) */
 public class Se2DefaultGoalManager implements Region, CostFunction {
   static final Mod PRINCIPAL = Mod.function(RealScalar.of(2 * Math.PI), RealScalar.of(-Math.PI));
   // ---
@@ -35,15 +37,13 @@ public class Se2DefaultGoalManager implements Region, CostFunction {
     this.angle_delta = angle_delta;
   }
 
-  @Override
-  /** Cost Function */
+  @Override // Cost Function
   public Scalar costIncrement(StateTime from, List<StateTime> trajectory, Flow flow) {
     // integrate(1,t)
     return Trajectories.timeIncrement(from, trajectory);
   }
 
-  @Override
-  /** Heuristic function */
+  @Override // Heuristic function
   public Scalar minCostToGoal(Tensor x) {
     return RealScalar.ZERO;
   }

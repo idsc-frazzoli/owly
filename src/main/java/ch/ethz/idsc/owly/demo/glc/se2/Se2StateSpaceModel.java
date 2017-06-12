@@ -9,6 +9,9 @@ import ch.ethz.idsc.tensor.Tensors;
 import ch.ethz.idsc.tensor.sca.Cos;
 import ch.ethz.idsc.tensor.sca.Sin;
 
+/** Nonholonomic Wheeled Robot
+ * 
+ * bapaden phd thesis: (5.5.12) */
 public class Se2StateSpaceModel implements StateSpaceModel {
   @Override
   public Tensor f(Tensor x, Tensor u) {

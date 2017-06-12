@@ -23,7 +23,8 @@ import ch.ethz.idsc.tensor.Tensors;
 
 /** Pendulum Swing-up
  * 
- * implementation inspired by
+ * bapaden phd thesis: 5.5.2 Torque-Limited Pendulum Swing-Up
+ * 
  * "A Generalized Label Correcting Method for Optimal Kinodynamic Motion Planning" [Paden/Frazzoli] */
 public class PsuDemo {
   public static void main(String[] args) {

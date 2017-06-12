@@ -42,7 +42,7 @@ class R2ExpandDemo {
     Rrts rrts = new DefaultRrts(rnss, nc, trq, LengthCostFunction.IDENTITY);
     RrtsNode root = rrts.insertAsNode(Tensors.vector(0, 0), 5);
     Random random = new Random();
-    GifSequenceWriter gsw = GifSequenceWriter.of(UserHome.file("r2rrts.gif"), 250);
+    GifSequenceWriter gsw = GifSequenceWriter.of(UserHome.Pictures("r2rrts.gif"), 250);
     OwlyFrame owlyFrame = Gui.start();
     owlyFrame.configCoordinateOffset(42, 456);
     owlyFrame.jFrame.setBounds(100, 100, 500, 500);
