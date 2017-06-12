@@ -1,24 +1,31 @@
 // code by jph
-package ch.ethz.idsc.owly.demo.glc.rice2;
+package ch.ethz.idsc.owly.math;
 
-import ch.ethz.idsc.owly.math.StateSpaceModel;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
+import ch.ethz.idsc.tensor.Scalars;
 import ch.ethz.idsc.tensor.Tensor;
+import ch.ethz.idsc.tensor.TensorRuntimeException;
 import ch.ethz.idsc.tensor.Tensors;
 import ch.ethz.idsc.tensor.alg.Join;
 import ch.ethz.idsc.tensor.red.Norm;
 
-class Rice2StateSpaceModel implements StateSpaceModel {
+/** Double Integrator with friction
+ * 
+ * implementation for n-dimensional position and velocity */
+public class Rice2StateSpaceModel implements StateSpaceModel {
   private final Scalar lambda;
 
+  /** @param lambda strictly positive friction coefficient */
   public Rice2StateSpaceModel(Scalar lambda) {
+    if (Scalars.lessEquals(lambda, RealScalar.ZERO))
+      throw TensorRuntimeException.of(lambda);
     this.lambda = lambda;
   }
 
   @Override
-  public Tensor f(Tensor x, Tensor u) { // u.length() == 2
-    Tensor v = x.extract(2, 4);
+  public Tensor f(Tensor x, Tensor u) {
+    Tensor v = x.extract(u.length(), x.length());
     return Join.of(v, u.subtract(v).multiply(lambda));
   }
 

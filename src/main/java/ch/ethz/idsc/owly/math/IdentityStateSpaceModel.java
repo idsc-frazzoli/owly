@@ -6,7 +6,9 @@ import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
 
 // formerly "SingleIntegrator"
-public final class IdentityStateSpaceModel implements StateSpaceModel {
+public enum IdentityStateSpaceModel implements StateSpaceModel {
+  INSTANCE;
+  // ---
   /** f(x,u) == u */
   @Override
   public Tensor f(Tensor x, Tensor u) {
@@ -15,6 +17,6 @@ public final class IdentityStateSpaceModel implements StateSpaceModel {
 
   @Override
   public Scalar getLipschitz() {
-    return RealScalar.ZERO;
+    return RealScalar.ZERO; // TODO why doesn't max speed matter here!?
   }
 }
