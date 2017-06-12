@@ -9,7 +9,9 @@ import ch.ethz.idsc.owly.demo.glc.se2.Se2Controls;
 import ch.ethz.idsc.owly.demo.glc.se2.Se2MinCurvatureGoalManager;
 import ch.ethz.idsc.owly.demo.glc.se2.Se2StateSpaceModel;
 import ch.ethz.idsc.owly.demo.glc.se2.Se2Utils;
+import ch.ethz.idsc.owly.demo.glc.se2.Se2Wrap;
 import ch.ethz.idsc.owly.demo.glc.se2glc.Se2Parameters;
+import ch.ethz.idsc.owly.demo.glc.tn.IdentityWrap;
 import ch.ethz.idsc.owly.glc.adapter.Parameters;
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
 import ch.ethz.idsc.owly.glc.core.AnyTrajectoryPlanner;
@@ -17,6 +19,7 @@ import ch.ethz.idsc.owly.glc.core.DebugUtils;
 import ch.ethz.idsc.owly.glc.core.Expand;
 import ch.ethz.idsc.owly.gui.Gui;
 import ch.ethz.idsc.owly.gui.OwlyFrame;
+import ch.ethz.idsc.owly.math.CoordinateWrap;
 import ch.ethz.idsc.owly.math.StateSpaceModel;
 import ch.ethz.idsc.owly.math.flow.Flow;
 import ch.ethz.idsc.owly.math.region.EllipsoidRegion;
@@ -37,7 +40,7 @@ import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
 
 /** (x,y,theta) */
-class Se2IterateGlcAnyCircleDemo {
+class Se2IterateGlcAnyCircleWrapDemo {
   public static void main(String[] args) throws Exception {
     RationalScalar resolution = (RationalScalar) RealScalar.of(10);
     Scalar timeScale = RealScalar.of(4);
@@ -54,9 +57,17 @@ class Se2IterateGlcAnyCircleDemo {
     // ---
     parameters.printResolution();
     Collection<Flow> controls = Se2Controls.createControls(Se2Utils.DEGREE(45), parameters.getResolutionInt());
+    final CoordinateWrap identity = new IdentityWrap();
+    CoordinateWrap coordinateWrap;
+    coordinateWrap = new Se2Wrap(Tensors.vector(1, 1, 1));
+    coordinateWrap = identity;
+    // Se2WrapGoalManager se2GoalManager = new Se2WrapGoalManager( //
+    // coordinateWrap, //
+    // Tensors.vector(3, 0, 1.5 * Math.PI),// east
+    // DoubleScalar.of(.25));
     Se2MinCurvatureGoalManager se2GoalManager = new Se2MinCurvatureGoalManager( //
         Tensors.vector(3, 0), RealScalar.of(1.5 * Math.PI), // east
-        DoubleScalar.of(.1), Se2Utils.DEGREE(10));
+        DoubleScalar.of(.1), Se2Utils.DEGREE(30));
     TrajectoryRegionQuery obstacleQuery = //
         new SimpleTrajectoryRegionQuery(new TimeInvariantRegion( //
             RegionUnion.of( //
@@ -97,13 +108,10 @@ class Se2IterateGlcAnyCircleDemo {
     boolean goalFound = false;
     int expandIter = 0;
     while (owlyFrame.jFrame.isVisible()) {
-      Scalar delay = RealScalar.of(3000);
+      Scalar delay = RealScalar.of(0);
       Thread.sleep(1000);
       tic = RealScalar.of(System.nanoTime());
       int index = iter % 4;
-      Se2MinCurvatureGoalManager se2GoalManager2 = new Se2MinCurvatureGoalManager( //
-          goalListPosition.get(index), goalListAngle.get(index), //
-          DoubleScalar.of(0.1), Se2Utils.DEGREE(10));
       // --
       StateTime newRootState = trajectory.get(5);
       int increment = trajectoryPlanner.switchRootToState(newRootState.x());
@@ -111,6 +119,9 @@ class Se2IterateGlcAnyCircleDemo {
       parameters.increaseDepthLimit(increment);
       owlyFrame.setGlc(trajectoryPlanner);
       Thread.sleep(delay.number().intValue() / 2);
+      Se2MinCurvatureGoalManager se2GoalManager2 = new Se2MinCurvatureGoalManager( //
+          goalListPosition.get(index), goalListAngle.get(index), //
+          DoubleScalar.of(0.5), Se2Utils.DEGREE(30));
       // --
       goalFound = trajectoryPlanner.changeGoal(se2GoalManager2.getGoalInterface());
       DebugUtils.nodeAmountCompare(trajectoryPlanner);
@@ -120,7 +131,7 @@ class Se2IterateGlcAnyCircleDemo {
       if (!goalFound)
         expandIter = Expand.maxDepth(trajectoryPlanner, parameters.getDepthLimit());
       // TODO BUG after expanding 2848 Nodes on a 10083 Domain
-      // BUG occurences changes for different GoalManager
+      // Bug changes with goalmanager (time of occurence)
       // ---
       toc = RealScalar.of(System.nanoTime());
       trajectory = trajectoryPlanner.getPathFromRootToGoal();

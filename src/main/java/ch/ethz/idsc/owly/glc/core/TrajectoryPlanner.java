@@ -151,23 +151,6 @@ public abstract class TrajectoryPlanner implements ExpandInterface, Serializable
     return Nodes.listFromRoot(getBestOrElsePeek());
   }
 
-  // TODO JONAS extract function to DebugUtils
-  /* package */ final void nodeAmountCheck(GlcNode node) {
-    final GlcNode root = Nodes.rootFrom(getBestOrElsePeek());
-    int treeSize = Nodes.ofSubtree(root).size();
-    if (domainMap().size() != treeSize) {
-      System.err.println("DomainMap  != TreeSize:");
-      System.err.println(domainMap().size() + " =/= " + treeSize + " after expanding of Node: ");
-      System.err.println("DEPTH: " + node.depth());
-      System.err.println("State: " + node.state());
-      if (node.isRoot())
-        System.err.println("Node has no parents");
-      if (node.isLeaf())
-        System.err.println("Node is leaf");
-      throw new RuntimeException();
-    }
-  }
-
   /** @return unmodifiable view on queue for display and tests */
   public final Collection<GlcNode> getQueue() {
     return Collections.unmodifiableCollection(queue);

@@ -22,7 +22,7 @@ import ch.ethz.idsc.tensor.Tensor;
   /** flow is null for root node */
   private final Flow flow;
   private final StateTime stateTime;
-  private final Scalar costFromRoot;
+  private Scalar costFromRoot;
   private Scalar merit;
   /** depth == 0 for root node, otherwise depth > 0 */
   private int depth = 0;
@@ -98,5 +98,11 @@ import ch.ethz.idsc.tensor.Tensor;
   public int reCalculateDepth() {
     depth = Nodes.listToRoot(this).size() - 1;
     return depth; // as RootNode has depth 0 (NOT 1)
+  }
+
+  @Override // from GlcNode
+  public void reCalculateCost(Scalar costIncrement) {
+    merit = parent().costFromRoot().add(costIncrement).subtract(costFromRoot).add(merit);
+    costFromRoot = parent().costFromRoot().add(costIncrement);
   }
 }

@@ -25,6 +25,7 @@ import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
+import ch.ethz.idsc.tensor.sca.Mod;
 
 class R2glcAnyDemo {
   public static void main(String[] args) {
@@ -53,20 +54,21 @@ class R2glcAnyDemo {
     List<StateTime> trajectory = trajectoryPlanner.getPathFromRootToGoal();
     Trajectories.print(trajectory);
     Gui.glc(trajectoryPlanner);
-    int oldReplace = 0;
-    for (int iter = 0; iter < 3; iter++) {
+    Tensor goal = Tensors.vector(6, 6);
+    for (int iter = 0; iter < 20; iter++) {
       long tic = System.nanoTime();
-      RnGoalManager rnGoal2 = new RnGoalManager(Tensors.vector(6 + iter, 6 + iter), DoubleScalar.of(.25));
-      StateTime newRootState = trajectory.get(1);
+      goal = goal.add(Tensors.vector(1, 1));
+      goal.set(Mod.function(RealScalar.of(5)), 0);
+      goal.set(Mod.function(RealScalar.of(5)), 1);
+      RnGoalManager rnGoal2 = new RnGoalManager(goal, DoubleScalar.of(.25));
+      StateTime newRootState = trajectory.get(trajectory.size() > 1 ? 1 : 0);
       // ---
       int increment = trajectoryPlanner.switchRootToState(newRootState.x());
       Gui.glc(trajectoryPlanner);
       parameters.increaseDepthLimit(increment);
+      System.out.println("Switching to Goal:" + goal);
       trajectoryPlanner.changeGoal(rnGoal2);
       int iters2 = Expand.maxDepth(trajectoryPlanner, parameters.getDepthLimit());
-      System.out.println("Replaced " + (trajectoryPlanner.replaceCount() - oldReplace)//
-          + " Labels with better Nodes in run: " + iter + 1);
-      oldReplace = trajectoryPlanner.replaceCount();
       trajectory = trajectoryPlanner.getPathFromRootToGoal();
       Trajectories.print(trajectory);
       // ---
