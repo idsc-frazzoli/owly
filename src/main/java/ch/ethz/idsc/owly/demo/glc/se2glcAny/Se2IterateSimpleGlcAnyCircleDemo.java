@@ -104,17 +104,15 @@ class Se2IterateSimpleGlcAnyCircleDemo {
       Se2MinCurvatureGoalManager se2GoalManager2 = new Se2MinCurvatureGoalManager( //
           goalListPosition.get(index), goalListAngle.get(index), //
           DoubleScalar.of(0.1), Se2Utils.DEGREE(10));
-      // GlcNode newRootNode = trajectoryPlanner.getNodesfromRootToGoal().get(2);
-      // int increment = trajectoryPlanner.switchRootToNode(newRootNode);
       StateTime newRootState = trajectory.get(2);
       int increment = trajectoryPlanner.switchRootToState(newRootState.x());
       parameters.increaseDepthLimit(increment);
-      // trajectoryPlanner.switchRootToNode(newRootNode);
-      trajectoryPlanner.changeGoal(se2GoalManager2.getGoalInterface());
-      int expandIter = Expand.maxDepth(trajectoryPlanner, parameters.getDepthLimit());
+      final boolean foundGoal = trajectoryPlanner.changeGoal(se2GoalManager2.getGoalInterface());
+      int expandIter = 0;
+      if (!foundGoal)
+        expandIter = Expand.maxDepth(trajectoryPlanner, parameters.getDepthLimit());
       trajectory = trajectoryPlanner.getPathFromRootToGoal();
       Trajectories.print(trajectory);
-      // Trajectories.print(trajectory);
       // ---
       toc = System.nanoTime();
       timeSum = RealScalar.of(toc - tic).multiply(RealScalar.of(1e-9)).add(timeSum);

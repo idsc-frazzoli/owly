@@ -1,7 +1,6 @@
 // code by jl
 package ch.ethz.idsc.owly.glc.core;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -42,16 +41,6 @@ public class AnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
 
   @Override // from ExpandInterface
   public void expand(final GlcNode node) {
-    // --Experimental
-    // GOAL check
-    List<StateTime> bestState = new ArrayList<>();
-    bestState.add(node.stateTime());
-    if (!goalInterface.isDisjoint(bestState)) {
-      offerDestination(node);
-      System.out.println("Goal found");
-      return;
-    }
-    // -- old Code
     // TODO count updates in cell based on costs for benchmarking
     Map<GlcNode, List<StateTime>> connectors = //
         SharedUtils.integrate(node, controls, getStateIntegrator(), goalInterface);
@@ -74,7 +63,7 @@ public class AnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
 
   // TODO BUG: if big numbers of nodes are expanded, nodes =/= domains
   private void processCandidates( //
-      GlcNode node, Map<GlcNode, List<StateTime>> connectors, CandidatePairQueueMap candidatePairQueueMap) {
+      GlcNode nextParent, Map<GlcNode, List<StateTime>> connectors, CandidatePairQueueMap candidatePairQueueMap) {
     for (Entry<Tensor, CandidatePairQueue> entry : candidatePairQueueMap.map.entrySet()) {
       final Tensor domainKey = entry.getKey();
       final CandidatePairQueue candidateQueue = entry.getValue();
@@ -86,28 +75,31 @@ public class AnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
           final GlcNode next = nextCandidatePair.getCandidate();
           if (formerLabel != null) {
             if (Scalars.lessThan(next.merit(), formerLabel.merit())) {
-              // collision check only if new node is betster
+              // collision check only if new node is better
               if (getObstacleQuery().isDisjoint(connectors.get(next))) {// better node not collision
-                // current label back in bucket for this domains,
-                // System.out.println("Relabeled a domain with this labeltime: "//
-                // + formerLabel.stateTime().time() + "s swith cost: "+formerLabel.costFromRoot() +" and this merit s" + formerLabel.merit() //
-                // +" with this Candidatetime: "+ next.stateTime().time() + "s with cost: "+ next.costFromRoot() +" and this merit "+ next.merit());//
-                // System.out.println("from Origin: "+ node.state() + " at "+ node.stateTime().time() + "s" );
                 CandidatePair formerCandidate = new CandidatePair(formerLabel.parent(), formerLabel);
                 candidateMap.get(domainKey).add(formerCandidate);
                 // Removing the formerLabel from the Queue, if in it
-                queue().remove(formerLabel);
+                final Collection<GlcNode> subDeleteTree = deleteChildrenOf(formerLabel);
+                if (subDeleteTree.size() > 1)
+                  System.err.println("Pruned Tree of Size: " + subDeleteTree.size());
                 // removing the nextCandidate from bucket of this domain
                 // formerLabel disconnecting
                 formerLabel.parent().removeEdgeTo(formerLabel);
                 // adding next to tree and DomainMap
-                node.insertEdgeTo(next);
-                insert(domainKey, next);
-                candidateMap.get(domainKey).remove(nextCandidatePair);
+                nextParent.insertEdgeTo(next);
+                // TODO write check for insertion
+                final boolean replaced = insert(domainKey, next);
+                if (replaced)
+                  candidateMap.get(domainKey).remove(nextCandidatePair);
                 candidateQueue.remove();
+                if (replaced) {
+                  System.out.println("Node was present in domain, but should have been deleted earlier");
+                  throw new RuntimeException();
+                }
                 // GOAL check
-                // if (!goalInterface.isDisjoint(connectors.get(next)))
-                // offerDestination(next);
+                if (!goalInterface.isDisjoint(connectors.get(next)))
+                  offerDestination(next);
                 break;
               }
             }
@@ -115,13 +107,17 @@ public class AnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
             if (getObstacleQuery().isDisjoint(connectors.get(next))) {
               // removing the nextCandidate from bucket of this domain
               // adding next to tree and DomainMap
-              node.insertEdgeTo(next);
-              insert(domainKey, next);
+              nextParent.insertEdgeTo(next);
+              boolean replaced = insert(domainKey, next);
+              if (replaced) {
+                System.err.println("No formerLabel existed, but sth. was replaced");
+                throw new RuntimeException();
+              }
               candidateMap.get(domainKey).remove(nextCandidatePair);
               candidateQueue.remove();
               // GOAL check
-              // if (!goalInterface.isDisjoint(connectors.get(next)))
-              // offerDestination(next);
+              if (!goalInterface.isDisjoint(connectors.get(next)))
+                offerDestination(next);
               break;
             }
           }
@@ -148,7 +144,7 @@ public class AnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
     int oldDomainMapSize = domainMap().size();
     long oldtotalCandidates = candidateMap.values().stream().flatMap(Collection::stream).count();
     int oldQueueSize = queue().size();
-    // -- BASIC REROOTING
+    // -- BASIC REROOTING AND DELETING
     // removes the new root from the child list of its parent
     // Disconnecting newRoot from Old Tree and collecting DeleteTree
     newRoot.parent().removeEdgeTo(newRoot);
@@ -195,8 +191,9 @@ public class AnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
           final List<StateTime> connector = //
               getStateIntegrator().trajectory(nextParent.stateTime(), next.flow());
           if (getObstacleQuery().isDisjoint(connector)) { // no collision
+            if (formerLabel.parent() != null)
+              formerLabel.parent().removeEdgeTo(formerLabel);
             nextParent.insertEdgeTo(next);
-            // data structure changing statement shall not be in if clause:
             final boolean replaced = insert(domainKey, next);
             // DomainMap at this key should be empty
             candidateMap.get(domainKey).remove(nextCandidatePair);

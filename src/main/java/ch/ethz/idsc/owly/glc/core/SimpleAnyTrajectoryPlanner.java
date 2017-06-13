@@ -68,7 +68,9 @@ public class SimpleAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
               // collision check only if new node is better
               if (getObstacleQuery().isDisjoint(connectors.get(next))) {// better node not collision
                 // remove former Label from QUEUE
-                queue().remove(formerLabel);
+                final Collection<GlcNode> subDeleteTree = deleteChildrenOf(formerLabel);
+                if (subDeleteTree.size() > 1)
+                  System.err.println("Pruned Tree of Size: " + subDeleteTree.size());
                 // formerLabel disconnecting
                 formerLabel.parent().removeEdgeTo(formerLabel);
                 node.insertEdgeTo(next);

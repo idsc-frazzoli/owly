@@ -58,7 +58,6 @@ import ch.ethz.idsc.tensor.Tensor;
         if (deleteTreeCollection.contains(optional.get()))
           setBestNull();
     }
-    System.out.println("Nodes to be deleted: " + deleteTreeCollection.size());
     // -- QUEUE: Deleting Nodes from Queue
     queue().removeAll(deleteTreeCollection);
     // -- DOMAINMAP: Removing Nodes (DeleteTree) from DomainMap
@@ -81,61 +80,56 @@ import ch.ethz.idsc.tensor.Tensor;
    * @return boolean, true if Goal was already found in oldTree */
   public boolean changeGoal(final GoalInterface newGoal) {
     this.goalInterface = newGoal;
-    // -- GOALCHECK BEST
-    // TODO needed? as tree check will find it anyways, (maybe a better best), Pros: maybe timegain
-    {
-      Optional<GlcNode> optional = getBest();
-      if (optional.isPresent()) {
-        GlcNode best = optional.get();
-        List<StateTime> bestState = new ArrayList<>();
-        bestState.add(best.stateTime());
-        if (!newGoal.isDisjoint(bestState)) {
-          offerDestination(best);
-          System.out.println("Old Goal is in new Goalregion");
-          return true;
-        } // Old Goal is in new Goalregion
-      }
-    }
-    // Best is either not in newGoal or Null
+    final GlcNode root = Nodes.rootFrom(getBestOrElsePeek());
     setBestNull();
     // -- GOALCHECK TREE
-    {
-      long tic = System.nanoTime();
-      final GlcNode root = Nodes.rootFrom(getBestOrElsePeek());
-      Collection<GlcNode> treeCollection = Nodes.ofSubtree(root);
-      System.out.println("treesize for goal checking: " + treeCollection.size());
-      // TODO more efficient way then going through entire tree?
-      Iterator<GlcNode> treeCollectionIterator = treeCollection.iterator();
-      while (treeCollectionIterator.hasNext()) {
-        GlcNode current = treeCollectionIterator.next();
-        List<StateTime> currentState = new ArrayList<>();
-        currentState.add(current.stateTime());
-        if (!newGoal.isDisjoint(currentState)) { // current Node in Goal
-          offerDestination(current);
-          long toc = System.nanoTime();
-          System.out.println("New Goal was found in current tree --> No new search needed");
-          System.out.println("Checked current tree for goal in "//
-              + (toc - tic) * 1e-9 + "s");
-          return true;
-        }
-      }
-      long toc = System.nanoTime();
-      System.out.println("Checked current tree for goal in "//
-          + (toc - tic) * 1e-9 + "s");
-    }
-    // -- QUEUE
-    // Updating the Queue
     long tic = System.nanoTime();
+    Collection<GlcNode> treeCollection = Nodes.ofSubtree(root);
+    System.out.println("treesize for goal checking: " + treeCollection.size());
+    // TODO Parralizabe?
+    Iterator<GlcNode> treeCollectionIterator = treeCollection.iterator();
+    while (treeCollectionIterator.hasNext()) { // goes through entire tree
+      GlcNode current = treeCollectionIterator.next();
+      List<StateTime> currentState = new ArrayList<>();
+      currentState.add(current.stateTime());
+      if (!newGoal.isDisjoint(currentState)) // current Node in Goal
+        offerDestination(current); // overwrites worse Goal
+    }
+    long toc = System.nanoTime();
+    System.out.println("Checked current tree for goal in "//
+        + (toc - tic) * 1e-9 + "s");
+    if (getBest().isPresent()) {
+      System.out.println("New Goal was found in current tree --> No new search needed");
+      return true;
+    }
+    // -- TREE
+    // Updating the merit of the entire tree
+    tic = System.nanoTime();
     // Changing the Merit in Queue for each Node
     List<GlcNode> list = new LinkedList<>(queue());
-    queue().clear();
-    list.stream().parallel() //
+    treeCollection.stream().parallel() //
         .forEach(glcNode -> glcNode.setMinCostToGoal(newGoal.minCostToGoal(glcNode.state())));
+    // TODO Does Queue sort itself new automatically?
+    queue().clear();
     queue().addAll(list);
-    long toc = System.nanoTime();
-    System.out.println("Updated Merit of Queue with " + list.size() + " nodes in: " //
+    toc = System.nanoTime();
+    System.out.println("Updated Merit of Tree with " + list.size() + " nodes in: " //
         + ((toc - tic) * 1e-9) + "s");
     System.out.println("**Goalswitch finished**");
     return false;
+    // // -- QUEUE
+    // // Updating the Queue
+    // long tic = System.nanoTime();
+    // // Changing the Merit in Queue for each Node
+    // List<GlcNode> list = new LinkedList<>(queue());
+    // queue().clear();
+    // list.stream().parallel() //
+    // .forEach(glcNode -> glcNode.setMinCostToGoal(newGoal.minCostToGoal(glcNode.state())));
+    // queue().addAll(list);
+    // long toc = System.nanoTime();
+    // System.out.println("Updated Merit of Queue with " + list.size() + " nodes in: " //
+    // + ((toc - tic) * 1e-9) + "s");
+    // System.out.println("**Goalswitch finished**");
+    // return false;
   }
 }
