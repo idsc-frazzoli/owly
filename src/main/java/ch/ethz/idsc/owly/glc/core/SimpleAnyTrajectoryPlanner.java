@@ -39,8 +39,6 @@ public class SimpleAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
     // TODO count updates in cell based on costs for benchmarking
     Map<GlcNode, List<StateTime>> connectors = //
         SharedUtils.integrate(node, controls, getStateIntegrator(), goalInterface);
-    // Set<Tensor> domainsNeedingUpdate = new HashSet<>();
-    // Map<Tensor, DomainQueue> candidates = new HashMap<>();
     CandidatePairQueueMap candidates = new CandidatePairQueueMap();
     for (GlcNode next : connectors.keySet()) { // <- order of keys is non-deterministic
       CandidatePair nextCandidate = new CandidatePair(node, next);
