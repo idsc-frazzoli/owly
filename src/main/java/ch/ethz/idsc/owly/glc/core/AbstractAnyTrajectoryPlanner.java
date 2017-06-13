@@ -49,9 +49,19 @@ import ch.ethz.idsc.tensor.Tensor;
    * @return The value,by which the depth limit needs to be increased as of the RootSwitch */
   public abstract int switchRootToNode(GlcNode newRoot);
 
-  protected final Collection<GlcNode> deleteChildrenOf(GlcNode oldRoot) {
-    Collection<GlcNode> deleteTreeCollection = Nodes.ofSubtree(oldRoot);
-    // -- GOAL: goal deleted?
+  protected final void insertNodeInTree(GlcNode parent, GlcNode node) {
+    parent.insertEdgeTo(node);
+    final Tensor domainKey = convertToKey(node.state());
+    final boolean replaced = insert(domainKey, node);
+    if (replaced) {
+      System.err.println("No formerLabel existed, but sth. was replaced");
+      throw new RuntimeException();
+    }
+  }
+
+  protected final Collection<GlcNode> deleteSubtreeOf(GlcNode baseNode) {
+    Collection<GlcNode> deleteTreeCollection = Nodes.ofSubtree(baseNode);
+    // -- GOAL: goalNode deleted?
     {
       Optional<GlcNode> optional = getBest();
       if (optional.isPresent())
@@ -62,14 +72,16 @@ import ch.ethz.idsc.tensor.Tensor;
     queue().removeAll(deleteTreeCollection);
     // -- DOMAINMAP: Removing Nodes (DeleteTree) from DomainMap
     domainMap().values().removeAll(deleteTreeCollection);
-    // --
     // -- EDGE: Removing Edges between Nodes in DeleteTree
-    // TODO: edge removal Needed?
+    // TODO: edge removal of all nodes needed?
+    // Minimum needed:
+    // baseRoot.parent().removeEdgeTo(baseRoot);
     // oldRoot has no parent, therefore is skipped
-    deleteTreeCollection.remove(oldRoot);
-    // TODO: can parallelize?
-    deleteTreeCollection.forEach(tempNode -> tempNode.parent().removeEdgeTo(tempNode));
-    deleteTreeCollection.add(oldRoot);
+    deleteTreeCollection.remove(baseNode);
+    deleteTreeCollection.stream().parallel().forEach(tempNode -> tempNode.parent().removeEdgeTo(tempNode));
+    deleteTreeCollection.add(baseNode);
+    // if (!baseNode.isRoot()) //if not Rootnode, function was called in expand
+    // baseNode.parent().removeEdgeTo(baseNode);
     return deleteTreeCollection;
   }
 
@@ -117,19 +129,5 @@ import ch.ethz.idsc.tensor.Tensor;
         + ((toc - tic) * 1e-9) + "s");
     System.out.println("**Goalswitch finished**");
     return false;
-    // // -- QUEUE
-    // // Updating the Queue
-    // long tic = System.nanoTime();
-    // // Changing the Merit in Queue for each Node
-    // List<GlcNode> list = new LinkedList<>(queue());
-    // queue().clear();
-    // list.stream().parallel() //
-    // .forEach(glcNode -> glcNode.setMinCostToGoal(newGoal.minCostToGoal(glcNode.state())));
-    // queue().addAll(list);
-    // long toc = System.nanoTime();
-    // System.out.println("Updated Merit of Queue with " + list.size() + " nodes in: " //
-    // + ((toc - tic) * 1e-9) + "s");
-    // System.out.println("**Goalswitch finished**");
-    // return false;
   }
 }

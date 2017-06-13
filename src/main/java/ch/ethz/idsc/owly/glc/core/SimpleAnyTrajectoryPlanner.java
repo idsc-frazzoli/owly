@@ -52,7 +52,7 @@ public class SimpleAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
   }
 
   private void processCandidates( //
-      GlcNode node, Map<GlcNode, List<StateTime>> connectors, CandidatePairQueueMap candidates) {
+      GlcNode nextParent, Map<GlcNode, List<StateTime>> connectors, CandidatePairQueueMap candidates) {
     for (Entry<Tensor, CandidatePairQueue> entry : candidates.map.entrySet()) {
       final Tensor domain_key = entry.getKey();
       final CandidatePairQueue candidateQueue = entry.getValue();
@@ -66,13 +66,12 @@ public class SimpleAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
               // collision check only if new node is better
               if (getObstacleQuery().isDisjoint(connectors.get(next))) {// better node not collision
                 // remove former Label from QUEUE
-                final Collection<GlcNode> subDeleteTree = deleteChildrenOf(formerLabel);
+                final Collection<GlcNode> subDeleteTree = deleteSubtreeOf(formerLabel);
                 if (subDeleteTree.size() > 1)
                   System.err.println("Pruned Tree of Size: " + subDeleteTree.size());
                 // formerLabel disconnecting
                 formerLabel.parent().removeEdgeTo(formerLabel);
-                node.insertEdgeTo(next);
-                insert(domain_key, next);
+                insertNodeInTree(nextParent, next);
                 if (!goalInterface.isDisjoint(connectors.get(next)))
                   offerDestination(next);
                 candidateQueue.remove();
@@ -83,7 +82,7 @@ public class SimpleAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
           } else {
             // candidateQueue.remove();
             if (getObstacleQuery().isDisjoint(connectors.get(next))) {
-              node.insertEdgeTo(next);
+              nextParent.insertEdgeTo(next);
               insert(domain_key, next);
               if (!goalInterface.isDisjoint(connectors.get(next)))
                 offerDestination(next);
@@ -112,7 +111,7 @@ public class SimpleAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
     // removes the new root from the child list of its parent
     final GlcNode parent = newRoot.parent();
     parent.removeEdgeTo(newRoot);
-    Collection<GlcNode> deleteTreeCollection = deleteChildrenOf(oldRoot);
+    Collection<GlcNode> deleteTreeCollection = deleteSubtreeOf(oldRoot);
     System.out.println(oldDomainMapSize - domainMap().size() + " out of " + oldDomainMapSize + //
         " Domains removed from DomainMap = " + domainMap().size());
     GlcNode root = Nodes.rootFrom(getBestOrElsePeek());

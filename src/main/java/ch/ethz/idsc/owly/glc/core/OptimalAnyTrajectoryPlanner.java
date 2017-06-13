@@ -77,25 +77,25 @@ public class OptimalAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
             if (Scalars.lessThan(next.merit(), formerLabel.merit())) {
               // collision check only if new node is better
               if (getObstacleQuery().isDisjoint(connectors.get(next))) {// better node not collision
-                final Collection<GlcNode> subDeleteTree = deleteChildrenOf(formerLabel);
+                final Collection<GlcNode> subDeleteTree = deleteSubtreeOf(formerLabel);
                 if (subDeleteTree.size() > 1)
                   System.err.println("Pruned Tree of Size: " + subDeleteTree.size());
+                // adding the formerLabel as formerCandidate to bucket
                 CandidatePair formerCandidate = new CandidatePair(formerLabel.parent(), formerLabel);
                 candidateMap.get(domainKey).add(formerCandidate);
-                // removing the nextCandidate from bucket of this domain
                 // formerLabel disconnecting
                 formerLabel.parent().removeEdgeTo(formerLabel);
                 // adding next to tree and DomainMap
-                nextParent.insertEdgeTo(next);
-                // TODO write check for insertion
-                final boolean replaced = insert(domainKey, next);
-                if (replaced)
-                  candidateMap.get(domainKey).remove(nextCandidatePair);
+                insertNodeInTree(nextParent, next);
+                // nextParent.insertEdgeTo(next);
+                // final boolean replaced = insert(domainKey, next);
+                // if (replaced) {
+                // System.err.println("No formerLabel existed, but sth. was replaced");
+                // throw new RuntimeException();
+                // }
+                // removing the nextCandidate from bucket of this domain
+                candidateMap.get(domainKey).remove(nextCandidatePair);
                 candidateQueue.remove();
-                if (replaced) {
-                  System.out.println("Node was present in domain, but should have been deleted earlier");
-                  throw new RuntimeException();
-                }
                 // GOAL check
                 if (!goalInterface.isDisjoint(connectors.get(next)))
                   offerDestination(next);
@@ -147,7 +147,7 @@ public class OptimalAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
     // removes the new root from the child list of its parent
     // Disconnecting newRoot from Old Tree and collecting DeleteTree
     newRoot.parent().removeEdgeTo(newRoot);
-    Collection<GlcNode> deleteTreeCollection = deleteChildrenOf(oldRoot);
+    Collection<GlcNode> deleteTreeCollection = deleteSubtreeOf(oldRoot);
     // -- DEBUGING
     System.out.println("Removed " + (oldQueueSize - queue().size()) + " out of " + oldQueueSize + " nodes from Queue = " + queue().size());
     System.out.println(oldDomainMapSize - domainMap().size() + " out of " + oldDomainMapSize + //
@@ -193,7 +193,7 @@ public class OptimalAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
             if (formerLabel.parent() != null)
               formerLabel.parent().removeEdgeTo(formerLabel);
             nextParent.insertEdgeTo(next);
-            // TODO: check if CAndidates are small treees?
+            // TODO: check if Candidates are small trees?
             final boolean replaced = insert(domainKey, next);
             if (replaced) {// DomainMap at this key should be empty
               System.out.println("Something was replaced --> BUG");
