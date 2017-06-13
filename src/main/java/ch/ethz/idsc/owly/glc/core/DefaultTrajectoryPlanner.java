@@ -13,7 +13,7 @@ import ch.ethz.idsc.owly.math.state.TrajectoryRegionQuery;
 import ch.ethz.idsc.tensor.Scalars;
 import ch.ethz.idsc.tensor.Tensor;
 
-public class DefaultTrajectoryPlanner extends StandardTrajectoryPlanner {
+public class DefaultTrajectoryPlanner extends AbstractStandardTrajectoryPlanner {
   private final Collection<Flow> controls;
 
   public DefaultTrajectoryPlanner( //

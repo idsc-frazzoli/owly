@@ -22,13 +22,13 @@ import ch.ethz.idsc.tensor.Tensor;
  * after: [B. Paden] A Generalized Label Correcting Method for Optimal Kinodynamic Motion Planning
  * Assumptions: -All states of all obstacles are known at all times
  * -No new Obstacles are discovered */
-public class AnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
+public class OptimalAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
   private final Collection<Flow> controls;
   // CandidateMap saves neglected/pruned Nodes in a bucket for each domain
   private final Map<Tensor, Set<CandidatePair>> candidateMap = //
       new HashMap<>();
 
-  public AnyTrajectoryPlanner( //
+  public OptimalAnyTrajectoryPlanner( //
       Tensor eta, //
       StateIntegrator stateIntegrator, //
       Collection<Flow> controls, //
