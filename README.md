@@ -76,4 +76,4 @@ R^2
 
 ## References
 
-The repository has over `30` unit tests.
+The repository has over `40` unit tests.
