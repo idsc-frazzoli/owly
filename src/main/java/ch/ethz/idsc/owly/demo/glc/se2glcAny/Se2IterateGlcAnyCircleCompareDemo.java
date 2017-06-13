@@ -12,7 +12,7 @@ import ch.ethz.idsc.owly.demo.glc.se2.Se2Utils;
 import ch.ethz.idsc.owly.demo.glc.se2glc.Se2Parameters;
 import ch.ethz.idsc.owly.glc.adapter.Parameters;
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
-import ch.ethz.idsc.owly.glc.core.AnyTrajectoryPlanner;
+import ch.ethz.idsc.owly.glc.core.OptimalAnyTrajectoryPlanner;
 import ch.ethz.idsc.owly.glc.core.DebugUtils;
 import ch.ethz.idsc.owly.glc.core.DefaultTrajectoryPlanner;
 import ch.ethz.idsc.owly.glc.core.Expand;
@@ -80,7 +80,7 @@ class Se2IterateGlcAnyCircleCompareDemo {
     Scalar tic = RealScalar.of(System.nanoTime());
     System.out.println("***ANY***");
     // {
-    AnyTrajectoryPlanner anyTrajectoryPlanner = new AnyTrajectoryPlanner( //
+    OptimalAnyTrajectoryPlanner anyTrajectoryPlanner = new OptimalAnyTrajectoryPlanner( //
         parameters.getEta(), stateIntegrator, controls, obstacleQuery, se2GoalManager.getGoalInterface());
     anyTrajectoryPlanner.insertRoot(Tensors.vector(0, 3, 0));
     int iters = Expand.maxDepth(anyTrajectoryPlanner, parameters.getDepthLimit());

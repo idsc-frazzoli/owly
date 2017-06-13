@@ -11,12 +11,12 @@ import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Tensor;
 
 /** planner is shared between default and abstract-any */
-public abstract class StandardTrajectoryPlanner extends TrajectoryPlanner {
+public abstract class AbstractStandardTrajectoryPlanner extends TrajectoryPlanner {
   private final StateIntegrator stateIntegrator;
   private final TrajectoryRegionQuery obstacleQuery;
   /* not final */ GoalInterface goalInterface;
 
-  protected StandardTrajectoryPlanner( //
+  protected AbstractStandardTrajectoryPlanner( //
       Tensor eta, //
       StateIntegrator stateIntegrator, //
       TrajectoryRegionQuery obstacleQuery, //

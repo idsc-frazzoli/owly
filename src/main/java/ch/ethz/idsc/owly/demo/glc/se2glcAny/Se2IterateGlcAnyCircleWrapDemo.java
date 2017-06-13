@@ -14,7 +14,7 @@ import ch.ethz.idsc.owly.demo.glc.se2glc.Se2Parameters;
 import ch.ethz.idsc.owly.demo.glc.tn.IdentityWrap;
 import ch.ethz.idsc.owly.glc.adapter.Parameters;
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
-import ch.ethz.idsc.owly.glc.core.AnyTrajectoryPlanner;
+import ch.ethz.idsc.owly.glc.core.OptimalAnyTrajectoryPlanner;
 import ch.ethz.idsc.owly.glc.core.DebugUtils;
 import ch.ethz.idsc.owly.glc.core.Expand;
 import ch.ethz.idsc.owly.gui.Gui;
@@ -78,7 +78,7 @@ class Se2IterateGlcAnyCircleWrapDemo {
             )));
     // ---
     Scalar tic = RealScalar.of(System.nanoTime());
-    AnyTrajectoryPlanner trajectoryPlanner = new AnyTrajectoryPlanner( //
+    OptimalAnyTrajectoryPlanner trajectoryPlanner = new OptimalAnyTrajectoryPlanner( //
         parameters.getEta(), stateIntegrator, controls, obstacleQuery, se2GoalManager.getGoalInterface());
     // ---
     trajectoryPlanner.insertRoot(Tensors.vector(0, 3, 0));

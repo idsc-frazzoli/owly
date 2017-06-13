@@ -7,7 +7,7 @@ import java.util.List;
 import ch.ethz.idsc.owly.demo.util.R2Controls;
 import ch.ethz.idsc.owly.glc.adapter.Parameters;
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
-import ch.ethz.idsc.owly.glc.core.AnyTrajectoryPlanner;
+import ch.ethz.idsc.owly.glc.core.OptimalAnyTrajectoryPlanner;
 import ch.ethz.idsc.owly.glc.core.Expand;
 import ch.ethz.idsc.owly.gui.Gui;
 import ch.ethz.idsc.owly.math.flow.EulerIntegrator;
@@ -47,7 +47,7 @@ class R2glcAnyDemo {
     // TrajectoryRegionQuery obstacleQuery = new SimpleTrajectoryRegionQuery( //
     // new TimeInvariantRegion(new R2Bubbles()));
     // ---
-    AnyTrajectoryPlanner trajectoryPlanner = new AnyTrajectoryPlanner( //
+    OptimalAnyTrajectoryPlanner trajectoryPlanner = new OptimalAnyTrajectoryPlanner( //
         parameters.getEta(), stateIntegrator, controls, obstacleQuery, rnGoal);
     trajectoryPlanner.insertRoot(Tensors.vector(0, 0));
     Expand.maxDepth(trajectoryPlanner, parameters.getDepthLimit());
