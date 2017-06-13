@@ -58,7 +58,7 @@ public class OptimalAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
       candidateMap.get(entry.getKey()).addAll(entry.getValue());
     }
     processCandidates(node, connectors, candidatePairQueueMap);
-    DebugUtils.nodeAmountCheck(getBestOrElsePeek(), node, domainMap().size());
+    // DebugUtils.nodeAmountCheck(getBestOrElsePeek(), node, domainMap().size());
   }
 
   // TODO BUG: if big numbers of nodes are expanded, nodes =/= domains
@@ -77,25 +77,23 @@ public class OptimalAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
             if (Scalars.lessThan(next.merit(), formerLabel.merit())) {
               // collision check only if new node is better
               if (getObstacleQuery().isDisjoint(connectors.get(next))) {// better node not collision
-                final Collection<GlcNode> subDeleteTree = deleteChildrenOf(formerLabel);
+                final Collection<GlcNode> subDeleteTree = deleteSubtreeOf(formerLabel);
                 if (subDeleteTree.size() > 1)
                   System.err.println("Pruned Tree of Size: " + subDeleteTree.size());
+                // adding the formerLabel as formerCandidate to bucket
                 CandidatePair formerCandidate = new CandidatePair(formerLabel.parent(), formerLabel);
+                if (!formerCandidate.getCandidate().isLeaf()) {
+                  System.err.println("The Candidate in the bucket has children");
+                  throw new RuntimeException();
+                }
                 candidateMap.get(domainKey).add(formerCandidate);
-                // removing the nextCandidate from bucket of this domain
                 // formerLabel disconnecting
                 formerLabel.parent().removeEdgeTo(formerLabel);
                 // adding next to tree and DomainMap
-                nextParent.insertEdgeTo(next);
-                // TODO write check for insertion
-                final boolean replaced = insert(domainKey, next);
-                if (replaced)
-                  candidateMap.get(domainKey).remove(nextCandidatePair);
+                insertNodeInTree(nextParent, next);
+                // removing the nextCandidate from bucket of this domain
+                candidateMap.get(domainKey).remove(nextCandidatePair);
                 candidateQueue.remove();
-                if (replaced) {
-                  System.out.println("Node was present in domain, but should have been deleted earlier");
-                  throw new RuntimeException();
-                }
                 // GOAL check
                 if (!goalInterface.isDisjoint(connectors.get(next)))
                   offerDestination(next);
@@ -147,7 +145,7 @@ public class OptimalAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
     // removes the new root from the child list of its parent
     // Disconnecting newRoot from Old Tree and collecting DeleteTree
     newRoot.parent().removeEdgeTo(newRoot);
-    Collection<GlcNode> deleteTreeCollection = deleteChildrenOf(oldRoot);
+    Collection<GlcNode> deleteTreeCollection = deleteSubtreeOf(oldRoot);
     // -- DEBUGING
     System.out.println("Removed " + (oldQueueSize - queue().size()) + " out of " + oldQueueSize + " nodes from Queue = " + queue().size());
     System.out.println(oldDomainMapSize - domainMap().size() + " out of " + oldDomainMapSize + //
@@ -156,11 +154,13 @@ public class OptimalAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
     Collection<GlcNode> newTreeCollection = Nodes.ofSubtree(root);
     System.out.println(deleteTreeCollection.size() + " out of " + oldTreeCollection.size()//
         + " Nodes removed from Tree = " + newTreeCollection.size());
-    // -- CANDIDATEMAP: Deleting Candidates, if Origin is included in DeleteTree
+    // -- CANDIDATEMAP:
     // TODO What is the time gain by parallization?
     int candidateMapBeforeSize = candidateMap.size();
+    // Deleting Candidates, if Origin is included in DeleteTree
     candidateMap.entrySet().parallelStream().forEach( //
         CandidateSet -> CandidateSet.getValue().removeIf(cp -> deleteTreeCollection.contains(cp.getOrigin())));
+    // Deleting CandidateBuckets, if they are empty
     candidateMap.values().removeIf(bucket -> bucket.isEmpty());
     System.out.println("CandidateMap before " + candidateMapBeforeSize + " and after: " + candidateMap.size());
     // -- DEBUGING
@@ -184,37 +184,30 @@ public class OptimalAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
           final GlcNode nextParent = nextCandidatePair.getOrigin();
           // check if Delete was properly conducted
           if (deleteTreeCollection.contains(nextParent)) {
-            System.out.println("parent of node will be deleted --> not in QUEUE ");
-            break;
+            System.err.println("parent of node will be deleted --> not in QUEUE ");
+            throw new RuntimeException();
           }
           final List<StateTime> connector = //
               getStateIntegrator().trajectory(nextParent.stateTime(), next.flow());
           if (getObstacleQuery().isDisjoint(connector)) { // no collision
             if (formerLabel.parent() != null)
               formerLabel.parent().removeEdgeTo(formerLabel);
-            nextParent.insertEdgeTo(next);
-            // TODO: check if CAndidates are small treees?
-            final boolean replaced = insert(domainKey, next);
-            if (replaced) {// DomainMap at this key should be empty
-              System.out.println("Something was replaced --> BUG");
-              throw new RuntimeException();
-            }
+            insertNodeInTree(nextParent, next);
             candidateMap.get(domainKey).remove(nextCandidatePair);
             candidateQueue.remove();
+            // BUG
             addedNodesToQueue++;
             if (!goalInterface.isDisjoint(connector))
               offerDestination(next);
             break; // leaves the while loop, but not the for loop
           }
           // remove from CandidateMap and TemporaryQueue as was not better/or in Collision
-          candidateMap.get(domainKey).remove(nextCandidatePair);// !not if new environment
+          candidateMap.get(domainKey).remove(nextCandidatePair);// !not if new environment ( new obstacles)
           candidateQueue.remove();
         }
       }
     }
     System.out.println(addedNodesToQueue + " Nodes added to Domain = " + domainMap().size());
-    // TODO Update cost from root of all nodes in tree
-    //
     System.out.println("**Rootswitch finished**");
     return increasedDepthBy;
   }

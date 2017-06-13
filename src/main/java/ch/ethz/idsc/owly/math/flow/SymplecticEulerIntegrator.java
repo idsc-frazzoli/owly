@@ -7,7 +7,7 @@ import ch.ethz.idsc.tensor.Tensor;
 public class SymplecticEulerIntegrator implements Integrator {
   @Override
   public Tensor step(Flow flow, Tensor x, Scalar h) {
-    // TODO implementation
+    // TODO implement
     return null;
   }
 }
