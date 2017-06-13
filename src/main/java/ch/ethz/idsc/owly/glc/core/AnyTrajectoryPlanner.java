@@ -42,6 +42,16 @@ public class AnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
 
   @Override // from ExpandInterface
   public void expand(final GlcNode node) {
+    // --Experimental
+    // GOAL check
+    List<StateTime> bestState = new ArrayList<>();
+    bestState.add(node.stateTime());
+    if (!goalInterface.isDisjoint(bestState)) {
+      offerDestination(node);
+      System.out.println("Goal found");
+      return;
+    }
+    // -- old Code
     // TODO count updates in cell based on costs for benchmarking
     Map<GlcNode, List<StateTime>> connectors = //
         SharedUtils.integrate(node, controls, getStateIntegrator(), goalInterface);
@@ -59,7 +69,7 @@ public class AnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
       candidateMap.get(entry.getKey()).addAll(entry.getValue());
     }
     processCandidates(node, connectors, candidatePairQueueMap);
-    nodeAmountCheck(node);
+    DebugUtils.nodeAmountCheck(getBestOrElsePeek(), node, domainMap().size());
   }
 
   // TODO BUG: if big numbers of nodes are expanded, nodes =/= domains
@@ -76,9 +86,13 @@ public class AnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
           final GlcNode next = nextCandidatePair.getCandidate();
           if (formerLabel != null) {
             if (Scalars.lessThan(next.merit(), formerLabel.merit())) {
-              // collision check only if new node is better
+              // collision check only if new node is betster
               if (getObstacleQuery().isDisjoint(connectors.get(next))) {// better node not collision
                 // current label back in bucket for this domains,
+                // System.out.println("Relabeled a domain with this labeltime: "//
+                // + formerLabel.stateTime().time() + "s swith cost: "+formerLabel.costFromRoot() +" and this merit s" + formerLabel.merit() //
+                // +" with this Candidatetime: "+ next.stateTime().time() + "s with cost: "+ next.costFromRoot() +" and this merit "+ next.merit());//
+                // System.out.println("from Origin: "+ node.state() + " at "+ node.stateTime().time() + "s" );
                 CandidatePair formerCandidate = new CandidatePair(formerLabel.parent(), formerLabel);
                 candidateMap.get(domainKey).add(formerCandidate);
                 // Removing the formerLabel from the Queue, if in it
@@ -92,8 +106,8 @@ public class AnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
                 candidateMap.get(domainKey).remove(nextCandidatePair);
                 candidateQueue.remove();
                 // GOAL check
-                if (!goalInterface.isDisjoint(connectors.get(next)))
-                  offerDestination(next);
+                // if (!goalInterface.isDisjoint(connectors.get(next)))
+                // offerDestination(next);
                 break;
               }
             }
@@ -106,8 +120,8 @@ public class AnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
               candidateMap.get(domainKey).remove(nextCandidatePair);
               candidateQueue.remove();
               // GOAL check
-              if (!goalInterface.isDisjoint(connectors.get(next)))
-                offerDestination(next);
+              // if (!goalInterface.isDisjoint(connectors.get(next)))
+              // offerDestination(next);
               break;
             }
           }
@@ -134,21 +148,6 @@ public class AnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
     int oldDomainMapSize = domainMap().size();
     long oldtotalCandidates = candidateMap.values().stream().flatMap(Collection::stream).count();
     int oldQueueSize = queue().size();
-    int nodesWithoutDomain = 0;
-    Collection<GlcNode> debugCollection = new ArrayList<GlcNode>(oldTreeCollection);
-    debugCollection.removeIf(temp -> (domainMap().get(convertToKey(temp.state()))).equals(temp));
-    nodesWithoutDomain = debugCollection.size();
-    for (GlcNode tempNode : debugCollection) {
-      System.out.println("additional Nodes not in a Domain: state: " + tempNode.state() + "cost" + tempNode.costFromRoot());
-      if (!tempNode.isRoot())
-        System.out.println("has a parent");
-      if (tempNode.isLeaf())
-        System.out.println("is leaf");
-      if (tempNode.flow() != null)
-        System.out.println("has flow");
-    }
-    if (nodesWithoutDomain != 0)
-      throw new RuntimeException();
     // -- BASIC REROOTING
     // removes the new root from the child list of its parent
     // Disconnecting newRoot from Old Tree and collecting DeleteTree
@@ -164,15 +163,18 @@ public class AnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
         + " Nodes removed from Tree = " + newTreeCollection.size());
     // -- CANDIDATEMAP: Deleting Candidates, if Origin is included in DeleteTree
     // TODO What is the time gain by parallization?
+    int candidateMapBeforeSize = candidateMap.size();
     candidateMap.entrySet().parallelStream().forEach( //
         CandidateSet -> CandidateSet.getValue().removeIf(cp -> deleteTreeCollection.contains(cp.getOrigin())));
+    candidateMap.values().removeIf(bucket -> bucket.isEmpty());
+    System.out.println("CandidateMap before " + candidateMapBeforeSize + " and after: " + candidateMap.size());
     // -- DEBUGING
     long newtotalCandidates = candidateMap.values().stream().flatMap(Collection::stream).count();
     System.out.println(oldtotalCandidates - newtotalCandidates + " of " + oldtotalCandidates + //
         " Candidates removed from CandidateList ");
     // -- RELABELING:
     int addedNodesToQueue = 0;
-    for (GlcNode formerLabel : deleteTreeCollection) {
+    for (GlcNode formerLabel : deleteTreeCollection) { // going through domains
       Tensor domainKey = convertToKey(formerLabel.state());
       // if a bucket exists do Relabeling otherwise not
       if (candidateMap.containsKey(domainKey)) {
@@ -215,6 +217,8 @@ public class AnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
       }
     }
     System.out.println(addedNodesToQueue + " Nodes added to Domain = " + domainMap().size());
+    // TODO Update cost from root of all nodes in tree
+    //
     System.out.println("**Rootswitch finished**");
     return increasedDepthBy;
   }

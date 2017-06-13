@@ -43,7 +43,7 @@ public class DefaultTrajectoryPlanner extends StandardTrajectoryPlanner {
         domainQueueMap.insert(domainKey, next); // node is considered without comparison to any former node
     }
     processCandidates(node, connectors, domainQueueMap);
-    nodeAmountCheck(node);
+    DebugUtils.nodeAmountCheck(getBestOrElsePeek(), node, domainMap().size());
   }
 
   private void processCandidates( //
@@ -58,7 +58,9 @@ public class DefaultTrajectoryPlanner extends StandardTrajectoryPlanner {
           if (formerLabel != null) {
             if (Scalars.lessThan(next.merit(), formerLabel.merit())) {
               if (getObstacleQuery().isDisjoint(connectors.get(next))) { // no collision
-                queue().remove(formerLabel);
+                boolean removed = queue().remove(formerLabel);
+                if (!removed)
+                  throw new RuntimeException();
                 formerLabel.parent().removeEdgeTo(formerLabel);
                 node.insertEdgeTo(next);
                 boolean replaced = insert(domainKey, next);
