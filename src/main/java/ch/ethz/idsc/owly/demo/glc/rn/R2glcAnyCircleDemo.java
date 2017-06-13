@@ -7,6 +7,7 @@ import java.util.List;
 import ch.ethz.idsc.owly.demo.util.R2Controls;
 import ch.ethz.idsc.owly.glc.adapter.Parameters;
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
+import ch.ethz.idsc.owly.glc.core.DebugUtils;
 import ch.ethz.idsc.owly.glc.core.Expand;
 import ch.ethz.idsc.owly.glc.core.OptimalAnyTrajectoryPlanner;
 import ch.ethz.idsc.owly.gui.Gui;
@@ -61,6 +62,8 @@ class R2glcAnyCircleDemo {
             // ,new HyperplaneRegion(Tensors.vector(0, +1, 0), RealScalar.of(4)) //
             )));
     // --
+    // SimpleAnyTrajectoryPlanner trajectoryPlanner = new SimpleAnyTrajectoryPlanner( //
+    // parameters.getEta(), stateIntegrator, controls, obstacleQuery, rnGoal);
     OptimalAnyTrajectoryPlanner trajectoryPlanner = new OptimalAnyTrajectoryPlanner( //
         parameters.getEta(), stateIntegrator, controls, obstacleQuery, rnGoal);
     trajectoryPlanner.insertRoot(Tensors.vector(0, 1).multiply(circleRadius));
@@ -69,8 +72,8 @@ class R2glcAnyCircleDemo {
     Trajectories.print(trajectory);
     OwlyFrame owlyFrame = Gui.start();
     owlyFrame.setGlc(trajectoryPlanner);
-    for (int iter = 1; iter < 20; iter++) {
-      Thread.sleep(3000);
+    for (int iter = 1; iter < 500; iter++) {
+      Thread.sleep(1000);
       long tic = System.nanoTime();
       goalAngle = goalAngle.subtract(RealScalar.of(0.1 * Math.PI));
       goal = Tensors.of(Cos.of(goalAngle), Sin.of(goalAngle)).multiply(circleRadius);
@@ -82,6 +85,8 @@ class R2glcAnyCircleDemo {
       System.out.println("Switching to Goal:" + goal);
       trajectoryPlanner.changeGoal(rnGoal2);
       int iters2 = Expand.maxDepth(trajectoryPlanner, parameters.getDepthLimit());
+      owlyFrame.setGlc(trajectoryPlanner);
+      DebugUtils.nodeAmountCompare(trajectoryPlanner);
       trajectory = trajectoryPlanner.getPathFromRootToGoal();
       Trajectories.print(trajectory);
       // ---
@@ -89,7 +94,6 @@ class R2glcAnyCircleDemo {
       System.out.println((toc - tic) * 1e-9 + " Seconds needed to replan");
       System.out.println("After root switch needed " + iters2 + " iterations");
       System.out.println("*****Finished*****");
-      owlyFrame.setGlc(trajectoryPlanner);
       // owlyFrame.configCoordinateOffset(150 - iter * 30, 450 + iter * 30);
       if (!owlyFrame.jFrame.isVisible())
         break;

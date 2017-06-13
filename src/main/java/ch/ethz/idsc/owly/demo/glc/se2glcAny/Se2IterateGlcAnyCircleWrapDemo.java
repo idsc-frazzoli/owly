@@ -130,7 +130,6 @@ class Se2IterateGlcAnyCircleWrapDemo {
       // --
       if (!goalFound)
         expandIter = Expand.maxDepth(trajectoryPlanner, parameters.getDepthLimit());
-      // TODO BUG after expanding 2848 Nodes on a 10083 Domain
       // Bug changes with goalmanager (time of occurence)
       // ---
       toc = RealScalar.of(System.nanoTime());

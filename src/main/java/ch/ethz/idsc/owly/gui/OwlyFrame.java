@@ -7,13 +7,16 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 import javax.imageio.ImageIO;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JToggleButton;
 import javax.swing.JToolBar;
 import javax.swing.WindowConstants;
 
@@ -29,26 +32,41 @@ public class OwlyFrame {
   public final JFrame jFrame = new JFrame();
   private final OwlyComponent owlyComponent = new OwlyComponent();
   private final JLabel jLabel = new JLabel();
+  private boolean update = true;
+  List<TrajectoryPlanner> backup = new ArrayList<>();
 
   public OwlyFrame() {
     JPanel jPanel = new JPanel(new BorderLayout());
     {
       JToolBar jToolBar = new JToolBar();
       jToolBar.setFloatable(false);
-      JButton jButton = new JButton("save2png");
-      jButton.setToolTipText("file is created in Pictures/...");
-      jButton.addActionListener(new ActionListener() {
-        @Override
-        public void actionPerformed(ActionEvent actionEvent) {
-          try {
-            BufferedImage bufferedImage = offscreen();
-            ImageIO.write(bufferedImage, "PNG", UserHome.Pictures("owly_" + System.currentTimeMillis() + ".png"));
-          } catch (Exception exception) {
-            exception.printStackTrace();
+      {
+        JButton jButton = new JButton("save2png");
+        jButton.setToolTipText("file is created in Pictures/...");
+        jButton.addActionListener(new ActionListener() {
+          @Override
+          public void actionPerformed(ActionEvent actionEvent) {
+            try {
+              BufferedImage bufferedImage = offscreen();
+              ImageIO.write(bufferedImage, "PNG", UserHome.Pictures("owly_" + System.currentTimeMillis() + ".png"));
+            } catch (Exception exception) {
+              exception.printStackTrace();
+            }
           }
-        }
-      });
-      jToolBar.add(jButton);
+        });
+        jToolBar.add(jButton);
+      }
+      {
+        JToggleButton jToggleButton = new JToggleButton("pause");
+        jToggleButton.setToolTipText("ignore updates...");
+        jToggleButton.addActionListener(new ActionListener() {
+          @Override
+          public void actionPerformed(ActionEvent actionEvent) {
+            update = !jToggleButton.isSelected();
+          }
+        });
+        jToolBar.add(jToggleButton);
+      }
       jPanel.add(jToolBar, BorderLayout.NORTH);
     }
     jPanel.add(owlyComponent.jComponent, BorderLayout.CENTER);
@@ -65,12 +83,21 @@ public class OwlyFrame {
 
   public void setGlc(TrajectoryPlanner trajectoryPlanner) {
     try {
-      owlyComponent.renderElements = new RenderElements(Serialization.copy(trajectoryPlanner));
-      jLabel.setText(trajectoryPlanner.infoString());
-      owlyComponent.jComponent.repaint();
-    } catch (Exception exception) {
-      exception.printStackTrace();
+      backup.add(Serialization.copy(trajectoryPlanner));
+    } catch (Exception e) {
+      // ---
+      e.printStackTrace();
     }
+    if (update)
+      try {
+        // TODO smart way of GUI
+        int index = backup.size() - 1;
+        owlyComponent.renderElements = new RenderElements(backup.get(index));
+        jLabel.setText(trajectoryPlanner.infoString());
+        owlyComponent.jComponent.repaint();
+      } catch (Exception exception) {
+        exception.printStackTrace();
+      }
   }
 
   @SuppressWarnings("unchecked")

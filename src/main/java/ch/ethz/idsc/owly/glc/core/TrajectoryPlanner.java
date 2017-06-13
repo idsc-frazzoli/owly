@@ -44,7 +44,6 @@ public abstract class TrajectoryPlanner implements ExpandInterface, Serializable
     return eta;
   }
 
-  // TODO define default expand function, as the same in simple and default planner
   // EXPERIMENTAL
   public TensorUnaryOperator represent = TensorUnaryOperator.IDENTITY;
 
@@ -76,6 +75,10 @@ public abstract class TrajectoryPlanner implements ExpandInterface, Serializable
    * @return true if node replaces a existing entry in the domain map,
    * false if the domain map did not have a pre-existing mapping from given domain_key */
   /* package */ final boolean insert(Tensor domain_key, GlcNode node) {
+    if (!node.isLeaf()) {
+      System.err.println("The Inserted Node has children");
+      throw new RuntimeException();
+    }
     queue.add(node);
     final boolean replaced = domainMap.containsKey(domain_key);
     domainMap.put(domain_key, node);

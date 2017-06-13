@@ -14,7 +14,7 @@ import ch.ethz.idsc.tensor.RealScalar;
 
 class DeltaGlcDemo {
   public static void main(String[] args) throws Exception {
-    RationalScalar resolution = (RationalScalar) RationalScalar.of(20, 1);
+    RationalScalar resolution = (RationalScalar) RationalScalar.of(10, 1);
     TrajectoryPlanner trajectoryPlanner = DeltaHelper.createGlc(RealScalar.of(-0.25), resolution);
     OwlyFrame owlyFrame = Gui.start();
     owlyFrame.configCoordinateOffset(33, 416);
