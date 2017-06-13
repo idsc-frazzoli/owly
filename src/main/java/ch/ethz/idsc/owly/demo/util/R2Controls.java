@@ -23,7 +23,7 @@ public enum R2Controls {
   ;
   // ---
   public static Collection<Flow> createRadial(final int num) {
-    StateSpaceModel stateSpaceModel = new IdentityStateSpaceModel();
+    StateSpaceModel stateSpaceModel = IdentityStateSpaceModel.INSTANCE;
     List<Flow> list = new ArrayList<>();
     for (Tensor angle : Range.of(0, num).multiply(DoubleScalar.of(2 * Math.PI / num))) {
       Tensor u = Chop.of(Tensors.of(Cos.of(angle), Sin.of(angle)));
