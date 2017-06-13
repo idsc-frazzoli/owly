@@ -3,15 +3,18 @@ package ch.ethz.idsc.owly.demo.glc.rn;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 
 import ch.ethz.idsc.owly.demo.util.R2Controls;
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
 import ch.ethz.idsc.owly.glc.core.DefaultTrajectoryPlanner;
 import ch.ethz.idsc.owly.glc.core.Expand;
+import ch.ethz.idsc.owly.glc.core.GlcNode;
 import ch.ethz.idsc.owly.glc.core.TrajectoryPlanner;
 import ch.ethz.idsc.owly.gui.Gui;
 import ch.ethz.idsc.owly.math.flow.EulerIntegrator;
 import ch.ethz.idsc.owly.math.flow.Flow;
+import ch.ethz.idsc.owly.math.state.EmptyTrajectoryRegionQuery;
 import ch.ethz.idsc.owly.math.state.FixedStateIntegrator;
 import ch.ethz.idsc.owly.math.state.StateIntegrator;
 import ch.ethz.idsc.owly.math.state.StateTime;
@@ -20,26 +23,63 @@ import ch.ethz.idsc.owly.math.state.Trajectories;
 import ch.ethz.idsc.owly.math.state.TrajectoryRegionQuery;
 import ch.ethz.idsc.tensor.DoubleScalar;
 import ch.ethz.idsc.tensor.RationalScalar;
+import ch.ethz.idsc.tensor.Scalar;
+import ch.ethz.idsc.tensor.Scalars;
 import ch.ethz.idsc.tensor.Tensor;
+import ch.ethz.idsc.tensor.TensorRuntimeException;
 import ch.ethz.idsc.tensor.Tensors;
+import ch.ethz.idsc.tensor.red.Norm;
+import ch.ethz.idsc.tensor.sca.Ramp;
 
-class R2Demo {
-  public static void main(String[] args) {
+public class R2Demo { // <- intentionally public
+  public static TrajectoryPlanner simpleEmpty() {
+    return simple(new EmptyTrajectoryRegionQuery());
+  }
+
+  public static TrajectoryPlanner simpleR2Bubbles() {
+    return simple( //
+        new SimpleTrajectoryRegionQuery( //
+            new TimeInvariantRegion(new R2Bubbles())));
+  }
+
+  private static TrajectoryPlanner simple(TrajectoryRegionQuery obstacleQuery) {
+    final Tensor stateRoot = Tensors.vector(-2, -2);
+    final Tensor stateGoal = Tensors.vector(2, 2);
+    final Scalar radius = DoubleScalar.of(.25);
+    // ---
     Tensor eta = Tensors.vector(4, 4);
     StateIntegrator stateIntegrator = FixedStateIntegrator.create(new EulerIntegrator(), RationalScalar.of(1, 5), 5);
     Collection<Flow> controls = R2Controls.createRadial(36);
-    RnGoalManager rnGoal = new RnGoalManager(Tensors.vector(2, 2), DoubleScalar.of(.25));
-    // performance depends on heuristic: zeroHeuristic vs rnGoal
-    // Heuristic heuristic = new ZeroHeuristic(); // rnGoal
-    TrajectoryRegionQuery obstacleQuery = new SimpleTrajectoryRegionQuery( //
-        new TimeInvariantRegion(new R2Bubbles()));
+    RnGoalManager rnGoal = new RnGoalManager(stateGoal, radius);
     // ---
     TrajectoryPlanner trajectoryPlanner = new DefaultTrajectoryPlanner( //
         eta, stateIntegrator, controls, obstacleQuery, rnGoal);
-    trajectoryPlanner.insertRoot(Tensors.vector(-2, -2));
-    Expand.maxSteps(trajectoryPlanner, 1400);
-    List<StateTime> trajectory = trajectoryPlanner.getPathFromRootToGoal();
-    Trajectories.print(trajectory);
-    Gui.glc(trajectoryPlanner);
+    trajectoryPlanner.insertRoot(stateRoot);
+    int iters = Expand.maxSteps(trajectoryPlanner, 200);
+    System.out.println("iterations " + iters);
+    Optional<GlcNode> optional = trajectoryPlanner.getBest();
+    if (optional.isPresent()) {
+      GlcNode goalNode = optional.get(); // <- throws exception if
+      Scalar cost = goalNode.costFromRoot();
+      Scalar lowerBound = Ramp.of(Norm._2.of(stateGoal.subtract(stateRoot)).subtract(radius));
+      if (Scalars.lessThan(cost, lowerBound))
+        throw TensorRuntimeException.of(cost, lowerBound);
+    }
+    return trajectoryPlanner;
+  }
+
+  public static void main(String[] args) {
+    {
+      TrajectoryPlanner trajectoryPlanner = simpleEmpty();
+      List<StateTime> trajectory = trajectoryPlanner.getPathFromRootToGoal();
+      Trajectories.print(trajectory);
+      Gui.glc(trajectoryPlanner);
+    }
+    {
+      TrajectoryPlanner trajectoryPlanner = simpleR2Bubbles();
+      List<StateTime> trajectory = trajectoryPlanner.getPathFromRootToGoal();
+      Trajectories.print(trajectory);
+      Gui.glc(trajectoryPlanner);
+    }
   }
 }

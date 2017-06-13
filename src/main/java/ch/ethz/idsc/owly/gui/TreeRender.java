@@ -1,7 +1,6 @@
 // code by jph
 package ch.ethz.idsc.owly.gui;
 
-import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Shape;
 import java.awt.geom.Line2D;
@@ -13,6 +12,9 @@ import java.util.DoubleSummaryStatistics;
 import ch.ethz.idsc.owly.data.tree.StateCostNode;
 import ch.ethz.idsc.tensor.Scalar;
 
+/** renders the edges between nodes
+ * 
+ * the edges are drawn as straight lines with the color of the cost to root */
 class TreeRender implements AbstractRender {
   private static final int NODE_WIDTH = 2;
   private final Collection<? extends StateCostNode> collection;
@@ -31,7 +33,6 @@ class TreeRender implements AbstractRender {
         .summaryStatistics();
     final double min = dss.getMin();
     final double max = dss.getMax();
-    graphics.setColor(Color.BLUE);
     for (StateCostNode node : collection) {
       double val = node.costFromRoot().number().doubleValue();
       final double interp = (val - min) / (max - min);

@@ -25,7 +25,7 @@ import ch.ethz.idsc.tensor.Tensors;
 
 /** "Mobility and Autonomous Reconfiguration of Marsokhod" */
 class Rice1Demo {
-  public static void main(String[] args) {
+  public static TrajectoryPlanner simple() {
     Tensor eta = Tensors.vector(5, 8);
     StateIntegrator stateIntegrator = FixedStateIntegrator.createDefault(RationalScalar.of(1, 5), 5);
     Collection<Flow> controls = Rice1Controls.createControls(RealScalar.of(.5), 15); //
@@ -44,6 +44,11 @@ class Rice1Demo {
     trajectoryPlanner.insertRoot(Tensors.vector(0, 0));
     int iters = Expand.maxSteps(trajectoryPlanner, 1000);
     System.out.println(iters);
+    return trajectoryPlanner;
+  }
+
+  public static void main(String[] args) {
+    TrajectoryPlanner trajectoryPlanner = simple();
     List<StateTime> trajectory = trajectoryPlanner.getPathFromRootToGoal();
     Trajectories.print(trajectory);
     Gui.glc(trajectoryPlanner);
