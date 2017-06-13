@@ -77,12 +77,11 @@ public class AnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
             if (Scalars.lessThan(next.merit(), formerLabel.merit())) {
               // collision check only if new node is better
               if (getObstacleQuery().isDisjoint(connectors.get(next))) {// better node not collision
-                CandidatePair formerCandidate = new CandidatePair(formerLabel.parent(), formerLabel);
-                candidateMap.get(domainKey).add(formerCandidate);
-                // Removing the formerLabel from the Queue, if in it
                 final Collection<GlcNode> subDeleteTree = deleteChildrenOf(formerLabel);
                 if (subDeleteTree.size() > 1)
                   System.err.println("Pruned Tree of Size: " + subDeleteTree.size());
+                CandidatePair formerCandidate = new CandidatePair(formerLabel.parent(), formerLabel);
+                candidateMap.get(domainKey).add(formerCandidate);
                 // removing the nextCandidate from bucket of this domain
                 // formerLabel disconnecting
                 formerLabel.parent().removeEdgeTo(formerLabel);
@@ -194,14 +193,14 @@ public class AnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
             if (formerLabel.parent() != null)
               formerLabel.parent().removeEdgeTo(formerLabel);
             nextParent.insertEdgeTo(next);
+            // TODO: check if CAndidates are small treees?
             final boolean replaced = insert(domainKey, next);
-            // DomainMap at this key should be empty
-            candidateMap.get(domainKey).remove(nextCandidatePair);
-            candidateQueue.remove();
-            if (replaced) {
+            if (replaced) {// DomainMap at this key should be empty
               System.out.println("Something was replaced --> BUG");
               throw new RuntimeException();
             }
+            candidateMap.get(domainKey).remove(nextCandidatePair);
+            candidateQueue.remove();
             addedNodesToQueue++;
             if (!goalInterface.isDisjoint(connector))
               offerDestination(next);
