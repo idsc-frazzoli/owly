@@ -84,7 +84,7 @@ public class OwlyFrame {
               replayIndex = 0;
               System.err.println("GUI: Already displaying first Planningstep");
             }
-            repaint(replayIndex);
+            jSlider.setValue(replayIndex);
           }
         });
         jToolBar.add(jButton);
@@ -101,7 +101,7 @@ public class OwlyFrame {
               replayIndex = backup.size() - 1;
               System.err.println("GUI: Already displaying latest Planningstep");
             }
-            repaint(replayIndex);
+            jSlider.setValue(replayIndex);
           }
         });
         jToolBar.add(jButton);
@@ -111,7 +111,6 @@ public class OwlyFrame {
         jSlider.addChangeListener(new ChangeListener() {
           @Override
           public void stateChanged(ChangeEvent e) {
-            System.out.println("change listenr called");
             replayIndex = jSlider.getValue();
             repaint(replayIndex);
           }

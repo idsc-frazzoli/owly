@@ -4,8 +4,8 @@ package ch.ethz.idsc.owly.gui;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Shape;
+import java.awt.geom.Ellipse2D;
 import java.awt.geom.Point2D;
-import java.awt.geom.Rectangle2D;
 import java.util.Collection;
 
 import ch.ethz.idsc.owly.glc.core.GlcNode;
@@ -24,8 +24,8 @@ class QueueRender implements AbstractRender {
     for (GlcNode node : collection) {
       Tensor x = node.stateTime().x();
       Point2D p = abstractLayer.toPoint2D(x);
-      Shape shape = new Rectangle2D.Double(p.getX() - 1, p.getY() - 1, 3, 3);
-      graphics.fill(shape);
+      Shape shape2 = new Ellipse2D.Double(p.getX() - 4, p.getY() - 4, 8, 8);
+      graphics.fill(shape2);
     }
   }
 }

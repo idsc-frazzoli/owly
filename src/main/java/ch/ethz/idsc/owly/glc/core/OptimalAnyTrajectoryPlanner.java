@@ -79,6 +79,7 @@ public class OptimalAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
               if (getObstacleQuery().isDisjoint(connectors.get(next))) {// better node not collision
                 final Collection<GlcNode> subDeleteTree = deleteSubtreeOf(formerLabel);
                 if (subDeleteTree.size() > 1)
+                  // TODO add leafs of Subtree to Queue instead of deleting subtree
                   System.err.println("Pruned Tree of Size: " + subDeleteTree.size());
                 // adding the formerLabel as formerCandidate to bucket
                 CandidatePair formerCandidate = new CandidatePair(formerLabel.parent(), formerLabel);
@@ -147,7 +148,9 @@ public class OptimalAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
     newRoot.parent().removeEdgeTo(newRoot);
     Collection<GlcNode> deleteTreeCollection = deleteSubtreeOf(oldRoot);
     // -- DEBUGING
-    System.out.println("Removed " + (oldQueueSize - queue().size()) + " out of " + oldQueueSize + " nodes from Queue = " + queue().size());
+    System.out.println("Removed " + (oldQueueSize - queue().size()) + " out of " + oldQueueSize + //
+        " Nodes from Queue = " + queue().size());
+    // --
     System.out.println(oldDomainMapSize - domainMap().size() + " out of " + oldDomainMapSize + //
         " Domains removed from DomainMap = " + domainMap().size());
     final GlcNode root = Nodes.rootFrom(getBestOrElsePeek());
@@ -158,8 +161,11 @@ public class OptimalAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
     // TODO What is the time gain by parallization?
     int candidateMapBeforeSize = candidateMap.size();
     // Deleting Candidates, if Origin is included in DeleteTree
-    candidateMap.entrySet().parallelStream().forEach( //
-        CandidateSet -> CandidateSet.getValue().removeIf(cp -> deleteTreeCollection.contains(cp.getOrigin())));
+    // TODO check which functions deletes how much?
+    candidateMap.entrySet().forEach( //
+        candidateSet -> candidateSet.getValue().removeIf(cp -> deleteTreeCollection.contains(cp.getOrigin())));
+    // TODO BUG: ALso need to delete Candidates, whose Origin is in CandidateMap, not in Nodes
+    candidateMap.entrySet().forEach(candidateSet -> candidateSet.getValue().removeIf(cp -> !Nodes.rootFrom(cp.getOrigin()).equals(rootNode)));
     // Deleting CandidateBuckets, if they are empty
     candidateMap.values().removeIf(bucket -> bucket.isEmpty());
     System.out.println("CandidateMap before " + candidateMapBeforeSize + " and after: " + candidateMap.size());
