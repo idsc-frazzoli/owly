@@ -16,9 +16,12 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JSlider;
 import javax.swing.JToggleButton;
 import javax.swing.JToolBar;
 import javax.swing.WindowConstants;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
 import ch.ethz.idsc.owly.data.tree.Nodes;
 import ch.ethz.idsc.owly.demo.util.UserHome;
@@ -32,8 +35,10 @@ public class OwlyFrame {
   public final JFrame jFrame = new JFrame();
   private final OwlyComponent owlyComponent = new OwlyComponent();
   private final JLabel jLabel = new JLabel();
-  private boolean update = true;
+  private boolean replay = false;
+  private int replayIndex = 0;
   List<TrajectoryPlanner> backup = new ArrayList<>();
+  final JSlider jSlider = new JSlider();
 
   public OwlyFrame() {
     JPanel jPanel = new JPanel(new BorderLayout());
@@ -57,17 +62,62 @@ public class OwlyFrame {
         jToolBar.add(jButton);
       }
       {
-        JToggleButton jToggleButton = new JToggleButton("pause");
-        jToggleButton.setToolTipText("ignore updates...");
+        JToggleButton jToggleButton = new JToggleButton("Replay");
+        jToggleButton.setToolTipText("stops LiveFeed and goes to Replaymode");
         jToggleButton.addActionListener(new ActionListener() {
           @Override
           public void actionPerformed(ActionEvent actionEvent) {
-            update = !jToggleButton.isSelected();
+            replay = jToggleButton.isSelected();
           }
         });
         jToolBar.add(jToggleButton);
       }
+      {
+        JButton jButton = new JButton("<<");
+        jButton.setToolTipText("Replay: 1 Step back");
+        jButton.addActionListener(new ActionListener() {
+          @Override
+          public void actionPerformed(ActionEvent actionEvent) {
+            if (replayIndex > 0) {
+              replayIndex = replayIndex - 1;
+            } else {
+              replayIndex = 0;
+              System.err.println("GUI: Already displaying first Planningstep");
+            }
+            repaint(replayIndex);
+          }
+        });
+        jToolBar.add(jButton);
+      }
+      {
+        JButton jButton = new JButton(">>");
+        jButton.setToolTipText("Replay: 1 Step forward");
+        jButton.addActionListener(new ActionListener() {
+          @Override
+          public void actionPerformed(ActionEvent actionEvent) {
+            if (replayIndex < backup.size() - 1) {
+              replayIndex = replayIndex + 1;
+            } else {
+              replayIndex = backup.size() - 1;
+              System.err.println("GUI: Already displaying latest Planningstep");
+            }
+            repaint(replayIndex);
+          }
+        });
+        jToolBar.add(jButton);
+      }
       jPanel.add(jToolBar, BorderLayout.NORTH);
+      {
+        jSlider.addChangeListener(new ChangeListener() {
+          @Override
+          public void stateChanged(ChangeEvent e) {
+            System.out.println("change listenr called");
+            replayIndex = jSlider.getValue();
+            repaint(replayIndex);
+          }
+        });
+        jToolBar.add(jSlider);
+      }
     }
     jPanel.add(owlyComponent.jComponent, BorderLayout.CENTER);
     jPanel.add(jLabel, BorderLayout.SOUTH);
@@ -84,20 +134,25 @@ public class OwlyFrame {
   public void setGlc(TrajectoryPlanner trajectoryPlanner) {
     try {
       backup.add(Serialization.copy(trajectoryPlanner));
+      jSlider.setMaximum(backup.size() - 1);
     } catch (Exception e) {
       // ---
       e.printStackTrace();
     }
-    if (update)
-      try {
-        // TODO smart way of GUI
-        int index = backup.size() - 1;
-        owlyComponent.renderElements = new RenderElements(backup.get(index));
-        jLabel.setText(trajectoryPlanner.infoString());
-        owlyComponent.jComponent.repaint();
-      } catch (Exception exception) {
-        exception.printStackTrace();
-      }
+    if (!replay) { // live feed
+      replayIndex = backup.size() - 1;
+      jSlider.setValue(replayIndex);
+    }
+  }
+
+  private void repaint(int index) {
+    try {
+      owlyComponent.renderElements = new RenderElements(backup.get(index));
+      jLabel.setText(backup.get(index).infoString());
+      owlyComponent.jComponent.repaint();
+    } catch (Exception exception) {
+      exception.printStackTrace();
+    }
   }
 
   @SuppressWarnings("unchecked")
