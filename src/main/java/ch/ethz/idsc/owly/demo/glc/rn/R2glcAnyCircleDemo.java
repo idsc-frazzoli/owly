@@ -67,29 +67,32 @@ class R2glcAnyCircleDemo {
     OptimalAnyTrajectoryPlanner trajectoryPlanner = new OptimalAnyTrajectoryPlanner( //
         parameters.getEta(), stateIntegrator, controls, obstacleQuery, rnGoal);
     trajectoryPlanner.insertRoot(Tensors.vector(0, 1).multiply(circleRadius));
-    Expand.maxDepth(trajectoryPlanner, parameters.getDepthLimit());
-    List<StateTime> trajectory = trajectoryPlanner.getPathFromRootToGoal();
-    Trajectories.print(trajectory);
     OwlyFrame owlyFrame = Gui.start();
-    owlyFrame.setGlc(trajectoryPlanner);
     for (int iter = 1; iter < 500; iter++) {
       Thread.sleep(1000);
       long tic = System.nanoTime();
+      List<StateTime> trajectory = trajectoryPlanner.getPathFromRootToGoal();
+      // -- GOAL change
       goalAngle = goalAngle.subtract(RealScalar.of(0.1 * Math.PI));
       goal = Tensors.of(Cos.of(goalAngle), Sin.of(goalAngle)).multiply(circleRadius);
       RnGoalManager rnGoal2 = new RnGoalManager(goal, DoubleScalar.of(.25));
-      StateTime newRootState = trajectory.get(trajectory.size() > 5 ? 5 : 0);
-      // ---
-      int increment = trajectoryPlanner.switchRootToState(newRootState.x());
-      parameters.increaseDepthLimit(increment);
       System.out.println("Switching to Goal:" + goal);
       trajectoryPlanner.changeGoal(rnGoal2);
+      owlyFrame.setGlc(trajectoryPlanner);
+      DebugUtils.nodeAmountCompare(trajectoryPlanner);
+      // -- ROOTCHANGE
+      StateTime newRootState = trajectory.get(trajectory.size() > 5 ? 5 : 0);
+      int increment = trajectoryPlanner.switchRootToState(newRootState.x());
+      parameters.increaseDepthLimit(increment);
+      owlyFrame.setGlc(trajectoryPlanner);
+      DebugUtils.nodeAmountCompare(trajectoryPlanner);
+      // -- EXPANDING
       int iters2 = Expand.maxDepth(trajectoryPlanner, parameters.getDepthLimit());
       owlyFrame.setGlc(trajectoryPlanner);
       DebugUtils.nodeAmountCompare(trajectoryPlanner);
       trajectory = trajectoryPlanner.getPathFromRootToGoal();
       Trajectories.print(trajectory);
-      // ---
+      // --
       long toc = System.nanoTime();
       System.out.println((toc - tic) * 1e-9 + " Seconds needed to replan");
       System.out.println("After root switch needed " + iters2 + " iterations");

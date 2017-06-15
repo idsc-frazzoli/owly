@@ -15,6 +15,8 @@ import ch.ethz.idsc.owly.math.state.TrajectoryRegionQuery;
 import ch.ethz.idsc.tensor.Tensor;
 
 /* package */ abstract class AbstractAnyTrajectoryPlanner extends AbstractStandardTrajectoryPlanner {
+  protected GlcNode rootNode;
+
   protected AbstractAnyTrajectoryPlanner( //
       Tensor eta, //
       StateIntegrator stateIntegrator, //
@@ -32,9 +34,10 @@ import ch.ethz.idsc.tensor.Tensor;
     GlcNode newRoot = this.getNode(convertToKey(state));
     int increaseDepthBy = 0;
     // TODO not nice, as we jump from state to startnode
-    if (newRoot != null)
+    if (newRoot != null) {
+      rootNode = newRoot;
       increaseDepthBy = switchRootToNode(newRoot);
-    else {
+    } else {
       System.out.println("This domain  is not labelled yet:");
       System.out.println(state);
       throw new RuntimeException();
