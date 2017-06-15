@@ -39,7 +39,7 @@ import ch.ethz.idsc.tensor.Tensors;
 /** (x,y,theta) */
 class Se2IterateGlcAnyCircleDemo {
   public static void main(String[] args) throws Exception {
-    RationalScalar resolution = (RationalScalar) RealScalar.of(10);
+    RationalScalar resolution = (RationalScalar) RealScalar.of(8);
     Scalar timeScale = RealScalar.of(4);
     Scalar depthScale = RealScalar.of(10);
     Tensor partitionScale = Tensors.vector(3, 3, 50 / Math.PI);
@@ -105,7 +105,7 @@ class Se2IterateGlcAnyCircleDemo {
           goalListPosition.get(index), goalListAngle.get(index), //
           DoubleScalar.of(0.1), Se2Utils.DEGREE(10));
       // --
-      StateTime newRootState = trajectory.get(5);
+      StateTime newRootState = trajectory.get(trajectory.size() > 3 ? 3 : 0);
       int increment = trajectoryPlanner.switchRootToState(newRootState.x());
       DebugUtils.nodeAmountCompare(trajectoryPlanner);
       parameters.increaseDepthLimit(increment);

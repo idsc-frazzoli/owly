@@ -101,5 +101,6 @@ class R2glcAnyCircleDemo {
       if (!owlyFrame.jFrame.isVisible())
         break;
     }
+    System.out.println("Finished LOOP");
   }
 }

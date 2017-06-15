@@ -15,8 +15,6 @@ import ch.ethz.idsc.owly.math.state.TrajectoryRegionQuery;
 import ch.ethz.idsc.tensor.Tensor;
 
 /* package */ abstract class AbstractAnyTrajectoryPlanner extends AbstractStandardTrajectoryPlanner {
-  protected GlcNode rootNode;
-
   protected AbstractAnyTrajectoryPlanner( //
       Tensor eta, //
       StateIntegrator stateIntegrator, //
@@ -35,7 +33,6 @@ import ch.ethz.idsc.tensor.Tensor;
     int increaseDepthBy = 0;
     // TODO not nice, as we jump from state to startnode
     if (newRoot != null) {
-      rootNode = newRoot;
       increaseDepthBy = switchRootToNode(newRoot);
     } else {
       System.out.println("This domain  is not labelled yet:");
@@ -81,8 +78,11 @@ import ch.ethz.idsc.tensor.Tensor;
     // baseRoot.parent().removeEdgeTo(baseRoot);
     // oldRoot has no parent, therefore is skipped
     deleteTreeCollection.remove(baseNode);
-    deleteTreeCollection.stream().parallel().forEach(tempNode -> tempNode.parent().removeEdgeTo(tempNode));
+    // TODO make parralel?
+    deleteTreeCollection.stream().forEach(tempNode -> tempNode.parent().removeEdgeTo(tempNode));
     deleteTreeCollection.add(baseNode);
+    if (!baseNode.isLeaf())
+      throw new RuntimeException();
     // if (!baseNode.isRoot()) //if not Rootnode, function was called in expand
     // baseNode.parent().removeEdgeTo(baseNode);
     return deleteTreeCollection;
