@@ -45,7 +45,7 @@ public abstract class TrajectoryPlanner implements ExpandInterface, Serializable
   }
 
   // EXPERIMENTAL
-  public TensorUnaryOperator represent = TensorUnaryOperator.IDENTITY;
+  public TensorUnaryOperator represent = tensor -> tensor;
 
   /** Floor(eta * state) == Floor(state / domain_size)
    * 
