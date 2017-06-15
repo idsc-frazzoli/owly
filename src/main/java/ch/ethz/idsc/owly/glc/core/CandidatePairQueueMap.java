@@ -1,12 +1,13 @@
 // code by jph
 package ch.ethz.idsc.owly.glc.core;
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
 import ch.ethz.idsc.tensor.Tensor;
 
-/* package */ class CandidatePairQueueMap {
+/* package */ class CandidatePairQueueMap implements Serializable {
   final Map<Tensor, CandidatePairQueue> map = new HashMap<>();
 
   /** add given candidate to CandidatePair queue at the location determined by domain_key.
