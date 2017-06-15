@@ -29,6 +29,7 @@ import ch.ethz.idsc.owly.glc.core.TrajectoryPlanner;
 import ch.ethz.idsc.owly.rrts.core.RrtsNode;
 import ch.ethz.idsc.owly.rrts.core.TransitionRegionQuery;
 import ch.ethz.idsc.tensor.RealScalar;
+import ch.ethz.idsc.tensor.Tensors;
 import ch.ethz.idsc.tensor.io.Serialization;
 
 public class OwlyFrame {
@@ -57,6 +58,22 @@ public class OwlyFrame {
             } catch (Exception exception) {
               exception.printStackTrace();
             }
+          }
+        });
+        jToolBar.add(jButton);
+      }
+      {
+        JButton jButton = new JButton("Reset View");
+        jButton.setToolTipText("Resets the Crop and Zoom of the Window");
+        jButton.addActionListener(new ActionListener() {
+          @Override
+          public void actionPerformed(ActionEvent actionEvent) {
+            owlyComponent.model2pixel = Tensors.matrix(new Number[][] { //
+                { 60, 0, 300 }, //
+                { 0, -60, 300 }, //
+                { 0, 0, 1 }, //
+            });
+            repaint(replayIndex);
           }
         });
         jToolBar.add(jButton);
