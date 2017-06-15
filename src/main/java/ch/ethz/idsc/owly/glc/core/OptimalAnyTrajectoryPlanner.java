@@ -58,7 +58,7 @@ public class OptimalAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
       candidateMap.get(entry.getKey()).addAll(entry.getValue());
     }
     processCandidates(node, connectors, candidatePairQueueMap);
-    // DebugUtils.nodeAmountCheck(getBestOrElsePeek(), node, domainMap().size());
+    DebugUtils.nodeAmountCheck(getBestOrElsePeek(), node, domainMap().size());
   }
 
   // TODO BUG: if big numbers of nodes are expanded, nodes =/= domains
@@ -119,8 +119,7 @@ public class OptimalAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
               break;
             }
           }
-          // remove from CandidateMap and TemporaryQueue as was not better/or in Collision
-          candidateMap.get(domainKey).remove(nextCandidatePair); // !not if new environment
+          // remove from TemporaryQueue as was not better/or in Collision
           candidateQueue.remove();
         }
       }
@@ -162,17 +161,22 @@ public class OptimalAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
     int candidateMapBeforeSize = candidateMap.size();
     // Deleting Candidates, if Origin is included in DeleteTree
     // TODO check which functions deletes how much?
-    candidateMap.entrySet().forEach( //
+    candidateMap.entrySet().parallelStream().forEach( //
         candidateSet -> candidateSet.getValue().removeIf(cp -> deleteTreeCollection.contains(cp.getOrigin())));
+    long middletotalCandidates = candidateMap.values().stream().flatMap(Collection::stream).count();
+    System.out.println(oldtotalCandidates - middletotalCandidates + " of " + oldtotalCandidates + //
+        " C removed from CandidateList with parent in DeleteTree ");
     // TODO BUG: ALso need to delete Candidates, whose Origin is in CandidateMap, not in Nodes
-    candidateMap.entrySet().forEach(candidateSet -> candidateSet.getValue().removeIf(cp -> !Nodes.rootFrom(cp.getOrigin()).equals(rootNode)));
+    candidateMap.entrySet().parallelStream().forEach(candidateSet -> candidateSet.getValue()//
+        .removeIf(cp -> !Nodes.rootFrom(cp.getOrigin()).equals(rootNode)));
     // Deleting CandidateBuckets, if they are empty
-    candidateMap.values().removeIf(bucket -> bucket.isEmpty());
-    System.out.println("CandidateMap before " + candidateMapBeforeSize + " and after: " + candidateMap.size());
     // -- DEBUGING
     long newtotalCandidates = candidateMap.values().stream().flatMap(Collection::stream).count();
-    System.out.println(oldtotalCandidates - newtotalCandidates + " of " + oldtotalCandidates + //
-        " Candidates removed from CandidateList ");
+    System.out.println(middletotalCandidates - newtotalCandidates + " of " + middletotalCandidates + //
+        " C removed from CL not connecting to Root: " + newtotalCandidates);
+    candidateMap.values().removeIf(bucket -> bucket.isEmpty());
+    System.out.println("CandidateMap before " + candidateMapBeforeSize + //
+        " and after: " + candidateMap.size());
     // -- RELABELING:
     int addedNodesToQueue = 0;
     for (GlcNode formerLabel : deleteTreeCollection) { // going through domains
@@ -180,6 +184,9 @@ public class OptimalAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
       // if a bucket exists do Relabeling otherwise not
       if (candidateMap.containsKey(domainKey)) {
         Set<CandidatePair> tempCandidateSet = candidateMap.get(domainKey);
+        // Merit of Candidates can have changed--> update
+        tempCandidateSet.parallelStream().forEach(cp -> //
+        cp.getCandidate().setMinCostToGoal(goalInterface.minCostToGoal(cp.getCandidate().state())));
         // TODO modify constructor of CandidatePairQueue so below statement works
         // CandidatePairQueue candidateQueue = new CandidatePairQueue(tempCandidateSet);
         PriorityQueue<CandidatePair> candidateQueue = new PriorityQueue<>(tempCandidateSet);
@@ -207,8 +214,7 @@ public class OptimalAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
               offerDestination(next);
             break; // leaves the while loop, but not the for loop
           }
-          // remove from CandidateMap and TemporaryQueue as was not better/or in Collision
-          candidateMap.get(domainKey).remove(nextCandidatePair);// !not if new environment ( new obstacles)
+          // remove from TemporaryQueue as was not better/or in Collision
           candidateQueue.remove();
         }
       }
