@@ -50,9 +50,9 @@ enum DeltaHelper {
   }
 
   static TrajectoryPlanner createGlc(Scalar gradientAmp, RationalScalar resolution) throws Exception {
-    Scalar timeScale = RealScalar.of(5);
+    Scalar timeScale = RealScalar.of(10);
     Scalar depthScale = RealScalar.of(10);
-    Tensor partitionScale = Tensors.vector(5, 5);
+    Tensor partitionScale = Tensors.vector(10e5, 10e5);
     Scalar dtMax = RationalScalar.of(1, 6);
     int maxIter = 2000;
     Tensor range = Tensors.vector(9, 6.5);
@@ -62,6 +62,7 @@ enum DeltaHelper {
     DeltaStateSpaceModel stateSpaceModel = new DeltaStateSpaceModel(ipr);
     Parameters parameters = new DeltaParameters(resolution, timeScale, depthScale, //
         partitionScale, dtMax, maxIter, stateSpaceModel.getLipschitz());
+    System.out.println("1/DomainSize: " + parameters.getEta());
     StateIntegrator stateIntegrator = FixedStateIntegrator.create( //
         new RungeKutta45Integrator(), parameters.getdtMax(), parameters.getTrajectorySize());
     Scalar maxInput = RealScalar.ONE;

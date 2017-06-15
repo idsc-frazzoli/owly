@@ -61,7 +61,6 @@ public class OptimalAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
     DebugUtils.nodeAmountCheck(getBestOrElsePeek(), node, domainMap().size());
   }
 
-  // TODO BUG: if big numbers of nodes are expanded, nodes =/= domains
   private void processCandidates( //
       GlcNode nextParent, Map<GlcNode, List<StateTime>> connectors, CandidatePairQueueMap candidatePairQueueMap) {
     for (Entry<Tensor, CandidatePairQueue> entry : candidatePairQueueMap.map.entrySet()) {
@@ -159,21 +158,23 @@ public class OptimalAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
     // -- CANDIDATEMAP:
     // TODO What is the time gain by parallization?
     int candidateMapBeforeSize = candidateMap.size();
-    // Deleting Candidates, if Origin is included in DeleteTree
-    // TODO check which functions deletes how much?
-    candidateMap.entrySet().parallelStream().forEach( //
-        candidateSet -> candidateSet.getValue().removeIf(cp -> deleteTreeCollection.contains(cp.getOrigin())));
-    long middletotalCandidates = candidateMap.values().stream().flatMap(Collection::stream).count();
-    System.out.println(oldtotalCandidates - middletotalCandidates + " of " + oldtotalCandidates + //
-        " C removed from CandidateList with parent in DeleteTree ");
-    // TODO BUG: ALso need to delete Candidates, whose Origin is in CandidateMap, not in Nodes
+    // Deleting Candidates, if origin is not connected to root
+    GlcNode rootNode = Nodes.rootFrom(getBestOrElsePeek());
     candidateMap.entrySet().parallelStream().forEach(candidateSet -> candidateSet.getValue()//
         .removeIf(cp -> !Nodes.rootFrom(cp.getOrigin()).equals(rootNode)));
+    long middletotalCandidates = candidateMap.values().parallelStream().flatMap(Collection::stream).count();
+    // TODO check which functions deletes how much? 1st is needed
+    candidateMap.entrySet().parallelStream().forEach( //
+        candidateSet -> candidateSet.getValue().removeIf(cp -> deleteTreeCollection.contains(cp.getOrigin())));
+    System.out.println(oldtotalCandidates - middletotalCandidates + " of " + oldtotalCandidates + //
+        " C removed from CandidateList with no connection to Root ");
     // Deleting CandidateBuckets, if they are empty
     // -- DEBUGING
-    long newtotalCandidates = candidateMap.values().stream().flatMap(Collection::stream).count();
+    long newtotalCandidates = candidateMap.values().parallelStream().flatMap(Collection::stream).count();
     System.out.println(middletotalCandidates - newtotalCandidates + " of " + middletotalCandidates + //
-        " C removed from CL not connecting to Root: " + newtotalCandidates);
+        " C removed from CL with Origin in deleteTree " + newtotalCandidates);
+    if (middletotalCandidates != newtotalCandidates)
+      throw new RuntimeException();
     candidateMap.values().removeIf(bucket -> bucket.isEmpty());
     System.out.println("CandidateMap before " + candidateMapBeforeSize + //
         " and after: " + candidateMap.size());
@@ -195,24 +196,27 @@ public class OptimalAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
           final CandidatePair nextCandidatePair = candidateQueue.element();
           final GlcNode next = nextCandidatePair.getCandidate();
           final GlcNode nextParent = nextCandidatePair.getOrigin();
-          // check if Delete was properly conducted
-          if (deleteTreeCollection.contains(nextParent)) {
-            System.err.println("parent of node will be deleted --> not in QUEUE ");
-            throw new RuntimeException();
-          }
-          final List<StateTime> connector = //
-              getStateIntegrator().trajectory(nextParent.stateTime(), next.flow());
-          if (getObstacleQuery().isDisjoint(connector)) { // no collision
-            if (formerLabel.parent() != null)
-              formerLabel.parent().removeEdgeTo(formerLabel);
-            insertNodeInTree(nextParent, next);
-            candidateMap.get(domainKey).remove(nextCandidatePair);
-            candidateQueue.remove();
-            // BUG
-            addedNodesToQueue++;
-            if (!goalInterface.isDisjoint(connector))
-              offerDestination(next);
-            break; // leaves the while loop, but not the for loop
+          // CandidateOrigin needs to be part of tree
+          if (!nextParent.isRoot()) {
+            // check if Delete was properly conducted
+            if (deleteTreeCollection.contains(nextParent)) {
+              System.err.println("parent of node will be deleted --> not in QUEUE ");
+              throw new RuntimeException();
+            }
+            final List<StateTime> connector = //
+                getStateIntegrator().trajectory(nextParent.stateTime(), next.flow());
+            if (getObstacleQuery().isDisjoint(connector)) { // no collision
+              if (formerLabel.parent() != null)
+                formerLabel.parent().removeEdgeTo(formerLabel);
+              insertNodeInTree(nextParent, next);
+              candidateMap.get(domainKey).remove(nextCandidatePair);
+              candidateQueue.remove();
+              // BUG
+              addedNodesToQueue++;
+              if (!goalInterface.isDisjoint(connector))
+                offerDestination(next);
+              break; // leaves the while loop, but not the for loop
+            }
           }
           // remove from TemporaryQueue as was not better/or in Collision
           candidateQueue.remove();

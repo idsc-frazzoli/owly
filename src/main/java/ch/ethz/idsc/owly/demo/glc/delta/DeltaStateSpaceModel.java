@@ -20,6 +20,7 @@ class DeltaStateSpaceModel implements StateSpaceModel {
   @Override
   public Scalar getLipschitz() {
     // TODO not sure if |u| should appear in formula
+    // TODO maxNorm is very big--> therefore eta with R^(1+LF) is huge? real lipschitz?
     return imageGradient.maxNorm();
   }
 }

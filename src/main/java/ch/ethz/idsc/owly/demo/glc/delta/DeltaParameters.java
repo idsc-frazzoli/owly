@@ -17,7 +17,7 @@ class DeltaParameters extends DefaultParameters {
   @Override
   /** @return if Lipschitz == 0: R²/partitionScale */
   protected final Tensor EtaLfZero() {
-    return getPartitionScale().map(Scalar::invert); //
+    return getPartitionScale().map(Scalar::invert).multiply(Power.of(getResolution(), 2)); //
   }
 
   @Override
