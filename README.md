@@ -66,6 +66,12 @@ current reversed
 
 ![delta_s](https://cloud.githubusercontent.com/assets/4012178/26282191/59dafa84-3e0c-11e7-9602-2ece6f417bc1.gif)
 
+### AnyTime GLC
+
+R^2
+
+![r2_circle_gif](https://user-images.githubusercontent.com/6703495/27226674-6a78071c-52a0-11e7-948c-7a12af42a7c1.gif)
+
 ### RRT*
 
 R^2
