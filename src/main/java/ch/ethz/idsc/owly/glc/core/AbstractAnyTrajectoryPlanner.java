@@ -94,6 +94,7 @@ import ch.ethz.idsc.tensor.Tensor;
    * @param newGoal New GoalRegion
    * @return boolean, true if Goal was already found in oldTree */
   public boolean changeGoal(final GoalInterface newGoal) {
+    //TODO Check if Goal is reachable
     this.goalInterface = newGoal;
     final GlcNode root = Nodes.rootFrom(getBestOrElsePeek());
     setBestNull();

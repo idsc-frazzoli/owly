@@ -2,10 +2,14 @@
 package ch.ethz.idsc.owly.demo.glc.rn;
 
 import java.util.Collection;
+
 import java.util.List;
+import java.util.Random;
+import java.util.stream.IntStream;
 
 import ch.ethz.idsc.owly.demo.util.R2Controls;
 import ch.ethz.idsc.owly.glc.adapter.Parameters;
+import ch.ethz.idsc.owly.glc.adapter.RnPointcloudRegion;
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
 import ch.ethz.idsc.owly.glc.core.DebugUtils;
 import ch.ethz.idsc.owly.glc.core.Expand;
@@ -57,7 +61,8 @@ class R2glcAnyCircleDemo {
         new SimpleTrajectoryRegionQuery(new TimeInvariantRegion( //
             RegionUnion.of( //
                 new EllipsoidRegion(Tensors.vector(0, 0), Tensors.vector(1, 1).multiply(circleRadius).multiply(RealScalar.of(0.5))) //
-                , new InvertedRegion(new EllipsoidRegion(Tensors.vector(0, 0), Tensors.vector(1, 1).multiply(circleRadius).multiply(RealScalar.of(2)))) //
+                , new InvertedRegion(new EllipsoidRegion(Tensors.vector(0, 0), Tensors.vector(1, 1).multiply(circleRadius).multiply(RealScalar.of(2)))),
+                RnPointcloudRegion.createRandom(20, Tensors.vector(12,12),Tensors.vector(0,0), RealScalar.of(0.6))//
             // ,new HyperplaneRegion(Tensors.vector(0, -1, 0), RealScalar.of(4)) //
             // ,new HyperplaneRegion(Tensors.vector(0, +1, 0), RealScalar.of(4)) //
             )));
@@ -79,17 +84,14 @@ class R2glcAnyCircleDemo {
       System.out.println("Switching to Goal:" + goal);
       trajectoryPlanner.changeGoal(rnGoal2);
       owlyFrame.setGlc(trajectoryPlanner);
-      DebugUtils.nodeAmountCompare(trajectoryPlanner);
       // -- ROOTCHANGE
       StateTime newRootState = trajectory.get(trajectory.size() > 5 ? 5 : 0);
       int increment = trajectoryPlanner.switchRootToState(newRootState.x());
       parameters.increaseDepthLimit(increment);
       owlyFrame.setGlc(trajectoryPlanner);
-      DebugUtils.nodeAmountCompare(trajectoryPlanner);
       // -- EXPANDING
       int iters2 = Expand.maxDepth(trajectoryPlanner, parameters.getDepthLimit());
       owlyFrame.setGlc(trajectoryPlanner);
-      DebugUtils.nodeAmountCompare(trajectoryPlanner);
       trajectory = trajectoryPlanner.getPathFromRootToGoal();
       Trajectories.print(trajectory);
       // --
