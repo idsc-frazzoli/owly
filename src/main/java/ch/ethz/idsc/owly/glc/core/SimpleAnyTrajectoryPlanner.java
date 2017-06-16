@@ -78,9 +78,7 @@ public class SimpleAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
                 break;
               }
             }
-            // candidateQueue.remove();
           } else {
-            // candidateQueue.remove();
             if (getObstacleQuery().isDisjoint(connectors.get(next))) {
               nextParent.insertEdgeTo(next);
               insert(domain_key, next);
@@ -105,7 +103,6 @@ public class SimpleAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
     }
     int increaseDepthBy = newRoot.reCalculateDepth();
     int oldDomainMapSize = domainMap().size();
-    int oldQueueSize = queue().size();
     int oldTreeSize = Nodes.ofSubtree(oldRoot).size();
     System.out.println("changing to root:" + newRoot.state());
     // removes the new root from the child list of its parent
@@ -120,5 +117,12 @@ public class SimpleAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
     // --
     System.out.println("**Rootswitch finished**");
     return increaseDepthBy;
+  }
+
+  @Override
+  public String infoString() {
+    StringBuilder stringBuilder = new StringBuilder(super.infoString() + ", ");
+    stringBuilder.append("SimpleAny...");
+    return stringBuilder.toString();
   }
 }

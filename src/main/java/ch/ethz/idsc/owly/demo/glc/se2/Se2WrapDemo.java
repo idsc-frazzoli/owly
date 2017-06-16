@@ -36,9 +36,10 @@ class Se2WrapDemo {
     CoordinateWrap coordinateWrap;
     coordinateWrap = new Se2Wrap(Tensors.vector(1, 1, 1));
     coordinateWrap = identity;
-    Se2WrapGoalManager se2GoalManager = new Se2WrapGoalManager( //
-        coordinateWrap, //
-        Tensors.vector(-.5, 0, 0), RealScalar.of(.25));
+    Se2DefaultGoalManager se2DefaultGoalManager = new Se2DefaultGoalManager(//
+        Tensors.vector(-.5, 0), RealScalar.of(0), RealScalar.of(0.2), Se2Utils.DEGREE(30));
+    Se2WrapGoalManager se2WrapGoalManager = new Se2WrapGoalManager( //
+        coordinateWrap, se2DefaultGoalManager);
     TrajectoryRegionQuery obstacleQuery = //
         new SimpleTrajectoryRegionQuery(new TimeInvariantRegion(RegionUnion.of( //
             new PolygonRegion(Tensors.matrixDouble(new double[][] { //
@@ -55,7 +56,7 @@ class Se2WrapDemo {
         )));
     // ---
     TrajectoryPlanner trajectoryPlanner = new DefaultTrajectoryPlanner( //
-        eta, stateIntegrator, controls, obstacleQuery, se2GoalManager.getGoalInterface());
+        eta, stateIntegrator, controls, obstacleQuery, se2WrapGoalManager.getGoalInterface());
     trajectoryPlanner.represent = coordinateWrap::represent;
     // ---
     trajectoryPlanner.insertRoot(Tensors.vector(.1, 0, 0));

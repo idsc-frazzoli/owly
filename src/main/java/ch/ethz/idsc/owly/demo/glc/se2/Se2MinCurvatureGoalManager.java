@@ -36,10 +36,6 @@ public class Se2MinCurvatureGoalManager extends Se2DefaultGoalManager {
     Tensor b = trajectory.get(middleIndex).x().block(indices1, indices2);
     Tensor c = trajectory.get(endIndex).x().block(indices1, indices2);
     Scalar curvature = SignedCurvature2D.of(a, b, c);
-    // if (Scalars.isZero(curvature))
-    // integrate(1,t)
-    // return RealScalar.ONE.multiply(Trajectories.timeIncrement(from, trajectory));
-    // integrate (1+||curvature||,t)
     return RealScalar.ONE.add(Power.of(curvature.abs(), 2)) //
         .multiply(Trajectories.timeIncrement(from, trajectory));
   }

@@ -78,13 +78,11 @@ import ch.ethz.idsc.tensor.Tensor;
     // baseRoot.parent().removeEdgeTo(baseRoot);
     // oldRoot has no parent, therefore is skipped
     deleteTreeCollection.remove(baseNode);
-    // TODO make parralel?
+    // TODO make parralel? If parralel, run in below exceptions
     deleteTreeCollection.stream().forEach(tempNode -> tempNode.parent().removeEdgeTo(tempNode));
     deleteTreeCollection.add(baseNode);
     if (!baseNode.isLeaf())
       throw new RuntimeException();
-    // if (!baseNode.isRoot()) //if not Rootnode, function was called in expand
-    // baseNode.parent().removeEdgeTo(baseNode);
     return deleteTreeCollection;
   }
 
@@ -94,6 +92,7 @@ import ch.ethz.idsc.tensor.Tensor;
    * @param newGoal New GoalRegion
    * @return boolean, true if Goal was already found in oldTree */
   public boolean changeGoal(final GoalInterface newGoal) {
+    // TODO Check if Goal is reachable
     this.goalInterface = newGoal;
     final GlcNode root = Nodes.rootFrom(getBestOrElsePeek());
     setBestNull();

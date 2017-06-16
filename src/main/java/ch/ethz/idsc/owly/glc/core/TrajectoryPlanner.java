@@ -114,9 +114,13 @@ public abstract class TrajectoryPlanner implements ExpandInterface, Serializable
     best = null;
   }
 
+  @Deprecated
   public final GlcNode getBestOrElsePeek() {
-    // TODO BUG: when queue empty fails
-    return getBest().orElse(queue.peek()); // Queue#peek() returns the head of queue, or null if queue is empty
+    return getBestOrElsePeek2().get();
+  }
+
+  public final Optional<GlcNode> getBestOrElsePeek2() {
+    return Optional.ofNullable(getBest().orElse(queue.peek())); // Queue#peek() returns the head of queue, or null if queue is empty
   }
 
   // public final GlcNode getBestOr

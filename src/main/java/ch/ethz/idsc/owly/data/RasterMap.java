@@ -17,14 +17,14 @@ public abstract class RasterMap<T> implements Serializable {
     putWithKey(toKey(tensor), value);
   }
 
-  public void putWithKey(Tensor key, T value) {
+  public synchronized void putWithKey(Tensor key, T value) {
     map.put(key, value);
   }
 
   // public T get(Tensor tensor) {
   // return getWithKey(toKey(tensor));
   // }
-  public T getWithKey(Tensor key) {
+  public synchronized T getWithKey(Tensor key) {
     return map.get(key);
   }
 
