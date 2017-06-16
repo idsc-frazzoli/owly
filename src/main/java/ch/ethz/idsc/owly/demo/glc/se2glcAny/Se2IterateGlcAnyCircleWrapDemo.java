@@ -6,10 +6,10 @@ import java.util.Collection;
 import java.util.List;
 
 import ch.ethz.idsc.owly.demo.glc.se2.Se2Controls;
-import ch.ethz.idsc.owly.demo.glc.se2.Se2MinCurvatureGoalManager;
 import ch.ethz.idsc.owly.demo.glc.se2.Se2StateSpaceModel;
 import ch.ethz.idsc.owly.demo.glc.se2.Se2Utils;
 import ch.ethz.idsc.owly.demo.glc.se2.Se2Wrap;
+import ch.ethz.idsc.owly.demo.glc.se2.Se2WrapGoalManager;
 import ch.ethz.idsc.owly.demo.glc.se2glc.Se2Parameters;
 import ch.ethz.idsc.owly.demo.glc.tn.IdentityWrap;
 import ch.ethz.idsc.owly.glc.adapter.Parameters;
@@ -61,13 +61,13 @@ class Se2IterateGlcAnyCircleWrapDemo {
     CoordinateWrap coordinateWrap;
     coordinateWrap = new Se2Wrap(Tensors.vector(1, 1, 1));
     coordinateWrap = identity;
-    // Se2WrapGoalManager se2GoalManager = new Se2WrapGoalManager( //
-    // coordinateWrap, //
-    // Tensors.vector(3, 0, 1.5 * Math.PI),// east
-    // DoubleScalar.of(.25));
-    Se2MinCurvatureGoalManager se2GoalManager = new Se2MinCurvatureGoalManager( //
-        Tensors.vector(3, 0), RealScalar.of(1.5 * Math.PI), // east
-        DoubleScalar.of(.1), Se2Utils.DEGREE(30));
+    Se2WrapGoalManager se2GoalManager = new Se2WrapGoalManager( //
+        coordinateWrap, //
+        Tensors.vector(3, 0, 1.5 * Math.PI), // east
+        DoubleScalar.of(.25));
+    // Se2MinCurvatureGoalManager se2GoalManager = new Se2MinCurvatureGoalManager( //
+    // Tensors.vector(3, 0), RealScalar.of(1.5 * Math.PI), // east
+    // DoubleScalar.of(.1), Se2Utils.DEGREE(30));
     TrajectoryRegionQuery obstacleQuery = //
         new SimpleTrajectoryRegionQuery(new TimeInvariantRegion( //
             RegionUnion.of( //
@@ -82,6 +82,7 @@ class Se2IterateGlcAnyCircleWrapDemo {
         parameters.getEta(), stateIntegrator, controls, obstacleQuery, se2GoalManager.getGoalInterface());
     // ---
     trajectoryPlanner.insertRoot(Tensors.vector(0, 3, 0));
+    OwlyFrame owlyFrame = Gui.start();
     int iters = Expand.maxDepth(trajectoryPlanner, parameters.getDepthLimit());
     DebugUtils.nodeAmountCompare(trajectoryPlanner);
     System.out.println("After " + iters + " iterations");
@@ -89,19 +90,13 @@ class Se2IterateGlcAnyCircleWrapDemo {
     Scalar toc = RealScalar.of(System.nanoTime());
     System.out.println(toc.subtract(tic).multiply(RealScalar.of(1e-9)) + " Seconds needed to plan");
     Trajectories.print(trajectory);
-    OwlyFrame owlyFrame = Gui.start();
     owlyFrame.setGlc(trajectoryPlanner);
     // ---
-    List<Tensor> goalListPosition = new ArrayList<>();
-    goalListPosition.add(Tensors.vector(0, -3));// South
-    goalListPosition.add(Tensors.vector(-3, 0));// West
-    goalListPosition.add(Tensors.vector(0, 3)); // North
-    goalListPosition.add(Tensors.vector(3, 0)); // East
-    List<Scalar> goalListAngle = new ArrayList<>();
-    goalListAngle.add(RealScalar.of(Math.PI)); // South
-    goalListAngle.add(RealScalar.of(0.5 * Math.PI)); // West
-    goalListAngle.add(RealScalar.of(0)); // North
-    goalListAngle.add(RealScalar.of(-0.5 * Math.PI)); // East
+    List<Tensor> goalList = new ArrayList<>();
+    goalList.add(Tensors.vector(0, -3, Math.PI));// South
+    goalList.add(Tensors.vector(-3, 0, 0.5 * Math.PI));// West
+    goalList.add(Tensors.vector(0, 3, 0)); // North
+    goalList.add(Tensors.vector(3, 0, -0.5 * Math.PI)); // East
     // --
     int iter = 0;
     Scalar timeSum = RealScalar.of(0);
@@ -119,9 +114,16 @@ class Se2IterateGlcAnyCircleWrapDemo {
       parameters.increaseDepthLimit(increment);
       owlyFrame.setGlc(trajectoryPlanner);
       Thread.sleep(delay.number().intValue() / 2);
-      Se2MinCurvatureGoalManager se2GoalManager2 = new Se2MinCurvatureGoalManager( //
-          goalListPosition.get(index), goalListAngle.get(index), //
-          DoubleScalar.of(0.5), Se2Utils.DEGREE(30));
+      List<Integer> positionIndex = new ArrayList<Integer>();
+      positionIndex.add(1);
+      positionIndex.add(2);
+      // Se2MinCurvatureGoalManager se2GoalManager2 = new Se2MinCurvatureGoalManager( //
+      // goalList.get(index).get(positionIndex), goalList.get(index).get(3), //
+      // DoubleScalar.of(0.5), Se2Utils.DEGREE(30));
+      Se2WrapGoalManager se2GoalManager2 = new Se2WrapGoalManager( //
+          coordinateWrap, //
+          goalList.get(index), // east
+          DoubleScalar.of(.25));
       // --
       goalFound = trajectoryPlanner.changeGoal(se2GoalManager2.getGoalInterface());
       DebugUtils.nodeAmountCompare(trajectoryPlanner);

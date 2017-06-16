@@ -42,7 +42,4 @@ public interface GlcNode extends StateCostNode {
 
   // during development, function is public, but later it would be nice to hide this function
   int reCalculateDepth();
-
-  // during development, function is public, but later it would be nice to hide this function
-  void reCalculateCost(Scalar costIncrement);
 }

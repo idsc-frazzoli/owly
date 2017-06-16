@@ -2,16 +2,12 @@
 package ch.ethz.idsc.owly.demo.glc.rn;
 
 import java.util.Collection;
-
 import java.util.List;
-import java.util.Random;
-import java.util.stream.IntStream;
 
 import ch.ethz.idsc.owly.demo.util.R2Controls;
 import ch.ethz.idsc.owly.glc.adapter.Parameters;
 import ch.ethz.idsc.owly.glc.adapter.RnPointcloudRegion;
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
-import ch.ethz.idsc.owly.glc.core.DebugUtils;
 import ch.ethz.idsc.owly.glc.core.Expand;
 import ch.ethz.idsc.owly.glc.core.OptimalAnyTrajectoryPlanner;
 import ch.ethz.idsc.owly.gui.Gui;
@@ -62,7 +58,7 @@ class R2glcAnyCircleDemo {
             RegionUnion.of( //
                 new EllipsoidRegion(Tensors.vector(0, 0), Tensors.vector(1, 1).multiply(circleRadius).multiply(RealScalar.of(0.5))) //
                 , new InvertedRegion(new EllipsoidRegion(Tensors.vector(0, 0), Tensors.vector(1, 1).multiply(circleRadius).multiply(RealScalar.of(2)))),
-                RnPointcloudRegion.createRandom(20, Tensors.vector(12,12),Tensors.vector(0,0), RealScalar.of(0.6))//
+                RnPointcloudRegion.createRandom(30, Tensors.vector(12, 12), Tensors.vector(0, 0), RealScalar.of(0.6))//
             // ,new HyperplaneRegion(Tensors.vector(0, -1, 0), RealScalar.of(4)) //
             // ,new HyperplaneRegion(Tensors.vector(0, +1, 0), RealScalar.of(4)) //
             )));
@@ -74,7 +70,7 @@ class R2glcAnyCircleDemo {
     trajectoryPlanner.insertRoot(Tensors.vector(0, 1).multiply(circleRadius));
     OwlyFrame owlyFrame = Gui.start();
     for (int iter = 1; iter < 500; iter++) {
-      Thread.sleep(1000);
+      Thread.sleep(1);
       long tic = System.nanoTime();
       List<StateTime> trajectory = trajectoryPlanner.getPathFromRootToGoal();
       // -- GOAL change

@@ -99,10 +99,4 @@ import ch.ethz.idsc.tensor.Tensor;
     depth = Nodes.listToRoot(this).size() - 1;
     return depth; // as RootNode has depth 0 (NOT 1)
   }
-
-  @Override // from GlcNode
-  public void reCalculateCost(Scalar costIncrement) {
-    merit = parent().costFromRoot().add(costIncrement).subtract(costFromRoot).add(merit);
-    costFromRoot = parent().costFromRoot().add(costIncrement);
-  }
 }

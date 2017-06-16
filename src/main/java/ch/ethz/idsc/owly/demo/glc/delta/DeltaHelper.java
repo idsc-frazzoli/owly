@@ -50,7 +50,7 @@ enum DeltaHelper {
   }
 
   static TrajectoryPlanner createGlc(Scalar gradientAmp, RationalScalar resolution) throws Exception {
-    Scalar timeScale = RealScalar.of(10);
+    Scalar timeScale = RealScalar.of(5);
     Scalar depthScale = RealScalar.of(10);
     Tensor partitionScale = Tensors.vector(10e5, 10e5);
     Scalar dtMax = RationalScalar.of(1, 6);

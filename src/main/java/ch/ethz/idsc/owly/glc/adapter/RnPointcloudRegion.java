@@ -23,8 +23,23 @@ public class RnPointcloudRegion implements Region {
     return points.length() == 0 ? new EmptyRegion() : new RnPointcloudRegion(points, radius);
   }
 
-  final NdTreeMap<String> ndTreeMap;
-  final Scalar radius;
+  /** @param num number of points
+   * @param width width of area, in which they are created
+   * @param center center of area, in which they are created
+   * @param radius radius of each obstacle
+   * @return the Pointcloudregion */
+  public static Region createRandom(int num, Tensor width, Tensor center, Scalar radius) {
+    Random random = new Random();
+    Tensor points = Tensors.empty();
+    IntStream.range(0, num).boxed() //
+        .forEach(i -> points.append(width.pmul(Tensors.vector(random.nextDouble(), random.nextDouble()))//
+            .subtract(width.multiply(RealScalar.of(0.5)).subtract(center))));
+    return create(points, radius);
+  }
+
+  // ---
+  private final NdTreeMap<String> ndTreeMap;
+  private final Scalar radius;
 
   private RnPointcloudRegion(Tensor points, Scalar radius) {
     Tensor pt = Transpose.of(points);
@@ -44,20 +59,5 @@ public class RnPointcloudRegion implements Region {
     NdCluster<String> ndCluster = ndTreeMap.buildCluster(tensor, 1, NdDistanceInterface.EUCLIDEAN);
     Scalar distance = ndCluster.iterator().next().distanceToCenter;
     return Scalars.lessEquals(distance, radius);
-  }
-
-  /** @param num number of points
-   * @param width width of area, in which they are created
-   * @param center center of area, in which they are created
-   * @param radius radius of each obstacle
-   * @return the Pointcloudregion */
-  public static Region createRandom(int num, Tensor width, Tensor center, Scalar radius) {
-    Random random = new Random();
-    Tensor points = Tensors.empty();
-    IntStream.range(0, num).boxed() //
-        .forEach(
-            i -> points.append(width.pmul(Tensors.vector(random.nextDouble(), random.nextDouble()))//
-                .subtract(width.multiply(RealScalar.of(0.5)).subtract(center))));
-    return create(points, radius);
   }
 }
