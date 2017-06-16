@@ -78,8 +78,8 @@ import ch.ethz.idsc.tensor.Tensor;
     // baseRoot.parent().removeEdgeTo(baseRoot);
     // oldRoot has no parent, therefore is skipped
     deleteTreeCollection.remove(baseNode);
-    // TODO make parralel?
-    deleteTreeCollection.parallelStream().forEach(tempNode -> tempNode.parent().removeEdgeTo(tempNode));
+    // TODO make parralel? If parralel, run in below exceptions
+    deleteTreeCollection.stream().forEach(tempNode -> tempNode.parent().removeEdgeTo(tempNode));
     deleteTreeCollection.add(baseNode);
     if (!baseNode.isLeaf())
       throw new RuntimeException();

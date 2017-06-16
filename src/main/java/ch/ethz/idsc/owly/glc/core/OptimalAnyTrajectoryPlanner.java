@@ -89,7 +89,8 @@ public class OptimalAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
                 }
                 candidateMap.get(domainKey).add(formerCandidate);
                 // formerLabel disconnecting
-                formerLabel.parent().removeEdgeTo(formerLabel);
+                if (formerLabel.parent() != null)
+                  formerLabel.parent().removeEdgeTo(formerLabel);
                 // adding next to tree and DomainMap
                 insertNodeInTree(nextParent, next);
                 // removing the nextCandidate from bucket of this domain
