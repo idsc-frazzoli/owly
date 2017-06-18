@@ -9,6 +9,7 @@ public class OptionalTest extends TestCase {
   public void testSimple() {
     Optional<String> asd = Optional.ofNullable(null);
     assertFalse(asd.isPresent());
+    assertEquals(asd.orElse(null), null);
   }
 
   public void testSimple2() {

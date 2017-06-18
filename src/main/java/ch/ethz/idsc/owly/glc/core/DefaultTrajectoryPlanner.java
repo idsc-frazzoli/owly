@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 
 import ch.ethz.idsc.owly.math.flow.Flow;
 import ch.ethz.idsc.owly.math.state.StateIntegrator;
@@ -43,7 +44,9 @@ public class DefaultTrajectoryPlanner extends AbstractStandardTrajectoryPlanner 
         domainQueueMap.insert(domainKey, next); // node is considered without comparison to any former node
     }
     processCandidates(node, connectors, domainQueueMap);
-    DebugUtils.nodeAmountCheck(getBestOrElsePeek(), node, domainMap().size());
+    Optional<GlcNode> optional = getBestOrElsePeek();
+    if (optional.isPresent())
+      DebugUtils.nodeAmountCheck(optional.get(), node, domainMap().size());
   }
 
   private void processCandidates( //

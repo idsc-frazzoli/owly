@@ -94,7 +94,9 @@ import ch.ethz.idsc.tensor.Tensor;
   public boolean changeGoal(final GoalInterface newGoal) {
     // TODO Check if Goal is reachable
     this.goalInterface = newGoal;
-    final GlcNode root = Nodes.rootFrom(getBestOrElsePeek());
+    // TODO JONAS check that goal or queue nodes are what you want
+    // .. what if don't exists ?
+    final GlcNode root = Nodes.rootFrom(getBestOrElsePeek().get());
     setBestNull();
     // -- GOALCHECK TREE
     long tic = System.nanoTime();

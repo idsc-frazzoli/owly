@@ -23,6 +23,8 @@ public enum Nodes {
    * @return */
   @SuppressWarnings("unchecked")
   public static <T extends Node> List<T> listToRoot(T node) {
+    if (node == null)
+      throw new RuntimeException();
     List<T> list = new ArrayList<>();
     while (node != null) {
       list.add(node);

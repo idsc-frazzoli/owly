@@ -137,7 +137,8 @@ public class OptimalAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
     int increasedDepthBy = newRoot.reCalculateDepth();
     // -- DEBUGING Values
     // -- Collecting Oldtree
-    GlcNode oldRoot = Nodes.rootFrom(getBestOrElsePeek());
+    // TODO JONAS why not find old root from new root?
+    GlcNode oldRoot = Nodes.rootFrom(getBestOrElsePeek().get());
     Collection<GlcNode> oldTreeCollection = Nodes.ofSubtree(oldRoot);
     int oldDomainMapSize = domainMap().size();
     long oldtotalCandidates = candidateMap.values().stream().flatMap(Collection::stream).count();
@@ -153,7 +154,8 @@ public class OptimalAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
     // --
     System.out.println(oldDomainMapSize - domainMap().size() + " out of " + oldDomainMapSize + //
         " Domains removed from DomainMap = " + domainMap().size());
-    final GlcNode rootNode = Nodes.rootFrom(getBestOrElsePeek());
+    // TODO JONAS check and simplify logic?
+    final GlcNode rootNode = Nodes.rootFrom(getBestOrElsePeek().get());
     Collection<GlcNode> newTreeCollection = Nodes.ofSubtree(rootNode);
     System.out.println(deleteTreeCollection.size() + " out of " + oldTreeCollection.size()//
         + " Nodes removed from Tree = " + newTreeCollection.size());

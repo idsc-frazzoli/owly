@@ -1,10 +1,27 @@
-// code by jl
+// code by jph
 package ch.ethz.idsc.owly.data.tree;
 
 import junit.framework.TestCase;
 
 public class NodesTest extends TestCase {
-  public void testSimple() {
-    // TODO JONAS implement tests
+  public void testFail() {
+    try {
+      Nodes.rootFrom(null);
+      assertTrue(false);
+    } catch (Exception exception) {
+      // ---
+    }
+    try {
+      Nodes.listFromRoot(null);
+      assertTrue(false);
+    } catch (Exception exception) {
+      // ---
+    }
+    try {
+      Nodes.listToRoot(null);
+      assertTrue(false);
+    } catch (Exception exception) {
+      // ---
+    }
   }
 }

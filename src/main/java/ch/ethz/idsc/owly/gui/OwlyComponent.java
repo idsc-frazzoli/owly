@@ -29,6 +29,12 @@ import ch.ethz.idsc.tensor.sca.Power;
 import ch.ethz.idsc.tensor.sca.Round;
 
 class OwlyComponent {
+  static final Tensor MODEL2PIXEL_INITIAL = Tensors.matrix(new Number[][] { //
+      { 60, 0, 300 }, //
+      { 0, -60, 300 }, //
+      { 0, 0, 1 }, //
+  }).unmodifiable();
+
   // function ignores all but the first and second entry of x
   private static Tensor toAffinePoint(Tensor x) {
     return Tensors.of( //
@@ -42,11 +48,7 @@ class OwlyComponent {
   RenderElements renderElements;
 
   public OwlyComponent() {
-    model2pixel = Tensors.matrix(new Number[][] { //
-        { 60, 0, 300 }, //
-        { 0, -60, 300 }, //
-        { 0, 0, 1 }, //
-    });
+    reset_model2pixel();
     jComponent.addMouseWheelListener(new MouseWheelListener() {
       @Override
       public void mouseWheelMoved(MouseWheelEvent event) {
@@ -98,6 +100,10 @@ class OwlyComponent {
       };
       jComponent.addMouseListener(mouseListener);
     }
+  }
+
+  void reset_model2pixel() {
+    model2pixel = MODEL2PIXEL_INITIAL.copy();
   }
 
   final JComponent jComponent = new JComponent() {
