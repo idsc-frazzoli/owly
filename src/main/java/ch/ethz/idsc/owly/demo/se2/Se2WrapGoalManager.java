@@ -1,5 +1,5 @@
 // code by jph
-package ch.ethz.idsc.owly.demo.glc.se2b;
+package ch.ethz.idsc.owly.demo.se2;
 
 import java.util.List;
 

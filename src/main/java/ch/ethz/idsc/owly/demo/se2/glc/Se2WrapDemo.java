@@ -1,11 +1,14 @@
 // code by jph
-package ch.ethz.idsc.owly.demo.glc.se2b;
+package ch.ethz.idsc.owly.demo.se2.glc;
 
 import java.util.Collection;
 import java.util.List;
 
-import ch.ethz.idsc.owly.demo.glc.se2.Se2Controls;
 import ch.ethz.idsc.owly.demo.glc.tn.IdentityWrap;
+import ch.ethz.idsc.owly.demo.se2.Se2Controls;
+import ch.ethz.idsc.owly.demo.se2.Se2Utils;
+import ch.ethz.idsc.owly.demo.se2.Se2Wrap;
+import ch.ethz.idsc.owly.demo.se2.Se2WrapGoalManager;
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
 import ch.ethz.idsc.owly.glc.core.DefaultTrajectoryPlanner;
 import ch.ethz.idsc.owly.glc.core.Expand;
@@ -36,7 +39,7 @@ class Se2WrapDemo {
     final CoordinateWrap identity = new IdentityWrap();
     CoordinateWrap coordinateWrap;
     coordinateWrap = new Se2Wrap(Tensors.vector(1, 1, 1));
-    coordinateWrap = identity;
+    // coordinateWrap = identity;
     Se2WrapGoalManager se2GoalManager = new Se2WrapGoalManager( //
         coordinateWrap, //
         Tensors.vector(-.5, 0, 0), RealScalar.of(.25));

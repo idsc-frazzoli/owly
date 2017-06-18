@@ -1,5 +1,5 @@
 // code by jph and jl
-package ch.ethz.idsc.owly.demo.glc.se2;
+package ch.ethz.idsc.owly.demo.se2;
 
 import java.util.List;
 
@@ -23,7 +23,7 @@ import ch.ethz.idsc.tensor.sca.Mod;
 /** Se2 goal region is not elliptic, therefore we implement {@link Region}
  * 
  * bapaden phd thesis: (6.4.10) */
-public class Se2DefaultGoalManager implements Region, CostFunction {
+public class Se2DefaultGoalManagerExt implements Region, CostFunction {
   static final Mod PRINCIPAL = Mod.function(RealScalar.of(2 * Math.PI), RealScalar.of(-Math.PI));
   // ---
   final Tensor xy;
@@ -33,7 +33,7 @@ public class Se2DefaultGoalManager implements Region, CostFunction {
   final Scalar angle_delta;
   final Tensor radiusVector;
 
-  public Se2DefaultGoalManager(Tensor xy, Scalar angle, Scalar radius, Scalar angle_delta) {
+  public Se2DefaultGoalManagerExt(Tensor xy, Scalar angle, Scalar radius, Scalar angle_delta) {
     this.xy = xy;
     this.angle = angle;
     this.center = Tensors.of(xy.Get(0), xy.Get(1), angle);

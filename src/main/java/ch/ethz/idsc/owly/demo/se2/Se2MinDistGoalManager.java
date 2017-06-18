@@ -1,5 +1,5 @@
 // code by jl
-package ch.ethz.idsc.owly.demo.glc.se2;
+package ch.ethz.idsc.owly.demo.se2;
 
 import java.util.List;
 
@@ -15,7 +15,7 @@ import ch.ethz.idsc.tensor.sca.Ramp;
 /** Nonholonomic Wheeled Robot
  * 
  * bapaden phd thesis: (5.5.13) */
-public class Se2MinDistGoalManager extends Se2DefaultGoalManager {
+public class Se2MinDistGoalManager extends Se2DefaultGoalManagerExt {
   public Se2MinDistGoalManager(Tensor xy, Scalar angle, Scalar radius, Scalar angle_delta) {
     super(xy, angle, radius, angle_delta);
   }

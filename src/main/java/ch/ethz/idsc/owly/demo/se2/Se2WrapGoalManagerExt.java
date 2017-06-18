@@ -1,5 +1,5 @@
 // code by jph
-package ch.ethz.idsc.owly.demo.glc.se2;
+package ch.ethz.idsc.owly.demo.se2;
 
 import java.util.List;
 
@@ -20,15 +20,15 @@ import ch.ethz.idsc.tensor.sca.Ramp;
 
 /** minimizes driving time (=distance, since unit speed)
  * 
- * {@link Se2WrapGoalManager} works with {@link Se2Wrap} as well as with {@link IdentityWrap} */
-public class Se2WrapGoalManager implements Region, CostFunction {
+ * {@link Se2WrapGoalManagerExt} works with {@link Se2Wrap} as well as with {@link IdentityWrap} */
+public class Se2WrapGoalManagerExt implements Region, CostFunction {
   private final CoordinateWrap coordinateWrap;
-  private final Se2DefaultGoalManager goalManager;
+  private final Se2DefaultGoalManagerExt goalManager;
 
   /** @param coordinateWrap
    * @param center consists of x,y,theta
    * @param radius */
-  public Se2WrapGoalManager(CoordinateWrap coordinateWrap, Se2DefaultGoalManager goalManager) {
+  public Se2WrapGoalManagerExt(CoordinateWrap coordinateWrap, Se2DefaultGoalManagerExt goalManager) {
     this.coordinateWrap = coordinateWrap;
     this.goalManager = goalManager;
   }

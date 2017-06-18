@@ -1,5 +1,5 @@
 // code by jl
-package ch.ethz.idsc.owly.demo.glc.se2b;
+package ch.ethz.idsc.owly.demo.se2;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,7 +16,7 @@ import ch.ethz.idsc.tensor.red.Norm;
 import ch.ethz.idsc.tensor.sca.Floor;
 import ch.ethz.idsc.tensor.sca.Power;
 
-public class Se2MinCurvatureGoalManager extends Se2DefaultGoalManager {
+public class Se2MinCurvatureGoalManager extends Se2DefaultGoalManagerExt {
   public Se2MinCurvatureGoalManager(Tensor xy, Scalar angle, Scalar radius, Scalar angle_delta) {
     super(xy, angle, radius, angle_delta);
   }
@@ -36,10 +36,6 @@ public class Se2MinCurvatureGoalManager extends Se2DefaultGoalManager {
     Tensor b = trajectory.get(middleIndex).x().block(indices1, indices2);
     Tensor c = trajectory.get(endIndex).x().block(indices1, indices2);
     Scalar curvature = SignedCurvature2D.of(a, b, c);
-    // if (Scalars.isZero(curvature))
-    // integrate(1,t)
-    // return RealScalar.ONE.multiply(Trajectories.timeIncrement(from, trajectory));
-    // integrate (1+||curvature||,t)
     return RealScalar.ONE.add(Power.of(curvature.abs(), 2)) //
         .multiply(Trajectories.timeIncrement(from, trajectory));
   }

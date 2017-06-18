@@ -1,15 +1,15 @@
 // code by jl
-package ch.ethz.idsc.owly.demo.glc.se2glcAny;
+package ch.ethz.idsc.owly.demo.se2.any;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import ch.ethz.idsc.owly.demo.glc.se2.Se2Controls;
-import ch.ethz.idsc.owly.demo.glc.se2.Se2MinCurvatureGoalManager;
-import ch.ethz.idsc.owly.demo.glc.se2.Se2StateSpaceModel;
-import ch.ethz.idsc.owly.demo.glc.se2.Se2Utils;
-import ch.ethz.idsc.owly.demo.glc.se2glc.Se2Parameters;
+import ch.ethz.idsc.owly.demo.se2.Se2Controls;
+import ch.ethz.idsc.owly.demo.se2.Se2MinCurvatureGoalManager;
+import ch.ethz.idsc.owly.demo.se2.Se2StateSpaceModel;
+import ch.ethz.idsc.owly.demo.se2.Se2Utils;
+import ch.ethz.idsc.owly.demo.se2.glc.Se2Parameters;
 import ch.ethz.idsc.owly.glc.adapter.Parameters;
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
 import ch.ethz.idsc.owly.glc.core.DebugUtils;

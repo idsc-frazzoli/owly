@@ -1,10 +1,15 @@
 // code by jph
-package ch.ethz.idsc.owly.demo.glc.se2;
+package ch.ethz.idsc.owly.demo.se2.glc;
 
 import java.util.Collection;
 import java.util.List;
 
 import ch.ethz.idsc.owly.demo.glc.tn.IdentityWrap;
+import ch.ethz.idsc.owly.demo.se2.Se2Controls;
+import ch.ethz.idsc.owly.demo.se2.Se2DefaultGoalManagerExt;
+import ch.ethz.idsc.owly.demo.se2.Se2Utils;
+import ch.ethz.idsc.owly.demo.se2.Se2Wrap;
+import ch.ethz.idsc.owly.demo.se2.Se2WrapGoalManagerExt;
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
 import ch.ethz.idsc.owly.glc.core.DefaultTrajectoryPlanner;
 import ch.ethz.idsc.owly.glc.core.Expand;
@@ -26,7 +31,7 @@ import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
 
 /** (x,y,theta) */
-class Se2WrapDemo {
+class Se2WrapDemoExt {
   public static void main(String[] args) {
     Tensor eta = Tensors.vector(3, 3, 50 / Math.PI);
     StateIntegrator stateIntegrator = FixedStateIntegrator.createDefault(RationalScalar.of(1, 6), 5);
@@ -36,9 +41,9 @@ class Se2WrapDemo {
     CoordinateWrap coordinateWrap;
     coordinateWrap = new Se2Wrap(Tensors.vector(1, 1, 1));
     coordinateWrap = identity;
-    Se2DefaultGoalManager se2DefaultGoalManager = new Se2DefaultGoalManager(//
+    Se2DefaultGoalManagerExt se2DefaultGoalManager = new Se2DefaultGoalManagerExt(//
         Tensors.vector(-.5, 0), RealScalar.of(0), RealScalar.of(0.2), Se2Utils.DEGREE(30));
-    Se2WrapGoalManager se2WrapGoalManager = new Se2WrapGoalManager( //
+    Se2WrapGoalManagerExt se2WrapGoalManager = new Se2WrapGoalManagerExt( //
         coordinateWrap, se2DefaultGoalManager);
     TrajectoryRegionQuery obstacleQuery = //
         new SimpleTrajectoryRegionQuery(new TimeInvariantRegion(RegionUnion.of( //

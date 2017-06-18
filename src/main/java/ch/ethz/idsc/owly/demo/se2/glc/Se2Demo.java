@@ -1,9 +1,12 @@
 // code by jph
-package ch.ethz.idsc.owly.demo.glc.se2;
+package ch.ethz.idsc.owly.demo.se2.glc;
 
 import java.util.Collection;
 import java.util.List;
 
+import ch.ethz.idsc.owly.demo.se2.Se2Controls;
+import ch.ethz.idsc.owly.demo.se2.Se2DefaultGoalManager;
+import ch.ethz.idsc.owly.demo.se2.Se2Utils;
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
 import ch.ethz.idsc.owly.glc.core.DebugUtils;
 import ch.ethz.idsc.owly.glc.core.DefaultTrajectoryPlanner;
@@ -31,9 +34,9 @@ class Se2Demo {
     Tensor eta = Tensors.vector(3, 3, 50 / Math.PI);
     StateIntegrator stateIntegrator = FixedStateIntegrator.createDefault(RationalScalar.of(1, 6), 5);
     System.out.println("scale=" + eta);
-    Collection<Flow> controls = Se2Controls.createControls(Se2Utils.DEGREE(45), 6);
+    Collection<Flow> controls = Se2Controls.createControls(Se2Utils.DEGREE(45), 10);
     Se2DefaultGoalManager se2GoalManager = new Se2DefaultGoalManager( //
-        Tensors.vector(0, 1), RealScalar.of(Math.PI), //
+        Tensors.vector(2, 0), RealScalar.of(Math.PI * 0), //
         DoubleScalar.of(.1), Se2Utils.DEGREE(10));
     TrajectoryRegionQuery obstacleQuery = //
         new SimpleTrajectoryRegionQuery(new TimeInvariantRegion( //

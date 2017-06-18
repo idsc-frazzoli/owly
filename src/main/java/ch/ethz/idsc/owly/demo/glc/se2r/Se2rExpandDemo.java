@@ -3,7 +3,7 @@ package ch.ethz.idsc.owly.demo.glc.se2r;
 
 import java.util.Collection;
 
-import ch.ethz.idsc.owly.demo.glc.se2.Se2Utils;
+import ch.ethz.idsc.owly.demo.se2.Se2Utils;
 import ch.ethz.idsc.owly.demo.util.UserHome;
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
 import ch.ethz.idsc.owly.glc.core.DefaultTrajectoryPlanner;
