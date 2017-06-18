@@ -15,7 +15,6 @@ import ch.ethz.idsc.tensor.alg.Subdivide;
 
 public enum Se2Controls {
   ;
-  // ---
   public static Collection<Flow> createControls(Scalar angle_max, int num) {
     StateSpaceModel stateSpaceModel = new Se2StateSpaceModel();
     List<Flow> list = new ArrayList<>();

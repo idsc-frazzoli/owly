@@ -18,7 +18,8 @@ import ch.ethz.idsc.tensor.sca.Chop;
 import ch.ethz.idsc.tensor.sca.Cos;
 import ch.ethz.idsc.tensor.sca.Sin;
 
-public class Rice2Controls {
+public enum Rice2Controls {
+  ;
   public static Collection<Flow> createControls(Scalar lambda, int seg, int num) {
     StateSpaceModel stateSpaceModel = new Rice2StateSpaceModel(lambda);
     Collection<Flow> collection = new HashSet<>();

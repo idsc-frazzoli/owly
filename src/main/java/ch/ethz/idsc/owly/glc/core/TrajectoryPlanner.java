@@ -112,6 +112,8 @@ public abstract class TrajectoryPlanner implements ExpandInterface, Serializable
     best = null;
   }
 
+  /** @return best node known to be in goal, or top node in queue, or null,
+   * in this order depending on existence */
   public final Optional<GlcNode> getBestOrElsePeek() {
     return Optional.ofNullable(getBest().orElse(queue.peek())); // Queue#peek() returns the head of queue, or null if queue is empty
   }
@@ -156,9 +158,9 @@ public abstract class TrajectoryPlanner implements ExpandInterface, Serializable
       stringBuilder.append("nodes:" + domainMap.values().size() + ", ");
     }
     {
-      TrajectoryRegionQuery trq = getObstacleQuery();
-      if (trq instanceof SimpleTrajectoryRegionQuery) {
-        SimpleTrajectoryRegionQuery strq = (SimpleTrajectoryRegionQuery) trq;
+      TrajectoryRegionQuery trajectoryRegionQuery = getObstacleQuery();
+      if (trajectoryRegionQuery instanceof SimpleTrajectoryRegionQuery) {
+        SimpleTrajectoryRegionQuery strq = (SimpleTrajectoryRegionQuery) trajectoryRegionQuery;
         Collection<StateTime> collection = strq.getDiscoveredMembers();
         stringBuilder.append("obstacles:" + collection.size() + ", ");
       }

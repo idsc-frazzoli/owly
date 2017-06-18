@@ -13,15 +13,15 @@ import ch.ethz.idsc.owly.math.state.Trajectories;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
-import ch.ethz.idsc.tensor.red.Max;
 import ch.ethz.idsc.tensor.red.Norm;
+import ch.ethz.idsc.tensor.sca.Ramp;
 
-public class ExtDeltaGoalManager extends SimpleTrajectoryRegionQuery implements GoalInterface {
+public class DeltaGoalManagerExt extends SimpleTrajectoryRegionQuery implements GoalInterface {
   private final Tensor center;
   private final Scalar radius;
   private final Scalar maxSpeed;
 
-  public ExtDeltaGoalManager(Tensor center, Tensor radius, Scalar maxSpeed) {
+  public DeltaGoalManagerExt(Tensor center, Tensor radius, Scalar maxSpeed) {
     super(new TimeInvariantRegion(new EllipsoidRegion(center, radius)));
     this.center = center;
     this.maxSpeed = maxSpeed;
@@ -45,7 +45,6 @@ public class ExtDeltaGoalManager extends SimpleTrajectoryRegionQuery implements 
     // B. Paden: A Generalized Label Correcting Method for Optimal Kinodynamic Motion Planning
     // p. 79 Eq: 6.4.14
     // Heuristic needs to be underestimating: (Euclideandistance-radius) / (MaxControl+Max(|Vectorfield|)
-    Scalar dxy = Norm._2.of(x.subtract(center)).subtract(radius).divide(maxSpeed);
-    return Max.of(dxy, RealScalar.ZERO);
+    return Ramp.of(Norm._2.of(x.subtract(center)).subtract(radius).divide(maxSpeed));
   }
 }

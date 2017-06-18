@@ -8,10 +8,10 @@ import java.util.Optional;
 
 import ch.ethz.idsc.owly.demo.rn.R2Parameters;
 import ch.ethz.idsc.owly.demo.rn.RnGoalManager;
+import ch.ethz.idsc.owly.demo.rn.RnPointclouds;
 import ch.ethz.idsc.owly.demo.util.R2Controls;
 import ch.ethz.idsc.owly.demo.util.UserHome;
 import ch.ethz.idsc.owly.glc.adapter.Parameters;
-import ch.ethz.idsc.owly.glc.adapter.RnPointcloudRegion;
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
 import ch.ethz.idsc.owly.glc.core.Expand;
 import ch.ethz.idsc.owly.glc.core.GlcNode;
@@ -66,7 +66,7 @@ class R2glcAnyCircleDemo {
             RegionUnion.of( //
                 new EllipsoidRegion(Tensors.vector(0, 0), Tensors.vector(1, 1).multiply(circleRadius).multiply(RealScalar.of(0.5))) //
                 , new InvertedRegion(new EllipsoidRegion(Tensors.vector(0, 0), Tensors.vector(1, 1).multiply(circleRadius).multiply(RealScalar.of(2)))),
-                RnPointcloudRegion.createRandom(30, Tensors.vector(12, 12), Tensors.vector(0, 0), RealScalar.of(0.6))//
+                RnPointclouds.createRandomRegion(30, Tensors.vector(12, 12), Tensors.vector(0, 0), RealScalar.of(0.6))//
             // ,new HyperplaneRegion(Tensors.vector(0, -1, 0), RealScalar.of(4)) //
             // ,new HyperplaneRegion(Tensors.vector(0, +1, 0), RealScalar.of(4)) //
             )));

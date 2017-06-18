@@ -3,7 +3,6 @@ package ch.ethz.idsc.owly.demo.se2;
 
 import java.util.List;
 
-import ch.ethz.idsc.owly.demo.tn.IdentityWrap;
 import ch.ethz.idsc.owly.glc.adapter.GoalAdapter;
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
 import ch.ethz.idsc.owly.glc.core.GoalInterface;
@@ -20,7 +19,7 @@ import ch.ethz.idsc.tensor.sca.Ramp;
 
 /** minimizes driving time (=distance, since unit speed)
  * 
- * {@link Se2WrapGoalManagerExt} works with {@link Se2Wrap} as well as with {@link IdentityWrap} */
+ * {@link Se2WrapGoalManagerExt} works with {@link Se2Wrap} as well as with {@link TnIdentityWrap} */
 public class Se2WrapGoalManagerExt implements Region, CostFunction {
   private final CoordinateWrap coordinateWrap;
   private final Se2DefaultGoalManagerExt goalManager;
@@ -43,7 +42,7 @@ public class Se2WrapGoalManagerExt implements Region, CostFunction {
     return Ramp.of(coordinateWrap.distance(x, goalManager.center).subtract(goalManager.radius));
   }
 
-  // TODO FIX!
+  // TODO JONAS FIX!
   @Override
   public boolean isMember(Tensor x) {
     return Scalars.isZero(Ramp.of(coordinateWrap.distance(x, goalManager.center).subtract(goalManager.radius)));

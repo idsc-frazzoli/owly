@@ -14,7 +14,8 @@ import ch.ethz.idsc.tensor.alg.Partition;
 import ch.ethz.idsc.tensor.alg.Subdivide;
 
 /** Pendulum Swing-up controls */
-public class PsuControls {
+public enum PsuControls {
+  ;
   /** @param amplitude maximum absolute radial acceleration of pendulum
    * @param num
    * @return */

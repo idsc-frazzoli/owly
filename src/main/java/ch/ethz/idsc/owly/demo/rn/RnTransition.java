@@ -1,5 +1,5 @@
 // code by jph
-package ch.ethz.idsc.owly.demo.rn.rrts;
+package ch.ethz.idsc.owly.demo.rn;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -12,7 +12,7 @@ import ch.ethz.idsc.tensor.Scalars;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.red.Norm;
 
-class RnTransition extends AbstractTransition {
+public class RnTransition extends AbstractTransition {
   public RnTransition(Tensor start, Tensor end) {
     super(start, end);
   }

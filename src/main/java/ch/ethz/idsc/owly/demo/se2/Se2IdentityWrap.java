@@ -1,12 +1,13 @@
 // code by jph
-package ch.ethz.idsc.owly.demo.tn;
+package ch.ethz.idsc.owly.demo.se2;
 
 import ch.ethz.idsc.owly.math.CoordinateWrap;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.red.Norm;
 
-public class IdentityWrap implements CoordinateWrap {
+public class Se2IdentityWrap implements CoordinateWrap {
+  // TODO still needs weights to unify x-y ["meters"] with angle [radians]
   @Override
   public Tensor represent(Tensor x) {
     return x;
@@ -14,6 +15,6 @@ public class IdentityWrap implements CoordinateWrap {
 
   @Override
   public Scalar distance(Tensor p, Tensor q) {
-    return Norm._2.of(p.subtract(q));
+    return Norm.Infinity.of(p.subtract(q));
   }
 }

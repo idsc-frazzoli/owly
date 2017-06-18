@@ -62,7 +62,7 @@ class R2glcAnyDemo {
     // Trajectories.print(trajectory);
     List<StateTime> trajectory = null;
     {
-      Optional<GlcNode> optional = trajectoryPlanner.getBest();
+      Optional<GlcNode> optional = trajectoryPlanner.getBestOrElsePeek();
       if (optional.isPresent()) {
         trajectory = GlcNodes.getPathFromRootTo(optional.get());
         Trajectories.print(trajectory);

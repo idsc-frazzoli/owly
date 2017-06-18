@@ -3,6 +3,8 @@ package ch.ethz.idsc.owly.demo.rn.rrts;
 
 import java.util.Random;
 
+import ch.ethz.idsc.owly.demo.rn.RnNodeCollection;
+import ch.ethz.idsc.owly.demo.rn.RnTransitionSpace;
 import ch.ethz.idsc.owly.demo.util.UserHome;
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
 import ch.ethz.idsc.owly.gui.Gui;

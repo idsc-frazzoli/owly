@@ -6,8 +6,8 @@ import java.util.List;
 import java.util.Optional;
 
 import ch.ethz.idsc.owly.demo.rn.RnGoalManager;
+import ch.ethz.idsc.owly.demo.rn.RnPointclouds;
 import ch.ethz.idsc.owly.demo.util.R2Controls;
-import ch.ethz.idsc.owly.glc.adapter.RnPointcloudRegion;
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
 import ch.ethz.idsc.owly.glc.core.DefaultTrajectoryPlanner;
 import ch.ethz.idsc.owly.glc.core.Expand;
@@ -40,7 +40,7 @@ class R2PointsDemo {
     // });
     TrajectoryRegionQuery obstacleQuery = // new EmptyRegionQuery();
         new SimpleTrajectoryRegionQuery(new TimeInvariantRegion( //
-            RnPointcloudRegion.createRandom(10, Tensors.vector(4, 4), Tensors.vector(2, 2), RealScalar.of(0.6))));
+            RnPointclouds.createRandomRegion(10, Tensors.vector(4, 4), Tensors.vector(2, 2), RealScalar.of(0.6))));
     // ---
     TrajectoryPlanner trajectoryPlanner = new DefaultTrajectoryPlanner( //
         partitionScale, stateIntegrator, controls, obstacleQuery, rnGoal);

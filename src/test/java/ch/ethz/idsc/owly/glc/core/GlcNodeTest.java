@@ -30,9 +30,11 @@ public class GlcNodeTest extends TestCase {
     // Nodes are identically except heuristic
     // assertTrue(test1.equals(test2));
     // Cost is different ==> different node
+    @SuppressWarnings("unused")
     GlcNode test3 = GlcNode.of(null, state1, cost2, heuristic1);
     // assertFalse(test1.equals(test3));
     // Nodes are different in state ==> different
+    @SuppressWarnings("unused")
     GlcNode test4 = GlcNode.of(null, state2, cost1, heuristic1);
     // assertFalse(test1.equals(test4));
   }

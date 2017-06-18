@@ -1,6 +1,8 @@
 // code by jph
 package ch.ethz.idsc.owly.demo.rn.rrts;
 
+import ch.ethz.idsc.owly.demo.rn.RnNodeCollection;
+import ch.ethz.idsc.owly.demo.rn.RnTransitionSpace;
 import ch.ethz.idsc.owly.rrts.adapter.DefaultRrts;
 import ch.ethz.idsc.owly.rrts.adapter.EmptyTransitionRegionQuery;
 import ch.ethz.idsc.owly.rrts.adapter.LengthCostFunction;

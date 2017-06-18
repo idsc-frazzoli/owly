@@ -8,8 +8,10 @@ import ch.ethz.idsc.owly.math.flow.Flow;
 import ch.ethz.idsc.tensor.Scalar;
 
 /** two wheel drive */
-public class TwdControls {
+public enum TwdControls {
+  ;
   public static Collection<Flow> createControls(Scalar angle_max, int num) {
+    @SuppressWarnings("unused")
     StateSpaceModel stateSpaceModel = new TwdStateSpaceModel();
     // TODO implement
     throw new RuntimeException();

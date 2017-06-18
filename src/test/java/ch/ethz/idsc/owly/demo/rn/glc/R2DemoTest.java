@@ -1,7 +1,6 @@
 // code by jph
-package ch.ethz.idsc.owly.demo.rn;
+package ch.ethz.idsc.owly.demo.rn.glc;
 
-import ch.ethz.idsc.owly.demo.rn.glc.R2Demo;
 import junit.framework.TestCase;
 
 public class R2DemoTest extends TestCase {

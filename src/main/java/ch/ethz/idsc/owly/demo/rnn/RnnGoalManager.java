@@ -18,8 +18,10 @@ import ch.ethz.idsc.tensor.alg.Array;
 
 /** objective is minimum path length */
 class RnnGoalManager extends SimpleTrajectoryRegionQuery implements GoalInterface {
-  final Tensor center;
-  final Scalar radius;
+  @SuppressWarnings("unused")
+  private final Tensor center;
+  @SuppressWarnings("unused")
+  private final Scalar radius;
 
   public RnnGoalManager(Tensor center, Scalar radius) {
     super(new TimeInvariantRegion(new EllipsoidRegion(center, Array.of(l -> radius, center.length()))));

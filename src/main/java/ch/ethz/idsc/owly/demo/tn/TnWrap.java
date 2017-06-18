@@ -12,7 +12,7 @@ import ch.ethz.idsc.tensor.Tensors;
 import ch.ethz.idsc.tensor.red.Norm;
 import ch.ethz.idsc.tensor.sca.Mod;
 
-public class TnWrap implements CoordinateWrap {
+class TnWrap implements CoordinateWrap {
   private static final Scalar NEGATIVE_HALF = RationalScalar.of(-1, 2);
   // ---
   private final Tensor extension;

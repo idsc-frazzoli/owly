@@ -7,10 +7,10 @@ import java.util.Optional;
 
 import ch.ethz.idsc.owly.demo.se2.Se2Controls;
 import ch.ethz.idsc.owly.demo.se2.Se2DefaultGoalManagerExt;
+import ch.ethz.idsc.owly.demo.se2.Se2IdentityWrap;
 import ch.ethz.idsc.owly.demo.se2.Se2Utils;
 import ch.ethz.idsc.owly.demo.se2.Se2Wrap;
 import ch.ethz.idsc.owly.demo.se2.Se2WrapGoalManagerExt;
-import ch.ethz.idsc.owly.demo.tn.IdentityWrap;
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
 import ch.ethz.idsc.owly.glc.core.DefaultTrajectoryPlanner;
 import ch.ethz.idsc.owly.glc.core.Expand;
@@ -40,7 +40,7 @@ class Se2WrapDemoExt {
     StateIntegrator stateIntegrator = FixedStateIntegrator.createDefault(RationalScalar.of(1, 6), 5);
     System.out.println("scale=" + eta);
     Collection<Flow> controls = Se2Controls.createControls(Se2Utils.DEGREE(45), 6);
-    final CoordinateWrap identity = new IdentityWrap();
+    final CoordinateWrap identity = new Se2IdentityWrap();
     CoordinateWrap coordinateWrap;
     coordinateWrap = new Se2Wrap(Tensors.vector(1, 1, 1));
     coordinateWrap = identity;

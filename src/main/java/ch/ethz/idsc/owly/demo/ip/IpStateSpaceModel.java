@@ -14,10 +14,10 @@ import ch.ethz.idsc.tensor.sca.Sin;
  * from Analysis and Synthesis of Single-Input Single-Output Control Systems, 3rd edition
  * p.13, p.53 */
 class IpStateSpaceModel implements StateSpaceModel {
-  final Scalar M;
-  final Scalar m;
-  final Scalar l;
-  final Scalar g;
+  private final Scalar M;
+  private final Scalar m;
+  private final Scalar l;
+  private final Scalar g;
 
   /** @param M mass of cart
    * @param m mass of weight on top of rod

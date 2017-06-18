@@ -15,7 +15,8 @@ import ch.ethz.idsc.tensor.sca.Chop;
 import ch.ethz.idsc.tensor.sca.Cos;
 import ch.ethz.idsc.tensor.sca.Sin;
 
-public class DeltaControls {
+public enum DeltaControls {
+  ;
   public static Collection<Flow> createControls(DeltaStateSpaceModel dssm, Scalar amp, int num) {
     Collection<Flow> collection = new ArrayList<>();
     for (Tensor angle : Range.of(0, num).multiply(DoubleScalar.of(2 * Math.PI / num))) {

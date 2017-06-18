@@ -1,5 +1,5 @@
 // code by jph
-package ch.ethz.idsc.owly.demo.rn.rrts;
+package ch.ethz.idsc.owly.demo.rn;
 
 import java.util.Collection;
 import java.util.stream.Collectors;
@@ -14,7 +14,7 @@ import ch.ethz.idsc.tensor.Tensor;
 /** collection of nodes in R^n backed by a n-dimensional uniform tree
  * in 2-d, the data structure is a quad tree
  * in 3-d, the data structure is a octree */
-class RnNodeCollection implements RrtsNodeCollection {
+public class RnNodeCollection implements RrtsNodeCollection {
   private final NdTreeMap<RrtsNode> ndTreeMap;
 
   public RnNodeCollection(Tensor lbounds, Tensor ubounds) {

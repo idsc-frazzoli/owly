@@ -7,13 +7,13 @@ import java.util.List;
 import java.util.Optional;
 
 import ch.ethz.idsc.owly.demo.se2.Se2Controls;
+import ch.ethz.idsc.owly.demo.se2.Se2IdentityWrap;
 import ch.ethz.idsc.owly.demo.se2.Se2MinCurvatureGoalManager;
 import ch.ethz.idsc.owly.demo.se2.Se2StateSpaceModel;
 import ch.ethz.idsc.owly.demo.se2.Se2Utils;
 import ch.ethz.idsc.owly.demo.se2.Se2Wrap;
 import ch.ethz.idsc.owly.demo.se2.Se2WrapGoalManagerExt;
 import ch.ethz.idsc.owly.demo.se2.glc.Se2Parameters;
-import ch.ethz.idsc.owly.demo.tn.IdentityWrap;
 import ch.ethz.idsc.owly.glc.adapter.Parameters;
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
 import ch.ethz.idsc.owly.glc.core.DebugUtils;
@@ -61,7 +61,7 @@ class Se2IterateGlcAnyCircleWrapDemo {
     // ---
     parameters.printResolution();
     Collection<Flow> controls = Se2Controls.createControls(Se2Utils.DEGREE(45), parameters.getResolutionInt());
-    final CoordinateWrap identity = new IdentityWrap();
+    final CoordinateWrap identity = new Se2IdentityWrap();
     CoordinateWrap coordinateWrap;
     coordinateWrap = identity;
     coordinateWrap = new Se2Wrap(Tensors.vector(1, 1, 1));
