@@ -1,9 +1,8 @@
 // code by jph
-package ch.ethz.idsc.owly.demo.se2;
+package ch.ethz.idsc.owly.demo.psu;
 
 import java.util.List;
 
-import ch.ethz.idsc.owly.demo.tn.IdentityWrap;
 import ch.ethz.idsc.owly.glc.adapter.GoalAdapter;
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
 import ch.ethz.idsc.owly.glc.core.GoalInterface;
@@ -13,41 +12,36 @@ import ch.ethz.idsc.owly.math.region.Region;
 import ch.ethz.idsc.owly.math.state.CostFunction;
 import ch.ethz.idsc.owly.math.state.StateTime;
 import ch.ethz.idsc.owly.math.state.TimeInvariantRegion;
+import ch.ethz.idsc.owly.math.state.Trajectories;
+import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Scalars;
 import ch.ethz.idsc.tensor.Tensor;
-import ch.ethz.idsc.tensor.sca.Ramp;
 
-/** minimizes driving time (=distance, since unit speed)
- * 
- * {@link Se2WrapGoalManagerExt} works with {@link Se2Wrap} as well as with {@link IdentityWrap} */
-public class Se2WrapGoalManagerExt implements Region, CostFunction {
+public class PsuGoalManager implements Region, CostFunction {
   private final CoordinateWrap coordinateWrap;
-  private final Se2DefaultGoalManagerExt goalManager;
+  private final Tensor center;
+  private final Tensor radius;
 
-  /** @param coordinateWrap
-   * @param center consists of x,y,theta
-   * @param radius */
-  public Se2WrapGoalManagerExt(CoordinateWrap coordinateWrap, Se2DefaultGoalManagerExt goalManager) {
+  public PsuGoalManager(CoordinateWrap coordinateWrap, Tensor center, Tensor radius) {
     this.coordinateWrap = coordinateWrap;
-    this.goalManager = goalManager;
+    this.center = center;
+    this.radius = radius;
   }
 
   @Override
   public Scalar costIncrement(StateTime from, List<StateTime> trajectory, Flow flow) {
-    return goalManager.costIncrement(from, trajectory, flow);
+    return Trajectories.timeIncrement(from, trajectory);
   }
 
   @Override
   public Scalar minCostToGoal(Tensor x) {
-    return Ramp.of(coordinateWrap.distance(x, goalManager.center).subtract(goalManager.radius));
+    return RealScalar.ZERO;
   }
 
-  // TODO FIX!
   @Override
   public boolean isMember(Tensor x) {
-    return Scalars.isZero(Ramp.of(coordinateWrap.distance(x, goalManager.center).subtract(goalManager.radius)));
-    // return Scalars.isZero(minCostToGoal(x));
+    return Scalars.lessThan(coordinateWrap.distance(x, center).subtract(radius), RealScalar.ZERO);
   }
 
   public GoalInterface getGoalInterface() {

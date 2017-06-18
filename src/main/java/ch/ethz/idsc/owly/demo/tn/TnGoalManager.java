@@ -1,9 +1,8 @@
 // code by jph
-package ch.ethz.idsc.owly.demo.se2;
+package ch.ethz.idsc.owly.demo.tn;
 
 import java.util.List;
 
-import ch.ethz.idsc.owly.demo.tn.IdentityWrap;
 import ch.ethz.idsc.owly.glc.adapter.GoalAdapter;
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
 import ch.ethz.idsc.owly.glc.core.GoalInterface;
@@ -17,38 +16,36 @@ import ch.ethz.idsc.owly.math.state.Trajectories;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Scalars;
 import ch.ethz.idsc.tensor.Tensor;
+import ch.ethz.idsc.tensor.red.Norm;
 import ch.ethz.idsc.tensor.sca.Ramp;
 
-/** minimizes driving time (=distance, since unit speed)
+/** goal region is spherical
  * 
- * {@link Se2WrapGoalManager} works with {@link Se2Wrap} as well as with {@link IdentityWrap} */
-public class Se2WrapGoalManager implements Region, CostFunction {
-  private final CoordinateWrap coordinateWrap;
+ * objective is minimum path length */
+class TnGoalManager implements Region, CostFunction {
+  private final CoordinateWrap tnWarp;
   private final Tensor center;
   private final Scalar radius;
 
-  /** @param coordinateWrap
-   * @param center consists of x,y,theta
-   * @param radius */
-  public Se2WrapGoalManager(CoordinateWrap coordinateWrap, Tensor center, Scalar radius) {
-    this.coordinateWrap = coordinateWrap;
+  public TnGoalManager(CoordinateWrap tnWarp, Tensor center, Scalar radius) {
+    this.tnWarp = tnWarp;
     this.center = center;
     this.radius = radius;
   }
 
   @Override
   public Scalar costIncrement(StateTime from, List<StateTime> trajectory, Flow flow) {
-    return Trajectories.timeIncrement(from, trajectory);
+    return Norm._2.of(from.x().subtract(Trajectories.getLast(trajectory).x()));
   }
 
   @Override
   public Scalar minCostToGoal(Tensor x) {
-    return Ramp.of(coordinateWrap.distance(x, center).subtract(radius));
+    return Ramp.of(tnWarp.distance(x, center).subtract(radius));
   }
 
   @Override
-  public boolean isMember(Tensor x) {
-    return Scalars.isZero(minCostToGoal(x));
+  public boolean isMember(Tensor tensor) {
+    return Scalars.isZero(minCostToGoal(tensor));
   }
 
   public GoalInterface getGoalInterface() {
