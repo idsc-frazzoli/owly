@@ -4,6 +4,7 @@ package ch.ethz.idsc.owly.demo.se2.any;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 
 import ch.ethz.idsc.owly.demo.se2.Se2Controls;
 import ch.ethz.idsc.owly.demo.se2.Se2MinCurvatureGoalManager;
@@ -15,6 +16,8 @@ import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
 import ch.ethz.idsc.owly.glc.core.DebugUtils;
 import ch.ethz.idsc.owly.glc.core.DefaultTrajectoryPlanner;
 import ch.ethz.idsc.owly.glc.core.Expand;
+import ch.ethz.idsc.owly.glc.core.GlcNode;
+import ch.ethz.idsc.owly.glc.core.GlcNodes;
 import ch.ethz.idsc.owly.glc.core.OptimalAnyTrajectoryPlanner;
 import ch.ethz.idsc.owly.gui.Gui;
 import ch.ethz.idsc.owly.gui.OwlyFrame;
@@ -28,6 +31,7 @@ import ch.ethz.idsc.owly.math.state.FixedStateIntegrator;
 import ch.ethz.idsc.owly.math.state.StateIntegrator;
 import ch.ethz.idsc.owly.math.state.StateTime;
 import ch.ethz.idsc.owly.math.state.TimeInvariantRegion;
+import ch.ethz.idsc.owly.math.state.Trajectories;
 import ch.ethz.idsc.owly.math.state.TrajectoryRegionQuery;
 import ch.ethz.idsc.tensor.DoubleScalar;
 import ch.ethz.idsc.tensor.RationalScalar;
@@ -87,7 +91,13 @@ class Se2IterateGlcAnyCircleCompareDemo {
     System.out.println("After " + iters + " iterations");
     Scalar toc = RealScalar.of(System.nanoTime());
     // }
-    List<StateTime> anyTrajectory = anyTrajectoryPlanner.getPathFromRootToGoal();
+    // TODO JONAS check
+    // List<StateTime> anyTrajectory = anyTrajectoryPlanner.getPathFromRootTo();
+    Optional<GlcNode> optional = anyTrajectoryPlanner.getBestOrElsePeek();
+    if (optional.isPresent()) {
+      List<StateTime> trajectory = GlcNodes.getPathFromRootTo(optional.get());
+      Trajectories.print(trajectory);
+    }
     System.out.println(toc.subtract(tic).multiply(RealScalar.of(1e-9)) + " Seconds needed to plan");
     OwlyFrame owlyFrameAny = Gui.start();
     owlyFrameAny.setGlc(anyTrajectoryPlanner);
@@ -119,7 +129,8 @@ class Se2IterateGlcAnyCircleCompareDemo {
           goalListPosition.get(index), goalListAngle.get(index), //
           DoubleScalar.of(0.1), Se2Utils.DEGREE(10));
       // --
-      StateTime newRootState = anyTrajectory.get(5);
+      // FIXME JONAS this is not safe:
+      StateTime newRootState = null; // anyTrajectory.get(5);
       System.out.println("***ANY***");
       tic = RealScalar.of(System.nanoTime());
       {
@@ -155,7 +166,8 @@ class Se2IterateGlcAnyCircleCompareDemo {
       // timeSumDefault = toc.subtract(tic).multiply(RealScalar.of(1e-9)).add(timeSumDefault);
       System.out.println((iter + 1) + ". iteration took: " + toc.subtract(tic).multiply(RealScalar.of(1e-9)) + "s");
       // System.out.println("Average: " + timeSumDefault.divide(RealScalar.of(iter + 1)));
-      anyTrajectory = anyTrajectoryPlanner.getPathFromRootToGoal();
+      // FIXME JONAS use new API
+      // anyTrajectory = anyTrajectoryPlanner.getPathFromRootTo();
       iter++;
     }
   }

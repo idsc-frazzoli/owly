@@ -4,6 +4,7 @@ package ch.ethz.idsc.owly.demo.rn.any;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 
 import ch.ethz.idsc.owly.demo.rn.R2Parameters;
 import ch.ethz.idsc.owly.demo.rn.RnGoalManager;
@@ -13,6 +14,8 @@ import ch.ethz.idsc.owly.glc.adapter.Parameters;
 import ch.ethz.idsc.owly.glc.adapter.RnPointcloudRegion;
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
 import ch.ethz.idsc.owly.glc.core.Expand;
+import ch.ethz.idsc.owly.glc.core.GlcNode;
+import ch.ethz.idsc.owly.glc.core.GlcNodes;
 import ch.ethz.idsc.owly.glc.core.OptimalAnyTrajectoryPlanner;
 import ch.ethz.idsc.owly.gui.Gui;
 import ch.ethz.idsc.owly.gui.OwlyFrame;
@@ -80,7 +83,15 @@ class R2glcAnyCircleDemo {
     for (int iter = 1; iter < 31; iter++) {
       Thread.sleep(1);
       long tic = System.nanoTime();
-      List<StateTime> trajectory = trajectoryPlanner.getPathFromRootToGoal();
+      List<StateTime> trajectory = null;
+      {
+        // TODO JONAS check
+        Optional<GlcNode> optional = trajectoryPlanner.getBestOrElsePeek();
+        if (optional.isPresent()) {
+          trajectory = GlcNodes.getPathFromRootTo(optional.get());
+          // Trajectories.print(trajectory);
+        }
+      }
       // -- GOAL change
       List<StateTime> goalStateList = new ArrayList<>();
       do {
@@ -101,8 +112,17 @@ class R2glcAnyCircleDemo {
       int iters2 = Expand.maxDepth(trajectoryPlanner, parameters.getDepthLimit());
       owlyFrame.setGlc(trajectoryPlanner);
       gsw.append(owlyFrame.offscreen());
-      trajectory = trajectoryPlanner.getPathFromRootToGoal();
-      Trajectories.print(trajectory);
+      // TODO JONAS check
+      // trajectory = trajectoryPlanner.getPathFromRootTo();
+      // Trajectories.print(trajectory);
+      {
+        Optional<GlcNode> optional = trajectoryPlanner.getBestOrElsePeek();
+        if (optional.isPresent()) {
+          trajectory = GlcNodes.getPathFromRootTo(optional.get());
+          Trajectories.print(trajectory);
+        } else
+          throw new RuntimeException();
+      }
       // --
       long toc = System.nanoTime();
       System.out.println((toc - tic) * 1e-9 + " Seconds needed to replan");

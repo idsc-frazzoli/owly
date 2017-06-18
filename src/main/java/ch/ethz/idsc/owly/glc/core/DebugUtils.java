@@ -7,9 +7,10 @@ public enum DebugUtils {
   ;
   // ---
   // function for convenience
+  @Deprecated // TODO deprecated because root should be passed to function
   public static final void nodeAmountCompare(TrajectoryPlanner trajectoryPlanner) {
     nodeAmountCompare( //
-        Nodes.rootFrom(trajectoryPlanner.getBestOrElsePeek()), trajectoryPlanner.domainMap().size());
+        Nodes.rootFrom(trajectoryPlanner.getBestOrElsePeek().get()), trajectoryPlanner.domainMap().size());
   }
 
   // ---

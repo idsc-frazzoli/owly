@@ -48,7 +48,7 @@ public class SimpleAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
     }
     // save candidates in CandidateMap for RootSwitchlater
     processCandidates(node, connectors, candidates);
-    DebugUtils.nodeAmountCheck(getBestOrElsePeek(), node, domainMap().size());
+    DebugUtils.nodeAmountCheck(getBestOrElsePeek().get(), node, domainMap().size());
   }
 
   private void processCandidates( //
@@ -96,7 +96,7 @@ public class SimpleAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
 
   @Override
   public int switchRootToNode(GlcNode newRoot) {
-    GlcNode oldRoot = Nodes.rootFrom(getBestOrElsePeek());
+    GlcNode oldRoot = Nodes.rootFrom(getBestOrElsePeek().get());
     if (newRoot.isRoot()) {
       System.out.println("node is already root");
       return 0;
@@ -111,7 +111,7 @@ public class SimpleAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
     Collection<GlcNode> deleteTreeCollection = deleteSubtreeOf(oldRoot);
     System.out.println(oldDomainMapSize - domainMap().size() + " out of " + oldDomainMapSize + //
         " Domains removed from DomainMap = " + domainMap().size());
-    GlcNode root = Nodes.rootFrom(getBestOrElsePeek());
+    GlcNode root = Nodes.rootFrom(getBestOrElsePeek().get());
     System.out.println(deleteTreeCollection.size() + " out of " + oldTreeSize//
         + " Nodes removed from Tree = " + Nodes.ofSubtree(root).size());
     // --

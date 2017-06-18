@@ -3,6 +3,7 @@ package ch.ethz.idsc.owly.demo.se2.any;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 
 import ch.ethz.idsc.owly.demo.se2.Se2Controls;
 import ch.ethz.idsc.owly.demo.se2.Se2DefaultGoalManagerExt;
@@ -12,6 +13,8 @@ import ch.ethz.idsc.owly.demo.se2.glc.Se2Parameters;
 import ch.ethz.idsc.owly.glc.adapter.Parameters;
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
 import ch.ethz.idsc.owly.glc.core.Expand;
+import ch.ethz.idsc.owly.glc.core.GlcNode;
+import ch.ethz.idsc.owly.glc.core.GlcNodes;
 import ch.ethz.idsc.owly.glc.core.OptimalAnyTrajectoryPlanner;
 import ch.ethz.idsc.owly.gui.Gui;
 import ch.ethz.idsc.owly.math.StateSpaceModel;
@@ -70,10 +73,16 @@ class Se2glcAnyDemo {
     trajectoryPlanner.insertRoot(Tensors.vector(0, 0, 0));
     int iters = Expand.maxDepth(trajectoryPlanner, parameters.getDepthLimit());
     System.out.println("After " + iters + " iterations");
-    List<StateTime> trajectory = trajectoryPlanner.getPathFromRootToGoal();
+    // TODO JONAS check
+    // List<StateTime> trajectory = trajectoryPlanner.getPathFromRootTo();
+    Optional<GlcNode> optional = trajectoryPlanner.getBestOrElsePeek();
+    if (optional.isPresent()) {
+      List<StateTime> trajectory = GlcNodes.getPathFromRootTo(optional.get());
+      Trajectories.print(trajectory);
+    }
     long toc = System.nanoTime();
     System.out.println((toc - tic) * 1e-9 + " Seconds needed to plan");
-    Trajectories.print(trajectory);
+    // Trajectories.print(trajectory);
     // OwlyFrame owlyFrame =
     Gui.glc(trajectoryPlanner);
     // ---
@@ -83,7 +92,8 @@ class Se2glcAnyDemo {
     Se2DefaultGoalManagerExt se2GoalManager2 = new Se2DefaultGoalManagerExt( //
         Tensors.vector(-3, 1), RealScalar.of(Math.PI), //
         DoubleScalar.of(0.1), Se2Utils.DEGREE(10));
-    StateTime newRootState = trajectory.get(1);
+    // FIXME JONAS this is not safe
+    StateTime newRootState = null; // trajectory.get(1);
     // ---
     trajectoryPlanner.switchRootToState(newRootState.x());
     trajectoryPlanner.changeGoal(se2GoalManager2.getGoalInterface());

@@ -4,6 +4,7 @@ package ch.ethz.idsc.owly.demo.se2.any;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 
 import ch.ethz.idsc.owly.demo.se2.Se2Controls;
 import ch.ethz.idsc.owly.demo.se2.Se2DefaultGoalManagerExt;
@@ -15,6 +16,8 @@ import ch.ethz.idsc.owly.glc.adapter.Parameters;
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
 import ch.ethz.idsc.owly.glc.core.DebugUtils;
 import ch.ethz.idsc.owly.glc.core.Expand;
+import ch.ethz.idsc.owly.glc.core.GlcNode;
+import ch.ethz.idsc.owly.glc.core.GlcNodes;
 import ch.ethz.idsc.owly.glc.core.SimpleAnyTrajectoryPlanner;
 import ch.ethz.idsc.owly.gui.Gui;
 import ch.ethz.idsc.owly.gui.OwlyFrame;
@@ -76,7 +79,14 @@ class Se2IterateSimpleGlcAnyCircleDemo {
     int iters = Expand.maxDepth(trajectoryPlanner, parameters.getDepthLimit());
     DebugUtils.nodeAmountCompare(trajectoryPlanner);
     System.out.println("After " + iters + " iterations");
-    List<StateTime> trajectory = trajectoryPlanner.getPathFromRootToGoal();
+    // TODO JONAS check
+    List<StateTime> trajectory = null; // trajectoryPlanner.getPathFromRootTo();
+    {
+      Optional<GlcNode> optional = trajectoryPlanner.getBestOrElsePeek();
+      if (optional.isPresent()) {
+        trajectory = GlcNodes.getPathFromRootTo(optional.get());
+      }
+    }
     long toc = System.nanoTime();
     System.out.println((toc - tic) * 1e-9 + " Seconds needed to plan");
     Trajectories.print(trajectory);
@@ -110,8 +120,17 @@ class Se2IterateSimpleGlcAnyCircleDemo {
       int expandIter = 0;
       if (!foundGoal)
         expandIter = Expand.maxDepth(trajectoryPlanner, parameters.getDepthLimit());
-      trajectory = trajectoryPlanner.getPathFromRootToGoal();
-      Trajectories.print(trajectory);
+      // FIXME JONAS
+      // trajectory = trajectoryPlanner.getPathFromRootTo();
+      // Trajectories.print(trajectory);
+      {
+        Optional<GlcNode> optional = trajectoryPlanner.getBestOrElsePeek();
+        if (optional.isPresent()) {
+          trajectory = GlcNodes.getPathFromRootTo(optional.get());
+          Trajectories.print(trajectory);
+        } else
+          throw new RuntimeException();
+      }
       // ---
       toc = System.nanoTime();
       timeSum = RealScalar.of(toc - tic).multiply(RealScalar.of(1e-9)).add(timeSum);

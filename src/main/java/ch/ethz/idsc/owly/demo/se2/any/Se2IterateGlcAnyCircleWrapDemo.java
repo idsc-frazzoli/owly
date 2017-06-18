@@ -4,6 +4,7 @@ package ch.ethz.idsc.owly.demo.se2.any;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 
 import ch.ethz.idsc.owly.demo.se2.Se2Controls;
 import ch.ethz.idsc.owly.demo.se2.Se2MinCurvatureGoalManager;
@@ -17,6 +18,8 @@ import ch.ethz.idsc.owly.glc.adapter.Parameters;
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
 import ch.ethz.idsc.owly.glc.core.DebugUtils;
 import ch.ethz.idsc.owly.glc.core.Expand;
+import ch.ethz.idsc.owly.glc.core.GlcNode;
+import ch.ethz.idsc.owly.glc.core.GlcNodes;
 import ch.ethz.idsc.owly.glc.core.OptimalAnyTrajectoryPlanner;
 import ch.ethz.idsc.owly.gui.Gui;
 import ch.ethz.idsc.owly.gui.OwlyFrame;
@@ -86,7 +89,14 @@ class Se2IterateGlcAnyCircleWrapDemo {
     int iters = Expand.maxDepth(trajectoryPlanner, parameters.getDepthLimit());
     DebugUtils.nodeAmountCompare(trajectoryPlanner);
     System.out.println("After " + iters + " iterations");
-    List<StateTime> trajectory = trajectoryPlanner.getPathFromRootToGoal();
+    // TODO JONAS check
+    List<StateTime> trajectory = null; // trajectoryPlanner.getPathFromRootTo();
+    {
+      Optional<GlcNode> optional = trajectoryPlanner.getBestOrElsePeek();
+      if (optional.isPresent()) {
+        trajectory = GlcNodes.getPathFromRootTo(optional.get());
+      }
+    }
     Scalar toc = RealScalar.of(System.nanoTime());
     System.out.println(toc.subtract(tic).multiply(RealScalar.of(1e-9)) + " Seconds needed to plan");
     Trajectories.print(trajectory);
@@ -129,8 +139,17 @@ class Se2IterateGlcAnyCircleWrapDemo {
         expandIter = Expand.maxDepth(trajectoryPlanner, parameters.getDepthLimit());
       // ---
       toc = RealScalar.of(System.nanoTime());
-      trajectory = trajectoryPlanner.getPathFromRootToGoal();
-      Trajectories.print(trajectory);
+      // FIXME JONAS
+      // trajectory = trajectoryPlanner.getPathFromRootTo();
+      // Trajectories.print(trajectory);
+      {
+        Optional<GlcNode> optional = trajectoryPlanner.getBestOrElsePeek();
+        if (optional.isPresent()) {
+          trajectory = GlcNodes.getPathFromRootTo(optional.get());
+          Trajectories.print(trajectory);
+        } else
+          throw new RuntimeException();
+      }
       timeSum = toc.subtract(tic).multiply(RealScalar.of(1e-9)).add(timeSum);
       System.out.println((iter + 1) + ". iteration took: " + toc.subtract(tic).multiply(RealScalar.of(1e-9)) + "s");
       System.out.println("Average: " + timeSum.divide(RealScalar.of(iter + 1)));

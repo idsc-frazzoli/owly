@@ -3,6 +3,7 @@ package ch.ethz.idsc.owly.demo.se2.glc;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 
 import ch.ethz.idsc.owly.demo.se2.Se2Controls;
 import ch.ethz.idsc.owly.demo.se2.Se2DefaultGoalManager;
@@ -12,6 +13,8 @@ import ch.ethz.idsc.owly.glc.adapter.Parameters;
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
 import ch.ethz.idsc.owly.glc.core.DefaultTrajectoryPlanner;
 import ch.ethz.idsc.owly.glc.core.Expand;
+import ch.ethz.idsc.owly.glc.core.GlcNode;
+import ch.ethz.idsc.owly.glc.core.GlcNodes;
 import ch.ethz.idsc.owly.glc.core.TrajectoryPlanner;
 import ch.ethz.idsc.owly.gui.Gui;
 import ch.ethz.idsc.owly.math.StateSpaceModel;
@@ -66,8 +69,11 @@ class Se2GlcDemo {
     int iters = Expand.maxDepth(trajectoryPlanner, parameters.getDepthLimit());
     // int iters = Expand.maxTime(trajectoryPlanner, RealScalar.of(3));
     System.out.println("After " + iters + " iterations");
-    List<StateTime> trajectory = trajectoryPlanner.getPathFromRootToGoal();
-    Trajectories.print(trajectory);
+    Optional<GlcNode> optional = trajectoryPlanner.getBest();
+    if (optional.isPresent()) {
+      List<StateTime> trajectory = GlcNodes.getPathFromRootTo(optional.get());
+      Trajectories.print(trajectory);
+    }
     Gui.glc(trajectoryPlanner);
     // glcFrame.glcComponent.addTrajectoryPlanner(trajectoryPlanner);
   }

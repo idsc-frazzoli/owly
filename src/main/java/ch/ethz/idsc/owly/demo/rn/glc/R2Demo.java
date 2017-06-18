@@ -12,6 +12,7 @@ import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
 import ch.ethz.idsc.owly.glc.core.DefaultTrajectoryPlanner;
 import ch.ethz.idsc.owly.glc.core.Expand;
 import ch.ethz.idsc.owly.glc.core.GlcNode;
+import ch.ethz.idsc.owly.glc.core.GlcNodes;
 import ch.ethz.idsc.owly.glc.core.TrajectoryPlanner;
 import ch.ethz.idsc.owly.gui.Gui;
 import ch.ethz.idsc.owly.math.flow.EulerIntegrator;
@@ -73,14 +74,20 @@ public class R2Demo { // <- intentionally public
   public static void main(String[] args) {
     {
       TrajectoryPlanner trajectoryPlanner = simpleEmpty();
-      List<StateTime> trajectory = trajectoryPlanner.getPathFromRootToGoal();
-      Trajectories.print(trajectory);
+      Optional<GlcNode> optional = trajectoryPlanner.getBest();
+      if (optional.isPresent()) {
+        List<StateTime> trajectory = GlcNodes.getPathFromRootTo(optional.get());
+        Trajectories.print(trajectory);
+      }
       Gui.glc(trajectoryPlanner);
     }
     {
       TrajectoryPlanner trajectoryPlanner = simpleR2Bubbles();
-      List<StateTime> trajectory = trajectoryPlanner.getPathFromRootToGoal();
-      Trajectories.print(trajectory);
+      Optional<GlcNode> optional = trajectoryPlanner.getBest();
+      if (optional.isPresent()) {
+        List<StateTime> trajectory = GlcNodes.getPathFromRootTo(optional.get());
+        Trajectories.print(trajectory);
+      }
       Gui.glc(trajectoryPlanner);
     }
   }

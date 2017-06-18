@@ -3,12 +3,15 @@ package ch.ethz.idsc.owly.demo.psu.glc;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 
 import ch.ethz.idsc.owly.demo.psu.PsuControls;
 import ch.ethz.idsc.owly.demo.psu.PsuGoalManager;
 import ch.ethz.idsc.owly.demo.psu.PsuWrap;
 import ch.ethz.idsc.owly.glc.core.DefaultTrajectoryPlanner;
 import ch.ethz.idsc.owly.glc.core.Expand;
+import ch.ethz.idsc.owly.glc.core.GlcNode;
+import ch.ethz.idsc.owly.glc.core.GlcNodes;
 import ch.ethz.idsc.owly.glc.core.TrajectoryPlanner;
 import ch.ethz.idsc.owly.gui.Gui;
 import ch.ethz.idsc.owly.math.flow.Flow;
@@ -72,8 +75,11 @@ public class PsuDemo { // <- intentionally public
 
   public static void main(String[] args) {
     TrajectoryPlanner trajectoryPlanner = medium();
-    List<StateTime> trajectory = trajectoryPlanner.getPathFromRootToGoal();
-    Trajectories.print(trajectory);
+    Optional<GlcNode> optional = trajectoryPlanner.getBest();
+    if (optional.isPresent()) {
+      List<StateTime> trajectory = GlcNodes.getPathFromRootTo(optional.get());
+      Trajectories.print(trajectory);
+    }
     Gui.glc(trajectoryPlanner);
   }
 }

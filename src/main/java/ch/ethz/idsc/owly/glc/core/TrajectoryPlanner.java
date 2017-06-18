@@ -10,9 +10,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.PriorityQueue;
 import java.util.Queue;
-import java.util.stream.Collectors;
 
-import ch.ethz.idsc.owly.data.tree.Nodes;
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
 import ch.ethz.idsc.owly.math.TensorUnaryOperator;
 import ch.ethz.idsc.owly.math.state.StateTime;
@@ -114,16 +112,10 @@ public abstract class TrajectoryPlanner implements ExpandInterface, Serializable
     best = null;
   }
 
-  @Deprecated
-  public final GlcNode getBestOrElsePeek() {
-    return getBestOrElsePeek2().get();
-  }
-
-  public final Optional<GlcNode> getBestOrElsePeek2() {
+  public final Optional<GlcNode> getBestOrElsePeek() {
     return Optional.ofNullable(getBest().orElse(queue.peek())); // Queue#peek() returns the head of queue, or null if queue is empty
   }
 
-  // public final GlcNode getBestOr
   /** @return number of replacements in the domain map caused by {@link TrajectoryPlanner#insert(Tensor, GlcNode)} */
   public final int replaceCount() {
     return replaceCount;
@@ -146,17 +138,6 @@ public abstract class TrajectoryPlanner implements ExpandInterface, Serializable
 
   /* package */ final Map<Tensor, GlcNode> domainMap() {
     return domainMap;
-  }
-
-  // TODO perhaps rename to coarse path ...
-  /** @return path to goal if found, or path to current Node in queue */
-  public final List<StateTime> getPathFromRootToGoal() {
-    return Nodes.listFromRoot(getBestOrElsePeek()).stream() //
-        .map(GlcNode::stateTime).collect(Collectors.toList());
-  }
-
-  public final List<GlcNode> getNodesfromRootToGoal() { // <- check here
-    return Nodes.listFromRoot(getBestOrElsePeek());
   }
 
   /** @return unmodifiable view on queue for display and tests */

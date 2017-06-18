@@ -4,6 +4,7 @@ package ch.ethz.idsc.owly.demo.se2.any;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Optional;
 
 import ch.ethz.idsc.owly.demo.se2.Se2Controls;
 import ch.ethz.idsc.owly.demo.se2.Se2DefaultGoalManagerExt;
@@ -13,6 +14,8 @@ import ch.ethz.idsc.owly.demo.se2.glc.Se2Parameters;
 import ch.ethz.idsc.owly.glc.adapter.Parameters;
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
 import ch.ethz.idsc.owly.glc.core.Expand;
+import ch.ethz.idsc.owly.glc.core.GlcNode;
+import ch.ethz.idsc.owly.glc.core.GlcNodes;
 import ch.ethz.idsc.owly.glc.core.SimpleAnyTrajectoryPlanner;
 import ch.ethz.idsc.owly.gui.Gui;
 import ch.ethz.idsc.owly.gui.OwlyFrame;
@@ -70,7 +73,14 @@ class Se2IterateSimpleGlcAnyStreetDemo {
     trajectoryPlanner.insertRoot(Tensors.vector(-10, 0, 0));
     int iters = Expand.maxDepth(trajectoryPlanner, parameters.getDepthLimit());
     System.out.println("After " + iters + " iterations");
-    List<StateTime> trajectory = trajectoryPlanner.getPathFromRootToGoal();
+    // TODO JONAS check
+    List<StateTime> trajectory = null; // trajectoryPlanner.getPathFromRootTo();
+    {
+      Optional<GlcNode> optional = trajectoryPlanner.getBestOrElsePeek();
+      if (optional.isPresent()) {
+        trajectory = GlcNodes.getPathFromRootTo(optional.get());
+      }
+    }
     long toc = System.nanoTime();
     System.out.println((toc - tic) * 1e-9 + " Seconds needed to plan");
     Trajectories.print(trajectory);
@@ -94,8 +104,17 @@ class Se2IterateSimpleGlcAnyStreetDemo {
       trajectoryPlanner.switchRootToState(newRootState.x());
       trajectoryPlanner.changeGoal(se2GoalManager2.getGoalInterface());
       int iters2 = Expand.maxDepth(trajectoryPlanner, parameters.getDepthLimit());
-      trajectory = trajectoryPlanner.getPathFromRootToGoal();
-      Trajectories.print(trajectory);
+      // TODO JONAS check
+      // trajectory = trajectoryPlanner.getPathFromRootTo();
+      // Trajectories.print(trajectory);
+      {
+        Optional<GlcNode> optional = trajectoryPlanner.getBestOrElsePeek();
+        if (optional.isPresent()) {
+          trajectory = GlcNodes.getPathFromRootTo(optional.get());
+          Trajectories.print(trajectory);
+        } else
+          throw new RuntimeException();
+      }
       // ---
       toc = System.nanoTime();
       System.out.println((toc - tic) * 1e-9 + " Seconds needed to replan");
