@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import ch.ethz.idsc.owly.math.StateSpaceModel;
 import ch.ethz.idsc.owly.math.StateSpaceModels;
 import ch.ethz.idsc.owly.math.flow.Flow;
 import ch.ethz.idsc.tensor.DoubleScalar;
@@ -20,11 +19,10 @@ public enum PsuControls {
    * @param num
    * @return */
   public static Collection<Flow> createControls(double amplitude, int num) {
-    StateSpaceModel stateSpaceModel = new PsuStateSpaceModel();
     List<Flow> list = new ArrayList<>();
     for (Tensor u : Partition.of( //
         Subdivide.of(DoubleScalar.of(-amplitude), DoubleScalar.of(amplitude), num), 1))
-      list.add(StateSpaceModels.createFlow(stateSpaceModel, u));
+      list.add(StateSpaceModels.createFlow(PsuStateSpaceModel.INSTANCE, u));
     return list;
   }
 }

@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import ch.ethz.idsc.owly.math.Rice2StateSpaceModel;
 import ch.ethz.idsc.owly.math.StateSpaceModel;
 import ch.ethz.idsc.owly.math.StateSpaceModels;
 import ch.ethz.idsc.owly.math.flow.Flow;

@@ -11,7 +11,9 @@ import ch.ethz.idsc.tensor.sca.Sin;
 /** Pendulum Swing-up state space model
  * 
  * bapaden phd thesis: (5.5.4) */
-class PsuStateSpaceModel implements StateSpaceModel {
+public enum PsuStateSpaceModel implements StateSpaceModel {
+  INSTANCE;
+  // ---
   @Override
   public Tensor f(Tensor x, Tensor u) {
     // equation (10)
