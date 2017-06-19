@@ -137,8 +137,7 @@ public class OptimalAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
     int increasedDepthBy = newRoot.reCalculateDepth();
     // -- DEBUGING Values
     // -- Collecting Oldtree
-    // TODO JONAS why not find old root from new root?
-    GlcNode oldRoot = Nodes.rootFrom(getBestOrElsePeek().get());
+    GlcNode oldRoot = getRoot();
     Collection<GlcNode> oldTreeCollection = Nodes.ofSubtree(oldRoot);
     int oldDomainMapSize = domainMap().size();
     long oldtotalCandidates = candidateMap.values().stream().flatMap(Collection::stream).count();
@@ -154,8 +153,7 @@ public class OptimalAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
     // --
     System.out.println(oldDomainMapSize - domainMap().size() + " out of " + oldDomainMapSize + //
         " Domains removed from DomainMap = " + domainMap().size());
-    // TODO JONAS check and simplify logic?
-    final GlcNode rootNode = Nodes.rootFrom(getBestOrElsePeek().get());
+    final GlcNode rootNode = getRoot();
     Collection<GlcNode> newTreeCollection = Nodes.ofSubtree(rootNode);
     System.out.println(deleteTreeCollection.size() + " out of " + oldTreeCollection.size()//
         + " Nodes removed from Tree = " + newTreeCollection.size());
@@ -170,7 +168,7 @@ public class OptimalAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
     // -- DEBUGING
     long newtotalCandidates = candidateMap.values().parallelStream().flatMap(Collection::stream).count();
     System.out.println(oldtotalCandidates - newtotalCandidates + " of " + oldtotalCandidates + //
-        " C removed from CL with Origin in deleteTree " + newtotalCandidates);
+        " C. removed from CL. with Origin in deleteTree " + newtotalCandidates);
     System.out.println("CandidateMap before " + candidateMapBeforeSize + //
         " and after: " + candidateMap.size());
     // --

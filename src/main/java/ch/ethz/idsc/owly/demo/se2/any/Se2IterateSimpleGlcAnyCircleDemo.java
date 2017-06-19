@@ -79,17 +79,8 @@ class Se2IterateSimpleGlcAnyCircleDemo {
     int iters = Expand.maxDepth(trajectoryPlanner, parameters.getDepthLimit());
     DebugUtils.nodeAmountCompare(trajectoryPlanner);
     System.out.println("After " + iters + " iterations");
-    // TODO JONAS check
-    List<StateTime> trajectory = null; // trajectoryPlanner.getPathFromRootTo();
-    {
-      Optional<GlcNode> optional = trajectoryPlanner.getBestOrElsePeek();
-      if (optional.isPresent()) {
-        trajectory = GlcNodes.getPathFromRootTo(optional.get());
-      }
-    }
     long toc = System.nanoTime();
     System.out.println((toc - tic) * 1e-9 + " Seconds needed to plan");
-    Trajectories.print(trajectory);
     OwlyFrame owlyFrame = Gui.start();
     owlyFrame.setGlc(trajectoryPlanner);
     // ---
@@ -113,6 +104,15 @@ class Se2IterateSimpleGlcAnyCircleDemo {
       Se2MinCurvatureGoalManager se2GoalManager2 = new Se2MinCurvatureGoalManager( //
           goalListPosition.get(index), goalListAngle.get(index), //
           DoubleScalar.of(0.1), Se2Utils.DEGREE(10));
+      List<StateTime> trajectory = null;
+      {
+        Optional<GlcNode> optional = trajectoryPlanner.getBestOrElsePeek();
+        if (optional.isPresent()) {
+          trajectory = GlcNodes.getPathFromRootTo(optional.get());
+        } else {
+          throw new RuntimeException();
+        }
+      }
       StateTime newRootState = trajectory.get(2);
       int increment = trajectoryPlanner.switchRootToState(newRootState.x());
       parameters.increaseDepthLimit(increment);
@@ -120,17 +120,7 @@ class Se2IterateSimpleGlcAnyCircleDemo {
       int expandIter = 0;
       if (!foundGoal)
         expandIter = Expand.maxDepth(trajectoryPlanner, parameters.getDepthLimit());
-      // FIXME JONAS
-      // trajectory = trajectoryPlanner.getPathFromRootTo();
-      // Trajectories.print(trajectory);
-      {
-        Optional<GlcNode> optional = trajectoryPlanner.getBestOrElsePeek();
-        if (optional.isPresent()) {
-          trajectory = GlcNodes.getPathFromRootTo(optional.get());
-          Trajectories.print(trajectory);
-        } else
-          throw new RuntimeException();
-      }
+      Trajectories.print(trajectory);
       // ---
       toc = System.nanoTime();
       timeSum = RealScalar.of(toc - tic).multiply(RealScalar.of(1e-9)).add(timeSum);

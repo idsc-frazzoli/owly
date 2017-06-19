@@ -8,6 +8,7 @@ public enum DebugUtils {
   // ---
   // function for convenience
   @Deprecated // TODO deprecated because root should be passed to function
+  // but domainMap.size() is needed
   public static final void nodeAmountCompare(TrajectoryPlanner trajectoryPlanner) {
     nodeAmountCompare( //
         Nodes.rootFrom(trajectoryPlanner.getBestOrElsePeek().get()), trajectoryPlanner.domainMap().size());

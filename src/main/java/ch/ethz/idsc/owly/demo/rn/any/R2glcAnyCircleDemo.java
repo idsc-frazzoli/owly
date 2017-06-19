@@ -67,12 +67,8 @@ class R2glcAnyCircleDemo {
                 new EllipsoidRegion(Tensors.vector(0, 0), Tensors.vector(1, 1).multiply(circleRadius).multiply(RealScalar.of(0.5))) //
                 , new InvertedRegion(new EllipsoidRegion(Tensors.vector(0, 0), Tensors.vector(1, 1).multiply(circleRadius).multiply(RealScalar.of(2)))),
                 RnPointclouds.createRandomRegion(30, Tensors.vector(12, 12), Tensors.vector(0, 0), RealScalar.of(0.6))//
-            // ,new HyperplaneRegion(Tensors.vector(0, -1, 0), RealScalar.of(4)) //
-            // ,new HyperplaneRegion(Tensors.vector(0, +1, 0), RealScalar.of(4)) //
             )));
     // --
-    // SimpleAnyTrajectoryPlanner trajectoryPlanner = new SimpleAnyTrajectoryPlanner( //
-    // parameters.getEta(), stateIntegrator, controls, obstacleQuery, rnGoal);
     OptimalAnyTrajectoryPlanner trajectoryPlanner = new OptimalAnyTrajectoryPlanner( //
         parameters.getEta(), stateIntegrator, controls, obstacleQuery, rnGoal);
     trajectoryPlanner.insertRoot(Tensors.vector(0, 1).multiply(circleRadius));
@@ -85,11 +81,9 @@ class R2glcAnyCircleDemo {
       long tic = System.nanoTime();
       List<StateTime> trajectory = null;
       {
-        // TODO JONAS check
         Optional<GlcNode> optional = trajectoryPlanner.getBestOrElsePeek();
         if (optional.isPresent()) {
           trajectory = GlcNodes.getPathFromRootTo(optional.get());
-          // Trajectories.print(trajectory);
         }
       }
       // -- GOAL change
@@ -111,18 +105,8 @@ class R2glcAnyCircleDemo {
       // -- EXPANDING
       int iters2 = Expand.maxDepth(trajectoryPlanner, parameters.getDepthLimit());
       owlyFrame.setGlc(trajectoryPlanner);
+      Trajectories.print(trajectory);
       gsw.append(owlyFrame.offscreen());
-      // TODO JONAS check
-      // trajectory = trajectoryPlanner.getPathFromRootTo();
-      // Trajectories.print(trajectory);
-      {
-        Optional<GlcNode> optional = trajectoryPlanner.getBestOrElsePeek();
-        if (optional.isPresent()) {
-          trajectory = GlcNodes.getPathFromRootTo(optional.get());
-          Trajectories.print(trajectory);
-        } else
-          throw new RuntimeException();
-      }
       // --
       long toc = System.nanoTime();
       System.out.println((toc - tic) * 1e-9 + " Seconds needed to replan");
