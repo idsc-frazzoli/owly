@@ -9,11 +9,16 @@ import ch.ethz.idsc.tensor.Tensors;
 import ch.ethz.idsc.tensor.sca.Cos;
 import ch.ethz.idsc.tensor.sca.Sin;
 
-class Se2rStateSpaceModel implements StateSpaceModel {
+/** since the se2r state space model is parameter free
+ * access to the model is via a singleton instance */
+public enum Se2rStateSpaceModel implements StateSpaceModel {
+  INSTANCE;
+  // ---
   @Override
   public Tensor f(Tensor x, Tensor u) {
-    // u.Get(0) contains angle
-    // u.Get(1) should be 1 for forward motion or -1 for backward motion
+    // x = {px, py, theta}
+    // u = {angle, speed}
+    // speed: positive for forward motion, or negative for backward motion
     Scalar angle = x.Get(2);
     Tensor tangent = Tensors.of(Cos.of(angle), Sin.of(angle), u.Get(0));
     return tangent.multiply(u.Get(1));
