@@ -11,13 +11,15 @@ import ch.ethz.idsc.tensor.Scalar;
 
 /** trajectory integration with fixed step size over given time period */
 public class FixedStateIntegrator implements StateIntegrator {
+  private static final Integrator MIDPOINT = new MidpointIntegrator();
+
   /** uses {@link MidpointIntegrator}
    * 
    * @param timeStep
    * @param trajectorySize
    * @return */
   public static StateIntegrator createDefault(Scalar timeStep, int trajectorySize) {
-    return new FixedStateIntegrator(new MidpointIntegrator(), timeStep, trajectorySize);
+    return new FixedStateIntegrator(MIDPOINT, timeStep, trajectorySize);
   }
 
   public static StateIntegrator create(Integrator integrator, Scalar timeStep, int trajectorySize) {

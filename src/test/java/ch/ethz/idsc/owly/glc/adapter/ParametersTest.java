@@ -20,7 +20,7 @@ public class ParametersTest extends TestCase {
     Tensor partitionScale = Tensors.vector(3, 3, 15);
     Scalar dtMax = RationalScalar.of(1, 6);
     int maxIter = 2000;
-    StateSpaceModel stateSpaceModel = new Se2StateSpaceModel();
+    StateSpaceModel stateSpaceModel = Se2StateSpaceModel.INSTANCE;
     Scalar resolution = RationalScalar.of(2, 1); // resolution is bound by Integer.MAX_VALUE
     Scalar oldValue = RealScalar.of(1000);
     Scalar newValue = oldValue;

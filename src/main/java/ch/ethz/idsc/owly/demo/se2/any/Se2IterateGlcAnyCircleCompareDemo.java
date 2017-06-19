@@ -48,7 +48,7 @@ class Se2IterateGlcAnyCircleCompareDemo {
     Tensor partitionScale = Tensors.vector(3, 3, 50 / Math.PI);
     Scalar dtMax = RationalScalar.of(1, 12);
     int maxIter = 2000;
-    StateSpaceModel stateSpaceModel = new Se2StateSpaceModel();
+    StateSpaceModel stateSpaceModel = Se2StateSpaceModel.INSTANCE;
     // --
     Parameters parameters = new Se2Parameters( //
         resolution, timeScale, depthScale, partitionScale, dtMax, maxIter, stateSpaceModel.getLipschitz());
