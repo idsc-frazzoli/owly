@@ -2,7 +2,6 @@
 package ch.ethz.idsc.owly.demo.se2.any;
 
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 
@@ -39,10 +38,10 @@ import ch.ethz.idsc.tensor.Tensors;
 /** (x,y,theta) */
 class Se2IterateSimpleGlcAnyStreetDemo {
   public static void main(String[] args) throws Exception {
-    RationalScalar resolution = (RationalScalar) RealScalar.of(5);
-    Scalar timeScale = RealScalar.of(10);
-    Scalar depthScale = RealScalar.of(5);
-    Tensor partitionScale = Tensors.vector(3, 3, 50 / Math.PI);
+    RationalScalar resolution = (RationalScalar) RealScalar.of(6);
+    Scalar timeScale = RealScalar.of(4);
+    Scalar depthScale = RealScalar.of(10);
+    Tensor partitionScale = Tensors.vector(5, 5, 20 / Math.PI);
     Scalar dtMax = RationalScalar.of(1, 6);
     int maxIter = 2000;
     StateSpaceModel stateSpaceModel = new Se2StateSpaceModel();
@@ -73,23 +72,12 @@ class Se2IterateSimpleGlcAnyStreetDemo {
     trajectoryPlanner.insertRoot(Tensors.vector(-10, 0, 0));
     int iters = Expand.maxDepth(trajectoryPlanner, parameters.getDepthLimit());
     System.out.println("After " + iters + " iterations");
-    // TODO JONAS check
-    List<StateTime> trajectory = null; // trajectoryPlanner.getPathFromRootTo();
-    {
-      Optional<GlcNode> optional = trajectoryPlanner.getBestOrElsePeek();
-      if (optional.isPresent()) {
-        trajectory = GlcNodes.getPathFromRootTo(optional.get());
-      }
-    }
     long toc = System.nanoTime();
     System.out.println((toc - tic) * 1e-9 + " Seconds needed to plan");
-    Trajectories.print(trajectory);
     OwlyFrame owlyFrame = Gui.start();
     owlyFrame.setGlc(trajectoryPlanner);
     // ---
     // --
-    Iterator<StateTime> trajectoryIterator = trajectory.iterator();
-    trajectoryIterator.next();
     for (int iter = 0; iter < 100; iter++) {
       // while (trajectoryIterator.hasNext()) {
       Thread.sleep(500);
@@ -99,22 +87,19 @@ class Se2IterateSimpleGlcAnyStreetDemo {
       // saw toothtrajectory for goals
       Se2DefaultGoalManagerExt se2GoalManager2 = new Se2DefaultGoalManagerExt(Tensors.vector(-7 + iter, index), RealScalar.of(0), DoubleScalar.of(.1),
           Se2Utils.DEGREE(10));
+      List<StateTime> trajectory = null;
+      {
+        Optional<GlcNode> optional = trajectoryPlanner.getBestOrElsePeek();
+        if (optional.isPresent()) {
+          trajectory = GlcNodes.getPathFromRootTo(optional.get());
+        }
+      }
       StateTime newRootState = trajectory.get(1);
       // ---
       trajectoryPlanner.switchRootToState(newRootState.x());
       trajectoryPlanner.changeGoal(se2GoalManager2.getGoalInterface());
       int iters2 = Expand.maxDepth(trajectoryPlanner, parameters.getDepthLimit());
-      // TODO JONAS check
-      // trajectory = trajectoryPlanner.getPathFromRootTo();
-      // Trajectories.print(trajectory);
-      {
-        Optional<GlcNode> optional = trajectoryPlanner.getBestOrElsePeek();
-        if (optional.isPresent()) {
-          trajectory = GlcNodes.getPathFromRootTo(optional.get());
-          Trajectories.print(trajectory);
-        } else
-          throw new RuntimeException();
-      }
+      Trajectories.print(trajectory);
       // ---
       toc = System.nanoTime();
       System.out.println((toc - tic) * 1e-9 + " Seconds needed to replan");

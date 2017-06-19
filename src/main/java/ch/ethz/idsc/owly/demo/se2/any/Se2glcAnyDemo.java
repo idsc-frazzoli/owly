@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Optional;
 
 import ch.ethz.idsc.owly.demo.se2.Se2Controls;
-import ch.ethz.idsc.owly.demo.se2.Se2DefaultGoalManagerExt;
+import ch.ethz.idsc.owly.demo.se2.Se2DefaultGoalManager;
 import ch.ethz.idsc.owly.demo.se2.Se2StateSpaceModel;
 import ch.ethz.idsc.owly.demo.se2.Se2Utils;
 import ch.ethz.idsc.owly.demo.se2.glc.Se2Parameters;
@@ -37,11 +37,11 @@ import ch.ethz.idsc.tensor.Tensors;
 /** (x,y,theta) */
 class Se2glcAnyDemo {
   public static void main(String[] args) throws Exception {
-    RationalScalar resolution = (RationalScalar) RealScalar.of(12);
-    Scalar timeScale = RealScalar.of(10);
-    Scalar depthScale = RealScalar.of(5);
+    RationalScalar resolution = (RationalScalar) RealScalar.of(8);
+    Scalar timeScale = RealScalar.of(4);
+    Scalar depthScale = RealScalar.of(10);
     Tensor partitionScale = Tensors.vector(3, 3, 50 / Math.PI);
-    Scalar dtMax = RationalScalar.of(1, 6);
+    Scalar dtMax = RationalScalar.of(1, 12);
     int maxIter = 2000;
     StateSpaceModel stateSpaceModel = new Se2StateSpaceModel();
     // --
@@ -50,15 +50,14 @@ class Se2glcAnyDemo {
     StateIntegrator stateIntegrator = FixedStateIntegrator.createDefault(parameters.getdtMax(), //
         parameters.getTrajectorySize());
     // ---
+    List<StateTime> trajectory = null;
     System.out.println("1/Domainsize=" + parameters.getEta());
     parameters.printResolution();
     // Se2Controls uses Se2StateSpaceModel
     Collection<Flow> controls = Se2Controls.createControls(Se2Utils.DEGREE(45), parameters.getResolutionInt());
-    Se2DefaultGoalManagerExt se2GoalManager = new Se2DefaultGoalManagerExt( //
+    Se2DefaultGoalManager se2GoalManager = new Se2DefaultGoalManager( //
         Tensors.vector(0, 1), RealScalar.of(Math.PI), //
         DoubleScalar.of(.1), Se2Utils.DEGREE(10));
-    // TrajectoryRegionQuery goalQuery = //
-    // new SimpleTrajectoryRegionQuery(new TimeInvariantRegion(se2GoalManager));
     TrajectoryRegionQuery obstacleQuery = //
         new SimpleTrajectoryRegionQuery(new TimeInvariantRegion( //
             RegionUnion.of( //
@@ -73,27 +72,24 @@ class Se2glcAnyDemo {
     trajectoryPlanner.insertRoot(Tensors.vector(0, 0, 0));
     int iters = Expand.maxDepth(trajectoryPlanner, parameters.getDepthLimit());
     System.out.println("After " + iters + " iterations");
-    // TODO JONAS check
-    // List<StateTime> trajectory = trajectoryPlanner.getPathFromRootTo();
     Optional<GlcNode> optional = trajectoryPlanner.getBestOrElsePeek();
     if (optional.isPresent()) {
-      List<StateTime> trajectory = GlcNodes.getPathFromRootTo(optional.get());
+      trajectory = GlcNodes.getPathFromRootTo(optional.get());
       Trajectories.print(trajectory);
+    } else {
+      throw new RuntimeException();
     }
     long toc = System.nanoTime();
     System.out.println((toc - tic) * 1e-9 + " Seconds needed to plan");
-    // Trajectories.print(trajectory);
-    // OwlyFrame owlyFrame =
     Gui.glc(trajectoryPlanner);
-    // ---
-    // Thread.sleep(4000);
     tic = System.nanoTime();
     // --
-    Se2DefaultGoalManagerExt se2GoalManager2 = new Se2DefaultGoalManagerExt( //
+    Se2DefaultGoalManager se2GoalManager2 = new Se2DefaultGoalManager( //
         Tensors.vector(-3, 1), RealScalar.of(Math.PI), //
         DoubleScalar.of(0.1), Se2Utils.DEGREE(10));
-    // FIXME JONAS this is not safe
-    StateTime newRootState = null; // trajectory.get(1);
+    StateTime newRootState = null;
+    if (trajectory != null)
+      newRootState = trajectory.get(trajectory.size() > 3 ? 3 : 0);
     // ---
     trajectoryPlanner.switchRootToState(newRootState.x());
     trajectoryPlanner.changeGoal(se2GoalManager2.getGoalInterface());
@@ -102,7 +98,6 @@ class Se2glcAnyDemo {
     toc = System.nanoTime();
     System.out.println((toc - tic) * 1e-9 + " Seconds needed to replan");
     System.out.println("After root switch needed " + iters2 + " iterations");
-    // owlyFrame.repaint();
     Gui.glc(trajectoryPlanner);
   }
 }

@@ -49,7 +49,7 @@ class Se2IterateGlcAnyCircleWrapDemo {
     RationalScalar resolution = (RationalScalar) RealScalar.of(6);
     Scalar timeScale = RealScalar.of(4);
     Scalar depthScale = RealScalar.of(10);
-    Tensor partitionScale = Tensors.vector(5, 5, 50 / Math.PI);
+    Tensor partitionScale = Tensors.vector(5, 5, 20 / Math.PI);
     Scalar dtMax = RationalScalar.of(1, 12);
     int maxIter = 2000;
     StateSpaceModel stateSpaceModel = new Se2StateSpaceModel();
@@ -89,17 +89,8 @@ class Se2IterateGlcAnyCircleWrapDemo {
     int iters = Expand.maxDepth(trajectoryPlanner, parameters.getDepthLimit());
     DebugUtils.nodeAmountCompare(trajectoryPlanner);
     System.out.println("After " + iters + " iterations");
-    // TODO JONAS check
-    List<StateTime> trajectory = null; // trajectoryPlanner.getPathFromRootTo();
-    {
-      Optional<GlcNode> optional = trajectoryPlanner.getBestOrElsePeek();
-      if (optional.isPresent()) {
-        trajectory = GlcNodes.getPathFromRootTo(optional.get());
-      }
-    }
     Scalar toc = RealScalar.of(System.nanoTime());
     System.out.println(toc.subtract(tic).multiply(RealScalar.of(1e-9)) + " Seconds needed to plan");
-    Trajectories.print(trajectory);
     owlyFrame.setGlc(trajectoryPlanner);
     // ---
     List<Tensor> goalList = new ArrayList<>();
@@ -118,6 +109,17 @@ class Se2IterateGlcAnyCircleWrapDemo {
       tic = RealScalar.of(System.nanoTime());
       int index = iter % 4;
       // --
+      List<StateTime> trajectory = null;
+      {
+        Optional<GlcNode> optional = trajectoryPlanner.getBestOrElsePeek();
+        if (optional.isPresent()) {
+          trajectory = GlcNodes.getPathFromRootTo(optional.get());
+        } else {
+          // TODO JONAS maybe change resolution of next iteration --> new planner
+          // TODO JONAS write function which finds best merit in Tree
+          throw new RuntimeException();
+        }
+      }
       StateTime newRootState = trajectory.get(5);
       int increment = trajectoryPlanner.switchRootToState(newRootState.x());
       parameters.increaseDepthLimit(increment);
@@ -125,6 +127,7 @@ class Se2IterateGlcAnyCircleWrapDemo {
       List<Integer> positionIndex = new ArrayList<Integer>();
       positionIndex.add(0);
       positionIndex.add(1);
+      // TODO JONAS runtimeerror
       Se2MinCurvatureGoalManager se2GoalManager2 = new Se2MinCurvatureGoalManager( //
           goalList.get(index).get(positionIndex), goalList.get(index).Get(2), //
           DoubleScalar.of(0.5), Se2Utils.DEGREE(30));
@@ -139,17 +142,7 @@ class Se2IterateGlcAnyCircleWrapDemo {
         expandIter = Expand.maxDepth(trajectoryPlanner, parameters.getDepthLimit());
       // ---
       toc = RealScalar.of(System.nanoTime());
-      // FIXME JONAS
-      // trajectory = trajectoryPlanner.getPathFromRootTo();
-      // Trajectories.print(trajectory);
-      {
-        Optional<GlcNode> optional = trajectoryPlanner.getBestOrElsePeek();
-        if (optional.isPresent()) {
-          trajectory = GlcNodes.getPathFromRootTo(optional.get());
-          Trajectories.print(trajectory);
-        } else
-          throw new RuntimeException();
-      }
+      Trajectories.print(trajectory);
       timeSum = toc.subtract(tic).multiply(RealScalar.of(1e-9)).add(timeSum);
       System.out.println((iter + 1) + ". iteration took: " + toc.subtract(tic).multiply(RealScalar.of(1e-9)) + "s");
       System.out.println("Average: " + timeSum.divide(RealScalar.of(iter + 1)));

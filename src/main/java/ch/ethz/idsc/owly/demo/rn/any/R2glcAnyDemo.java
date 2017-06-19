@@ -15,6 +15,7 @@ import ch.ethz.idsc.owly.glc.core.GlcNode;
 import ch.ethz.idsc.owly.glc.core.GlcNodes;
 import ch.ethz.idsc.owly.glc.core.OptimalAnyTrajectoryPlanner;
 import ch.ethz.idsc.owly.gui.Gui;
+import ch.ethz.idsc.owly.gui.OwlyFrame;
 import ch.ethz.idsc.owly.math.flow.EulerIntegrator;
 import ch.ethz.idsc.owly.math.flow.Flow;
 import ch.ethz.idsc.owly.math.region.EmptyRegion;
@@ -35,9 +36,9 @@ import ch.ethz.idsc.tensor.sca.Mod;
 class R2glcAnyDemo {
   public static void main(String[] args) {
     RationalScalar resolution = (RationalScalar) RealScalar.of(4);
-    Scalar timeScale = RealScalar.of(10);
+    Scalar timeScale = RealScalar.of(2);
     Scalar depthScale = RealScalar.of(100);
-    Tensor partitionScale = Tensors.vector(3, 3);
+    Tensor partitionScale = Tensors.vector(7, 7);
     Scalar dtMax = RationalScalar.of(1, 6);
     int maxIter = 2000;
     Scalar lipschitz = RealScalar.ONE;
@@ -57,18 +58,7 @@ class R2glcAnyDemo {
         parameters.getEta(), stateIntegrator, controls, obstacleQuery, rnGoal);
     trajectoryPlanner.insertRoot(Tensors.vector(0, 0));
     Expand.maxDepth(trajectoryPlanner, parameters.getDepthLimit());
-    // TODO JONAS check
-    // List<StateTime> trajectory = trajectoryPlanner.getPathFromRootTo();
-    // Trajectories.print(trajectory);
-    List<StateTime> trajectory = null;
-    {
-      Optional<GlcNode> optional = trajectoryPlanner.getBestOrElsePeek();
-      if (optional.isPresent()) {
-        trajectory = GlcNodes.getPathFromRootTo(optional.get());
-        Trajectories.print(trajectory);
-      }
-    }
-    Gui.glc(trajectoryPlanner);
+    OwlyFrame owlyFrame = Gui.start();
     Tensor goal = Tensors.vector(6, 6);
     for (int iter = 0; iter < 20; iter++) {
       long tic = System.nanoTime();
@@ -76,28 +66,27 @@ class R2glcAnyDemo {
       goal.set(Mod.function(RealScalar.of(5)), 0);
       goal.set(Mod.function(RealScalar.of(5)), 1);
       RnGoalManager rnGoal2 = new RnGoalManager(goal, DoubleScalar.of(.25));
+      List<StateTime> trajectory = null;
+      {
+        Optional<GlcNode> optional = trajectoryPlanner.getBestOrElsePeek();
+        if (optional.isPresent()) {
+          trajectory = GlcNodes.getPathFromRootTo(optional.get());
+        }
+      }
       StateTime newRootState = trajectory.get(trajectory.size() > 1 ? 1 : 0);
       // ---
       int increment = trajectoryPlanner.switchRootToState(newRootState.x());
-      Gui.glc(trajectoryPlanner);
       parameters.increaseDepthLimit(increment);
       System.out.println("Switching to Goal:" + goal);
       trajectoryPlanner.changeGoal(rnGoal2);
       int iters2 = Expand.maxDepth(trajectoryPlanner, parameters.getDepthLimit());
-      // TODO JONAS check
-      // trajectory = trajectoryPlanner.getPathFromRootTo();
-      // Trajectories.print(trajectory);
-      Optional<GlcNode> optional = trajectoryPlanner.getBestOrElsePeek();
-      if (optional.isPresent()) {
-        trajectory = GlcNodes.getPathFromRootTo(optional.get());
-        Trajectories.print(trajectory);
-      }
       // ---
       long toc = System.nanoTime();
+      Trajectories.print(trajectory);
       System.out.println((toc - tic) * 1e-9 + " Seconds needed to replan");
       System.out.println("After root switch needed " + iters2 + " iterations");
       System.out.println("*****Finished*****");
-      // owlyFrame.setGlc(trajectoryPlanner);
+      owlyFrame.setGlc(trajectoryPlanner);
       // owlyFrame.configCoordinateOffset(150 - iter * 30, 450 + iter * 30);
       // if (!owlyFrame.jFrame.isVisible())
       // break;
