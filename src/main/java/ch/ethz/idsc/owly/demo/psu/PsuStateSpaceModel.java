@@ -10,7 +10,10 @@ import ch.ethz.idsc.tensor.sca.Sin;
 
 /** Pendulum Swing-up state space model
  * 
- * bapaden phd thesis: (5.5.4) */
+ * bapaden phd thesis: (5.5.4)
+ * 
+ * Since the state space model is parameter free, the access
+ * to the model is via a singleton instance. */
 public enum PsuStateSpaceModel implements StateSpaceModel {
   INSTANCE;
   // ---

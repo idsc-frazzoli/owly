@@ -9,8 +9,8 @@ import ch.ethz.idsc.tensor.Tensors;
 import ch.ethz.idsc.tensor.sca.Cos;
 import ch.ethz.idsc.tensor.sca.Sin;
 
-/** since the se2r state space model is parameter free
- * access to the model is via a singleton instance */
+/** since the se2r state space model is parameter free,
+ * the access to the model is via a singleton instance */
 public enum Se2rStateSpaceModel implements StateSpaceModel {
   INSTANCE;
   // ---

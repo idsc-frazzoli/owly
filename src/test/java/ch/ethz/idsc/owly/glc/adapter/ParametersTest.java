@@ -30,7 +30,7 @@ public class ParametersTest extends TestCase {
       Parameters test = new Se2Parameters(//
           resolution, timeScale, depthScale, partitionScale, dtMax, maxIter, stateSpaceModel.getLipschitz());
       oldValue = newValue;
-      //TODO why R/depthlimit?
+      // TODO why R/depthlimit?
       newValue = resolution.divide(test.getDepthLimitExact());
       assertTrue(Scalars.lessEquals(newValue, oldValue));
       if (Scalars.lessThan(newValue.abs(), RealScalar.of(0.001)))
@@ -46,14 +46,14 @@ public class ParametersTest extends TestCase {
     Scalar power = Power.of(scalar, exponent);
     assertTrue(Scalars.isZero(power)); // 0 * 0 == 0
   }
-  
-  public void testDomainSizeToZero(){
+
+  public void testDomainSizeToZero() {
     Scalar timeScale = RealScalar.of(10);
     Scalar depthScale = RealScalar.of(5);
     Tensor partitionScale = Tensors.vector(3, 3, 15);
     Scalar dtMax = RationalScalar.of(1, 6);
     int maxIter = 2000;
-    StateSpaceModel stateSpaceModel = new Se2StateSpaceModel();
+    StateSpaceModel stateSpaceModel = Se2StateSpaceModel.INSTANCE;
     Scalar resolution = RationalScalar.of(2, 1); // resolution is bound by Integer.MAX_VALUE
     Scalar oldValue = RealScalar.of(1000);
     Scalar newValue = oldValue;
@@ -64,13 +64,12 @@ public class ParametersTest extends TestCase {
           resolution, timeScale, depthScale, partitionScale, dtMax, maxIter, stateSpaceModel.getLipschitz());
       oldValue = newValue;
       newValue = resolution.divide(test.getEta().Get(1));
-      //only need to test 1, as only initial conditions different
+      // only need to test 1, as only initial conditions different
       assertTrue(Scalars.lessEquals(newValue, oldValue));
       if (Scalars.lessThan(newValue.abs(), RealScalar.of(0.001)))
         break;
     }
     System.out.println(iter);
     assertTrue(iter < 1000);
-    
   }
 }

@@ -15,7 +15,10 @@ import ch.ethz.idsc.tensor.sca.Sin;
  * bapaden phd thesis: (5.5.12)
  * 
  * The Se2-StateSpaceModel has a single control parameter: the angle
- * In order to control angle and speed use {@link Se2rStateSpaceModel}. */
+ * In order to control angle and speed use {@link Se2rStateSpaceModel}.
+ * 
+ * since the se2 state space model is parameter free,
+ * the access to the model is via a singleton instance */
 public enum Se2StateSpaceModel implements StateSpaceModel {
   INSTANCE;
   // ---
