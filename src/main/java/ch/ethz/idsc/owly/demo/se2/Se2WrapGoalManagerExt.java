@@ -15,6 +15,7 @@ import ch.ethz.idsc.owly.math.state.TimeInvariantRegion;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Scalars;
 import ch.ethz.idsc.tensor.Tensor;
+import ch.ethz.idsc.tensor.Tensors;
 import ch.ethz.idsc.tensor.sca.Ramp;
 
 /** minimizes driving time (=distance, since unit speed)
@@ -42,11 +43,10 @@ public class Se2WrapGoalManagerExt implements Region, CostFunction {
     return Ramp.of(coordinateWrap.distance(x, goalManager.center).subtract(goalManager.radius));
   }
 
-  // TODO JONAS FIX!
   @Override
   public boolean isMember(Tensor x) {
-    return Scalars.isZero(Ramp.of(coordinateWrap.distance(x, goalManager.center).subtract(goalManager.radius)));
-    // return Scalars.isZero(minCostToGoal(x));
+    return Scalars.isZero(Ramp.of(coordinateWrap.distance(x, goalManager.center)//
+        .subtract(coordinateWrap.distance(Tensors.vector(0, 0, 0), goalManager.radiusVector))));
   }
 
   public GoalInterface getGoalInterface() {
