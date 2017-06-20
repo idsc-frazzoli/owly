@@ -66,15 +66,15 @@ public enum DeltaHelper {
         Images.displayOrientation(Import.of(Resources.fileFromRepository("/io/delta_uxy.png")).get(Tensor.ALL, Tensor.ALL, 0)), //
         range, RealScalar.of(-.5)); // -.25 .5
     DeltaStateSpaceModel stateSpaceModel = new DeltaStateSpaceModel(ipr);
+    Scalar maxInput = RealScalar.ONE;
+    Scalar maxSpeed = maxInput.add(ipr.maxNorm());
+    Collection<Flow> controls = DeltaControls.createControls( //
+        stateSpaceModel, maxInput, resolution.number().intValue());
     Parameters parameters = new DeltaParameters(resolution, timeScale, depthScale, //
         partitionScale, dtMax, maxIter, stateSpaceModel.getLipschitz());
     System.out.println("1/DomainSize: " + parameters.getEta());
     StateIntegrator stateIntegrator = FixedStateIntegrator.create( //
         new RungeKutta45Integrator(), parameters.getdtMax(), parameters.getTrajectorySize());
-    Scalar maxInput = RealScalar.ONE;
-    Scalar maxSpeed = maxInput.add(ipr.maxNorm());
-    Collection<Flow> controls = DeltaControls.createControls( //
-        stateSpaceModel, maxInput, parameters.getResolutionInt());
     Tensor obstacleImage = Images.displayOrientation(Import.of(Resources.fileFromRepository("/io/delta_free.png")).get(Tensor.ALL, Tensor.ALL, 0)); //
     TrajectoryRegionQuery obstacleQuery = //
         new SimpleTrajectoryRegionQuery(new TimeInvariantRegion( //

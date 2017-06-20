@@ -123,7 +123,6 @@ import ch.ethz.idsc.tensor.Tensor;
     List<GlcNode> list = new LinkedList<>(queue());
     treeCollection.stream().parallel() //
         .forEach(glcNode -> glcNode.setMinCostToGoal(newGoal.minCostToGoal(glcNode.state())));
-    // TODO Does Queue sort itself new automatically?
     queue().clear();
     queue().addAll(list);
     toc = System.nanoTime();

@@ -20,23 +20,27 @@ public class DeltaGoalManagerExt extends SimpleTrajectoryRegionQuery implements 
   private final Tensor center;
   private final Scalar radius;
   private final Scalar maxSpeed;
+  private final Scalar costScalingFactor;
 
+  // Constructor with Default value in CostScaling
   public DeltaGoalManagerExt(Tensor center, Tensor radius, Scalar maxSpeed) {
+    this(center, radius, maxSpeed, RealScalar.ONE);
+  }
+
+  public DeltaGoalManagerExt(Tensor center, Tensor radius, Scalar maxSpeed, Scalar costScalingFactor) {
     super(new TimeInvariantRegion(new EllipsoidRegion(center, radius)));
     this.center = center;
     this.maxSpeed = maxSpeed;
     if (!radius.Get(0).equals(radius.Get(1)))
       throw new RuntimeException(); // x-y radius have to be equal
     this.radius = radius.Get(0);
+    this.costScalingFactor = costScalingFactor;
   }
 
   @Override
   public Scalar costIncrement(StateTime from, List<StateTime> trajectory, Flow flow) {
-    // return RealScalar.of(trajectory.size());
-    Scalar sum = Norm._2.of(flow.getU()).add(RealScalar.of(0.1));
-    // TODO magic const in input
-    // Costfunction: integrate (u^2 +0.1, t)
-    // TODO multiply with time needed?, as trajectorytimelength always the same
+    Scalar sum = Norm._2.of(flow.getU()).add(costScalingFactor);
+    // Costfunction: integrate (u^2 +1, t)
     return sum.multiply(Trajectories.timeIncrement(from, trajectory));
   }
 

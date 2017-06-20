@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.Optional;
 
 import ch.ethz.idsc.owly.demo.se2.Se2Controls;
-import ch.ethz.idsc.owly.demo.se2.Se2IdentityWrap;
 import ch.ethz.idsc.owly.demo.se2.Se2MinCurvatureGoalManager;
 import ch.ethz.idsc.owly.demo.se2.Se2StateSpaceModel;
 import ch.ethz.idsc.owly.demo.se2.Se2Utils;
@@ -61,10 +60,7 @@ class Se2IterateGlcAnyCircleWrapDemo {
     // ---
     parameters.printResolution();
     Collection<Flow> controls = Se2Controls.createControls(Se2Utils.DEGREE(45), parameters.getResolutionInt());
-    final CoordinateWrap identity = new Se2IdentityWrap();
-    CoordinateWrap coordinateWrap;
-    coordinateWrap = identity;
-    coordinateWrap = new Se2Wrap(Tensors.vector(1, 1, 1));
+    CoordinateWrap coordinateWrap = new Se2Wrap(Tensors.vector(1, 1, 1));
     Se2MinCurvatureGoalManager se2GoalManager = new Se2MinCurvatureGoalManager( //
         Tensors.vector(3, 0), RealScalar.of(1.5 * Math.PI), // east
         DoubleScalar.of(.1), Se2Utils.DEGREE(30));
@@ -86,10 +82,10 @@ class Se2IterateGlcAnyCircleWrapDemo {
     // ---
     trajectoryPlanner.insertRoot(Tensors.vector(0, 3, 0));
     OwlyFrame owlyFrame = Gui.start();
+    Scalar toc = RealScalar.of(System.nanoTime());
     int iters = Expand.maxDepth(trajectoryPlanner, parameters.getDepthLimit());
     DebugUtils.nodeAmountCompare(trajectoryPlanner);
     System.out.println("After " + iters + " iterations");
-    Scalar toc = RealScalar.of(System.nanoTime());
     System.out.println(toc.subtract(tic).multiply(RealScalar.of(1e-9)) + " Seconds needed to plan");
     owlyFrame.setGlc(trajectoryPlanner);
     // ---
@@ -103,7 +99,8 @@ class Se2IterateGlcAnyCircleWrapDemo {
     Scalar timeSum = RealScalar.of(0);
     boolean goalFound = false;
     int expandIter = 0;
-    while (owlyFrame.jFrame.isVisible()) {
+    while (iter < 20) {
+      // while (owlyFrame.jFrame.isVisible()) {
       Scalar delay = RealScalar.of(0);
       Thread.sleep(1000);
       tic = RealScalar.of(System.nanoTime());
@@ -124,12 +121,8 @@ class Se2IterateGlcAnyCircleWrapDemo {
       int increment = trajectoryPlanner.switchRootToState(newRootState.x());
       parameters.increaseDepthLimit(increment);
       Thread.sleep(delay.number().intValue() / 2);
-      List<Integer> positionIndex = new ArrayList<Integer>();
-      positionIndex.add(0);
-      positionIndex.add(1);
-      // TODO JONAS runtimeerror
       Se2MinCurvatureGoalManager se2GoalManager2 = new Se2MinCurvatureGoalManager( //
-          goalList.get(index).get(positionIndex), goalList.get(index).Get(2), //
+          Tensors.of(goalList.get(index).Get(0), goalList.get(index).Get(1)), goalList.get(index).Get(2), //
           DoubleScalar.of(0.5), Se2Utils.DEGREE(30));
       Se2WrapGoalManagerExt se2WrapGoalManager2 = new Se2WrapGoalManagerExt( //
           coordinateWrap, //
