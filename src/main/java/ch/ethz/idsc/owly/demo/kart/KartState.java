@@ -1,8 +1,10 @@
-// code by jph
+// code by marcello
+// code adapted by jph
 package ch.ethz.idsc.owly.demo.kart;
 
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
+import ch.ethz.idsc.tensor.TensorRuntimeException;
 import ch.ethz.idsc.tensor.Tensors;
 import ch.ethz.idsc.tensor.sca.Cos;
 import ch.ethz.idsc.tensor.sca.Sin;
@@ -20,6 +22,9 @@ public class KartState {
   public final Scalar y_BF;
 
   public KartState(Tensor vector) {
+    if (vector.length() != 10)
+      throw TensorRuntimeException.of(vector);
+    // ---
     V = vector.Get(0); // V
     beta1 = vector.Get(1); // beta1
     phi = vector.Get(2); // phi
@@ -46,5 +51,11 @@ public class KartState {
     return Tensors.of( //
         Sin.of(beta1.subtract(delta)), //
         Cos.of(delta));
+  }
+
+  Tensor asVector() {
+    return Tensors.of(V, beta1, phi, dphi, //
+        w_FL, w_FR, w_RL, w_RR, //
+        x_BF, y_BF);
   }
 }
