@@ -64,7 +64,7 @@ class Se2IterateGlcAnyCircleWrapDemo {
     Se2MinCurvatureGoalManager se2GoalManager = new Se2MinCurvatureGoalManager( //
         Tensors.vector(3, 0), RealScalar.of(1.5 * Math.PI), // east
         DoubleScalar.of(.1), Se2Utils.DEGREE(30));
-    Se2WrapGoalManagerExt se2WrapGoalManager = new Se2WrapGoalManagerExt( //
+    Se2WrapGoalManagerExt se2WrapGoalManagerExt = new Se2WrapGoalManagerExt( //
         coordinateWrap, //
         se2GoalManager);
     TrajectoryRegionQuery obstacleQuery = //
@@ -78,7 +78,7 @@ class Se2IterateGlcAnyCircleWrapDemo {
     // ---
     Scalar tic = RealScalar.of(System.nanoTime());
     OptimalAnyTrajectoryPlanner trajectoryPlanner = new OptimalAnyTrajectoryPlanner( //
-        parameters.getEta(), stateIntegrator, controls, obstacleQuery, se2WrapGoalManager.getGoalInterface());
+        parameters.getEta(), stateIntegrator, controls, obstacleQuery, se2WrapGoalManagerExt.getGoalInterface());
     // ---
     trajectoryPlanner.insertRoot(Tensors.vector(0, 3, 0));
     OwlyFrame owlyFrame = Gui.start();
