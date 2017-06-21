@@ -15,10 +15,11 @@ import ch.ethz.idsc.tensor.red.Max;
 import ch.ethz.idsc.tensor.red.Norm;
 import ch.ethz.idsc.tensor.sca.Floor;
 import ch.ethz.idsc.tensor.sca.Power;
+import ch.ethz.idsc.tensor.sca.Ramp;
 
 public class Se2MinCurvatureGoalManager extends Se2DefaultGoalManagerExt {
-  public Se2MinCurvatureGoalManager(Tensor xy, Scalar angle, Scalar radius, Scalar angle_delta) {
-    super(xy, angle, radius, angle_delta);
+  public Se2MinCurvatureGoalManager(Tensor center, Tensor radiusVector) {
+    super(center, radiusVector);
   }
 
   @Override
@@ -45,8 +46,8 @@ public class Se2MinCurvatureGoalManager extends Se2DefaultGoalManagerExt {
   public Scalar minCostToGoal(Tensor x) {
     Tensor cur_xy = x.extract(0, 2);
     Scalar cur_angle = x.Get(2);
-    Scalar dxy = Norm._2.of(cur_xy.subtract(xy)).subtract(radius);
-    Scalar dangle = PRINCIPAL.apply(cur_angle.subtract(angle)).abs().subtract(angle_delta);
-    return Max.of(dxy, dangle);
+    Scalar dxy = Norm._2.of(cur_xy.subtract(center.extract(0, 2))).subtract(radiusVector.Get(1));
+    Scalar dangle = PRINCIPAL.apply(cur_angle.subtract(center.Get(2))).abs().subtract(radiusVector.Get(2));
+    return Ramp.of(Max.of(dxy, dangle));
   }
 }

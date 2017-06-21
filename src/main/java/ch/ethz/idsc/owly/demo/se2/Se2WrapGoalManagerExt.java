@@ -40,7 +40,7 @@ public class Se2WrapGoalManagerExt implements Region, CostFunction {
 
   @Override
   public Scalar minCostToGoal(Tensor x) {
-    return Ramp.of(coordinateWrap.distance(x, goalManager.center).subtract(goalManager.radius));
+    return Ramp.of(coordinateWrap.distance(x, goalManager.center).subtract(goalManager.radiusVector.Get(1)));
   }
 
   @Override
