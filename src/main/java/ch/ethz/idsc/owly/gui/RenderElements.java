@@ -7,7 +7,7 @@ import java.util.List;
 
 import ch.ethz.idsc.owly.data.tree.StateCostNode;
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
-import ch.ethz.idsc.owly.glc.core.AbstractAnyTrajectoryPlanner;
+import ch.ethz.idsc.owly.glc.core.OptimalAnyTrajectoryPlanner;
 import ch.ethz.idsc.owly.glc.core.TrajectoryPlanner;
 import ch.ethz.idsc.owly.math.state.TrajectoryRegionQuery;
 import ch.ethz.idsc.owly.rrts.adapter.SampledTransitionRegionQuery;
@@ -30,9 +30,9 @@ class RenderElements {
     list.add(new TreeRender(trajectoryPlanner.getDomainMap().values()));
     list.add(new TrajectoryRender(trajectoryPlanner));
     {
-      if (trajectoryPlanner instanceof AbstractAnyTrajectoryPlanner) {
-        AbstractAnyTrajectoryPlanner abstractAnyTrajectoryPlanner = (AbstractAnyTrajectoryPlanner) trajectoryPlanner;
-        list.add(new CandidatesRender(abstractAnyTrajectoryPlanner));
+      if (trajectoryPlanner instanceof OptimalAnyTrajectoryPlanner) {
+        OptimalAnyTrajectoryPlanner optimalAnyTrajectoryPlanner = (OptimalAnyTrajectoryPlanner) trajectoryPlanner;
+        list.add(new CandidatesRender(optimalAnyTrajectoryPlanner));
       }
     }
     {

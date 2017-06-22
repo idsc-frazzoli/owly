@@ -2,6 +2,7 @@
 package ch.ethz.idsc.owly.glc.core;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -41,7 +42,6 @@ public class OptimalAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
 
   @Override // from ExpandInterface
   public void expand(final GlcNode node) {
-    // TODO count updates in cell based on costs for benchmarking
     Map<GlcNode, List<StateTime>> connectors = //
         SharedUtils.integrate(node, controls, getStateIntegrator(), goalInterface);
     CandidatePairQueueMap candidatePairQueueMap = new CandidatePairQueueMap();
@@ -220,6 +220,10 @@ public class OptimalAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
     System.out.println(addedNodesToQueue + " Nodes added to Domain = " + domainMap().size());
     System.out.println("**Rootswitch finished**");
     return increasedDepthBy;
+  }
+
+  public Map<Tensor, Set<CandidatePair>> getCandidateMap() {
+    return Collections.unmodifiableMap(candidateMap);
   }
 
   @Override

@@ -28,8 +28,8 @@ import ch.ethz.idsc.owly.math.state.StateTime;
 import ch.ethz.idsc.owly.math.state.TimeInvariantRegion;
 import ch.ethz.idsc.owly.math.state.Trajectories;
 import ch.ethz.idsc.owly.math.state.TrajectoryRegionQuery;
+import ch.ethz.idsc.tensor.DoubleScalar;
 import ch.ethz.idsc.tensor.RationalScalar;
-import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
 
@@ -37,6 +37,7 @@ import ch.ethz.idsc.tensor.Tensors;
 class Se2WrapDemoExt {
   public static void main(String[] args) {
     Tensor eta = Tensors.vector(3, 3, 50 / Math.PI);
+    Tensor radiusVector = Tensors.of(DoubleScalar.of(0.2), DoubleScalar.of(0.2), Se2Utils.DEGREE(15));
     StateIntegrator stateIntegrator = FixedStateIntegrator.createDefault(RationalScalar.of(1, 6), 5);
     System.out.println("scale=" + eta);
     Collection<Flow> controls = Se2Controls.createControls(Se2Utils.DEGREE(45), 6);
@@ -45,7 +46,7 @@ class Se2WrapDemoExt {
     coordinateWrap = new Se2Wrap(Tensors.vector(1, 1, 1));
     coordinateWrap = identity;
     Se2DefaultGoalManagerExt se2DefaultGoalManager = new Se2DefaultGoalManagerExt(//
-        Tensors.vector(-.5, 0), RealScalar.of(0), RealScalar.of(0.2), Se2Utils.DEGREE(30));
+        Tensors.vector(-.5, 0, 0), radiusVector);
     Se2WrapGoalManagerExt se2WrapGoalManager = new Se2WrapGoalManagerExt( //
         coordinateWrap, se2DefaultGoalManager);
     TrajectoryRegionQuery obstacleQuery = //

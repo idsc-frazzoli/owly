@@ -5,7 +5,7 @@ import java.io.Serializable;
 
 import ch.ethz.idsc.tensor.Scalars;
 
-/* package */ class CandidatePair implements Comparable<CandidatePair>, Serializable {
+/* package */ public class CandidatePair implements Comparable<CandidatePair>, Serializable {
   private final GlcNode origin;
   private final GlcNode candidate;
 

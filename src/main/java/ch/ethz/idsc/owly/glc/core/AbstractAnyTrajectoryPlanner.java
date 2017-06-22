@@ -92,7 +92,7 @@ public abstract class AbstractAnyTrajectoryPlanner extends AbstractStandardTraje
    * @param newGoal New GoalRegion
    * @return boolean, true if Goal was already found in oldTree */
   public boolean changeGoal(final GoalInterface newGoal) {
-    // TODO Check if Goal is reachable
+    // TODO JONAS Check if Goal is reachable
     this.goalInterface = newGoal;
     GlcNode root = getRoot();
     setBestNull();

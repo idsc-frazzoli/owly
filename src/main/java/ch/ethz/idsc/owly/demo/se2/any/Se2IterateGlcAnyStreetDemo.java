@@ -44,6 +44,7 @@ class Se2IterateGlcAnyStreetDemo {
     Tensor partitionScale = Tensors.vector(3, 3, 50 / Math.PI);
     Scalar dtMax = RationalScalar.of(1, 6);
     int maxIter = 2000;
+    Tensor radiusVector = Tensors.of(DoubleScalar.of(0.2), DoubleScalar.of(0.2), Se2Utils.DEGREE(15));
     StateSpaceModel stateSpaceModel = Se2StateSpaceModel.INSTANCE;
     // --
     Parameters parameters = new Se2Parameters( //
@@ -54,9 +55,7 @@ class Se2IterateGlcAnyStreetDemo {
     System.out.println("1/Domainsize=" + parameters.getEta());
     parameters.printResolution();
     Collection<Flow> controls = Se2Controls.createControls(Se2Utils.DEGREE(45), 6);
-    Se2DefaultGoalManagerExt se2GoalManager = new Se2DefaultGoalManagerExt( //
-        Tensors.vector(-7, 0), RealScalar.of(0), // east
-        DoubleScalar.of(.1), Se2Utils.DEGREE(10));
+    Se2DefaultGoalManagerExt se2GoalManager = new Se2DefaultGoalManagerExt(Tensors.vector(-7, 0, 0), radiusVector);
     TrajectoryRegionQuery obstacleQuery = //
         new SimpleTrajectoryRegionQuery(new TimeInvariantRegion( //
             RegionUnion.of( //
@@ -80,8 +79,7 @@ class Se2IterateGlcAnyStreetDemo {
     for (int iter = 0; iter < 300; iter++) {
       Thread.sleep(500);
       tic = System.nanoTime();
-      Se2DefaultGoalManagerExt se2GoalManager2 = new Se2DefaultGoalManagerExt(Tensors.vector(-7 + iter, 0), RealScalar.of(0), DoubleScalar.of(.1),
-          Se2Utils.DEGREE(10));
+      Se2DefaultGoalManagerExt se2GoalManager2 = new Se2DefaultGoalManagerExt(Tensors.vector(-7 + iter, 0, 0), radiusVector);
       List<StateTime> trajectory = null;
       {
         Optional<GlcNode> optional = trajectoryPlanner.getBestOrElsePeek();

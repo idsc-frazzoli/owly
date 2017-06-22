@@ -49,6 +49,7 @@ class Se2IterateGlcAnyCircleCompareDemo {
     Scalar dtMax = RationalScalar.of(1, 12);
     int maxIter = 2000;
     StateSpaceModel stateSpaceModel = Se2StateSpaceModel.INSTANCE;
+    Tensor radiusVector = Tensors.of(DoubleScalar.of(0.2), DoubleScalar.of(0.2), Se2Utils.DEGREE(15));
     // --
     Parameters parameters = new Se2Parameters( //
         resolution, timeScale, depthScale, partitionScale, dtMax, maxIter, stateSpaceModel.getLipschitz());
@@ -59,8 +60,7 @@ class Se2IterateGlcAnyCircleCompareDemo {
     parameters.printResolution();
     Collection<Flow> controls = Se2Controls.createControls(Se2Utils.DEGREE(45), parameters.getResolutionInt());
     Se2MinCurvatureGoalManager se2GoalManager = new Se2MinCurvatureGoalManager( //
-        Tensors.vector(3, 0), RealScalar.of(1.5 * Math.PI), // east
-        DoubleScalar.of(.1), Se2Utils.DEGREE(10));
+        Tensors.vector(3, 0, 1.5 * Math.PI), radiusVector);
     TrajectoryRegionQuery obstacleQuery = //
         new SimpleTrajectoryRegionQuery(new TimeInvariantRegion( //
             RegionUnion.of( //
@@ -69,16 +69,11 @@ class Se2IterateGlcAnyCircleCompareDemo {
                 new HyperplaneRegion(Tensors.vector(0, -1, 0), RealScalar.of(4)), //
                 new HyperplaneRegion(Tensors.vector(0, +1, 0), RealScalar.of(4)) //
             )));
-    List<Tensor> goalListPosition = new ArrayList<>();
-    goalListPosition.add(Tensors.vector(0, -3));// South
-    goalListPosition.add(Tensors.vector(-3, 0));// West
-    goalListPosition.add(Tensors.vector(0, 3)); // North
-    goalListPosition.add(Tensors.vector(3, 0)); // East
-    List<Scalar> goalListAngle = new ArrayList<>();
-    goalListAngle.add(RealScalar.of(Math.PI)); // South
-    goalListAngle.add(RealScalar.of(0.5 * Math.PI)); // West
-    goalListAngle.add(RealScalar.of(0)); // North
-    goalListAngle.add(RealScalar.of(-0.5 * Math.PI)); // East
+    List<Tensor> goalList = new ArrayList<>();
+    goalList.add(Tensors.vector(0, -3, Math.PI));// South
+    goalList.add(Tensors.vector(-3, 0, 0.5 * Math.PI));// West
+    goalList.add(Tensors.vector(0, 3, 0)); // North
+    goalList.add(Tensors.vector(3, 0, -0.5 * Math.PI)); // East
     // ---
     Scalar tic = RealScalar.of(System.nanoTime());
     System.out.println("***ANY***");
@@ -110,12 +105,11 @@ class Se2IterateGlcAnyCircleCompareDemo {
     }
     // --
     int iter = 0;
-    // Scalar timeSumAny = RealScalar.of(0);
-    // Scalar timeSumDefault = RealScalar.of(0);
     boolean goalFound = false;
     int expandIter = 0;
     System.out.println("****STARTING COMPARISON****");
     while (owlyFrameAny.jFrame.isVisible()) {
+      System.out.println("***NEW SET");
       List<StateTime> anyTrajectory = null;
       Optional<GlcNode> optional = anyTrajectoryPlanner.getBestOrElsePeek();
       if (optional.isPresent()) {
@@ -128,8 +122,7 @@ class Se2IterateGlcAnyCircleCompareDemo {
         newRootState = anyTrajectory.get(anyTrajectory.size() > 5 ? 5 : 0);
       int index = iter % 4;
       Se2MinCurvatureGoalManager se2GoalManager2 = new Se2MinCurvatureGoalManager( //
-          goalListPosition.get(index), goalListAngle.get(index), //
-          DoubleScalar.of(0.1), Se2Utils.DEGREE(10));
+          goalList.get(index), radiusVector);
       // --
       System.out.println("***ANY***");
       tic = RealScalar.of(System.nanoTime());
@@ -147,9 +140,7 @@ class Se2IterateGlcAnyCircleCompareDemo {
         // ---
       }
       toc = RealScalar.of(System.nanoTime());
-      // timeSumAny = toc.subtract(tic).multiply(RealScalar.of(1e-9)).add(timeSumAny);
       System.out.println((iter + 1) + ". iteration took: " + toc.subtract(tic).multiply(RealScalar.of(1e-9)) + "s");
-      // System.out.println("Average: " + timeSumAny.divide(RealScalar.of(iter + 1)));
       System.out.println("***DEFAULT***");
       tic = RealScalar.of(System.nanoTime());
       {
@@ -163,9 +154,7 @@ class Se2IterateGlcAnyCircleCompareDemo {
         owlyFrameDefault.setGlc(defaultTrajectoryPlanner);
       }
       toc = RealScalar.of(System.nanoTime());
-      // timeSumDefault = toc.subtract(tic).multiply(RealScalar.of(1e-9)).add(timeSumDefault);
       System.out.println((iter + 1) + ". iteration took: " + toc.subtract(tic).multiply(RealScalar.of(1e-9)) + "s");
-      // System.out.println("Average: " + timeSumDefault.divide(RealScalar.of(iter + 1)));
       iter++;
     }
   }

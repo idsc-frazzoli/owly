@@ -3,14 +3,18 @@ package ch.ethz.idsc.owly.gui;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
+import java.util.Map;
+import java.util.Set;
 
-import ch.ethz.idsc.owly.glc.core.AbstractAnyTrajectoryPlanner;
+import ch.ethz.idsc.owly.glc.core.CandidatePair;
+import ch.ethz.idsc.owly.glc.core.OptimalAnyTrajectoryPlanner;
+import ch.ethz.idsc.tensor.Tensor;
 
 public class CandidatesRender implements AbstractRender {
-  private final AbstractAnyTrajectoryPlanner abstractAnyTrajectoryPlanner;
+  private final OptimalAnyTrajectoryPlanner OptimalAnyTrajectoryPlanner;
 
-  public CandidatesRender(AbstractAnyTrajectoryPlanner abstractAnyTrajectoryPlanner) {
-    this.abstractAnyTrajectoryPlanner = abstractAnyTrajectoryPlanner;
+  public CandidatesRender(OptimalAnyTrajectoryPlanner OptimalAnyTrajectoryPlanner) {
+    this.OptimalAnyTrajectoryPlanner = OptimalAnyTrajectoryPlanner;
   }
 
   @Override
@@ -18,5 +22,7 @@ public class CandidatesRender implements AbstractRender {
     graphics.setColor(Color.black);
     graphics.drawString("candidates could appear in view", 50, 50);
     // TODO JONAS abstractAnyTrajectoryPlanner."get candidates set" and visualize them
+    // TODO smart way as usually are many
+    Map<Tensor, Set<CandidatePair>> candidateMap = OptimalAnyTrajectoryPlanner.getCandidateMap();
   }
 }
