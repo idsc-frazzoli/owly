@@ -1,10 +1,8 @@
-package ch.ethz.idsc.owly.demo.se2.glc;
+package ch.ethz.idsc.owly.demo.se2;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import ch.ethz.idsc.owly.demo.se2.Se2MinCurvatureGoalManager;
-import ch.ethz.idsc.owly.demo.se2.Se2Utils;
 import ch.ethz.idsc.owly.glc.core.AbstractAnyTrajectoryPlanner;
 import ch.ethz.idsc.owly.math.state.StateTime;
 import ch.ethz.idsc.tensor.DoubleScalar;
@@ -31,7 +29,7 @@ public class Se2CircleAnyDemo {
       goalStateList.add(goalState);
     } while (!trajectoryPlanner.getObstacleQuery().isDisjoint(goalStateList));
     Se2MinCurvatureGoalManager se2GoalManager = new Se2MinCurvatureGoalManager(goal, radiusVector);
-    boolean goalFound = trajectoryPlanner.changeGoal(se2GoalManager.getGoalInterface());
+    boolean goalFound = trajectoryPlanner.changeToGoal(se2GoalManager.getGoalInterface());
     return goalFound;
   }
 }

@@ -4,7 +4,6 @@ package ch.ethz.idsc.owly.demo.rn.any;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.Optional;
 
 import ch.ethz.idsc.owly.demo.rn.R2Parameters;
 import ch.ethz.idsc.owly.demo.rn.RnGoalManager;
@@ -13,10 +12,10 @@ import ch.ethz.idsc.owly.demo.util.R2Controls;
 import ch.ethz.idsc.owly.demo.util.UserHome;
 import ch.ethz.idsc.owly.glc.adapter.Parameters;
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
+import ch.ethz.idsc.owly.glc.core.AnyPlannerInterface;
 import ch.ethz.idsc.owly.glc.core.Expand;
-import ch.ethz.idsc.owly.glc.core.GlcNode;
-import ch.ethz.idsc.owly.glc.core.GlcNodes;
 import ch.ethz.idsc.owly.glc.core.OptimalAnyTrajectoryPlanner;
+import ch.ethz.idsc.owly.glc.core.TrajectoryPlanner;
 import ch.ethz.idsc.owly.gui.Gui;
 import ch.ethz.idsc.owly.gui.OwlyFrame;
 import ch.ethz.idsc.owly.math.flow.EulerIntegrator;
@@ -40,7 +39,7 @@ import ch.ethz.idsc.tensor.io.GifSequenceWriter;
 import ch.ethz.idsc.tensor.sca.Cos;
 import ch.ethz.idsc.tensor.sca.Sin;
 
-class R2glcAnyCircleDemo {
+class R2GlcAnyCircleDemo {
   public static void main(String[] args) throws Exception {
     RationalScalar resolution = (RationalScalar) RealScalar.of(10);
     Scalar timeScale = RealScalar.of(2);
@@ -69,9 +68,10 @@ class R2glcAnyCircleDemo {
                 RnPointclouds.createRandomRegion(30, Tensors.vector(12, 12), Tensors.vector(0, 0), RealScalar.of(0.6))//
             )));
     // --
-    OptimalAnyTrajectoryPlanner trajectoryPlanner = new OptimalAnyTrajectoryPlanner( //
+    AnyPlannerInterface trajectoryPlanner = new OptimalAnyTrajectoryPlanner( //
         parameters.getEta(), stateIntegrator, controls, obstacleQuery, rnGoal);
-    trajectoryPlanner.insertRoot(Tensors.vector(0, 1).multiply(circleRadius));
+    trajectoryPlanner.switchRootToState(Tensors.vector(0, 1).multiply(circleRadius));
+    Expand.maxDepth(trajectoryPlanner, parameters.getDepthLimit());
     GifSequenceWriter gsw = GifSequenceWriter.of(UserHome.Pictures("R2_Circle_Gif.gif"), 250);
     OwlyFrame owlyFrame = Gui.start();
     owlyFrame.configCoordinateOffset(400, 400);
@@ -79,14 +79,8 @@ class R2glcAnyCircleDemo {
     for (int iter = 1; iter < 31; iter++) {
       Thread.sleep(1);
       long tic = System.nanoTime();
-      List<StateTime> trajectory = null;
-      {
-        Optional<GlcNode> optional = trajectoryPlanner.getBestOrElsePeek();
-        if (optional.isPresent()) {
-          trajectory = GlcNodes.getPathFromRootTo(optional.get());
-        }
-      }
-      // -- GOAL change
+      List<StateTime> trajectory = trajectoryPlanner.trajectoryToBest();
+      // -- GOALCHANGE
       List<StateTime> goalStateList = new ArrayList<>();
       do {
         goalStateList.clear();
@@ -97,14 +91,14 @@ class R2glcAnyCircleDemo {
       } while (!obstacleQuery.isDisjoint(goalStateList));
       RnGoalManager rnGoal2 = new RnGoalManager(goal, DoubleScalar.of(.25));
       System.out.println("Switching to Goal:" + goal);
-      trajectoryPlanner.changeGoal(rnGoal2);
+      trajectoryPlanner.changeToGoal(rnGoal2);
       // -- ROOTCHANGE
       StateTime newRootState = trajectory.get(trajectory.size() > 5 ? 5 : 0);
       int increment = trajectoryPlanner.switchRootToState(newRootState.x());
       parameters.increaseDepthLimit(increment);
       // -- EXPANDING
       int iters2 = Expand.maxDepth(trajectoryPlanner, parameters.getDepthLimit());
-      owlyFrame.setGlc(trajectoryPlanner);
+      owlyFrame.setGlc((TrajectoryPlanner) trajectoryPlanner);
       Trajectories.print(trajectory);
       gsw.append(owlyFrame.offscreen());
       // --

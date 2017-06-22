@@ -9,10 +9,10 @@ import ch.ethz.idsc.owly.demo.rn.RnGoalManager;
 import ch.ethz.idsc.owly.demo.rn.RnPointclouds;
 import ch.ethz.idsc.owly.demo.util.R2Controls;
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
-import ch.ethz.idsc.owly.glc.core.DefaultTrajectoryPlanner;
 import ch.ethz.idsc.owly.glc.core.Expand;
 import ch.ethz.idsc.owly.glc.core.GlcNode;
 import ch.ethz.idsc.owly.glc.core.GlcNodes;
+import ch.ethz.idsc.owly.glc.core.StandardTrajectoryPlanner;
 import ch.ethz.idsc.owly.glc.core.TrajectoryPlanner;
 import ch.ethz.idsc.owly.gui.Gui;
 import ch.ethz.idsc.owly.math.flow.EulerIntegrator;
@@ -42,7 +42,7 @@ class R2PointsDemo {
         new SimpleTrajectoryRegionQuery(new TimeInvariantRegion( //
             RnPointclouds.createRandomRegion(10, Tensors.vector(4, 4), Tensors.vector(2, 2), RealScalar.of(0.6))));
     // ---
-    TrajectoryPlanner trajectoryPlanner = new DefaultTrajectoryPlanner( //
+    TrajectoryPlanner trajectoryPlanner = new StandardTrajectoryPlanner( //
         partitionScale, stateIntegrator, controls, obstacleQuery, rnGoal);
     trajectoryPlanner.insertRoot(Tensors.vector(0, 0));
     int iters = Expand.maxSteps(trajectoryPlanner, 1000);

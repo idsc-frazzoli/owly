@@ -3,7 +3,6 @@ package ch.ethz.idsc.owly.demo.se2.any;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.Optional;
 
 import ch.ethz.idsc.owly.demo.se2.Se2Controls;
 import ch.ethz.idsc.owly.demo.se2.Se2DefaultGoalManagerExt;
@@ -12,10 +11,10 @@ import ch.ethz.idsc.owly.demo.se2.Se2Utils;
 import ch.ethz.idsc.owly.demo.se2.glc.Se2Parameters;
 import ch.ethz.idsc.owly.glc.adapter.Parameters;
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
+import ch.ethz.idsc.owly.glc.core.AnyPlannerInterface;
 import ch.ethz.idsc.owly.glc.core.Expand;
-import ch.ethz.idsc.owly.glc.core.GlcNode;
-import ch.ethz.idsc.owly.glc.core.GlcNodes;
 import ch.ethz.idsc.owly.glc.core.SimpleAnyTrajectoryPlanner;
+import ch.ethz.idsc.owly.glc.core.TrajectoryPlanner;
 import ch.ethz.idsc.owly.gui.Gui;
 import ch.ethz.idsc.owly.gui.OwlyFrame;
 import ch.ethz.idsc.owly.math.StateSpaceModel;
@@ -26,7 +25,6 @@ import ch.ethz.idsc.owly.math.state.FixedStateIntegrator;
 import ch.ethz.idsc.owly.math.state.StateIntegrator;
 import ch.ethz.idsc.owly.math.state.StateTime;
 import ch.ethz.idsc.owly.math.state.TimeInvariantRegion;
-import ch.ethz.idsc.owly.math.state.Trajectories;
 import ch.ethz.idsc.owly.math.state.TrajectoryRegionQuery;
 import ch.ethz.idsc.tensor.DoubleScalar;
 import ch.ethz.idsc.tensor.RationalScalar;
@@ -66,45 +64,41 @@ class Se2IterateSimpleGlcAnyStreetDemo {
             )));
     // ---
     long tic = System.nanoTime();
-    SimpleAnyTrajectoryPlanner trajectoryPlanner = new SimpleAnyTrajectoryPlanner( //
+    AnyPlannerInterface trajectoryPlanner = new SimpleAnyTrajectoryPlanner( //
         parameters.getEta(), stateIntegrator, controls, obstacleQuery, se2GoalManager.getGoalInterface());
     // ---
-    trajectoryPlanner.insertRoot(Tensors.vector(-10, 0, 0));
+    trajectoryPlanner.switchRootToState(Tensors.vector(-10, 0, 0));
     int iters = Expand.maxDepth(trajectoryPlanner, parameters.getDepthLimit());
     System.out.println("After " + iters + " iterations");
     long toc = System.nanoTime();
     System.out.println((toc - tic) * 1e-9 + " Seconds needed to plan");
     OwlyFrame owlyFrame = Gui.start();
-    owlyFrame.setGlc(trajectoryPlanner);
+    owlyFrame.setGlc((TrajectoryPlanner) trajectoryPlanner);
     // ---
     // --
     for (int iter = 0; iter < 100; iter++) {
       Thread.sleep(500);
       tic = System.nanoTime();
       int index = iter % 4;
-      System.out.println("index" + index);
-      // saw toothtrajectory for goals
+      // sawtooth trajectory for goals
       Se2DefaultGoalManagerExt se2GoalManager2 = new Se2DefaultGoalManagerExt(//
           Tensors.vector(-7 + iter, index, 0), radiusVector);
-      List<StateTime> trajectory = null;
-      {
-        Optional<GlcNode> optional = trajectoryPlanner.getBestOrElsePeek();
-        if (optional.isPresent()) {
-          trajectory = GlcNodes.getPathFromRootTo(optional.get());
-        }
+      List<StateTime> trajectory = trajectoryPlanner.trajectoryToBest();
+      if (trajectory != null) {
+        StateTime newRootState = trajectory.get(trajectory.size() > 2 ? 2 : 0);
+        trajectoryPlanner.switchRootToState(newRootState.x());
+      } else {
+        throw new RuntimeException();
       }
-      StateTime newRootState = trajectory.get(1);
-      // ---
-      trajectoryPlanner.switchRootToState(newRootState.x());
-      trajectoryPlanner.changeGoal(se2GoalManager2.getGoalInterface());
+      // --
+      trajectoryPlanner.changeToGoal(se2GoalManager2.getGoalInterface());
       int iters2 = Expand.maxDepth(trajectoryPlanner, parameters.getDepthLimit());
-      Trajectories.print(trajectory);
       // ---
       toc = System.nanoTime();
       System.out.println((toc - tic) * 1e-9 + " Seconds needed to replan");
       System.out.println("After root switch needed " + iters2 + " iterations");
       System.out.println("*****Finished*****");
-      owlyFrame.setGlc(trajectoryPlanner);
+      owlyFrame.setGlc((TrajectoryPlanner) trajectoryPlanner);
       // owlyFrame.configCoordinateOffset(432, 273);
     }
   }

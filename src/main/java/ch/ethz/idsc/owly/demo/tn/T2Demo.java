@@ -6,10 +6,10 @@ import java.util.List;
 import java.util.Optional;
 
 import ch.ethz.idsc.owly.demo.util.R2Controls;
-import ch.ethz.idsc.owly.glc.core.DefaultTrajectoryPlanner;
 import ch.ethz.idsc.owly.glc.core.Expand;
 import ch.ethz.idsc.owly.glc.core.GlcNode;
 import ch.ethz.idsc.owly.glc.core.GlcNodes;
+import ch.ethz.idsc.owly.glc.core.StandardTrajectoryPlanner;
 import ch.ethz.idsc.owly.glc.core.TrajectoryPlanner;
 import ch.ethz.idsc.owly.gui.Gui;
 import ch.ethz.idsc.owly.math.CoordinateWrap;
@@ -40,7 +40,7 @@ class T2Demo {
     // Heuristic heuristic = new ZeroHeuristic(); // rnGoal
     TrajectoryRegionQuery obstacleQuery = new EmptyTrajectoryRegionQuery();
     // ---
-    TrajectoryPlanner trajectoryPlanner = new DefaultTrajectoryPlanner( //
+    TrajectoryPlanner trajectoryPlanner = new StandardTrajectoryPlanner( //
         eta, stateIntegrator, controls, obstacleQuery, rnGoal.getGoalInterface());
     trajectoryPlanner.represent = coordinateWrap::represent;
     trajectoryPlanner.insertRoot(Tensors.vector(0, 0));

@@ -4,8 +4,8 @@ package ch.ethz.idsc.owly.demo.rnn;
 import java.util.Collection;
 
 import ch.ethz.idsc.owly.demo.util.R2Controls;
-import ch.ethz.idsc.owly.glc.core.DefaultTrajectoryPlanner;
 import ch.ethz.idsc.owly.glc.core.Expand;
+import ch.ethz.idsc.owly.glc.core.StandardTrajectoryPlanner;
 import ch.ethz.idsc.owly.glc.core.TrajectoryPlanner;
 import ch.ethz.idsc.owly.gui.Gui;
 import ch.ethz.idsc.owly.gui.OwlyFrame;
@@ -28,7 +28,7 @@ class R2nExpandDemo {
     RnnGoalManager rnGoal = new RnnGoalManager(Tensors.vector(4, 4), DoubleScalar.of(.25));
     TrajectoryRegionQuery obstacleQuery = new EmptyTrajectoryRegionQuery();
     // ---
-    TrajectoryPlanner trajectoryPlanner = new DefaultTrajectoryPlanner( //
+    TrajectoryPlanner trajectoryPlanner = new StandardTrajectoryPlanner( //
         eta, stateIntegrator, controls, obstacleQuery, rnGoal);
     trajectoryPlanner.insertRoot(Tensors.vector(0, 0));
     OwlyFrame owlyFrame = Gui.start();

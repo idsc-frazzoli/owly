@@ -8,10 +8,10 @@ import java.util.Optional;
 import ch.ethz.idsc.owly.demo.rice.Rice1Controls;
 import ch.ethz.idsc.owly.demo.rice.Rice1GoalManager;
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
-import ch.ethz.idsc.owly.glc.core.DefaultTrajectoryPlanner;
 import ch.ethz.idsc.owly.glc.core.Expand;
 import ch.ethz.idsc.owly.glc.core.GlcNode;
 import ch.ethz.idsc.owly.glc.core.GlcNodes;
+import ch.ethz.idsc.owly.glc.core.StandardTrajectoryPlanner;
 import ch.ethz.idsc.owly.glc.core.TrajectoryPlanner;
 import ch.ethz.idsc.owly.gui.Gui;
 import ch.ethz.idsc.owly.math.flow.Flow;
@@ -43,7 +43,7 @@ class Rice1Demo {
                 new EllipsoidRegion(Tensors.vector(-2, +0), Tensors.vector(1, 1)) // block to the left
             )));
     // ---
-    TrajectoryPlanner trajectoryPlanner = new DefaultTrajectoryPlanner( //
+    TrajectoryPlanner trajectoryPlanner = new StandardTrajectoryPlanner( //
         eta, stateIntegrator, controls, obstacleQuery, rice1Goal);
     // ---
     trajectoryPlanner.insertRoot(Tensors.vector(0, 0));

@@ -14,7 +14,7 @@ import ch.ethz.idsc.owly.math.state.StateTime;
 import ch.ethz.idsc.owly.math.state.TrajectoryRegionQuery;
 import ch.ethz.idsc.tensor.Tensor;
 
-public abstract class AbstractAnyTrajectoryPlanner extends AbstractStandardTrajectoryPlanner {
+public abstract class AbstractAnyTrajectoryPlanner extends AbstractStandardTrajectoryPlanner implements AnyPlannerInterface {
   protected AbstractAnyTrajectoryPlanner( //
       Tensor eta, //
       StateIntegrator stateIntegrator, //
@@ -28,6 +28,7 @@ public abstract class AbstractAnyTrajectoryPlanner extends AbstractStandardTraje
    * (deleting of the useless nodes and relabling of modified Domains)
    * @param state the new Rootstate
    * @return The value,by which the depth limit needs to be increased as of the RootSwitch */
+  @Override
   public final int switchRootToState(Tensor state) {
     GlcNode newRoot = this.getNode(convertToKey(state));
     int increaseDepthBy = 0;
@@ -35,10 +36,15 @@ public abstract class AbstractAnyTrajectoryPlanner extends AbstractStandardTraje
     if (newRoot != null) {
       increaseDepthBy = switchRootToNode(newRoot);
     } else {
+      System.err.println("***RESET***");
       System.out.println("This domain  is not labelled yet:");
       System.out.println(state);
-      throw new RuntimeException();
-      // TODO: should replan everything, as we left old trajectory
+      if (!domainMap().isEmpty()) {
+        this.deleteSubtreeOf(getRoot());
+        this.domainMap().clear();
+        this.queue().clear();
+      }
+      this.insertRoot(state);
     }
     return increaseDepthBy;
   }
@@ -47,8 +53,7 @@ public abstract class AbstractAnyTrajectoryPlanner extends AbstractStandardTraje
    * (deleting of the useless nodes and relabling of modified Domains)
    * @param newRoot Node to Switch
    * @return The value,by which the depth limit needs to be increased as of the RootSwitch */
-  public abstract int switchRootToNode(GlcNode newRoot);
-
+  // public abstract int switchRootToNode(GlcNode newRoot);
   protected final void insertNodeInTree(GlcNode parent, GlcNode node) {
     parent.insertEdgeTo(node);
     final Tensor domainKey = convertToKey(node.state());
@@ -91,7 +96,8 @@ public abstract class AbstractAnyTrajectoryPlanner extends AbstractStandardTraje
    * @param newCostFunction modified Costfunction for heuristic
    * @param newGoal New GoalRegion
    * @return boolean, true if Goal was already found in oldTree */
-  public boolean changeGoal(final GoalInterface newGoal) {
+  @Override
+  public boolean changeToGoal(final GoalInterface newGoal) {
     // TODO JONAS Check if Goal is reachable
     this.goalInterface = newGoal;
     GlcNode root = getRoot();
@@ -135,13 +141,28 @@ public abstract class AbstractAnyTrajectoryPlanner extends AbstractStandardTraje
   /** Finds the rootNode, by following the parents
    * from a random root Node in the tree/DomainMap
    * @return rootNode, which was found from random GlcNode in the tree */
-  /* TODO perhaps package visibility is suffient */
-  public final GlcNode getRoot() {
+  /* package */ final GlcNode getRoot() {
     Iterator<GlcNode> node = domainMap().values().iterator();
     if (node.hasNext())
       return Nodes.rootFrom(node.next());
     throw new RuntimeException();
     // if domainmap empty: no tree exists
     // TODO what to do if No Tree exists?
+  }
+
+  @Override
+  public List<StateTime> trajectoryToBest() {
+    Optional<GlcNode> tempBest = getBestOrElsePeek();
+    if (tempBest.isPresent())
+      return GlcNodes.getPathFromRootTo(tempBest.get());
+    return null;
+  }
+
+  @Override
+  public List<TrajectorySample> detailedTrajectoryToBest() {
+    Optional<GlcNode> optional = getBestOrElsePeek();
+    if (optional.isPresent())
+      return GlcTrajectories.connect(getStateIntegrator(), Nodes.listFromRoot(getBest().get()));
+    return null;
   }
 }

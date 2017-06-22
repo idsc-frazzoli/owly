@@ -3,21 +3,21 @@ package ch.ethz.idsc.owly.demo.se2.any;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.Optional;
 
+import ch.ethz.idsc.owly.demo.se2.Se2CircleAnyDemo;
 import ch.ethz.idsc.owly.demo.se2.Se2Controls;
 import ch.ethz.idsc.owly.demo.se2.Se2MinCurvatureGoalManager;
 import ch.ethz.idsc.owly.demo.se2.Se2StateSpaceModel;
 import ch.ethz.idsc.owly.demo.se2.Se2Utils;
-import ch.ethz.idsc.owly.demo.se2.glc.Se2CircleAnyDemo;
 import ch.ethz.idsc.owly.demo.se2.glc.Se2Parameters;
 import ch.ethz.idsc.owly.glc.adapter.Parameters;
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
+import ch.ethz.idsc.owly.glc.core.AbstractAnyTrajectoryPlanner;
+import ch.ethz.idsc.owly.glc.core.AnyPlannerInterface;
 import ch.ethz.idsc.owly.glc.core.DebugUtils;
 import ch.ethz.idsc.owly.glc.core.Expand;
-import ch.ethz.idsc.owly.glc.core.GlcNode;
-import ch.ethz.idsc.owly.glc.core.GlcNodes;
 import ch.ethz.idsc.owly.glc.core.OptimalAnyTrajectoryPlanner;
+import ch.ethz.idsc.owly.glc.core.TrajectoryPlanner;
 import ch.ethz.idsc.owly.gui.Gui;
 import ch.ethz.idsc.owly.gui.OwlyFrame;
 import ch.ethz.idsc.owly.math.StateSpaceModel;
@@ -75,16 +75,16 @@ class Se2IterateGlcAnyCircleDemo extends Se2CircleAnyDemo {
             )));
     // ---
     Scalar tic = RealScalar.of(System.nanoTime());
-    OptimalAnyTrajectoryPlanner trajectoryPlanner = new OptimalAnyTrajectoryPlanner( //
+    AnyPlannerInterface trajectoryPlanner = new OptimalAnyTrajectoryPlanner( //
         parameters.getEta(), stateIntegrator, controls, obstacleQuery, se2GoalManager.getGoalInterface());
     // ---
-    trajectoryPlanner.insertRoot(Tensors.vector(0, 3, 0));
+    trajectoryPlanner.switchRootToState(Tensors.vector(0, 3, 0));
     int iters = Expand.maxDepth(trajectoryPlanner, parameters.getDepthLimit());
     System.out.println("After " + iters + " iterations");
     Scalar toc = RealScalar.of(System.nanoTime());
     System.out.println(toc.subtract(tic).multiply(RealScalar.of(1e-9)) + " Seconds needed to plan");
     OwlyFrame owlyFrame = Gui.start();
-    owlyFrame.setGlc(trajectoryPlanner);
+    owlyFrame.setGlc((TrajectoryPlanner) trajectoryPlanner);
     // ---
     int iter = 1;
     Scalar timeSum = RealScalar.of(0);
@@ -95,21 +95,17 @@ class Se2IterateGlcAnyCircleDemo extends Se2CircleAnyDemo {
       Thread.sleep(1000);
       tic = RealScalar.of(System.nanoTime());
       // --
-      List<StateTime> trajectory = null;
-      {
-        Optional<GlcNode> optional = trajectoryPlanner.getBestOrElsePeek();
-        if (optional.isPresent()) {
-          trajectory = GlcNodes.getPathFromRootTo(optional.get());
-        } else {
-          throw new RuntimeException();
-        }
+      List<StateTime> trajectory = trajectoryPlanner.trajectoryToBest();
+      if (trajectory != null) {
+        StateTime newRootState = trajectory.get(trajectory.size() > 5 ? 5 : 0);
+        int increment = trajectoryPlanner.switchRootToState(newRootState.x());
+        parameters.increaseDepthLimit(increment);
+      } else {
+        throw new RuntimeException();
       }
-      StateTime newRootState = trajectory.get(trajectory.size() > 5 ? 5 : 0);
-      int increment = trajectoryPlanner.switchRootToState(newRootState.x());
-      parameters.increaseDepthLimit(increment);
-      owlyFrame.setGlc(trajectoryPlanner);
+      owlyFrame.setGlc((TrajectoryPlanner) trajectoryPlanner);
       Thread.sleep(delay.number().intValue() / 2);
-      goalFound = switchToNextCircularGoal(trajectoryPlanner, iter);
+      goalFound = switchToNextCircularGoal((AbstractAnyTrajectoryPlanner) trajectoryPlanner, iter);
       iter++;
       Thread.sleep(delay.number().intValue() / 2);
       // --
@@ -123,8 +119,8 @@ class Se2IterateGlcAnyCircleDemo extends Se2CircleAnyDemo {
       System.out.println("After root switch needed " + expandIter + " iterations");
       System.out.println("*****Finished*****");
       System.out.println("");
-      DebugUtils.nodeAmountCompare(trajectoryPlanner);
-      owlyFrame.setGlc(trajectoryPlanner);
+      DebugUtils.nodeAmountCompare((TrajectoryPlanner) trajectoryPlanner);
+      owlyFrame.setGlc((TrajectoryPlanner) trajectoryPlanner);
       // owlyFrame.configCoordinateOffset(432, 273);
     }
   }
