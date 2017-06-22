@@ -1,16 +1,15 @@
 // code by jl
 package ch.ethz.idsc.owly.demo.se2.any;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
 import ch.ethz.idsc.owly.demo.se2.Se2Controls;
 import ch.ethz.idsc.owly.demo.se2.Se2DefaultGoalManagerExt;
-import ch.ethz.idsc.owly.demo.se2.Se2MinCurvatureGoalManager;
 import ch.ethz.idsc.owly.demo.se2.Se2StateSpaceModel;
 import ch.ethz.idsc.owly.demo.se2.Se2Utils;
+import ch.ethz.idsc.owly.demo.se2.glc.Se2CircleAnyDemo;
 import ch.ethz.idsc.owly.demo.se2.glc.Se2Parameters;
 import ch.ethz.idsc.owly.glc.adapter.Parameters;
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
@@ -38,9 +37,11 @@ import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
+import ch.ethz.idsc.tensor.sca.Cos;
+import ch.ethz.idsc.tensor.sca.Sin;
 
 /** (x,y,theta) */
-class Se2IterateSimpleGlcAnyCircleDemo {
+class Se2IterateSimpleGlcAnyCircleDemo extends Se2CircleAnyDemo {
   public static void main(String[] args) throws Exception {
     RationalScalar resolution = (RationalScalar) RealScalar.of(6);
     Scalar timeScale = RealScalar.of(6);
@@ -49,6 +50,11 @@ class Se2IterateSimpleGlcAnyCircleDemo {
     Scalar dtMax = RationalScalar.of(1, 6);
     int maxIter = 2000;
     StateSpaceModel stateSpaceModel = Se2StateSpaceModel.INSTANCE;
+    Scalar circleRadius = RealScalar.of(3);
+    Scalar goalAngle = RealScalar.of(0);
+    Tensor goal = Tensors.of(Cos.of(goalAngle).multiply(circleRadius), //
+        Sin.of(goalAngle).multiply(circleRadius), goalAngle.subtract(RealScalar.of(Math.PI * 0.5)));
+    Tensor radiusVector = Tensors.of(DoubleScalar.of(0.2), DoubleScalar.of(0.2), Se2Utils.DEGREE(15));
     // --
     Parameters parameters = new Se2Parameters( //
         resolution, timeScale, depthScale, partitionScale, dtMax, maxIter, stateSpaceModel.getLipschitz());
@@ -59,9 +65,7 @@ class Se2IterateSimpleGlcAnyCircleDemo {
     parameters.printResolution();
     // Se2Controls uses Se2StateSpaceModel
     Collection<Flow> controls = Se2Controls.createControls(Se2Utils.DEGREE(45), parameters.getResolutionInt());
-    Se2DefaultGoalManagerExt se2GoalManager = new Se2DefaultGoalManagerExt( //
-        Tensors.vector(3, 0), RealScalar.of(1.5 * Math.PI), // east
-        DoubleScalar.of(.1), Se2Utils.DEGREE(10));
+    Se2DefaultGoalManagerExt se2GoalManager = new Se2DefaultGoalManagerExt(goal, radiusVector);
     TrajectoryRegionQuery obstacleQuery = //
         new SimpleTrajectoryRegionQuery(new TimeInvariantRegion( //
             RegionUnion.of( //
@@ -84,26 +88,12 @@ class Se2IterateSimpleGlcAnyCircleDemo {
     OwlyFrame owlyFrame = Gui.start();
     owlyFrame.setGlc(trajectoryPlanner);
     // ---
-    List<Tensor> goalListPosition = new ArrayList<>();
-    goalListPosition.add(Tensors.vector(0, -3));// South
-    goalListPosition.add(Tensors.vector(-3, 0));// West
-    goalListPosition.add(Tensors.vector(0, 3)); // North
-    goalListPosition.add(Tensors.vector(3, 0)); // East
-    List<Scalar> goalListAngle = new ArrayList<>();
-    goalListAngle.add(RealScalar.of(Math.PI)); // South
-    goalListAngle.add(RealScalar.of(0.5 * Math.PI)); // West
-    goalListAngle.add(RealScalar.of(0)); // North
-    goalListAngle.add(RealScalar.of(-0.5 * Math.PI)); // East
     // --
-    int iter = 0;
+    int iter = 1;
     Scalar timeSum = RealScalar.of(0);
     while (owlyFrame.jFrame.isVisible()) {
       Thread.sleep(000);
       tic = System.nanoTime();
-      int index = iter % 4;
-      Se2MinCurvatureGoalManager se2GoalManager2 = new Se2MinCurvatureGoalManager( //
-          goalListPosition.get(index), goalListAngle.get(index), //
-          DoubleScalar.of(0.1), Se2Utils.DEGREE(10));
       List<StateTime> trajectory = null;
       {
         Optional<GlcNode> optional = trajectoryPlanner.getBestOrElsePeek();
@@ -116,7 +106,7 @@ class Se2IterateSimpleGlcAnyCircleDemo {
       StateTime newRootState = trajectory.get(2);
       int increment = trajectoryPlanner.switchRootToState(newRootState.x());
       parameters.increaseDepthLimit(increment);
-      final boolean foundGoal = trajectoryPlanner.changeGoal(se2GoalManager2.getGoalInterface());
+      boolean foundGoal = switchToNextCircularGoal(trajectoryPlanner, iter);
       int expandIter = 0;
       if (!foundGoal)
         expandIter = Expand.maxDepth(trajectoryPlanner, parameters.getDepthLimit());

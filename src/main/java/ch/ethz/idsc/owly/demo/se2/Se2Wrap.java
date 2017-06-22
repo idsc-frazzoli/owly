@@ -14,6 +14,7 @@ public class Se2Wrap implements CoordinateWrap {
   private static Mod MOD_DISTANCE = Mod.function(RealScalar.of(Math.PI * 2), RealScalar.of(-Math.PI));
   // ---
   // angular error may need a different "weight" from error in x, y
+  // figure out default scaling
   private final Tensor scale;
 
   /** one can choose scale == {1, 1, 1}

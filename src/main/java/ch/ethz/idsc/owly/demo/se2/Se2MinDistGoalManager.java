@@ -16,8 +16,8 @@ import ch.ethz.idsc.tensor.sca.Ramp;
  * 
  * bapaden phd thesis: (5.5.13) */
 public class Se2MinDistGoalManager extends Se2DefaultGoalManagerExt {
-  public Se2MinDistGoalManager(Tensor xy, Scalar angle, Scalar radius, Scalar angle_delta) {
-    super(xy, angle, radius, angle_delta);
+  public Se2MinDistGoalManager(Tensor goal, Tensor radiusVector) {
+    super(goal, radiusVector);
   }
 
   @Override // Cost function
@@ -33,7 +33,7 @@ public class Se2MinDistGoalManager extends Se2DefaultGoalManagerExt {
   public Scalar minCostToGoal(Tensor x) {
     Tensor cur_xy = x.extract(0, 2);
     // Euclidean distance
-    Scalar dxy = Norm._2.of(cur_xy.subtract(xy)).subtract(radius);
+    Scalar dxy = Norm._2.of(cur_xy.subtract(center.extract(0, 2))).subtract(radiusVector.Get(1));
     return Ramp.of(dxy);
   }
 }
