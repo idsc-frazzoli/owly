@@ -36,7 +36,8 @@ public abstract class AbstractAnyTrajectoryPlanner extends AbstractStandardTraje
     if (newRoot != null) {
       increaseDepthBy = switchRootToNode(newRoot);
     } else {
-      System.err.println("This domain  is not labelled yet:");
+      System.err.println("***RESET***");
+      System.out.println("This domain  is not labelled yet:");
       System.out.println(state);
       if (!domainMap().isEmpty()) {
         this.deleteSubtreeOf(getRoot());
@@ -150,16 +151,16 @@ public abstract class AbstractAnyTrajectoryPlanner extends AbstractStandardTraje
   }
 
   @Override
-  public List<StateTime> TrajectoryToGoal() {
-    Optional<GlcNode> tempBest = getBest();
+  public List<StateTime> trajectoryToBest() {
+    Optional<GlcNode> tempBest = getBestOrElsePeek();
     if (tempBest.isPresent())
       return GlcNodes.getPathFromRootTo(tempBest.get());
     return null;
   }
 
   @Override
-  public List<TrajectorySample> detailedTrajectoryToGoal() {
-    Optional<GlcNode> optional = getBest();
+  public List<TrajectorySample> detailedTrajectoryToBest() {
+    Optional<GlcNode> optional = getBestOrElsePeek();
     if (optional.isPresent())
       return GlcTrajectories.connect(getStateIntegrator(), Nodes.listFromRoot(getBest().get()));
     return null;

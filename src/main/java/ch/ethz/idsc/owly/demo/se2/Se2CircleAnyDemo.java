@@ -1,10 +1,8 @@
-package ch.ethz.idsc.owly.demo.se2.glc;
+package ch.ethz.idsc.owly.demo.se2;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import ch.ethz.idsc.owly.demo.se2.Se2MinCurvatureGoalManager;
-import ch.ethz.idsc.owly.demo.se2.Se2Utils;
 import ch.ethz.idsc.owly.glc.core.AbstractAnyTrajectoryPlanner;
 import ch.ethz.idsc.owly.math.state.StateTime;
 import ch.ethz.idsc.tensor.DoubleScalar;

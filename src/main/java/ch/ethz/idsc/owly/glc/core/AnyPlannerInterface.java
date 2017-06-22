@@ -26,9 +26,9 @@ public interface AnyPlannerInterface extends ExpandInterface {
   boolean changeToGoal(final GoalInterface newGoal);
 
   /** @return the StateTime Trajectory to the best Goal, or if no goal was found NULL */
-  List<StateTime> TrajectoryToGoal();
+  List<StateTime> trajectoryToBest();
 
   /** The TrajectorySample Trajectory is more detailed and also includes the Input used.
    * @return TrajectorySample Trajectory to the best Goal or if no goal was found NULL */
-  List<TrajectorySample> detailedTrajectoryToGoal();
+  List<TrajectorySample> detailedTrajectoryToBest();
 }

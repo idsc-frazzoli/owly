@@ -71,6 +71,7 @@ class R2GlcAnyCircleDemo {
     AnyPlannerInterface trajectoryPlanner = new OptimalAnyTrajectoryPlanner( //
         parameters.getEta(), stateIntegrator, controls, obstacleQuery, rnGoal);
     trajectoryPlanner.switchRootToState(Tensors.vector(0, 1).multiply(circleRadius));
+    Expand.maxDepth(trajectoryPlanner, parameters.getDepthLimit());
     GifSequenceWriter gsw = GifSequenceWriter.of(UserHome.Pictures("R2_Circle_Gif.gif"), 250);
     OwlyFrame owlyFrame = Gui.start();
     owlyFrame.configCoordinateOffset(400, 400);
@@ -78,8 +79,8 @@ class R2GlcAnyCircleDemo {
     for (int iter = 1; iter < 31; iter++) {
       Thread.sleep(1);
       long tic = System.nanoTime();
-      List<StateTime> trajectory = trajectoryPlanner.TrajectoryToGoal();
-      // -- GOAL change
+      List<StateTime> trajectory = trajectoryPlanner.trajectoryToBest();
+      // -- GOALCHANGE
       List<StateTime> goalStateList = new ArrayList<>();
       do {
         goalStateList.clear();
