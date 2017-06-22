@@ -5,14 +5,12 @@ import java.io.Serializable;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.PriorityQueue;
 import java.util.Queue;
 
-import ch.ethz.idsc.owly.data.tree.Nodes;
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
 import ch.ethz.idsc.owly.math.TensorUnaryOperator;
 import ch.ethz.idsc.owly.math.state.StateTime;
@@ -118,20 +116,6 @@ public abstract class TrajectoryPlanner implements ExpandInterface, Serializable
    * in this order depending on existence */
   public final Optional<GlcNode> getBestOrElsePeek() {
     return Optional.ofNullable(getBest().orElse(queue.peek())); // Queue#peek() returns the head of queue, or null if queue is empty
-  }
-
-  /** Finds the rootNode, by following the parents
-   * from a random root Node in the tree/DomainMap
-   * @return rootNode, which was found from random GlcNode in the tree */
-  public final GlcNode getRoot() {
-    Iterator<GlcNode> node = domainMap.values().iterator();
-    if (node.hasNext()) {
-      return Nodes.rootFrom(node.next());
-    } else {
-      throw new RuntimeException();
-      // if domainmap empty: no tree exists
-      // TODO what to do if No Tree exists?
-    }
   }
 
   /** @return number of replacements in the domain map caused by {@link TrajectoryPlanner#insert(Tensor, GlcNode)} */

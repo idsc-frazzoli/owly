@@ -131,4 +131,17 @@ public abstract class AbstractAnyTrajectoryPlanner extends AbstractStandardTraje
     System.out.println("**Goalswitch finished**");
     return false;
   }
+
+  /** Finds the rootNode, by following the parents
+   * from a random root Node in the tree/DomainMap
+   * @return rootNode, which was found from random GlcNode in the tree */
+  /* TODO perhaps package visibility is suffient */
+  public final GlcNode getRoot() {
+    Iterator<GlcNode> node = domainMap().values().iterator();
+    if (node.hasNext())
+      return Nodes.rootFrom(node.next());
+    throw new RuntimeException();
+    // if domainmap empty: no tree exists
+    // TODO what to do if No Tree exists?
+  }
 }
