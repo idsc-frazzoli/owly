@@ -33,7 +33,7 @@ import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
 import ch.ethz.idsc.tensor.sca.Mod;
 
-class R2glcAnyDemo {
+class R2GlcAnyDemo {
   public static void main(String[] args) {
     RationalScalar resolution = (RationalScalar) RealScalar.of(4);
     Scalar timeScale = RealScalar.of(2);
@@ -78,7 +78,7 @@ class R2glcAnyDemo {
       int increment = trajectoryPlanner.switchRootToState(newRootState.x());
       parameters.increaseDepthLimit(increment);
       System.out.println("Switching to Goal:" + goal);
-      trajectoryPlanner.changeGoal(rnGoal2);
+      trajectoryPlanner.changeToGoal(rnGoal2);
       int iters2 = Expand.maxDepth(trajectoryPlanner, parameters.getDepthLimit());
       // ---
       long toc = System.nanoTime();

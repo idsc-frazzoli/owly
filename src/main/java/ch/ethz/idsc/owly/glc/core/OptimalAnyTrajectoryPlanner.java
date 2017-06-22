@@ -12,6 +12,7 @@ import java.util.PriorityQueue;
 import java.util.Set;
 
 import ch.ethz.idsc.owly.data.tree.Nodes;
+import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
 import ch.ethz.idsc.owly.math.flow.Flow;
 import ch.ethz.idsc.owly.math.state.StateIntegrator;
 import ch.ethz.idsc.owly.math.state.StateTime;
@@ -230,6 +231,20 @@ public class OptimalAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
   public String infoString() {
     StringBuilder stringBuilder = new StringBuilder(super.infoString() + ", ");
     stringBuilder.append("OptimalAny...");
+    {
+      stringBuilder.append("nodes:" + domainMap().values().size() + ", ");
+    }
+    {
+      TrajectoryRegionQuery trajectoryRegionQuery = getObstacleQuery();
+      if (trajectoryRegionQuery instanceof SimpleTrajectoryRegionQuery) {
+        SimpleTrajectoryRegionQuery strq = (SimpleTrajectoryRegionQuery) trajectoryRegionQuery;
+        Collection<StateTime> collection = strq.getDiscoveredMembers();
+        stringBuilder.append("obstacles:" + collection.size() + ", ");
+      }
+    }
+    {
+      stringBuilder.append("replacements:" + replaceCount());
+    }
     return stringBuilder.toString();
   }
 }

@@ -9,10 +9,10 @@ import ch.ethz.idsc.owly.demo.rn.R2Bubbles;
 import ch.ethz.idsc.owly.demo.rn.RnGoalManager;
 import ch.ethz.idsc.owly.demo.util.R2Controls;
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
-import ch.ethz.idsc.owly.glc.core.DefaultTrajectoryPlanner;
 import ch.ethz.idsc.owly.glc.core.Expand;
 import ch.ethz.idsc.owly.glc.core.GlcNode;
 import ch.ethz.idsc.owly.glc.core.GlcNodes;
+import ch.ethz.idsc.owly.glc.core.StandardTrajectoryPlanner;
 import ch.ethz.idsc.owly.glc.core.TrajectoryPlanner;
 import ch.ethz.idsc.owly.gui.Gui;
 import ch.ethz.idsc.owly.math.flow.EulerIntegrator;
@@ -55,7 +55,7 @@ class R2Demo {
     Collection<Flow> controls = R2Controls.createRadial(36);
     RnGoalManager rnGoal = new RnGoalManager(stateGoal, radius);
     // ---
-    TrajectoryPlanner trajectoryPlanner = new DefaultTrajectoryPlanner( //
+    TrajectoryPlanner trajectoryPlanner = new StandardTrajectoryPlanner( //
         eta, stateIntegrator, controls, obstacleQuery, rnGoal);
     trajectoryPlanner.insertRoot(stateRoot);
     int iters = Expand.maxSteps(trajectoryPlanner, 200);

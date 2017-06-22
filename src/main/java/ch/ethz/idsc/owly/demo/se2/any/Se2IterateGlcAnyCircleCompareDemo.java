@@ -14,11 +14,11 @@ import ch.ethz.idsc.owly.demo.se2.glc.Se2Parameters;
 import ch.ethz.idsc.owly.glc.adapter.Parameters;
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
 import ch.ethz.idsc.owly.glc.core.DebugUtils;
-import ch.ethz.idsc.owly.glc.core.DefaultTrajectoryPlanner;
 import ch.ethz.idsc.owly.glc.core.Expand;
 import ch.ethz.idsc.owly.glc.core.GlcNode;
 import ch.ethz.idsc.owly.glc.core.GlcNodes;
 import ch.ethz.idsc.owly.glc.core.OptimalAnyTrajectoryPlanner;
+import ch.ethz.idsc.owly.glc.core.StandardTrajectoryPlanner;
 import ch.ethz.idsc.owly.gui.Gui;
 import ch.ethz.idsc.owly.gui.OwlyFrame;
 import ch.ethz.idsc.owly.math.StateSpaceModel;
@@ -93,7 +93,7 @@ class Se2IterateGlcAnyCircleCompareDemo {
     // ---
     OwlyFrame owlyFrameDefault = Gui.start();
     {
-      DefaultTrajectoryPlanner defaultTrajectoryPlanner = new DefaultTrajectoryPlanner( //
+      StandardTrajectoryPlanner defaultTrajectoryPlanner = new StandardTrajectoryPlanner( //
           parameters.getEta(), stateIntegrator, controls, obstacleQuery, se2GoalManager.getGoalInterface());
       defaultTrajectoryPlanner.insertRoot(Tensors.vector(0, 3, 0));
       iters = Expand.maxDepth(defaultTrajectoryPlanner, parameters.getDepthLimit());
@@ -130,7 +130,7 @@ class Se2IterateGlcAnyCircleCompareDemo {
         int increment = anyTrajectoryPlanner.switchRootToState(newRootState.x());
         parameters.increaseDepthLimit(increment);
         // --
-        goalFound = anyTrajectoryPlanner.changeGoal(se2GoalManager2.getGoalInterface());
+        goalFound = anyTrajectoryPlanner.changeToGoal(se2GoalManager2.getGoalInterface());
         // --
         if (!goalFound)
           expandIter = Expand.maxDepth(anyTrajectoryPlanner, parameters.getDepthLimit());
@@ -144,7 +144,7 @@ class Se2IterateGlcAnyCircleCompareDemo {
       System.out.println("***DEFAULT***");
       tic = RealScalar.of(System.nanoTime());
       {
-        DefaultTrajectoryPlanner defaultTrajectoryPlanner = new DefaultTrajectoryPlanner( //
+        StandardTrajectoryPlanner defaultTrajectoryPlanner = new StandardTrajectoryPlanner( //
             parameters.getEta(), stateIntegrator, controls, obstacleQuery, se2GoalManager2.getGoalInterface());
         defaultTrajectoryPlanner.insertRoot(newRootState.x());
         iters = Expand.maxDepth(defaultTrajectoryPlanner, parameters.getDepthLimit());

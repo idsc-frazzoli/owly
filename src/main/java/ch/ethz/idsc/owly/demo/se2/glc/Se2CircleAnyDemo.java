@@ -31,7 +31,7 @@ public class Se2CircleAnyDemo {
       goalStateList.add(goalState);
     } while (!trajectoryPlanner.getObstacleQuery().isDisjoint(goalStateList));
     Se2MinCurvatureGoalManager se2GoalManager = new Se2MinCurvatureGoalManager(goal, radiusVector);
-    boolean goalFound = trajectoryPlanner.changeGoal(se2GoalManager.getGoalInterface());
+    boolean goalFound = trajectoryPlanner.changeToGoal(se2GoalManager.getGoalInterface());
     return goalFound;
   }
 }

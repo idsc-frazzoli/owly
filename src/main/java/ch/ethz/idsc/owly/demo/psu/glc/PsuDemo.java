@@ -8,10 +8,10 @@ import java.util.Optional;
 import ch.ethz.idsc.owly.demo.psu.PsuControls;
 import ch.ethz.idsc.owly.demo.psu.PsuGoalManager;
 import ch.ethz.idsc.owly.demo.psu.PsuWrap;
-import ch.ethz.idsc.owly.glc.core.DefaultTrajectoryPlanner;
 import ch.ethz.idsc.owly.glc.core.Expand;
 import ch.ethz.idsc.owly.glc.core.GlcNode;
 import ch.ethz.idsc.owly.glc.core.GlcNodes;
+import ch.ethz.idsc.owly.glc.core.StandardTrajectoryPlanner;
 import ch.ethz.idsc.owly.glc.core.TrajectoryPlanner;
 import ch.ethz.idsc.owly.gui.Gui;
 import ch.ethz.idsc.owly.math.flow.Flow;
@@ -44,7 +44,7 @@ public class PsuDemo { // <- intentionally public
         Tensors.vector(Math.PI * 0.7, .5), RealScalar.of(0.3));
     TrajectoryRegionQuery obstacleQuery = new EmptyTrajectoryRegionQuery();
     // ---
-    TrajectoryPlanner trajectoryPlanner = new DefaultTrajectoryPlanner( //
+    TrajectoryPlanner trajectoryPlanner = new StandardTrajectoryPlanner( //
         eta, stateIntegrator, controls, obstacleQuery, psuGoalManager.getGoalInterface());
     trajectoryPlanner.represent = psuWrap::represent;
     // ---
@@ -63,7 +63,7 @@ public class PsuDemo { // <- intentionally public
         Tensors.vector(Math.PI, 2), RealScalar.of(0.3));
     TrajectoryRegionQuery obstacleQuery = new EmptyTrajectoryRegionQuery();
     // ---
-    TrajectoryPlanner trajectoryPlanner = new DefaultTrajectoryPlanner( //
+    TrajectoryPlanner trajectoryPlanner = new StandardTrajectoryPlanner( //
         eta, stateIntegrator, controls, obstacleQuery, psuGoalManager.getGoalInterface());
     trajectoryPlanner.represent = psuWrap::represent;
     // ---
