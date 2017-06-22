@@ -58,7 +58,7 @@ public enum Expand {
   }
 
   /** expands until the time of the running algorithm exceeds the maxTime
-   * 
+   * or a goal was found
    * @param expandInterface
    * @param timeLimit TimeLimit of expandfunction in [s] */
   public static int maxTime(ExpandInterface expandInterface, RealScalar timeLimit) {
@@ -80,6 +80,31 @@ public enum Expand {
       }
       if (Scalars.lessThan(timeLimit, RealScalar.of(toc - tic))) {
         System.out.println("*** TimeLimit reached -- No Goal was found ***");
+        break;
+      }
+    }
+    return expandCount;
+  }
+
+  /** expands until the time of the running algorithm exceeds time or depthlimit is reached
+   * 
+   * @param expandInterface
+   * @param time Time of expandfunction in [s] */
+  public static int constTime(ExpandInterface expandInterface, RealScalar time) {
+    long tic = System.nanoTime();
+    time = (RealScalar) time.multiply(RealScalar.of(1e9));
+    int expandCount = 0;
+    while (true) {
+      Optional<GlcNode> next = expandInterface.pollNext();
+      if (!next.isPresent()) {
+        System.err.println("**** Queue is empty -- No Goal was found");// queue is empty
+        break;
+      }
+      expandInterface.expand(next.get());
+      expandCount++;
+      long toc = System.nanoTime();
+      if (Scalars.lessThan(time, RealScalar.of(toc - tic))) {
+        System.out.println("***Planned for " + time.multiply(RealScalar.of(1e-9)) + "s ***");
         break;
       }
     }

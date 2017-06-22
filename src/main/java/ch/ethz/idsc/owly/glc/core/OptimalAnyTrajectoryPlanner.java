@@ -227,6 +227,7 @@ public class OptimalAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
     return Collections.unmodifiableMap(candidateMap);
   }
 
+  // TODO WHY DIisplayed twice
   @Override
   public String infoString() {
     StringBuilder stringBuilder = new StringBuilder(super.infoString() + ", ");
