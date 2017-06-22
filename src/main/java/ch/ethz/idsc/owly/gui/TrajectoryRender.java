@@ -15,6 +15,7 @@ import ch.ethz.idsc.owly.glc.core.GlcNode;
 import ch.ethz.idsc.owly.glc.core.GlcNodes;
 import ch.ethz.idsc.owly.glc.core.TrajectoryPlanner;
 import ch.ethz.idsc.owly.glc.core.TrajectorySample;
+import ch.ethz.idsc.owly.math.flow.Flow;
 import ch.ethz.idsc.owly.math.state.StateTime;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
@@ -39,9 +40,10 @@ class TrajectoryRender implements AbstractRender {
         { // draw control vectors u along trajectory
           int rgb = 64;
           graphics.setColor(new Color(rgb, rgb, rgb, 192));
-          for (TrajectorySample trajectorySample : list)
-            if (trajectorySample.hasU()) {
-              Tensor u = trajectorySample.getU().copy();
+          for (TrajectorySample trajectorySample : list) {
+            Optional<Flow> flow = trajectorySample.getFlow();
+            if (flow.isPresent()) {
+              Tensor u = flow.get().getU().copy();
               while (u.length() < 2)
                 u.append(RealScalar.ZERO);
               graphics.draw( //
@@ -50,6 +52,7 @@ class TrajectoryRender implements AbstractRender {
                       u.multiply(U_SCALE) //
                   ));
             }
+          }
         }
         { // draw trajectory as thick green line with white background
           Path2D path2d = owlyLayer.toPath2D(list.stream().map(TrajectorySample::stateTime).collect(Collectors.toList()));

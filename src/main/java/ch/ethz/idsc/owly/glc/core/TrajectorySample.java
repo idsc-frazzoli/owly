@@ -2,10 +2,10 @@
 package ch.ethz.idsc.owly.glc.core;
 
 import java.io.Serializable;
+import java.util.Optional;
 
 import ch.ethz.idsc.owly.math.flow.Flow;
 import ch.ethz.idsc.owly.math.state.StateTime;
-import ch.ethz.idsc.tensor.Tensor;
 
 /** container class that bundles information to follow a trajectory */
 public class TrajectorySample implements Serializable {
@@ -21,13 +21,15 @@ public class TrajectorySample implements Serializable {
     return stateTime;
   }
 
-  /** @return true, if function getU() provides control information */
-  public boolean hasU() {
-    return flow != null;
-  }
-
-  /** @return unmodifiable control identifier */
-  public Tensor getU() {
-    return flow.getU();
+  /** the first or the last state time in a trajectory
+   * typically does not have a flow associated
+   * (since there may not be history for the sample)
+   * 
+   * We return an optional type to make the application layer
+   * aware of the possibility that flow may be null.
+   * 
+   * @return Optional.ofNullable(flow) */
+  public Optional<Flow> getFlow() {
+    return Optional.ofNullable(flow);
   }
 }
