@@ -13,8 +13,6 @@ import ch.ethz.idsc.tensor.sca.Cos;
 import ch.ethz.idsc.tensor.sca.Sin;
 
 public class TireForces {
-  // TODO not final code design
-  static CHatchbackModel params = new CHatchbackModel();
   //
   final Scalar Fx1L; // 1
   final Scalar Fx1R; // 2
@@ -38,7 +36,7 @@ public class TireForces {
   final Scalar fy2L; // 7
   final Scalar fy2R; // 8
 
-  public TireForces(CarState cs, CarControl cc) {
+  public TireForces(CarModel params, CarState cs, CarControl cc) {
     Scalar Ux1L = cs.getUx1L(cc.delta);
     Scalar Uy1L = cs.getUy1L(cc.delta);
     //
@@ -51,20 +49,20 @@ public class TireForces {
     Scalar Ux2R = cs.getUx2R();
     Scalar Uy2R = cs.getUy2R();
     //
-    Scalar Sx1L = Ux1L.subtract(params.R.multiply(cs.w1L)) //
-        .divide(params.R.multiply(cs.w1L));
+    Scalar Sx1L = Ux1L.subtract(params.radiusTimes(cs.w1L)) //
+        .divide(params.radiusTimes(cs.w1L));
     Scalar Sy1L = RealScalar.ONE.add(Sx1L).multiply(Uy1L.divide(Ux1L));
     //
-    Scalar Sx1R = Ux1R.subtract(params.R.multiply(cs.w1R)) //
-        .divide(params.R.multiply(cs.w1R));
+    Scalar Sx1R = Ux1R.subtract(params.radiusTimes(cs.w1R)) //
+        .divide(params.radiusTimes(cs.w1R));
     Scalar Sy1R = RealScalar.ONE.add(Sx1R).multiply(Uy1R.divide(Ux1R));
     //
-    Scalar Sx2L = Ux2L.subtract(params.R.multiply(cs.w2L)) //
-        .divide(params.R.multiply(cs.w2L));
+    Scalar Sx2L = Ux2L.subtract(params.radiusTimes(cs.w2L)) //
+        .divide(params.radiusTimes(cs.w2L));
     Scalar Sy2L = RealScalar.ONE.add(Sx2L).multiply(Uy2L.divide(Ux2L));
     //
-    Scalar Sx2R = Ux2R.subtract(params.R.multiply(cs.w2R)) //
-        .divide(params.R.multiply(cs.w2R));
+    Scalar Sx2R = Ux2R.subtract(params.radiusTimes(cs.w2R)) //
+        .divide(params.radiusTimes(cs.w2R));
     Scalar Sy2R = RealScalar.ONE.add(Sx2R).multiply(Uy2R.divide(Ux2R));
     //
     // System.out.println(Sx1L + " " + Sy1L);
@@ -77,10 +75,10 @@ public class TireForces {
     Scalar S2R = Hypot.bifunction.apply(Sx2R, Sy2R);
     //
     // System.out.println("PACEJKA " + S1L);
-    Scalar mu1L = params.pacejka1.apply(S1L);
-    Scalar mu1R = params.pacejka1.apply(S1R);
-    Scalar mu2L = params.pacejka2.apply(S2L);
-    Scalar mu2R = params.pacejka2.apply(S2R);
+    Scalar mu1L = params.pacejka1().apply(S1L);
+    Scalar mu1R = params.pacejka1().apply(S1R);
+    Scalar mu2L = params.pacejka2().apply(S2L);
+    Scalar mu2R = params.pacejka2().apply(S2R);
     // ---
     // TODO investigate numerics
     Scalar eps = RealScalar.of(1e-4);
@@ -98,43 +96,43 @@ public class TireForces {
     Scalar muy2R = mu2R.multiply(robustDiv(Sy2R, S2R, eps)).negate();
     //
     Scalar C1 = Total.prod(Tensors.of( //
-        params.mu, mux1L, params.h, Sin.of(cc.delta))).Get().negate();
+        params.mu(), mux1L, params.heightCog(), Sin.of(cc.delta))).Get().negate();
     Scalar C2 = Total.prod(Tensors.of( //
-        params.mu, muy1L, params.h, Cos.of(cc.delta))).Get().negate();
+        params.mu(), muy1L, params.heightCog(), Cos.of(cc.delta))).Get().negate();
     //
     Scalar C3 = Total.prod(Tensors.of( //
-        params.mu, mux1R, params.h, Sin.of(cc.delta))).Get().negate();
+        params.mu(), mux1R, params.heightCog(), Sin.of(cc.delta))).Get().negate();
     Scalar C4 = Total.prod(Tensors.of( //
-        params.mu, muy1R, params.h, Cos.of(cc.delta))).Get().negate();
+        params.mu(), muy1R, params.heightCog(), Cos.of(cc.delta))).Get().negate();
     //
     Scalar C5 = Total.prod(Tensors.of( //
-        params.mu, muy2L, params.h)).Get().negate();
+        params.mu(), muy2L, params.heightCog())).Get().negate();
     Scalar C6 = Total.prod(Tensors.of( //
-        params.mu, muy2R, params.h)).Get().negate();
+        params.mu(), muy2R, params.heightCog())).Get().negate();
     //
     Scalar K1 = Total.prod(Tensors.of( //
-        params.mu, mux1L, params.h, Cos.of(cc.delta))).Get();
+        params.mu(), mux1L, params.heightCog(), Cos.of(cc.delta))).Get();
     Scalar K2 = Total.prod(Tensors.of( //
-        params.mu, muy1L, params.h, Sin.of(cc.delta))).Get();
+        params.mu(), muy1L, params.heightCog(), Sin.of(cc.delta))).Get();
     //
     Scalar K3 = Total.prod(Tensors.of( //
-        params.mu, mux1R, params.h, Cos.of(cc.delta))).Get();
+        params.mu(), mux1R, params.heightCog(), Cos.of(cc.delta))).Get();
     Scalar K4 = Total.prod(Tensors.of( //
-        params.mu, muy1R, params.h, Sin.of(cc.delta))).Get();
+        params.mu(), muy1R, params.heightCog(), Sin.of(cc.delta))).Get();
     //
     Scalar K5 = Total.prod(Tensors.of( //
-        params.mu, mux2L, params.h)).Get();
+        params.mu(), mux2L, params.heightCog())).Get();
     Scalar K6 = Total.prod(Tensors.of( //
-        params.mu, mux2R, params.h)).Get();
+        params.mu(), mux2R, params.heightCog())).Get();
     //
-    Scalar A = params.lw.negate().subtract(C1).subtract(C2);
-    Scalar B = params.lw.subtract(C3).subtract(C4);
-    Scalar C = params.lw.negate().subtract(C5);
-    Scalar D = params.lw.subtract(C6);
-    Scalar E = K1.subtract(K2).subtract(params.lF);
-    Scalar F = K3.subtract(K4).subtract(params.lF);
-    Scalar G = K5.add(params.lR);
-    Scalar H = K6.add(params.lR);
+    Scalar A = params.lw().negate().subtract(C1).subtract(C2);
+    Scalar B = params.lw().subtract(C3).subtract(C4);
+    Scalar C = params.lw().negate().subtract(C5);
+    Scalar D = params.lw().subtract(C6);
+    Scalar E = K1.subtract(K2).subtract(params.lF());
+    Scalar F = K3.subtract(K4).subtract(params.lF());
+    Scalar G = K5.add(params.lR());
+    Scalar H = K6.add(params.lR());
     // ---
     Scalar den;
     {
@@ -144,7 +142,7 @@ public class TireForces {
       den = vec1.dot(vec2).Get().multiply(RealScalar.of(2));
     }
     //
-    final Scalar factor = params.mass().multiply(params.g).divide(den);
+    final Scalar factor = params.gForce().divide(den);
     // final Scalar Fz1L;
     {
       Tensor vec1 = Tensors.of(B, C, B, D, C, D);
@@ -163,7 +161,7 @@ public class TireForces {
     {
       Tensor vec1 = Tensors.of(A, B, A, D, B, D);
       Tensor vec2 = Tensors.of( //
-          F, E.negate(), H, D.negate(), H, F.negate());
+          F, E.negate(), H, E.negate(), H, F.negate());
       Fz2L = vec1.dot(vec2).Get().multiply(factor);
     }
     // final Scalar Fz2R;
@@ -175,24 +173,24 @@ public class TireForces {
     }
     //
     // Scalar
-    fx1L = params.mu.multiply(Fz1L).multiply(mux1L);
+    fx1L = params.mu().multiply(Fz1L).multiply(mux1L);
     // Scalar
-    fy1L = params.mu.multiply(Fz1L).multiply(muy1L);
+    fy1L = params.mu().multiply(Fz1L).multiply(muy1L);
     //
     // Scalar
-    fx1R = params.mu.multiply(Fz1R).multiply(mux1R);
+    fx1R = params.mu().multiply(Fz1R).multiply(mux1R);
     // Scalar
-    fy1R = params.mu.multiply(Fz1R).multiply(muy1R);
+    fy1R = params.mu().multiply(Fz1R).multiply(muy1R);
     //
     // Scalar
-    fx2L = params.mu.multiply(Fz2L).multiply(mux2L);
+    fx2L = params.mu().multiply(Fz2L).multiply(mux2L);
     // Scalar
-    fy2L = params.mu.multiply(Fz2L).multiply(muy2L);
+    fy2L = params.mu().multiply(Fz2L).multiply(muy2L);
     //
     // Scalar
-    fx2R = params.mu.multiply(Fz2R).multiply(mux2R);
+    fx2R = params.mu().multiply(Fz2R).multiply(mux2R);
     // Scalar
-    fy2R = params.mu.multiply(Fz2R).multiply(muy2R);
+    fy2R = params.mu().multiply(Fz2R).multiply(muy2R);
     //
     // TODO matrix mult
     Fx1L = fx1L.multiply(Cos.of(cc.delta)).subtract(fy1L.multiply(Sin.of(cc.delta)));
@@ -235,5 +233,25 @@ public class TireForces {
       return RealScalar.ZERO;
     }
     return num.divide(den);
+  }
+
+  public Tensor asVectorFX() {
+    return Tensors.of(Fx1L, Fx1R, Fx2L, Fx2R);
+  }
+
+  public Tensor asVectorFY() {
+    return Tensors.of(Fy1L, Fy1R, Fy2L, Fy2R);
+  }
+
+  public Tensor asVectorFZ() {
+    return Tensors.of(Fz1L, Fz1R, Fz2L, Fz2R);
+  }
+
+  public Tensor asVector_fX() {
+    return Tensors.of(fx1L, fx1R, fx2L, fx2R);
+  }
+
+  public Tensor asVector_fY() {
+    return Tensors.of(fy1L, fy1R, fy2L, fy2R);
   }
 }

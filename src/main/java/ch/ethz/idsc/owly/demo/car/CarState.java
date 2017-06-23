@@ -55,7 +55,7 @@ public class CarState {
   // Sin.of(beta1.subtract(delta)), //
   // Cos.of(delta));
   // }
-  Tensor asVector() {
+  public Tensor asVector() {
     return Tensors.of( //
         Ux, Uy, //
         r, Ksi, px, py, //
@@ -66,8 +66,8 @@ public class CarState {
   public Scalar getUx1L(Scalar delta) {
     // (Ux - r*params.lw)*cos(delta) + (Uy + r*params.lF)*sin(delta)
     Tensor tang = Tensors.of( //
-        Ux.subtract(r.multiply(params.lw)), //
-        Uy.add(r.multiply(params.lF)));
+        Ux.subtract(r.multiply(params.lw())), //
+        Uy.add(r.multiply(params.lF())));
     Tensor trig = Tensors.of(Cos.of(delta), Sin.of(delta));
     return tang.dot(trig).Get();
   }
@@ -75,8 +75,8 @@ public class CarState {
   public Scalar getUy1L(Scalar delta) {
     // -(Ux - r*params.lw)*sin(delta) + (Uy + r*params.lF)*cos(delta);
     Tensor tang = Tensors.of( //
-        Ux.subtract(r.multiply(params.lw)).negate(), //
-        Uy.add(r.multiply(params.lF)));
+        Ux.subtract(r.multiply(params.lw())).negate(), //
+        Uy.add(r.multiply(params.lF())));
     Tensor trig = Tensors.of(Sin.of(delta), Cos.of(delta));
     return tang.dot(trig).Get();
   }
@@ -84,8 +84,8 @@ public class CarState {
   public Scalar getUx1R(Scalar delta) {
     // (Ux + r*params.lw)*cos(delta) + (Uy + r*params.lF)*sin(delta)
     Tensor tang = Tensors.of( //
-        Ux.add(r.multiply(params.lw)), //
-        Uy.add(r.multiply(params.lF)));
+        Ux.add(r.multiply(params.lw())), //
+        Uy.add(r.multiply(params.lF())));
     Tensor trig = Tensors.of(Cos.of(delta), Sin.of(delta));
     return tang.dot(trig).Get();
   }
@@ -93,25 +93,25 @@ public class CarState {
   public Scalar getUy1R(Scalar delta) {
     // -(Ux + r*params.lw)*sin(delta) + (Uy + r*params.lF)*cos(delta);
     Tensor tang = Tensors.of( //
-        Ux.add(r.multiply(params.lw)).negate(), //
-        Uy.add(r.multiply(params.lF)));
+        Ux.add(r.multiply(params.lw())).negate(), //
+        Uy.add(r.multiply(params.lF())));
     Tensor trig = Tensors.of(Sin.of(delta), Cos.of(delta));
     return tang.dot(trig).Get();
   }
 
   public Scalar getUx2L() {
-    return Ux.subtract(r.multiply(params.lw));
+    return Ux.subtract(r.multiply(params.lw()));
   }
 
   public Scalar getUy2L() {
-    return Uy.subtract(r.multiply(params.lR));
+    return Uy.subtract(r.multiply(params.lR()));
   }
 
   public Scalar getUx2R() {
-    return Ux.add(r.multiply(params.lw));
+    return Ux.add(r.multiply(params.lw()));
   }
 
   public Scalar getUy2R() {
-    return Uy.subtract(r.multiply(params.lR));
+    return Uy.subtract(r.multiply(params.lR()));
   }
 }

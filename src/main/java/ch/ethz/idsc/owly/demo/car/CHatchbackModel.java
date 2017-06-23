@@ -8,9 +8,53 @@ import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.sca.Sign;
 
 public class CHatchbackModel extends DefaultCarModel {
+  private static final Pacejka3 PACEJKA1 = new Pacejka3(13.8509, 1.3670, 0.9622);
+  private static final Pacejka3 PACEJKA2 = new Pacejka3(14.1663, 1.3652, 0.9744);
+
+  // ---
   @Override
   public Scalar mass() {
     return RealScalar.of(1412); // mass [kg]
+  }
+
+  @Override
+  public Pacejka3 pacejka1() {
+    return PACEJKA1;
+  }
+
+  @Override
+  public Pacejka3 pacejka2() {
+    return PACEJKA2;
+  }
+
+  @Override
+  public Scalar radius() {
+    return RealScalar.of(0.325); // wheel radius [m]
+  }
+
+  @Override
+  public Scalar heightCog() {
+    return RealScalar.of(0.54); // height of COG [m]
+  }
+
+  @Override
+  public Scalar mu() {
+    return RealScalar.of(0.85); // tire road friction coefficient
+  }
+
+  @Override
+  public Scalar lw() {
+    return RealScalar.of(0.8375); // lateral distance of wheels from COG [m]
+  }
+
+  @Override
+  public Scalar lF() {
+    return RealScalar.of(1.015); // front axle distance from COG [m]
+  }
+
+  @Override
+  public Scalar lR() {
+    return RealScalar.of(1.895); // rear axle distanc from COG [m]
   }
 
   public static final Scalar Iz = RealScalar.of(1536.7 + 427.7084); // yawing moment of inertia [kgm2]
@@ -19,14 +63,7 @@ public class CHatchbackModel extends DefaultCarModel {
   public static final Scalar frontL = RealScalar.of(1.915); // distance from COG to front end [m]
   public static final Scalar rearL = RealScalar.of(2.835); // distance from COG to rear end [m]
   public static final Scalar width = RealScalar.of(1.916); // width of the vehicle [m]
-  public static final Scalar lF = RealScalar.of(1.015); // front axle distance from COG [m]
-  public static final Scalar lR = RealScalar.of(1.895); // rear axle distanc from COG [m]
-  public static final Scalar lw = RealScalar.of(1.675 / 2); // lateral distance of wheels from COG [m]
-  public static final Scalar h = RealScalar.of(0.54); // height of COG [m]
-  public static final Scalar R = RealScalar.of(0.325); // wheel radius [m]
   // pacejka model parameters
-  public final Pacejka3 pacejka1 = new Pacejka3(13.8509, 1.3670, 0.9622);
-  public final Pacejka3 pacejka2 = new Pacejka3(14.1663, 1.3652, 0.9744);
   public static final Scalar maxDeltaDEGREE = RealScalar.of(30); // maximal steering angle [deg]
   public static final Scalar press2torF = RealScalar.of(250); // Nm per Mpa conversion constant [Nm/Mpa] for Front and Rear brakes
   public static final Scalar press2torR = RealScalar.of(150);
@@ -34,8 +71,6 @@ public class CHatchbackModel extends DefaultCarModel {
   public static final Scalar maxPress = RealScalar.of(13); // maximal master cylinder presure [MPa]
   public static final Scalar maxTm = RealScalar.of(1000); // maximal motor torque [Nm], with gears included
   public static final Scalar gammaM = RealScalar.of(0); // rear/total drive ratio; 0 is FWD, 1 is RWD
-  public static final Scalar g = RealScalar.of(9.81);
-  public static final Scalar mu = RealScalar.of(0.85); // tire road friction coefficient
   public static final Scalar muRoll = RealScalar.of(0); // rolling friction coefficient
   public static final Scalar b = RealScalar.of(5); // dynamic friction coefficient N/(m/s)
   public static final Scalar fric = RealScalar.of(47); // coulomb friction

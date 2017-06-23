@@ -30,7 +30,7 @@ public class CarStateSpaceModel implements StateSpaceModel {
     CarState cs = new CarState(x);
     CarControl cc = new CarControl(u);
     // [ FORCES, forces] = tires(x,u);
-    TireForces tire = new TireForces(cs, cc);
+    TireForces tire = new TireForces(params, cs, cc);
     BrakeTorques brakeTorques = new BrakeTorques(cs, cc, tire);
     MotorTorques torques = new MotorTorques(cc);
     // ---
@@ -52,17 +52,17 @@ public class CarStateSpaceModel implements StateSpaceModel {
     //
     Scalar dr;
     {
-      Tensor vec1 = Tensors.of(params.lF, params.lR.negate(), params.lw);
+      Tensor vec1 = Tensors.of(params.lF(), params.lR().negate(), params.lw());
       Tensor vec2 = Tensors.of(tire.total56(), tire.total78(), tire.total24_13());
       dr = vec1.dot(vec2).Get().divide(params.Iz);
     }
     Scalar dKsi = cs.r;
     Scalar dx = cs.Ux.multiply(Cos.of(cs.Ksi)).subtract(cs.Uy.multiply(Sin.of(cs.Ksi)));
     Scalar dy = cs.Ux.multiply(Sin.of(cs.Ksi)).add(cs.Uy.multiply(Cos.of(cs.Ksi)));
-    Scalar dw1L = torques.Tm1L.add(brakeTorques.Tb1L).subtract(tire.fx1L.multiply(params.R)).divide(params.Iw);
-    Scalar dw1R = torques.Tm1R.add(brakeTorques.Tb1R).subtract(tire.fx1R.multiply(params.R)).divide(params.Iw);
-    Scalar dw2L = torques.Tm2L.add(brakeTorques.Tb2L).subtract(tire.fx2L.multiply(params.R)).divide(params.Iw);
-    Scalar dw2R = torques.Tm2R.add(brakeTorques.Tb2R).subtract(tire.fx2R.multiply(params.R)).divide(params.Iw);
+    Scalar dw1L = torques.Tm1L.add(brakeTorques.Tb1L).subtract(params.radiusTimes(tire.fx1L)).divide(params.Iw);
+    Scalar dw1R = torques.Tm1R.add(brakeTorques.Tb1R).subtract(params.radiusTimes(tire.fx1R)).divide(params.Iw);
+    Scalar dw2L = torques.Tm2L.add(brakeTorques.Tb2L).subtract(params.radiusTimes(tire.fx2L)).divide(params.Iw);
+    Scalar dw2R = torques.Tm2R.add(brakeTorques.Tb2R).subtract(params.radiusTimes(tire.fx2R)).divide(params.Iw);
     //
     return Tensors.of(du, dv, dr, dKsi, dx, dy, dw1L, dw1R, dw2L, dw2R);
   }
