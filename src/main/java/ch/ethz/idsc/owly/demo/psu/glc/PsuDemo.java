@@ -37,7 +37,7 @@ public class PsuDemo { // <- intentionally public
   public static TrajectoryPlanner simple() {
     Tensor eta = Tensors.vector(5, 7);
     StateIntegrator stateIntegrator = FixedStateIntegrator.create( //
-        new RungeKutta4Integrator(), RationalScalar.of(1, 4), 5);
+        RungeKutta4Integrator.INSTANCE, RationalScalar.of(1, 4), 5);
     Collection<Flow> controls = PsuControls.createControls(0.2, 6);
     PsuWrap psuWrap = new PsuWrap();
     PsuGoalManager psuGoalManager = new PsuGoalManager(psuWrap, //
@@ -56,7 +56,7 @@ public class PsuDemo { // <- intentionally public
   public static TrajectoryPlanner medium() {
     Tensor eta = Tensors.vector(5, 7);
     StateIntegrator stateIntegrator = FixedStateIntegrator.create( //
-        new RungeKutta45Integrator(), RationalScalar.of(1, 4), 5);
+        RungeKutta45Integrator.INSTANCE, RationalScalar.of(1, 4), 5);
     Collection<Flow> controls = PsuControls.createControls(0.2, 6);
     PsuWrap psuWrap = new PsuWrap();
     PsuGoalManager psuGoalManager = new PsuGoalManager(psuWrap, //

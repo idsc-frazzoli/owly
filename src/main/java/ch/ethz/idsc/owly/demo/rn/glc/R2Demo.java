@@ -51,7 +51,7 @@ class R2Demo {
     final Scalar radius = DoubleScalar.of(.25);
     // ---
     Tensor eta = Tensors.vector(4, 4);
-    StateIntegrator stateIntegrator = FixedStateIntegrator.create(new EulerIntegrator(), RationalScalar.of(1, 5), 5);
+    StateIntegrator stateIntegrator = FixedStateIntegrator.create(EulerIntegrator.INSTANCE, RationalScalar.of(1, 5), 5);
     Collection<Flow> controls = R2Controls.createRadial(36);
     RnGoalManager rnGoal = new RnGoalManager(stateGoal, radius);
     // ---

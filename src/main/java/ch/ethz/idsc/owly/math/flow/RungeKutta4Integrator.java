@@ -9,8 +9,10 @@ import ch.ethz.idsc.tensor.Tensors;
 /** fourth-order Runge-Kutta formula
  * 
  * Numerical Recipes 3rd Edition (17.1.3) */
-public class RungeKutta4Integrator implements Integrator {
-  static final Scalar HALF = RationalScalar.of(1, 2);
+public enum RungeKutta4Integrator implements Integrator {
+  INSTANCE;
+  // ---
+  private static final Scalar HALF = RationalScalar.of(1, 2);
   private static final Scalar THIRD = RationalScalar.of(1, 3);
   private static final Scalar SIXTH = RationalScalar.of(1, 6);
   private static final Tensor WEIGHTS = Tensors.of(SIXTH, THIRD, THIRD, SIXTH);

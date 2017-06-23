@@ -13,7 +13,7 @@ public class CarStateTest extends TestCase {
   }
 
   public void testX0_Demo1() {
-    CarState carState = CarStatic.x0_demo1();
+    CarState carState = CarStatic.x0_demo2();
     // carState.asVector().forEach(System.out::println);
   }
 }

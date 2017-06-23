@@ -12,6 +12,7 @@ import ch.ethz.idsc.tensor.red.Total;
 import ch.ethz.idsc.tensor.sca.Cos;
 import ch.ethz.idsc.tensor.sca.Sin;
 
+/** implementation has been verified through several tests */
 public class TireForces {
   //
   final Scalar Fx1L; // 1
@@ -228,6 +229,7 @@ public class TireForces {
 
   public static Scalar robustDiv(Scalar num, Scalar den, Scalar eps) {
     if (Scalars.isZero(den)) {
+      System.out.println("ROBUST DIV " + num);
       if (Scalars.nonZero(num))
         return num.divide(eps);
       return RealScalar.ZERO;

@@ -8,7 +8,9 @@ import ch.ethz.idsc.tensor.Tensor;
 /** 2nd order RungeKutta
  * 
  * Numerical Recipes 3rd Edition (17.1.2) */
-public final class MidpointIntegrator implements Integrator {
+public enum MidpointIntegrator implements Integrator {
+  INSTANCE;
+  // ---
   private static final Scalar HALF = RationalScalar.of(1, 2);
 
   @Override

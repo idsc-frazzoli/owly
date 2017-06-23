@@ -37,7 +37,7 @@ class Se2rImageDemo {
     Region region = ImageRegions.loadFromRepository("/io/track0_100.png", Tensors.vector(10, 10), false);
     Tensor partitionScale = Tensors.vector(3, 3, 50 / Math.PI);
     StateIntegrator stateIntegrator = FixedStateIntegrator.create( //
-        new RungeKutta45Integrator(), RationalScalar.of(1, 6), 5);
+        RungeKutta45Integrator.INSTANCE, RationalScalar.of(1, 6), 5);
     Collection<Flow> controls = Se2rControls.createControls(Se2Utils.DEGREE(45), 6);
     Se2rGoalManager se2GoalManager = new Se2rGoalManager( //
         Tensors.vector(5.3, 4.4), RealScalar.of(0), //
