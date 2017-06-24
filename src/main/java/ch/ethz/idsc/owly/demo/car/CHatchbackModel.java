@@ -54,23 +54,51 @@ public class CHatchbackModel extends DefaultCarModel {
 
   @Override
   public Scalar lR() {
-    return RealScalar.of(1.895); // rear axle distanc from COG [m]
+    return RealScalar.of(1.895); // rear axle distance from COG [m]
   }
 
-  public static final Scalar Iz = RealScalar.of(1536.7 + 427.7084); // yawing moment of inertia [kgm2]
-  public static final Scalar Iw = RealScalar.of(0.9); // wheel moment of inertia [kgm2]
+  @Override
+  public Scalar frontL() {
+    return RealScalar.of(1.915); // distance from COG to front end [m]
+  }
+
+  @Override
+  public Scalar rearL() {
+    return RealScalar.of(2.835); // distance from COG to rear end [m]
+  }
+
+  @Override
+  public Scalar width() {
+    return RealScalar.of(1.916); // width of the vehicle [m]
+  }
+
+  @Override
+  public Scalar maxTm() {
+    return RealScalar.of(1000.); // maximal motor torque [Nm], with gears included
+  }
+
+  @Override
+  public Scalar gammaM() {
+    return RealScalar.of(0.0); // rear/total drive ratio; 0 is FWD, 1 is RWD
+  }
+
+  @Override
+  public Scalar Iz_invert() {
+    return RealScalar.of(1 / (1536.7 + 427.7084)); // yawing moment of inertia [kgm2]
+  }
+
+  @Override
+  public Scalar Iw_invert() {
+    return RealScalar.of(1 / 0.9); // wheel moment of inertia [kgm2]
+  }
+
   // dimensions
-  public static final Scalar frontL = RealScalar.of(1.915); // distance from COG to front end [m]
-  public static final Scalar rearL = RealScalar.of(2.835); // distance from COG to rear end [m]
-  public static final Scalar width = RealScalar.of(1.916); // width of the vehicle [m]
   // pacejka model parameters
   public static final Scalar maxDeltaDEGREE = RealScalar.of(30); // maximal steering angle [deg]
   public static final Scalar press2torF = RealScalar.of(250); // Nm per Mpa conversion constant [Nm/Mpa] for Front and Rear brakes
   public static final Scalar press2torR = RealScalar.of(150);
   public static final Scalar maxThb = RealScalar.of(2000); // max handbrake torque [Nm]
   public static final Scalar maxPress = RealScalar.of(13); // maximal master cylinder presure [MPa]
-  public static final Scalar maxTm = RealScalar.of(1000); // maximal motor torque [Nm], with gears included
-  public static final Scalar gammaM = RealScalar.of(0); // rear/total drive ratio; 0 is FWD, 1 is RWD
   public static final Scalar muRoll = RealScalar.of(0); // rolling friction coefficient
   public static final Scalar b = RealScalar.of(5); // dynamic friction coefficient N/(m/s)
   public static final Scalar fric = RealScalar.of(47); // coulomb friction

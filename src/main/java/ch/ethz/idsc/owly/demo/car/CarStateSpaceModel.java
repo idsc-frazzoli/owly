@@ -14,8 +14,8 @@ import ch.ethz.idsc.tensor.sca.Sin;
 public class CarStateSpaceModel implements StateSpaceModel {
   private final CHatchbackModel params; // TODO not final design
 
-  public CarStateSpaceModel(CHatchbackModel params) {
-    this.params = params;
+  public CarStateSpaceModel(CarModel params) {
+    this.params = (CHatchbackModel) params; // TODO
   }
 
   @Override
@@ -32,7 +32,7 @@ public class CarStateSpaceModel implements StateSpaceModel {
     // [ FORCES, forces] = tires(x,u);
     TireForces tire = new TireForces(params, cs, cc);
     BrakeTorques brakeTorques = new BrakeTorques(cs, cc, tire);
-    MotorTorques torques = new MotorTorques(cc);
+    MotorTorques torques = new MotorTorques(params, cc.throttle);
     // ---
     //
     Scalar du; // TODO rename du, dv
@@ -54,15 +54,15 @@ public class CarStateSpaceModel implements StateSpaceModel {
     {
       Tensor vec1 = Tensors.of(params.lF(), params.lR().negate(), params.lw());
       Tensor vec2 = Tensors.of(tire.total56(), tire.total78(), tire.total24_13());
-      dr = vec1.dot(vec2).Get().divide(params.Iz);
+      dr = vec1.dot(vec2).Get().multiply(params.Iz_invert());
     }
     Scalar dKsi = cs.r;
     Scalar dx = cs.Ux.multiply(Cos.of(cs.Ksi)).subtract(cs.Uy.multiply(Sin.of(cs.Ksi)));
     Scalar dy = cs.Ux.multiply(Sin.of(cs.Ksi)).add(cs.Uy.multiply(Cos.of(cs.Ksi)));
-    Scalar dw1L = torques.Tm1L.add(brakeTorques.Tb1L).subtract(params.radiusTimes(tire.fx1L)).divide(params.Iw);
-    Scalar dw1R = torques.Tm1R.add(brakeTorques.Tb1R).subtract(params.radiusTimes(tire.fx1R)).divide(params.Iw);
-    Scalar dw2L = torques.Tm2L.add(brakeTorques.Tb2L).subtract(params.radiusTimes(tire.fx2L)).divide(params.Iw);
-    Scalar dw2R = torques.Tm2R.add(brakeTorques.Tb2R).subtract(params.radiusTimes(tire.fx2R)).divide(params.Iw);
+    Scalar dw1L = torques.Tm1L.add(brakeTorques.Tb1L).subtract(params.radiusTimes(tire.fx1L)).multiply(params.Iw_invert());
+    Scalar dw1R = torques.Tm1R.add(brakeTorques.Tb1R).subtract(params.radiusTimes(tire.fx1R)).multiply(params.Iw_invert());
+    Scalar dw2L = torques.Tm2L.add(brakeTorques.Tb2L).subtract(params.radiusTimes(tire.fx2L)).multiply(params.Iw_invert());
+    Scalar dw2R = torques.Tm2R.add(brakeTorques.Tb2R).subtract(params.radiusTimes(tire.fx2R)).multiply(params.Iw_invert());
     //
     return Tensors.of(du, dv, dr, dKsi, dx, dy, dw1L, dw1R, dw2L, dw2R);
   }

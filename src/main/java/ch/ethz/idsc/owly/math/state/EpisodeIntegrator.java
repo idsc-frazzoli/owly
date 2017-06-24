@@ -12,5 +12,8 @@ public interface EpisodeIntegrator {
   /** @param u constant control input during the time of integration
    * @param now absolute point in time
    * @return */
-  StateTime move(Tensor u, Scalar now);
+  void move(Tensor u, Scalar now);
+
+  /** @return state time reached by this {@link EpisodeIntegrator} */
+  StateTime tail();
 }

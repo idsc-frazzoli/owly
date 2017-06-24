@@ -11,9 +11,9 @@ import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
 
 abstract class AbstractEpisodeIntegrator implements EpisodeIntegrator {
-  final StateSpaceModel stateSpaceModel;
+  private final StateSpaceModel stateSpaceModel;
   final Integrator integrator;
-  StateTime stateTime;
+  private StateTime stateTime;
 
   AbstractEpisodeIntegrator(StateSpaceModel stateSpaceModel, Integrator integrator, StateTime stateTime) {
     this.stateSpaceModel = stateSpaceModel;
@@ -21,12 +21,19 @@ abstract class AbstractEpisodeIntegrator implements EpisodeIntegrator {
     this.stateTime = stateTime;
   }
 
+  /** @param flow
+   * @param period
+   * @return */
   protected abstract List<StateTime> move(Flow flow, Scalar period);
 
   @Override
-  public final StateTime move(Tensor u, Scalar now) {
+  public final void move(Tensor u, Scalar now) {
     List<StateTime> trajectory = move(StateSpaceModels.createFlow(stateSpaceModel, u), now.subtract(stateTime.time()));
     stateTime = trajectory.get(trajectory.size() - 1);
+  }
+
+  @Override
+  public StateTime tail() {
     return stateTime;
   }
 }
