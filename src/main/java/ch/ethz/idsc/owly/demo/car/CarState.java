@@ -6,6 +6,7 @@ import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.TensorRuntimeException;
 import ch.ethz.idsc.tensor.Tensors;
+import ch.ethz.idsc.tensor.red.Hypot;
 import ch.ethz.idsc.tensor.sca.Cos;
 import ch.ethz.idsc.tensor.sca.Sin;
 
@@ -60,6 +61,10 @@ public class CarState {
         Ux, Uy, //
         r, Ksi, px, py, //
         w1L, w1R, w2L, w2R);
+  }
+  
+  public Scalar groundSpeed() {
+    return Hypot.bifunction.apply(Ux, Uy);
   }
 
   // TODO establish both via matrix mult as vector

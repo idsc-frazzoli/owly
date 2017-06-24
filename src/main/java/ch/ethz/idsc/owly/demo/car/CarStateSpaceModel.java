@@ -6,47 +6,40 @@ import ch.ethz.idsc.owly.math.StateSpaceModel;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
-import ch.ethz.idsc.tensor.TensorRuntimeException;
 import ch.ethz.idsc.tensor.Tensors;
 import ch.ethz.idsc.tensor.sca.Cos;
 import ch.ethz.idsc.tensor.sca.Sin;
 
 public class CarStateSpaceModel implements StateSpaceModel {
-  private final CHatchbackModel params; // TODO not final design
+  private final CarModel params; // TODO not final design
 
   public CarStateSpaceModel(CarModel params) {
-    this.params = (CHatchbackModel) params; // TODO
+    this.params = params; // TODO
   }
 
   @Override
   public Tensor f(Tensor x, Tensor u) {
-    if (x.length() != 10)
-      throw TensorRuntimeException.of(x);
-    if (u.length() != 4)
-      throw TensorRuntimeException.of(u);
-    // ---
     // TODO apply u rate limiter
     // ---
     CarState cs = new CarState(x);
     CarControl cc = new CarControl(u);
-    // [ FORCES, forces] = tires(x,u);
     TireForces tire = new TireForces(params, cs, cc);
-    BrakeTorques brakeTorques = new BrakeTorques(cs, cc, tire);
+    BrakeTorques brakeTorques = new BrakeTorques(params, cs, cc, tire);
     MotorTorques torques = new MotorTorques(params, cc.throttle);
     // ---
     //
-    Scalar du; // TODO rename du, dv
+    Scalar dux;
     {
       Scalar prel = tire.total1234().add(params.mass().multiply(cs.Uy).multiply(cs.r));
       // TODO rollFric
-      du = prel.subtract(params.coulombFriction(cs.Ux)).divide(params.mass());
+      dux = prel.subtract(params.coulombFriction(cs.Ux)).divide(params.mass());
     }
     // ---
-    Scalar dv;
+    Scalar duy;
     {
       Scalar prel = tire.total5678().subtract(params.mass().multiply(cs.Ux).multiply(cs.r));
       // TODO rollFric
-      dv = prel.subtract(RealScalar.ZERO.multiply(params.coulombFriction(cs.Uy))).divide(params.mass());
+      duy = prel.subtract(RealScalar.ZERO.multiply(params.coulombFriction(cs.Uy))).divide(params.mass());
     }
     // ---
     //
@@ -64,7 +57,7 @@ public class CarStateSpaceModel implements StateSpaceModel {
     Scalar dw2L = torques.Tm2L.add(brakeTorques.Tb2L).subtract(params.radiusTimes(tire.fx2L)).multiply(params.Iw_invert());
     Scalar dw2R = torques.Tm2R.add(brakeTorques.Tb2R).subtract(params.radiusTimes(tire.fx2R)).multiply(params.Iw_invert());
     //
-    return Tensors.of(du, dv, dr, dKsi, dx, dy, dw1L, dw1R, dw2L, dw2R);
+    return Tensors.of(dux, duy, dr, dKsi, dx, dy, dw1L, dw1R, dw2L, dw2R);
   }
 
   @Override

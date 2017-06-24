@@ -12,7 +12,7 @@ public class TireForcesTest extends TestCase {
     CarModel carModel = new CHatchbackModel();
     CarState carState = CarStatic.x0_demo1();
     // System.out.println(carState.asVector());
-    CarControl carControl = new CarControl(Tensors.vector(0, 0, 0, 0));
+    CarControl carControl = carModel.createControl(Tensors.vector(0, 0, 0, 0));
     TireForces tireForces = new TireForces(carModel, carState, carControl);
     assertTrue(Chop.isZeros(tireForces.asVectorFX()));
     assertTrue(Chop.isZeros(tireForces.asVectorFY()));
@@ -28,7 +28,7 @@ public class TireForcesTest extends TestCase {
     CarModel carModel = new CHatchbackModel();
     CarState carState = CarStatic.x0_demo2();
     // System.out.println(carState.asVector());
-    CarControl carControl = new CarControl(Tensors.vector(0, 0, 0, 0));
+    CarControl carControl = carModel.createControl(Tensors.vector(0, 0, 0, 0));
     TireForces tireForces = new TireForces(carModel, carState, carControl);
     assertTrue(Chop.isZeros(tireForces.asVectorFX()));
     assertTrue(Chop.isZeros(tireForces.asVector_fX()));
@@ -87,7 +87,9 @@ public class TireForcesTest extends TestCase {
     CarModel carModel = new CHatchbackModel();
     CarState carState = CarStatic.x0_demo3();
     // System.out.println(carState.asVector());
-    CarControl carControl = new CarControl(Tensors.vector(.5, 0, 0, 0));
+    double maxDelta = 30 * Math.PI / 180;
+    CarControl carControl = carModel.createControl(Tensors.vector(.5 / maxDelta, 0, 0, 0));
+    // new CarControl();
     @SuppressWarnings("unused")
     TireForces tireForces = new TireForces(carModel, carState, carControl);
     // CONFIRMED

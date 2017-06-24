@@ -5,7 +5,10 @@ package ch.ethz.idsc.owly.demo.car;
 import ch.ethz.idsc.owly.math.Pacejka3;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
-import ch.ethz.idsc.tensor.sca.Sign;
+import ch.ethz.idsc.tensor.Tensor;
+import ch.ethz.idsc.tensor.TensorRuntimeException;
+import ch.ethz.idsc.tensor.Tensors;
+import ch.ethz.idsc.tensor.sca.Clip;
 
 public class CHatchbackModel extends DefaultCarModel {
   private static final Pacejka3 PACEJKA1 = new Pacejka3(13.8509, 1.3670, 0.9622);
@@ -72,11 +75,10 @@ public class CHatchbackModel extends DefaultCarModel {
     return RealScalar.of(1.916); // width of the vehicle [m]
   }
 
-  @Override
-  public Scalar maxTm() {
-    return RealScalar.of(1000.); // maximal motor torque [Nm], with gears included
-  }
-
+  // @Override
+  // public Scalar maxTm() {
+  // return RealScalar.of(1000.); // maximal motor torque [Nm], with gears included
+  // }
   @Override
   public Scalar gammaM() {
     return RealScalar.of(0.0); // rear/total drive ratio; 0 is FWD, 1 is RWD
@@ -92,16 +94,52 @@ public class CHatchbackModel extends DefaultCarModel {
     return RealScalar.of(1 / 0.9); // wheel moment of inertia [kgm2]
   }
 
+  @Override
+  public Scalar b() {
+    return RealScalar.of(5); // dynamic friction coefficient N/(m/s)
+  }
+
+  @Override
+  public Scalar fric() {
+    return RealScalar.of(47); // coulomb friction
+  }
+
+  // maximal steering angle [deg]
+  private static final Scalar maxDelta = RealScalar.of(30 * Math.PI / 180);
+  // maximal motor torque [Nm], with gears included
+  private static final Scalar maxThrottle = RealScalar.of(1000.);
+  private static final Scalar maxPress = RealScalar.of(13); // maximal master cylinder presure [MPa]
+  private static final Scalar maxThb = RealScalar.of(2000); // max handbrake torque [Nm]
+
+  @Override
+  public CarControl createControl(Tensor u) {
+    if (!Clip.ABSOLUTE_ONE.of(u.Get(0)).equals(u.Get(0)))
+      throw TensorRuntimeException.of(u.Get(0));
+    if (!Clip.UNIT.of(u.Get(3)).equals(u.Get(3)))
+      throw TensorRuntimeException.of(u.Get(3));
+    // ---
+    Scalar delta = u.Get(0).multiply(maxDelta);
+    Scalar brake = u.Get(1).multiply(maxPress);
+    Scalar handbrake = u.Get(2).multiply(maxThb);
+    Scalar throttle = u.Get(3).multiply(maxThrottle);
+    return new CarControl(Tensors.of(delta, brake, handbrake, throttle));
+  }
+
+  @Override
+  public Scalar press2torF() {
+    return RealScalar.of(250); // Nm per Mpa conversion constant [Nm/Mpa] for Front and Rear brakes
+  }
+
+  @Override
+  public Scalar press2torR() {
+    return RealScalar.of(150);
+  }
+
   // dimensions
   // pacejka model parameters
-  public static final Scalar maxDeltaDEGREE = RealScalar.of(30); // maximal steering angle [deg]
-  public static final Scalar press2torF = RealScalar.of(250); // Nm per Mpa conversion constant [Nm/Mpa] for Front and Rear brakes
-  public static final Scalar press2torR = RealScalar.of(150);
-  public static final Scalar maxThb = RealScalar.of(2000); // max handbrake torque [Nm]
-  public static final Scalar maxPress = RealScalar.of(13); // maximal master cylinder presure [MPa]
+  // public static final Scalar press2torF =
+  // public static final Scalar press2torR =
   public static final Scalar muRoll = RealScalar.of(0); // rolling friction coefficient
-  public static final Scalar b = RealScalar.of(5); // dynamic friction coefficient N/(m/s)
-  public static final Scalar fric = RealScalar.of(47); // coulomb friction
   public static final Scalar eps = RealScalar.of(1e-4); // tolerance below which is speed considered 0
   public static final Scalar Dz1 = RealScalar.of(0.05); // dead zone tOLERANCE
   public static final Scalar Dz2 = RealScalar.of(3.1415 / 180);
@@ -113,9 +151,5 @@ public class CHatchbackModel extends DefaultCarModel {
 
   public Scalar rollFric() {
     return gForce().multiply(muRoll);
-  }
-
-  public Scalar coulombFriction(Scalar in) {
-    return Sign.of(in).multiply(b.multiply(in.abs()).add(fric));
   }
 }

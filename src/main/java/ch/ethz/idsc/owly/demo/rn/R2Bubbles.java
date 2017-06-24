@@ -5,7 +5,7 @@ import ch.ethz.idsc.owly.math.region.ImplicitFunctionRegion;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
-import ch.ethz.idsc.tensor.io.ExtractPrimitives;
+import ch.ethz.idsc.tensor.io.Primitives;
 
 /** numerous ~circles of varying size
  * the challenge is to find the path through narrow passages as close as possible to the diagonal
@@ -17,7 +17,7 @@ import ch.ethz.idsc.tensor.io.ExtractPrimitives;
 public class R2Bubbles extends ImplicitFunctionRegion {
   @Override
   public Scalar evaluate(Tensor tensor) {
-    final double[] data = ExtractPrimitives.toArrayDouble(tensor);
+    final double[] data = Primitives.toArrayDouble(tensor);
     double x = data[0];
     double y = data[1];
     double x2 = x * x;

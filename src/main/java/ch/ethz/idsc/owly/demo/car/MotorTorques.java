@@ -13,11 +13,12 @@ public class MotorTorques {
   final Scalar Tm2L; // 3
   final Scalar Tm2R; // 4
 
-  public MotorTorques(CarModel params, Scalar throttleCmd) {
-    // = cc.throttle;
+  /** @param params
+   * @param throttle absolute [Nm] */
+  public MotorTorques(CarModel params, Scalar throttle) {
     // ---
-    // TODO check with
-    final Scalar reqTorque = params.maxTm().multiply(RealScalar.of(.5)).multiply(throttleCmd);
+    // TODO check with edo
+    final Scalar reqTorque = throttle.multiply(RealScalar.of(.5));
     final Scalar rearCoeff = params.gammaM();
     final Scalar frontCoeff = RealScalar.ONE.subtract(rearCoeff);
     Tm1L = frontCoeff.multiply(reqTorque);
