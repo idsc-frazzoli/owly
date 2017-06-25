@@ -38,7 +38,7 @@ public enum DeltaHelper {
   public static TrajectoryPlanner createDefault(Scalar amp) throws Exception {
     Tensor eta = Tensors.vector(8, 8);
     StateIntegrator stateIntegrator = FixedStateIntegrator.create( //
-        new RungeKutta45Integrator(), RationalScalar.of(1, 10), 4);
+        RungeKutta45Integrator.INSTANCE, RationalScalar.of(1, 10), 4);
     Tensor range = Tensors.vector(9, 6.5);
     ImageGradient ipr = new ImageGradient( //
         Images.displayOrientation(Import.of(Resources.fileFromRepository("/io/delta_uxy.png")).get(Tensor.ALL, Tensor.ALL, 0)), //
@@ -76,7 +76,7 @@ public enum DeltaHelper {
         partitionScale, dtMax, maxIter, stateSpaceModel.getLipschitz());
     System.out.println("1/DomainSize: " + parameters.getEta());
     StateIntegrator stateIntegrator = FixedStateIntegrator.create( //
-        new RungeKutta45Integrator(), parameters.getdtMax(), parameters.getTrajectorySize());
+        RungeKutta45Integrator.INSTANCE, parameters.getdtMax(), parameters.getTrajectorySize());
     Tensor obstacleImage = Images.displayOrientation(Import.of(Resources.fileFromRepository("/io/delta_free.png")).get(Tensor.ALL, Tensor.ALL, 0)); //
     TrajectoryRegionQuery obstacleQuery = //
         new SimpleTrajectoryRegionQuery(new TimeInvariantRegion( //
@@ -110,7 +110,7 @@ public enum DeltaHelper {
         partitionScale, dtMax, maxIter, stateSpaceModel.getLipschitz());
     System.out.println("1/DomainSize: " + parameters.getEta());
     StateIntegrator stateIntegrator = FixedStateIntegrator.create( //
-        new RungeKutta45Integrator(), parameters.getdtMax(), parameters.getTrajectorySize());
+        RungeKutta45Integrator.INSTANCE, parameters.getdtMax(), parameters.getTrajectorySize());
     Tensor obstacleImage = Images.displayOrientation(Import.of(Resources.fileFromRepository("/io/delta_free.png")).get(Tensor.ALL, Tensor.ALL, 0)); //
     TrajectoryRegionQuery obstacleQuery = //
         new SimpleTrajectoryRegionQuery(new TimeInvariantRegion( //

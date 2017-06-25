@@ -6,6 +6,7 @@ import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.alg.Join;
 
+/** implementation for R^n */
 public enum DoubleIntegrator implements StateSpaceModel {
   INSTANCE;
   // ---

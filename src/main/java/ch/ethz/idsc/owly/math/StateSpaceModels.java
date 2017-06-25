@@ -15,7 +15,6 @@ public enum StateSpaceModels {
    * @param u
    * @return flow defined by stateSpaceModel using control parameter u */
   public static Flow createFlow(StateSpaceModel stateSpaceModel, Tensor u) {
-    final Tensor u_unmodifiable = u.unmodifiable();
     return new Flow() {
       @Override
       public final Tensor at(Tensor x) {
@@ -24,22 +23,12 @@ public enum StateSpaceModels {
 
       @Override
       public final Tensor getU() {
-        return u_unmodifiable;
+        return u.unmodifiable();
       }
-
-      @Override
-      public int hashCode() {
-        return getU().hashCode();
-      }
-
-      @Override
-      public boolean equals(Object object) {
-        if (object instanceof Flow) {
-          Flow flow = (Flow) object;
-          return getU().equals(flow.getU());
-        }
-        return false;
-      }
+      // ---
+      /** FLOW IMPLEMENTATION INTENTIONALLY DOES NOT OVERRIDE hashCode(), and equals(...)
+       * 
+       * FLOWS SHOULD BE DIFFERENTIATED OUTSIDE CLASS VIA THE STATE SPACE MODEL AND THE CONTROL U's */
     };
   }
 }

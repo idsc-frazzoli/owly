@@ -30,7 +30,7 @@ import ch.ethz.idsc.tensor.Tensors;
 class T2Demo {
   public static void main(String[] args) {
     Tensor eta = Tensors.vector(4, 5);
-    StateIntegrator stateIntegrator = FixedStateIntegrator.create(new EulerIntegrator(), RationalScalar.of(1, 10), 5);
+    StateIntegrator stateIntegrator = FixedStateIntegrator.create(EulerIntegrator.INSTANCE, RationalScalar.of(1, 10), 5);
     Collection<Flow> controls = R2Controls.createRadial(36);
     CoordinateWrap coordinateWrap;
     coordinateWrap = new TnWrap(Tensors.vector(5, 7));

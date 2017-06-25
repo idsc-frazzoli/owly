@@ -43,7 +43,7 @@ class R2GlcAnyDemo {
     Scalar lipschitz = RealScalar.ONE;
     Parameters parameters = new R2Parameters( //
         resolution, timeScale, depthScale, partitionScale, dtMax, maxIter, lipschitz);
-    StateIntegrator stateIntegrator = FixedStateIntegrator.create(new EulerIntegrator(), parameters.getdtMax(), //
+    StateIntegrator stateIntegrator = FixedStateIntegrator.create(EulerIntegrator.INSTANCE, parameters.getdtMax(), //
         parameters.getTrajectorySize());
     Collection<Flow> controls = R2Controls.createRadial(parameters.getResolutionInt());
     RnGoalManager rnGoal = new RnGoalManager(Tensors.vector(5, 5), DoubleScalar.of(.25));

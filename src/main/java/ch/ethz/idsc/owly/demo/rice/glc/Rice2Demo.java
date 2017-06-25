@@ -34,7 +34,7 @@ class Rice2Demo {
   public static void main(String[] args) {
     Tensor eta = Tensors.vector(3, 3, 6, 6);
     StateIntegrator stateIntegrator = FixedStateIntegrator.create( //
-        new MidpointIntegrator(), RationalScalar.of(1, 2), 5);
+        MidpointIntegrator.INSTANCE, RationalScalar.of(1, 2), 5);
     Collection<Flow> controls = Rice2Controls.createControls(RealScalar.of(.5), 3, 15);
     Rice2GoalManager rice2Goal = new Rice2GoalManager( //
         Tensors.vector(3, 3, -1, 0), Tensors.vector(.5, .5, .4, .4));

@@ -32,7 +32,7 @@ import ch.ethz.idsc.tensor.Tensors;
 class R2PointsDemo {
   public static void main(String[] args) {
     Tensor partitionScale = Tensors.vector(5, 5);
-    StateIntegrator stateIntegrator = FixedStateIntegrator.create(new EulerIntegrator(), RationalScalar.of(1, 8), 4);
+    StateIntegrator stateIntegrator = FixedStateIntegrator.create(EulerIntegrator.INSTANCE, RationalScalar.of(1, 8), 4);
     Collection<Flow> controls = R2Controls.createRadial(20);
     RnGoalManager rnGoal = new RnGoalManager(Tensors.vector(5, 5), DoubleScalar.of(.2));
     // Tensors.matrix(new Number[][] { //

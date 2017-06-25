@@ -36,7 +36,7 @@ class Se2rDemo {
   public static void main(String[] args) {
     Tensor eta = Tensors.vector(6, 6, 50 / Math.PI);
     StateIntegrator stateIntegrator = FixedStateIntegrator.create( //
-        new RungeKutta45Integrator(), RationalScalar.of(1, 6), 5);
+        RungeKutta45Integrator.INSTANCE, RationalScalar.of(1, 6), 5);
     Collection<Flow> controls = Se2rControls.createControls(Se2Utils.DEGREE(45), 6);
     // place holder for parameter class
     Se2rGoalManager se2GoalManager = new Se2rGoalManager( //

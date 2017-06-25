@@ -23,7 +23,7 @@ import ch.ethz.idsc.tensor.Tensors;
 class R2nExpandDemo {
   public static void main(String[] args) throws Exception {
     Tensor eta = Tensors.vector(4, 4);
-    StateIntegrator stateIntegrator = FixedStateIntegrator.create(new EulerIntegrator(), RationalScalar.of(1, 5), 5);
+    StateIntegrator stateIntegrator = FixedStateIntegrator.create(EulerIntegrator.INSTANCE, RationalScalar.of(1, 5), 5);
     Collection<Flow> controls = R2Controls.createRadial(16);
     RnnGoalManager rnGoal = new RnnGoalManager(Tensors.vector(4, 4), DoubleScalar.of(.25));
     TrajectoryRegionQuery obstacleQuery = new EmptyTrajectoryRegionQuery();

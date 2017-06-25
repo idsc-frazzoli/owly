@@ -5,7 +5,7 @@ import ch.ethz.idsc.owly.math.region.ImplicitFunctionRegion;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
-import ch.ethz.idsc.tensor.io.ExtractPrimitives;
+import ch.ethz.idsc.tensor.io.Primitives;
 
 /** example functions for use with RnImplicitObstacle
  *
@@ -23,7 +23,7 @@ class R3Tubes extends ImplicitFunctionRegion {
    * https://reference.wolfram.com/language/ref/ContourPlot3D.html */
   @Override
   public Scalar evaluate(Tensor tensor) {
-    final double[] data = ExtractPrimitives.toArrayDouble(tensor);
+    final double[] data = Primitives.toArrayDouble(tensor);
     double x = data[0];
     double y = data[1];
     double z = data[2];
