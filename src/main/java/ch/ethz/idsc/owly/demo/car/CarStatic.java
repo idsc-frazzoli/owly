@@ -8,6 +8,8 @@ import ch.ethz.idsc.tensor.Tensors;
 /** DO NOT CHANGE THE VALUES IN THE EXISTING FUNCTIONS */
 public enum CarStatic {
   ;
+  private static final double Dz1 = 0.05; // TODO not final code design
+
   /** {8.383333333333333, 0,
    * 0, 1,
    * -50, -75,
@@ -16,7 +18,7 @@ public enum CarStatic {
    * @return */
   public static CarState x0_demo1() {
     CarModel params = new CHatchbackModel();
-    Scalar speed = RealScalar.of(30 + 3.6 * CarModel.Dz1);
+    Scalar speed = RealScalar.of(30 + 3.6 * Dz1);
     return new CarState(Tensors.vector( //
         speed.number().doubleValue() / 3.6, // Ux
         0, // Uy
@@ -40,7 +42,7 @@ public enum CarStatic {
    * @return */
   public static CarState x0_demo2() {
     CarModel params = new CHatchbackModel();
-    Scalar speed = RealScalar.of(30 + 3.6 * CarModel.Dz1);
+    Scalar speed = RealScalar.of(30 + 3.6 * Dz1);
     return new CarState(Tensors.vector( //
         speed.number().doubleValue() / 3.6, // Ux
         2, // Uy
@@ -59,7 +61,7 @@ public enum CarStatic {
   /** @return */
   public static CarState x0_demo3() {
     CarModel params = new CHatchbackModel();
-    Scalar speed = RealScalar.of(20 + 3.6 * CarModel.Dz1);
+    Scalar speed = RealScalar.of(20 + 3.6 * Dz1);
     return new CarState(Tensors.vector( //
         speed.number().doubleValue() / 3.6, // Ux
         .3, // Uy

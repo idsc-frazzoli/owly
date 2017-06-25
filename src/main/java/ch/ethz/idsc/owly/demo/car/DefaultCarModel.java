@@ -17,7 +17,7 @@ public abstract class DefaultCarModel implements CarModel {
   }
 
   @Override
-  public Scalar noSlipRate(Scalar speed) {
+  public final Scalar noSlipRate(Scalar speed) {
     return speed.divide(radius());
   }
 

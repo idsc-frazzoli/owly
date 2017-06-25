@@ -82,7 +82,7 @@ public class TireForces {
     Scalar mu2R = params.pacejka2().apply(S2R);
     // ---
     // TODO investigate numerics
-    Scalar eps = RealScalar.of(1e-4);
+    Scalar eps = RealScalar.of(1e-8);
     //
     Scalar mux1L = mu1L.multiply(robustDiv(Sx1L, S1L, eps)).negate();
     Scalar muy1L = mu1L.multiply(robustDiv(Sy1L, S1L, eps)).negate();

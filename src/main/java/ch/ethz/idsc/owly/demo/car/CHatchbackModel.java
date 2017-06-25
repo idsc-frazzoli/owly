@@ -75,10 +75,6 @@ public class CHatchbackModel extends DefaultCarModel {
     return RealScalar.of(1.916); // width of the vehicle [m]
   }
 
-  // @Override
-  // public Scalar maxTm() {
-  // return RealScalar.of(1000.); // maximal motor torque [Nm], with gears included
-  // }
   @Override
   public Scalar gammaM() {
     return RealScalar.of(0.0); // rear/total drive ratio; 0 is FWD, 1 is RWD
@@ -105,7 +101,7 @@ public class CHatchbackModel extends DefaultCarModel {
   }
 
   // maximal steering angle [deg]
-  private static final Scalar maxDelta = RealScalar.of(30 * Math.PI / 180);
+  private static final Scalar maxDelta = RealScalar.of(50 * Math.PI / 180);
   // maximal motor torque [Nm], with gears included
   private static final Scalar maxThrottle = RealScalar.of(1000.);
   private static final Scalar maxPress = RealScalar.of(13); // maximal master cylinder presure [MPa]
@@ -135,21 +131,24 @@ public class CHatchbackModel extends DefaultCarModel {
     return RealScalar.of(150);
   }
 
-  // dimensions
-  // pacejka model parameters
-  // public static final Scalar press2torF =
-  // public static final Scalar press2torR =
-  public static final Scalar muRoll = RealScalar.of(0); // rolling friction coefficient
-  public static final Scalar eps = RealScalar.of(1e-4); // tolerance below which is speed considered 0
-  public static final Scalar Dz1 = RealScalar.of(0.05); // dead zone tOLERANCE
-  public static final Scalar Dz2 = RealScalar.of(3.1415 / 180);
-  // public static final Scalar T = RealScalar.of(0.1);
-  public static final Scalar maxDeltaRate = RealScalar.of(50 * Math.PI / 180); // rad/s
-  public static final Scalar maxBrakeRate = RealScalar.of(5); // 1/s
-  public static final Scalar maxHandbrakeRate = RealScalar.of(5); // 1/s
-  public static final Scalar maxThrottleRate = RealScalar.of(5); // 1/s
-
-  public Scalar rollFric() {
-    return gForce().multiply(muRoll);
+  @Override
+  public Scalar muRoll() {
+    // TODO check if == 0 ok
+    // for ==2 the car will not make a turn but slide in nose direction...
+    return RealScalar.of(0); // rolling friction coefficient
   }
+
+  @Override
+  public Scalar rollFric() {
+    return gForce().multiply(muRoll());
+  }
+
+  // public static final Scalar eps = RealScalar.of(1e-4); // tolerance below which is speed considered 0
+  // public static final Scalar Dz1 = RealScalar.of(0.05); // dead zone tOLERANCE
+  // public static final Scalar Dz2 = RealScalar.of(3.1415 / 180);
+  // public static final Scalar T = RealScalar.of(0.1);
+  // public static final Scalar maxDeltaRate = RealScalar.of(50 * Math.PI / 180); // rad/s
+  private static final Scalar maxBrakeRate = RealScalar.of(5); // 1/s
+  private static final Scalar maxHandbrakeRate = RealScalar.of(5); // 1/s
+  private static final Scalar maxThrottleRate = RealScalar.of(5); // 1/s
 }

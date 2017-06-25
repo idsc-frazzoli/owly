@@ -8,9 +8,6 @@ import ch.ethz.idsc.tensor.Tensor;
 
 // TODO function names remain as-is until system works
 public interface CarModel {
-  static final double Dz1 = 0.05; // TODO not final code design
-  // ---
-
   /** @return mass [kg] */
   Scalar mass();
 
@@ -45,8 +42,6 @@ public interface CarModel {
   /** @return width of the vehicle [m] */
   Scalar width();
 
-  // /** @return maximal motor torque [Nm], with gears included */
-  // Scalar maxTm();
   /** @return rear/total drive ratio; 0 is FWD, 1 is RWD */
   Scalar gammaM();
 
@@ -67,6 +62,10 @@ public interface CarModel {
 
   /** @return Nm per Mpa conversion constant [Nm/Mpa] for Rear brakes */
   Scalar press2torR();
+
+  Scalar muRoll();
+
+  Scalar rollFric();
 
   /***************************************************/
   Scalar gForce();

@@ -41,21 +41,6 @@ public class CarState {
     w2R = x.Get(9);
   }
 
-  // /** @param delta control parameter
-  // * @return */
-  // Tensor getCosBsD_SD(Scalar delta) {
-  // return Tensors.of( //
-  // Cos.of(beta1.subtract(delta)), //
-  // Sin.of(delta));
-  // }
-  //
-  // /** @param delta control parameter
-  // * @return */
-  // Tensor getSinBsD_CD(Scalar delta) {
-  // return Tensors.of( //
-  // Sin.of(beta1.subtract(delta)), //
-  // Cos.of(delta));
-  // }
   public Tensor asVector() {
     return Tensors.of( //
         Ux, Uy, //
@@ -63,7 +48,11 @@ public class CarState {
         w1L, w1R, w2L, w2R);
   }
 
-  public Scalar groundSpeed() {
+  public Tensor groundSpeed() {
+    return Tensors.of(Ux, Uy);
+  }
+
+  public Scalar groundSpeedNorm() {
     return Hypot.bifunction.apply(Ux, Uy);
   }
 

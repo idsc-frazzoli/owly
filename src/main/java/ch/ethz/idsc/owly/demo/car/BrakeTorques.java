@@ -10,7 +10,6 @@ import ch.ethz.idsc.tensor.Tensors;
 import ch.ethz.idsc.tensor.sca.Sign;
 
 public class BrakeTorques {
-  // TODO longterm: make final
   public final Scalar Tb1L; // 1
   public final Scalar Tb1R; // 2
   public final Scalar Tb2L; // 3
