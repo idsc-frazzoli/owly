@@ -62,7 +62,7 @@ public class CarState {
         r, Ksi, px, py, //
         w1L, w1R, w2L, w2R);
   }
-  
+
   public Scalar groundSpeed() {
     return Hypot.bifunction.apply(Ux, Uy);
   }

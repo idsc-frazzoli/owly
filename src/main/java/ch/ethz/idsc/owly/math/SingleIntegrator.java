@@ -5,8 +5,10 @@ import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
 
-// formerly "SingleIntegrator"
-public enum IdentityStateSpaceModel implements StateSpaceModel {
+/** implementation for R^n
+ * 
+ * formerly "IdentityStateSpaceModel" */
+public enum SingleIntegrator implements StateSpaceModel {
   INSTANCE;
   // ---
   /** f(x,u) == u */

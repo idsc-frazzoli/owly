@@ -64,7 +64,7 @@ public interface CarModel {
 
   /** @return Nm per Mpa conversion constant [Nm/Mpa] for Front brakes */
   Scalar press2torF();
-  
+
   /** @return Nm per Mpa conversion constant [Nm/Mpa] for Rear brakes */
   Scalar press2torR();
 

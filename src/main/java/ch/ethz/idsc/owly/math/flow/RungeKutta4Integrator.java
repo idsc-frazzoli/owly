@@ -4,7 +4,6 @@ package ch.ethz.idsc.owly.math.flow;
 import ch.ethz.idsc.tensor.RationalScalar;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
-import ch.ethz.idsc.tensor.Tensors;
 
 /** fourth-order Runge-Kutta formula
  * 
@@ -15,14 +14,15 @@ public enum RungeKutta4Integrator implements Integrator {
   private static final Scalar HALF = RationalScalar.of(1, 2);
   private static final Scalar THIRD = RationalScalar.of(1, 3);
   private static final Scalar SIXTH = RationalScalar.of(1, 6);
-  private static final Tensor WEIGHTS = Tensors.of(SIXTH, THIRD, THIRD, SIXTH);
+  // private static final Tensor WEIGHTS = Tensors.of(SIXTH, THIRD, THIRD, SIXTH);
 
   static final Tensor increment(Flow flow, Tensor x, Scalar h) {
-    Tensor k1 = flow.at(x).multiply(h);
+    Tensor k1 = flow.at(x).multiply(h); // euler increment
     Tensor k2 = flow.at(x.add(k1.multiply(HALF))).multiply(h);
     Tensor k3 = flow.at(x.add(k2.multiply(HALF))).multiply(h);
     Tensor k4 = flow.at(x.add(k3)).multiply(h);
-    return WEIGHTS.dot(Tensors.of(k1, k2, k3, k4));
+    // WEIGHTS.dot(Tensors.of(k1, k2, k3, k4));
+    return k1.add(k4).multiply(SIXTH).add(k2.add(k3).multiply(THIRD));
   }
 
   @Override

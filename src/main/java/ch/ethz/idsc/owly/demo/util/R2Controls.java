@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import ch.ethz.idsc.owly.math.IdentityStateSpaceModel;
+import ch.ethz.idsc.owly.math.SingleIntegrator;
 import ch.ethz.idsc.owly.math.StateSpaceModel;
 import ch.ethz.idsc.owly.math.StateSpaceModels;
 import ch.ethz.idsc.owly.math.flow.Flow;
@@ -23,7 +23,7 @@ public enum R2Controls {
   ;
   // ---
   public static Collection<Flow> createRadial(final int num) {
-    StateSpaceModel stateSpaceModel = IdentityStateSpaceModel.INSTANCE;
+    StateSpaceModel stateSpaceModel = SingleIntegrator.INSTANCE;
     List<Flow> list = new ArrayList<>();
     for (Tensor angle : Range.of(0, num).multiply(DoubleScalar.of(2 * Math.PI / num))) {
       Tensor u = Chop.of(Tensors.of(Cos.of(angle), Sin.of(angle)));
