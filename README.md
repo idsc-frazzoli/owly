@@ -23,6 +23,10 @@ The following integrators are available:
 * Euler, Midpoint
 * Runge-Kutta 4th order, and 5th order 
 
+The `owly` repository implements visualizations in 2D as showcased below.
+
+The separate repository [owly3d](https://github.com/idsc-frazzoli/owly3d) implements animations and visualizations in 3D.
+
 
 ## Examples
 
@@ -82,4 +86,4 @@ R^2
 
 ## References
 
-The repository has over `40` unit tests.
+The repository has over `60` unit tests.
