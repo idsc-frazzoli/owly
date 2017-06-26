@@ -8,6 +8,8 @@ import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
 
 public class MotorTorques {
+  private final Scalar HALF = RealScalar.of(.5);
+  // ---
   final Scalar Tm1L; // 1
   final Scalar Tm1R; // 2
   final Scalar Tm2L; // 3
@@ -17,8 +19,7 @@ public class MotorTorques {
    * @param throttle absolute [Nm] */
   public MotorTorques(CarModel params, Scalar throttle) {
     // ---
-    // TODO check with edo
-    final Scalar reqTorque = throttle.multiply(RealScalar.of(.5));
+    final Scalar reqTorque = throttle.multiply(HALF);
     final Scalar rearCoeff = params.gammaM();
     final Scalar frontCoeff = RealScalar.ONE.subtract(rearCoeff);
     Tm1L = frontCoeff.multiply(reqTorque);
