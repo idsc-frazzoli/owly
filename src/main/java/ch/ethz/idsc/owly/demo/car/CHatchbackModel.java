@@ -13,6 +13,22 @@ import ch.ethz.idsc.tensor.sca.Clip;
 public class CHatchbackModel extends DefaultCarModel {
   private static final Pacejka3 PACEJKA1 = new Pacejka3(13.8509, 1.3670, 0.9622);
   private static final Pacejka3 PACEJKA2 = new Pacejka3(14.1663, 1.3652, 0.9744);
+  private static final Scalar RADIUS = RealScalar.of(0.325); // wheel radius [m]
+  private static final Scalar HEIGHT_COG = RealScalar.of(0.54); // height of COG [m]
+  private static final Scalar LW = RealScalar.of(0.8375); // lateral distance of wheels from COG [m]
+  private static final Scalar LF = RealScalar.of(1.015); // front axle distance from COG [m]
+  private static final Scalar LR = RealScalar.of(1.895); // rear axle distance from COG [m]
+  private final Tensor levers;
+
+  public CHatchbackModel() {
+    Scalar h = HEIGHT_COG.negate(); // FIXME this may need to consider wheel radius!?!?!
+    levers = Tensors.of( //
+        Tensors.of(LF, LW, h), // 1L
+        Tensors.of(LF, LW.negate(), h), // 1R
+        Tensors.of(LR.negate(), LW, h), // 2L
+        Tensors.of(LR.negate(), LW.negate(), h) // 2R
+    ).unmodifiable();
+  }
 
   // ---
   @Override
@@ -32,12 +48,12 @@ public class CHatchbackModel extends DefaultCarModel {
 
   @Override
   public Scalar radius() {
-    return RealScalar.of(0.325); // wheel radius [m]
+    return RADIUS;
   }
 
   @Override
   public Scalar heightCog() {
-    return RealScalar.of(0.54); // height of COG [m]
+    return HEIGHT_COG;
   }
 
   @Override
@@ -47,17 +63,22 @@ public class CHatchbackModel extends DefaultCarModel {
 
   @Override
   public Scalar lw() {
-    return RealScalar.of(0.8375); // lateral distance of wheels from COG [m]
+    return LW;
   }
 
   @Override
   public Scalar lF() {
-    return RealScalar.of(1.015); // front axle distance from COG [m]
+    return LF;
   }
 
   @Override
   public Scalar lR() {
-    return RealScalar.of(1.895); // rear axle distance from COG [m]
+    return LR;
+  }
+
+  @Override
+  public Tensor levers() {
+    return levers;
   }
 
   @Override

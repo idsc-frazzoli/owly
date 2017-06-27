@@ -2,6 +2,7 @@
 // code adapted by jph
 package ch.ethz.idsc.owly.demo.car;
 
+import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.TensorRuntimeException;
@@ -26,5 +27,16 @@ public class CarControl {
 
   public Tensor asVector() {
     return Tensors.of(delta, brake, handbrake, throttle);
+  }
+
+  /** @return angles represent rotation around z-axis */
+  public Tensor tire_angles() {
+    // TODO try with advanced angle correction formulas!
+    return Tensors.of( //
+        delta, // 1L
+        delta, // 1R
+        RealScalar.ZERO, // 2L
+        RealScalar.ZERO // 2R
+    );
   }
 }

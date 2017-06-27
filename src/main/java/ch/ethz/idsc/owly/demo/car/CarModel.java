@@ -25,19 +25,33 @@ public interface CarModel {
   Scalar mu();
 
   /** @return lateral distance of wheels from COG */
+  @Deprecated
   Scalar lw();
 
   /** @return front axle distance from COG [m] */
+  @Deprecated
   Scalar lF();
 
   /** @return rear axle distance from COG [m] */
+  @Deprecated
   Scalar lR();
 
+  /** @return vectors from COG to wheel centers in local coordinates (=invariant over time)
+   * for instance if the car has 4 wheels, then
+   * levers() = {
+   * {+1.1,+1,-h}, // 1L
+   * {+1.1,-1,-h}, // 1R
+   * {-1.2,+1,-h}, // 2L
+   * {-1.2,-1,-h} // 2R
+   * }
+   * and h = heightCog() */
+  Tensor levers();
+
   /** @return distance from COG to front end [m] */
-  Scalar frontL();
+  Scalar frontL(); // only used for visualization
 
   /** @return distance from COG to rear end [m] */
-  Scalar rearL();
+  Scalar rearL(); // only used for visualization
 
   /** @return width of the vehicle [m] */
   Scalar width();

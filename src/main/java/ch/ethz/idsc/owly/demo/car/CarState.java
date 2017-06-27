@@ -2,13 +2,15 @@
 // code adapted by jph
 package ch.ethz.idsc.owly.demo.car;
 
+import ch.ethz.idsc.owly.math.StateSpaceModel;
+import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.TensorRuntimeException;
 import ch.ethz.idsc.tensor.Tensors;
-import ch.ethz.idsc.tensor.red.Hypot;
-import ch.ethz.idsc.tensor.sca.Cos;
-import ch.ethz.idsc.tensor.sca.Sin;
+import ch.ethz.idsc.tensor.lie.Cross;
+import ch.ethz.idsc.tensor.lie.Rodriguez;
+import ch.ethz.idsc.tensor.mat.RotationMatrix;
 
 public class CarState {
   // TODO not final code design
@@ -41,6 +43,7 @@ public class CarState {
     w2R = x.Get(9);
   }
 
+  /** @return state encoded as vector for input to {@link StateSpaceModel} */
   public Tensor asVector() {
     return Tensors.of( //
         Ux, Uy, //
@@ -52,60 +55,32 @@ public class CarState {
     return Tensors.of(Ux, Uy);
   }
 
-  public Scalar groundSpeedNorm() {
-    return Hypot.bifunction.apply(Ux, Uy);
+  public Tensor u_3d() {
+    return Tensors.of(Ux, Uy, RealScalar.ZERO);
   }
 
-  // TODO establish both via matrix mult as vector
-  public Scalar getUx1L(Scalar delta) {
-    // (Ux - r*params.lw)*cos(delta) + (Uy + r*params.lF)*sin(delta)
-    Tensor tang = Tensors.of( //
-        Ux.subtract(r.multiply(params.lw())), //
-        Uy.add(r.multiply(params.lF())));
-    Tensor trig = Tensors.of(Cos.of(delta), Sin.of(delta));
-    return tang.dot(trig).Get();
+  public Tensor rate_3d() {
+    return Tensors.of(RealScalar.ZERO, RealScalar.ZERO, r);
   }
 
-  public Scalar getUy1L(Scalar delta) {
-    // -(Ux - r*params.lw)*sin(delta) + (Uy + r*params.lF)*cos(delta);
-    Tensor tang = Tensors.of( //
-        Ux.subtract(r.multiply(params.lw())).negate(), //
-        Uy.add(r.multiply(params.lF())));
-    Tensor trig = Tensors.of(Sin.of(delta), Cos.of(delta));
-    return tang.dot(trig).Get();
+  /** @param delta
+   * @param index of wheel
+   * @return */
+  public Tensor get_ui(Scalar delta, int index) { // as in doc
+    Tensor rotation = RotationMatrix.of(delta.negate());
+    Tensor tangent_3 = u_3d().add(Cross.of(rate_3d(), params.levers().get(index))); // 1L
+    return rotation.dot(tangent_3.extract(0, 2));
   }
 
-  public Scalar getUx1R(Scalar delta) {
-    // (Ux + r*params.lw)*cos(delta) + (Uy + r*params.lF)*sin(delta)
-    Tensor tang = Tensors.of( //
-        Ux.add(r.multiply(params.lw())), //
-        Uy.add(r.multiply(params.lF())));
-    Tensor trig = Tensors.of(Cos.of(delta), Sin.of(delta));
-    return tang.dot(trig).Get();
-  }
-
-  public Scalar getUy1R(Scalar delta) {
-    // -(Ux + r*params.lw)*sin(delta) + (Uy + r*params.lF)*cos(delta);
-    Tensor tang = Tensors.of( //
-        Ux.add(r.multiply(params.lw())).negate(), //
-        Uy.add(r.multiply(params.lF())));
-    Tensor trig = Tensors.of(Sin.of(delta), Cos.of(delta));
-    return tang.dot(trig).Get();
-  }
-
-  public Scalar getUx2L() {
-    return Ux.subtract(r.multiply(params.lw()));
-  }
-
-  public Scalar getUy2L() {
-    return Uy.subtract(r.multiply(params.lR()));
-  }
-
-  public Scalar getUx2R() {
-    return Ux.add(r.multiply(params.lw()));
-  }
-
-  public Scalar getUy2R() {
-    return Uy.subtract(r.multiply(params.lR()));
+  /** implementation below is for full 3d rotations, but not used since
+   * at the moment our car rotates in plane (only around z-axis)
+   * 
+   * @param delta
+   * @param index
+   * @return */
+  public Tensor get_ui_3(Scalar delta, int index) { // as in doc
+    Tensor rotation_3 = Rodriguez.of(Tensors.of(RealScalar.ZERO, RealScalar.ZERO, delta.negate()));
+    Tensor tangent_3 = u_3d().add(Cross.of(rate_3d(), params.levers().get(index))); // 1L
+    return rotation_3.dot(tangent_3).extract(0, 2);
   }
 }

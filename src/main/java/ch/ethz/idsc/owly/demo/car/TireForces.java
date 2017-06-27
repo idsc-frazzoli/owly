@@ -38,17 +38,38 @@ public class TireForces {
   final Scalar fy2R; // 8
 
   public TireForces(CarModel params, CarState cs, CarControl cc) {
-    Scalar Ux1L = cs.getUx1L(cc.delta);
-    Scalar Uy1L = cs.getUy1L(cc.delta);
+    final Tensor angles = cc.tire_angles().unmodifiable();
+    final Scalar Ux1L;
+    final Scalar Uy1L;
+    {
+      Tensor _u1L = cs.get_ui(angles.Get(0), 0);
+      Ux1L = _u1L.Get(0);
+      Uy1L = _u1L.Get(1);
+    }
     //
-    Scalar Ux1R = cs.getUx1R(cc.delta);
-    Scalar Uy1R = cs.getUy1R(cc.delta);
+    final Scalar Ux1R;
+    final Scalar Uy1R;
+    {
+      Tensor _u1R = cs.get_ui(angles.Get(1), 1); // cs.get_u1R(cc.delta);
+      Ux1R = _u1R.Get(0);
+      Uy1R = _u1R.Get(1);
+    }
     //
-    Scalar Ux2L = cs.getUx2L();
-    Scalar Uy2L = cs.getUy2L();
+    final Scalar Ux2L;
+    final Scalar Uy2L;
+    {
+      Tensor _u2L = cs.get_ui(angles.Get(2), 2);
+      Ux2L = _u2L.Get(0);
+      Uy2L = _u2L.Get(1);
+    }
     //
-    Scalar Ux2R = cs.getUx2R();
-    Scalar Uy2R = cs.getUy2R();
+    final Scalar Ux2R;
+    final Scalar Uy2R;
+    {
+      Tensor _u2R = cs.get_ui(angles.Get(3), 3);
+      Ux2R = _u2R.Get(0);
+      Uy2R = _u2R.Get(1);
+    }
     //
     Scalar Sx1L = Ux1L.subtract(params.radiusTimes(cs.w1L)) //
         .divide(params.radiusTimes(cs.w1L));
@@ -126,46 +147,45 @@ public class TireForces {
     Scalar K6 = Total.prod(Tensors.of( //
         params.mu(), mux2R, params.heightCog())).Get();
     //
-    Scalar A = params.lw().negate().subtract(C1).subtract(C2);
-    Scalar B = params.lw().subtract(C3).subtract(C4);
-    Scalar C = params.lw().negate().subtract(C5);
-    Scalar D = params.lw().subtract(C6);
-    Scalar E = K1.subtract(K2).subtract(params.lF());
-    Scalar F = K3.subtract(K4).subtract(params.lF());
-    Scalar G = K5.add(params.lR());
-    Scalar H = K6.add(params.lR());
+    Scalar A = params.lw().negate().subtract(C1).subtract(C2); // as in doc
+    Scalar B = params.lw().subtract(C3).subtract(C4); // as in doc
+    Scalar C = params.lw().negate().subtract(C5); // as in doc
+    Scalar D = params.lw().subtract(C6); // as in doc
+    Scalar E = K1.subtract(K2).subtract(params.lF()); // as in doc
+    Scalar F = K3.subtract(K4).subtract(params.lF()); // as in doc
+    Scalar G = K5.add(params.lR()); // as in doc
+    Scalar H = K6.add(params.lR()); // as in doc
     // ---
-    Scalar den;
+    final Scalar den;
     {
       Tensor vec1 = Tensors.of(A, B, A, C, B, D, C, D);
       Tensor vec2 = Tensors.of( //
           F, E.negate(), G.negate(), E, H, F.negate(), H.negate(), G);
-      den = vec1.dot(vec2).Get().multiply(RealScalar.of(2));
+      den = vec1.dot(vec2).Get().multiply(RealScalar.of(2)); // as in doc
     }
     //
-    final Scalar factor = params.gForce().divide(den);
-    // final Scalar Fz1L;
+    if (Scalars.lessThan(den.abs(), RealScalar.of(1e-5))) {
+      System.out.println("denominator den = " + den);
+    }
+    final Scalar factor = params.gForce().divide(den); // explain why no risk to divide by 0?
     {
       Tensor vec1 = Tensors.of(B, C, B, D, C, D);
       Tensor vec2 = Tensors.of( //
           G, F.negate(), H, F.negate(), H.negate(), G);
       Fz1L = vec1.dot(vec2).Get().multiply(factor);
     }
-    // final Scalar Fz1R;
     {
       Tensor vec1 = Tensors.of(A, C, A, D, C, D);
       Tensor vec2 = Tensors.of( //
           G, E.negate(), H, E.negate(), H, G.negate());
       Fz1R = vec1.dot(vec2).Get().multiply(factor).negate();
     }
-    // final Scalar Fz2L;
     {
       Tensor vec1 = Tensors.of(A, B, A, D, B, D);
       Tensor vec2 = Tensors.of( //
           F, E.negate(), H, E.negate(), H, F.negate());
       Fz2L = vec1.dot(vec2).Get().multiply(factor);
     }
-    // final Scalar Fz2R;
     {
       Tensor vec1 = Tensors.of(A, B, A, C, B, C);
       Tensor vec2 = Tensors.of( //
@@ -173,24 +193,16 @@ public class TireForces {
       Fz2R = vec1.dot(vec2).Get().multiply(factor);
     }
     //
-    // Scalar
     fx1L = params.mu().multiply(Fz1L).multiply(mux1L);
-    // Scalar
     fy1L = params.mu().multiply(Fz1L).multiply(muy1L);
     //
-    // Scalar
     fx1R = params.mu().multiply(Fz1R).multiply(mux1R);
-    // Scalar
     fy1R = params.mu().multiply(Fz1R).multiply(muy1R);
     //
-    // Scalar
     fx2L = params.mu().multiply(Fz2L).multiply(mux2L);
-    // Scalar
     fy2L = params.mu().multiply(Fz2L).multiply(muy2L);
     //
-    // Scalar
     fx2R = params.mu().multiply(Fz2R).multiply(mux2R);
-    // Scalar
     fy2R = params.mu().multiply(Fz2R).multiply(muy2R);
     //
     // TODO matrix mult
