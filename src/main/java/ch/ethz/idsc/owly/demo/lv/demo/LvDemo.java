@@ -17,6 +17,7 @@ import ch.ethz.idsc.owly.math.state.FixedStateIntegrator;
 import ch.ethz.idsc.owly.math.state.StateIntegrator;
 import ch.ethz.idsc.owly.math.state.TrajectoryRegionQuery;
 import ch.ethz.idsc.tensor.RationalScalar;
+import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
 
@@ -28,17 +29,17 @@ class LvDemo {
   public static void main(String[] args) {
     Tensor eta = Tensors.vector(10, 10);
     StateIntegrator stateIntegrator = FixedStateIntegrator.create( //
-        RungeKutta45Integrator.INSTANCE, RationalScalar.of(1, 20), 10);
-    Collection<Flow> controls = LvControls.set();
-    GoalInterface goalInterface = new LvGoalInterface();
+        RungeKutta45Integrator.INSTANCE, RationalScalar.of(1, 30), 5);
+    Collection<Flow> controls = LvControls.set(RealScalar.of(1), RealScalar.of(2));
+    GoalInterface goalInterface = new LvGoalInterface(Tensors.vector(2, 1), Tensors.vector(.25, .25));
     TrajectoryRegionQuery obstacleQuery = new EmptyTrajectoryRegionQuery();
     // ---
     TrajectoryPlanner trajectoryPlanner = new StandardTrajectoryPlanner( //
         eta, stateIntegrator, controls, obstacleQuery, goalInterface);
     // trajectoryPlanner.represent = psuWrap::represent;
     // ---
-    trajectoryPlanner.insertRoot(Tensors.vector(.2, .3));
-    Expand.maxSteps(trajectoryPlanner, 12);
+    trajectoryPlanner.insertRoot(Tensors.vector(2, .1));
+    Expand.maxSteps(trajectoryPlanner, 4000);
     Gui.glc(trajectoryPlanner);
   }
 }

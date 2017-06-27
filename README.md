@@ -58,6 +58,12 @@ R^2
 
 ---
 
+Lotka-Volterra: predator and prey, control by decay rate of predators
+
+![owly_1498564633644](https://user-images.githubusercontent.com/4012178/27586449-a90c1fc4-5b40-11e7-975b-9015f89ccfa3.png)
+
+---
+
 surface flow in river delta
 
 ![lava](https://cloud.githubusercontent.com/assets/4012178/26282194/6855b6d0-3e0c-11e7-92be-cb0ad99e3b8a.gif)
