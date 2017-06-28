@@ -33,18 +33,26 @@ public class CarStateSpaceModel implements StateSpaceModel {
     final Scalar rollFric = params.rollFric(); // TODO at the moment == 0!
     Deadzone deadzone = Deadzone.of(rollFric.negate(), rollFric);
     {
-      Scalar prel = tire.total1234().add(params.mass().multiply(cs.Uy).multiply(cs.r));
+      Scalar prel = tire.totalFX().add(params.mass().multiply(cs.Uy).multiply(cs.r));
       dux = deadzone.apply(prel).subtract(params.coulombFriction(cs.Ux)).divide(params.mass());
     }
     // ---
     final Scalar duy;
     {
-      Scalar prel = tire.total5678().subtract(params.mass().multiply(cs.Ux).multiply(cs.r));
+      Scalar prel = tire.totalFY().subtract(params.mass().multiply(cs.Ux).multiply(cs.r));
       duy = deadzone.apply(prel).subtract(RealScalar.ZERO.multiply(params.coulombFriction(cs.Uy))).divide(params.mass());
     }
     // ---
     Scalar dr;
     {
+      // TODO use sum_i (lever_i x force_i)
+      // Tensor tor = Array.zeros(3);
+      // for (Tensor lever : params.levers()) {
+      // // tire.force();
+      // // Tensor vec1 = Tensors.of(params.lF(), params.lR().negate(), params.lw());
+      // // Tensor vec2 = Tensors.of(tire.total56(), tire.total78(), tire.total24_13());
+      // // dr = vec1.dot(vec2).Get().multiply(params.Iz_invert());
+      // }
       Tensor vec1 = Tensors.of(params.lF(), params.lR().negate(), params.lw());
       Tensor vec2 = Tensors.of(tire.total56(), tire.total78(), tire.total24_13());
       dr = vec1.dot(vec2).Get().multiply(params.Iz_invert());

@@ -21,7 +21,7 @@ public class ReducedSlip implements SlipInterface {
    * @param pacejka3
    * @param U ground speed in coordinate system of tire
    * @param rtw == radius * rate of wheel */
-  public ReducedSlip(Pacejka3 pacejka3, Tensor U, Scalar rtw) {
+  public ReducedSlip(Pacejka3 pacejka3, Scalar factor, Tensor U, Scalar rtw) {
     final Scalar ux = U.Get(0).subtract(rtw); // effective speed of tire (longitude)
     final Scalar uy = U.Get(1);
     final Scalar value;
@@ -32,7 +32,7 @@ public class ReducedSlip implements SlipInterface {
       value = PI_HALF;
     else
       value = ArcTan.of(pacejka3.B.multiply(Hypot.bifunction.apply(ux, uy).divide(rtw)));
-    Scalar total = pacejka3.D.multiply(Sin.of(pacejka3.C.multiply(value)));
+    Scalar total = pacejka3.D.multiply(Sin.of(pacejka3.C.multiply(value))).multiply(factor);
     mu = StablePytagoras.normalize(ux, uy).multiply(total.negate());
   }
 

@@ -13,9 +13,9 @@ import junit.framework.TestCase;
 public class SlipInterfaceTest extends TestCase {
   public void testSimple() {
     CHatchbackModel c = new CHatchbackModel();
-    new ReducedSlip(c.pacejka1(), Tensors.vector(0, 0), RealScalar.ZERO).slip();
+    new ReducedSlip(c.pacejka1(), c.mu(), Tensors.vector(0, 0), RealScalar.ZERO).slip();
     try {
-      new TextbookSlip(c.pacejka1(), Tensors.vector(0, 0), RealScalar.ZERO).slip();
+      new TextbookSlip(c.pacejka1(), c.mu(), Tensors.vector(0, 0), RealScalar.ZERO).slip();
       assertTrue(false);
     } catch (Exception exception) {
       // ---
@@ -24,8 +24,8 @@ public class SlipInterfaceTest extends TestCase {
 
   public void testEquality1() {
     CHatchbackModel c = new CHatchbackModel();
-    SlipInterface si1 = new ReducedSlip(c.pacejka1(), Tensors.vector(1, 0), RealScalar.of(1));
-    SlipInterface si2 = new TextbookSlip(c.pacejka1(), Tensors.vector(1, 0), RealScalar.of(1));
+    SlipInterface si1 = new ReducedSlip(c.pacejka1(), c.mu(), Tensors.vector(1, 0), RealScalar.of(1));
+    SlipInterface si2 = new TextbookSlip(c.pacejka1(), c.mu(), Tensors.vector(1, 0), RealScalar.of(1));
     assertEquals(si1.slip(), si2.slip());
   }
 
@@ -34,8 +34,8 @@ public class SlipInterfaceTest extends TestCase {
     Distribution distribution = NormalDistribution.standard();
     for (int index = 0; index < 100; ++index) {
       Scalar rtw = RandomVariate.of(distribution);
-      SlipInterface si1 = new ReducedSlip(c.pacejka1(), Tensors.vector(1, 0), rtw);
-      SlipInterface si2 = new TextbookSlip(c.pacejka1(), Tensors.vector(1, 0), rtw);
+      SlipInterface si1 = new ReducedSlip(c.pacejka1(), c.mu(), Tensors.vector(1, 0), rtw);
+      SlipInterface si2 = new TextbookSlip(c.pacejka1(), c.mu(), Tensors.vector(1, 0), rtw);
       assertTrue(Chop.isZeros(si1.slip().subtract(si2.slip())));
     }
   }
@@ -47,8 +47,8 @@ public class SlipInterfaceTest extends TestCase {
       Scalar vx = RandomVariate.of(distribution);
       Scalar vy = RandomVariate.of(distribution);
       Scalar rtw = RandomVariate.of(distribution);
-      SlipInterface si1 = new ReducedSlip(c.pacejka1(), Tensors.of(vx, vy), rtw);
-      SlipInterface si2 = new TextbookSlip(c.pacejka1(), Tensors.of(vx, vy), rtw);
+      SlipInterface si1 = new ReducedSlip(c.pacejka1(), c.mu(), Tensors.of(vx, vy), rtw);
+      SlipInterface si2 = new TextbookSlip(c.pacejka1(), c.mu(), Tensors.of(vx, vy), rtw);
       assertTrue(Chop.isZeros(si1.slip().subtract(si2.slip())));
     }
   }

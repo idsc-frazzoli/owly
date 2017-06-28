@@ -24,7 +24,7 @@ class RobustSlip implements SlipInterface {
    * @param pacejka3
    * @param U ground speed in coordinate system of tire
    * @param rtw == radius * rate of wheel */
-  public RobustSlip(Pacejka3 pacejka3, Tensor U, Scalar rtw) {
+  public RobustSlip(Pacejka3 pacejka3, Scalar factor, Tensor U, Scalar rtw) {
     final Scalar vx = U.Get(0);
     final Scalar vy = U.Get(1);
     if (Scalars.isZero(rtw)) {
@@ -36,9 +36,9 @@ class RobustSlip implements SlipInterface {
       final Scalar rtn = rtw.subtract(vx);
       final Scalar hy = Hypot.bifunction.apply(rtn, vy);
       mux = pacejka3.D.multiply(Sin.of(pacejka3.C.multiply(ArcTan.of(pacejka3.B.multiply( //
-          hy.divide(rtw)))))).multiply(StablePytagoras.of(rtn, vy));
+          hy.divide(rtw)))))).multiply(StablePytagoras.of(rtn, vy)).multiply(factor);
       muy = pacejka3.D.multiply(Sin.of(pacejka3.C.multiply(ArcTan.of(pacejka3.B.multiply( //
-          hy.divide(rtw)))))).multiply(StablePytagoras.of(vy, rtn)).negate();
+          hy.divide(rtw)))))).multiply(StablePytagoras.of(vy, rtn)).negate().multiply(factor);
     }
   }
 
