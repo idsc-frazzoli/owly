@@ -49,7 +49,7 @@ public class CarStateSpaceModel implements StateSpaceModel {
       Tensor vec2 = Tensors.of(tire.total56(), tire.total78(), tire.total24_13());
       dr = vec1.dot(vec2).Get().multiply(params.Iz_invert());
     }
-    Tensor dp = RotationMatrix.of(cs.Ksi).dot(cs.groundSpeed());
+    Tensor dp = RotationMatrix.of(cs.Ksi).dot(cs.u_2d());
     // ---
     Scalar dw1L = torques.Tm1L.add(brakeTorques.Tb1L).subtract(params.radiusTimes(tire.fx1L)).multiply(params.Iw_invert());
     Scalar dw1R = torques.Tm1R.add(brakeTorques.Tb1R).subtract(params.radiusTimes(tire.fx1R)).multiply(params.Iw_invert());

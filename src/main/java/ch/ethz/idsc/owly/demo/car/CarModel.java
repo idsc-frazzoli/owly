@@ -2,7 +2,7 @@
 // code adapted by jph
 package ch.ethz.idsc.owly.demo.car;
 
-import ch.ethz.idsc.owly.math.Pacejka3;
+import ch.ethz.idsc.owly.math.car.Pacejka3;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
 

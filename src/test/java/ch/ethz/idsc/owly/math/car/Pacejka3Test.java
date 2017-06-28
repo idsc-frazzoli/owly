@@ -1,5 +1,5 @@
 // code by jph
-package ch.ethz.idsc.owly.math;
+package ch.ethz.idsc.owly.math.car;
 
 import ch.ethz.idsc.owly.demo.car.CHatchbackModel;
 import ch.ethz.idsc.owly.demo.car.CarModel;

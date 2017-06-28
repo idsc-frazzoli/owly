@@ -1,5 +1,5 @@
 // code by jph
-package ch.ethz.idsc.owly.math;
+package ch.ethz.idsc.owly.math.car;
 
 import ch.ethz.idsc.tensor.NumberQ;
 import ch.ethz.idsc.tensor.RealScalar;
@@ -15,9 +15,9 @@ import ch.ethz.idsc.tensor.sca.Sin;
  * 
  * https://en.wikipedia.org/wiki/Hans_B._Pacejka */
 public class Pacejka3 implements ScalarUnaryOperator {
-  private final Scalar B;
-  private final Scalar C;
-  private final Scalar D;
+  public final Scalar B;
+  public final Scalar C;
+  public final Scalar D;
 
   public Pacejka3(double B, double C, double D) {
     this.B = RealScalar.of(B);

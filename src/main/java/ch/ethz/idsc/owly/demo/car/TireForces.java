@@ -7,7 +7,6 @@ import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Scalars;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
-import ch.ethz.idsc.tensor.red.Hypot;
 import ch.ethz.idsc.tensor.red.Total;
 import ch.ethz.idsc.tensor.sca.Cos;
 import ch.ethz.idsc.tensor.sca.Sin;
@@ -38,85 +37,26 @@ public class TireForces {
   final Scalar fy2R; // 8
 
   public TireForces(CarModel params, CarState cs, CarControl cc) {
-    final Tensor angles = cc.tire_angles().unmodifiable();
-    final Scalar Ux1L;
-    final Scalar Uy1L;
-    {
-      Tensor _u1L = cs.get_ui(angles.Get(0), 0);
-      Ux1L = _u1L.Get(0);
-      Uy1L = _u1L.Get(1);
-    }
+    // TODO check with edo
+    final Tensor angles = cc.tire_angles().unmodifiable(); // params
     //
-    final Scalar Ux1R;
-    final Scalar Uy1R;
-    {
-      Tensor _u1R = cs.get_ui(angles.Get(1), 1); // cs.get_u1R(cc.delta);
-      Ux1R = _u1R.Get(0);
-      Uy1R = _u1R.Get(1);
-    }
-    //
-    final Scalar Ux2L;
-    final Scalar Uy2L;
-    {
-      Tensor _u2L = cs.get_ui(angles.Get(2), 2);
-      Ux2L = _u2L.Get(0);
-      Uy2L = _u2L.Get(1);
-    }
-    //
-    final Scalar Ux2R;
-    final Scalar Uy2R;
-    {
-      Tensor _u2R = cs.get_ui(angles.Get(3), 3);
-      Ux2R = _u2R.Get(0);
-      Uy2R = _u2R.Get(1);
-    }
-    //
-    Scalar Sx1L = Ux1L.subtract(params.radiusTimes(cs.w1L)) //
-        .divide(params.radiusTimes(cs.w1L));
-    Scalar Sy1L = RealScalar.ONE.add(Sx1L).multiply(Uy1L.divide(Ux1L));
-    //
-    Scalar Sx1R = Ux1R.subtract(params.radiusTimes(cs.w1R)) //
-        .divide(params.radiusTimes(cs.w1R));
-    Scalar Sy1R = RealScalar.ONE.add(Sx1R).multiply(Uy1R.divide(Ux1R));
-    //
-    Scalar Sx2L = Ux2L.subtract(params.radiusTimes(cs.w2L)) //
-        .divide(params.radiusTimes(cs.w2L));
-    Scalar Sy2L = RealScalar.ONE.add(Sx2L).multiply(Uy2L.divide(Ux2L));
-    //
-    Scalar Sx2R = Ux2R.subtract(params.radiusTimes(cs.w2R)) //
-        .divide(params.radiusTimes(cs.w2R));
-    Scalar Sy2R = RealScalar.ONE.add(Sx2R).multiply(Uy2R.divide(Ux2R));
-    //
-    // System.out.println(Sx1L + " " + Sy1L);
-    Scalar S1L = Hypot.bifunction.apply(Sx1L, Sy1L);
-    // System.out.println(Sx1R + " " + Sy1R);
-    Scalar S1R = Hypot.bifunction.apply(Sx1R, Sy1R);
-    // System.out.println(Sx2L + " " + Sy2L);
-    Scalar S2L = Hypot.bifunction.apply(Sx2L, Sy2L);
-    // System.out.println(Sx2R + " " + Sy2R);
-    Scalar S2R = Hypot.bifunction.apply(Sx2R, Sy2R);
-    //
-    // System.out.println("PACEJKA " + S1L);
-    Scalar mu1L = params.pacejka1().apply(S1L);
-    Scalar mu1R = params.pacejka1().apply(S1R);
-    Scalar mu2L = params.pacejka2().apply(S2L);
-    Scalar mu2R = params.pacejka2().apply(S2R);
+    final Tensor _u1L = cs.get_ui_2d(angles.Get(0), 0);
+    final Tensor _u1R = cs.get_ui_2d(angles.Get(1), 1); // cs.get_u1R(cc.delta);
+    final Tensor _u2L = cs.get_ui_2d(angles.Get(2), 2);
+    final Tensor _u2R = cs.get_ui_2d(angles.Get(3), 3);
+    final SlipInterface sh1L = new StableSlip(params.pacejka1(), _u1L, params.radiusTimes(cs.w1L));
+    final Scalar mux1L = sh1L.slip().Get(0);
+    final Scalar muy1L = sh1L.slip().Get(1);
+    final SlipInterface sh1R = new StableSlip(params.pacejka1(), _u1R, params.radiusTimes(cs.w1R));
+    final Scalar mux1R = sh1R.slip().Get(0);
+    final Scalar muy1R = sh1R.slip().Get(1);
+    final SlipInterface sh2L = new StableSlip(params.pacejka2(), _u2L, params.radiusTimes(cs.w2L));
+    final Scalar mux2L = sh2L.slip().Get(0);
+    final Scalar muy2L = sh2L.slip().Get(1);
+    final SlipInterface sh2R = new StableSlip(params.pacejka2(), _u2R, params.radiusTimes(cs.w2R));
+    final Scalar mux2R = sh2R.slip().Get(0);
+    final Scalar muy2R = sh2R.slip().Get(1);
     // ---
-    // TODO investigate numerics
-    Scalar eps = RealScalar.of(1e-8);
-    //
-    Scalar mux1L = mu1L.multiply(robustDiv(Sx1L, S1L, eps)).negate();
-    Scalar muy1L = mu1L.multiply(robustDiv(Sy1L, S1L, eps)).negate();
-    //
-    Scalar mux1R = mu1R.multiply(robustDiv(Sx1R, S1R, eps)).negate();
-    Scalar muy1R = mu1R.multiply(robustDiv(Sy1R, S1R, eps)).negate();
-    //
-    Scalar mux2L = mu2L.multiply(robustDiv(Sx2L, S2L, eps)).negate();
-    Scalar muy2L = mu2L.multiply(robustDiv(Sy2L, S2L, eps)).negate();
-    //
-    Scalar mux2R = mu2R.multiply(robustDiv(Sx2R, S2R, eps)).negate();
-    Scalar muy2R = mu2R.multiply(robustDiv(Sy2R, S2R, eps)).negate();
-    //
     Scalar C1 = Total.prod(Tensors.of( //
         params.mu(), mux1L, params.heightCog(), Sin.of(cc.delta))).Get().negate();
     Scalar C2 = Total.prod(Tensors.of( //
@@ -237,16 +177,6 @@ public class TireForces {
 
   public Scalar total78() {
     return Fy2L.add(Fy2R); // 7 + 8
-  }
-
-  public static Scalar robustDiv(Scalar num, Scalar den, Scalar eps) {
-    if (Scalars.isZero(den)) {
-      System.out.println("ROBUST DIV " + num);
-      if (Scalars.nonZero(num))
-        return num.divide(eps);
-      return RealScalar.ZERO;
-    }
-    return num.divide(den);
   }
 
   public Tensor asVectorFX() {

@@ -2,6 +2,7 @@
 // code adapted by jph
 package ch.ethz.idsc.owly.demo.car;
 
+import ch.ethz.idsc.owly.math.Cross2D;
 import ch.ethz.idsc.owly.math.StateSpaceModel;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
@@ -51,7 +52,7 @@ public class CarState {
         w1L, w1R, w2L, w2R);
   }
 
-  public Tensor groundSpeed() {
+  public Tensor u_2d() {
     return Tensors.of(Ux, Uy);
   }
 
@@ -63,13 +64,12 @@ public class CarState {
     return Tensors.of(RealScalar.ZERO, RealScalar.ZERO, r);
   }
 
-  /** @param delta
+  /** @param delta angle of wheel
    * @param index of wheel
    * @return */
-  public Tensor get_ui(Scalar delta, int index) { // as in doc
-    Tensor rotation = RotationMatrix.of(delta.negate());
-    Tensor tangent_3 = u_3d().add(Cross.of(rate_3d(), params.levers().get(index))); // 1L
-    return rotation.dot(tangent_3.extract(0, 2));
+  public Tensor get_ui_2d(Scalar delta, int index) { // as in doc
+    Tensor tangent_2 = u_2d().add(Cross2D.of(params.levers().get(index).extract(0, 2).multiply(r)));
+    return RotationMatrix.of(delta.negate()).dot(tangent_2);
   }
 
   /** implementation below is for full 3d rotations, but not used since
@@ -78,9 +78,9 @@ public class CarState {
    * @param delta
    * @param index
    * @return */
-  public Tensor get_ui_3(Scalar delta, int index) { // as in doc
+  /* package */ Tensor get_ui_3(Scalar delta, int index) { // as in doc
     Tensor rotation_3 = Rodriguez.of(Tensors.of(RealScalar.ZERO, RealScalar.ZERO, delta.negate()));
-    Tensor tangent_3 = u_3d().add(Cross.of(rate_3d(), params.levers().get(index))); // 1L
+    Tensor tangent_3 = u_3d().add(Cross.of(rate_3d(), params.levers().get(index)));
     return rotation_3.dot(tangent_3).extract(0, 2);
   }
 }

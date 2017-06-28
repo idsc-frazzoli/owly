@@ -2,7 +2,7 @@
 // code adapted by jph
 package ch.ethz.idsc.owly.demo.car;
 
-import ch.ethz.idsc.owly.math.Pacejka3;
+import ch.ethz.idsc.owly.math.car.Pacejka3;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
@@ -122,7 +122,8 @@ public class CHatchbackModel extends DefaultCarModel {
   }
 
   // maximal steering angle [deg]
-  private static final Scalar maxDelta = RealScalar.of(50 * Math.PI / 180);
+  // TODO check what is appropriate
+  private static final Scalar maxDelta = RealScalar.of(45 * Math.PI / 180);
   // maximal motor torque [Nm], with gears included
   private static final Scalar maxThrottle = RealScalar.of(1000.);
   private static final Scalar maxPress = RealScalar.of(13); // maximal master cylinder presure [MPa]
