@@ -62,42 +62,26 @@ public class TireForces {
     final Scalar mux2R = sr2R.slip().Get(0);
     final Scalar muy2R = sr2R.slip().Get(1);
     // ---
+    final Scalar factor2 = params.mu().multiply(params.heightCog());
     // related to 1L
-    Scalar C1 = Total.prod(Tensors.of( //
-        params.mu(), mux1L, params.heightCog(), Sin.of(angles.Get(0)))).Get().negate();
-    Scalar C2 = Total.prod(Tensors.of( //
-        params.mu(), muy1L, params.heightCog(), Cos.of(angles.Get(0)))).Get().negate();
-    //
+    Scalar C1 = Total.prod(Tensors.of(factor2, mux1L, Sin.of(angles.Get(0)))).Get().negate();
+    Scalar C2 = Total.prod(Tensors.of(factor2, muy1L, Cos.of(angles.Get(0)))).Get().negate();
+    Scalar K1 = Total.prod(Tensors.of(factor2, mux1L, Cos.of(angles.Get(0)))).Get();
+    Scalar K2 = Total.prod(Tensors.of(factor2, muy1L, Sin.of(angles.Get(0)))).Get();
     // related to 1R
-    Scalar C3 = Total.prod(Tensors.of( //
-        params.mu(), mux1R, params.heightCog(), Sin.of(angles.Get(1)))).Get().negate();
-    Scalar C4 = Total.prod(Tensors.of( //
-        params.mu(), muy1R, params.heightCog(), Cos.of(angles.Get(1)))).Get().negate();
+    Scalar C3 = Total.prod(Tensors.of(factor2, mux1R, Sin.of(angles.Get(1)))).Get().negate();
+    Scalar C4 = Total.prod(Tensors.of(factor2, muy1R, Cos.of(angles.Get(1)))).Get().negate();
+    Scalar K3 = Total.prod(Tensors.of(factor2, mux1R, Cos.of(angles.Get(1)))).Get();
+    Scalar K4 = Total.prod(Tensors.of(factor2, muy1R, Sin.of(angles.Get(1)))).Get();
+    // related to 2L
+    Scalar C5 = factor2.multiply(muy2L).negate();
+    Scalar K5 = factor2.multiply(mux2L);
+    // related to 2R
+    Scalar C6 = factor2.multiply(muy2R).negate();
+    Scalar K6 = factor2.multiply(mux2R);
     //
-    Scalar C5 = Total.prod(Tensors.of( //
-        params.mu(), muy2L, params.heightCog())).Get().negate();
-    Scalar C6 = Total.prod(Tensors.of( //
-        params.mu(), muy2R, params.heightCog())).Get().negate();
-    //
-    // related to 1L
-    Scalar K1 = Total.prod(Tensors.of( //
-        params.mu(), mux1L, params.heightCog(), Cos.of(angles.Get(0)))).Get();
-    Scalar K2 = Total.prod(Tensors.of( //
-        params.mu(), muy1L, params.heightCog(), Sin.of(angles.Get(0)))).Get();
-    //
-    // related to 1R
-    Scalar K3 = Total.prod(Tensors.of( //
-        params.mu(), mux1R, params.heightCog(), Cos.of(angles.Get(1)))).Get();
-    Scalar K4 = Total.prod(Tensors.of( //
-        params.mu(), muy1R, params.heightCog(), Sin.of(angles.Get(1)))).Get();
-    //
-    Scalar K5 = Total.prod(Tensors.of( //
-        params.mu(), mux2L, params.heightCog())).Get();
-    Scalar K6 = Total.prod(Tensors.of( //
-        params.mu(), mux2R, params.heightCog())).Get();
-    //
-    Scalar A = params.lw().negate().subtract(C1).subtract(C2); // as in doc
-    Scalar B = params.lw().subtract(C3).subtract(C4); // as in doc
+    Scalar A = params.lw().negate().subtract(C1.add(C2)); // as in doc
+    Scalar B = params.lw().subtract(C3.add(C4)); // as in doc
     Scalar C = params.lw().negate().subtract(C5); // as in doc
     Scalar D = params.lw().subtract(C6); // as in doc
     Scalar E = K1.subtract(K2).subtract(params.lF()); // as in doc
