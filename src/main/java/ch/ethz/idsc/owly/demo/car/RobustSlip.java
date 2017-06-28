@@ -12,7 +12,8 @@ import ch.ethz.idsc.tensor.sca.ArcTan;
 import ch.ethz.idsc.tensor.sca.Sin;
 
 /** robust computation of slip */
-public class RobustSlip implements SlipInterface {
+@Deprecated
+class RobustSlip implements SlipInterface {
   private static final Scalar PI_HALF = RealScalar.of(Math.PI / 2);
   // ---
   private final Scalar mux;
