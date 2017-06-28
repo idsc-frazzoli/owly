@@ -7,13 +7,14 @@ import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Scalars;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
+import ch.ethz.idsc.tensor.mat.RotationMatrix;
 import ch.ethz.idsc.tensor.red.Total;
 import ch.ethz.idsc.tensor.sca.Cos;
 import ch.ethz.idsc.tensor.sca.Sin;
 
 /** implementation has been verified through several tests */
 public class TireForces {
-  //
+  // forces in car frame
   final Scalar Fx1L; // 1
   final Scalar Fx1R; // 2
   final Scalar Fx2L; // 3
@@ -27,6 +28,7 @@ public class TireForces {
   final Scalar Fz2L; // 11
   final Scalar Fz2R; // 12
   //
+  // forces in wheel frame
   final Scalar fx1L; // 1
   final Scalar fx1R; // 2
   final Scalar fx2L; // 3
@@ -41,46 +43,53 @@ public class TireForces {
     final Tensor angles = cc.tire_angles().unmodifiable(); // params
     //
     final Tensor _u1L = cs.get_ui_2d(angles.Get(0), 0);
-    final Tensor _u1R = cs.get_ui_2d(angles.Get(1), 1); // cs.get_u1R(cc.delta);
-    final Tensor _u2L = cs.get_ui_2d(angles.Get(2), 2);
-    final Tensor _u2R = cs.get_ui_2d(angles.Get(3), 3);
-    final SlipInterface sh1L = new StableSlip(params.pacejka1(), _u1L, params.radiusTimes(cs.w1L));
+    final SlipInterface sh1L = new RobustSlip(params.pacejka1(), _u1L, params.radiusTimes(cs.w1L));
     final Scalar mux1L = sh1L.slip().Get(0);
     final Scalar muy1L = sh1L.slip().Get(1);
-    final SlipInterface sh1R = new StableSlip(params.pacejka1(), _u1R, params.radiusTimes(cs.w1R));
+    //
+    final Tensor _u1R = cs.get_ui_2d(angles.Get(1), 1);
+    final SlipInterface sh1R = new RobustSlip(params.pacejka1(), _u1R, params.radiusTimes(cs.w1R));
     final Scalar mux1R = sh1R.slip().Get(0);
     final Scalar muy1R = sh1R.slip().Get(1);
-    final SlipInterface sh2L = new StableSlip(params.pacejka2(), _u2L, params.radiusTimes(cs.w2L));
+    //
+    final Tensor _u2L = cs.get_ui_2d(angles.Get(2), 2);
+    final SlipInterface sh2L = new RobustSlip(params.pacejka2(), _u2L, params.radiusTimes(cs.w2L));
     final Scalar mux2L = sh2L.slip().Get(0);
     final Scalar muy2L = sh2L.slip().Get(1);
-    final SlipInterface sh2R = new StableSlip(params.pacejka2(), _u2R, params.radiusTimes(cs.w2R));
+    //
+    final Tensor _u2R = cs.get_ui_2d(angles.Get(3), 3);
+    final SlipInterface sh2R = new RobustSlip(params.pacejka2(), _u2R, params.radiusTimes(cs.w2R));
     final Scalar mux2R = sh2R.slip().Get(0);
     final Scalar muy2R = sh2R.slip().Get(1);
     // ---
+    // related to 1L
     Scalar C1 = Total.prod(Tensors.of( //
-        params.mu(), mux1L, params.heightCog(), Sin.of(cc.delta))).Get().negate();
+        params.mu(), mux1L, params.heightCog(), Sin.of(angles.Get(0)))).Get().negate();
     Scalar C2 = Total.prod(Tensors.of( //
-        params.mu(), muy1L, params.heightCog(), Cos.of(cc.delta))).Get().negate();
+        params.mu(), muy1L, params.heightCog(), Cos.of(angles.Get(0)))).Get().negate();
     //
+    // related to 1R
     Scalar C3 = Total.prod(Tensors.of( //
-        params.mu(), mux1R, params.heightCog(), Sin.of(cc.delta))).Get().negate();
+        params.mu(), mux1R, params.heightCog(), Sin.of(angles.Get(1)))).Get().negate();
     Scalar C4 = Total.prod(Tensors.of( //
-        params.mu(), muy1R, params.heightCog(), Cos.of(cc.delta))).Get().negate();
+        params.mu(), muy1R, params.heightCog(), Cos.of(angles.Get(1)))).Get().negate();
     //
     Scalar C5 = Total.prod(Tensors.of( //
         params.mu(), muy2L, params.heightCog())).Get().negate();
     Scalar C6 = Total.prod(Tensors.of( //
         params.mu(), muy2R, params.heightCog())).Get().negate();
     //
+    // related to 1L
     Scalar K1 = Total.prod(Tensors.of( //
-        params.mu(), mux1L, params.heightCog(), Cos.of(cc.delta))).Get();
+        params.mu(), mux1L, params.heightCog(), Cos.of(angles.Get(0)))).Get();
     Scalar K2 = Total.prod(Tensors.of( //
-        params.mu(), muy1L, params.heightCog(), Sin.of(cc.delta))).Get();
+        params.mu(), muy1L, params.heightCog(), Sin.of(angles.Get(0)))).Get();
     //
+    // related to 1R
     Scalar K3 = Total.prod(Tensors.of( //
-        params.mu(), mux1R, params.heightCog(), Cos.of(cc.delta))).Get();
+        params.mu(), mux1R, params.heightCog(), Cos.of(angles.Get(1)))).Get();
     Scalar K4 = Total.prod(Tensors.of( //
-        params.mu(), muy1R, params.heightCog(), Sin.of(cc.delta))).Get();
+        params.mu(), muy1R, params.heightCog(), Sin.of(angles.Get(1)))).Get();
     //
     Scalar K5 = Total.prod(Tensors.of( //
         params.mu(), mux2L, params.heightCog())).Get();
@@ -145,12 +154,13 @@ public class TireForces {
     fx2R = params.mu().multiply(Fz2R).multiply(mux2R);
     fy2R = params.mu().multiply(Fz2R).multiply(muy2R);
     //
-    // TODO matrix mult
-    Fx1L = fx1L.multiply(Cos.of(cc.delta)).subtract(fy1L.multiply(Sin.of(cc.delta)));
-    Fy1L = fx1L.multiply(Sin.of(cc.delta)).add(fy1L.multiply(Cos.of(cc.delta)));
+    final Tensor _F1L = RotationMatrix.of(angles.Get(0)).dot(Tensors.of(fx1L, fy1L)); // wheel to body
+    Fx1L = _F1L.Get(0);
+    Fy1L = _F1L.Get(1);
     //
-    Fx1R = fx1R.multiply(Cos.of(cc.delta)).subtract(fy1R.multiply(Sin.of(cc.delta)));
-    Fy1R = fx1R.multiply(Sin.of(cc.delta)).add(fy1R.multiply(Cos.of(cc.delta)));
+    final Tensor _F1R = RotationMatrix.of(angles.Get(1)).dot(Tensors.of(fx1R, fy1R)); // wheel to body
+    Fx1R = _F1R.Get(0);
+    Fy1R = _F1R.Get(1);
     //
     Fx2L = fx2L;
     Fy2L = fy2L;

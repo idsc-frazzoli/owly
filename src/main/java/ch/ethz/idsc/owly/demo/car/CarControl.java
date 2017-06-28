@@ -12,7 +12,7 @@ import ch.ethz.idsc.tensor.red.Mean;
 
 /** controls in absolute physical magnitude */
 public class CarControl {
-  public final Scalar delta; // [rad]
+  private final Scalar delta; // [rad], access via functions ...angles()
   public final Scalar brake; // non-negative
   public final Scalar handbrake; // non-negative
   public final Scalar throttle; // non-negative

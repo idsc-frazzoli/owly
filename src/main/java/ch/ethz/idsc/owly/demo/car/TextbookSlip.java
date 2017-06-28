@@ -9,17 +9,17 @@ import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
 import ch.ethz.idsc.tensor.red.Hypot;
 
-/** slip as introduced in textbook
+/** slip as introduced in textbook,
+ * straight forward implementation suffers from numerical badness.
  * 
- * implementation suffers from numerical badness */
+ * Important: use {@link RobustSlip} instead */
 class TextbookSlip implements SlipInterface {
   private static final Scalar eps = RealScalar.of(1e-8);
   // ---
   private final Scalar mux;
   private final Scalar muy;
 
-  // TODO API not finalized
-  /** if U == (rtw, 0) that means no slip TODO confirm
+  /** if U == (rtw, 0) that means no slip
    * 
    * @param pacejka3
    * @param U ground speed in coordinate system of tire
@@ -27,12 +27,12 @@ class TextbookSlip implements SlipInterface {
   public TextbookSlip(Pacejka3 pacejka3, Tensor U, Scalar rtw) {
     final Scalar vx = U.Get(0);
     final Scalar vy = U.Get(1);
-    final Scalar sx = vx.subtract(rtw).divide(rtw); // FIXME div by 0
+    final Scalar sx = vx.subtract(rtw).divide(rtw); // division by 0 !
     final Scalar sy = RealScalar.ONE.add(sx).multiply(vy.divide(vx));
     final Scalar s = Hypot.bifunction.apply(sx, sy);
     final Scalar mu = pacejka3.apply(s);
-    mux = mu.multiply(robustDiv(sx, s, eps)).negate();
-    muy = mu.multiply(robustDiv(sy, s, eps)).negate();
+    mux = mu.multiply(robustDiv(sx, s, eps)).negate(); // hack !
+    muy = mu.multiply(robustDiv(sy, s, eps)).negate(); // hack !
   }
 
   @Override

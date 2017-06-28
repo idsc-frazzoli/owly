@@ -11,22 +11,19 @@ import ch.ethz.idsc.tensor.red.Hypot;
 import ch.ethz.idsc.tensor.sca.ArcTan;
 import ch.ethz.idsc.tensor.sca.Sin;
 
-/** slip as introduced in textbook
- * 
- * implementation suffers from numerical badness */
-public class StableSlip implements SlipInterface {
+/** robust computation of slip */
+public class RobustSlip implements SlipInterface {
   private static final Scalar PI_HALF = RealScalar.of(Math.PI / 2);
   // ---
   private final Scalar mux;
   private final Scalar muy;
 
-  // TODO API not finalized
-  /** if U == (rtw, 0) that means no slip TODO confirm
+  /** if U == (rtw, 0) that means no slip
    * 
    * @param pacejka3
    * @param U ground speed in coordinate system of tire
    * @param rtw == radius * rate of wheel */
-  public StableSlip(Pacejka3 pacejka3, Tensor U, Scalar rtw) {
+  public RobustSlip(Pacejka3 pacejka3, Tensor U, Scalar rtw) {
     final Scalar vx = U.Get(0);
     final Scalar vy = U.Get(1);
     if (Scalars.isZero(rtw)) {
