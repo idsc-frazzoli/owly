@@ -8,9 +8,6 @@ import ch.ethz.idsc.tensor.Scalars;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
 import ch.ethz.idsc.tensor.mat.RotationMatrix;
-import ch.ethz.idsc.tensor.red.Total;
-import ch.ethz.idsc.tensor.sca.Cos;
-import ch.ethz.idsc.tensor.sca.Sin;
 
 /** implementation has been verified through several tests */
 public class TireForces {
@@ -23,71 +20,60 @@ public class TireForces {
   final Scalar Fy1R; // 6
   final Scalar Fy2L; // 7
   final Scalar Fy2R; // 8
-  final Scalar Fz1L; // 9
-  final Scalar Fz1R; // 10
-  final Scalar Fz2L; // 11
-  final Scalar Fz2R; // 12
+  private final Scalar Fz1L; // 9
+  private final Scalar Fz1R; // 10
+  private final Scalar Fz2L; // 11
+  private final Scalar Fz2R; // 12
   //
   // forces in wheel frame
   final Scalar fx1L; // 1
   final Scalar fx1R; // 2
   final Scalar fx2L; // 3
   final Scalar fx2R; // 4
-  final Scalar fy1L; // 5
-  final Scalar fy1R; // 6
-  final Scalar fy2L; // 7
-  final Scalar fy2R; // 8
+  private final Scalar fy1L; // 5
+  private final Scalar fy1R; // 6
+  private final Scalar fy2L; // 7
+  private final Scalar fy2R; // 8
 
   public TireForces(CarModel params, CarState cs, CarControl cc) {
     // TODO check with edo
     final Tensor angles = cc.tire_angles().unmodifiable(); // params
     //
     final Tensor _u1L = cs.get_ui_2d(angles.Get(0), 0);
-    final SlipInterface sr1L = new ReducedSlip(params.pacejka1(), _u1L, params.radiusTimes(cs.w1L));
-    final Scalar mux1L = sr1L.slip().Get(0);
-    final Scalar muy1L = sr1L.slip().Get(1);
+    final SlipInterface mu1L = new ReducedSlip(params.pacejka1(), _u1L, params.radiusTimes(cs.w1L));
+    final Scalar mux1L = mu1L.slip().Get(0);
+    final Scalar muy1L = mu1L.slip().Get(1);
     //
     final Tensor _u1R = cs.get_ui_2d(angles.Get(1), 1);
-    final SlipInterface sr1R = new ReducedSlip(params.pacejka1(), _u1R, params.radiusTimes(cs.w1R));
-    final Scalar mux1R = sr1R.slip().Get(0);
-    final Scalar muy1R = sr1R.slip().Get(1);
+    final SlipInterface mu1R = new ReducedSlip(params.pacejka1(), _u1R, params.radiusTimes(cs.w1R));
+    final Scalar mux1R = mu1R.slip().Get(0);
+    final Scalar muy1R = mu1R.slip().Get(1);
     //
     final Tensor _u2L = cs.get_ui_2d(angles.Get(2), 2);
-    final SlipInterface sr2L = new ReducedSlip(params.pacejka2(), _u2L, params.radiusTimes(cs.w2L));
-    final Scalar mux2L = sr2L.slip().Get(0);
-    final Scalar muy2L = sr2L.slip().Get(1);
+    final SlipInterface mu2L = new ReducedSlip(params.pacejka2(), _u2L, params.radiusTimes(cs.w2L));
+    final Scalar mux2L = mu2L.slip().Get(0);
+    final Scalar muy2L = mu2L.slip().Get(1);
     //
     final Tensor _u2R = cs.get_ui_2d(angles.Get(3), 3);
-    final SlipInterface sr2R = new ReducedSlip(params.pacejka2(), _u2R, params.radiusTimes(cs.w2R));
-    final Scalar mux2R = sr2R.slip().Get(0);
-    final Scalar muy2R = sr2R.slip().Get(1);
+    final SlipInterface mu2R = new ReducedSlip(params.pacejka2(), _u2R, params.radiusTimes(cs.w2R));
+    final Scalar mux2R = mu2R.slip().Get(0);
+    final Scalar muy2R = mu2R.slip().Get(1);
     // ---
     final Scalar factor2 = params.mu().multiply(params.heightCog());
-    // related to 1L
-    Scalar C1 = Total.prod(Tensors.of(factor2, mux1L, Sin.of(angles.Get(0)))).Get().negate();
-    Scalar C2 = Total.prod(Tensors.of(factor2, muy1L, Cos.of(angles.Get(0)))).Get().negate();
-    Scalar K1 = Total.prod(Tensors.of(factor2, mux1L, Cos.of(angles.Get(0)))).Get();
-    Scalar K2 = Total.prod(Tensors.of(factor2, muy1L, Sin.of(angles.Get(0)))).Get();
-    // related to 1R
-    Scalar C3 = Total.prod(Tensors.of(factor2, mux1R, Sin.of(angles.Get(1)))).Get().negate();
-    Scalar C4 = Total.prod(Tensors.of(factor2, muy1R, Cos.of(angles.Get(1)))).Get().negate();
-    Scalar K3 = Total.prod(Tensors.of(factor2, mux1R, Cos.of(angles.Get(1)))).Get();
-    Scalar K4 = Total.prod(Tensors.of(factor2, muy1R, Sin.of(angles.Get(1)))).Get();
-    // related to 2L
-    Scalar C5 = factor2.multiply(muy2L).negate();
-    Scalar K5 = factor2.multiply(mux2L);
-    // related to 2R
-    Scalar C6 = factor2.multiply(muy2R).negate();
-    Scalar K6 = factor2.multiply(mux2R);
-    //
-    Scalar A = params.lw().negate().subtract(C1.add(C2)); // as in doc
-    Scalar B = params.lw().subtract(C3.add(C4)); // as in doc
-    Scalar C = params.lw().negate().subtract(C5); // as in doc
-    Scalar D = params.lw().subtract(C6); // as in doc
-    Scalar E = K1.subtract(K2).subtract(params.lF()); // as in doc
-    Scalar F = K3.subtract(K4).subtract(params.lF()); // as in doc
-    Scalar G = K5.add(params.lR()); // as in doc
-    Scalar H = K6.add(params.lR()); // as in doc
+    final Tensor ck1L = RotationMatrix.of(angles.Get(0)).dot(mu1L.slip()).multiply(factor2);
+    final Tensor ck1R = RotationMatrix.of(angles.Get(1)).dot(mu1R.slip()).multiply(factor2);
+    final Tensor ck2L = RotationMatrix.of(angles.Get(2)).dot(mu2L.slip()).multiply(factor2);
+    final Tensor ck2R = RotationMatrix.of(angles.Get(3)).dot(mu2R.slip()).multiply(factor2);
+    // ---
+    Scalar E = ck1L.Get(0).add(params.lF().negate()); // as in doc
+    Scalar F = ck1R.Get(0).add(params.lF().negate()); // as in doc
+    Scalar G = ck2L.Get(0).add(params.lR()); // as in doc
+    Scalar H = ck2R.Get(0).add(params.lR()); // as in doc
+    // ---
+    Scalar A = ck1L.Get(1).add(params.lw().negate()); // as in doc
+    Scalar B = ck1R.Get(1).add(params.lw()); // as in doc
+    Scalar C = ck2L.Get(1).add(params.lw().negate()); // as in doc
+    Scalar D = ck2R.Get(1).add(params.lw()); // as in doc
     // ---
     final Scalar den;
     {
@@ -126,17 +112,17 @@ public class TireForces {
       Fz2R = vec1.dot(vec2).Get().multiply(factor);
     }
     //
-    fx1L = params.mu().multiply(Fz1L).multiply(mux1L);
-    fy1L = params.mu().multiply(Fz1L).multiply(muy1L);
+    fx1L = Fz1L.multiply(mux1L.multiply(params.mu()));
+    fy1L = Fz1L.multiply(muy1L.multiply(params.mu()));
     //
-    fx1R = params.mu().multiply(Fz1R).multiply(mux1R);
-    fy1R = params.mu().multiply(Fz1R).multiply(muy1R);
+    fx1R = Fz1R.multiply(mux1R.multiply(params.mu()));
+    fy1R = Fz1R.multiply(muy1R.multiply(params.mu()));
     //
-    fx2L = params.mu().multiply(Fz2L).multiply(mux2L);
-    fy2L = params.mu().multiply(Fz2L).multiply(muy2L);
+    fx2L = Fz2L.multiply(mux2L.multiply(params.mu()));
+    fy2L = Fz2L.multiply(muy2L.multiply(params.mu()));
     //
-    fx2R = params.mu().multiply(Fz2R).multiply(mux2R);
-    fy2R = params.mu().multiply(Fz2R).multiply(muy2R);
+    fx2R = Fz2R.multiply(mux2R.multiply(params.mu()));
+    fy2R = Fz2R.multiply(muy2R.multiply(params.mu()));
     //
     final Tensor _F1L = RotationMatrix.of(angles.Get(0)).dot(Tensors.of(fx1L, fy1L)); // wheel to body
     Fx1L = _F1L.Get(0);
@@ -173,23 +159,24 @@ public class TireForces {
     return Fy2L.add(Fy2R); // 7 + 8
   }
 
-  public Tensor asVectorFX() {
+  /***************************************************/
+  Tensor asVectorFX() { // only used in test
     return Tensors.of(Fx1L, Fx1R, Fx2L, Fx2R);
   }
 
-  public Tensor asVectorFY() {
+  Tensor asVectorFY() { // only used in test
     return Tensors.of(Fy1L, Fy1R, Fy2L, Fy2R);
   }
 
-  public Tensor asVectorFZ() {
+  Tensor asVectorFZ() { // only used in test
     return Tensors.of(Fz1L, Fz1R, Fz2L, Fz2R);
   }
 
-  public Tensor asVector_fX() {
+  Tensor asVector_fX() { // only used in test
     return Tensors.of(fx1L, fx1R, fx2L, fx2R);
   }
 
-  public Tensor asVector_fY() {
+  Tensor asVector_fY() { // only used in test
     return Tensors.of(fy1L, fy1R, fy2L, fy2R);
   }
 }
