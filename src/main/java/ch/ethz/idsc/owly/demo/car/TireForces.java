@@ -6,6 +6,7 @@ import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Scalars;
 import ch.ethz.idsc.tensor.Tensor;
+import ch.ethz.idsc.tensor.TensorRuntimeException;
 import ch.ethz.idsc.tensor.Tensors;
 import ch.ethz.idsc.tensor.mat.RotationMatrix;
 import ch.ethz.idsc.tensor.red.Total;
@@ -44,21 +45,33 @@ public class TireForces {
     //
     final Tensor _u1L = cs.get_ui_2d(angles.Get(0), 0);
     final SlipInterface sh1L = new RobustSlip(params.pacejka1(), _u1L, params.radiusTimes(cs.w1L));
+    final SlipInterface sr1L = new ReducedSlip(params.pacejka1(), _u1L, params.radiusTimes(cs.w1L));
+    if (!sh1L.slip().equals(sr1L.slip()))
+      throw TensorRuntimeException.of(sh1L.slip(), sr1L.slip());
     final Scalar mux1L = sh1L.slip().Get(0);
     final Scalar muy1L = sh1L.slip().Get(1);
     //
     final Tensor _u1R = cs.get_ui_2d(angles.Get(1), 1);
     final SlipInterface sh1R = new RobustSlip(params.pacejka1(), _u1R, params.radiusTimes(cs.w1R));
+    final SlipInterface sr1R = new ReducedSlip(params.pacejka1(), _u1R, params.radiusTimes(cs.w1R));
+    if (!sh1R.slip().equals(sr1R.slip()))
+      throw TensorRuntimeException.of(sh1R.slip(), sr1R.slip());
     final Scalar mux1R = sh1R.slip().Get(0);
     final Scalar muy1R = sh1R.slip().Get(1);
     //
     final Tensor _u2L = cs.get_ui_2d(angles.Get(2), 2);
     final SlipInterface sh2L = new RobustSlip(params.pacejka2(), _u2L, params.radiusTimes(cs.w2L));
+    final SlipInterface sr2L = new ReducedSlip(params.pacejka2(), _u2L, params.radiusTimes(cs.w2L));
+    if (!sh2L.slip().equals(sr2L.slip()))
+      throw TensorRuntimeException.of(sh2L.slip(), sr2L.slip());
     final Scalar mux2L = sh2L.slip().Get(0);
     final Scalar muy2L = sh2L.slip().Get(1);
     //
     final Tensor _u2R = cs.get_ui_2d(angles.Get(3), 3);
     final SlipInterface sh2R = new RobustSlip(params.pacejka2(), _u2R, params.radiusTimes(cs.w2R));
+    final SlipInterface sr2R = new ReducedSlip(params.pacejka2(), _u2R, params.radiusTimes(cs.w2R));
+    if (!sh2R.slip().equals(sr2R.slip()))
+      throw TensorRuntimeException.of(sh2R.slip(), sr2R.slip());
     final Scalar mux2R = sh2R.slip().Get(0);
     final Scalar muy2R = sh2R.slip().Get(1);
     // ---
