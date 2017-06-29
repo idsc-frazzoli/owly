@@ -6,12 +6,16 @@ import ch.ethz.idsc.owly.math.Deadzone;
 import ch.ethz.idsc.owly.math.StateSpaceModel;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
+import ch.ethz.idsc.tensor.Scalars;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
 import ch.ethz.idsc.tensor.alg.Array;
+import ch.ethz.idsc.tensor.alg.Transpose;
 import ch.ethz.idsc.tensor.lie.Cross;
 import ch.ethz.idsc.tensor.mat.RotationMatrix;
 import ch.ethz.idsc.tensor.red.Total;
+import ch.ethz.idsc.tensor.sca.Chop;
+import ch.ethz.idsc.tensor.sca.Round;
 
 /** the matlab code applies a rate limiter to u
  * if this is beneficial for stability, the limiter should
@@ -22,6 +26,8 @@ public class CarStateSpaceModel implements StateSpaceModel {
   public CarStateSpaceModel(CarModel carModel) {
     this.params = carModel;
   }
+
+  private long tic = 0;
 
   @Override
   public Tensor f(Tensor x, Tensor u) {
@@ -36,6 +42,11 @@ public class CarStateSpaceModel implements StateSpaceModel {
     final Scalar rollFric = params.rollFric(); // TODO at the moment == 0!
     Deadzone deadzone = Deadzone.of(rollFric.negate(), rollFric);
     final Tensor total = Total.of(tire.Forces);
+    {
+      Scalar dF_z = total.Get(2).subtract(params.gForce());
+      if (Scalars.nonZero((Scalar) dF_z.map(Chop.below(1e-5))))
+        System.out.println("dF_z=" + dF_z);
+    }
     {
       Scalar prel = total.Get(0).add(params.mass().multiply(cs.Uy).multiply(cs.r));
       dux = deadzone.apply(prel).subtract(params.coulombFriction(cs.Ux)).divide(params.mass());
@@ -52,8 +63,18 @@ public class CarStateSpaceModel implements StateSpaceModel {
       Tensor torque = Array.zeros(3);
       for (int index = 0; index < params.levers().length(); ++index)
         torque = torque.add(Cross.of(params.levers().get(index), tire.Forces.get(index)));
-      // TODO assert that components 0, and 1 are == 0! at the moment they are not
-      // maybe because of height?
+      {
+        // TODO assert that components 0, and 1 are == 0! at the moment they are not
+        long toc = System.currentTimeMillis();
+        if (tic + 987 <= toc) {
+          tic = toc;
+          System.out.println("---");
+          System.out.println("Tq=" + torque.map(Round._2));
+          Tensor Fz = Transpose.of(tire.Forces).get(2);
+          Fz = Tensors.of(Fz.Get(0).add(Fz.Get(3)), Fz.Get(1).add(Fz.Get(2)));
+          System.out.println("Fz=" + Fz.map(Round._2));
+        }
+      }
       dr = torque.Get(2).multiply(params.Iz_invert());
     }
     Tensor dp = RotationMatrix.of(cs.Ksi).dot(cs.u_2d());

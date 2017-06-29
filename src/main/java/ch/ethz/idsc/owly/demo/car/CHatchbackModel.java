@@ -21,12 +21,12 @@ public class CHatchbackModel extends DefaultCarModel {
   private final Tensor levers;
 
   public CHatchbackModel() {
-    Scalar h = HEIGHT_COG.negate(); // FIXME this may need to consider wheel radius!?!?!
+    Scalar h_negate = HEIGHT_COG.negate();
     levers = Tensors.of( //
-        Tensors.of(LF, LW, h), // 1L
-        Tensors.of(LF, LW.negate(), h), // 1R
-        Tensors.of(LR.negate(), LW, h), // 2L
-        Tensors.of(LR.negate(), LW.negate(), h) // 2R
+        Tensors.of(LF, LW, h_negate), // 1L
+        Tensors.of(LF, LW.negate(), h_negate), // 1R
+        Tensors.of(LR.negate(), LW, h_negate), // 2L
+        Tensors.of(LR.negate(), LW.negate(), h_negate) // 2R
     ).unmodifiable();
   }
 

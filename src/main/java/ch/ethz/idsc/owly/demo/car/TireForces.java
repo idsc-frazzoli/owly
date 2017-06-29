@@ -36,10 +36,10 @@ public class TireForces {
     final Tensor ck2L = RotationMatrix.of(angles.Get(2)).dot(mu2L.slip()).multiply(h);
     final Tensor ck2R = RotationMatrix.of(angles.Get(3)).dot(mu2R.slip()).multiply(h);
     // ---
-    Tensor EA = ck1L.subtract(params.levers().get(0).extract(0, 2));
-    Tensor FB = ck1R.subtract(params.levers().get(1).extract(0, 2));
-    Tensor GC = ck2L.subtract(params.levers().get(2).extract(0, 2));
-    Tensor HD = ck2R.subtract(params.levers().get(3).extract(0, 2));
+    Tensor EA = ck1L.add(params.levers().get(0).extract(0, 2)); // TODO jan changed this from subtract to "add"
+    Tensor FB = ck1R.add(params.levers().get(1).extract(0, 2));
+    Tensor GC = ck2L.add(params.levers().get(2).extract(0, 2));
+    Tensor HD = ck2R.add(params.levers().get(3).extract(0, 2));
     // ---
     final Scalar den = Total.of(Tensors.of( //
         EA.dot(Cross2D.of(FB)), //
