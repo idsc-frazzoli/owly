@@ -38,13 +38,8 @@ public class CHatchbackModel extends DefaultCarModel {
   }
 
   @Override
-  public Pacejka3 pacejka1() {
-    return PACEJKA1;
-  }
-
-  @Override
-  public Pacejka3 pacejka2() {
-    return PACEJKA2;
+  public Pacejka3 pacejka(int index) {
+    return index < 2 ? PACEJKA1 : PACEJKA2;
   }
 
   @Override
@@ -127,9 +122,7 @@ public class CHatchbackModel extends DefaultCarModel {
     if (!Clip.UNIT.of(u.Get(3)).equals(u.Get(3)))
       throw TensorRuntimeException.of(u.Get(3));
     // ---
-    Scalar maxSteer = //
-        carSteering.equals(CarSteering.BOTH) ? maxDelta.multiply(RealScalar.of(.5)) : maxDelta;
-    Scalar delta = u.Get(0).multiply(maxSteer);
+    Scalar delta = u.Get(0).multiply(maxDelta).multiply(carSteering.factor);
     Scalar brake = u.Get(1).multiply(maxPress);
     Scalar handbrake = u.Get(2).multiply(maxThb);
     Scalar throttle = u.Get(3).multiply(maxThrottle);

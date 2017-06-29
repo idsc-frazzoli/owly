@@ -12,7 +12,7 @@ import ch.ethz.idsc.tensor.red.Hypot;
 /** slip as introduced in textbook,
  * straight forward implementation suffers from numerical badness.
  * 
- * Important: use {@link ReducedSlip} instead */
+ * Important: use {@link RobustSlip} instead */
 class TextbookSlip implements SlipInterface {
   private static final Scalar eps = RealScalar.of(1e-8);
   // ---

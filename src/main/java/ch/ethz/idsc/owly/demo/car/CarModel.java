@@ -10,9 +10,9 @@ public interface CarModel {
   /** @return mass [kg] */
   Scalar mass();
 
-  Pacejka3 pacejka1();
-
-  Pacejka3 pacejka2();
+  /** @param index of wheel
+   * @return pacejka formula for wheel */
+  Pacejka3 pacejka(int index);
 
   /** @return tire radius */
   Scalar radius(); // formerly "R"

@@ -12,7 +12,7 @@ import ch.ethz.idsc.tensor.sca.ArcTan;
 import ch.ethz.idsc.tensor.sca.Sin;
 
 /** robust computation of slip */
-public class ReducedSlip implements SlipInterface {
+public class RobustSlip implements SlipInterface {
   private static final Scalar PI_HALF = RealScalar.of(Math.PI / 2);
   // ---
   private final Tensor mu;
@@ -23,7 +23,7 @@ public class ReducedSlip implements SlipInterface {
    * @param factor to scale final result
    * @param U ground speed in coordinate system of tire
    * @param rtw == radius * rate of wheel */
-  public ReducedSlip(Pacejka3 pacejka3, Scalar factor, Tensor U, Scalar rtw) {
+  public RobustSlip(Pacejka3 pacejka3, Scalar factor, Tensor U, Scalar rtw) {
     final Scalar ux = U.Get(0).subtract(rtw); // effective speed of tire (longitude)
     final Scalar uy = U.Get(1);
     final Scalar value;

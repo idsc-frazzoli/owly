@@ -6,7 +6,6 @@ import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
-import ch.ethz.idsc.tensor.alg.Array;
 import ch.ethz.idsc.tensor.red.Mean;
 import ch.ethz.idsc.tensor.sca.Sign;
 
@@ -94,11 +93,10 @@ public abstract class DefaultCarModel implements CarModel {
   }
 
   private Tensor _angles_both(Scalar delta) {
-    Tensor center = Array.zeros(3);
-    Tensor p1L = levers().get(0).subtract(center); // TODO simplify
-    Tensor p1R = levers().get(1).subtract(center);
-    Tensor p2L = levers().get(2).subtract(center);
-    Tensor p2R = levers().get(3).subtract(center);
+    Tensor p1L = levers().get(0);
+    Tensor p1R = levers().get(1);
+    Tensor p2L = levers().get(2);
+    Tensor p2R = levers().get(3);
     return Tensors.of( //
         SteeringWheelAngle.of(p1L.Get(1).divide(p1L.Get(0)), delta), //
         SteeringWheelAngle.of(p1R.Get(1).divide(p1R.Get(0)), delta), //

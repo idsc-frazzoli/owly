@@ -5,17 +5,23 @@ package ch.ethz.idsc.owly.demo.car;
 import ch.ethz.idsc.owly.math.Cross2D;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
-import ch.ethz.idsc.tensor.Scalars;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
+import ch.ethz.idsc.tensor.alg.Array;
+import ch.ethz.idsc.tensor.alg.Join;
 import ch.ethz.idsc.tensor.alg.Transpose;
 import ch.ethz.idsc.tensor.lie.Cross;
 import ch.ethz.idsc.tensor.lie.Rodriguez;
+import ch.ethz.idsc.tensor.mat.LinearSolve;
 import ch.ethz.idsc.tensor.mat.RotationMatrix;
 import ch.ethz.idsc.tensor.red.Total;
+import ch.ethz.idsc.tensor.sca.Chop;
 
 /** implementation has been verified through several tests */
 public class TireForces {
+  private static final Tensor AFFINE_ONE = Tensors.vector(1);
+  private static final Tensor SUM_ALL = Tensors.vector(1, 1, 1, 1);
+  // ---
   public final CarModel params;
   public final CarState cs;
   public final Tensor Forces; // forces in car/body frame
@@ -25,58 +31,36 @@ public class TireForces {
     this.params = params;
     this.cs = cs;
     final Tensor angles = params.angles(cc.delta).unmodifiable();
-    //
-    final Tensor _u1L = get_ui_2d(angles.Get(0), 0);
-    final SlipInterface mu1L = new ReducedSlip(params.pacejka1(), params.mu(), _u1L, params.radiusTimes(cs.w1L));
-    final Tensor _u1R = get_ui_2d(angles.Get(1), 1);
-    final SlipInterface mu1R = new ReducedSlip(params.pacejka1(), params.mu(), _u1R, params.radiusTimes(cs.w1R));
-    final Tensor _u2L = get_ui_2d(angles.Get(2), 2);
-    final SlipInterface mu2L = new ReducedSlip(params.pacejka2(), params.mu(), _u2L, params.radiusTimes(cs.w2L));
-    final Tensor _u2R = get_ui_2d(angles.Get(3), 3);
-    final SlipInterface mu2R = new ReducedSlip(params.pacejka2(), params.mu(), _u2R, params.radiusTimes(cs.w2R));
+    // ---
+    final Tensor mus = Tensors.of( //
+        new RobustSlip(params.pacejka(0), params.mu(), get_ui_2d(angles.Get(0), 0), params.radiusTimes(cs.w1L)).slip(), //
+        new RobustSlip(params.pacejka(1), params.mu(), get_ui_2d(angles.Get(1), 1), params.radiusTimes(cs.w1R)).slip(), //
+        new RobustSlip(params.pacejka(2), params.mu(), get_ui_2d(angles.Get(2), 2), params.radiusTimes(cs.w2L)).slip(), //
+        new RobustSlip(params.pacejka(3), params.mu(), get_ui_2d(angles.Get(3), 3), params.radiusTimes(cs.w2R)).slip() //
+    );
+    final Tensor dir = Tensors.vector(index -> //
+    Join.of(RotationMatrix.of(angles.Get(index)).dot(mus.get(index)), AFFINE_ONE), 4);
     // ---
     final Scalar h = params.heightCog();
-    final Tensor ck1L = RotationMatrix.of(angles.Get(0)).dot(mu1L.slip()).multiply(h);
-    final Tensor ck1R = RotationMatrix.of(angles.Get(1)).dot(mu1R.slip()).multiply(h);
-    final Tensor ck2L = RotationMatrix.of(angles.Get(2)).dot(mu2L.slip()).multiply(h);
-    final Tensor ck2R = RotationMatrix.of(angles.Get(3)).dot(mu2R.slip()).multiply(h);
-    // ---
-    Tensor EA = ck1L.add(params.levers().get(0).extract(0, 2)); // changed from "subtract" to "add"
-    Tensor FB = ck1R.add(params.levers().get(1).extract(0, 2));
-    Tensor GC = ck2L.add(params.levers().get(2).extract(0, 2));
-    Tensor HD = ck2R.add(params.levers().get(3).extract(0, 2));
-    // ---
-    final Scalar den = Total.of(Tensors.of( //
-        EA.dot(Cross2D.of(FB)), //
-        FB.dot(Cross2D.of(HD)), //
-        GC.dot(Cross2D.of(EA)), //
-        HD.dot(Cross2D.of(GC)) //
-    )).multiply(RealScalar.of(2)).Get();
-    //
-    if (Scalars.lessThan(den.abs(), RealScalar.of(1e-5))) {
-      System.out.println("denominator den = " + den);
+    final Tensor fbodyZ;
+    {
+      Tensor leversT = Transpose.of(params.levers());
+      Tensor dirT = Transpose.of(dir);
+      Tensor rotX_z = leversT.get(1);
+      Tensor rotX_y = dirT.get(1).multiply(h);
+      Tensor rotY_z = leversT.get(0);
+      Tensor rotY_x = dirT.get(0).multiply(h);
+      Tensor Lhs = Tensors.of( //
+          rotX_z.add(rotX_y), // no rotation around X
+          rotY_z.add(rotY_x), // no rotation around Y
+          SUM_ALL, // compensate g-force
+          Tensors.vector(+1, -1, -1, +1) // weight transfer TODO geometry of COG?
+      );
+      Tensor rhs = Array.zeros(4);
+      rhs.set(params.gForce(), 2);
+      fbodyZ = LinearSolve.of(Lhs, rhs);
     }
-    final Scalar factor = params.gForce().divide(den); // explain why no risk to divide by 0?
-    Scalar Fz1L = Total.of(Tensors.of( //
-        FB.dot(Cross2D.of(GC)), //
-        FB.dot(Cross2D.of(HD)), //
-        HD.dot(Cross2D.of(GC)) //
-    )).multiply(factor).Get();
-    Scalar Fz1R = Total.of(Tensors.of( //
-        GC.dot(Cross2D.of(EA)), //
-        HD.dot(Cross2D.of(EA)), //
-        HD.dot(Cross2D.of(GC)) //
-    )).multiply(factor).Get();
-    Scalar Fz2L = Total.of(Tensors.of( //
-        EA.dot(Cross2D.of(FB)), //
-        EA.dot(Cross2D.of(HD)), //
-        FB.dot(Cross2D.of(HD)) //
-    )).multiply(factor).Get();
-    Scalar Fz2R = Total.of(Tensors.of( //
-        EA.dot(Cross2D.of(FB)), //
-        GC.dot(Cross2D.of(EA)), //
-        GC.dot(Cross2D.of(FB)) //
-    )).multiply(factor).Get();
+    // ---
     // if (false) {
     // Scalar lF = params.levers().Get(0, 0);
     // Scalar lR = params.levers().Get(2, 0).negate();
@@ -86,20 +70,30 @@ public class TireForces {
     // Fz2L = lF.divide(lR_lF).multiply(params.gForce());
     // Fz2R = lF.divide(lR_lF).multiply(params.gForce());
     // }
-    Tensor fbodyZ = Tensors.of(Fz1L, Fz1R, Fz2L, Fz2R);
-    //
-    fwheel = Tensors.of( //
-        mu1L.slip().multiply(Fz1L), //
-        mu1R.slip().multiply(Fz1R), //
-        mu2L.slip().multiply(Fz2L), //
-        mu2R.slip().multiply(Fz2R) //
-    ).unmodifiable();
-    Tensor fbody = Tensors.empty();
-    for (int index = 0; index < 4; ++index) {
-      final Tensor _Fxy = RotationMatrix.of(angles.Get(index)).dot(fwheel.get(index)); // wheel to body
-      fbody.append(Tensors.of(_Fxy.Get(0), _Fxy.Get(1), fbodyZ.Get(index)));
-    }
-    Forces = fbody.unmodifiable();
+    fwheel = fbodyZ.pmul(mus).unmodifiable();
+    Forces = fbodyZ.pmul(dir).unmodifiable();
+  }
+
+  /** @return torque on vehicle at center of mass */
+  public Tensor torque() {
+    Tensor tensor = Array.zeros(3);
+    for (int index = 0; index < params.levers().length(); ++index)
+      tensor = tensor.add(Cross.of(params.levers().get(index), Forces.get(index)));
+    return tensor;
+  }
+
+  public boolean isTorqueConsistent() {
+    return Chop.isZeros(torque().extract(0, 2).multiply(RealScalar.of(1e-3)));
+  }
+
+  public boolean isFzConsistent() {
+    Scalar f03 = Forces.Get(0, 2).add(Forces.Get(3, 2));
+    Scalar f12 = Forces.Get(1, 2).add(Forces.Get(2, 2));
+    return Chop.isZeros(f03.subtract(f12).multiply(RealScalar.of(1e-3)));
+  }
+
+  public boolean isGForceConsistent() {
+    return Chop.isZeros(Total.of(Forces).Get(2).subtract(params.gForce()).multiply(RealScalar.of(1e-3)));
   }
 
   /** @param delta angle of wheel

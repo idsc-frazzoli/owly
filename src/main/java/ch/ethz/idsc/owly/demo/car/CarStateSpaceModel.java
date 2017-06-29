@@ -9,9 +9,6 @@ import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Scalars;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
-import ch.ethz.idsc.tensor.alg.Array;
-import ch.ethz.idsc.tensor.alg.Transpose;
-import ch.ethz.idsc.tensor.lie.Cross;
 import ch.ethz.idsc.tensor.mat.RotationMatrix;
 import ch.ethz.idsc.tensor.red.Total;
 import ch.ethz.idsc.tensor.sca.Chop;
@@ -31,7 +28,7 @@ public class CarStateSpaceModel implements StateSpaceModel {
 
   @Override
   public Tensor f(Tensor x, Tensor u) {
-    // TODO u may need to satisfy certain conditions with respect to previous u
+    // u may need to satisfy certain conditions with respect to previous u
     CarState cs = new CarState(x);
     CarControl cc = new CarControl(u);
     TireForces tire = new TireForces(params, cs, cc);
@@ -60,9 +57,7 @@ public class CarStateSpaceModel implements StateSpaceModel {
     // ---
     Scalar dr;
     {
-      Tensor torque = Array.zeros(3);
-      for (int index = 0; index < params.levers().length(); ++index)
-        torque = torque.add(Cross.of(params.levers().get(index), tire.Forces.get(index)));
+      Tensor torque = tire.torque();
       {
         // TODO assert that components 0, and 1 are == 0! at the moment they are not
         long toc = System.currentTimeMillis();
@@ -70,9 +65,10 @@ public class CarStateSpaceModel implements StateSpaceModel {
           tic = toc;
           System.out.println("---");
           System.out.println("Tq=" + torque.map(Round._2));
-          Tensor Fz = Transpose.of(tire.Forces).get(2);
-          Fz = Tensors.of(Fz.Get(0).add(Fz.Get(3)), Fz.Get(1).add(Fz.Get(2)));
-          System.out.println("Fz=" + Fz.map(Round._2));
+          Scalar f03 = tire.Forces.Get(0, 2).add(tire.Forces.Get(3, 2));
+          Scalar f12 = tire.Forces.Get(1, 2).add(tire.Forces.Get(2, 2));
+          System.out.println("Fz=" + Tensors.of(f03, f12).map(Round._2));
+          System.out.println(tire.isTorqueConsistent() + " " + tire.isFzConsistent());
         }
       }
       dr = torque.Get(2).multiply(params.Iz_invert());
