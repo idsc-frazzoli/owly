@@ -2,6 +2,7 @@
 // code adapted by jph
 package ch.ethz.idsc.owly.demo.car;
 
+import ch.ethz.idsc.owly.math.Cross2D;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Scalars;
@@ -9,6 +10,7 @@ import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
 import ch.ethz.idsc.tensor.alg.Transpose;
 import ch.ethz.idsc.tensor.mat.RotationMatrix;
+import ch.ethz.idsc.tensor.red.Total;
 
 /** implementation has been verified through several tests */
 public class TireForces {
@@ -35,62 +37,41 @@ public class TireForces {
     final Tensor ck2R = RotationMatrix.of(angles.Get(3)).dot(mu2R.slip()).multiply(h);
     // ---
     Tensor EA = ck1L.subtract(params.levers().get(0).extract(0, 2));
-    Scalar E = EA.Get(0);
-    Scalar A = EA.Get(1);
-    //
     Tensor FB = ck1R.subtract(params.levers().get(1).extract(0, 2));
-    Scalar F = FB.Get(0);
-    Scalar B = FB.Get(1);
-    //
     Tensor GC = ck2L.subtract(params.levers().get(2).extract(0, 2));
-    Scalar G = GC.Get(0);
-    Scalar C = GC.Get(1);
-    //
     Tensor HD = ck2R.subtract(params.levers().get(3).extract(0, 2));
-    Scalar H = HD.Get(0);
-    Scalar D = HD.Get(1);
     // ---
-    final Scalar den;
-    {
-      Tensor vec1 = Tensors.of(A, B, A, C, B, D, C, D);
-      Tensor vec2 = Tensors.of( //
-          F, E.negate(), G.negate(), E, H, F.negate(), H.negate(), G);
-      den = vec1.dot(vec2).Get().multiply(RealScalar.of(2)); // as in doc
-    }
+    final Scalar den = Total.of(Tensors.of( //
+        EA.dot(Cross2D.of(FB)), //
+        GC.dot(Cross2D.of(EA)), //
+        FB.dot(Cross2D.of(HD)), //
+        HD.dot(Cross2D.of(GC)) //
+    )).multiply(RealScalar.of(2)).Get();
     //
     if (Scalars.lessThan(den.abs(), RealScalar.of(1e-5))) {
       System.out.println("denominator den = " + den);
     }
     final Scalar factor = params.gForce().divide(den); // explain why no risk to divide by 0?
-    final Scalar Fz1L;
-    {
-      // 1R x 2L +
-      Tensor vec1 = Tensors.of(B, C, B, D, C, D); // B.G-F.C +B.H-C.F
-      Tensor vec2 = Tensors.of( //
-          G, F.negate(), H, F.negate(), H.negate(), G);
-      Fz1L = vec1.dot(vec2).Get().multiply(factor);
-    }
-    final Scalar Fz1R;
-    {
-      Tensor vec1 = Tensors.of(A, C, A, D, C, D);
-      Tensor vec2 = Tensors.of( //
-          G, E.negate(), H, E.negate(), H, G.negate());
-      Fz1R = vec1.dot(vec2).Get().multiply(factor).negate();
-    }
-    final Scalar Fz2L;
-    {
-      Tensor vec1 = Tensors.of(A, B, A, D, B, D);
-      Tensor vec2 = Tensors.of( //
-          F, E.negate(), H, E.negate(), H, F.negate());
-      Fz2L = vec1.dot(vec2).Get().multiply(factor);
-    }
-    final Scalar Fz2R;
-    {
-      Tensor vec1 = Tensors.of(A, B, A, C, B, C);
-      Tensor vec2 = Tensors.of( //
-          F, E.negate(), G.negate(), E, G.negate(), F);
-      Fz2R = vec1.dot(vec2).Get().multiply(factor);
-    }
+    final Scalar Fz1L = Total.of(Tensors.of( //
+        FB.dot(Cross2D.of(GC)), //
+        FB.dot(Cross2D.of(HD)), //
+        HD.dot(Cross2D.of(GC)) //
+    )).multiply(factor).Get();
+    final Scalar Fz1R = Total.of(Tensors.of( //
+        GC.dot(Cross2D.of(EA)), //
+        HD.dot(Cross2D.of(EA)), //
+        HD.dot(Cross2D.of(GC)) //
+    )).multiply(factor).Get();
+    final Scalar Fz2L = Total.of(Tensors.of( //
+        EA.dot(Cross2D.of(FB)), //
+        EA.dot(Cross2D.of(HD)), //
+        FB.dot(Cross2D.of(HD)) //
+    )).multiply(factor).Get();
+    final Scalar Fz2R = Total.of(Tensors.of( //
+        EA.dot(Cross2D.of(FB)), //
+        GC.dot(Cross2D.of(EA)), //
+        GC.dot(Cross2D.of(FB)) //
+    )).multiply(factor).Get();
     //
     fwheel = Tensors.of( //
         mu1L.slip().multiply(Fz1L), //
