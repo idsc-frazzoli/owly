@@ -83,7 +83,7 @@ public class CHatchbackModel extends DefaultCarModel {
 
   @Override
   public Scalar gammaM() {
-    return RealScalar.of(0.0); // rear/total drive ratio; 0 is FWD, 1 is RWD
+    return RealScalar.of(0.5); // rear/total drive ratio; 0 is FWD, 1 is RWD
   }
 
   @Override
@@ -110,9 +110,9 @@ public class CHatchbackModel extends DefaultCarModel {
   // TODO check what is appropriate
   private static final Scalar maxDelta = RealScalar.of(45 * Math.PI / 180);
   // maximal motor torque [Nm], with gears included
-  private static final Scalar maxThrottle = RealScalar.of(1000.);
   private static final Scalar maxPress = RealScalar.of(13); // maximal master cylinder presure [MPa]
   private static final Scalar maxThb = RealScalar.of(2000); // max handbrake torque [Nm]
+  private static final Scalar maxThrottle = RealScalar.of(2000.);
 
   @Override
   public CarControl createControl(Tensor u) {

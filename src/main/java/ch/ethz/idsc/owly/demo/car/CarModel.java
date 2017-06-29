@@ -6,7 +6,6 @@ import ch.ethz.idsc.owly.math.car.Pacejka3;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
 
-// TODO function names remain as-is until system works
 public interface CarModel {
   /** @return mass [kg] */
   Scalar mass();
@@ -70,6 +69,7 @@ public interface CarModel {
   Scalar rollFric();
 
   /***************************************************/
+  /** @return mass * g */
   Scalar gForce();
 
   Scalar radiusTimes(Scalar omega);

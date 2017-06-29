@@ -23,32 +23,31 @@ public class TireForcesTest extends TestCase {
     assertEquals(Fz.Get(2), Fz.Get(3));
   }
 
-  public void testDemo2() {
-    // System.out.println("TireForcesTest::demo2");
-    CarModel carModel = new CHatchbackModel();
-    CarState carState = CarStatic.x0_demo2();
-    // System.out.println(carState.asVector());
-    CarControl carControl = carModel.createControl(Tensors.vector(0, 0, 0, 0));
-    TireForces tireForces = new TireForces(carModel, carState, carControl);
-    assertTrue(Chop.isZeros(tireForces.asVectorFX()));
-    assertTrue(Chop.isZeros(tireForces.asVector_fX()));
-    // ---
-    assertTrue(tireForces.asVectorFY().Get(0).toString().startsWith("-2178."));
-    assertTrue(tireForces.asVectorFY().Get(1).toString().startsWith("-5086."));
-    assertTrue(tireForces.asVectorFY().Get(2).toString().startsWith("-497."));
-    assertTrue(tireForces.asVectorFY().Get(3).toString().startsWith("-3439."));
-    // ---
-    assertTrue(tireForces.asVectorFZ().Get(0).toString().startsWith("2704."));
-    assertTrue(tireForces.asVectorFZ().Get(1).toString().startsWith("6315."));
-    assertTrue(tireForces.asVectorFZ().Get(2).toString().startsWith("610."));
-    assertTrue(tireForces.asVectorFZ().Get(3).toString().startsWith("4221."));
-    // ---
-    assertTrue(tireForces.asVector_fY().Get(0).toString().startsWith("-2178."));
-    assertTrue(tireForces.asVector_fY().Get(1).toString().startsWith("-5086."));
-    assertTrue(tireForces.asVector_fY().Get(2).toString().startsWith("-497."));
-    assertTrue(tireForces.asVector_fY().Get(3).toString().startsWith("-3439."));
-  }
-
+  // public void testDemo2() {
+  // // System.out.println("TireForcesTest::demo2");
+  // CarModel carModel = new CHatchbackModel();
+  // CarState carState = CarStatic.x0_demo2();
+  // // System.out.println(carState.asVector());
+  // CarControl carControl = carModel.createControl(Tensors.vector(0, 0, 0, 0));
+  // TireForces tireForces = new TireForces(carModel, carState, carControl);
+  // assertTrue(Chop.isZeros(tireForces.asVectorFX()));
+  // assertTrue(Chop.isZeros(tireForces.asVector_fX()));
+  // // ---
+  // assertTrue(tireForces.asVectorFY().Get(0).toString().startsWith("-2178."));
+  // assertTrue(tireForces.asVectorFY().Get(1).toString().startsWith("-5086."));
+  // assertTrue(tireForces.asVectorFY().Get(2).toString().startsWith("-497."));
+  // assertTrue(tireForces.asVectorFY().Get(3).toString().startsWith("-3439."));
+  // // ---
+  // assertTrue(tireForces.asVectorFZ().Get(0).toString().startsWith("2704."));
+  // assertTrue(tireForces.asVectorFZ().Get(1).toString().startsWith("6315."));
+  // assertTrue(tireForces.asVectorFZ().Get(2).toString().startsWith("610."));
+  // assertTrue(tireForces.asVectorFZ().Get(3).toString().startsWith("4221."));
+  // // ---
+  // assertTrue(tireForces.asVector_fY().Get(0).toString().startsWith("-2178."));
+  // assertTrue(tireForces.asVector_fY().Get(1).toString().startsWith("-5086."));
+  // assertTrue(tireForces.asVector_fY().Get(2).toString().startsWith("-497."));
+  // assertTrue(tireForces.asVector_fY().Get(3).toString().startsWith("-3439."));
+  // }
   /** {903.610973774307, -1807.7084631684347, 2736.1718856177345, -865.0967379905104}
    * {4386.855391683335, 1896.4937941266203, 766.4628278978114, 202.1501561222724}
    * {5768.831655182105, 3430.8856422219737, 3494.974357778026, 1157.0283448178939}

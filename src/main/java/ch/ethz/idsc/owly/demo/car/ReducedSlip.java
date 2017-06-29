@@ -20,6 +20,7 @@ public class ReducedSlip implements SlipInterface {
   /** if U == {rtw, 0} that means no slip
    * 
    * @param pacejka3
+   * @param factor to scale final result
    * @param U ground speed in coordinate system of tire
    * @param rtw == radius * rate of wheel */
   public ReducedSlip(Pacejka3 pacejka3, Scalar factor, Tensor U, Scalar rtw) {

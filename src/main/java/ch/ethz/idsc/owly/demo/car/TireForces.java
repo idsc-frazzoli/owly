@@ -18,8 +18,7 @@ public class TireForces {
   public final Tensor fwheel; // forces in wheel frame
 
   public TireForces(CarModel params, CarState cs, CarControl cc) {
-    // TODO check with edo
-    final Tensor angles = cc.tire_angles().unmodifiable(); // params
+    final Tensor angles = cc.tire_angles(params).unmodifiable();
     //
     final Tensor _u1L = cs.get_ui_2d(angles.Get(0), 0);
     final SlipInterface mu1L = new ReducedSlip(params.pacejka1(), params.mu(), _u1L, params.radiusTimes(cs.w1L));
@@ -36,7 +35,7 @@ public class TireForces {
     final Tensor ck2L = RotationMatrix.of(angles.Get(2)).dot(mu2L.slip()).multiply(h);
     final Tensor ck2R = RotationMatrix.of(angles.Get(3)).dot(mu2R.slip()).multiply(h);
     // ---
-    Tensor EA = ck1L.add(params.levers().get(0).extract(0, 2)); // TODO jan changed this from subtract to "add"
+    Tensor EA = ck1L.add(params.levers().get(0).extract(0, 2)); // changed from "subtract" to "add"
     Tensor FB = ck1R.add(params.levers().get(1).extract(0, 2));
     Tensor GC = ck2L.add(params.levers().get(2).extract(0, 2));
     Tensor HD = ck2R.add(params.levers().get(3).extract(0, 2));
@@ -52,26 +51,36 @@ public class TireForces {
       System.out.println("denominator den = " + den);
     }
     final Scalar factor = params.gForce().divide(den); // explain why no risk to divide by 0?
-    final Scalar Fz1L = Total.of(Tensors.of( //
+    Scalar Fz1L = Total.of(Tensors.of( //
         FB.dot(Cross2D.of(GC)), //
         FB.dot(Cross2D.of(HD)), //
         HD.dot(Cross2D.of(GC)) //
     )).multiply(factor).Get();
-    final Scalar Fz1R = Total.of(Tensors.of( //
+    Scalar Fz1R = Total.of(Tensors.of( //
         GC.dot(Cross2D.of(EA)), //
         HD.dot(Cross2D.of(EA)), //
         HD.dot(Cross2D.of(GC)) //
     )).multiply(factor).Get();
-    final Scalar Fz2L = Total.of(Tensors.of( //
+    Scalar Fz2L = Total.of(Tensors.of( //
         EA.dot(Cross2D.of(FB)), //
         EA.dot(Cross2D.of(HD)), //
         FB.dot(Cross2D.of(HD)) //
     )).multiply(factor).Get();
-    final Scalar Fz2R = Total.of(Tensors.of( //
+    Scalar Fz2R = Total.of(Tensors.of( //
         EA.dot(Cross2D.of(FB)), //
         GC.dot(Cross2D.of(EA)), //
         GC.dot(Cross2D.of(FB)) //
     )).multiply(factor).Get();
+    // if (false) {
+    // Scalar lF = params.levers().Get(0, 0);
+    // Scalar lR = params.levers().Get(2, 0).negate();
+    // Scalar lR_lF = lF.add(lR).multiply(RealScalar.of(2));
+    // Fz1L = lR.divide(lR_lF).multiply(params.gForce());
+    // Fz1R = lR.divide(lR_lF).multiply(params.gForce());
+    // Fz2L = lF.divide(lR_lF).multiply(params.gForce());
+    // Fz2R = lF.divide(lR_lF).multiply(params.gForce());
+    // }
+    Tensor fbodyZ = Tensors.of(Fz1L, Fz1R, Fz2L, Fz2R);
     //
     fwheel = Tensors.of( //
         mu1L.slip().multiply(Fz1L), //
@@ -79,7 +88,6 @@ public class TireForces {
         mu2L.slip().multiply(Fz2L), //
         mu2R.slip().multiply(Fz2R) //
     ).unmodifiable();
-    Tensor fbodyZ = Tensors.of(Fz1L, Fz1R, Fz2L, Fz2R);
     Tensor fbody = Tensors.empty();
     for (int index = 0; index < 4; ++index) {
       final Tensor _Fxy = RotationMatrix.of(angles.Get(index)).dot(fwheel.get(index)); // wheel to body

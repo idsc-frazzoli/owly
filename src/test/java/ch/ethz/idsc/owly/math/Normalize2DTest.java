@@ -23,4 +23,12 @@ public class Normalize2DTest extends TestCase {
     Tensor res = Normalize2D.unlessZero(RealScalar.ZERO, RealScalar.ZERO);
     assertEquals(res, Array.zeros(2));
   }
+
+  public void testUp2() {
+    double eps = Math.nextUp(0);
+    Tensor vec = Normalize2D.unlessZero(RealScalar.of(eps), RealScalar.of(eps));
+    System.out.println(vec);
+    // assertTrue();
+    // assertFalse(Normalize2D.unlessZero(RealScalar.ZERO, RealScalar.of(eps)).equals(Array.zeros(2)));
+  }
 }

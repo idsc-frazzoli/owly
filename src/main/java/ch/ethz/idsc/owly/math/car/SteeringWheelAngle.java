@@ -9,7 +9,10 @@ import ch.ethz.idsc.tensor.sca.Tan;
 /** formula to convert steering angle to (front-)wheel angle
  * so that no friction arises in the ideal/no-slip scenario.
  * 
- * formula simplified from document by marcello and panos */
+ * formula simplified from document by marcello and panos
+ * 
+ * see also
+ * <a href="https://en.wikipedia.org/wiki/Ackermann_steering_geometry">Ackermann steering geometry</a> */
 public enum SteeringWheelAngle {
   ;
   /** (px, py) is front wheel position measured from center of rear axle in local car coordinates
