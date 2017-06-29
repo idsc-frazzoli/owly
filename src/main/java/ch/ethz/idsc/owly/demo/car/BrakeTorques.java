@@ -35,25 +35,25 @@ public class BrakeTorques {
       if (Scalars.nonZero(cs.w1L)) {
         _Tb1L = pressF.multiply(params.press2torF()).multiply(Sign.of(cs.w1L)).negate();
       } else {
-        _Tb1L = tireForces.fx1L.multiply(params.radius());
+        _Tb1L = tireForces.fwheel.Get(0, 0).multiply(params.radius());
       }
       //
       if (Scalars.nonZero(cs.w1R)) {
         _Tb1R = pressF.multiply(params.press2torF()).multiply(Sign.of(cs.w1R)).negate();
       } else {
-        _Tb1R = tireForces.fx1R.multiply(params.radius());
+        _Tb1R = tireForces.fwheel.Get(1, 0).multiply(params.radius());
       }
       //
       if (Scalars.nonZero(cs.w2L)) {
         _Tb2L = pressR.multiply(params.press2torR()).multiply(Sign.of(cs.w2L)).negate();
       } else {
-        _Tb2L = tireForces.fx2L.multiply(params.radius());
+        _Tb2L = tireForces.fwheel.Get(2, 0).multiply(params.radius());
       }
       //
       if (Scalars.nonZero(cs.w2R)) {
         _Tb2R = pressR.multiply(params.press2torR()).multiply(Sign.of(cs.w2R)).negate();
       } else {
-        _Tb2R = tireForces.fx2R.multiply(params.radius());
+        _Tb2R = tireForces.fwheel.Get(3, 0).multiply(params.radius());
       }
     }
     // ---
@@ -61,13 +61,13 @@ public class BrakeTorques {
       if (Scalars.nonZero(cs.w2L)) {
         _Tb2L = _Tb2L.subtract(cc.handbrake.multiply(Sign.of(cs.w2L)));
       } else {
-        _Tb2L = _Tb2L.subtract(tireForces.fx2L.multiply(params.radius()));
+        _Tb2L = _Tb2L.subtract(tireForces.fwheel.Get(2, 0).multiply(params.radius()));
       }
       //
       if (Scalars.nonZero(cs.w2R)) {
         _Tb2R = _Tb2R.subtract(cc.handbrake.multiply(Sign.of(cs.w2R)));
       } else {
-        _Tb2R = _Tb2R.subtract(tireForces.fx2R.multiply(params.radius()));
+        _Tb2R = _Tb2R.subtract(tireForces.fwheel.Get(3, 0).multiply(params.radius()));
       }
     }
     // ---

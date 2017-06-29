@@ -7,33 +7,13 @@ import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Scalars;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
+import ch.ethz.idsc.tensor.alg.Transpose;
 import ch.ethz.idsc.tensor.mat.RotationMatrix;
 
 /** implementation has been verified through several tests */
 public class TireForces {
-  // forces in car frame
-  final Scalar Fx1L; // 1
-  final Scalar Fx1R; // 2
-  final Scalar Fx2L; // 3
-  final Scalar Fx2R; // 4
-  final Scalar Fy1L; // 5
-  final Scalar Fy1R; // 6
-  final Scalar Fy2L; // 7
-  final Scalar Fy2R; // 8
-  private final Scalar Fz1L; // 9
-  private final Scalar Fz1R; // 10
-  private final Scalar Fz2L; // 11
-  private final Scalar Fz2R; // 12
-  //
-  // forces in wheel frame
-  final Scalar fx1L; // 1
-  final Scalar fx1R; // 2
-  final Scalar fx2L; // 3
-  final Scalar fx2R; // 4
-  private final Scalar fy1L; // 5
-  private final Scalar fy1R; // 6
-  private final Scalar fy2L; // 7
-  private final Scalar fy2R; // 8
+  public final Tensor Forces; // forces in car/body frame
+  public final Tensor fwheel; // forces in wheel frame
 
   public TireForces(CarModel params, CarState cs, CarControl cc) {
     // TODO check with edo
@@ -54,15 +34,21 @@ public class TireForces {
     final Tensor ck2L = RotationMatrix.of(angles.Get(2)).dot(mu2L.slip()).multiply(h);
     final Tensor ck2R = RotationMatrix.of(angles.Get(3)).dot(mu2R.slip()).multiply(h);
     // ---
-    Scalar E = ck1L.Get(0).add(params.lF().negate()); // as in doc
-    Scalar F = ck1R.Get(0).add(params.lF().negate()); // as in doc
-    Scalar G = ck2L.Get(0).add(params.lR()); // as in doc
-    Scalar H = ck2R.Get(0).add(params.lR()); // as in doc
-    // ---
-    Scalar A = ck1L.Get(1).add(params.lw().negate()); // as in doc
-    Scalar B = ck1R.Get(1).add(params.lw()); // as in doc
-    Scalar C = ck2L.Get(1).add(params.lw().negate()); // as in doc
-    Scalar D = ck2R.Get(1).add(params.lw()); // as in doc
+    Tensor EA = ck1L.subtract(params.levers().get(0).extract(0, 2));
+    Scalar E = EA.Get(0);
+    Scalar A = EA.Get(1);
+    //
+    Tensor FB = ck1R.subtract(params.levers().get(1).extract(0, 2));
+    Scalar F = FB.Get(0);
+    Scalar B = FB.Get(1);
+    //
+    Tensor GC = ck2L.subtract(params.levers().get(2).extract(0, 2));
+    Scalar G = GC.Get(0);
+    Scalar C = GC.Get(1);
+    //
+    Tensor HD = ck2R.subtract(params.levers().get(3).extract(0, 2));
+    Scalar H = HD.Get(0);
+    Scalar D = HD.Get(1);
     // ---
     final Scalar den;
     {
@@ -76,24 +62,29 @@ public class TireForces {
       System.out.println("denominator den = " + den);
     }
     final Scalar factor = params.gForce().divide(den); // explain why no risk to divide by 0?
+    final Scalar Fz1L;
     {
-      Tensor vec1 = Tensors.of(B, C, B, D, C, D);
+      // 1R x 2L +
+      Tensor vec1 = Tensors.of(B, C, B, D, C, D); // B.G-F.C +B.H-C.F
       Tensor vec2 = Tensors.of( //
           G, F.negate(), H, F.negate(), H.negate(), G);
       Fz1L = vec1.dot(vec2).Get().multiply(factor);
     }
+    final Scalar Fz1R;
     {
       Tensor vec1 = Tensors.of(A, C, A, D, C, D);
       Tensor vec2 = Tensors.of( //
           G, E.negate(), H, E.negate(), H, G.negate());
       Fz1R = vec1.dot(vec2).Get().multiply(factor).negate();
     }
+    final Scalar Fz2L;
     {
       Tensor vec1 = Tensors.of(A, B, A, D, B, D);
       Tensor vec2 = Tensors.of( //
           F, E.negate(), H, E.negate(), H, F.negate());
       Fz2L = vec1.dot(vec2).Get().multiply(factor);
     }
+    final Scalar Fz2R;
     {
       Tensor vec1 = Tensors.of(A, B, A, C, B, C);
       Tensor vec2 = Tensors.of( //
@@ -101,75 +92,40 @@ public class TireForces {
       Fz2R = vec1.dot(vec2).Get().multiply(factor);
     }
     //
-    Tensor f_1L = mu1L.slip().multiply(Fz1L);
-    fx1L = f_1L.Get(0);
-    fy1L = f_1L.Get(1);
-    //
-    Tensor f_1R = mu1R.slip().multiply(Fz1R);
-    fx1R = f_1R.Get(0);
-    fy1R = f_1R.Get(1);
-    //
-    Tensor f_2L = mu2L.slip().multiply(Fz2L);
-    fx2L = f_2L.Get(0);
-    fy2L = f_2L.Get(1);
-    //
-    Tensor f_2R = mu2R.slip().multiply(Fz2R);
-    fx2R = f_2R.Get(0);
-    fy2R = f_2R.Get(1);
-    //
-    final Tensor _F1L = RotationMatrix.of(angles.Get(0)).dot(Tensors.of(fx1L, fy1L)); // wheel to body
-    Fx1L = _F1L.Get(0);
-    Fy1L = _F1L.Get(1);
-    //
-    final Tensor _F1R = RotationMatrix.of(angles.Get(1)).dot(Tensors.of(fx1R, fy1R)); // wheel to body
-    Fx1R = _F1R.Get(0);
-    Fy1R = _F1R.Get(1);
-    //
-    Fx2L = fx2L;
-    Fy2L = fy2L;
-    //
-    Fx2R = fx2R;
-    Fy2R = fy2R;
-  }
-
-  public Scalar totalFX() {
-    return Fx1L.add(Fx1R).add(Fx2L).add(Fx2R);
-  }
-
-  public Scalar totalFY() {
-    return Fy1L.add(Fy1R).add(Fy2L).add(Fy2R);
-  }
-
-  public Scalar total24_13() {
-    return Fx1R.add(Fx2R).subtract(Fx1L.add(Fx2L));
-  }
-
-  public Scalar total56() {
-    return Fy1L.add(Fy1R); // 5 + 6
-  }
-
-  public Scalar total78() {
-    return Fy2L.add(Fy2R); // 7 + 8
+    fwheel = Tensors.of( //
+        mu1L.slip().multiply(Fz1L), //
+        mu1R.slip().multiply(Fz1R), //
+        mu2L.slip().multiply(Fz2L), //
+        mu2R.slip().multiply(Fz2R) //
+    ).unmodifiable();
+    Tensor fbodyZ = Tensors.of(Fz1L, Fz1R, Fz2L, Fz2R);
+    Tensor fbody = Tensors.empty();
+    for (int index = 0; index < 4; ++index) {
+      final Tensor _Fxy = RotationMatrix.of(angles.Get(index)).dot(fwheel.get(index)); // wheel to body
+      fbody.append(Tensors.of(_Fxy.Get(0), _Fxy.Get(1), fbodyZ.Get(index)));
+    }
+    Forces = fbody.unmodifiable();
   }
 
   /***************************************************/
-  Tensor asVectorFX() { // only used in test
-    return Tensors.of(Fx1L, Fx1R, Fx2L, Fx2R);
+  // FOR TESTS ONLY
+  Tensor asVectorFX() { // Tensors.of(Fx1L, Fx1R, Fx2L, Fx2R);
+    return Transpose.of(Forces).get(0);
   }
 
-  Tensor asVectorFY() { // only used in test
-    return Tensors.of(Fy1L, Fy1R, Fy2L, Fy2R);
+  Tensor asVectorFY() { // Tensors.of(Fy1L, Fy1R, Fy2L, Fy2R);
+    return Transpose.of(Forces).get(1);
   }
 
-  Tensor asVectorFZ() { // only used in test
-    return Tensors.of(Fz1L, Fz1R, Fz2L, Fz2R);
+  Tensor asVectorFZ() { // Tensors.of(Fz1L, Fz1R, Fz2L, Fz2R);
+    return Transpose.of(Forces).get(2);
   }
 
-  Tensor asVector_fX() { // only used in test
-    return Tensors.of(fx1L, fx1R, fx2L, fx2R);
+  Tensor asVector_fX() { // Tensors.of(fx1L, fx1R, fx2L, fx2R);
+    return Transpose.of(fwheel).get(0);
   }
 
-  Tensor asVector_fY() { // only used in test
-    return Tensors.of(fy1L, fy1R, fy2L, fy2R);
+  Tensor asVector_fY() { // Tensors.of(fy1L, fy1R, fy2L, fy2R);
+    return Transpose.of(fwheel).get(1);
   }
 }

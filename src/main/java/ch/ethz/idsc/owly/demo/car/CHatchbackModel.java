@@ -62,21 +62,6 @@ public class CHatchbackModel extends DefaultCarModel {
   }
 
   @Override
-  public Scalar lw() {
-    return LW;
-  }
-
-  @Override
-  public Scalar lF() {
-    return LF;
-  }
-
-  @Override
-  public Scalar lR() {
-    return LR;
-  }
-
-  @Override
   public Tensor levers() {
     return levers;
   }

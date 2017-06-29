@@ -24,18 +24,6 @@ public interface CarModel {
   /** @return tire-road friction coefficient */
   Scalar mu();
 
-  /** @return lateral distance of wheels from COG */
-  @Deprecated
-  Scalar lw();
-
-  /** @return front axle distance from COG [m] */
-  @Deprecated
-  Scalar lF();
-
-  /** @return rear axle distance from COG [m] */
-  @Deprecated
-  Scalar lR();
-
   /** @return vectors from COG to wheel centers in local coordinates (=invariant over time)
    * for instance if the car has 4 wheels, then
    * levers() = {

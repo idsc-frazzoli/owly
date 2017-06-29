@@ -8,7 +8,7 @@ import junit.framework.TestCase;
 
 public class TireForcesTest extends TestCase {
   public void testDemo1() {
-    System.out.println("TireForcesTest::demo1");
+//    System.out.println("TireForcesTest::demo1");
     CarModel carModel = new CHatchbackModel();
     CarState carState = CarStatic.x0_demo1();
     // System.out.println(carState.asVector());
@@ -24,7 +24,7 @@ public class TireForcesTest extends TestCase {
   }
 
   public void testDemo2() {
-    System.out.println("TireForcesTest::demo2");
+//    System.out.println("TireForcesTest::demo2");
     CarModel carModel = new CHatchbackModel();
     CarState carState = CarStatic.x0_demo2();
     // System.out.println(carState.asVector());
@@ -83,7 +83,7 @@ public class TireForcesTest extends TestCase {
    * 0.7665
    * 0.2022 */
   public void testDemo3() {
-    System.out.println("TireForcesTest::demo3");
+//    System.out.println("TireForcesTest::demo3");
     CarModel carModel = new CHatchbackModel();
     CarState carState = CarStatic.x0_demo3();
     // System.out.println(carState.asVector());

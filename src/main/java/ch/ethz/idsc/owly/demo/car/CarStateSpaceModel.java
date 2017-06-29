@@ -8,7 +8,10 @@ import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
+import ch.ethz.idsc.tensor.alg.Array;
+import ch.ethz.idsc.tensor.lie.Cross;
 import ch.ethz.idsc.tensor.mat.RotationMatrix;
+import ch.ethz.idsc.tensor.red.Total;
 
 /** the matlab code applies a rate limiter to u
  * if this is beneficial for stability, the limiter should
@@ -32,37 +35,33 @@ public class CarStateSpaceModel implements StateSpaceModel {
     final Scalar dux;
     final Scalar rollFric = params.rollFric(); // TODO at the moment == 0!
     Deadzone deadzone = Deadzone.of(rollFric.negate(), rollFric);
+    final Tensor total = Total.of(tire.Forces);
     {
-      Scalar prel = tire.totalFX().add(params.mass().multiply(cs.Uy).multiply(cs.r));
+      Scalar prel = total.Get(0).add(params.mass().multiply(cs.Uy).multiply(cs.r));
       dux = deadzone.apply(prel).subtract(params.coulombFriction(cs.Ux)).divide(params.mass());
     }
     // ---
     final Scalar duy;
     {
-      Scalar prel = tire.totalFY().subtract(params.mass().multiply(cs.Ux).multiply(cs.r));
+      Scalar prel = total.Get(1).subtract(params.mass().multiply(cs.Ux).multiply(cs.r));
       duy = deadzone.apply(prel).subtract(RealScalar.ZERO.multiply(params.coulombFriction(cs.Uy))).divide(params.mass());
     }
     // ---
     Scalar dr;
     {
-      // TODO use sum_i (lever_i x force_i)
-      // Tensor tor = Array.zeros(3);
-      // for (Tensor lever : params.levers()) {
-      // // tire.force();
-      // // Tensor vec1 = Tensors.of(params.lF(), params.lR().negate(), params.lw());
-      // // Tensor vec2 = Tensors.of(tire.total56(), tire.total78(), tire.total24_13());
-      // // dr = vec1.dot(vec2).Get().multiply(params.Iz_invert());
-      // }
-      Tensor vec1 = Tensors.of(params.lF(), params.lR().negate(), params.lw());
-      Tensor vec2 = Tensors.of(tire.total56(), tire.total78(), tire.total24_13());
-      dr = vec1.dot(vec2).Get().multiply(params.Iz_invert());
+      Tensor torque = Array.zeros(3);
+      for (int index = 0; index < params.levers().length(); ++index)
+        torque = torque.add(Cross.of(params.levers().get(index), tire.Forces.get(index)));
+      // TODO assert that components 0, and 1 are == 0! at the moment they are not
+      // maybe because of height?
+      dr = torque.Get(2).multiply(params.Iz_invert());
     }
     Tensor dp = RotationMatrix.of(cs.Ksi).dot(cs.u_2d());
     // ---
-    Scalar dw1L = torques.Tm1L.add(brakeTorques.Tb1L).subtract(params.radiusTimes(tire.fx1L)).multiply(params.Iw_invert());
-    Scalar dw1R = torques.Tm1R.add(brakeTorques.Tb1R).subtract(params.radiusTimes(tire.fx1R)).multiply(params.Iw_invert());
-    Scalar dw2L = torques.Tm2L.add(brakeTorques.Tb2L).subtract(params.radiusTimes(tire.fx2L)).multiply(params.Iw_invert());
-    Scalar dw2R = torques.Tm2R.add(brakeTorques.Tb2R).subtract(params.radiusTimes(tire.fx2R)).multiply(params.Iw_invert());
+    Scalar dw1L = torques.Tm1L.add(brakeTorques.Tb1L).subtract(params.radiusTimes(tire.fwheel.Get(0, 0))).multiply(params.Iw_invert());
+    Scalar dw1R = torques.Tm1R.add(brakeTorques.Tb1R).subtract(params.radiusTimes(tire.fwheel.Get(1, 0))).multiply(params.Iw_invert());
+    Scalar dw2L = torques.Tm2L.add(brakeTorques.Tb2L).subtract(params.radiusTimes(tire.fwheel.Get(2, 0))).multiply(params.Iw_invert());
+    Scalar dw2R = torques.Tm2R.add(brakeTorques.Tb2R).subtract(params.radiusTimes(tire.fwheel.Get(3, 0))).multiply(params.Iw_invert());
     // ---
     return Tensors.of( //
         dux, duy, //
