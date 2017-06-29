@@ -1,4 +1,4 @@
-// code by jph
+// code by jph & jl
 package ch.ethz.idsc.owly.math.region;
 
 import java.util.Arrays;
@@ -16,6 +16,10 @@ public class RegionUnion implements Region {
 
   public static Region of(Region... regions) {
     return new RegionUnion(Arrays.asList(regions));
+  }
+
+  public static Region of(Collection<Region> collection) {
+    return new RegionUnion(collection);
   }
 
   private RegionUnion(Collection<Region> collection) {
