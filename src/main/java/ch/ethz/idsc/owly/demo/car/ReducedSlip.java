@@ -1,6 +1,7 @@
 // code by edo and jph
 package ch.ethz.idsc.owly.demo.car;
 
+import ch.ethz.idsc.owly.math.Normalize2D;
 import ch.ethz.idsc.owly.math.car.Pacejka3;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
@@ -33,7 +34,7 @@ public class ReducedSlip implements SlipInterface {
     else
       value = ArcTan.of(pacejka3.B.multiply(Hypot.bifunction.apply(ux, uy).divide(rtw)));
     Scalar total = pacejka3.D.multiply(Sin.of(pacejka3.C.multiply(value))).multiply(factor);
-    mu = StablePytagoras.normalize(ux, uy).multiply(total.negate());
+    mu = Normalize2D.unlessZero(ux, uy).multiply(total.negate());
   }
 
   @Override

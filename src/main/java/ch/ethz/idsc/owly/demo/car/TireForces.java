@@ -43,8 +43,8 @@ public class TireForces {
     // ---
     final Scalar den = Total.of(Tensors.of( //
         EA.dot(Cross2D.of(FB)), //
-        GC.dot(Cross2D.of(EA)), //
         FB.dot(Cross2D.of(HD)), //
+        GC.dot(Cross2D.of(EA)), //
         HD.dot(Cross2D.of(GC)) //
     )).multiply(RealScalar.of(2)).Get();
     //
