@@ -2,21 +2,14 @@
 // code adapted by jph
 package ch.ethz.idsc.owly.demo.car;
 
-import ch.ethz.idsc.owly.math.Cross2D;
 import ch.ethz.idsc.owly.math.StateSpaceModel;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.TensorRuntimeException;
 import ch.ethz.idsc.tensor.Tensors;
-import ch.ethz.idsc.tensor.lie.Cross;
-import ch.ethz.idsc.tensor.lie.Rodriguez;
-import ch.ethz.idsc.tensor.mat.RotationMatrix;
 
 public class CarState {
-  // TODO not final code design
-  static CHatchbackModel params = new CHatchbackModel();
-  // ---
   public final Scalar Ux; // 1 long speed body frame [m/s]
   public final Scalar Uy; // 2 lateral speed body frame [m/s]
   public final Scalar r; // 3 yawing rate [rad/s]
@@ -62,25 +55,5 @@ public class CarState {
 
   public Tensor rate_3d() {
     return Tensors.of(RealScalar.ZERO, RealScalar.ZERO, r);
-  }
-
-  /** @param delta angle of wheel
-   * @param index of wheel
-   * @return */
-  public Tensor get_ui_2d(Scalar delta, int index) { // as in doc
-    Tensor tangent_2 = u_2d().add(Cross2D.of(params.levers().get(index).extract(0, 2).multiply(r)));
-    return RotationMatrix.of(delta.negate()).dot(tangent_2);
-  }
-
-  /** implementation below is for full 3d rotations, but not used since
-   * at the moment our car rotates in plane (only around z-axis)
-   * 
-   * @param delta
-   * @param index
-   * @return */
-  /* package */ Tensor get_ui_3(Scalar delta, int index) { // as in doc
-    Tensor rotation_3 = Rodriguez.of(Tensors.of(RealScalar.ZERO, RealScalar.ZERO, delta.negate()));
-    Tensor tangent_3 = u_3d().add(Cross.of(rate_3d(), params.levers().get(index)));
-    return rotation_3.dot(tangent_3).extract(0, 2);
   }
 }

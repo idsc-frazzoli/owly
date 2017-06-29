@@ -34,6 +34,12 @@ public interface CarModel {
    * and h = heightCog() */
   Tensor levers();
 
+  /** @param delta steering angle
+   * @return angles of wheels (measured from longitude forward direction)
+   * for instance if the car has 4 wheels and traditional steering then
+   * angles(delta) = {~delta, ~delta, 0, 0} */
+  Tensor angles(Scalar delta);
+
   /** @return distance from COG to front end [m] */
   Scalar frontL(); // only used for visualization
 

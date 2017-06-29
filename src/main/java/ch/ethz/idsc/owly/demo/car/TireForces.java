@@ -9,24 +9,30 @@ import ch.ethz.idsc.tensor.Scalars;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
 import ch.ethz.idsc.tensor.alg.Transpose;
+import ch.ethz.idsc.tensor.lie.Cross;
+import ch.ethz.idsc.tensor.lie.Rodriguez;
 import ch.ethz.idsc.tensor.mat.RotationMatrix;
 import ch.ethz.idsc.tensor.red.Total;
 
 /** implementation has been verified through several tests */
 public class TireForces {
+  public final CarModel params;
+  public final CarState cs;
   public final Tensor Forces; // forces in car/body frame
   public final Tensor fwheel; // forces in wheel frame
 
   public TireForces(CarModel params, CarState cs, CarControl cc) {
-    final Tensor angles = cc.tire_angles(params).unmodifiable();
+    this.params = params;
+    this.cs = cs;
+    final Tensor angles = params.angles(cc.delta).unmodifiable();
     //
-    final Tensor _u1L = cs.get_ui_2d(angles.Get(0), 0);
+    final Tensor _u1L = get_ui_2d(angles.Get(0), 0);
     final SlipInterface mu1L = new ReducedSlip(params.pacejka1(), params.mu(), _u1L, params.radiusTimes(cs.w1L));
-    final Tensor _u1R = cs.get_ui_2d(angles.Get(1), 1);
+    final Tensor _u1R = get_ui_2d(angles.Get(1), 1);
     final SlipInterface mu1R = new ReducedSlip(params.pacejka1(), params.mu(), _u1R, params.radiusTimes(cs.w1R));
-    final Tensor _u2L = cs.get_ui_2d(angles.Get(2), 2);
+    final Tensor _u2L = get_ui_2d(angles.Get(2), 2);
     final SlipInterface mu2L = new ReducedSlip(params.pacejka2(), params.mu(), _u2L, params.radiusTimes(cs.w2L));
-    final Tensor _u2R = cs.get_ui_2d(angles.Get(3), 3);
+    final Tensor _u2R = get_ui_2d(angles.Get(3), 3);
     final SlipInterface mu2R = new ReducedSlip(params.pacejka2(), params.mu(), _u2R, params.radiusTimes(cs.w2R));
     // ---
     final Scalar h = params.heightCog();
@@ -94,6 +100,26 @@ public class TireForces {
       fbody.append(Tensors.of(_Fxy.Get(0), _Fxy.Get(1), fbodyZ.Get(index)));
     }
     Forces = fbody.unmodifiable();
+  }
+
+  /** @param delta angle of wheel
+   * @param index of wheel
+   * @return */
+  private Tensor get_ui_2d(Scalar delta, int index) { // as in doc
+    Tensor tangent_2 = cs.u_2d().add(Cross2D.of(params.levers().get(index).extract(0, 2).multiply(cs.r)));
+    return RotationMatrix.of(delta.negate()).dot(tangent_2);
+  }
+
+  /** implementation below is for full 3d rotations, but not used since
+   * at the moment our car rotates in plane (only around z-axis)
+   * 
+   * @param delta
+   * @param index
+   * @return */
+  /* package */ Tensor get_ui_3(Scalar delta, int index) { // as in doc
+    Tensor rotation_3 = Rodriguez.of(Tensors.of(RealScalar.ZERO, RealScalar.ZERO, delta.negate()));
+    Tensor tangent_3 = cs.u_3d().add(Cross.of(cs.rate_3d(), params.levers().get(index)));
+    return rotation_3.dot(tangent_3).extract(0, 2);
   }
 
   /***************************************************/

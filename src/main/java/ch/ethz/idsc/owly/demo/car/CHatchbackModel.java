@@ -19,6 +19,7 @@ public class CHatchbackModel extends DefaultCarModel {
   private static final Scalar LF = RealScalar.of(1.015); // front axle distance from COG [m]
   private static final Scalar LR = RealScalar.of(1.895); // rear axle distance from COG [m]
   private final Tensor levers;
+  public CarSteering carSteering = CarSteering.FRONT;
 
   public CHatchbackModel() {
     Scalar h_negate = HEIGHT_COG.negate();
@@ -106,8 +107,13 @@ public class CHatchbackModel extends DefaultCarModel {
     return RealScalar.of(47); // coulomb friction
   }
 
+  @Override
+  public CarSteering steering() {
+    return carSteering;
+  }
+
   // maximal steering angle [deg]
-  // TODO check what is appropriate
+  // TODO check online what is appropriate
   private static final Scalar maxDelta = RealScalar.of(45 * Math.PI / 180);
   // maximal motor torque [Nm], with gears included
   private static final Scalar maxPress = RealScalar.of(13); // maximal master cylinder presure [MPa]
@@ -121,7 +127,9 @@ public class CHatchbackModel extends DefaultCarModel {
     if (!Clip.UNIT.of(u.Get(3)).equals(u.Get(3)))
       throw TensorRuntimeException.of(u.Get(3));
     // ---
-    Scalar delta = u.Get(0).multiply(maxDelta);
+    Scalar maxSteer = //
+        carSteering.equals(CarSteering.BOTH) ? maxDelta.multiply(RealScalar.of(.5)) : maxDelta;
+    Scalar delta = u.Get(0).multiply(maxSteer);
     Scalar brake = u.Get(1).multiply(maxPress);
     Scalar handbrake = u.Get(2).multiply(maxThb);
     Scalar throttle = u.Get(3).multiply(maxThrottle);
