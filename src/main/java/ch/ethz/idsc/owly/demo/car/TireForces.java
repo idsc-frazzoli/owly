@@ -9,7 +9,6 @@ import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
 import ch.ethz.idsc.tensor.alg.Array;
 import ch.ethz.idsc.tensor.alg.Join;
-import ch.ethz.idsc.tensor.alg.Transpose;
 import ch.ethz.idsc.tensor.lie.Cross;
 import ch.ethz.idsc.tensor.lie.Rodriguez;
 import ch.ethz.idsc.tensor.mat.LinearSolve;
@@ -32,23 +31,17 @@ public class TireForces {
     this.cs = cs;
     final Tensor angles = params.angles(cc.delta).unmodifiable();
     // ---
-    final Tensor mus = Tensors.of( //
-        new RobustSlip(params.pacejka(0), params.mu(), get_ui_2d(angles.Get(0), 0), params.radiusTimes(cs.w1L)).slip(), //
-        new RobustSlip(params.pacejka(1), params.mu(), get_ui_2d(angles.Get(1), 1), params.radiusTimes(cs.w1R)).slip(), //
-        new RobustSlip(params.pacejka(2), params.mu(), get_ui_2d(angles.Get(2), 2), params.radiusTimes(cs.w2L)).slip(), //
-        new RobustSlip(params.pacejka(3), params.mu(), get_ui_2d(angles.Get(3), 3), params.radiusTimes(cs.w2R)).slip() //
-    );
+    final Tensor mus = Tensors.vector(index -> //
+    new RobustSlip(params.pacejka(index), params.mu(), get_ui_2d(angles.Get(index), index), params.radiusTimes(cs.omega.Get(index))).slip(), 4);//
     final Tensor dir = Tensors.vector(index -> //
     Join.of(RotationMatrix.of(angles.Get(index)).dot(mus.get(index)), AFFINE_ONE), 4);
     // ---
     final Tensor fbodyZ;
     {
-      Tensor leversT = Transpose.of(params.levers());
-      Tensor dirT = Transpose.of(dir);
-      Tensor rotX_z = leversT.get(1);
-      Tensor rotX_y = leversT.get(2).pmul(dirT.get(1)); // z coordinate of tire contact * dir_y
-      Tensor rotY_z = leversT.get(0);
-      Tensor rotY_x = leversT.get(2).pmul(dirT.get(0)); // z coordinate of tire contact * dir_x
+      Tensor rotX_z = params.levers().get(Tensor.ALL, 1);
+      Tensor rotX_y = params.levers().get(Tensor.ALL, 2).pmul(dir.get(Tensor.ALL, 1)); // z coordinate of tire contact * dir_y
+      Tensor rotY_z = params.levers().get(Tensor.ALL, 0);
+      Tensor rotY_x = params.levers().get(Tensor.ALL, 2).pmul(dir.get(Tensor.ALL, 0)); // z coordinate of tire contact * dir_x
       Tensor Lhs = Tensors.of( //
           rotX_z.subtract(rotX_y), // no rotation around X
           rotY_z.subtract(rotY_x), // no rotation around Y
@@ -118,22 +111,22 @@ public class TireForces {
   /***************************************************/
   // FOR TESTS ONLY
   Tensor asVectorFX() { // Tensors.of(Fx1L, Fx1R, Fx2L, Fx2R);
-    return Transpose.of(Forces).get(0);
+    return Forces.get(Tensor.ALL, 0);
   }
 
   Tensor asVectorFY() { // Tensors.of(Fy1L, Fy1R, Fy2L, Fy2R);
-    return Transpose.of(Forces).get(1);
+    return Forces.get(Tensor.ALL, 1);
   }
 
   Tensor asVectorFZ() { // Tensors.of(Fz1L, Fz1R, Fz2L, Fz2R);
-    return Transpose.of(Forces).get(2);
+    return Forces.get(Tensor.ALL, 2);
   }
 
   Tensor asVector_fX() { // Tensors.of(fx1L, fx1R, fx2L, fx2R);
-    return Transpose.of(fwheel).get(0);
+    return fwheel.get(Tensor.ALL, 0);
   }
 
   Tensor asVector_fY() { // Tensors.of(fy1L, fy1R, fy2L, fy2R);
-    return Transpose.of(fwheel).get(1);
+    return fwheel.get(Tensor.ALL, 1);
   }
 }
