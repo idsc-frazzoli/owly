@@ -22,7 +22,6 @@ import ch.ethz.idsc.owly.math.state.FixedStateIntegrator;
 import ch.ethz.idsc.owly.math.state.StateIntegrator;
 import ch.ethz.idsc.owly.math.state.StateTime;
 import ch.ethz.idsc.owly.math.state.Trajectories;
-import ch.ethz.idsc.owly.math.state.TrajectoryRegionQuery;
 import ch.ethz.idsc.tensor.RationalScalar;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Tensor;
@@ -42,10 +41,9 @@ public class PsuDemo { // <- intentionally public
     PsuWrap psuWrap = new PsuWrap();
     PsuGoalManager psuGoalManager = new PsuGoalManager(psuWrap, //
         Tensors.vector(Math.PI * 0.7, .5), RealScalar.of(0.3));
-    TrajectoryRegionQuery obstacleQuery = new EmptyTrajectoryRegionQuery();
     // ---
     TrajectoryPlanner trajectoryPlanner = new StandardTrajectoryPlanner( //
-        eta, stateIntegrator, controls, obstacleQuery, psuGoalManager.getGoalInterface());
+        eta, stateIntegrator, controls, EmptyTrajectoryRegionQuery.INSTANCE, psuGoalManager.getGoalInterface());
     trajectoryPlanner.represent = psuWrap::represent;
     // ---
     trajectoryPlanner.insertRoot(Tensors.vector(0, 0));
@@ -61,10 +59,9 @@ public class PsuDemo { // <- intentionally public
     PsuWrap psuWrap = new PsuWrap();
     PsuGoalManager psuGoalManager = new PsuGoalManager(psuWrap, //
         Tensors.vector(Math.PI, 2), RealScalar.of(0.3));
-    TrajectoryRegionQuery obstacleQuery = new EmptyTrajectoryRegionQuery();
     // ---
     TrajectoryPlanner trajectoryPlanner = new StandardTrajectoryPlanner( //
-        eta, stateIntegrator, controls, obstacleQuery, psuGoalManager.getGoalInterface());
+        eta, stateIntegrator, controls, EmptyTrajectoryRegionQuery.INSTANCE, psuGoalManager.getGoalInterface());
     trajectoryPlanner.represent = psuWrap::represent;
     // ---
     trajectoryPlanner.insertRoot(Tensors.vector(0, 0));

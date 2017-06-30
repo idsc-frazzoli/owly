@@ -36,7 +36,7 @@ import ch.ethz.idsc.tensor.sca.Ramp;
 
 class R2Demo {
   public static TrajectoryPlanner simpleEmpty() {
-    return simple(new EmptyTrajectoryRegionQuery());
+    return simple(EmptyTrajectoryRegionQuery.INSTANCE);
   }
 
   public static TrajectoryPlanner simpleR2Bubbles() {

@@ -15,7 +15,6 @@ import ch.ethz.idsc.owly.math.flow.RungeKutta45Integrator;
 import ch.ethz.idsc.owly.math.state.EmptyTrajectoryRegionQuery;
 import ch.ethz.idsc.owly.math.state.FixedStateIntegrator;
 import ch.ethz.idsc.owly.math.state.StateIntegrator;
-import ch.ethz.idsc.owly.math.state.TrajectoryRegionQuery;
 import ch.ethz.idsc.tensor.RationalScalar;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Tensor;
@@ -32,10 +31,9 @@ class LvDemo {
         RungeKutta45Integrator.INSTANCE, RationalScalar.of(1, 30), 5);
     Collection<Flow> controls = LvControls.set(RealScalar.of(1), RealScalar.of(2));
     GoalInterface goalInterface = new LvGoalInterface(Tensors.vector(2, 1), Tensors.vector(.25, .25));
-    TrajectoryRegionQuery obstacleQuery = new EmptyTrajectoryRegionQuery();
     // ---
     TrajectoryPlanner trajectoryPlanner = new StandardTrajectoryPlanner( //
-        eta, stateIntegrator, controls, obstacleQuery, goalInterface);
+        eta, stateIntegrator, controls, EmptyTrajectoryRegionQuery.INSTANCE, goalInterface);
     // trajectoryPlanner.represent = psuWrap::represent;
     // ---
     trajectoryPlanner.insertRoot(Tensors.vector(2, .1));

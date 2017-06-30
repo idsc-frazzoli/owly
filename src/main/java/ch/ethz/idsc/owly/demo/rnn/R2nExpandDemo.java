@@ -14,7 +14,6 @@ import ch.ethz.idsc.owly.math.flow.Flow;
 import ch.ethz.idsc.owly.math.state.EmptyTrajectoryRegionQuery;
 import ch.ethz.idsc.owly.math.state.FixedStateIntegrator;
 import ch.ethz.idsc.owly.math.state.StateIntegrator;
-import ch.ethz.idsc.owly.math.state.TrajectoryRegionQuery;
 import ch.ethz.idsc.tensor.DoubleScalar;
 import ch.ethz.idsc.tensor.RationalScalar;
 import ch.ethz.idsc.tensor.Tensor;
@@ -26,10 +25,9 @@ class R2nExpandDemo {
     StateIntegrator stateIntegrator = FixedStateIntegrator.create(EulerIntegrator.INSTANCE, RationalScalar.of(1, 5), 5);
     Collection<Flow> controls = R2Controls.createRadial(16);
     RnnGoalManager rnGoal = new RnnGoalManager(Tensors.vector(4, 4), DoubleScalar.of(.25));
-    TrajectoryRegionQuery obstacleQuery = new EmptyTrajectoryRegionQuery();
     // ---
     TrajectoryPlanner trajectoryPlanner = new StandardTrajectoryPlanner( //
-        eta, stateIntegrator, controls, obstacleQuery, rnGoal);
+        eta, stateIntegrator, controls, EmptyTrajectoryRegionQuery.INSTANCE, rnGoal);
     trajectoryPlanner.insertRoot(Tensors.vector(0, 0));
     OwlyFrame owlyFrame = Gui.start();
     for (int c = 0; c < 100 && owlyFrame.jFrame.isVisible(); ++c) {

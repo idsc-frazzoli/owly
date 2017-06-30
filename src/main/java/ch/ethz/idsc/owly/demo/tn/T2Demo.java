@@ -20,7 +20,6 @@ import ch.ethz.idsc.owly.math.state.FixedStateIntegrator;
 import ch.ethz.idsc.owly.math.state.StateIntegrator;
 import ch.ethz.idsc.owly.math.state.StateTime;
 import ch.ethz.idsc.owly.math.state.Trajectories;
-import ch.ethz.idsc.owly.math.state.TrajectoryRegionQuery;
 import ch.ethz.idsc.tensor.RationalScalar;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Tensor;
@@ -38,10 +37,9 @@ class T2Demo {
     TnGoalManager rnGoal = new TnGoalManager(coordinateWrap, Tensors.vector(4, 6), RealScalar.of(.25));
     // performance depends on heuristic: zeroHeuristic vs rnGoal
     // Heuristic heuristic = new ZeroHeuristic(); // rnGoal
-    TrajectoryRegionQuery obstacleQuery = new EmptyTrajectoryRegionQuery();
     // ---
     TrajectoryPlanner trajectoryPlanner = new StandardTrajectoryPlanner( //
-        eta, stateIntegrator, controls, obstacleQuery, rnGoal.getGoalInterface());
+        eta, stateIntegrator, controls, EmptyTrajectoryRegionQuery.INSTANCE, rnGoal.getGoalInterface());
     trajectoryPlanner.represent = coordinateWrap::represent;
     trajectoryPlanner.insertRoot(Tensors.vector(0, 0));
     Expand.maxSteps(trajectoryPlanner, 1400);
