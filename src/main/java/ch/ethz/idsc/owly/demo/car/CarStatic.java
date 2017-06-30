@@ -17,7 +17,7 @@ public enum CarStatic {
    * 
    * @return */
   public static CarState x0_demo1() {
-    CarModel params = new CHatchbackModel();
+    CarModel params = CHatchbackModel.standard();
     Scalar speed = RealScalar.of(30 + 3.6 * Dz1);
     return new CarState(Tensors.vector( //
         speed.number().doubleValue() / 3.6, // Ux
@@ -41,7 +41,7 @@ public enum CarStatic {
    * 
    * @return */
   public static CarState x0_demo2() {
-    CarModel params = new CHatchbackModel();
+    CarModel params = CHatchbackModel.standard();
     Scalar speed = RealScalar.of(30 + 3.6 * Dz1);
     return new CarState(Tensors.vector( //
         speed.number().doubleValue() / 3.6, // Ux
@@ -60,7 +60,7 @@ public enum CarStatic {
 
   /** @return */
   public static CarState x0_demo3() {
-    CarModel params = new CHatchbackModel();
+    CarModel params = CHatchbackModel.standard();
     Scalar speed = RealScalar.of(20 + 3.6 * Dz1);
     return new CarState(Tensors.vector( //
         speed.number().doubleValue() / 3.6, // Ux

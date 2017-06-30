@@ -2,42 +2,46 @@
 // code adapted by jph
 package ch.ethz.idsc.owly.demo.car;
 
-import ch.ethz.idsc.owly.math.Pacejka3;
+import ch.ethz.idsc.owly.math.car.Pacejka3;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
 
-// TODO function names remain as-is until system works
 public interface CarModel {
   /** @return mass [kg] */
   Scalar mass();
 
-  Pacejka3 pacejka1();
-
-  Pacejka3 pacejka2();
+  /** @param index of wheel
+   * @return pacejka formula for wheel */
+  Pacejka3 pacejka(int index);
 
   /** @return tire radius */
   Scalar radius(); // formerly "R"
 
-  /** @return height of COG above ground */
-  Scalar heightCog();
-
   /** @return tire-road friction coefficient */
   Scalar mu();
 
-  /** @return lateral distance of wheels from COG */
-  Scalar lw();
+  /** @return vectors from COG to wheel centers in local coordinates (=invariant over time)
+   * for instance if the car has 4 wheels, then
+   * levers() = {
+   * {+1.1,+1,-h}, // 1L
+   * {+1.1,-1,-h}, // 1R
+   * {-1.2,+1,-h}, // 2L
+   * {-1.2,-1,-h} // 2R
+   * }
+   * and h = heightCog() */
+  Tensor levers();
 
-  /** @return front axle distance from COG [m] */
-  Scalar lF();
-
-  /** @return rear axle distance from COG [m] */
-  Scalar lR();
+  /** @param delta steering angle
+   * @return angles of wheels (measured from longitude forward direction)
+   * for instance if the car has 4 wheels and traditional steering then
+   * angles(delta) = {~delta, ~delta, 0, 0} */
+  Tensor angles(Scalar delta);
 
   /** @return distance from COG to front end [m] */
-  Scalar frontL();
+  Scalar frontL(); // only used for visualization
 
   /** @return distance from COG to rear end [m] */
-  Scalar rearL();
+  Scalar rearL(); // only used for visualization
 
   /** @return width of the vehicle [m] */
   Scalar width();
@@ -68,6 +72,7 @@ public interface CarModel {
   Scalar rollFric();
 
   /***************************************************/
+  /** @return mass * g */
   Scalar gForce();
 
   Scalar radiusTimes(Scalar omega);

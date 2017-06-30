@@ -2,7 +2,7 @@
 // code adapted by jph
 package ch.ethz.idsc.owly.demo.car;
 
-import ch.ethz.idsc.owly.math.Pacejka3;
+import ch.ethz.idsc.owly.math.car.Pacejka3;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
@@ -13,6 +13,34 @@ import ch.ethz.idsc.tensor.sca.Clip;
 public class CHatchbackModel extends DefaultCarModel {
   private static final Pacejka3 PACEJKA1 = new Pacejka3(13.8509, 1.3670, 0.9622);
   private static final Pacejka3 PACEJKA2 = new Pacejka3(14.1663, 1.3652, 0.9744);
+  private static final Scalar RADIUS = RealScalar.of(0.325); // wheel radius [m]
+  private static final Scalar HEIGHT_COG = RealScalar.of(0.54); // height of COG [m]
+  private static final Scalar LW = RealScalar.of(0.8375); // lateral distance of wheels from COG [m]
+  private static final Scalar LF = RealScalar.of(1.015); // front axle distance from COG [m]
+  private static final Scalar LR = RealScalar.of(1.895); // rear axle distance from COG [m]
+
+  public static CHatchbackModel standard() {
+    return new CHatchbackModel(CarSteering.FRONT, RealScalar.ZERO);
+  }
+
+  // ---
+  private final Tensor levers;
+  private final CarSteering carSteering; // = CarSteering.FRONT;
+  private final Scalar gammaM;
+
+  /** @param carSteering
+   * @param gammaM rear/total drive ratio; 0 is FWD, 1 is RWD, 0.5 is AWD */
+  public CHatchbackModel(CarSteering carSteering, Scalar gammaM) {
+    this.carSteering = carSteering;
+    this.gammaM = gammaM;
+    Scalar h_negate = HEIGHT_COG.negate();
+    levers = Tensors.of( //
+        Tensors.of(LF, LW, h_negate), // 1L
+        Tensors.of(LF, LW.negate(), h_negate), // 1R
+        Tensors.of(LR.negate(), LW, h_negate), // 2L
+        Tensors.of(LR.negate(), LW.negate(), h_negate) // 2R
+    ).unmodifiable();
+  }
 
   // ---
   @Override
@@ -21,23 +49,13 @@ public class CHatchbackModel extends DefaultCarModel {
   }
 
   @Override
-  public Pacejka3 pacejka1() {
-    return PACEJKA1;
-  }
-
-  @Override
-  public Pacejka3 pacejka2() {
-    return PACEJKA2;
+  public Pacejka3 pacejka(int index) {
+    return index < 2 ? PACEJKA1 : PACEJKA2;
   }
 
   @Override
   public Scalar radius() {
-    return RealScalar.of(0.325); // wheel radius [m]
-  }
-
-  @Override
-  public Scalar heightCog() {
-    return RealScalar.of(0.54); // height of COG [m]
+    return RADIUS;
   }
 
   @Override
@@ -46,18 +64,8 @@ public class CHatchbackModel extends DefaultCarModel {
   }
 
   @Override
-  public Scalar lw() {
-    return RealScalar.of(0.8375); // lateral distance of wheels from COG [m]
-  }
-
-  @Override
-  public Scalar lF() {
-    return RealScalar.of(1.015); // front axle distance from COG [m]
-  }
-
-  @Override
-  public Scalar lR() {
-    return RealScalar.of(1.895); // rear axle distance from COG [m]
+  public Tensor levers() {
+    return levers;
   }
 
   @Override
@@ -77,7 +85,7 @@ public class CHatchbackModel extends DefaultCarModel {
 
   @Override
   public Scalar gammaM() {
-    return RealScalar.of(0.0); // rear/total drive ratio; 0 is FWD, 1 is RWD
+    return gammaM; // rear/total drive ratio; 0 is FWD, 1 is RWD
   }
 
   @Override
@@ -100,12 +108,18 @@ public class CHatchbackModel extends DefaultCarModel {
     return RealScalar.of(47); // coulomb friction
   }
 
+  @Override
+  public CarSteering steering() {
+    return carSteering;
+  }
+
   // maximal steering angle [deg]
-  private static final Scalar maxDelta = RealScalar.of(50 * Math.PI / 180);
+  // TODO check online what is appropriate
+  private static final Scalar maxDelta = RealScalar.of(45 * Math.PI / 180);
   // maximal motor torque [Nm], with gears included
-  private static final Scalar maxThrottle = RealScalar.of(1000.);
   private static final Scalar maxPress = RealScalar.of(13); // maximal master cylinder presure [MPa]
   private static final Scalar maxThb = RealScalar.of(2000); // max handbrake torque [Nm]
+  private static final Scalar maxThrottle = RealScalar.of(2000.);
 
   @Override
   public CarControl createControl(Tensor u) {
@@ -114,7 +128,7 @@ public class CHatchbackModel extends DefaultCarModel {
     if (!Clip.UNIT.of(u.Get(3)).equals(u.Get(3)))
       throw TensorRuntimeException.of(u.Get(3));
     // ---
-    Scalar delta = u.Get(0).multiply(maxDelta);
+    Scalar delta = u.Get(0).multiply(maxDelta).multiply(carSteering.factor);
     Scalar brake = u.Get(1).multiply(maxPress);
     Scalar handbrake = u.Get(2).multiply(maxThb);
     Scalar throttle = u.Get(3).multiply(maxThrottle);
