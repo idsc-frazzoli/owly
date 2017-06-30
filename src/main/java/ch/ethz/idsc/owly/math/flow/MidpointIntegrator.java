@@ -6,6 +6,7 @@ import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
 
 /** 2nd order RungeKutta
+ * integrator requires 2 flow evaluations
  * 
  * Numerical Recipes 3rd Edition (17.1.2) */
 public enum MidpointIntegrator implements Integrator {

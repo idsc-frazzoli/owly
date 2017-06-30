@@ -6,6 +6,7 @@ import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
 
 /** fourth-order Runge-Kutta formula
+ * integrator requires 4 flow evaluations
  * 
  * Numerical Recipes 3rd Edition (17.1.3) */
 public enum RungeKutta4Integrator implements Integrator {

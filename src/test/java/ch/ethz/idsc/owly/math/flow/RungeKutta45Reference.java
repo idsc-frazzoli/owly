@@ -6,11 +6,12 @@ import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
 
 /** fifth-order Runge-Kutta formula based on RK4
+ * implementation requires 12 flow evaluations
  * 
  * Numerical Recipes 3rd Edition (17.2.3)
  * 
- * class is a reference implementation for testing.
- * for production, use {@link RungeKutta45Integrator} */
+ * class is a simple reference implementation for testing.
+ * use {@link RungeKutta45Integrator} for applications */
 /* package */ enum RungeKutta45Reference implements Integrator {
   INSTANCE;
   // ---
