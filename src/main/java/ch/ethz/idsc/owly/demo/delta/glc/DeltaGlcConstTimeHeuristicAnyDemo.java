@@ -1,9 +1,16 @@
 // code by jl
 package ch.ethz.idsc.owly.demo.delta.glc;
 
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 
+import ch.ethz.idsc.owly.demo.delta.DeltaStateSpaceModel;
+import ch.ethz.idsc.owly.demo.delta.DeltaTrajectoryGoalManager;
+import ch.ethz.idsc.owly.demo.delta.ImageGradient;
+import ch.ethz.idsc.owly.demo.util.Images;
+import ch.ethz.idsc.owly.demo.util.Resources;
 import ch.ethz.idsc.owly.glc.core.AnyPlannerInterface;
 import ch.ethz.idsc.owly.glc.core.Expand;
 import ch.ethz.idsc.owly.glc.core.GlcNode;
@@ -18,16 +25,12 @@ import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
+import ch.ethz.idsc.tensor.io.Import;
 
 class DeltaGlcConstTimeHeuristicAnyDemo {
   public static void main(String[] args) throws Exception {
     // -- Quick Planner init
     RationalScalar quickResolution = (RationalScalar) RationalScalar.of(11, 1);
-    Scalar timeScale = RealScalar.of(5);
-    Scalar depthScale = RealScalar.of(10);
-    Tensor partitionScale = Tensors.vector(10e5, 10e5);
-    Scalar dtMax = RationalScalar.of(1, 6);
-    int maxIter = 2000;
     TrajectoryPlanner quickTrajectoryPlanner = DeltaHelper.createGlc(RealScalar.of(-0.25), quickResolution);
     OwlyFrame quickOwlyFrame = Gui.start();
     quickOwlyFrame.configCoordinateOffset(33, 416);
@@ -36,22 +39,40 @@ class DeltaGlcConstTimeHeuristicAnyDemo {
     Expand.maxDepth(quickTrajectoryPlanner, RealScalar.POSITIVE_INFINITY.number().intValue());
     quickOwlyFrame.setGlc(quickTrajectoryPlanner);
     Optional<GlcNode> optional = quickTrajectoryPlanner.getBest();
+    List<StateTime> quickTrajectory = null;
     if (optional.isPresent()) {
-      List<StateTime> quickTrajectory = GlcNodes.getPathFromRootTo(optional.get());
+      quickTrajectory = GlcNodes.getPathFromRootTo(optional.get());
       Trajectories.print(quickTrajectory);
+    } else {
+      throw new RuntimeException();
     }
     // s --SLOWPLANNER
     RationalScalar resolution = (RationalScalar) RationalScalar.of(11, 1);
-    AnyPlannerInterface anyTrajectoryPlanner = DeltaHelper.createGlcAny(RealScalar.of(-0.25), resolution);
+    AnyPlannerInterface slowTrajectoryPlanner = DeltaHelper.createGlcAny(RealScalar.of(-0.25), resolution);
     // GOALMANAGER
+    // TODO: needs to be removed from main
+    Tensor range = Tensors.vector(9, 6.5);
+    ImageGradient ipr = new ImageGradient( //
+        Images.displayOrientation(Import.of(Resources.fileFromRepository("/io/delta_uxy.png")).get(Tensor.ALL, Tensor.ALL, 0)), //
+        range, RealScalar.of(-.5)); // -.25 .5
+    DeltaStateSpaceModel stateSpaceModel = new DeltaStateSpaceModel(ipr);
+    Scalar maxInput = RealScalar.ONE;
+    Scalar maxSpeed = maxInput.add(ipr.maxNorm());
+    Iterator<StateTime> iterator = quickTrajectory.iterator();
+    List<Tensor> quickPath = new ArrayList<>();
+    while (iterator.hasNext())
+      quickPath.add(iterator.next().x());
+    DeltaTrajectoryGoalManager trajectoryGoalManager = new DeltaTrajectoryGoalManager(//
+        quickPath, Tensors.vector(.3, .3), maxSpeed);
+    slowTrajectoryPlanner.changeToGoal(trajectoryGoalManager);
     OwlyFrame owlyFrame = Gui.start();
     owlyFrame.configCoordinateOffset(33, 416);
     owlyFrame.jFrame.setBounds(100, 100, 620, 475);
     Scalar planningTime = RealScalar.of(1);
-    while (!anyTrajectoryPlanner.getBest().isPresent() && owlyFrame.jFrame.isVisible()) {
+    while (owlyFrame.jFrame.isVisible()) {
       // TODO JAN wierd RealScalar cast
-      int expandIter = Expand.constTime(anyTrajectoryPlanner, (RealScalar) planningTime);
-      owlyFrame.setGlc((TrajectoryPlanner) anyTrajectoryPlanner);
+      int expandIter = Expand.constTime(slowTrajectoryPlanner, (RealScalar) planningTime);
+      owlyFrame.setGlc((TrajectoryPlanner) slowTrajectoryPlanner);
       if (expandIter < 1)
         break;
       Thread.sleep(1);
