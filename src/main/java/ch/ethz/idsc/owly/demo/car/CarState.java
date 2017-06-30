@@ -8,6 +8,7 @@ import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.TensorRuntimeException;
 import ch.ethz.idsc.tensor.Tensors;
+import ch.ethz.idsc.tensor.alg.Join;
 
 public class CarState {
   public final Scalar Ux; // 1 long speed body frame [m/s]
@@ -16,10 +17,7 @@ public class CarState {
   public final Scalar Ksi; // 4 heading of the car [rad]
   public final Scalar px; // 5 pos [m]
   public final Scalar py; // 6 pos [m]
-  public final Scalar w1L; // [rad/s]
-  public final Scalar w1R; // [rad/s]
-  public final Scalar w2L; // [rad/s]
-  public final Scalar w2R; // [rad/s]
+  public final Tensor omega; // [rad/s]
 
   public CarState(Tensor x) {
     if (x.length() != 10)
@@ -31,18 +29,17 @@ public class CarState {
     Ksi = x.Get(3);
     px = x.Get(4);
     py = x.Get(5);
-    w1L = x.Get(6);
-    w1R = x.Get(7);
-    w2L = x.Get(8);
-    w2R = x.Get(9);
+    omega = x.extract(6, 10).unmodifiable();
   }
 
   /** @return state encoded as vector for input to {@link StateSpaceModel} */
   public Tensor asVector() {
-    return Tensors.of( //
-        Ux, Uy, //
-        r, Ksi, px, py, //
-        w1L, w1R, w2L, w2R);
+    return Join.of( //
+        Tensors.of( //
+            Ux, Uy, //
+            r, Ksi, //
+            px, py), //
+        omega);
   }
 
   public Tensor u_2d() {
