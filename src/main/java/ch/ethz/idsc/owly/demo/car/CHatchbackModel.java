@@ -18,10 +18,21 @@ public class CHatchbackModel extends DefaultCarModel {
   private static final Scalar LW = RealScalar.of(0.8375); // lateral distance of wheels from COG [m]
   private static final Scalar LF = RealScalar.of(1.015); // front axle distance from COG [m]
   private static final Scalar LR = RealScalar.of(1.895); // rear axle distance from COG [m]
-  private final Tensor levers;
-  public CarSteering carSteering = CarSteering.FRONT;
 
-  public CHatchbackModel() {
+  public static CHatchbackModel standard() {
+    return new CHatchbackModel(CarSteering.FRONT, RealScalar.ZERO);
+  }
+
+  // ---
+  private final Tensor levers;
+  private final CarSteering carSteering; // = CarSteering.FRONT;
+  private final Scalar gammaM;
+
+  /** @param carSteering
+   * @param gammaM rear/total drive ratio; 0 is FWD, 1 is RWD, 0.5 is AWD */
+  public CHatchbackModel(CarSteering carSteering, Scalar gammaM) {
+    this.carSteering = carSteering;
+    this.gammaM = gammaM;
     Scalar h_negate = HEIGHT_COG.negate();
     levers = Tensors.of( //
         Tensors.of(LF, LW, h_negate), // 1L
@@ -79,7 +90,7 @@ public class CHatchbackModel extends DefaultCarModel {
 
   @Override
   public Scalar gammaM() {
-    return RealScalar.of(0.5); // rear/total drive ratio; 0 is FWD, 1 is RWD
+    return gammaM; // rear/total drive ratio; 0 is FWD, 1 is RWD
   }
 
   @Override

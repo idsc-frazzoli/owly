@@ -58,8 +58,7 @@ public class CarStateSpaceModel implements StateSpaceModel {
     Scalar dr;
     {
       Tensor torque = tire.torque();
-      {
-        // TODO assert that components 0, and 1 are == 0! at the moment they are not
+      if (!tire.isTorqueConsistent() || !tire.isFzConsistent()) {
         long toc = System.currentTimeMillis();
         if (tic + 987 <= toc) {
           tic = toc;
@@ -68,7 +67,6 @@ public class CarStateSpaceModel implements StateSpaceModel {
           Scalar f03 = tire.Forces.Get(0, 2).add(tire.Forces.Get(3, 2));
           Scalar f12 = tire.Forces.Get(1, 2).add(tire.Forces.Get(2, 2));
           System.out.println("Fz=" + Tensors.of(f03, f12).map(Round._2));
-          System.out.println(tire.isTorqueConsistent() + " " + tire.isFzConsistent());
         }
       }
       dr = torque.Get(2).multiply(params.Iz_invert());
@@ -80,12 +78,17 @@ public class CarStateSpaceModel implements StateSpaceModel {
     Scalar dw2L = torques.Tm2L.add(brakeTorques.Tb2L).subtract(params.radiusTimes(tire.fwheel.Get(2, 0))).multiply(params.Iw_invert());
     Scalar dw2R = torques.Tm2R.add(brakeTorques.Tb2R).subtract(params.radiusTimes(tire.fwheel.Get(3, 0))).multiply(params.Iw_invert());
     // ---
-    return Tensors.of( //
+    Tensor fxu = Tensors.of( //
         dux, duy, //
         dr, //
         cs.r, //
         dp.Get(0), dp.Get(1), //
         dw1L, dw1R, dw2L, dw2R);
+    // the observation is that dwXY oscillate a lot!
+    // this is consistent with the MATLAB code
+    // if (Scalars.lessThan(RealScalar.of(1e4), Norm.Infinity.of(fxu)))
+    // System.out.println(fxu);
+    return fxu;
   }
 
   @Override

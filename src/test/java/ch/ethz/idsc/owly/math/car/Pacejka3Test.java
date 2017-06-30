@@ -9,13 +9,13 @@ import junit.framework.TestCase;
 
 public class Pacejka3Test extends TestCase {
   public void testSimple() {
-    CarModel c = new CHatchbackModel();
+    CarModel c = CHatchbackModel.standard();
     Scalar r = c.pacejka(0).apply(RealScalar.ZERO);
     assertEquals(r, RealScalar.ZERO);
   }
 
   public void testAntiSymmetric() {
-    CarModel c = new CHatchbackModel();
+    CarModel c = CHatchbackModel.standard();
     Scalar sp = c.pacejka(1).apply(RealScalar.ONE);
     Scalar sn = c.pacejka(0).apply(RealScalar.ONE.negate());
     assertEquals(sp, sn.negate());

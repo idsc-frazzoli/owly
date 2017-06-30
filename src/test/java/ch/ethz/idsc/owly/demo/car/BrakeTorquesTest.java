@@ -8,7 +8,7 @@ import junit.framework.TestCase;
 
 public class BrakeTorquesTest extends TestCase {
   public void testSimple() {
-    CarModel carModel = new CHatchbackModel();
+    CarModel carModel = CHatchbackModel.standard();
     CarState carState = CarStatic.x0_demo1();
     CarControl cc = carModel.createControl(Tensors.vector(0, 1, 0, 0));
     TireForces tireForces = new TireForces(carModel, carState, cc);
