@@ -17,9 +17,6 @@ public interface CarModel {
   /** @return tire radius */
   Scalar radius(); // formerly "R"
 
-  /** @return height of COG above ground */
-  Scalar heightCog();
-
   /** @return tire-road friction coefficient */
   Scalar mu();
 

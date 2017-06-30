@@ -59,11 +59,6 @@ public class CHatchbackModel extends DefaultCarModel {
   }
 
   @Override
-  public Scalar heightCog() {
-    return HEIGHT_COG;
-  }
-
-  @Override
   public Scalar mu() {
     return RealScalar.of(0.85); // tire road friction coefficient
   }

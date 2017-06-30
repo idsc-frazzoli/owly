@@ -41,18 +41,17 @@ public class TireForces {
     final Tensor dir = Tensors.vector(index -> //
     Join.of(RotationMatrix.of(angles.Get(index)).dot(mus.get(index)), AFFINE_ONE), 4);
     // ---
-    final Scalar h = params.heightCog();
     final Tensor fbodyZ;
     {
       Tensor leversT = Transpose.of(params.levers());
       Tensor dirT = Transpose.of(dir);
       Tensor rotX_z = leversT.get(1);
-      Tensor rotX_y = dirT.get(1).multiply(h);
+      Tensor rotX_y = leversT.get(2).pmul(dirT.get(1)); // z coordinate of tire contact * dir_y
       Tensor rotY_z = leversT.get(0);
-      Tensor rotY_x = dirT.get(0).multiply(h);
+      Tensor rotY_x = leversT.get(2).pmul(dirT.get(0)); // z coordinate of tire contact * dir_x
       Tensor Lhs = Tensors.of( //
-          rotX_z.add(rotX_y), // no rotation around X
-          rotY_z.add(rotY_x), // no rotation around Y
+          rotX_z.subtract(rotX_y), // no rotation around X
+          rotY_z.subtract(rotY_x), // no rotation around Y
           SUM_ALL, // compensate g-force
           Tensors.vector(+1, -1, -1, +1) // weight transfer TODO geometry of COG?
       );
