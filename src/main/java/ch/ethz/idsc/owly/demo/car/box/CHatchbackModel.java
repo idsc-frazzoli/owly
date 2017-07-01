@@ -1,10 +1,15 @@
 // code by edo
 // code adapted by jph
-package ch.ethz.idsc.owly.demo.car;
+package ch.ethz.idsc.owly.demo.car.box;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import ch.ethz.idsc.owly.demo.car.CarControl;
+import ch.ethz.idsc.owly.demo.car.CarSteering;
+import ch.ethz.idsc.owly.demo.car.DefaultCarModel;
+import ch.ethz.idsc.owly.demo.car.DefaultTire;
+import ch.ethz.idsc.owly.demo.car.TireInterface;
 import ch.ethz.idsc.owly.math.car.Pacejka3;
 import ch.ethz.idsc.tensor.DoubleScalar;
 import ch.ethz.idsc.tensor.RealScalar;

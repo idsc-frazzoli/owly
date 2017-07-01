@@ -1,6 +1,9 @@
 // code by jph
-package ch.ethz.idsc.owly.demo.car;
+package ch.ethz.idsc.owly.demo.car.box;
 
+import ch.ethz.idsc.owly.demo.car.CarControl;
+import ch.ethz.idsc.owly.demo.car.CarSteering;
+import ch.ethz.idsc.owly.demo.car.DefaultCarModel;
 import ch.ethz.idsc.owly.math.car.Pacejka3;
 import ch.ethz.idsc.tensor.DoubleScalar;
 import ch.ethz.idsc.tensor.RealScalar;
@@ -11,10 +14,12 @@ import ch.ethz.idsc.tensor.Tensors;
 import ch.ethz.idsc.tensor.sca.Clip;
 
 /** specifications of vehicle taken from:
- * TODO */
-public class RimoSinusModel extends DefaultCarModel {
-  public static RimoSinusModel standard() {
-    return new RimoSinusModel(CarSteering.FRONT, RealScalar.ZERO);
+ * Time-Optimal Vehicle Posture Control to Mitigate Unavoidable
+ * Collisions Using Conventional Control Inputs
+ * Chakraborty, Tsiotras, Diaz */
+public class TsiotrasModel extends DefaultCarModel {
+  public static TsiotrasModel standard() {
+    return new TsiotrasModel(CarSteering.FRONT, RealScalar.ZERO);
   }
 
   // ---
@@ -24,17 +29,15 @@ public class RimoSinusModel extends DefaultCarModel {
 
   /** @param carSteering
    * @param gammaM rear/total drive ratio; 0 is FWD, 1 is RWD, 0.5 is AWD */
-  public RimoSinusModel(CarSteering carSteering, Scalar gammaM) {
+  public TsiotrasModel(CarSteering carSteering, Scalar gammaM) {
     this.carSteering = carSteering;
     this.gammaM = gammaM;
-    final Pacejka3 PACEJKA = new Pacejka3(7, 1.4); // TODO
-    final Scalar RADIUS1 = DoubleScalar.of(0.255 * 0.5); // wheel radius [m]
-    final Scalar RADIUS2 = DoubleScalar.of(0.278 * 0.5); // wheel radius [m]
-    // TODO front wheel, back wheel
-    final Scalar HEIGHT_COG = DoubleScalar.of(0.20); // height of COG [m]
+    final Pacejka3 PACEJKA = new Pacejka3(7, 1.4);
+    final Scalar RADIUS = DoubleScalar.of(0.29); // wheel radius [m]
+    final Scalar HEIGHT_COG = DoubleScalar.of(0.58); // height of COG [m]
     final Scalar LW = DoubleScalar.of(0.8375); // TODO unspecified lateral distance of wheels from COG [m]
-    final Scalar LF = DoubleScalar.of(0.7); // TODO front axle distance from COG [m]
-    final Scalar LR = DoubleScalar.of(0.7); // rear axle distance from COG [m]
+    final Scalar LF = DoubleScalar.of(1.1); // front axle distance from COG [m]
+    final Scalar LR = DoubleScalar.of(1.3); // rear axle distance from COG [m]
     Scalar h_negate = HEIGHT_COG.negate();
     levers = Tensors.of( //
         Tensors.of(LF, LW, h_negate), // 1L
@@ -47,7 +50,7 @@ public class RimoSinusModel extends DefaultCarModel {
   // ---
   @Override
   public Scalar mass() {
-    return DoubleScalar.of(170); // mass [kg]
+    return DoubleScalar.of(1245); // mass [kg]
   }
 
   @Override
