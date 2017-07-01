@@ -9,18 +9,6 @@ public interface VehicleModel {
   /** @return mass [kg] */
   Scalar mass();
 
-  /** @return vectors from COG to wheel centers in local coordinates (=invariant over time)
-   * for instance if the car has 4 wheels, then
-   * levers() = {
-   * {+1.1,+1,-h}, // 1L
-   * {+1.1,-1,-h}, // 1R
-   * {-1.2,+1,-h}, // 2L
-   * {-1.2,-1,-h} // 2R
-   * }
-   * and h = heightCog() */
-  @Deprecated
-  Tensor levers(); // TODO remove
-
   /** @return number of tires */
   int tires();
 

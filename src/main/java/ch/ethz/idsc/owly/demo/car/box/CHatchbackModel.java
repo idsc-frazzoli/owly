@@ -25,7 +25,6 @@ public class CHatchbackModel extends DefaultCarModel {
   }
 
   // ---
-  private final Tensor levers;
   private final CarSteering carSteering;
   private final Scalar gammaM;
   private final List<TireInterface> list = new ArrayList<>();
@@ -35,23 +34,18 @@ public class CHatchbackModel extends DefaultCarModel {
   public CHatchbackModel(CarSteering carSteering, Scalar gammaM) {
     this.carSteering = carSteering;
     this.gammaM = gammaM;
+    final Scalar radius = DoubleScalar.of(0.325); // wheel radius [m]
+    final Scalar iw = DoubleScalar.of(1536.7 + 427.7084);
+    final Pacejka3 PACEJKA1 = new Pacejka3(13.8509, 1.3670, 0.9622);
+    final Pacejka3 PACEJKA2 = new Pacejka3(14.1663, 1.3652, 0.9744);
     final Scalar LW = DoubleScalar.of(0.8375); // lateral distance of wheels from COG [m]
     final Scalar LF = DoubleScalar.of(1.015); // front axle distance from COG [m]
     final Scalar LR = DoubleScalar.of(1.895); // rear axle distance from COG [m]
-    Scalar h_negate = DoubleScalar.of(-0.54); // height of COG [m]
-    levers = Tensors.of( //
-        Tensors.of(LF, LW, h_negate), // 1L
-        Tensors.of(LF, LW.negate(), h_negate), // 1R
-        Tensors.of(LR.negate(), LW, h_negate), // 2L
-        Tensors.of(LR.negate(), LW.negate(), h_negate) // 2R
-    ).unmodifiable();
-    Scalar RADIUS = DoubleScalar.of(0.325); // wheel radius [m]
-    final Pacejka3 PACEJKA1 = new Pacejka3(13.8509, 1.3670, 0.9622);
-    final Pacejka3 PACEJKA2 = new Pacejka3(14.1663, 1.3652, 0.9744);
-    list.add(new DefaultTire(levers.get(0), RADIUS, DoubleScalar.of(1536.7 + 427.7084), PACEJKA1));
-    list.add(new DefaultTire(levers.get(1), RADIUS, DoubleScalar.of(1536.7 + 427.7084), PACEJKA1));
-    list.add(new DefaultTire(levers.get(2), RADIUS, DoubleScalar.of(1536.7 + 427.7084), PACEJKA2));
-    list.add(new DefaultTire(levers.get(3), RADIUS, DoubleScalar.of(1536.7 + 427.7084), PACEJKA2));
+    final Scalar LZ = DoubleScalar.of(-0.54); // from COG to ground contact level [m]
+    list.add(new DefaultTire(radius, iw, PACEJKA1, Tensors.of(LF, LW, LZ)));
+    list.add(new DefaultTire(radius, iw, PACEJKA1, Tensors.of(LF, LW.negate(), LZ)));
+    list.add(new DefaultTire(radius, iw, PACEJKA2, Tensors.of(LR.negate(), LW, LZ)));
+    list.add(new DefaultTire(radius, iw, PACEJKA2, Tensors.of(LR.negate(), LW.negate(), LZ)));
   }
 
   public TireInterface tire(int index) {
@@ -62,11 +56,6 @@ public class CHatchbackModel extends DefaultCarModel {
   @Override
   public Scalar mass() {
     return DoubleScalar.of(1412); // mass [kg]
-  }
-
-  @Override
-  public Tensor levers() {
-    return levers;
   }
 
   @Override

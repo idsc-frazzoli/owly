@@ -40,10 +40,11 @@ public class TireForces {
     // ---
     final Tensor fbodyZ;
     {
-      Tensor rotX_z = params.levers().get(Tensor.ALL, 1);
-      Tensor rotX_y = params.levers().get(Tensor.ALL, 2).pmul(dir.get(Tensor.ALL, 1)); // z coordinate of tire contact * dir_y
-      Tensor rotY_z = params.levers().get(Tensor.ALL, 0);
-      Tensor rotY_x = params.levers().get(Tensor.ALL, 2).pmul(dir.get(Tensor.ALL, 0)); // z coordinate of tire contact * dir_x
+      Tensor levers = Tensors.vector(i -> params.tire(i).lever(), 4);
+      Tensor rotX_z = levers.get(Tensor.ALL, 1);
+      Tensor rotX_y = levers.get(Tensor.ALL, 2).pmul(dir.get(Tensor.ALL, 1)); // z coordinate of tire contact * dir_y
+      Tensor rotY_z = levers.get(Tensor.ALL, 0);
+      Tensor rotY_x = levers.get(Tensor.ALL, 2).pmul(dir.get(Tensor.ALL, 0)); // z coordinate of tire contact * dir_x
       Tensor Lhs = Tensors.of( //
           rotX_z.subtract(rotX_y), // no rotation around X
           rotY_z.subtract(rotY_x), // no rotation around Y
@@ -73,8 +74,8 @@ public class TireForces {
   /** @return torque on vehicle at center of mass */
   public Tensor torque() {
     Tensor tensor = Array.zeros(3);
-    for (int index = 0; index < params.levers().length(); ++index)
-      tensor = tensor.add(Cross.of(params.levers().get(index), Forces.get(index)));
+    for (int index = 0; index < params.tires(); ++index)
+      tensor = tensor.add(Cross.of(params.tire(index).lever(), Forces.get(index)));
     return tensor;
   }
 
@@ -97,7 +98,7 @@ public class TireForces {
    * @param index of wheel
    * @return */
   private Tensor get_ui_2d(Scalar delta, int index) { // as in doc
-    Tensor tangent_2 = cs.u_2d().add(Cross2D.of(params.levers().get(index).extract(0, 2).multiply(cs.r)));
+    Tensor tangent_2 = cs.u_2d().add(Cross2D.of(params.tire(index).lever().extract(0, 2).multiply(cs.r)));
     return RotationMatrix.of(delta.negate()).dot(tangent_2);
   }
 
@@ -109,7 +110,7 @@ public class TireForces {
    * @return */
   /* package */ Tensor get_ui_3(Scalar delta, int index) { // as in doc
     Tensor rotation_3 = Rodriguez.of(Tensors.of(RealScalar.ZERO, RealScalar.ZERO, delta.negate()));
-    Tensor tangent_3 = cs.u_3d().add(Cross.of(cs.rate_3d(), params.levers().get(index)));
+    Tensor tangent_3 = cs.u_3d().add(Cross.of(cs.rate_3d(), params.tire(index).lever()));
     return rotation_3.dot(tangent_3).extract(0, 2);
   }
 

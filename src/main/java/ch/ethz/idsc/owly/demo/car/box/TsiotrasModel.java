@@ -54,11 +54,6 @@ public class TsiotrasModel extends DefaultCarModel {
   }
 
   @Override
-  public Tensor levers() {
-    return levers;
-  }
-
-  @Override
   public Scalar gammaM() {
     return gammaM; // rear/total drive ratio; 0 is FWD, 1 is RWD
   }

@@ -1,9 +1,14 @@
 // code by jph
 package ch.ethz.idsc.owly.demo.car.box;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import ch.ethz.idsc.owly.demo.car.CarControl;
 import ch.ethz.idsc.owly.demo.car.CarSteering;
 import ch.ethz.idsc.owly.demo.car.DefaultCarModel;
+import ch.ethz.idsc.owly.demo.car.DefaultTire;
+import ch.ethz.idsc.owly.demo.car.TireInterface;
 import ch.ethz.idsc.owly.math.car.Pacejka3;
 import ch.ethz.idsc.tensor.DoubleScalar;
 import ch.ethz.idsc.tensor.RealScalar;
@@ -21,9 +26,9 @@ public class RimoSinusModel extends DefaultCarModel {
   }
 
   // ---
-  private final Tensor levers;
   private final CarSteering carSteering;
   private final Scalar gammaM;
+  private final List<TireInterface> list = new ArrayList<>();
 
   /** @param carSteering
    * @param gammaM rear/total drive ratio; 0 is FWD, 1 is RWD, 0.5 is AWD */
@@ -33,29 +38,20 @@ public class RimoSinusModel extends DefaultCarModel {
     final Pacejka3 PACEJKA = new Pacejka3(7, 1.4); // TODO
     final Scalar RADIUS1 = DoubleScalar.of(0.255 * 0.5); // wheel radius [m]
     final Scalar RADIUS2 = DoubleScalar.of(0.278 * 0.5); // wheel radius [m]
-    // TODO front wheel, back wheel
-    final Scalar HEIGHT_COG = DoubleScalar.of(0.20); // height of COG [m]
+    final Scalar LZ = DoubleScalar.of(-0.20); // height of COG [m]
     final Scalar LW = DoubleScalar.of(0.8375); // TODO unspecified lateral distance of wheels from COG [m]
     final Scalar LF = DoubleScalar.of(0.7); // TODO front axle distance from COG [m]
     final Scalar LR = DoubleScalar.of(0.7); // rear axle distance from COG [m]
-    Scalar h_negate = HEIGHT_COG.negate();
-    levers = Tensors.of( //
-        Tensors.of(LF, LW, h_negate), // 1L
-        Tensors.of(LF, LW.negate(), h_negate), // 1R
-        Tensors.of(LR.negate(), LW, h_negate), // 2L
-        Tensors.of(LR.negate(), LW.negate(), h_negate) // 2R
-    ).unmodifiable();
+    list.add(new DefaultTire(RADIUS1, null, PACEJKA, null)); // TODO
+    list.add(new DefaultTire(RADIUS1, null, PACEJKA, null)); // TODO
+    list.add(new DefaultTire(RADIUS2, null, PACEJKA, null)); // TODO
+    list.add(new DefaultTire(RADIUS2, null, PACEJKA, null)); // TODO
   }
 
   // ---
   @Override
   public Scalar mass() {
     return DoubleScalar.of(170); // mass [kg]
-  }
-
-  @Override
-  public Tensor levers() {
-    return levers;
   }
 
   @Override
