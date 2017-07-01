@@ -46,7 +46,7 @@ public abstract class DefaultCarModel implements CarModel {
     }
     return null;
   }
-  
+
   public TireInterface tire(int index) {
     throw new RuntimeException();
   }

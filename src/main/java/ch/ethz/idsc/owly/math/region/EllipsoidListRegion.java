@@ -40,12 +40,12 @@ public class EllipsoidListRegion extends ImplicitFunctionRegion {
       Tensor delta = iterator.next().subtract(tensor).pmul(invert);
       test_value = Norm._2.of(delta).subtract(RealScalar.ONE);
       if (Scalars.lessThan(test_value, RealScalar.ZERO))
-        return RealScalar.ONE.negate(); //as soon as collision is detected return -1
+        return RealScalar.ONE.negate(); // as soon as collision is detected return -1
       if (Scalars.isZero(test_value))
         touching = true; // touching is saved for later, as inside obstacle is more significant
     }
     if (touching)
-      return RealScalar.ZERO; //tensor is not in obstacle, but touching it
+      return RealScalar.ZERO; // tensor is not in obstacle, but touching it
     return RealScalar.ONE;
   }
 }

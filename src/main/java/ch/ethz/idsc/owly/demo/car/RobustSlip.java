@@ -32,7 +32,7 @@ public class RobustSlip implements SlipInterface {
        * due to the negate the final friction "mu" is then pointing against the ground speed {ux, uy} */
       value = PI_HALF;
     else
-      value = ArcTan.of(pacejka3.B.multiply(Hypot.bifunction.apply(ux, uy).divide(rtw)));
+      value = ArcTan.of(pacejka3.B.multiply(Hypot.BIFUNCTION.apply(ux, uy).divide(rtw)));
     Scalar total = pacejka3.D.multiply(Sin.of(pacejka3.C.multiply(value)));
     mu = Normalize2D.unlessZero(ux, uy).multiply(total.negate());
   }

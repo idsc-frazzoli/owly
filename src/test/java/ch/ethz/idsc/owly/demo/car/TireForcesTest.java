@@ -16,14 +16,14 @@ public class TireForcesTest extends TestCase {
     // System.out.println(carState.asVector());
     CarControl carControl = carModel.createControl(Tensors.vector(0, 0, 0, 0));
     TireForces tireForces = new TireForces(carModel, carState, carControl, FrictionCoefficients.TIRE_DRY_ROAD);
-    assertTrue(Chop.isZeros(tireForces.asVectorFX()));
-    assertTrue(Chop.isZeros(tireForces.asVectorFY()));
-    assertTrue(Chop.isZeros(tireForces.asVector_fX()));
-    assertTrue(Chop.isZeros(tireForces.asVector_fY()));
+    assertTrue(Chop._10.allZero(tireForces.asVectorFX()));
+    assertTrue(Chop._10.allZero(tireForces.asVectorFY()));
+    assertTrue(Chop._10.allZero(tireForces.asVector_fX()));
+    assertTrue(Chop._10.allZero(tireForces.asVector_fY()));
     Tensor Fz = tireForces.asVectorFZ();
     // System.out.println(Fz);
-    assertTrue(Chop.isZeros(Fz.Get(0).subtract(Fz.Get(1)).multiply(RealScalar.of(1e-5))));
-    assertTrue(Chop.isZeros(Fz.Get(2).subtract(Fz.Get(3)).multiply(RealScalar.of(1e-5))));
+    assertTrue(Chop._10.allZero(Fz.Get(0).subtract(Fz.Get(1)).multiply(RealScalar.of(1e-5))));
+    assertTrue(Chop._10.allZero(Fz.Get(2).subtract(Fz.Get(3)).multiply(RealScalar.of(1e-5))));
   }
 
   // public void testDemo2() {
@@ -115,23 +115,23 @@ public class TireForcesTest extends TestCase {
     final Scalar eps = RealScalar.of(1e-4);
     {
       Tensor ref = Tensors.fromString("{2738.193007092158, -3947.6788060735894, 1170.8731696720263, -2185.584181004175}");
-      assertTrue(Chop.isZeros(tireForces.asVectorFX().subtract(ref).multiply(eps)));
+      assertTrue(Chop._10.allZero(tireForces.asVectorFX().subtract(ref).multiply(eps)));
     }
     {
       Tensor ref = Tensors.fromString("{1751.9092384505734, 1837.4033663178448, 327.9877135839681, 510.7130382142411}");
-      assertTrue(Chop.isZeros(tireForces.asVectorFY().subtract(ref).multiply(eps)));
+      assertTrue(Chop._10.allZero(tireForces.asVectorFY().subtract(ref).multiply(eps)));
     }
     {
       Tensor ref = Tensors.fromString("{4002.7385312017072, 5430.277165557515, 1495.5828344424856, 2923.121468798294}");
-      assertTrue(Chop.isZeros(tireForces.asVectorFZ().subtract(ref).multiply(eps)));
+      assertTrue(Chop._10.allZero(tireForces.asVectorFZ().subtract(ref).multiply(eps)));
     }
     {
       Tensor ref = Tensors.fromString("{3055.5116561664586, -3363.7523920949643, 1170.8731696720263, -2185.584181004175}");
-      assertTrue(Chop.isZeros(tireForces.asVector_fX().subtract(ref).multiply(eps)));
+      assertTrue(Chop._10.allZero(tireForces.asVector_fX().subtract(ref).multiply(eps)));
     }
     {
       Tensor ref = Tensors.fromString("{1109.3851643535563, 2765.0296438111022, 327.9877135839681, 510.7130382142411}");
-      assertTrue(Chop.isZeros(tireForces.asVector_fY().subtract(ref).multiply(eps)));
+      assertTrue(Chop._10.allZero(tireForces.asVector_fY().subtract(ref).multiply(eps)));
     }
   }
 
@@ -146,23 +146,23 @@ public class TireForcesTest extends TestCase {
     final Scalar eps = RealScalar.of(1e-4);
     {
       Tensor ref = Tensors.fromString("{3727.207496471704, -3538.798572155104, 2048.7077387254126, -1806.3756234894938}");
-      assertTrue(Chop.isZeros(tireForces.asVectorFX().subtract(ref).multiply(eps)));
+      assertTrue(Chop._10.allZero(tireForces.asVectorFX().subtract(ref).multiply(eps)));
     }
     {
       Tensor ref = Tensors.fromString("{-1.5386478805418733, -211.93848309716915, -403.93105996690156, -32.03339931296793}");
-      assertTrue(Chop.isZeros(tireForces.asVectorFY().subtract(ref).multiply(eps)));
+      assertTrue(Chop._10.allZero(tireForces.asVectorFY().subtract(ref).multiply(eps)));
     }
     {
       Tensor ref = Tensors.fromString("{4574.85951578761, 4365.487301615016, 2560.3726983849833, 2351.000484212391}");
-      assertTrue(Chop.isZeros(tireForces.asVectorFZ().subtract(ref).multiply(eps)));
+      assertTrue(Chop._10.allZero(tireForces.asVectorFZ().subtract(ref).multiply(eps)));
     }
     {
       Tensor ref = Tensors.fromString("{3705.562023175224, -3536.306797616178, 2081.0180655406984, -1788.4808508788399}");
-      assertTrue(Chop.isZeros(tireForces.asVector_fX().subtract(ref).multiply(eps)));
+      assertTrue(Chop._10.allZero(tireForces.asVector_fX().subtract(ref).multiply(eps)));
     }
     {
       Tensor ref = Tensors.fromString("{-401.1086904988554, 250.0949580422282, -172.41667788421276, -255.64678337171037}");
-      assertTrue(Chop.isZeros(tireForces.asVector_fY().subtract(ref).multiply(eps)));
+      assertTrue(Chop._10.allZero(tireForces.asVector_fY().subtract(ref).multiply(eps)));
     }
   }
 }

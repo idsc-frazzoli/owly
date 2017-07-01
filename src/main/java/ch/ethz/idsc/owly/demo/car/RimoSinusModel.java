@@ -14,8 +14,8 @@ import ch.ethz.idsc.tensor.sca.Clip;
  * TODO */
 public class RimoSinusModel extends DefaultCarModel {
   private static final Pacejka3 PACEJKA = new Pacejka3(7, 1.4); // TODO
-  private static final Scalar RADIUS1 = DoubleScalar.of(0.255*0.5); // wheel radius [m]
-  private static final Scalar RADIUS2 = DoubleScalar.of(0.278*0.5); // wheel radius [m]
+  private static final Scalar RADIUS1 = DoubleScalar.of(0.255 * 0.5); // wheel radius [m]
+  private static final Scalar RADIUS2 = DoubleScalar.of(0.278 * 0.5); // wheel radius [m]
   // TODO front wheel, back wheel
   private static final Scalar HEIGHT_COG = DoubleScalar.of(0.20); // height of COG [m]
   private static final Scalar LW = DoubleScalar.of(0.8375); // TODO unspecified lateral distance of wheels from COG [m]
@@ -51,11 +51,10 @@ public class RimoSinusModel extends DefaultCarModel {
     return DoubleScalar.of(170); // mass [kg]
   }
 
-//  @Override
-//  public Pacejka3 pacejka(int index) {
-//    return PACEJKA;
-//  }
-
+  // @Override
+  // public Pacejka3 pacejka(int index) {
+  // return PACEJKA;
+  // }
   @Override
   public Scalar radius() {
     return RADIUS1;

@@ -26,7 +26,7 @@ public enum Se2rControls {
     List<Flow> list = new ArrayList<>();
     for (Tensor angle : Subdivide.of(angle_max.negate(), angle_max, num)) {
       list.add(create(angle.Get(), RealScalar.ONE));
-      list.add(create(angle.Get(), RealScalar.NEGATIVE_ONE));
+      list.add(create(angle.Get(), RealScalar.ONE.negate()));
     }
     return list;
   }

@@ -12,8 +12,8 @@ public class SignedCurvature2DTest extends TestCase {
     Tensor a = Tensors.vector(1, 0);
     Tensor b = Tensors.vector(0, 1);
     Tensor c = Tensors.vector(-1, 0);
-    assertEquals(Chop.of(SignedCurvature2D.of(a, b, c).add(RealScalar.ONE)), RealScalar.ZERO);
-    assertEquals(Chop.of(SignedCurvature2D.of(c, b, a).subtract(RealScalar.ONE)), RealScalar.ZERO);
+    assertEquals(Chop._10.of(SignedCurvature2D.of(a, b, c).add(RealScalar.ONE)), RealScalar.ZERO);
+    assertEquals(Chop._10.of(SignedCurvature2D.of(c, b, a).subtract(RealScalar.ONE)), RealScalar.ZERO);
   }
 
   public void testStraight() {

@@ -50,11 +50,10 @@ public class ChakrabortyModel extends DefaultCarModel {
     return DoubleScalar.of(1245); // mass [kg]
   }
 
-//  @Override
-//  public Pacejka3 pacejka(int index) {
-//    return PACEJKA;
-//  }
-
+  // @Override
+  // public Pacejka3 pacejka(int index) {
+  // return PACEJKA;
+  // }
   @Override
   public Scalar radius() {
     return RADIUS;

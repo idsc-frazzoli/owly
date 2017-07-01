@@ -50,7 +50,7 @@ public abstract class TrajectoryPlanner implements ExpandInterface, Serializable
    * @param x state
    * @return */
   /* package */ Tensor convertToKey(Tensor x) {
-    return eta.pmul(represent.apply(x)).map(Floor.function);
+    return eta.pmul(represent.apply(x)).map(Floor.FUNCTION);
   }
 
   /** the current API assumes that the root node will be assigned a {@link StateTime} with

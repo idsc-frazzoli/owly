@@ -43,10 +43,10 @@ class MuScriptVbp {
     Scalar s_RRX = k_RR.negate().divide(RealScalar.ONE.add(k_RR));
     Scalar s_RRY = V_Ry.divide(status.w_RR.multiply(RimoKart.r_RR));
     // ---
-    Scalar s_FL = Hypot.bifunction.apply(s_FLX, s_FLY);
-    Scalar s_FR = Hypot.bifunction.apply(s_FRX, s_FRY);
-    Scalar s_RL = Hypot.bifunction.apply(s_RLX, s_RLY);
-    Scalar s_RR = Hypot.bifunction.apply(s_RRX, s_RRY);
+    Scalar s_FL = Hypot.BIFUNCTION.apply(s_FLX, s_FLY);
+    Scalar s_FR = Hypot.BIFUNCTION.apply(s_FRX, s_FRY);
+    Scalar s_RL = Hypot.BIFUNCTION.apply(s_RLX, s_RLY);
+    Scalar s_RR = Hypot.BIFUNCTION.apply(s_RRX, s_RRY);
     // ---
     Scalar mu_FL = slipTrig(s_FL);
     Scalar mu_FR = slipTrig(s_FR);

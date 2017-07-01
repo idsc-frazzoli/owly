@@ -26,7 +26,7 @@ public enum R2Controls {
     StateSpaceModel stateSpaceModel = SingleIntegrator.INSTANCE;
     List<Flow> list = new ArrayList<>();
     for (Tensor angle : Range.of(0, num).multiply(DoubleScalar.of(2 * Math.PI / num))) {
-      Tensor u = Chop.of(Tensors.of(Cos.of(angle), Sin.of(angle)));
+      Tensor u = Chop._10.of(Tensors.of(Cos.of(angle), Sin.of(angle)));
       list.add(StateSpaceModels.createFlow(stateSpaceModel, u));
     }
     return list;

@@ -19,15 +19,15 @@ public enum Normalize2D {
    * @param y
    * @return {x, y} / |{x, y}|, or {0, 0} */
   public static Tensor unlessZero(Scalar x, Scalar y) {
-    Scalar norm = Hypot.bifunction.apply(x, y);
+    Scalar norm = Hypot.BIFUNCTION.apply(x, y);
     // return Scalars.isZero(norm) ? //
     // Tensors.vector(0, 0) : Tensors.of(x, y).multiply(norm.invert());
     if (Scalars.isZero(norm))
       return Tensors.vector(0, 0);
     Tensor result = Tensors.of(x, y).multiply(norm.invert());
-    Scalar actual = Hypot.bifunction.apply(result.Get(0), result.Get(1));
+    Scalar actual = Hypot.BIFUNCTION.apply(result.Get(0), result.Get(1));
     // TODO remove check after a long while
-    if (!Chop.isZeros(actual.subtract(RealScalar.ONE)))
+    if (!Chop._10.allZero(actual.subtract(RealScalar.ONE)))
       throw TensorRuntimeException.of(result, actual);
     return result;
   }

@@ -20,6 +20,7 @@ import ch.ethz.idsc.owly.gui.Gui;
 import ch.ethz.idsc.owly.gui.OwlyFrame;
 import ch.ethz.idsc.owly.math.state.StateTime;
 import ch.ethz.idsc.owly.math.state.Trajectories;
+import ch.ethz.idsc.tensor.DoubleScalar;
 import ch.ethz.idsc.tensor.RationalScalar;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
@@ -36,7 +37,7 @@ class DeltaGlcConstTimeHeuristicAnyDemo {
     quickOwlyFrame.configCoordinateOffset(33, 416);
     quickOwlyFrame.jFrame.setBounds(100, 100, 620, 475);
     // TODO FIX depthlimit needs to come from parameters
-    Expand.maxDepth(quickTrajectoryPlanner, RealScalar.POSITIVE_INFINITY.number().intValue());
+    Expand.maxDepth(quickTrajectoryPlanner, DoubleScalar.POSITIVE_INFINITY.number().intValue());
     quickOwlyFrame.setGlc(quickTrajectoryPlanner);
     Optional<GlcNode> optional = quickTrajectoryPlanner.getBest();
     List<StateTime> quickTrajectory = null;

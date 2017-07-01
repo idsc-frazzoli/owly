@@ -3,6 +3,7 @@ package ch.ethz.idsc.owly.math.car;
 
 import ch.ethz.idsc.owly.demo.car.CHatchbackModel;
 import ch.ethz.idsc.owly.demo.car.CarModel;
+import ch.ethz.idsc.tensor.DoubleScalar;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
 import junit.framework.TestCase;
@@ -25,7 +26,7 @@ public class Pacejka3Test extends TestCase {
   public void testFail() {
     CarModel carModel = CHatchbackModel.standard();
     try {
-      carModel.tire(0).pacejka().apply(RealScalar.POSITIVE_INFINITY);
+      carModel.tire(0).pacejka().apply(DoubleScalar.POSITIVE_INFINITY);
     } catch (Exception exception) {
       // ---
     }

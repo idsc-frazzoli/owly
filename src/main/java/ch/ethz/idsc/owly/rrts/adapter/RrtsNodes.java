@@ -22,7 +22,7 @@ public enum RrtsNodes {
       Scalar tran = node.costFromRoot().subtract(parent.costFromRoot());
       Transition transition = transitionSpace.connect(parent.state(), node.state());
       Scalar tc = transitionCostFunction.cost(transition);
-      status &= Scalars.isZero(Chop.of(tc.subtract(tran)));
+      status &= Scalars.isZero(Chop._10.of(tc.subtract(tran)));
       if (!status)
         throw TensorRuntimeException.of(tc, tran);
       status &= parent.costFromRoot().add(tran).equals(node.costFromRoot());

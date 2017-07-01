@@ -61,11 +61,10 @@ public class CHatchbackModel extends DefaultCarModel {
     return DoubleScalar.of(1412); // mass [kg]
   }
 
-//  @Override
-//  public Pacejka3 pacejka(int index) {
-//    return index < 2 ? PACEJKA1 : PACEJKA2;
-//  }
-
+  // @Override
+  // public Pacejka3 pacejka(int index) {
+  // return index < 2 ? PACEJKA1 : PACEJKA2;
+  // }
   @Override
   public Scalar radius() {
     return RADIUS;
