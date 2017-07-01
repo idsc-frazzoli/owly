@@ -23,7 +23,8 @@ import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
 
-class R2ImageDemo {
+enum R2ImageDemo {
+  ;
   public static void main(String[] args) throws Exception {
     final int wid = 7;
     RnTransitionSpace rnss = new RnTransitionSpace();

@@ -22,7 +22,8 @@ import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
 
-class R2Demo {
+enum R2Demo {
+  ;
   public static void main(String[] args) {
     int wid = 7;
     RnTransitionSpace rnss = new RnTransitionSpace();

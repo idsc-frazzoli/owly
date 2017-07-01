@@ -12,7 +12,8 @@ import ch.ethz.idsc.tensor.io.GifSequenceWriter;
 /** simple animation of small boat driving upstream, or downstream in a river delta
  * 
  * records to animated gif */
-class DeltaExpandDemo {
+enum DeltaExpandDemo {
+  ;
   public static void main(String[] args) throws Exception {
     TrajectoryPlanner trajectoryPlanner = DeltaHelper.createDefault(RealScalar.of(.5)); // -.25 .5
     OwlyFrame owlyFrame = Gui.start();

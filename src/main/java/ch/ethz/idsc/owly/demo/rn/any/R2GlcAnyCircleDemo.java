@@ -39,7 +39,8 @@ import ch.ethz.idsc.tensor.io.GifSequenceWriter;
 import ch.ethz.idsc.tensor.sca.Cos;
 import ch.ethz.idsc.tensor.sca.Sin;
 
-class R2GlcAnyCircleDemo {
+enum R2GlcAnyCircleDemo {
+  ;
   public static void main(String[] args) throws Exception {
     RationalScalar resolution = (RationalScalar) RealScalar.of(10);
     Scalar timeScale = RealScalar.of(2);

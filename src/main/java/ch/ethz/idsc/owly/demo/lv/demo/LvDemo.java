@@ -24,7 +24,8 @@ import ch.ethz.idsc.tensor.Tensors;
  * only shows the integration of a single trajectory
  * 
  * the coordinates represent the population of predators and prey */
-class LvDemo {
+enum LvDemo {
+  ;
   public static void main(String[] args) {
     Tensor eta = Tensors.vector(10, 10);
     StateIntegrator stateIntegrator = FixedStateIntegrator.create( //

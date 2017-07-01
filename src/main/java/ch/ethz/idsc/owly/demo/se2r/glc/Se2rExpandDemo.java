@@ -29,7 +29,8 @@ import ch.ethz.idsc.tensor.Tensors;
 import ch.ethz.idsc.tensor.io.GifSequenceWriter;
 
 /** (x,y,theta) */
-class Se2rExpandDemo {
+enum Se2rExpandDemo {
+  ;
   public static void main(String[] args) throws Exception {
     Tensor eta = Tensors.vector(6, 6, 50 / Math.PI);
     StateIntegrator stateIntegrator = FixedStateIntegrator.create( //

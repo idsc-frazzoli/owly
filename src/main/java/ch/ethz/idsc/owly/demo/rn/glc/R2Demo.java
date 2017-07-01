@@ -34,7 +34,8 @@ import ch.ethz.idsc.tensor.Tensors;
 import ch.ethz.idsc.tensor.red.Norm;
 import ch.ethz.idsc.tensor.sca.Ramp;
 
-class R2Demo {
+enum R2Demo {
+  ;
   public static TrajectoryPlanner simpleEmpty() {
     return simple(EmptyTrajectoryRegionQuery.INSTANCE);
   }

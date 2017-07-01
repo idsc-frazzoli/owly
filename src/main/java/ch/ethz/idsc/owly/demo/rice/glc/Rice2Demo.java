@@ -29,7 +29,8 @@ import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
 
-class Rice2Demo {
+enum Rice2Demo {
+  ;
   // TODO in general ensure that goal region contains at least 1 domain etc.
   public static void main(String[] args) {
     Tensor eta = Tensors.vector(3, 3, 6, 6);

@@ -29,7 +29,8 @@ import ch.ethz.idsc.tensor.RationalScalar;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
 
-class R2SphereDemo {
+enum R2SphereDemo {
+  ;
   public static void main(String[] args) {
     Tensor partitionScale = Tensors.vector(3.5, 4);
     StateIntegrator stateIntegrator = FixedStateIntegrator.create(EulerIntegrator.INSTANCE, RationalScalar.of(1, 8), 5);

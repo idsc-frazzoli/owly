@@ -19,7 +19,8 @@ import ch.ethz.idsc.tensor.RationalScalar;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
 
-class R2nExpandDemo {
+enum R2nExpandDemo {
+  ;
   public static void main(String[] args) throws Exception {
     Tensor eta = Tensors.vector(4, 4);
     StateIntegrator stateIntegrator = FixedStateIntegrator.create(EulerIntegrator.INSTANCE, RationalScalar.of(1, 5), 5);

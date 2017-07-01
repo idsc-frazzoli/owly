@@ -31,7 +31,8 @@ import ch.ethz.idsc.tensor.RationalScalar;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
 
-class R2ImageDemo {
+enum R2ImageDemo {
+  ;
   public static void main(String[] args) throws ClassNotFoundException, DataFormatException, IOException {
     Tensor partitionScale = Tensors.vector(6, 6);
     Region region = ImageRegions.loadFromRepository("/io/track0_100.png", Tensors.vector(10, 10), false);

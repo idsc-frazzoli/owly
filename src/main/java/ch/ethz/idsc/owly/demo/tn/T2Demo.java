@@ -26,7 +26,8 @@ import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
 
 /** topological torus */
-class T2Demo {
+enum T2Demo {
+  ;
   public static void main(String[] args) {
     Tensor eta = Tensors.vector(4, 5);
     StateIntegrator stateIntegrator = FixedStateIntegrator.create(EulerIntegrator.INSTANCE, RationalScalar.of(1, 10), 5);

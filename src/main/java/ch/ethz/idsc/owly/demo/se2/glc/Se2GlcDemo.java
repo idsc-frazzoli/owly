@@ -35,7 +35,8 @@ import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
 
 /** (x,y,theta) */
-class Se2GlcDemo {
+enum Se2GlcDemo {
+  ;
   public static void main(String[] args) throws Exception {
     RationalScalar resolution = (RationalScalar) RealScalar.of(4);
     Scalar timeScale = RealScalar.of(10);

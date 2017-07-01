@@ -10,7 +10,8 @@ import ch.ethz.idsc.tensor.RationalScalar;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
 
-class DeltaGlcConstTimeAnyDemo {
+enum DeltaGlcConstTimeAnyDemo {
+  ;
   public static void main(String[] args) throws Exception {
     RationalScalar resolution = (RationalScalar) RationalScalar.of(11, 1);
     AnyPlannerInterface trajectoryPlanner = DeltaHelper.createGlcAny(RealScalar.of(-0.25), resolution);
