@@ -13,15 +13,6 @@ import ch.ethz.idsc.tensor.sca.Clip;
 /** specifications of vehicle taken from:
  * TODO */
 public class RimoSinusModel extends DefaultCarModel {
-  private static final Pacejka3 PACEJKA = new Pacejka3(7, 1.4); // TODO
-  private static final Scalar RADIUS1 = DoubleScalar.of(0.255 * 0.5); // wheel radius [m]
-  private static final Scalar RADIUS2 = DoubleScalar.of(0.278 * 0.5); // wheel radius [m]
-  // TODO front wheel, back wheel
-  private static final Scalar HEIGHT_COG = DoubleScalar.of(0.20); // height of COG [m]
-  private static final Scalar LW = DoubleScalar.of(0.8375); // TODO unspecified lateral distance of wheels from COG [m]
-  private static final Scalar LF = DoubleScalar.of(0.7); // TODO front axle distance from COG [m]
-  private static final Scalar LR = DoubleScalar.of(0.7); // rear axle distance from COG [m]
-
   public static RimoSinusModel standard() {
     return new RimoSinusModel(CarSteering.FRONT, RealScalar.ZERO);
   }
@@ -36,6 +27,14 @@ public class RimoSinusModel extends DefaultCarModel {
   public RimoSinusModel(CarSteering carSteering, Scalar gammaM) {
     this.carSteering = carSteering;
     this.gammaM = gammaM;
+    final Pacejka3 PACEJKA = new Pacejka3(7, 1.4); // TODO
+    final Scalar RADIUS1 = DoubleScalar.of(0.255 * 0.5); // wheel radius [m]
+    final Scalar RADIUS2 = DoubleScalar.of(0.278 * 0.5); // wheel radius [m]
+    // TODO front wheel, back wheel
+    final Scalar HEIGHT_COG = DoubleScalar.of(0.20); // height of COG [m]
+    final Scalar LW = DoubleScalar.of(0.8375); // TODO unspecified lateral distance of wheels from COG [m]
+    final Scalar LF = DoubleScalar.of(0.7); // TODO front axle distance from COG [m]
+    final Scalar LR = DoubleScalar.of(0.7); // rear axle distance from COG [m]
     Scalar h_negate = HEIGHT_COG.negate();
     levers = Tensors.of( //
         Tensors.of(LF, LW, h_negate), // 1L
@@ -49,15 +48,6 @@ public class RimoSinusModel extends DefaultCarModel {
   @Override
   public Scalar mass() {
     return DoubleScalar.of(170); // mass [kg]
-  }
-
-  // @Override
-  // public Pacejka3 pacejka(int index) {
-  // return PACEJKA;
-  // }
-  @Override
-  public Scalar radius() {
-    return RADIUS1;
   }
 
   @Override
@@ -145,10 +135,5 @@ public class RimoSinusModel extends DefaultCarModel {
     // TODO check if == 0 ok
     // for ==2 the car will not make a turn but slide in nose direction...
     return DoubleScalar.of(0); // rolling friction coefficient
-  }
-
-  @Override
-  public Scalar rollFric() {
-    return gForce().multiply(muRoll());
   }
 }

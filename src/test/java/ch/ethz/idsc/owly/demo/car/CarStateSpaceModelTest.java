@@ -8,7 +8,7 @@ import junit.framework.TestCase;
 
 public class CarStateSpaceModelTest extends TestCase {
   public void testSimple() {
-    CarModel carModel = CHatchbackModel.standard();
+    VehicleModel carModel = CHatchbackModel.standard();
     CarState carState = CarStatic.x0_demo3();
     CarControl carControl = carModel.createControl(Tensors.vector(0.4, .03, 0, .4));
     StateSpaceModel ssm = new CarStateSpaceModel(carModel);

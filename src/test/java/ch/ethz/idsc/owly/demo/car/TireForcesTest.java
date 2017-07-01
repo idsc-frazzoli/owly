@@ -11,7 +11,7 @@ import junit.framework.TestCase;
 public class TireForcesTest extends TestCase {
   public void testDemo1() {
     // System.out.println("TireForcesTest::demo1");
-    CarModel carModel = CHatchbackModel.standard();
+    VehicleModel carModel = CHatchbackModel.standard();
     CarState carState = CarStatic.x0_demo1();
     // System.out.println(carState.asVector());
     CarControl carControl = carModel.createControl(Tensors.vector(0, 0, 0, 0));
@@ -86,7 +86,7 @@ public class TireForcesTest extends TestCase {
    * 0.2022 */
   public void testDemo3() {
     // System.out.println("TireForcesTest::demo3");
-    CarModel carModel = CHatchbackModel.standard();
+    VehicleModel carModel = CHatchbackModel.standard();
     CarState carState = CarStatic.x0_demo3();
     // System.out.println(carState.asVector());
     double maxDelta = 30 * Math.PI / 180;
@@ -105,7 +105,7 @@ public class TireForcesTest extends TestCase {
   }
 
   public void testDemo3ackermann() {
-    CarModel carModel = new CHatchbackModel(CarSteering.FRONT, RealScalar.of(0.5));
+    VehicleModel carModel = new CHatchbackModel(CarSteering.FRONT, RealScalar.of(0.5));
     CarState carState = CarStatic.x0_demo3();
     CarControl carControl = carModel.createControl(Tensors.vector(.3, 0, 0, 0));
     TireForces tireForces = new TireForces(carModel, carState, carControl, FrictionCoefficients.TIRE_DRY_ROAD);

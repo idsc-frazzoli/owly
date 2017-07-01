@@ -8,7 +8,7 @@ import junit.framework.TestCase;
 
 public class MotorTorquesTest extends TestCase {
   public void testSome() {
-    CarModel params = CHatchbackModel.standard();
+    VehicleModel params = CHatchbackModel.standard();
     Scalar throttle = RealScalar.of(200);
     MotorTorques motorTorques = new MotorTorques(params, throttle);
     // System.out.println(motorTorques.asVector());

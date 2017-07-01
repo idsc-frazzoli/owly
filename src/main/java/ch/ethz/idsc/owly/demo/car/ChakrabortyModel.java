@@ -14,13 +14,6 @@ import ch.ethz.idsc.tensor.sca.Clip;
  * Time-Optimal Vehicle Posture Control to Mitigate Unavoidable
  * Collisions Using Conventional Control Inputs */
 public class ChakrabortyModel extends DefaultCarModel {
-  private static final Pacejka3 PACEJKA = new Pacejka3(7, 1.4);
-  private static final Scalar RADIUS = DoubleScalar.of(0.29); // wheel radius [m]
-  private static final Scalar HEIGHT_COG = DoubleScalar.of(0.58); // height of COG [m]
-  private static final Scalar LW = DoubleScalar.of(0.8375); // TODO unspecified lateral distance of wheels from COG [m]
-  private static final Scalar LF = DoubleScalar.of(1.1); // front axle distance from COG [m]
-  private static final Scalar LR = DoubleScalar.of(1.3); // rear axle distance from COG [m]
-
   public static ChakrabortyModel standard() {
     return new ChakrabortyModel(CarSteering.FRONT, RealScalar.ZERO);
   }
@@ -35,6 +28,12 @@ public class ChakrabortyModel extends DefaultCarModel {
   public ChakrabortyModel(CarSteering carSteering, Scalar gammaM) {
     this.carSteering = carSteering;
     this.gammaM = gammaM;
+    final Pacejka3 PACEJKA = new Pacejka3(7, 1.4);
+    final Scalar RADIUS = DoubleScalar.of(0.29); // wheel radius [m]
+    final Scalar HEIGHT_COG = DoubleScalar.of(0.58); // height of COG [m]
+    final Scalar LW = DoubleScalar.of(0.8375); // TODO unspecified lateral distance of wheels from COG [m]
+    final Scalar LF = DoubleScalar.of(1.1); // front axle distance from COG [m]
+    final Scalar LR = DoubleScalar.of(1.3); // rear axle distance from COG [m]
     Scalar h_negate = HEIGHT_COG.negate();
     levers = Tensors.of( //
         Tensors.of(LF, LW, h_negate), // 1L
@@ -48,15 +47,6 @@ public class ChakrabortyModel extends DefaultCarModel {
   @Override
   public Scalar mass() {
     return DoubleScalar.of(1245); // mass [kg]
-  }
-
-  // @Override
-  // public Pacejka3 pacejka(int index) {
-  // return PACEJKA;
-  // }
-  @Override
-  public Scalar radius() {
-    return RADIUS;
   }
 
   @Override
@@ -144,10 +134,5 @@ public class ChakrabortyModel extends DefaultCarModel {
     // TODO check if == 0 ok
     // for ==2 the car will not make a turn but slide in nose direction...
     return DoubleScalar.of(0); // rolling friction coefficient
-  }
-
-  @Override
-  public Scalar rollFric() {
-    return gForce().multiply(muRoll());
   }
 }

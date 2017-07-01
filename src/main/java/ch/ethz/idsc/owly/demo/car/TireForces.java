@@ -22,19 +22,19 @@ public class TireForces {
   private static final Tensor SUM_ALL = Tensors.vector(1, 1, 1, 1).unmodifiable();
   private static final Tensor WEIGHT_STD = Tensors.vector(+1, -1, -1, +1).unmodifiable();
   // ---
-  public final CarModel params;
+  public final VehicleModel params;
   public final CarState cs;
   public final Tensor Forces; // forces in car/body frame
   public final Tensor fwheel; // forces in wheel frame
 
-  public TireForces(CarModel params, CarState cs, CarControl cc, Scalar mu) {
+  public TireForces(VehicleModel params, CarState cs, CarControl cc, Scalar mu) {
     this.params = params;
     this.cs = cs;
     final Tensor angles = params.angles(cc.delta).unmodifiable();
     // ---
     Tensor mus = Tensors.vector(index -> //
-    new RobustSlip(params.tire(index).pacejka(), get_ui_2d(angles.Get(index), index), params.radiusTimes(cs.omega.Get(index))).slip(), 4) //
-        .multiply(mu);
+    new RobustSlip(params.tire(index).pacejka(), get_ui_2d(angles.Get(index), index), //
+        params.tire(index).radius().multiply(cs.omega.Get(index))).slip(), 4).multiply(mu);
     final Tensor dir = Tensors.vector(index -> //
     Join.of(RotationMatrix.of(angles.Get(index)).dot(mus.get(index)), AFFINE_ONE), 4);
     // ---
@@ -52,7 +52,8 @@ public class TireForces {
       );
       // System.out.println("det=" + Det.of(Lhs));
       Tensor rhs = Array.zeros(4);
-      rhs.set(params.gForce(), 2);
+      Scalar gForce = params.mass().multiply(RealScalar.of(9.81));
+      rhs.set(gForce, 2);
       fbodyZ = LinearSolve.of(Lhs, rhs);
     }
     // ---
@@ -88,7 +89,8 @@ public class TireForces {
   }
 
   public boolean isGForceConsistent() {
-    return Chop._10.allZero(Total.of(Forces).Get(2).subtract(params.gForce()).multiply(RealScalar.of(1e-3)));
+    Scalar gForce = params.mass().multiply(RealScalar.of(9.81));
+    return Chop._10.allZero(Total.of(Forces).Get(2).subtract(gForce).multiply(RealScalar.of(1e-3)));
   }
 
   /** @param delta angle of wheel

@@ -5,13 +5,9 @@ package ch.ethz.idsc.owly.demo.car;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
 
-public interface CarModel {
+public interface VehicleModel {
   /** @return mass [kg] */
   Scalar mass();
-
-  /** @return tire radius */
-  @Deprecated
-  Scalar radius(); // formerly "R"
 
   /** @return vectors from COG to wheel centers in local coordinates (=invariant over time)
    * for instance if the car has 4 wheels, then
@@ -22,7 +18,11 @@ public interface CarModel {
    * {-1.2,-1,-h} // 2R
    * }
    * and h = heightCog() */
-  Tensor levers();
+  @Deprecated
+  Tensor levers(); // TODO remove
+
+  /** @return number of tires */
+  int tires();
 
   /** @param index
    * @return description of tire of given index */
@@ -69,14 +69,4 @@ public interface CarModel {
   Scalar press2torR();
 
   Scalar muRoll();
-
-  Scalar rollFric();
-
-  /***************************************************/
-  /** @return mass * g */
-  Scalar gForce();
-
-  Scalar radiusTimes(Scalar omega);
-
-  Scalar noSlipRate(Scalar speed);
 }
