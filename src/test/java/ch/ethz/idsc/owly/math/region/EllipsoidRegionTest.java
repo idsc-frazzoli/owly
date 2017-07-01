@@ -1,6 +1,7 @@
 // code by jph
 package ch.ethz.idsc.owly.math.region;
 
+import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Tensors;
 import junit.framework.TestCase;
 
@@ -34,5 +35,15 @@ public class EllipsoidRegionTest extends TestCase {
     assertFalse(region.isMember(Tensors.vector(11.2, 6.2)));
     assertFalse(region.isMember(Tensors.vector(10, 6.1)));
     assertFalse(region.isMember(Tensors.vector(10, 7.5)));
+  }
+
+  public void testInfty() {
+    ImplicitFunctionRegion ifr = new EllipsoidRegion(Tensors.vector(5, 10), Tensors.vector(1 / 0.0, 2));
+    assertEquals(ifr.evaluate(Tensors.vector(1000, 8)), RealScalar.ZERO);
+  }
+
+  public void test1D() {
+    ImplicitFunctionRegion ifr = new EllipsoidRegion(Tensors.vector(10), Tensors.vector(2));
+    assertEquals(ifr.evaluate(Tensors.vector(8)), RealScalar.ZERO);
   }
 }

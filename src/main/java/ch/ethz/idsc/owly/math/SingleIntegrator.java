@@ -5,7 +5,7 @@ import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
 
-/** implementation for R^n
+/** implementation for arbitrary dimensions
  * 
  * formerly "IdentityStateSpaceModel" */
 public enum SingleIntegrator implements StateSpaceModel {
@@ -19,6 +19,9 @@ public enum SingleIntegrator implements StateSpaceModel {
 
   @Override
   public Scalar getLipschitz() {
-    return RealScalar.ZERO; // TODO why doesn't max speed matter here!?
+    // | f(x_1, u) - f(x_2, u) | <= L | x_1 - x_2 |
+    // | f(x_1, u) - f(x_2, u) | == | u - u | == 0
+    // therefore L == 0
+    return RealScalar.ZERO;
   }
 }

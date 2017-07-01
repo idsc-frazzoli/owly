@@ -48,7 +48,7 @@ class IpStateSpaceModel implements StateSpaceModel {
 
   @Override
   public Scalar getLipschitz() {
-    // TODO implement
+    // LONGTERM linearize in Mathematica
     return null;
   }
 }

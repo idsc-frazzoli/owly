@@ -20,8 +20,7 @@ enum DeltaGlcConstTimeAnyDemo {
     owlyFrame.jFrame.setBounds(100, 100, 620, 475);
     Scalar planningTime = RealScalar.of(1);
     while (!trajectoryPlanner.getBest().isPresent() && owlyFrame.jFrame.isVisible()) {
-      // TODO JAN wierd RealScalar cast
-      int expandIter = Expand.constTime(trajectoryPlanner, (RealScalar) planningTime);
+      int expandIter = Expand.constTime(trajectoryPlanner, planningTime);
       owlyFrame.setGlc((TrajectoryPlanner) trajectoryPlanner);
       if (expandIter < 1)
         break;

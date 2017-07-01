@@ -35,17 +35,17 @@ public class RimoSinusModel extends DefaultCarModel {
   public RimoSinusModel(CarSteering carSteering, Scalar gammaM) {
     this.carSteering = carSteering;
     this.gammaM = gammaM;
-    final Pacejka3 PACEJKA = new Pacejka3(7, 1.4); // TODO
+    final Pacejka3 PACEJKA = new Pacejka3(7, 1.4); //
     final Scalar RADIUS1 = DoubleScalar.of(0.255 * 0.5); // wheel radius [m]
     final Scalar RADIUS2 = DoubleScalar.of(0.278 * 0.5); // wheel radius [m]
     final Scalar LZ = DoubleScalar.of(-0.20); // height of COG [m]
-    final Scalar LW = DoubleScalar.of(0.8375); // TODO unspecified lateral distance of wheels from COG [m]
-    final Scalar LF = DoubleScalar.of(0.7); // TODO front axle distance from COG [m]
+    final Scalar LW = DoubleScalar.of(0.8375); // unspecified lateral distance of wheels from COG [m]
+    final Scalar LF = DoubleScalar.of(0.7); // front axle distance from COG [m]
     final Scalar LR = DoubleScalar.of(0.7); // rear axle distance from COG [m]
-    list.add(new DefaultTire(RADIUS1, null, PACEJKA, null)); // TODO
-    list.add(new DefaultTire(RADIUS1, null, PACEJKA, null)); // TODO
-    list.add(new DefaultTire(RADIUS2, null, PACEJKA, null)); // TODO
-    list.add(new DefaultTire(RADIUS2, null, PACEJKA, null)); // TODO
+    list.add(new DefaultTire(RADIUS1, null, PACEJKA, null));
+    list.add(new DefaultTire(RADIUS1, null, PACEJKA, null));
+    list.add(new DefaultTire(RADIUS2, null, PACEJKA, null));
+    list.add(new DefaultTire(RADIUS2, null, PACEJKA, null));
   }
 
   // ---

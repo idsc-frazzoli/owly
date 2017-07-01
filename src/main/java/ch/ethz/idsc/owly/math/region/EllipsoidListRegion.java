@@ -11,8 +11,9 @@ import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.red.Norm;
 import ch.ethz.idsc.tensor.sca.Ramp;
 
-//TODO TEST: write Test
+// TODO TEST: write Test
 /** evaluate does not correspond to Euclidean distance */
+@Deprecated // because the functionality can be achieved by concept of RegionUnion
 public class EllipsoidListRegion extends ImplicitFunctionRegion {
   protected final List<Tensor> centers;
   private final Tensor invert;
@@ -32,7 +33,6 @@ public class EllipsoidListRegion extends ImplicitFunctionRegion {
    * @return -1 if in Obstacle, 0 if touching Obstacle, 1 if not touching obstacle */
   @Override
   public Scalar evaluate(Tensor tensor) {
-    // TODO needs math derivation
     Iterator<Tensor> iterator = centers.iterator();
     Scalar test_value = RealScalar.ONE; // returns 1 if obstacle is non existent
     boolean touching = false;
