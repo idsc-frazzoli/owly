@@ -19,20 +19,22 @@ import ch.ethz.idsc.tensor.sca.Chop;
 /** implementation has been verified through several tests */
 public class TireForces {
   private static final Tensor AFFINE_ONE = Tensors.vector(1);
-  private static final Tensor SUM_ALL = Tensors.vector(1, 1, 1, 1);
+  private static final Tensor SUM_ALL = Tensors.vector(1, 1, 1, 1).unmodifiable();
+  private static final Tensor WEIGHT_STD = Tensors.vector(+1, -1, -1, +1).unmodifiable();
   // ---
   public final CarModel params;
   public final CarState cs;
   public final Tensor Forces; // forces in car/body frame
   public final Tensor fwheel; // forces in wheel frame
 
-  public TireForces(CarModel params, CarState cs, CarControl cc) {
+  public TireForces(CarModel params, CarState cs, CarControl cc, Scalar mu) {
     this.params = params;
     this.cs = cs;
     final Tensor angles = params.angles(cc.delta).unmodifiable();
     // ---
-    final Tensor mus = Tensors.vector(index -> //
-    new RobustSlip(params.pacejka(index), params.mu(), get_ui_2d(angles.Get(index), index), params.radiusTimes(cs.omega.Get(index))).slip(), 4);//
+    Tensor mus = Tensors.vector(index -> //
+    new RobustSlip(params.tire(index).pacejka(), get_ui_2d(angles.Get(index), index), params.radiusTimes(cs.omega.Get(index))).slip(), 4) //
+        .multiply(mu);
     final Tensor dir = Tensors.vector(index -> //
     Join.of(RotationMatrix.of(angles.Get(index)).dot(mus.get(index)), AFFINE_ONE), 4);
     // ---
@@ -46,8 +48,9 @@ public class TireForces {
           rotX_z.subtract(rotX_y), // no rotation around X
           rotY_z.subtract(rotY_x), // no rotation around Y
           SUM_ALL, // compensate g-force
-          Tensors.vector(+1, -1, -1, +1) // weight transfer TODO geometry of COG?
+          WEIGHT_STD // weight transfer TODO geometry of COG?
       );
+      // System.out.println("det=" + Det.of(Lhs));
       Tensor rhs = Array.zeros(4);
       rhs.set(params.gForce(), 2);
       fbodyZ = LinearSolve.of(Lhs, rhs);

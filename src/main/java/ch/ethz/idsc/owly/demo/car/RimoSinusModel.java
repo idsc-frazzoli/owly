@@ -1,9 +1,5 @@
-// code by edo
-// code adapted by jph
+// code by jph
 package ch.ethz.idsc.owly.demo.car;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import ch.ethz.idsc.owly.math.car.Pacejka3;
 import ch.ethz.idsc.tensor.DoubleScalar;
@@ -14,28 +10,30 @@ import ch.ethz.idsc.tensor.TensorRuntimeException;
 import ch.ethz.idsc.tensor.Tensors;
 import ch.ethz.idsc.tensor.sca.Clip;
 
-public class CHatchbackModel extends DefaultCarModel {
-  private static final Pacejka3 PACEJKA1 = new Pacejka3(13.8509, 1.3670, 0.9622);
-  private static final Pacejka3 PACEJKA2 = new Pacejka3(14.1663, 1.3652, 0.9744);
-  private static final Scalar RADIUS = DoubleScalar.of(0.325); // wheel radius [m]
-  private static final Scalar HEIGHT_COG = DoubleScalar.of(0.54); // height of COG [m]
-  private static final Scalar LW = DoubleScalar.of(0.8375); // lateral distance of wheels from COG [m]
-  private static final Scalar LF = DoubleScalar.of(1.015); // front axle distance from COG [m]
-  private static final Scalar LR = DoubleScalar.of(1.895); // rear axle distance from COG [m]
+/** specifications of vehicle taken from:
+ * TODO */
+public class RimoSinusModel extends DefaultCarModel {
+  private static final Pacejka3 PACEJKA = new Pacejka3(7, 1.4); // TODO
+  private static final Scalar RADIUS1 = DoubleScalar.of(0.255*0.5); // wheel radius [m]
+  private static final Scalar RADIUS2 = DoubleScalar.of(0.278*0.5); // wheel radius [m]
+  // TODO front wheel, back wheel
+  private static final Scalar HEIGHT_COG = DoubleScalar.of(0.20); // height of COG [m]
+  private static final Scalar LW = DoubleScalar.of(0.8375); // TODO unspecified lateral distance of wheels from COG [m]
+  private static final Scalar LF = DoubleScalar.of(0.7); // TODO front axle distance from COG [m]
+  private static final Scalar LR = DoubleScalar.of(0.7); // rear axle distance from COG [m]
 
-  public static CHatchbackModel standard() {
-    return new CHatchbackModel(CarSteering.FRONT, RealScalar.ZERO);
+  public static RimoSinusModel standard() {
+    return new RimoSinusModel(CarSteering.FRONT, RealScalar.ZERO);
   }
 
   // ---
   private final Tensor levers;
-  private final CarSteering carSteering; // = CarSteering.FRONT;
+  private final CarSteering carSteering;
   private final Scalar gammaM;
-  private final List<TireInterface> list = new ArrayList<>();
 
   /** @param carSteering
    * @param gammaM rear/total drive ratio; 0 is FWD, 1 is RWD, 0.5 is AWD */
-  public CHatchbackModel(CarSteering carSteering, Scalar gammaM) {
+  public RimoSinusModel(CarSteering carSteering, Scalar gammaM) {
     this.carSteering = carSteering;
     this.gammaM = gammaM;
     Scalar h_negate = HEIGHT_COG.negate();
@@ -45,30 +43,22 @@ public class CHatchbackModel extends DefaultCarModel {
         Tensors.of(LR.negate(), LW, h_negate), // 2L
         Tensors.of(LR.negate(), LW.negate(), h_negate) // 2R
     ).unmodifiable();
-    list.add(new DefaultTire(levers.get(0), RADIUS, DoubleScalar.of(1536.7 + 427.7084), PACEJKA1));
-    list.add(new DefaultTire(levers.get(1), RADIUS, DoubleScalar.of(1536.7 + 427.7084), PACEJKA1));
-    list.add(new DefaultTire(levers.get(2), RADIUS, DoubleScalar.of(1536.7 + 427.7084), PACEJKA2));
-    list.add(new DefaultTire(levers.get(3), RADIUS, DoubleScalar.of(1536.7 + 427.7084), PACEJKA2));
-  }
-
-  public TireInterface tire(int index) {
-    return list.get(index);
   }
 
   // ---
   @Override
   public Scalar mass() {
-    return DoubleScalar.of(1412); // mass [kg]
+    return DoubleScalar.of(170); // mass [kg]
   }
 
 //  @Override
 //  public Pacejka3 pacejka(int index) {
-//    return index < 2 ? PACEJKA1 : PACEJKA2;
+//    return PACEJKA;
 //  }
 
   @Override
   public Scalar radius() {
-    return RADIUS;
+    return RADIUS1;
   }
 
   @Override
@@ -98,12 +88,12 @@ public class CHatchbackModel extends DefaultCarModel {
 
   @Override
   public Scalar Iz_invert() {
-    return DoubleScalar.of(1 / (1536.7 + 427.7084)); // yawing moment of inertia [kgm2]
+    return DoubleScalar.of(1 / 1200.0); // yawing moment of inertia [kgm2]
   }
 
   @Override
   public Scalar Iw_invert() {
-    return DoubleScalar.of(1 / 0.9); // TODO check wheel moment of inertia [kgm2]
+    return DoubleScalar.of(1 / 1.8); // wheel moment of inertia [kgm2]
   }
 
   @Override
@@ -121,13 +111,11 @@ public class CHatchbackModel extends DefaultCarModel {
     return carSteering;
   }
 
-  // maximal steering angle [deg]
-  // TODO check online what is appropriate
-  private static final Scalar maxDelta = DoubleScalar.of(45 * Math.PI / 180);
+  private static final Scalar maxDelta = DoubleScalar.of(45 * Math.PI / 180); // maximal steering angle [rad]
   // maximal motor torque [Nm], with gears included
-  private static final Scalar maxPress = DoubleScalar.of(13); // maximal master cylinder presure [MPa]
-  private static final Scalar maxThb = DoubleScalar.of(2000); // max handbrake torque [Nm]
-  private static final Scalar maxThrottle = DoubleScalar.of(2000.);
+  private static final Scalar maxPress = DoubleScalar.of(13.0); // TODO should result in 3000 Nm maximal master cylinder pressure [MPa]
+  private static final Scalar maxThb = DoubleScalar.of(1000.0); // max handbrake torque [Nm]
+  private static final Scalar maxThrottle = DoubleScalar.of(2000.0);
 
   @Override
   public CarControl createControl(Tensor u) {
@@ -164,8 +152,4 @@ public class CHatchbackModel extends DefaultCarModel {
   public Scalar rollFric() {
     return gForce().multiply(muRoll());
   }
-  // public static final Scalar eps = RealScalar.of(1e-4); // tolerance below which is speed considered 0
-  // public static final Scalar Dz1 = RealScalar.of(0.05); // dead zone tOLERANCE
-  // public static final Scalar Dz2 = RealScalar.of(3.1415 / 180);
-  // public static final Scalar T = RealScalar.of(0.1);
 }

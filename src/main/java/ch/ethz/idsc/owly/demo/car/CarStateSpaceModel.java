@@ -31,7 +31,8 @@ public class CarStateSpaceModel implements StateSpaceModel {
     // u may need to satisfy certain conditions with respect to previous u
     CarState cs = new CarState(x);
     CarControl cc = new CarControl(u);
-    TireForces tire = new TireForces(params, cs, cc);
+    Scalar mu = RealScalar.of(0.8); // friction coefficient on dry road
+    TireForces tire = new TireForces(params, cs, cc, mu);
     BrakeTorques brakeTorques = new BrakeTorques(params, cs, cc, tire);
     MotorTorques torques = new MotorTorques(params, cc.throttle);
     // ---

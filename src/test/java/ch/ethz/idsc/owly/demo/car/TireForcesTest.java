@@ -15,7 +15,7 @@ public class TireForcesTest extends TestCase {
     CarState carState = CarStatic.x0_demo1();
     // System.out.println(carState.asVector());
     CarControl carControl = carModel.createControl(Tensors.vector(0, 0, 0, 0));
-    TireForces tireForces = new TireForces(carModel, carState, carControl);
+    TireForces tireForces = new TireForces(carModel, carState, carControl, FrictionCoefficients.TIRE_DRY_ROAD);
     assertTrue(Chop.isZeros(tireForces.asVectorFX()));
     assertTrue(Chop.isZeros(tireForces.asVectorFY()));
     assertTrue(Chop.isZeros(tireForces.asVector_fX()));
@@ -93,7 +93,7 @@ public class TireForcesTest extends TestCase {
     CarControl carControl = carModel.createControl(Tensors.vector(.5 / maxDelta, 0, 0, 0));
     // new CarControl();
     @SuppressWarnings("unused")
-    TireForces tireForces = new TireForces(carModel, carState, carControl);
+    TireForces tireForces = new TireForces(carModel, carState, carControl, FrictionCoefficients.TIRE_DRY_ROAD);
     // CONFIRMED
     // System.out.println(tireForces.asVectorFX());
     // System.out.println(tireForces.asVectorFY());
@@ -108,7 +108,7 @@ public class TireForcesTest extends TestCase {
     CarModel carModel = new CHatchbackModel(CarSteering.FRONT, RealScalar.of(0.5));
     CarState carState = CarStatic.x0_demo3();
     CarControl carControl = carModel.createControl(Tensors.vector(.3, 0, 0, 0));
-    TireForces tireForces = new TireForces(carModel, carState, carControl);
+    TireForces tireForces = new TireForces(carModel, carState, carControl, FrictionCoefficients.TIRE_DRY_ROAD);
     assertTrue(tireForces.isTorqueConsistent());
     assertTrue(tireForces.isFzConsistent());
     assertTrue(tireForces.isGForceConsistent());
@@ -139,7 +139,7 @@ public class TireForcesTest extends TestCase {
     CHatchbackModel carModel = new CHatchbackModel(CarSteering.BOTH, RealScalar.of(0.5));
     CarState carState = CarStatic.x0_demo3();
     CarControl carControl = carModel.createControl(Tensors.vector(.3, 0, 0, 0));
-    TireForces tireForces = new TireForces(carModel, carState, carControl);
+    TireForces tireForces = new TireForces(carModel, carState, carControl, FrictionCoefficients.TIRE_DRY_ROAD);
     assertTrue(tireForces.isTorqueConsistent());
     assertTrue(tireForces.isFzConsistent());
     assertTrue(tireForces.isGForceConsistent());
