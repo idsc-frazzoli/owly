@@ -25,7 +25,7 @@ public class Se2MinDistGoalManager extends Se2DefaultGoalManagerExt {
     // Cost increases with time and input length
     // TODO currently all Se2models only change angle, no amplitude changes
     // integrate(||u||²+1,t)
-    return RealScalar.ONE.add(Norm._2Squared.of(flow.getU()))//
+    return RealScalar.ONE.add(Norm._2SQUARED.of(flow.getU()))//
         .multiply(Trajectories.timeIncrement(from, trajectory));
   }
 

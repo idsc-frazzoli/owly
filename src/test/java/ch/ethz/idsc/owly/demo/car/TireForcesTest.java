@@ -2,6 +2,7 @@
 package ch.ethz.idsc.owly.demo.car;
 
 import ch.ethz.idsc.owly.demo.car.box.CHatchbackModel;
+import ch.ethz.idsc.owly.math.FrictionCoefficients;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;

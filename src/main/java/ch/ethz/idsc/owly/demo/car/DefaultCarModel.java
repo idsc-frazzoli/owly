@@ -11,10 +11,6 @@ import ch.ethz.idsc.tensor.red.Mean;
 import ch.ethz.idsc.tensor.sca.Sign;
 
 public abstract class DefaultCarModel implements VehicleModel {
-  // @Override
-  // public final Scalar gForce() {
-  // return mass().multiply(RealScalar.of(9.81));
-  // }
   @Override
   public final int tires() {
     return 4;

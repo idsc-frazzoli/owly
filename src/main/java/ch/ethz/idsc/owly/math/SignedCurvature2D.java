@@ -8,7 +8,10 @@ import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.red.Hypot;
 import ch.ethz.idsc.tensor.red.Norm;
 
-public class SignedCurvature2D {
+public enum SignedCurvature2D {
+  ;
+  private static final Scalar TWO = RealScalar.of(2);
+
   /** @param a
    * @param b
    * @param c
@@ -18,7 +21,7 @@ public class SignedCurvature2D {
     Scalar v = b.subtract(a).dot(Cross2D.of(c.subtract(b))).Get();
     Scalar w = b.subtract(a).dot(c.subtract(a)).Get();
     Scalar n = Norm._2.of(c.subtract(b));
-    Scalar den = Hypot.BIFUNCTION.apply(v, w).multiply(n);
-    return RealScalar.of(2).multiply(v).divide(den);
+    Scalar den = Hypot.of(v, w).multiply(n);
+    return TWO.multiply(v).divide(den);
   }
 }

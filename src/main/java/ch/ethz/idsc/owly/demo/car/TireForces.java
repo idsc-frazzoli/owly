@@ -3,6 +3,8 @@
 package ch.ethz.idsc.owly.demo.car;
 
 import ch.ethz.idsc.owly.math.Cross2D;
+import ch.ethz.idsc.owly.math.FrictionCoefficients;
+import ch.ethz.idsc.owly.math.PhysicalConstants;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
@@ -11,8 +13,8 @@ import ch.ethz.idsc.tensor.alg.Array;
 import ch.ethz.idsc.tensor.alg.Join;
 import ch.ethz.idsc.tensor.lie.Cross;
 import ch.ethz.idsc.tensor.lie.Rodriguez;
+import ch.ethz.idsc.tensor.lie.RotationMatrix;
 import ch.ethz.idsc.tensor.mat.LinearSolve;
-import ch.ethz.idsc.tensor.mat.RotationMatrix;
 import ch.ethz.idsc.tensor.red.Total;
 import ch.ethz.idsc.tensor.sca.Chop;
 
@@ -27,6 +29,10 @@ public class TireForces {
   public final Tensor Forces; // forces in car/body frame
   public final Tensor fwheel; // forces in wheel frame
 
+  /** @param params
+   * @param cs
+   * @param cc
+   * @param mu friction coefficient of tire on road/ground, see {@link FrictionCoefficients} */
   public TireForces(VehicleModel params, CarState cs, CarControl cc, Scalar mu) {
     this.params = params;
     this.cs = cs;
@@ -53,7 +59,7 @@ public class TireForces {
       );
       // System.out.println("det=" + Det.of(Lhs));
       Tensor rhs = Array.zeros(4);
-      Scalar gForce = params.mass().multiply(RealScalar.of(9.81));
+      Scalar gForce = params.mass().multiply(PhysicalConstants.G_EARTH);
       rhs.set(gForce, 2);
       fbodyZ = LinearSolve.of(Lhs, rhs);
     }
@@ -90,7 +96,7 @@ public class TireForces {
   }
 
   public boolean isGForceConsistent() {
-    Scalar gForce = params.mass().multiply(RealScalar.of(9.81));
+    Scalar gForce = params.mass().multiply(PhysicalConstants.G_EARTH);
     return Chop._07.close(Total.of(Forces).Get(2), gForce);
   }
 

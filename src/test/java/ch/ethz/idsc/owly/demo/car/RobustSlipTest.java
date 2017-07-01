@@ -43,4 +43,9 @@ public class RobustSlipTest extends TestCase {
     // FIXME not continuous at important case !!!
     _isContinuous(pacejka3, Tensors.vector(0, 0));
   }
+
+  public void testMathematica() {
+    final Pacejka3 pacejka3 = new Pacejka3(13, 1.3, 0.96);
+    System.out.println(new RobustSlip(pacejka3, Tensors.vector(10, 1), RealScalar.of(11)).slip());
+  }
 }

@@ -29,7 +29,7 @@ class TextbookSlip implements SlipInterface {
     final Scalar vy = U.Get(1);
     final Scalar sx = vx.subtract(rtw).divide(rtw); // division by 0 !
     final Scalar sy = RealScalar.ONE.add(sx).multiply(vy.divide(vx));
-    final Scalar s = Hypot.BIFUNCTION.apply(sx, sy);
+    final Scalar s = Hypot.of(sx, sy);
     final Scalar mu = pacejka3.apply(s);
     mux = mu.multiply(robustDiv(sx, s, eps)).negate(); // hack !
     muy = mu.multiply(robustDiv(sy, s, eps)).negate(); // hack !

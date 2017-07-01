@@ -1,5 +1,5 @@
 // code by jph
-package ch.ethz.idsc.owly.demo.car;
+package ch.ethz.idsc.owly.math;
 
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;

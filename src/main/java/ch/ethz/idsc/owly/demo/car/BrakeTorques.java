@@ -29,6 +29,7 @@ public class BrakeTorques {
     if (Scalars.lessEquals(masterPress, RealScalar.of(1.5))) {
       pressR = masterPress;
     } else {
+      // TODO magic constants
       pressR = RealScalar.of(0.3).multiply(masterPress).add(RealScalar.of(1.05));
     }
     // ---

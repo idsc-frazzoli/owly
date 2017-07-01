@@ -21,7 +21,7 @@ public class RobustSlip implements SlipInterface {
     final Scalar ux = U.Get(0).subtract(rtw); // effective speed of tire (longitude)
     final Scalar uy = U.Get(1);
     final Scalar total = Scalars.isZero(rtw) ? //
-        pacejka3.limit() : pacejka3.apply(Hypot.BIFUNCTION.apply(ux, uy).divide(rtw));
+        pacejka3.limit() : pacejka3.apply(Hypot.of(ux, uy).divide(rtw));
     mu = Normalize2D.unlessZero(ux, uy).multiply(total.negate());
   }
 

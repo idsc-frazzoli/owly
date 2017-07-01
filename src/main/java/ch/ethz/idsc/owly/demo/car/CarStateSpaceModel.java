@@ -3,13 +3,14 @@
 package ch.ethz.idsc.owly.demo.car;
 
 import ch.ethz.idsc.owly.math.Deadzone;
+import ch.ethz.idsc.owly.math.PhysicalConstants;
 import ch.ethz.idsc.owly.math.StateSpaceModel;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Scalars;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
-import ch.ethz.idsc.tensor.mat.RotationMatrix;
+import ch.ethz.idsc.tensor.lie.RotationMatrix;
 import ch.ethz.idsc.tensor.red.Total;
 import ch.ethz.idsc.tensor.sca.Chop;
 import ch.ethz.idsc.tensor.sca.Round;
@@ -19,9 +20,13 @@ import ch.ethz.idsc.tensor.sca.Round;
  * be a layer outside of the state space model */
 public class CarStateSpaceModel implements StateSpaceModel {
   private final VehicleModel params;
+  private final TrackInterface trackInterface;
 
-  public CarStateSpaceModel(VehicleModel carModel) {
+  /** @param carModel
+   * @param mu friction coefficient of tire on road */
+  public CarStateSpaceModel(VehicleModel carModel, TrackInterface trackInterface) {
     this.params = carModel;
+    this.trackInterface = trackInterface;
   }
 
   private long tic = 0;
@@ -31,13 +36,12 @@ public class CarStateSpaceModel implements StateSpaceModel {
     // u may need to satisfy certain conditions with respect to previous u
     CarState cs = new CarState(x);
     CarControl cc = new CarControl(u);
-    Scalar mu = RealScalar.of(0.8); // friction coefficient on dry road
-    TireForces tire = new TireForces(params, cs, cc, mu);
+    TireForces tire = new TireForces(params, cs, cc, trackInterface.mu(cs.asVector()));
     BrakeTorques brakeTorques = new BrakeTorques(params, cs, cc, tire);
     MotorTorques torques = new MotorTorques(params, cc.throttle);
     // ---
     final Scalar dux;
-    final Scalar gForce = params.mass().multiply(RealScalar.of(9.81));
+    final Scalar gForce = params.mass().multiply(PhysicalConstants.G_EARTH);
     // TODO friction from drag
     final Scalar rollFric = gForce.multiply(params.muRoll()); // TODO at the moment == 0!
     Deadzone deadzone = Deadzone.of(rollFric.negate(), rollFric);
