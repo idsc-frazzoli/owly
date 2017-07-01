@@ -59,21 +59,6 @@ public class TsiotrasModel extends DefaultCarModel {
   }
 
   @Override
-  public Scalar frontL() {
-    return DoubleScalar.of(1.915); // distance from COG to front end [m]
-  }
-
-  @Override
-  public Scalar rearL() {
-    return DoubleScalar.of(2.835); // distance from COG to rear end [m]
-  }
-
-  @Override
-  public Scalar width() {
-    return DoubleScalar.of(1.916); // width of the vehicle [m]
-  }
-
-  @Override
   public Scalar gammaM() {
     return gammaM; // rear/total drive ratio; 0 is FWD, 1 is RWD
   }

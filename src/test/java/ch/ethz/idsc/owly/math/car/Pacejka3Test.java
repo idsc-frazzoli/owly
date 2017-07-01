@@ -31,4 +31,14 @@ public class Pacejka3Test extends TestCase {
       // ---
     }
   }
+
+  public void testLimit() {
+    final Pacejka3 pacejka3 = new Pacejka3(13.8509, 1.3670, 0.9622);
+    Scalar value = DoubleScalar.of(1.0);
+    for (int c = 0; c < 100; ++c) {
+      Scalar result = pacejka3.apply(value);
+      value = value.multiply(RealScalar.of(.1));
+      // System.out.println(value + " " + result);
+    }
+  }
 }

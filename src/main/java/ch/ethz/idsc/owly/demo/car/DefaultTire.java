@@ -5,6 +5,7 @@ import ch.ethz.idsc.owly.math.car.Pacejka3;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
 
+/** class holds invariant parameters of tire */
 public class DefaultTire implements TireInterface {
   private final Tensor lever;
   private final Scalar radius;

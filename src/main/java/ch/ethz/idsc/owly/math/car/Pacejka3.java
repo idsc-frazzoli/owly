@@ -20,9 +20,11 @@ import ch.ethz.idsc.tensor.sca.Sin;
  * Collisions Using Conventional Control Inputs
  * B=7, C=1.4, D=1 */
 public class Pacejka3 implements ScalarUnaryOperator {
-  public final Scalar B;
-  public final Scalar C;
-  public final Scalar D;
+  private static final Scalar PI_HALF = RealScalar.of(Math.PI / 2);
+  // ---
+  private final Scalar B;
+  private final Scalar C;
+  private final Scalar D;
 
   /** @param B
    * @param C
@@ -44,5 +46,12 @@ public class Pacejka3 implements ScalarUnaryOperator {
     if (!NumberQ.of(slip))
       throw TensorRuntimeException.of(slip);
     return D.multiply(Sin.of(C.multiply(ArcTan.of(B.multiply(slip)))));
+  }
+
+  /** the limit case has been established with Mathematica.
+   * for reasonable pacejka constants, the "total" variable will evaluate to be positive.
+   * due to the negate the final friction "mu" is then pointing against the ground speed {ux, uy} */
+  public Scalar limit() {
+    return D.multiply(Sin.of(C.multiply(PI_HALF)));
   }
 }

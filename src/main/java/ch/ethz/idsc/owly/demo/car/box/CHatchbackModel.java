@@ -70,18 +70,16 @@ public class CHatchbackModel extends DefaultCarModel {
   }
 
   @Override
-  public Scalar frontL() {
-    return DoubleScalar.of(1.915); // distance from COG to front end [m]
-  }
-
-  @Override
-  public Scalar rearL() {
-    return DoubleScalar.of(2.835); // distance from COG to rear end [m]
-  }
-
-  @Override
-  public Scalar width() {
-    return DoubleScalar.of(1.916); // width of the vehicle [m]
+  public Tensor footprint() {
+    double xf = 1.915; // from COG to front end [m]
+    double xr = -2.835; // from COG to rear end [m]
+    double yw = 1.916 * 0.5; // width of the vehicle [m]
+    return Tensors.matrixDouble(new double[][] { //
+        { xf, yw }, //
+        { xr, yw }, //
+        { xr, -yw }, //
+        { xf, -yw } //
+    });
   }
 
   @Override

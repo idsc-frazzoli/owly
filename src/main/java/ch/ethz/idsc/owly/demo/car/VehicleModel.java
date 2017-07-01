@@ -34,18 +34,8 @@ public interface VehicleModel {
    * angles(delta) = {~delta, ~delta, 0, 0} */
   Tensor angles(Scalar delta);
 
-  // TODO consolidate visualization info into one concept
-  /** @return distance from COG to front end [m] */
-  @Deprecated
-  Scalar frontL(); // only used for visualization
-
-  /** @return distance from COG to rear end [m] */
-  @Deprecated
-  Scalar rearL(); // only used for visualization
-
-  /** @return width of the vehicle [m] */
-  @Deprecated
-  Scalar width(); // only used for visualization
+  /** @return sequence of points that describe the footprint of the vehicle */
+  Tensor footprint();
 
   /** @return rear/total drive ratio; 0 is FWD, 1 is RWD */
   Scalar gammaM();

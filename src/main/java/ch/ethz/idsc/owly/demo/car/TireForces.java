@@ -79,18 +79,18 @@ public class TireForces {
   }
 
   public boolean isTorqueConsistent() {
-    return Chop._10.allZero(torque().extract(0, 2).multiply(RealScalar.of(1e-3)));
+    return Chop._07.allZero(torque().extract(0, 2));
   }
 
   public boolean isFzConsistent() {
     Scalar f03 = Forces.Get(0, 2).add(Forces.Get(3, 2));
     Scalar f12 = Forces.Get(1, 2).add(Forces.Get(2, 2));
-    return Chop._10.allZero(f03.subtract(f12).multiply(RealScalar.of(1e-3)));
+    return Chop._07.close(f03, f12);
   }
 
   public boolean isGForceConsistent() {
     Scalar gForce = params.mass().multiply(RealScalar.of(9.81));
-    return Chop._10.allZero(Total.of(Forces).Get(2).subtract(gForce).multiply(RealScalar.of(1e-3)));
+    return Chop._07.close(Total.of(Forces).Get(2), gForce);
   }
 
   /** @param delta angle of wheel

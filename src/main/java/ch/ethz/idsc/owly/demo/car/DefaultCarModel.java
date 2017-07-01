@@ -6,6 +6,7 @@ import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
+import ch.ethz.idsc.tensor.opt.ConvexHull;
 import ch.ethz.idsc.tensor.red.Mean;
 import ch.ethz.idsc.tensor.sca.Sign;
 
@@ -43,6 +44,14 @@ public abstract class DefaultCarModel implements VehicleModel {
 
   public TireInterface tire(int index) {
     throw new RuntimeException();
+  }
+
+  @Override
+  public Tensor footprint() {
+    Tensor hull = Tensors.empty();
+    for (int index = 0; index < tires(); ++index)
+      hull.append(tire(index).lever().extract(0, 2));
+    return ConvexHull.of(hull);
   }
 
   /***************************************************/

@@ -17,6 +17,6 @@ public class Cross2DTest extends TestCase {
   public void testRotation() {
     Tensor x = Tensors.vector(1, 2);
     Tensor mat = RotationMatrix.of(RealScalar.of(Math.PI / 2));
-    assertTrue(Chop._10.allZero(Cross2D.of(x).subtract(mat.dot(x))));
+    assertTrue(Chop._10.close(Cross2D.of(x), mat.dot(x)));
   }
 }

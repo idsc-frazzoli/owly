@@ -27,7 +27,7 @@ public enum Normalize2D {
     Tensor result = Tensors.of(x, y).multiply(norm.invert());
     Scalar actual = Hypot.BIFUNCTION.apply(result.Get(0), result.Get(1));
     // TODO remove check after a long while
-    if (!Chop._10.allZero(actual.subtract(RealScalar.ONE)))
+    if (!Chop._10.close(actual, RealScalar.ONE))
       throw TensorRuntimeException.of(result, actual);
     return result;
   }

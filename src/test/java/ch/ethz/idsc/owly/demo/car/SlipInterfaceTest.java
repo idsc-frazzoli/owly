@@ -37,7 +37,7 @@ public class SlipInterfaceTest extends TestCase {
       Scalar rtw = RandomVariate.of(distribution);
       SlipInterface si1 = new RobustSlip(c.tire(0).pacejka(), Tensors.vector(1, 0), rtw);
       SlipInterface si2 = new TextbookSlip(c.tire(1).pacejka(), Tensors.vector(1, 0), rtw);
-      assertTrue(Chop._10.allZero(si1.slip().subtract(si2.slip())));
+      assertTrue(Chop._10.close(si1.slip(), si2.slip()));
     }
   }
 
@@ -50,7 +50,7 @@ public class SlipInterfaceTest extends TestCase {
       Scalar rtw = RandomVariate.of(distribution);
       SlipInterface si1 = new RobustSlip(c.tire(1).pacejka(), Tensors.of(vx, vy), rtw);
       SlipInterface si2 = new TextbookSlip(c.tire(0).pacejka(), Tensors.of(vx, vy), rtw);
-      assertTrue(Chop._10.allZero(si1.slip().subtract(si2.slip())));
+      assertTrue(Chop._10.close(si1.slip(), si2.slip()));
     }
   }
 }
