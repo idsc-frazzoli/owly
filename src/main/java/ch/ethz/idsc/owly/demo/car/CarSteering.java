@@ -1,17 +1,18 @@
 // code by jph
 package ch.ethz.idsc.owly.demo.car;
 
-import ch.ethz.idsc.tensor.RealScalar;
+import ch.ethz.idsc.tensor.DoubleScalar;
 import ch.ethz.idsc.tensor.Scalar;
 
 public enum CarSteering {
-  FRONT(RealScalar.ONE), // Ackermann
-  FRONT_PARALLEL(RealScalar.ONE), // simple, only recommended for tests
-  REAR(RealScalar.ONE), // Ackermann
-  BOTH(RealScalar.of(.5)), // Ackermann
+  FRONT(1), // Ackermann
+  FRONT_PARALLEL(1), // simple, only recommended for tests
+  REAR(1), // Ackermann
+  BOTH(.5), // Ackermann
   ;
-  private CarSteering(Scalar factor) {
-    this.factor = factor;
+  // ---
+  private CarSteering(double factor) {
+    this.factor = DoubleScalar.of(factor);
   }
 
   public final Scalar factor;

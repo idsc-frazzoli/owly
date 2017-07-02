@@ -27,7 +27,8 @@ import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
 
 /** (x,y,theta) */
-class Se2rAnimateDemo {
+enum Se2rAnimateDemo {
+  ;
   public static void main(String[] args) throws Exception {
     Tensor eta = Tensors.vector(6, 6, 50 / Math.PI);
     StateIntegrator stateIntegrator = FixedStateIntegrator.create( //

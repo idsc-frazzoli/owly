@@ -15,6 +15,6 @@ public class Se2IdentityWrap implements CoordinateWrap {
 
   @Override
   public Scalar distance(Tensor p, Tensor q) {
-    return Norm.Infinity.of(p.subtract(q));
+    return Norm.INFINITY.of(p.subtract(q));
   }
 }

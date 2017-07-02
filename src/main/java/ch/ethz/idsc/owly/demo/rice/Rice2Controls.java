@@ -24,7 +24,7 @@ public enum Rice2Controls {
     Collection<Flow> collection = new HashSet<>();
     for (Tensor amp : Subdivide.of(0, 1, seg))
       for (Tensor angle : Range.of(0, num).multiply(DoubleScalar.of(2 * Math.PI / num))) {
-        Tensor u = Chop.of(Tensors.of(Cos.of(angle), Sin.of(angle)).multiply(amp.Get()));
+        Tensor u = Chop._10.of(Tensors.of(Cos.of(angle), Sin.of(angle)).multiply(amp.Get()));
         collection.add(StateSpaceModels.createFlow(stateSpaceModel, u));
       }
     return collection;

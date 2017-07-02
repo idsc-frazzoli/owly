@@ -2,7 +2,6 @@
 package ch.ethz.idsc.owly.demo.lv;
 
 import ch.ethz.idsc.owly.math.StateSpaceModel;
-import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
@@ -39,6 +38,7 @@ public class LvStateSpaceModel implements StateSpaceModel {
 
   @Override
   public Scalar getLipschitz() {
-    return RealScalar.ONE; // TODO
+    // LONGTERM
+    return null;
   }
 }

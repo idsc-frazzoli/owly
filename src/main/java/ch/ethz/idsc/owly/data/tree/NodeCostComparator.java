@@ -7,7 +7,7 @@ import ch.ethz.idsc.tensor.Scalars;
 
 /** compare two nodes based on {@link StateCostNode#costFromRoot()} */
 public enum NodeCostComparator implements Comparator<StateCostNode> {
-  INSTANCE;
+  INSTANCE; // not used yet
   // ---
   @Override
   public int compare(StateCostNode o1, StateCostNode o2) {

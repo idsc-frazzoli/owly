@@ -9,7 +9,7 @@ import ch.ethz.idsc.tensor.sca.Ramp;
 
 /** evaluate does not correspond to Euclidean distance */
 public class EllipsoidRegion extends ImplicitFunctionRegion {
-  protected final Tensor center;
+  private final Tensor center;
   private final Tensor invert;
 
   /** @param center of the Ellipsoid
@@ -25,8 +25,6 @@ public class EllipsoidRegion extends ImplicitFunctionRegion {
 
   @Override
   public Scalar evaluate(Tensor tensor) {
-    // TODO needs math derivation
-    Tensor delta = center.subtract(tensor).pmul(invert);
-    return Norm._2.of(delta).subtract(RealScalar.ONE);
+    return Norm._2SQUARED.of(tensor.subtract(center).pmul(invert)).subtract(RealScalar.ONE);
   }
 }

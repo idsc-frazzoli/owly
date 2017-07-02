@@ -3,13 +3,14 @@
 package ch.ethz.idsc.owly.demo.car;
 
 import ch.ethz.idsc.owly.math.Deadzone;
+import ch.ethz.idsc.owly.math.PhysicalConstants;
 import ch.ethz.idsc.owly.math.StateSpaceModel;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Scalars;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
-import ch.ethz.idsc.tensor.mat.RotationMatrix;
+import ch.ethz.idsc.tensor.lie.RotationMatrix;
 import ch.ethz.idsc.tensor.red.Total;
 import ch.ethz.idsc.tensor.sca.Chop;
 import ch.ethz.idsc.tensor.sca.Round;
@@ -18,10 +19,14 @@ import ch.ethz.idsc.tensor.sca.Round;
  * if this is beneficial for stability, the limiter should
  * be a layer outside of the state space model */
 public class CarStateSpaceModel implements StateSpaceModel {
-  private final CarModel params;
+  private final VehicleModel params;
+  private final TrackInterface trackInterface;
 
-  public CarStateSpaceModel(CarModel carModel) {
+  /** @param carModel
+   * @param mu friction coefficient of tire on road */
+  public CarStateSpaceModel(VehicleModel carModel, TrackInterface trackInterface) {
     this.params = carModel;
+    this.trackInterface = trackInterface;
   }
 
   private long tic = 0;
@@ -31,16 +36,19 @@ public class CarStateSpaceModel implements StateSpaceModel {
     // u may need to satisfy certain conditions with respect to previous u
     CarState cs = new CarState(x);
     CarControl cc = new CarControl(u);
-    TireForces tire = new TireForces(params, cs, cc);
+    TireForces tire = new TireForces(params, cs, cc, trackInterface.mu(cs.asVector()));
     BrakeTorques brakeTorques = new BrakeTorques(params, cs, cc, tire);
     MotorTorques torques = new MotorTorques(params, cc.throttle);
     // ---
     final Scalar dux;
-    final Scalar rollFric = params.rollFric(); // TODO at the moment == 0!
+    final Scalar gForce = params.mass().multiply(PhysicalConstants.G_EARTH);
+    // TODO friction from drag
+    final Scalar rollFric = gForce.multiply(params.muRoll()); // TODO at the moment == 0!
     Deadzone deadzone = Deadzone.of(rollFric.negate(), rollFric);
     final Tensor total = Total.of(tire.Forces);
     {
-      Scalar dF_z = total.Get(2).subtract(params.gForce());
+      // Scalar
+      Scalar dF_z = total.Get(2).subtract(gForce);
       if (Scalars.nonZero((Scalar) dF_z.map(Chop.below(1e-5))))
         System.out.println("dF_z=" + dF_z);
     }
@@ -73,10 +81,10 @@ public class CarStateSpaceModel implements StateSpaceModel {
     }
     Tensor dp = RotationMatrix.of(cs.Ksi).dot(cs.u_2d());
     // ---
-    Scalar dw1L = torques.Tm1L.add(brakeTorques.Tb1L).subtract(params.radiusTimes(tire.fwheel.Get(0, 0))).multiply(params.Iw_invert());
-    Scalar dw1R = torques.Tm1R.add(brakeTorques.Tb1R).subtract(params.radiusTimes(tire.fwheel.Get(1, 0))).multiply(params.Iw_invert());
-    Scalar dw2L = torques.Tm2L.add(brakeTorques.Tb2L).subtract(params.radiusTimes(tire.fwheel.Get(2, 0))).multiply(params.Iw_invert());
-    Scalar dw2R = torques.Tm2R.add(brakeTorques.Tb2R).subtract(params.radiusTimes(tire.fwheel.Get(3, 0))).multiply(params.Iw_invert());
+    Scalar dw1L = torques.Tm1L.add(brakeTorques.Tb1L).subtract(params.tire(0).radius().multiply(tire.fwheel.Get(0, 0))).multiply(params.Iw_invert());
+    Scalar dw1R = torques.Tm1R.add(brakeTorques.Tb1R).subtract(params.tire(1).radius().multiply(tire.fwheel.Get(1, 0))).multiply(params.Iw_invert());
+    Scalar dw2L = torques.Tm2L.add(brakeTorques.Tb2L).subtract(params.tire(2).radius().multiply(tire.fwheel.Get(2, 0))).multiply(params.Iw_invert());
+    Scalar dw2R = torques.Tm2R.add(brakeTorques.Tb2R).subtract(params.tire(3).radius().multiply(tire.fwheel.Get(3, 0))).multiply(params.Iw_invert());
     // ---
     Tensor fxu = Tensors.of( //
         dux, duy, //

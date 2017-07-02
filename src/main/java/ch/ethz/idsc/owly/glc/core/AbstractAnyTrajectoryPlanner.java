@@ -78,7 +78,7 @@ public abstract class AbstractAnyTrajectoryPlanner extends AbstractStandardTraje
     // -- DOMAINMAP: Removing Nodes (DeleteTree) from DomainMap
     domainMap().values().removeAll(deleteTreeCollection);
     // -- EDGE: Removing Edges between Nodes in DeleteTree
-    // TODO: edge removal of all nodes needed?
+    // TODO edge removal of all nodes needed?
     // Minimum needed:
     // baseRoot.parent().removeEdgeTo(baseRoot);
     // oldRoot has no parent, therefore is skipped
@@ -106,7 +106,7 @@ public abstract class AbstractAnyTrajectoryPlanner extends AbstractStandardTraje
     long tic = System.nanoTime();
     Collection<GlcNode> treeCollection = Nodes.ofSubtree(root);
     System.out.println("treesize for goal checking: " + treeCollection.size());
-    // TODO Parralizabe?
+    // TODO can parallelize?
     Iterator<GlcNode> treeCollectionIterator = treeCollection.iterator();
     while (treeCollectionIterator.hasNext()) { // goes through entire tree
       GlcNode current = treeCollectionIterator.next();

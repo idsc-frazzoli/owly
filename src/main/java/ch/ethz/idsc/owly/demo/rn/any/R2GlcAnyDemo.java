@@ -32,7 +32,8 @@ import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
 import ch.ethz.idsc.tensor.sca.Mod;
 
-class R2GlcAnyDemo {
+enum R2GlcAnyDemo {
+  ;
   public static void main(String[] args) {
     RationalScalar resolution = (RationalScalar) RealScalar.of(4);
     Scalar timeScale = RealScalar.of(2);

@@ -32,7 +32,8 @@ import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
 
 /** (x,y,theta) */
-class Se2rImageDemo {
+enum Se2rImageDemo {
+  ;
   public static void main(String[] args) throws Exception {
     Region region = ImageRegions.loadFromRepository("/io/track0_100.png", Tensors.vector(10, 10), false);
     Tensor partitionScale = Tensors.vector(3, 3, 50 / Math.PI);

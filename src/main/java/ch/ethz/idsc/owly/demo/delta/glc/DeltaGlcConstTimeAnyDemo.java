@@ -10,7 +10,8 @@ import ch.ethz.idsc.tensor.RationalScalar;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
 
-class DeltaGlcConstTimeAnyDemo {
+enum DeltaGlcConstTimeAnyDemo {
+  ;
   public static void main(String[] args) throws Exception {
     RationalScalar resolution = (RationalScalar) RationalScalar.of(11, 1);
     AnyPlannerInterface trajectoryPlanner = DeltaHelper.createGlcAny(RealScalar.of(-0.25), resolution);
@@ -19,8 +20,7 @@ class DeltaGlcConstTimeAnyDemo {
     owlyFrame.jFrame.setBounds(100, 100, 620, 475);
     Scalar planningTime = RealScalar.of(1);
     while (!trajectoryPlanner.getBest().isPresent() && owlyFrame.jFrame.isVisible()) {
-      // TODO JAN wierd RealScalar cast
-      int expandIter = Expand.constTime(trajectoryPlanner, (RealScalar) planningTime);
+      int expandIter = Expand.constTime(trajectoryPlanner, planningTime);
       owlyFrame.setGlc((TrajectoryPlanner) trajectoryPlanner);
       if (expandIter < 1)
         break;

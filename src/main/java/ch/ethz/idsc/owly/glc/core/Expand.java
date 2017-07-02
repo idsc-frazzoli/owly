@@ -4,6 +4,7 @@ package ch.ethz.idsc.owly.glc.core;
 import java.util.Optional;
 
 import ch.ethz.idsc.tensor.RealScalar;
+import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Scalars;
 
 /** class contains static utility function that operate on instances of the
@@ -61,9 +62,9 @@ public enum Expand {
    * or a goal was found
    * @param expandInterface
    * @param timeLimit TimeLimit of expandfunction in [s] */
-  public static int maxTime(ExpandInterface expandInterface, RealScalar timeLimit) {
+  public static int maxTime(ExpandInterface expandInterface, Scalar timeLimit) {
     long tic = System.nanoTime();
-    timeLimit = (RealScalar) timeLimit.multiply(RealScalar.of(1e9));
+    timeLimit = timeLimit.multiply(RealScalar.of(1e9));
     int expandCount = 0;
     while (true) {
       expandCount++;
@@ -90,9 +91,9 @@ public enum Expand {
    * 
    * @param expandInterface
    * @param time Time of expandfunction in [s] */
-  public static int constTime(ExpandInterface expandInterface, RealScalar time) {
+  public static int constTime(ExpandInterface expandInterface, Scalar time) {
     long tic = System.nanoTime();
-    time = (RealScalar) time.multiply(RealScalar.of(1e9));
+    time = time.multiply(RealScalar.of(1e9));
     int expandCount = 0;
     while (true) {
       Optional<GlcNode> next = expandInterface.pollNext();

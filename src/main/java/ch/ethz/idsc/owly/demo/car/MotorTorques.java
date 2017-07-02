@@ -17,7 +17,7 @@ public class MotorTorques {
 
   /** @param params
    * @param throttle absolute [Nm] */
-  public MotorTorques(CarModel params, Scalar throttle) {
+  public MotorTorques(VehicleModel params, Scalar throttle) {
     // ---
     final Scalar reqTorque = throttle.multiply(HALF);
     final Scalar rearCoeff = params.gammaM();

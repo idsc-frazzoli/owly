@@ -8,7 +8,8 @@ import ch.ethz.idsc.owly.gui.OwlyFrame;
 import ch.ethz.idsc.tensor.RationalScalar;
 import ch.ethz.idsc.tensor.RealScalar;
 
-class DeltaGlcDemo {
+enum DeltaGlcDemo {
+  ;
   public static void main(String[] args) throws Exception {
     RationalScalar resolution = (RationalScalar) RationalScalar.of(12, 1);
     TrajectoryPlanner trajectoryPlanner = DeltaHelper.createGlc(RealScalar.of(-0.25), resolution);

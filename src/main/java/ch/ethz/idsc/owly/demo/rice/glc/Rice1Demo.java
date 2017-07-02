@@ -29,7 +29,8 @@ import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
 
 /** "Mobility and Autonomous Reconfiguration of Marsokhod" */
-class Rice1Demo {
+enum Rice1Demo {
+  ;
   public static TrajectoryPlanner simple() {
     Tensor eta = Tensors.vector(5, 8);
     StateIntegrator stateIntegrator = FixedStateIntegrator.createDefault(RationalScalar.of(1, 5), 5);

@@ -24,7 +24,8 @@ import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
 import ch.ethz.idsc.tensor.io.GifSequenceWriter;
 
-class R2ExpandDemo {
+enum R2ExpandDemo {
+  ;
   public static void main(String[] args) throws Exception {
     int wid = 7;
     RnTransitionSpace rnss = new RnTransitionSpace();

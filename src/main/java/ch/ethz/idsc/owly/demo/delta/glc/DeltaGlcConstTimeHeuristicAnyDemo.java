@@ -20,6 +20,7 @@ import ch.ethz.idsc.owly.gui.Gui;
 import ch.ethz.idsc.owly.gui.OwlyFrame;
 import ch.ethz.idsc.owly.math.state.StateTime;
 import ch.ethz.idsc.owly.math.state.Trajectories;
+import ch.ethz.idsc.tensor.DoubleScalar;
 import ch.ethz.idsc.tensor.RationalScalar;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
@@ -27,7 +28,8 @@ import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
 import ch.ethz.idsc.tensor.io.Import;
 
-class DeltaGlcConstTimeHeuristicAnyDemo {
+enum DeltaGlcConstTimeHeuristicAnyDemo {
+  ;
   public static void main(String[] args) throws Exception {
     // -- Quick Planner init
     RationalScalar quickResolution = (RationalScalar) RationalScalar.of(11, 1);
@@ -36,7 +38,7 @@ class DeltaGlcConstTimeHeuristicAnyDemo {
     quickOwlyFrame.configCoordinateOffset(33, 416);
     quickOwlyFrame.jFrame.setBounds(100, 100, 620, 475);
     // TODO FIX depthlimit needs to come from parameters
-    Expand.maxDepth(quickTrajectoryPlanner, RealScalar.POSITIVE_INFINITY.number().intValue());
+    Expand.maxDepth(quickTrajectoryPlanner, DoubleScalar.POSITIVE_INFINITY.number().intValue());
     quickOwlyFrame.setGlc(quickTrajectoryPlanner);
     Optional<GlcNode> optional = quickTrajectoryPlanner.getBest();
     List<StateTime> quickTrajectory = null;
@@ -70,8 +72,7 @@ class DeltaGlcConstTimeHeuristicAnyDemo {
     owlyFrame.jFrame.setBounds(100, 100, 620, 475);
     Scalar planningTime = RealScalar.of(1);
     while (owlyFrame.jFrame.isVisible()) {
-      // TODO JAN wierd RealScalar cast
-      int expandIter = Expand.constTime(slowTrajectoryPlanner, (RealScalar) planningTime);
+      int expandIter = Expand.constTime(slowTrajectoryPlanner, planningTime);
       owlyFrame.setGlc((TrajectoryPlanner) slowTrajectoryPlanner);
       if (expandIter < 1)
         break;
