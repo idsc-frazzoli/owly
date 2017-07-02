@@ -45,6 +45,8 @@ public class TsiotrasModel extends DefaultCarModel {
         Tensors.of(LR.negate(), LW, h_negate), // 2L
         Tensors.of(LR.negate(), LW.negate(), h_negate) // 2R
     ).unmodifiable();
+    // TODO define tires!
+    // DoubleScalar.of(1 / 1.8); // wheel moment of inertia [kgm2]
   }
 
   // ---
@@ -61,11 +63,6 @@ public class TsiotrasModel extends DefaultCarModel {
   @Override
   public Scalar Iz_invert() {
     return DoubleScalar.of(1 / 1200.0); // yawing moment of inertia [kgm2]
-  }
-
-  @Override
-  public Scalar Iw_invert() {
-    return DoubleScalar.of(1 / 1.8); // wheel moment of inertia [kgm2]
   }
 
   @Override

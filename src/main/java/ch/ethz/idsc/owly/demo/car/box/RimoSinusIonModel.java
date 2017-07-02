@@ -11,7 +11,6 @@ import ch.ethz.idsc.owly.demo.car.DefaultTire;
 import ch.ethz.idsc.owly.demo.car.TireInterface;
 import ch.ethz.idsc.owly.math.car.Pacejka3;
 import ch.ethz.idsc.tensor.DoubleScalar;
-import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.TensorRuntimeException;
@@ -19,54 +18,73 @@ import ch.ethz.idsc.tensor.Tensors;
 import ch.ethz.idsc.tensor.sca.Clip;
 
 /** specifications of vehicle taken from:
- * TODO */
-public class RimoSinusModel extends DefaultCarModel {
-  public static RimoSinusModel standard() {
-    return new RimoSinusModel(CarSteering.FRONT, RealScalar.ZERO);
+ * http://www.rimo-germany.com/technische-daten-sinus-ion.html
+ * 
+ * 
+ * L/B/H: 2020 / 1390 / 600-1200\
+ * 186 kg
+ * Motoren: 2 x 2.8 kW Motoren
+ * 
+ * Drehmoment: 95 Nm pro Rad
+ * 
+ * specifications of tires taken from:
+ * http://www.prespo.de/shop/reifen/satz-dunlop-sl1-dimension-450710.html
+ * 
+ * Tires: DUNLOP SL1
+ * Tires front:
+ * Laufflächenbreite: 86mm
+ * Gesamtbreite: 133mm
+ * Außendurchmesser: 255mm
+ * Felgengrösse (inch): 4.5 (125-130mm)
+ * 
+ * Tires rear:
+ * Laufflächenbreite: 136mm
+ * Gesamtbreite: 210mm
+ * Außendurchmesser: 280mm
+ * Felgengrösse (inch): 8.0 (210mm) */
+public class RimoSinusIonModel extends DefaultCarModel {
+  public static RimoSinusIonModel standard() {
+    return new RimoSinusIonModel(CarSteering.FRONT);
   }
 
   // ---
   private final CarSteering carSteering;
-  private final Scalar gammaM;
   private final List<TireInterface> list = new ArrayList<>();
 
   /** @param carSteering
    * @param gammaM rear/total drive ratio; 0 is FWD, 1 is RWD, 0.5 is AWD */
-  public RimoSinusModel(CarSteering carSteering, Scalar gammaM) {
+  public RimoSinusIonModel(CarSteering carSteering) {
     this.carSteering = carSteering;
-    this.gammaM = gammaM;
     final Pacejka3 PACEJKA = new Pacejka3(7, 1.4); //
     final Scalar RADIUS1 = DoubleScalar.of(0.255 * 0.5); // wheel radius [m]
-    final Scalar RADIUS2 = DoubleScalar.of(0.278 * 0.5); // wheel radius [m]
-    final Scalar LZ = DoubleScalar.of(-0.20); // height of COG [m]
-    final Scalar LW = DoubleScalar.of(0.8375); // unspecified lateral distance of wheels from COG [m]
-    final Scalar LF = DoubleScalar.of(0.7); // front axle distance from COG [m]
-    final Scalar LR = DoubleScalar.of(0.7); // rear axle distance from COG [m]
-    list.add(new DefaultTire(RADIUS1, null, PACEJKA, null));
-    list.add(new DefaultTire(RADIUS1, null, PACEJKA, null));
-    list.add(new DefaultTire(RADIUS2, null, PACEJKA, null));
-    list.add(new DefaultTire(RADIUS2, null, PACEJKA, null));
+    final Scalar RADIUS2 = DoubleScalar.of(0.280 * 0.5); // wheel radius [m]
+    final Scalar IW = DoubleScalar.of(1); // wheel inertia [kgm2]
+    // TODO dimensions are not accurate
+    final Scalar LZ = DoubleScalar.of(-0.25); // height of COG [m]
+    final Scalar LF = DoubleScalar.of(+0.645); // front axle distance from COG [m]
+    final Scalar LR = DoubleScalar.of(-0.4); // rear axle distance from COG [m]
+    final Scalar TF = DoubleScalar.of(1.055 / 2); // half front track
+    final Scalar TR = DoubleScalar.of(1.200 / 2); // half rear track
+    list.add(new DefaultTire(RADIUS1, IW, PACEJKA, Tensors.of(LF, TF, LZ)));
+    list.add(new DefaultTire(RADIUS1, IW, PACEJKA, Tensors.of(LF, TF.negate(), LZ)));
+    list.add(new DefaultTire(RADIUS2, IW, PACEJKA, Tensors.of(LR, TR, LZ)));
+    list.add(new DefaultTire(RADIUS2, IW, PACEJKA, Tensors.of(LR, TR.negate(), LZ)));
   }
 
   // ---
   @Override
   public Scalar mass() {
-    return DoubleScalar.of(170); // mass [kg]
+    return DoubleScalar.of(186); // mass [kg]
   }
 
   @Override
   public Scalar gammaM() {
-    return gammaM; // rear/total drive ratio; 0 is FWD, 1 is RWD
+    return DoubleScalar.of(1); // rear/total drive ratio; 0 is FWD, 1 is RWD
   }
 
   @Override
   public Scalar Iz_invert() {
-    return DoubleScalar.of(1 / 1200.0); // yawing moment of inertia [kgm2]
-  }
-
-  @Override
-  public Scalar Iw_invert() {
-    return DoubleScalar.of(1 / 1.8); // wheel moment of inertia [kgm2]
+    return DoubleScalar.of(1 / 20.0); // yawing moment of inertia [kgm2]
   }
 
   @Override
@@ -86,7 +104,7 @@ public class RimoSinusModel extends DefaultCarModel {
 
   private static final Scalar maxDelta = DoubleScalar.of(45 * Math.PI / 180); // maximal steering angle [rad]
   // maximal motor torque [Nm], with gears included
-  private static final Scalar maxPress = DoubleScalar.of(13.0); // TODO should result in 3000 Nm maximal master cylinder pressure [MPa]
+  private static final Scalar maxPress = DoubleScalar.of(13.0); // TODO
   private static final Scalar maxThb = DoubleScalar.of(1000.0); // max handbrake torque [Nm]
   private static final Scalar maxThrottle = DoubleScalar.of(2000.0);
 

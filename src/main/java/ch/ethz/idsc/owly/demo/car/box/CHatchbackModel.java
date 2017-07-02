@@ -35,17 +35,17 @@ public class CHatchbackModel extends DefaultCarModel {
     this.carSteering = carSteering;
     this.gammaM = gammaM;
     final Scalar radius = DoubleScalar.of(0.325); // wheel radius [m]
-    final Scalar iw = DoubleScalar.of(1536.7 + 427.7084);
+    final Scalar IW = DoubleScalar.of(0.9); // wheel inertia [kgm2]
     final Pacejka3 PACEJKA1 = new Pacejka3(13.8509, 1.3670, 0.9622);
     final Pacejka3 PACEJKA2 = new Pacejka3(14.1663, 1.3652, 0.9744);
     final Scalar LW = DoubleScalar.of(0.8375); // lateral distance of wheels from COG [m]
     final Scalar LF = DoubleScalar.of(1.015); // front axle distance from COG [m]
     final Scalar LR = DoubleScalar.of(1.895); // rear axle distance from COG [m]
     final Scalar LZ = DoubleScalar.of(-0.54); // from COG to ground contact level [m]
-    list.add(new DefaultTire(radius, iw, PACEJKA1, Tensors.of(LF, LW, LZ)));
-    list.add(new DefaultTire(radius, iw, PACEJKA1, Tensors.of(LF, LW.negate(), LZ)));
-    list.add(new DefaultTire(radius, iw, PACEJKA2, Tensors.of(LR.negate(), LW, LZ)));
-    list.add(new DefaultTire(radius, iw, PACEJKA2, Tensors.of(LR.negate(), LW.negate(), LZ)));
+    list.add(new DefaultTire(radius, IW, PACEJKA1, Tensors.of(LF, LW, LZ)));
+    list.add(new DefaultTire(radius, IW, PACEJKA1, Tensors.of(LF, LW.negate(), LZ)));
+    list.add(new DefaultTire(radius, IW, PACEJKA2, Tensors.of(LR.negate(), LW, LZ)));
+    list.add(new DefaultTire(radius, IW, PACEJKA2, Tensors.of(LR.negate(), LW.negate(), LZ)));
   }
 
   public TireInterface tire(int index) {
@@ -79,11 +79,6 @@ public class CHatchbackModel extends DefaultCarModel {
   @Override
   public Scalar Iz_invert() {
     return DoubleScalar.of(1 / (1536.7 + 427.7084)); // yawing moment of inertia [kgm2]
-  }
-
-  @Override
-  public Scalar Iw_invert() {
-    return DoubleScalar.of(1 / 0.9); // TODO check wheel moment of inertia [kgm2]
   }
 
   @Override
