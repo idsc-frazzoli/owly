@@ -32,7 +32,7 @@ import ch.ethz.idsc.tensor.Tensors;
  * bapaden phd thesis: 5.5.2 Torque-Limited Pendulum Swing-Up
  * 
  * "A Generalized Label Correcting Method for Optimal Kinodynamic Motion Planning" [Paden/Frazzoli] */
-public enum PsuDemo { // <- intentionally public
+enum PsuDemo {
   ;
   public static TrajectoryPlanner simple() {
     Tensor eta = Tensors.vector(5, 7);
