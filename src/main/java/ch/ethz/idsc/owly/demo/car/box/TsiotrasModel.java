@@ -4,6 +4,7 @@ package ch.ethz.idsc.owly.demo.car.box;
 import ch.ethz.idsc.owly.demo.car.CarControl;
 import ch.ethz.idsc.owly.demo.car.CarSteering;
 import ch.ethz.idsc.owly.demo.car.DefaultCarModel;
+import ch.ethz.idsc.owly.demo.car.TireInterface;
 import ch.ethz.idsc.owly.math.car.Pacejka3;
 import ch.ethz.idsc.tensor.DoubleScalar;
 import ch.ethz.idsc.tensor.RealScalar;
@@ -53,6 +54,11 @@ public class TsiotrasModel extends DefaultCarModel {
   @Override
   public Scalar mass() {
     return DoubleScalar.of(1245); // mass [kg]
+  }
+
+  @Override
+  public TireInterface tire(int index) {
+    throw new RuntimeException();
   }
 
   @Override

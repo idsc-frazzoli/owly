@@ -10,6 +10,7 @@ import ch.ethz.idsc.owly.demo.car.CarSteering;
 import ch.ethz.idsc.owly.demo.car.DefaultCarModel;
 import ch.ethz.idsc.owly.demo.car.DefaultTire;
 import ch.ethz.idsc.owly.demo.car.TireInterface;
+import ch.ethz.idsc.owly.demo.car.VehicleModel;
 import ch.ethz.idsc.owly.math.car.Pacejka3;
 import ch.ethz.idsc.tensor.DoubleScalar;
 import ch.ethz.idsc.tensor.RealScalar;
@@ -20,7 +21,9 @@ import ch.ethz.idsc.tensor.Tensors;
 import ch.ethz.idsc.tensor.sca.Clip;
 
 public class CHatchbackModel extends DefaultCarModel {
-  public static CHatchbackModel standard() {
+  private static final Scalar WIDTH_165 = RealScalar.of(0.165);
+
+  public static VehicleModel standard() {
     return new CHatchbackModel(CarSteering.FRONT, RealScalar.ZERO);
   }
 
@@ -42,12 +45,13 @@ public class CHatchbackModel extends DefaultCarModel {
     final Scalar LF = DoubleScalar.of(1.015); // front axle distance from COG [m]
     final Scalar LR = DoubleScalar.of(1.895); // rear axle distance from COG [m]
     final Scalar LZ = DoubleScalar.of(-0.54); // from COG to ground contact level [m]
-    list.add(new DefaultTire(radius, IW, PACEJKA1, Tensors.of(LF, LW, LZ)));
-    list.add(new DefaultTire(radius, IW, PACEJKA1, Tensors.of(LF, LW.negate(), LZ)));
-    list.add(new DefaultTire(radius, IW, PACEJKA2, Tensors.of(LR.negate(), LW, LZ)));
-    list.add(new DefaultTire(radius, IW, PACEJKA2, Tensors.of(LR.negate(), LW.negate(), LZ)));
+    list.add(new DefaultTire(radius, WIDTH_165, IW, PACEJKA1, Tensors.of(LF, LW, LZ)));
+    list.add(new DefaultTire(radius, WIDTH_165, IW, PACEJKA1, Tensors.of(LF, LW.negate(), LZ)));
+    list.add(new DefaultTire(radius, WIDTH_165, IW, PACEJKA2, Tensors.of(LR.negate(), LW, LZ)));
+    list.add(new DefaultTire(radius, WIDTH_165, IW, PACEJKA2, Tensors.of(LR.negate(), LW.negate(), LZ)));
   }
 
+  @Override
   public TireInterface tire(int index) {
     return list.get(index);
   }

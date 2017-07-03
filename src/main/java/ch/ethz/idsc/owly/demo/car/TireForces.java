@@ -37,6 +37,7 @@ public class TireForces {
     this.params = params;
     this.cs = cs;
     final Tensor angles = params.angles(cc.delta).unmodifiable();
+    // System.out.println(angles.map(Round._4));
     // ---
     Tensor mus = Tensors.vector(index -> //
     new RobustSlip(params.tire(index).pacejka(), get_ui_2d(angles.Get(index), index), //

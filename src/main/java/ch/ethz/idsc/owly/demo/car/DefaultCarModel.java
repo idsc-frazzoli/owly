@@ -38,10 +38,6 @@ public abstract class DefaultCarModel implements VehicleModel {
     return null;
   }
 
-  public TireInterface tire(int index) {
-    throw new RuntimeException();
-  }
-
   @Override
   public Tensor footprint() {
     Tensor hull = Tensors.empty();
