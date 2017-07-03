@@ -30,9 +30,9 @@ public class StandardTrajectoryPlanner extends AbstractStandardTrajectoryPlanner
   @Override // from ExpandInterface
   public void expand(final GlcNode node) {
     Map<GlcNode, List<StateTime>> connectors = //
-        SharedUtils.integrate(node, controls, getStateIntegrator(), goalInterface);
+        SharedUtils.integrate(node, controls, getStateIntegrator(), goalInterface, true);
     // ---
-    DomainQueueMap domainQueueMap = new DomainQueueMap(); // holds candidates from insertion
+    DomainQueueMap domainQueueMap = new DomainQueueMap(); // holds candidates for insertion
     for (GlcNode next : connectors.keySet()) { // <- order of keys is non-deterministic
       final Tensor domainKey = convertToKey(next.state());
       final GlcNode former = getNode(domainKey);

@@ -12,7 +12,7 @@ import ch.ethz.idsc.tensor.Tensor;
 
 abstract class AbstractEpisodeIntegrator implements EpisodeIntegrator {
   private final StateSpaceModel stateSpaceModel;
-  final Integrator integrator;
+  /* package */ final Integrator integrator;
   private StateTime stateTime;
 
   AbstractEpisodeIntegrator(StateSpaceModel stateSpaceModel, Integrator integrator, StateTime stateTime) {

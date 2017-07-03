@@ -37,7 +37,7 @@ public class SimpleAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
   @Override // from ExpandInterface
   public void expand(final GlcNode node) {
     Map<GlcNode, List<StateTime>> connectors = //
-        SharedUtils.integrate(node, controls, getStateIntegrator(), goalInterface);
+        SharedUtils.integrate(node, controls, getStateIntegrator(), goalInterface, false);
     // --
     CandidatePairQueueMap candidates = new CandidatePairQueueMap();
     for (GlcNode next : connectors.keySet()) { // <- order of keys is non-deterministic

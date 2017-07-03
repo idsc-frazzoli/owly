@@ -18,7 +18,10 @@ import ch.ethz.idsc.owly.glc.core.GlcNodes;
 import ch.ethz.idsc.owly.glc.core.TrajectoryPlanner;
 import ch.ethz.idsc.owly.gui.Gui;
 import ch.ethz.idsc.owly.gui.OwlyFrame;
+import ch.ethz.idsc.owly.math.region.Region;
+import ch.ethz.idsc.owly.math.region.RegionUnion;
 import ch.ethz.idsc.owly.math.state.StateTime;
+import ch.ethz.idsc.owly.math.state.TimeInvariantRegion;
 import ch.ethz.idsc.owly.math.state.Trajectories;
 import ch.ethz.idsc.tensor.DoubleScalar;
 import ch.ethz.idsc.tensor.RationalScalar;
@@ -64,6 +67,17 @@ enum DeltaGlcConstTimeHeuristicAnyDemo {
     List<Tensor> quickPath = new ArrayList<>();
     while (iterator.hasNext())
       quickPath.add(iterator.next().x());
+    {
+      // TODO JONAS build list of regions
+      List<Region> regions = new ArrayList<>();
+      for (int c = 0; c < 10; ++c) { // !!! use iterator instead of c and "10"
+        // regions.add(new EllipsoidRegion(center, radius));
+      }
+      // TODO JONAS form union of list of regions
+      Region union = RegionUnion.of(regions);
+      // TODO JONAS create and then later use StateTimeRegion
+      new TimeInvariantRegion(union);
+    }
     DeltaTrajectoryGoalManager trajectoryGoalManager = new DeltaTrajectoryGoalManager(//
         quickPath, Tensors.vector(.3, .3), maxSpeed);
     slowTrajectoryPlanner.changeToGoal(trajectoryGoalManager);
