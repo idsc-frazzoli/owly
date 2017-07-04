@@ -7,10 +7,10 @@ import java.util.List;
 import ch.ethz.idsc.owly.demo.car.CarControl;
 import ch.ethz.idsc.owly.demo.car.CarSteering;
 import ch.ethz.idsc.owly.demo.car.DefaultCarModel;
-import ch.ethz.idsc.owly.demo.car.DefaultTire;
+import ch.ethz.idsc.owly.demo.car.DefaultWheel;
 import ch.ethz.idsc.owly.demo.car.MotorTorques;
-import ch.ethz.idsc.owly.demo.car.TireInterface;
 import ch.ethz.idsc.owly.demo.car.VehicleModel;
+import ch.ethz.idsc.owly.demo.car.WheelInterface;
 import ch.ethz.idsc.owly.math.car.Pacejka3;
 import ch.ethz.idsc.tensor.DoubleScalar;
 import ch.ethz.idsc.tensor.RealScalar;
@@ -54,7 +54,7 @@ public class RimoSinusIonModel extends DefaultCarModel {
   }
 
   // ---
-  private final List<TireInterface> list = new ArrayList<>();
+  private final List<WheelInterface> list = new ArrayList<>();
   private final Tensor hull;
 
   private RimoSinusIonModel() {
@@ -79,10 +79,10 @@ public class RimoSinusIonModel extends DefaultCarModel {
     // tire width front total: 13 cm (same as tire rear width on ground)
     final Scalar TWR = RealScalar.of(0.13); // tire width read
     // tire width rear total: 19.5 cm
-    list.add(new DefaultTire(RADIUS1, TWF, IW, PACEJKA, Tensors.of(LF, TF, LZ)));
-    list.add(new DefaultTire(RADIUS1, TWF, IW, PACEJKA, Tensors.of(LF, TF.negate(), LZ)));
-    list.add(new DefaultTire(RADIUS2, TWR, IW, PACEJKA, Tensors.of(LR, TR, LZ)));
-    list.add(new DefaultTire(RADIUS2, TWR, IW, PACEJKA, Tensors.of(LR, TR.negate(), LZ)));
+    list.add(new DefaultWheel(RADIUS1, TWF, IW, PACEJKA, Tensors.of(LF, TF, LZ)));
+    list.add(new DefaultWheel(RADIUS1, TWF, IW, PACEJKA, Tensors.of(LF, TF.negate(), LZ)));
+    list.add(new DefaultWheel(RADIUS2, TWR, IW, PACEJKA, Tensors.of(LR, TR, LZ)));
+    list.add(new DefaultWheel(RADIUS2, TWR, IW, PACEJKA, Tensors.of(LR, TR.negate(), LZ)));
     // cog + front axle to boundary contact 35 [cm] + to front tip 22.5 [cm]
     final Scalar HFX = LF.add(DoubleScalar.of(0.350 + 0.225));
     final Scalar HRX = HFX.subtract(DoubleScalar.of(2.060)); // measured
@@ -106,7 +106,7 @@ public class RimoSinusIonModel extends DefaultCarModel {
   }
 
   @Override
-  public TireInterface tire(int index) {
+  public WheelInterface wheel(int index) {
     return list.get(index);
   }
 
@@ -133,9 +133,9 @@ public class RimoSinusIonModel extends DefaultCarModel {
   // at the extreme the tires are inclined as 18 [deg] to 35 [deg]
   private static final Scalar maxDelta = DoubleScalar.of(25 * Math.PI / 180); // maximal steering angle [rad]
   // maximal motor torque [Nm], with gears included
-  private static final Scalar maxPress = DoubleScalar.of(8.0); // TODO no info yet
+  private static final Scalar maxPress = DoubleScalar.of(4.0); // TODO no info yet
   private static final Scalar maxThb = DoubleScalar.of(1000.0); // max handbrake torque [Nm]
-  private static final Scalar maxThrottle = DoubleScalar.of(200.0); // TODO no info yet
+  private static final Scalar maxThrottle = DoubleScalar.of(100.0); // TODO no info yet
 
   @Override
   public CarControl createControl(Tensor u) {
@@ -147,8 +147,8 @@ public class RimoSinusIonModel extends DefaultCarModel {
     Scalar delta = u.Get(0).multiply(maxDelta);
     Scalar brake = u.Get(1).multiply(maxPress);
     Scalar handbrake = u.Get(2).multiply(maxThb);
-    Scalar throttle = u.Get(3).multiply(maxThrottle);
-    Tensor throttleV = MotorTorques.standard(RealScalar.ONE, throttle); // TODO
+    Tensor throttleV = MotorTorques.electonicGokart( //
+        u.Get(3).multiply(maxThrottle), u.Get(4).multiply(maxThrottle));
     return new CarControl(delta, brake, handbrake, throttleV);
   }
 

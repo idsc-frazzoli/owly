@@ -8,10 +8,10 @@ import java.util.List;
 import ch.ethz.idsc.owly.demo.car.CarControl;
 import ch.ethz.idsc.owly.demo.car.CarSteering;
 import ch.ethz.idsc.owly.demo.car.DefaultCarModel;
-import ch.ethz.idsc.owly.demo.car.DefaultTire;
+import ch.ethz.idsc.owly.demo.car.DefaultWheel;
 import ch.ethz.idsc.owly.demo.car.MotorTorques;
-import ch.ethz.idsc.owly.demo.car.TireInterface;
 import ch.ethz.idsc.owly.demo.car.VehicleModel;
+import ch.ethz.idsc.owly.demo.car.WheelInterface;
 import ch.ethz.idsc.owly.math.car.Pacejka3;
 import ch.ethz.idsc.tensor.DoubleScalar;
 import ch.ethz.idsc.tensor.RealScalar;
@@ -31,7 +31,7 @@ public class CHatchbackModel extends DefaultCarModel {
   // ---
   private final CarSteering carSteering;
   private final Scalar gammaM;
-  private final List<TireInterface> list = new ArrayList<>();
+  private final List<WheelInterface> list = new ArrayList<>();
 
   /** @param carSteering
    * @param gammaM rear/total drive ratio; 0 is FWD, 1 is RWD, 0.5 is AWD */
@@ -46,14 +46,14 @@ public class CHatchbackModel extends DefaultCarModel {
     final Scalar LF = DoubleScalar.of(1.015); // front axle distance from COG [m]
     final Scalar LR = DoubleScalar.of(1.895); // rear axle distance from COG [m]
     final Scalar LZ = DoubleScalar.of(-0.54); // from COG to ground contact level [m]
-    list.add(new DefaultTire(radius, WIDTH_165, IW, PACEJKA1, Tensors.of(LF, LW, LZ)));
-    list.add(new DefaultTire(radius, WIDTH_165, IW, PACEJKA1, Tensors.of(LF, LW.negate(), LZ)));
-    list.add(new DefaultTire(radius, WIDTH_165, IW, PACEJKA2, Tensors.of(LR.negate(), LW, LZ)));
-    list.add(new DefaultTire(radius, WIDTH_165, IW, PACEJKA2, Tensors.of(LR.negate(), LW.negate(), LZ)));
+    list.add(new DefaultWheel(radius, WIDTH_165, IW, PACEJKA1, Tensors.of(LF, LW, LZ)));
+    list.add(new DefaultWheel(radius, WIDTH_165, IW, PACEJKA1, Tensors.of(LF, LW.negate(), LZ)));
+    list.add(new DefaultWheel(radius, WIDTH_165, IW, PACEJKA2, Tensors.of(LR.negate(), LW, LZ)));
+    list.add(new DefaultWheel(radius, WIDTH_165, IW, PACEJKA2, Tensors.of(LR.negate(), LW.negate(), LZ)));
   }
 
   @Override
-  public TireInterface tire(int index) {
+  public WheelInterface wheel(int index) {
     return list.get(index);
   }
 

@@ -16,6 +16,7 @@ public class Rice1StateSpaceModel implements StateSpaceModel {
 
   /** @param lambda strictly positive friction coefficient */
   public Rice1StateSpaceModel(Scalar lambda) {
+    // TODO use lambda = Exp(input_lambda)
     if (Scalars.lessEquals(lambda, RealScalar.ZERO))
       throw TensorRuntimeException.of(lambda);
     this.lambda = lambda;

@@ -7,7 +7,8 @@ import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
 
-public class MotorTorques {
+public enum MotorTorques {
+  ;
   private static final Scalar HALF = RealScalar.of(.5);
 
   /** @param gammaM rear/total drive ratio; 0 is FWD, 1 is RWD, 0.5 is 4WD
@@ -21,5 +22,11 @@ public class MotorTorques {
     Scalar Tm2L = rearCoeff.multiply(reqTorque);
     Scalar Tm2R = Tm2L;
     return Tensors.of(Tm1L, Tm1R, Tm2L, Tm2R);
+  }
+
+  public static Tensor electonicGokart(Scalar throttleL, Scalar throttleR) {
+    return Tensors.of( //
+        RealScalar.ZERO, RealScalar.ZERO, //
+        throttleL, throttleR);
   }
 }

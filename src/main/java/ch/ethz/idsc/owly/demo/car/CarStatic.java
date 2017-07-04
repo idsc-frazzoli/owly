@@ -22,7 +22,7 @@ public enum CarStatic {
    * 
    * @return */
   public static CarState x0_demo1() {
-    VehicleModel params = CHatchbackModel.standard();
+    VehicleModel vehicleModel = CHatchbackModel.standard();
     Scalar speed = RealScalar.of(30 + 3.6 * Dz1);
     return new CarState(Tensors.vector( //
         speed.number().doubleValue() / 3.6, // Ux
@@ -32,10 +32,10 @@ public enum CarStatic {
         // ---
         -50, -75, // px, py
         // ---
-        noSlipRate(speed, params.tire(0).radius()).number().doubleValue() / 3.6, //
-        noSlipRate(speed, params.tire(1).radius()).number().doubleValue() / 3.6, //
-        noSlipRate(speed, params.tire(2).radius()).number().doubleValue() / 3.6, //
-        noSlipRate(speed, params.tire(3).radius()).number().doubleValue() / 3.6 //
+        noSlipRate(speed, vehicleModel.wheel(0).radius()).number().doubleValue() / 3.6, //
+        noSlipRate(speed, vehicleModel.wheel(1).radius()).number().doubleValue() / 3.6, //
+        noSlipRate(speed, vehicleModel.wheel(2).radius()).number().doubleValue() / 3.6, //
+        noSlipRate(speed, vehicleModel.wheel(3).radius()).number().doubleValue() / 3.6 //
     ));
   }
 
@@ -46,7 +46,7 @@ public enum CarStatic {
    * 
    * @return */
   public static CarState x0_demo2() {
-    VehicleModel params = CHatchbackModel.standard();
+    VehicleModel vehicleModel = CHatchbackModel.standard();
     Scalar speed = RealScalar.of(30 + 3.6 * Dz1);
     return new CarState(Tensors.vector( //
         speed.number().doubleValue() / 3.6, // Ux
@@ -56,16 +56,16 @@ public enum CarStatic {
         // ---
         -50, -75, // px, py
         // ---
-        noSlipRate(speed, params.tire(0).radius()).number().doubleValue() / 3.6, //
-        noSlipRate(speed, params.tire(1).radius()).number().doubleValue() / 3.6, //
-        noSlipRate(speed, params.tire(2).radius()).number().doubleValue() / 3.6, //
-        noSlipRate(speed, params.tire(3).radius()).number().doubleValue() / 3.6 //
+        noSlipRate(speed, vehicleModel.wheel(0).radius()).number().doubleValue() / 3.6, //
+        noSlipRate(speed, vehicleModel.wheel(1).radius()).number().doubleValue() / 3.6, //
+        noSlipRate(speed, vehicleModel.wheel(2).radius()).number().doubleValue() / 3.6, //
+        noSlipRate(speed, vehicleModel.wheel(3).radius()).number().doubleValue() / 3.6 //
     ));
   }
 
   /** @return */
   public static CarState x0_demo3() {
-    VehicleModel params = CHatchbackModel.standard();
+    VehicleModel vehicleModel = CHatchbackModel.standard();
     Scalar speed = RealScalar.of(20 + 3.6 * Dz1);
     return new CarState(Tensors.vector( //
         speed.number().doubleValue() / 3.6, // Ux
@@ -75,10 +75,10 @@ public enum CarStatic {
         // ---
         -50, -75, // px, py
         // ---
-        noSlipRate(speed, params.tire(0).radius()).number().doubleValue() / 3.6 + 3, //
-        noSlipRate(speed, params.tire(1).radius()).number().doubleValue() / 3.6 - 2, //
-        noSlipRate(speed, params.tire(2).radius()).number().doubleValue() / 3.6 + 4, //
-        noSlipRate(speed, params.tire(3).radius()).number().doubleValue() / 3.6 - 5 //
+        noSlipRate(speed, vehicleModel.wheel(0).radius()).number().doubleValue() / 3.6 + 3, //
+        noSlipRate(speed, vehicleModel.wheel(1).radius()).number().doubleValue() / 3.6 - 2, //
+        noSlipRate(speed, vehicleModel.wheel(2).radius()).number().doubleValue() / 3.6 + 4, //
+        noSlipRate(speed, vehicleModel.wheel(3).radius()).number().doubleValue() / 3.6 - 5 //
     ));
   }
 }

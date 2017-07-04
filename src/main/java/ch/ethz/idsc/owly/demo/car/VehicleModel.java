@@ -10,11 +10,11 @@ public interface VehicleModel {
   Scalar mass();
 
   /** @return number of tires */
-  int tires();
+  int wheels();
 
   /** @param index
-   * @return description of tire of given index */
-  TireInterface tire(int index);
+   * @return description of wheel of given index */
+  WheelInterface wheel(int index);
 
   /** @param delta steering angle
    * @return angles of wheels (measured from longitude forward direction)
@@ -22,7 +22,8 @@ public interface VehicleModel {
    * angles(delta) = {~delta, ~delta, 0, 0} */
   Tensor angles(Scalar delta);
 
-  /** @return sequence of points that describe the footprint of the vehicle */
+  /** @return sequence of points in ccw direction that circumscribe the
+   * footprint of the vehicle */
   Tensor footprint();
 
   /** @return inverse of yawing moment of inertia [kgm2] */

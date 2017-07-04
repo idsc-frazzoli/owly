@@ -37,25 +37,25 @@ public class BrakeTorques {
       if (Scalars.nonZero(cs.omega.Get(0))) {
         _Tb1L = pressF.multiply(params.press2torF()).multiply(Sign.of(cs.omega.Get(0))).negate();
       } else {
-        _Tb1L = tireForces.fwheel.Get(0, 0).multiply(params.tire(0).radius());
+        _Tb1L = tireForces.fwheel.Get(0, 0).multiply(params.wheel(0).radius());
       }
       //
       if (Scalars.nonZero(cs.omega.Get(1))) {
         _Tb1R = pressF.multiply(params.press2torF()).multiply(Sign.of(cs.omega.Get(1))).negate();
       } else {
-        _Tb1R = tireForces.fwheel.Get(1, 0).multiply(params.tire(1).radius());
+        _Tb1R = tireForces.fwheel.Get(1, 0).multiply(params.wheel(1).radius());
       }
       //
       if (Scalars.nonZero(cs.omega.Get(2))) {
         _Tb2L = pressR.multiply(params.press2torR()).multiply(Sign.of(cs.omega.Get(2))).negate();
       } else {
-        _Tb2L = tireForces.fwheel.Get(2, 0).multiply(params.tire(2).radius());
+        _Tb2L = tireForces.fwheel.Get(2, 0).multiply(params.wheel(2).radius());
       }
       //
       if (Scalars.nonZero(cs.omega.Get(3))) {
         _Tb2R = pressR.multiply(params.press2torR()).multiply(Sign.of(cs.omega.Get(3))).negate();
       } else {
-        _Tb2R = tireForces.fwheel.Get(3, 0).multiply(params.tire(3).radius());
+        _Tb2R = tireForces.fwheel.Get(3, 0).multiply(params.wheel(3).radius());
       }
     }
     // ---
@@ -63,13 +63,13 @@ public class BrakeTorques {
       if (Scalars.nonZero(cs.omega.Get(2))) {
         _Tb2L = _Tb2L.subtract(cc.handbrake.multiply(Sign.of(cs.omega.Get(2))));
       } else {
-        _Tb2L = _Tb2L.subtract(tireForces.fwheel.Get(2, 0).multiply(params.tire(2).radius()));
+        _Tb2L = _Tb2L.subtract(tireForces.fwheel.Get(2, 0).multiply(params.wheel(2).radius()));
       }
       //
       if (Scalars.nonZero(cs.omega.Get(3))) {
         _Tb2R = _Tb2R.subtract(cc.handbrake.multiply(Sign.of(cs.omega.Get(3))));
       } else {
-        _Tb2R = _Tb2R.subtract(tireForces.fwheel.Get(3, 0).multiply(params.tire(3).radius()));
+        _Tb2R = _Tb2R.subtract(tireForces.fwheel.Get(3, 0).multiply(params.wheel(3).radius()));
       }
     }
     // ---
