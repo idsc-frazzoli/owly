@@ -2,6 +2,7 @@
 // code adapted by jph
 package ch.ethz.idsc.owly.demo.car;
 
+import ch.ethz.idsc.owly.math.Cross2D;
 import ch.ethz.idsc.owly.math.Deadzone;
 import ch.ethz.idsc.owly.math.PhysicalConstants;
 import ch.ethz.idsc.owly.math.StateSpaceModel;
@@ -10,6 +11,7 @@ import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Scalars;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
+import ch.ethz.idsc.tensor.alg.Join;
 import ch.ethz.idsc.tensor.lie.RotationMatrix;
 import ch.ethz.idsc.tensor.red.Total;
 import ch.ethz.idsc.tensor.sca.Chop;
@@ -40,28 +42,25 @@ public class CarStateSpaceModel implements StateSpaceModel {
         vehicleModel, carState, carControl, trackInterface.mu(carState.asVector()));
     BrakeTorques brakeTorques = new BrakeTorques(vehicleModel, carState, carControl, tire);
     // ---
-    final Scalar dux;
     final Scalar gForce = vehicleModel.mass().multiply(PhysicalConstants.G_EARTH);
     // TODO friction from drag
-    final Scalar rollFric = gForce.multiply(vehicleModel.muRoll()); // TODO at the moment == 0!
-    Deadzone deadzone = Deadzone.of(rollFric.negate(), rollFric);
     final Tensor total = Total.of(tire.Forces);
     {
-      // Scalar
       Scalar dF_z = total.Get(2).subtract(gForce);
       if (Scalars.nonZero((Scalar) dF_z.map(Chop.below(1e-5))))
         System.out.println("dF_z=" + dF_z);
     }
-    {
-      Scalar prel = total.Get(0).add(vehicleModel.mass().multiply(carState.Uy).multiply(carState.r));
-      dux = deadzone.apply(prel).subtract(vehicleModel.coulombFriction(carState.Ux)).divide(vehicleModel.mass());
-    }
-    // ---
-    final Scalar duy;
-    {
-      Scalar prel = total.Get(1).subtract(vehicleModel.mass().multiply(carState.Ux).multiply(carState.r));
-      duy = deadzone.apply(prel).subtract(RealScalar.ZERO.multiply(vehicleModel.coulombFriction(carState.Uy))).divide(vehicleModel.mass());
-    }
+    // (1.1)
+    // F + [Ux Uy 0] x [0 0 r]
+    // second term accounts for rotation of coordinate system, since Ux Uy are in body coordinates
+    Tensor dir = total.extract(0, 2).subtract(Cross2D.of(carState.u_2d()).multiply(vehicleModel.mass().multiply(carState.r)));
+    final Scalar rollFric = gForce.multiply(vehicleModel.muRoll()); // TODO at the moment == 0!
+    // TODO deadzone should not have influence on rotation of coordinate system!
+    Deadzone deadzone = Deadzone.of(rollFric.negate(), rollFric);
+    dir = dir.map(deadzone);
+    // TODO vectorize
+    final Scalar dux = dir.Get(0).subtract(vehicleModel.coulombFriction(carState.Ux)).divide(vehicleModel.mass());
+    final Scalar duy = dir.Get(1).subtract(RealScalar.ZERO.multiply(vehicleModel.coulombFriction(carState.Uy))).divide(vehicleModel.mass());
     // ---
     Scalar dr;
     {
@@ -81,21 +80,14 @@ public class CarStateSpaceModel implements StateSpaceModel {
     }
     Tensor dp = RotationMatrix.of(carState.Ksi).dot(carState.u_2d());
     // ---
-    Scalar dw1L = carControl.throttleV.Get(0).add(brakeTorques.Tb1L).subtract(vehicleModel.wheel(0).radius().multiply(tire.fwheel.Get(0, 0)))
-        .multiply(vehicleModel.wheel(0).Iw_invert());
-    Scalar dw1R = carControl.throttleV.Get(1).add(brakeTorques.Tb1R).subtract(vehicleModel.wheel(1).radius().multiply(tire.fwheel.Get(1, 0)))
-        .multiply(vehicleModel.wheel(1).Iw_invert());
-    Scalar dw2L = carControl.throttleV.Get(2).add(brakeTorques.Tb2L).subtract(vehicleModel.wheel(2).radius().multiply(tire.fwheel.Get(2, 0)))
-        .multiply(vehicleModel.wheel(2).Iw_invert());
-    Scalar dw2R = carControl.throttleV.Get(3).add(brakeTorques.Tb2R).subtract(vehicleModel.wheel(3).radius().multiply(tire.fwheel.Get(3, 0)))
-        .multiply(vehicleModel.wheel(3).Iw_invert());
+    Tensor dw = Tensors.vector(index -> //
+    carControl.throttleV.Get(index).add(brakeTorques.torque(index)) //
+        .subtract(vehicleModel.wheel(index).radius().multiply(tire.fwheel.Get(index, 0))) //
+        .multiply(vehicleModel.wheel(index).Iw_invert()), //
+        vehicleModel.wheels());
     // ---
-    Tensor fxu = Tensors.of( //
-        dux, duy, //
-        dr, //
-        carState.r, //
-        dp.Get(0), dp.Get(1), //
-        dw1L, dw1R, dw2L, dw2R);
+    Tensor fxu = Join.of(Tensors.of( //
+        dux, duy, dr, carState.r, dp.Get(0), dp.Get(1)), dw);
     // the observation is that dwXY oscillate a lot!
     // this is consistent with the MATLAB code
     // if (Scalars.lessThan(RealScalar.of(1e4), Norm.Infinity.of(fxu)))

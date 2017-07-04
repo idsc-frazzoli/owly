@@ -26,8 +26,8 @@ public class TireForces {
   // ---
   public final VehicleModel vehicleModel;
   public final CarState carState;
-  public final Tensor Forces; // forces in car/body frame
-  public final Tensor fwheel; // forces in wheel frame
+  public final Tensor Forces; // forces in car/body frame, matrix 4 x 3
+  public final Tensor fwheel; // forces in wheel frame, matrix 4 x 3
 
   /** @param vehicleModel
    * @param carState
@@ -37,7 +37,6 @@ public class TireForces {
     this.vehicleModel = vehicleModel;
     this.carState = carState;
     final Tensor angles = vehicleModel.angles(carControl.delta).unmodifiable();
-    // System.out.println(angles.map(Round._4));
     // ---
     Tensor mus = Tensors.vector(index -> //
     new RobustSlip(vehicleModel.wheel(index).pacejka(), get_ui_2d(angles.Get(index), index), //
