@@ -3,6 +3,7 @@ package ch.ethz.idsc.owly.math.state;
 
 import ch.ethz.idsc.owly.math.region.Region;
 
+/** TODO JONAS document */
 public final class TimeInvariantRegion implements StateTimeRegion {
   private final Region region;
 

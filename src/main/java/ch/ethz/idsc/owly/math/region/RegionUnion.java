@@ -12,15 +12,22 @@ import ch.ethz.idsc.tensor.Tensor;
  * <p>inspired by
  * <a href="https://reference.wolfram.com/language/ref/RegionUnion.html">RegionUnion</a> */
 public class RegionUnion implements Region {
-  private final Collection<Region> collection;
-
+  /** @param regions
+   * @return */
   public static Region of(Region... regions) {
     return new RegionUnion(Arrays.asList(regions));
   }
 
+  /** TODO JONAS document
+   * 
+   * @param collection
+   * @return */
   public static Region of(Collection<Region> collection) {
     return new RegionUnion(collection);
   }
+
+  // ---
+  private final Collection<Region> collection;
 
   private RegionUnion(Collection<Region> collection) {
     this.collection = collection;

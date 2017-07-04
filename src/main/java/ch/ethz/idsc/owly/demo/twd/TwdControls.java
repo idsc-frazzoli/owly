@@ -10,10 +10,17 @@ import ch.ethz.idsc.tensor.Scalar;
 /** two wheel drive */
 public enum TwdControls {
   ;
-  public static Collection<Flow> createControls(Scalar angle_max, int num) {
+  public static Collection<Flow> createControls1(Scalar angle_max, int num) {
     @SuppressWarnings("unused")
     StateSpaceModel stateSpaceModel = new TwdStateSpaceModel();
-    // TODO implement
+    // TODO JONAS implement, zB |wl|<=1
+    throw new RuntimeException();
+  }
+
+  public static Collection<Flow> createControls2(Scalar angle_max, int num) {
+    @SuppressWarnings("unused")
+    StateSpaceModel stateSpaceModel = new TwdStateSpaceModel();
+    // TODO JONAS implement, zB |wl|+|wr|<=1
     throw new RuntimeException();
   }
 }

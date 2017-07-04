@@ -5,15 +5,17 @@ import ch.ethz.idsc.owly.math.car.Pacejka3;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
 
-/** class holds invariant parameters of tire */
-public class DefaultTire implements TireInterface {
+/** class holds invariant parameters of wheel */
+public class DefaultWheel implements WheelInterface {
   private final Scalar radius;
+  private final Scalar width;
   private final Scalar iw_invert;
   private final Pacejka3 pacejka3;
   private final Tensor lever;
 
-  public DefaultTire(Scalar radius, Scalar iw, Pacejka3 pacejka3, Tensor lever) {
+  public DefaultWheel(Scalar radius, Scalar width, Scalar iw, Pacejka3 pacejka3, Tensor lever) {
     this.radius = radius;
+    this.width = width;
     this.iw_invert = iw.invert();
     this.pacejka3 = pacejka3;
     this.lever = lever.unmodifiable();
@@ -27,6 +29,11 @@ public class DefaultTire implements TireInterface {
   @Override
   public Scalar radius() {
     return radius;
+  }
+
+  @Override
+  public Scalar width() {
+    return width;
   }
 
   @Override

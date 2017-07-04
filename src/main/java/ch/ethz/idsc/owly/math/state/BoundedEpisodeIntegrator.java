@@ -12,7 +12,7 @@ import ch.ethz.idsc.tensor.Scalars;
 import ch.ethz.idsc.tensor.TensorRuntimeException;
 import ch.ethz.idsc.tensor.sca.Ceiling;
 
-/**  */
+/** integrates along given flow with time steps that do not exceed a predefined threshold */
 public class BoundedEpisodeIntegrator extends AbstractEpisodeIntegrator {
   private final Scalar maxStep;
 

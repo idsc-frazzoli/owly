@@ -10,19 +10,16 @@ import ch.ethz.idsc.tensor.Tensors;
 import ch.ethz.idsc.tensor.sca.Sign;
 
 public class BrakeTorques {
-  // TODO store torques as vector
-  public final Scalar Tb1L; // 1
-  public final Scalar Tb1R; // 2
-  public final Scalar Tb2L; // 3
-  public final Scalar Tb2R; // 4
+  private final Tensor tbreak;
 
-  public BrakeTorques(VehicleModel params, CarState cs, CarControl cc, TireForces tireForces) {
+  public BrakeTorques( //
+      VehicleModel vehicleModel, CarState carState, CarControl carControl, TireForces tireForces) {
     Scalar _Tb1L = RealScalar.ZERO;
     Scalar _Tb1R = RealScalar.ZERO;
     Scalar _Tb2L = RealScalar.ZERO;
     Scalar _Tb2R = RealScalar.ZERO;
     // ---
-    Scalar masterPress = cc.brake;
+    Scalar masterPress = carControl.brake;
     final Scalar pressF = masterPress;
     final Scalar pressR;
     // ---
@@ -34,52 +31,48 @@ public class BrakeTorques {
     }
     // ---
     if (Scalars.lessThan(RealScalar.ZERO, masterPress)) {
-      if (Scalars.nonZero(cs.omega.Get(0))) {
-        _Tb1L = pressF.multiply(params.press2torF()).multiply(Sign.of(cs.omega.Get(0))).negate();
+      if (Scalars.nonZero(carState.omega.Get(0))) {
+        _Tb1L = pressF.multiply(vehicleModel.press2torF()).multiply(Sign.of(carState.omega.Get(0))).negate();
       } else {
-        _Tb1L = tireForces.fwheel.Get(0, 0).multiply(params.tire(0).radius());
+        _Tb1L = tireForces.fwheel.Get(0, 0).multiply(vehicleModel.wheel(0).radius());
       }
       //
-      if (Scalars.nonZero(cs.omega.Get(1))) {
-        _Tb1R = pressF.multiply(params.press2torF()).multiply(Sign.of(cs.omega.Get(1))).negate();
+      if (Scalars.nonZero(carState.omega.Get(1))) {
+        _Tb1R = pressF.multiply(vehicleModel.press2torF()).multiply(Sign.of(carState.omega.Get(1))).negate();
       } else {
-        _Tb1R = tireForces.fwheel.Get(1, 0).multiply(params.tire(1).radius());
+        _Tb1R = tireForces.fwheel.Get(1, 0).multiply(vehicleModel.wheel(1).radius());
       }
       //
-      if (Scalars.nonZero(cs.omega.Get(2))) {
-        _Tb2L = pressR.multiply(params.press2torR()).multiply(Sign.of(cs.omega.Get(2))).negate();
+      if (Scalars.nonZero(carState.omega.Get(2))) {
+        _Tb2L = pressR.multiply(vehicleModel.press2torR()).multiply(Sign.of(carState.omega.Get(2))).negate();
       } else {
-        _Tb2L = tireForces.fwheel.Get(2, 0).multiply(params.tire(2).radius());
+        _Tb2L = tireForces.fwheel.Get(2, 0).multiply(vehicleModel.wheel(2).radius());
       }
       //
-      if (Scalars.nonZero(cs.omega.Get(3))) {
-        _Tb2R = pressR.multiply(params.press2torR()).multiply(Sign.of(cs.omega.Get(3))).negate();
+      if (Scalars.nonZero(carState.omega.Get(3))) {
+        _Tb2R = pressR.multiply(vehicleModel.press2torR()).multiply(Sign.of(carState.omega.Get(3))).negate();
       } else {
-        _Tb2R = tireForces.fwheel.Get(3, 0).multiply(params.tire(3).radius());
+        _Tb2R = tireForces.fwheel.Get(3, 0).multiply(vehicleModel.wheel(3).radius());
       }
     }
     // ---
-    if (Scalars.lessThan(RealScalar.ZERO, cc.handbrake)) {
-      if (Scalars.nonZero(cs.omega.Get(2))) {
-        _Tb2L = _Tb2L.subtract(cc.handbrake.multiply(Sign.of(cs.omega.Get(2))));
+    if (Scalars.lessThan(RealScalar.ZERO, carControl.handbrake)) {
+      if (Scalars.nonZero(carState.omega.Get(2))) {
+        _Tb2L = _Tb2L.subtract(carControl.handbrake.multiply(Sign.of(carState.omega.Get(2))));
       } else {
-        _Tb2L = _Tb2L.subtract(tireForces.fwheel.Get(2, 0).multiply(params.tire(2).radius()));
+        _Tb2L = _Tb2L.subtract(tireForces.fwheel.Get(2, 0).multiply(vehicleModel.wheel(2).radius()));
       }
       //
-      if (Scalars.nonZero(cs.omega.Get(3))) {
-        _Tb2R = _Tb2R.subtract(cc.handbrake.multiply(Sign.of(cs.omega.Get(3))));
+      if (Scalars.nonZero(carState.omega.Get(3))) {
+        _Tb2R = _Tb2R.subtract(carControl.handbrake.multiply(Sign.of(carState.omega.Get(3))));
       } else {
-        _Tb2R = _Tb2R.subtract(tireForces.fwheel.Get(3, 0).multiply(params.tire(3).radius()));
+        _Tb2R = _Tb2R.subtract(tireForces.fwheel.Get(3, 0).multiply(vehicleModel.wheel(3).radius()));
       }
     }
-    // ---
-    Tb1L = _Tb1L;
-    Tb1R = _Tb1R;
-    Tb2L = _Tb2L;
-    Tb2R = _Tb2R;
+    tbreak = Tensors.of(_Tb1L, _Tb1R, _Tb2L, _Tb2R).unmodifiable();
   }
 
-  public Tensor asVector() {
-    return Tensors.of(Tb1L, Tb1R, Tb2L, Tb2R);
+  public Scalar torque(int index) {
+    return tbreak.Get(index);
   }
 }

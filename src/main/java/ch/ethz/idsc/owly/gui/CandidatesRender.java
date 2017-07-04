@@ -22,6 +22,7 @@ public class CandidatesRender implements AbstractRender {
     graphics.setColor(Color.black);
     graphics.drawString("candidates could appear in view", 50, 50);
     // TODO JONAS abstractAnyTrajectoryPlanner."get candidates set" and visualize them
+    // TODO JONAS visualisierung ist wichtig! zeichne einfach die ersten 1000!
     // TODO smart way as usually are many
     Map<Tensor, Set<CandidatePair>> candidateMap = OptimalAnyTrajectoryPlanner.getCandidateMap();
   }

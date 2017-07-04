@@ -17,10 +17,11 @@ public class CarState {
   public final Scalar Ksi; // 4 heading of the car [rad]
   public final Scalar px; // 5 pos [m]
   public final Scalar py; // 6 pos [m]
+  /** rate for each tire */
   public final Tensor omega; // [rad/s]
 
   public CarState(Tensor x) {
-    if (x.length() != 10)
+    if (x.length() < 6 + 3) // assume that car has at least 3 tires
       throw TensorRuntimeException.of(x);
     // ---
     Ux = x.Get(0);
@@ -29,7 +30,7 @@ public class CarState {
     Ksi = x.Get(3);
     px = x.Get(4);
     py = x.Get(5);
-    omega = x.extract(6, 10).unmodifiable();
+    omega = x.extract(6, x.length()).unmodifiable();
   }
 
   /** @return state encoded as vector for input to {@link StateSpaceModel} */

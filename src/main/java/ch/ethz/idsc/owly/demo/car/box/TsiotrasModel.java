@@ -4,6 +4,7 @@ package ch.ethz.idsc.owly.demo.car.box;
 import ch.ethz.idsc.owly.demo.car.CarControl;
 import ch.ethz.idsc.owly.demo.car.CarSteering;
 import ch.ethz.idsc.owly.demo.car.DefaultCarModel;
+import ch.ethz.idsc.owly.demo.car.WheelInterface;
 import ch.ethz.idsc.owly.math.car.Pacejka3;
 import ch.ethz.idsc.tensor.DoubleScalar;
 import ch.ethz.idsc.tensor.RealScalar;
@@ -45,6 +46,8 @@ public class TsiotrasModel extends DefaultCarModel {
         Tensors.of(LR.negate(), LW, h_negate), // 2L
         Tensors.of(LR.negate(), LW.negate(), h_negate) // 2R
     ).unmodifiable();
+    // TODO define tires!
+    // DoubleScalar.of(1 / 1.8); // wheel moment of inertia [kgm2]
   }
 
   // ---
@@ -54,18 +57,13 @@ public class TsiotrasModel extends DefaultCarModel {
   }
 
   @Override
-  public Scalar gammaM() {
-    return gammaM; // rear/total drive ratio; 0 is FWD, 1 is RWD
+  public WheelInterface wheel(int index) {
+    throw new RuntimeException();
   }
 
   @Override
   public Scalar Iz_invert() {
     return DoubleScalar.of(1 / 1200.0); // yawing moment of inertia [kgm2]
-  }
-
-  @Override
-  public Scalar Iw_invert() {
-    return DoubleScalar.of(1 / 1.8); // wheel moment of inertia [kgm2]
   }
 
   @Override
@@ -100,7 +98,7 @@ public class TsiotrasModel extends DefaultCarModel {
     Scalar brake = u.Get(1).multiply(maxPress);
     Scalar handbrake = u.Get(2).multiply(maxThb);
     Scalar throttle = u.Get(3).multiply(maxThrottle);
-    return new CarControl(Tensors.of(delta, brake, handbrake, throttle));
+    return null; // new CarControl(Tensors.of(delta, brake, handbrake, throttle));
   }
 
   @Override
