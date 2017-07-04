@@ -25,9 +25,6 @@ public interface VehicleModel {
   /** @return sequence of points that describe the footprint of the vehicle */
   Tensor footprint();
 
-  /** @return rear/total drive ratio; 0 is FWD, 1 is RWD */
-  Scalar gammaM();
-
   /** @return inverse of yawing moment of inertia [kgm2] */
   Scalar Iz_invert();
 

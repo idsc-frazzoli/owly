@@ -9,6 +9,7 @@ import ch.ethz.idsc.owly.demo.car.CarControl;
 import ch.ethz.idsc.owly.demo.car.CarSteering;
 import ch.ethz.idsc.owly.demo.car.DefaultCarModel;
 import ch.ethz.idsc.owly.demo.car.DefaultTire;
+import ch.ethz.idsc.owly.demo.car.MotorTorques;
 import ch.ethz.idsc.owly.demo.car.TireInterface;
 import ch.ethz.idsc.owly.demo.car.VehicleModel;
 import ch.ethz.idsc.owly.math.car.Pacejka3;
@@ -76,11 +77,6 @@ public class CHatchbackModel extends DefaultCarModel {
   }
 
   @Override
-  public Scalar gammaM() {
-    return gammaM; // rear/total drive ratio; 0 is FWD, 1 is RWD
-  }
-
-  @Override
   public Scalar Iz_invert() {
     return DoubleScalar.of(1 / (1536.7 + 427.7084)); // yawing moment of inertia [kgm2]
   }
@@ -119,7 +115,7 @@ public class CHatchbackModel extends DefaultCarModel {
     Scalar brake = u.Get(1).multiply(maxPress);
     Scalar handbrake = u.Get(2).multiply(maxThb);
     Scalar throttle = u.Get(3).multiply(maxThrottle);
-    return new CarControl(Tensors.of(delta, brake, handbrake, throttle));
+    return new CarControl(delta, brake, handbrake, MotorTorques.standard(gammaM, throttle));
   }
 
   @Override

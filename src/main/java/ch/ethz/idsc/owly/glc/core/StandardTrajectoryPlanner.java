@@ -15,7 +15,7 @@ import ch.ethz.idsc.tensor.Scalars;
 import ch.ethz.idsc.tensor.Tensor;
 
 public class StandardTrajectoryPlanner extends AbstractStandardTrajectoryPlanner {
-  private final Collection<Flow> controls;
+  private final NodeIntegratorFlow nodeFlowBuilder;
 
   public StandardTrajectoryPlanner( //
       Tensor eta, //
@@ -24,13 +24,12 @@ public class StandardTrajectoryPlanner extends AbstractStandardTrajectoryPlanner
       TrajectoryRegionQuery obstacleQuery, //
       GoalInterface goalInterface) {
     super(eta, stateIntegrator, obstacleQuery, goalInterface);
-    this.controls = controls;
+    nodeFlowBuilder = new NodeIntegratorFlow(stateIntegrator, controls);
   }
 
   @Override // from ExpandInterface
   public void expand(final GlcNode node) {
-    Map<GlcNode, List<StateTime>> connectors = //
-        SharedUtils.integrate(node, controls, getStateIntegrator(), goalInterface, true);
+    Map<GlcNode, List<StateTime>> connectors = nodeFlowBuilder.parallel(node, goalInterface);
     // ---
     DomainQueueMap domainQueueMap = new DomainQueueMap(); // holds candidates for insertion
     for (GlcNode next : connectors.keySet()) { // <- order of keys is non-deterministic

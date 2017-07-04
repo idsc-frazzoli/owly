@@ -62,11 +62,6 @@ public class TsiotrasModel extends DefaultCarModel {
   }
 
   @Override
-  public Scalar gammaM() {
-    return gammaM; // rear/total drive ratio; 0 is FWD, 1 is RWD
-  }
-
-  @Override
   public Scalar Iz_invert() {
     return DoubleScalar.of(1 / 1200.0); // yawing moment of inertia [kgm2]
   }
@@ -103,7 +98,7 @@ public class TsiotrasModel extends DefaultCarModel {
     Scalar brake = u.Get(1).multiply(maxPress);
     Scalar handbrake = u.Get(2).multiply(maxThb);
     Scalar throttle = u.Get(3).multiply(maxThrottle);
-    return new CarControl(Tensors.of(delta, brake, handbrake, throttle));
+    return null; // new CarControl(Tensors.of(delta, brake, handbrake, throttle));
   }
 
   @Override
