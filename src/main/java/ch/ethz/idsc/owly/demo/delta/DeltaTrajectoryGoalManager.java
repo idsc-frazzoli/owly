@@ -17,7 +17,7 @@ import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.red.Norm;
 import ch.ethz.idsc.tensor.sca.Ramp;
 
-//TODO extend from DeltaGoalManager extended, so that costIncrement and minCostToGoal are not double
+//TODO extend from DeltaGoalManager extended, so that costIncrement are not double
 public class DeltaTrajectoryGoalManager extends SimpleTrajectoryRegionQuery implements GoalInterface {
   private final List<Tensor> goalPath;
   private final Scalar radius;
