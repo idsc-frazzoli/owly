@@ -87,11 +87,12 @@ public enum Expand {
     return expandCount;
   }
 
+  // TODO JONAS included depthlimit
   /** expands until the time of the running algorithm exceeds time or depthlimit is reached
    * 
    * @param expandInterface
    * @param time Time of expandfunction in [s] */
-  public static int constTime(ExpandInterface expandInterface, Scalar time) {
+  public static int constTime(ExpandInterface expandInterface, Scalar time, int depthLimit) {
     long tic = System.nanoTime();
     time = time.multiply(RealScalar.of(1e9));
     int expandCount = 0;
@@ -106,6 +107,10 @@ public enum Expand {
       long toc = System.nanoTime();
       if (Scalars.lessThan(time, RealScalar.of(toc - tic))) {
         System.out.println("***Planned for " + time.multiply(RealScalar.of(1e-9)) + "s ***");
+        break;
+      }
+      if (depthLimit < next.get().depth()) {
+        System.err.println("*** DepthLimit reached -- No Goal was found ***");
         break;
       }
     }

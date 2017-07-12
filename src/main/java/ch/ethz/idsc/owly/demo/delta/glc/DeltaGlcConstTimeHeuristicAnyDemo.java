@@ -37,6 +37,7 @@ enum DeltaGlcConstTimeHeuristicAnyDemo {
     // -- Quick Planner init
     RationalScalar quickResolution = (RationalScalar) RationalScalar.of(11, 1);
     TrajectoryPlanner quickTrajectoryPlanner = DeltaHelper.createGlc(RealScalar.of(-0.25), quickResolution);
+    int depthLimit = 100000; // TODO HACK:
     OwlyFrame quickOwlyFrame = Gui.start();
     quickOwlyFrame.configCoordinateOffset(33, 416);
     quickOwlyFrame.jFrame.setBounds(100, 100, 620, 475);
@@ -86,7 +87,7 @@ enum DeltaGlcConstTimeHeuristicAnyDemo {
     owlyFrame.jFrame.setBounds(100, 100, 620, 475);
     Scalar planningTime = RealScalar.of(1);
     while (owlyFrame.jFrame.isVisible()) {
-      int expandIter = Expand.constTime(slowTrajectoryPlanner, planningTime);
+      int expandIter = Expand.constTime(slowTrajectoryPlanner, planningTime, depthLimit);
       owlyFrame.setGlc((TrajectoryPlanner) slowTrajectoryPlanner);
       if (expandIter < 1)
         break;

@@ -76,7 +76,7 @@ public class OptimalAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
             if (Scalars.lessThan(next.merit(), formerLabel.merit())) {
               // collision check only if new node is better
               if (getObstacleQuery().isDisjoint(connectors.get(next))) {// better node not collision
-              //TODO Needs to be  checked with theory, removal from queue is unsure.
+                // TODO Needs to be checked with theory, removal from queue is unsure.
                 final Collection<GlcNode> subDeleteTree = deleteSubtreeOf(formerLabel);
                 if (subDeleteTree.size() > 1)
                   // TODO add leafs of Subtree to Queue instead of deleting subtree
@@ -100,7 +100,7 @@ public class OptimalAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
                 // GOAL check
                 if (!goalInterface.isDisjoint(connectors.get(next)))
                   offerDestination(next);
-              //TODO Needs to be  checked with theory, maybe break only if goal was found?
+                // TODO Needs to be checked with theory, maybe break only if goal was found?
                 break;
               }
             }
