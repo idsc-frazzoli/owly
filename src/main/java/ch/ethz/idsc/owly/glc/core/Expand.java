@@ -87,7 +87,6 @@ public enum Expand {
     return expandCount;
   }
 
-  // TODO JONAS included depthlimit
   /** expands until the time of the running algorithm exceeds time or depthlimit is reached
    * 
    * @param expandInterface
@@ -99,7 +98,7 @@ public enum Expand {
     while (true) {
       Optional<GlcNode> next = expandInterface.pollNext();
       if (!next.isPresent()) {
-        System.err.println("**** Queue is empty -- No Goal was found");// queue is empty
+        System.err.println("**** Queue is empty ****");// queue is empty
         break;
       }
       expandInterface.expand(next.get());

@@ -12,16 +12,16 @@ import ch.ethz.idsc.tensor.Tensor;
  * <p>inspired by
  * <a href="https://reference.wolfram.com/language/ref/RegionUnion.html">RegionUnion</a> */
 public class RegionUnion implements Region {
-  /** @param regions
-   * @return */
+  /** @param regions Regions to be combined
+   * @return Region, consisting from the combined inputed Regions */
   public static Region of(Region... regions) {
     return new RegionUnion(Arrays.asList(regions));
   }
 
-  /** TODO JONAS document
+  /** Combines a List of Regions into 1 Region
    * 
-   * @param collection
-   * @return */
+   * @param collection collection of Regions
+   * @return the combined Regions */
   public static Region of(Collection<Region> collection) {
     return new RegionUnion(collection);
   }

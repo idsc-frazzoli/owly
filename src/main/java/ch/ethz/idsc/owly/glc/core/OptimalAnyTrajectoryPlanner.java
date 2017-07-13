@@ -66,7 +66,8 @@ public class OptimalAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
     for (Entry<Tensor, CandidatePairQueue> entry : candidatePairQueueMap.map.entrySet()) {
       final Tensor domainKey = entry.getKey();
       final CandidatePairQueue candidateQueue = entry.getValue();
-      if (candidateQueue != null && !getBest().isPresent()) {
+      // TODO getBest check is double, as also checked before expanding each Node
+      if (candidateQueue != null) { // && !getBest().isPresent()) {
         while (!candidateQueue.isEmpty()) {
           // retrieving the Candidates
           final CandidatePair nextCandidatePair = candidateQueue.element();
@@ -170,7 +171,7 @@ public class OptimalAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
     // -- DEBUGING
     long newtotalCandidates = candidateMap.values().parallelStream().flatMap(Collection::stream).count();
     System.out.println(oldtotalCandidates - newtotalCandidates + " of " + oldtotalCandidates + //
-        " C. removed from CL. with Origin in deleteTree " + newtotalCandidates);
+        " C. removed from CL. with Origin in deleteTree: " + newtotalCandidates);
     System.out.println("CandidateMap before " + candidateMapBeforeSize + //
         " and after: " + candidateMap.size());
     // --
