@@ -91,14 +91,14 @@ public enum Expand {
    * 
    * @param expandInterface
    * @param time Time of expandfunction in [s] */
-  public static int constTime(ExpandInterface expandInterface, Scalar time) {
+  public static int constTime(ExpandInterface expandInterface, Scalar time, int depthLimit) {
     long tic = System.nanoTime();
     time = time.multiply(RealScalar.of(1e9));
     int expandCount = 0;
     while (true) {
       Optional<GlcNode> next = expandInterface.pollNext();
       if (!next.isPresent()) {
-        System.err.println("**** Queue is empty -- No Goal was found");// queue is empty
+        System.err.println("**** Queue is empty ****");// queue is empty
         break;
       }
       expandInterface.expand(next.get());
@@ -106,6 +106,10 @@ public enum Expand {
       long toc = System.nanoTime();
       if (Scalars.lessThan(time, RealScalar.of(toc - tic))) {
         System.out.println("***Planned for " + time.multiply(RealScalar.of(1e-9)) + "s ***");
+        break;
+      }
+      if (depthLimit < next.get().depth()) {
+        System.err.println("*** DepthLimit reached -- No Goal was found ***");
         break;
       }
     }

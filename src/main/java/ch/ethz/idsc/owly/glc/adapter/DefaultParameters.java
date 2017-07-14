@@ -18,7 +18,7 @@ public abstract class DefaultParameters extends Parameters {
   @Override
   /** @return if Lipschitz == 0: R² / PS
    * @return else : R^(1+Lipschitz) /PS */
-  public final Tensor getEta() {
+  public Tensor getEta() {
     if (Scalars.isZero(lipschitz))
       return EtaLfZero();
     return EtaLfNonZero(lipschitz);

@@ -60,6 +60,7 @@ public class StandardTrajectoryPlanner extends AbstractStandardTrajectoryPlanner
           if (formerLabel != null) {
             if (Scalars.lessThan(next.merit(), formerLabel.merit())) {
               if (getObstacleQuery().isDisjoint(connectors.get(next))) { // no collision
+                // TODO Needs to be checked with theory, if Queue removal is allowed
                 boolean removed = queue().remove(formerLabel);
                 if (!removed)
                   throw new RuntimeException();
@@ -71,6 +72,8 @@ public class StandardTrajectoryPlanner extends AbstractStandardTrajectoryPlanner
                 domainQueue.remove();
                 if (!goalInterface.isDisjoint(connectors.get(next)))
                   offerDestination(next);
+                // TODO Needs to be checked with theory, maybe only if goal was found?
+                // Same principle as in B. Paden's implementation, leaving while loop after first relabel
                 break; // leaves the while loop, but not the for loop
               }
             }

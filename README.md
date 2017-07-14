@@ -92,4 +92,4 @@ R^2
 
 ## References
 
-The repository has over `70` unit tests.
+The repository has over `80` unit tests.

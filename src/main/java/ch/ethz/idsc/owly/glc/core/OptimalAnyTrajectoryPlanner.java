@@ -66,7 +66,8 @@ public class OptimalAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
     for (Entry<Tensor, CandidatePairQueue> entry : candidatePairQueueMap.map.entrySet()) {
       final Tensor domainKey = entry.getKey();
       final CandidatePairQueue candidateQueue = entry.getValue();
-      if (candidateQueue != null && !getBest().isPresent()) {
+      // TODO getBest check is double, as also checked before expanding each Node
+      if (candidateQueue != null) { // && !getBest().isPresent()) {
         while (!candidateQueue.isEmpty()) {
           // retrieving the Candidates
           final CandidatePair nextCandidatePair = candidateQueue.element();
@@ -76,6 +77,7 @@ public class OptimalAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
             if (Scalars.lessThan(next.merit(), formerLabel.merit())) {
               // collision check only if new node is better
               if (getObstacleQuery().isDisjoint(connectors.get(next))) {// better node not collision
+                // TODO Needs to be checked with theory, removal from queue is unsure.
                 final Collection<GlcNode> subDeleteTree = deleteSubtreeOf(formerLabel);
                 if (subDeleteTree.size() > 1)
                   // TODO add leafs of Subtree to Queue instead of deleting subtree
@@ -99,6 +101,7 @@ public class OptimalAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
                 // GOAL check
                 if (!goalInterface.isDisjoint(connectors.get(next)))
                   offerDestination(next);
+                // TODO Needs to be checked with theory, maybe break only if goal was found?
                 break;
               }
             }
@@ -168,7 +171,7 @@ public class OptimalAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
     // -- DEBUGING
     long newtotalCandidates = candidateMap.values().parallelStream().flatMap(Collection::stream).count();
     System.out.println(oldtotalCandidates - newtotalCandidates + " of " + oldtotalCandidates + //
-        " C. removed from CL. with Origin in deleteTree " + newtotalCandidates);
+        " C. removed from CL. with Origin in deleteTree: " + newtotalCandidates);
     System.out.println("CandidateMap before " + candidateMapBeforeSize + //
         " and after: " + candidateMap.size());
     // --

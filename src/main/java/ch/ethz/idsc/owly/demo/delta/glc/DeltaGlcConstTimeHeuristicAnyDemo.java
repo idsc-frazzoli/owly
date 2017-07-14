@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.Optional;
 
 import ch.ethz.idsc.owly.demo.delta.DeltaStateSpaceModel;
-import ch.ethz.idsc.owly.demo.delta.DeltaTrajectoryGoalManager;
 import ch.ethz.idsc.owly.demo.delta.ImageGradient;
 import ch.ethz.idsc.owly.demo.util.Images;
 import ch.ethz.idsc.owly.demo.util.Resources;
@@ -37,6 +36,7 @@ enum DeltaGlcConstTimeHeuristicAnyDemo {
     // -- Quick Planner init
     RationalScalar quickResolution = (RationalScalar) RationalScalar.of(11, 1);
     TrajectoryPlanner quickTrajectoryPlanner = DeltaHelper.createGlc(RealScalar.of(-0.25), quickResolution);
+    int depthLimit = 100000; // TODO HACK:
     OwlyFrame quickOwlyFrame = Gui.start();
     quickOwlyFrame.configCoordinateOffset(33, 416);
     quickOwlyFrame.jFrame.setBounds(100, 100, 620, 475);
@@ -78,15 +78,15 @@ enum DeltaGlcConstTimeHeuristicAnyDemo {
       // TODO JONAS create and then later use StateTimeRegion
       new TimeInvariantRegion(union);
     }
-    DeltaTrajectoryGoalManager trajectoryGoalManager = new DeltaTrajectoryGoalManager(//
-        quickPath, Tensors.vector(.3, .3), maxSpeed);
-    slowTrajectoryPlanner.changeToGoal(trajectoryGoalManager);
+    // DeltaTrajectoryGoalManager trajectoryGoalManager = new DeltaTrajectoryGoalManager(//
+    // quickPath, Tensors.vector(.3, .3), maxSpeed);
+    // slowTrajectoryPlanner.changeToGoal(trajectoryGoalManager);
     OwlyFrame owlyFrame = Gui.start();
     owlyFrame.configCoordinateOffset(33, 416);
     owlyFrame.jFrame.setBounds(100, 100, 620, 475);
     Scalar planningTime = RealScalar.of(1);
     while (owlyFrame.jFrame.isVisible()) {
-      int expandIter = Expand.constTime(slowTrajectoryPlanner, planningTime);
+      int expandIter = Expand.constTime(slowTrajectoryPlanner, planningTime, depthLimit);
       owlyFrame.setGlc((TrajectoryPlanner) slowTrajectoryPlanner);
       if (expandIter < 1)
         break;

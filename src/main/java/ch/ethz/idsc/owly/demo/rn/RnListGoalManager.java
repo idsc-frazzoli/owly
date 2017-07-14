@@ -6,26 +6,30 @@ import java.util.List;
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
 import ch.ethz.idsc.owly.glc.core.GoalInterface;
 import ch.ethz.idsc.owly.math.flow.Flow;
-import ch.ethz.idsc.owly.math.region.EllipsoidRegion;
+import ch.ethz.idsc.owly.math.region.Region;
+import ch.ethz.idsc.owly.math.region.RegionUnion;
 import ch.ethz.idsc.owly.math.state.StateTime;
 import ch.ethz.idsc.owly.math.state.TimeInvariantRegion;
 import ch.ethz.idsc.owly.math.state.Trajectories;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
-import ch.ethz.idsc.tensor.alg.Array;
 import ch.ethz.idsc.tensor.red.Norm;
 import ch.ethz.idsc.tensor.sca.Ramp;
 
 /** objective is minimum path length */
-// TODO JAN: rename to RnSimpleEllipsoidGoalManager
-public class RnGoalManager extends SimpleTrajectoryRegionQuery implements GoalInterface {
+public class RnListGoalManager extends SimpleTrajectoryRegionQuery implements GoalInterface {
   private final Tensor center;
-  private final Scalar radius;
 
-  public RnGoalManager(Tensor center, Scalar radius) {
-    super(new TimeInvariantRegion(new EllipsoidRegion(center, Array.of(l -> radius, center.length()))));
-    this.center = center;
-    this.radius = radius;
+  // TODO JONAS change heuristic center to different way
+  public RnListGoalManager(List<Region> goalRegions, Tensor heuristicCenter) {
+    super(new TimeInvariantRegion(RegionUnion.of(goalRegions)));
+    center = heuristicCenter;
+  }
+
+  public RnListGoalManager(Region region, Tensor heuristicCenter) {
+    super(new TimeInvariantRegion(region));
+    center = heuristicCenter;
+    // TODO Auto-generated constructor stub
   }
 
   @Override
@@ -35,6 +39,6 @@ public class RnGoalManager extends SimpleTrajectoryRegionQuery implements GoalIn
 
   @Override
   public Scalar minCostToGoal(Tensor x) {
-    return Ramp.of(Norm._2.of(x.subtract(center)).subtract(radius));
+    return Ramp.of(Norm._2.of(x.subtract(center)));
   }
 }
