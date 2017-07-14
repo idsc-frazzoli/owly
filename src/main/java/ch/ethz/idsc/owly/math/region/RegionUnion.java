@@ -1,8 +1,10 @@
 // code by jph & jl
 package ch.ethz.idsc.owly.math.region;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
 
 import ch.ethz.idsc.tensor.Tensor;
 
@@ -29,8 +31,32 @@ public class RegionUnion implements Region {
   // ---
   private final Collection<Region> collection;
 
-  private RegionUnion(Collection<Region> collection) {
+  public RegionUnion(Collection<Region> collection) { // Constructor made public
     this.collection = collection;
+  }
+
+  public final Region add(Region region) {
+    List<Region> collectionToAdd = new ArrayList<>();
+    collectionToAdd.add(region);
+    this.add(collectionToAdd);
+    return this;
+  }
+
+  public final Region add(Collection<Region> collectionToAdd) {
+    collection.addAll(collectionToAdd);
+    return this;
+  }
+
+  public final Region removeAll(Collection<Region> collectionToRemove) {
+    collection.removeAll(collectionToRemove);
+    return this;
+  }
+
+  public final Region remove(Region region) {
+    List<Region> collectionToRemove = new ArrayList<>();
+    collectionToRemove.add(region);
+    this.removeAll(collectionToRemove);
+    return this;
   }
 
   @Override

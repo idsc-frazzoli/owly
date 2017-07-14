@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.Optional;
 
 import ch.ethz.idsc.owly.demo.delta.DeltaStateSpaceModel;
-import ch.ethz.idsc.owly.demo.delta.DeltaTrajectoryGoalManager;
 import ch.ethz.idsc.owly.demo.delta.ImageGradient;
 import ch.ethz.idsc.owly.demo.util.Images;
 import ch.ethz.idsc.owly.demo.util.Resources;
@@ -79,9 +78,9 @@ enum DeltaGlcConstTimeHeuristicAnyDemo {
       // TODO JONAS create and then later use StateTimeRegion
       new TimeInvariantRegion(union);
     }
-    DeltaTrajectoryGoalManager trajectoryGoalManager = new DeltaTrajectoryGoalManager(//
-        quickPath, Tensors.vector(.3, .3), maxSpeed);
-    slowTrajectoryPlanner.changeToGoal(trajectoryGoalManager);
+    // DeltaTrajectoryGoalManager trajectoryGoalManager = new DeltaTrajectoryGoalManager(//
+    // quickPath, Tensors.vector(.3, .3), maxSpeed);
+    // slowTrajectoryPlanner.changeToGoal(trajectoryGoalManager);
     OwlyFrame owlyFrame = Gui.start();
     owlyFrame.configCoordinateOffset(33, 416);
     owlyFrame.jFrame.setBounds(100, 100, 620, 475);

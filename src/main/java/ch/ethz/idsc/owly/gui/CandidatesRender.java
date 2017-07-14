@@ -28,17 +28,20 @@ public class CandidatesRender implements AbstractRender {
   public void render(OwlyLayer owlyLayer, Graphics2D graphics) {
     graphics.setColor(Color.black);
     graphics.drawString("candidates could appear in view", 50, 50);
-    // TODO JONAS optimalAnyTrajectoryPlanner."get candidates set" and visualize them
-    // TODO JONAS visualisierung ist wichtig! zeichne einfach die ersten 1000!
-    // TODO smart way as usually are many
+    // TODO JONAS: show only the some (smartway)
     Map<Tensor, Set<CandidatePair>> candidateMap = OptimalAnyTrajectoryPlanner.getCandidateMap();
     long totalCandidates = candidateMap.values().parallelStream().flatMap(Collection::stream).count();
-    long candidateThreshold = 1000; // Threshold, when candidates should not be rendered anymore
+    long candidateThreshold = 1000; // Threshold, how many first candidates to Render
+    long iter = 0;
     if (totalCandidates < candidateThreshold) {
       Iterator<Set<CandidatePair>> candidateMapIterator = candidateMap.values().iterator();
       while (candidateMapIterator.hasNext()) {
+        if (iter > candidateThreshold)
+          break;
         Iterator<CandidatePair> candidateSetIterator = candidateMapIterator.next().iterator();
         while (candidateSetIterator.hasNext()) {
+          if (iter > candidateThreshold)
+            break;
           final CandidatePair candidate = candidateSetIterator.next();
           final Point2D p1 = owlyLayer.toPoint2D(candidate.getCandidate().state());
           final Point2D p2 = owlyLayer.toPoint2D(candidate.getOrigin().state());
@@ -48,6 +51,7 @@ public class CandidatesRender implements AbstractRender {
           graphics.setColor(new Color(0, 0, 0, 30));
           Shape shape = new Line2D.Double(p2.getX(), p2.getY(), p1.getX(), p1.getY());
           graphics.draw(shape);
+          iter++;
         }
       }
     }

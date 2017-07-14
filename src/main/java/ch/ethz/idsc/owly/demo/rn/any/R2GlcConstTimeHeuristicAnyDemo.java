@@ -26,7 +26,6 @@ import ch.ethz.idsc.owly.math.state.EmptyTrajectoryRegionQuery;
 import ch.ethz.idsc.owly.math.state.FixedStateIntegrator;
 import ch.ethz.idsc.owly.math.state.StateIntegrator;
 import ch.ethz.idsc.owly.math.state.StateTime;
-import ch.ethz.idsc.owly.math.state.TimeInvariantRegion;
 import ch.ethz.idsc.owly.math.state.TrajectoryRegionQuery;
 import ch.ethz.idsc.tensor.RationalScalar;
 import ch.ethz.idsc.tensor.RealScalar;
@@ -62,8 +61,8 @@ enum R2GlcConstTimeHeuristicAnyDemo {
       goalStateList.add(new StateTime(goal, RealScalar.ZERO));
       goalRegions.add(new EllipsoidRegion(goal, radius));
     }
-    TimeInvariantRegion goalRegion = new TimeInvariantRegion(RegionUnion.of(goalRegions));
     Tensor heuristicCenter = goalStateList.get(0).x();
+    RegionUnion goalRegion = new RegionUnion(goalRegions);
     RnListGoalManager rnGoal = new RnListGoalManager(goalRegion, heuristicCenter);
     // RnGoalManager rnGoal = new RnGoalManager(goal, DoubleScalar.of(.25));
     // performance depends on heuristic: zeroHeuristic vs rnGoal
@@ -123,8 +122,7 @@ enum R2GlcConstTimeHeuristicAnyDemo {
       if (removed)
         System.out.println("All Regionparts before/with index: " + deleteUntilIndex + " were removed");// Deleting all goals before the first not found
       System.out.println("size of goal regions list: " + goalRegions.size());
-      TimeInvariantRegion goalRegion2 = new TimeInvariantRegion(RegionUnion.of(goalRegions)); // modified (smaller) GoalRegion
-      RnListGoalManager rnGoal2 = new RnListGoalManager(goalRegion2, heuristicCenter);
+      RnListGoalManager rnGoal2 = new RnListGoalManager(goalRegions, heuristicCenter);
       trajectoryPlanner.changeToGoal(rnGoal2);
       // -- ROOTCHANGE
       // TODO trajectory to actual goal, not queue node

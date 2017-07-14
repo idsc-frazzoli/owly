@@ -6,6 +6,8 @@ import java.util.List;
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
 import ch.ethz.idsc.owly.glc.core.GoalInterface;
 import ch.ethz.idsc.owly.math.flow.Flow;
+import ch.ethz.idsc.owly.math.region.Region;
+import ch.ethz.idsc.owly.math.region.RegionUnion;
 import ch.ethz.idsc.owly.math.state.StateTime;
 import ch.ethz.idsc.owly.math.state.TimeInvariantRegion;
 import ch.ethz.idsc.owly.math.state.Trajectories;
@@ -19,9 +21,15 @@ public class RnListGoalManager extends SimpleTrajectoryRegionQuery implements Go
   private final Tensor center;
 
   // TODO JONAS change heuristic center to different way
-  public RnListGoalManager(TimeInvariantRegion goalRegion, Tensor heuristicCenter) {
-    super(goalRegion);
+  public RnListGoalManager(List<Region> goalRegions, Tensor heuristicCenter) {
+    super(new TimeInvariantRegion(RegionUnion.of(goalRegions)));
     center = heuristicCenter;
+  }
+
+  public RnListGoalManager(Region region, Tensor heuristicCenter) {
+    super(new TimeInvariantRegion(region));
+    center = heuristicCenter;
+    // TODO Auto-generated constructor stub
   }
 
   @Override
