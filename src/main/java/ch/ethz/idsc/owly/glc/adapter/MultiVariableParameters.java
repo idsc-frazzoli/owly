@@ -13,7 +13,7 @@ public abstract class MultiVariableParameters extends DefaultParameters {
   public MultiVariableParameters( //
       Scalar resolution, Scalar timeScale, Scalar depthScale, //
       Tensor partitionScale, Scalar dtMax, int maxIter, Tensor lipschitz) {
-    super(resolution, timeScale, depthScale, partitionScale, dtMax, maxIter, (Scalar) Mean.of(lipschitz));
+    super(resolution, timeScale, depthScale, partitionScale, dtMax, maxIter, null);
     if (!Mean.of(lipschitz).isScalar())
       throw new RuntimeException(); // check if lipschitz is a 1xn tensor
     if (lipschitz.length() != partitionScale.length()) {
@@ -22,7 +22,7 @@ public abstract class MultiVariableParameters extends DefaultParameters {
     }
     if (lipschitz.length() == 0)
       throw new RuntimeException();// Lipschitz constant vector needs to be equal to PS vector
-    this.lipschitz = lipschitz; // TODO JAN: BUG? lipschitz saved in this and in superclass
+    this.lipschitz = lipschitz;
   }
 
   @Override

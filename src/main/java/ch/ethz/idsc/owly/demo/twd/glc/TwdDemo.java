@@ -45,7 +45,7 @@ enum TwdDemo {
     StateIntegrator stateIntegrator = FixedStateIntegrator.createDefault(parameters.getdtMax(), //
         parameters.getTrajectorySize());
     // --
-    Collection<Flow> controls = TwdControls.createControls1(//
+    Collection<Flow> controls = TwdControls.createControls2(//
         stateSpaceModel, parameters.getResolutionInt());
     // --
     TrajectoryRegionQuery obstacleQuery = //
@@ -55,14 +55,14 @@ enum TwdDemo {
                 new HyperplaneRegion(Tensors.vector(0, +1, 0), RealScalar.of(3)) //
             )));
     // --
-    Tensor goalCenter = Tensors.vector(2, -2, -0.5 * Math.PI);
+    Tensor goalCenter = Tensors.vector(2, -2, -1 * Math.PI);
     Tensor radiusVector = Tensors.vector(0.5, 0.5, 2 * Math.PI / 360 * 50);
     // TwdDefaultGoalManager goalManager = new TwdDefaultGoalManager(goalCenter, radiusVector);
     TwdHeuristicGoalManager goalManager = new TwdHeuristicGoalManager(goalCenter, radiusVector);
     // --
     TrajectoryPlanner trajectoryPlanner = new StandardTrajectoryPlanner(parameters.getEta(), //
         stateIntegrator, controls, obstacleQuery, goalManager.getGoalInterface());
-    trajectoryPlanner.insertRoot(Tensors.vector(0, 0, 0));
+    trajectoryPlanner.insertRoot(Tensors.vector(0, 0, 0.5 * Math.PI));
     OwlyFrame owlyFrame = Gui.start();
     owlyFrame.configCoordinateOffset(33, 416);
     owlyFrame.jFrame.setBounds(100, 100, 620, 475);
@@ -71,7 +71,6 @@ enum TwdDemo {
       Expand.maxSteps(trajectoryPlanner, 30);
       owlyFrame.setGlc(trajectoryPlanner);
       Thread.sleep(1);
-      // TODO JONAS experimentie re mit 2 kostenfunktionen
     }
   }
 }

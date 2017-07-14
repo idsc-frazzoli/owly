@@ -7,8 +7,8 @@ import java.util.List;
 
 import ch.ethz.idsc.owly.math.StateSpaceModels;
 import ch.ethz.idsc.owly.math.flow.Flow;
-import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
+import ch.ethz.idsc.tensor.Scalars;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
 import ch.ethz.idsc.tensor.alg.Subdivide;
@@ -20,13 +20,13 @@ public enum TwdControls {
    * @param num number of flows to produce
    * @return list of Flows */
   public static Collection<Flow> createControls1(TwdStateSpaceModel stateSpaceModel, int num) {
+    // TODO JONAS better way then floor
     // int numSqr = Floor.of(Sqrt.of(RealScalar.of(num))).number().intValue();
     int numSqr = num; // TODO to be checked with theory: simulated inputs is no R²
-    Scalar wheelspeeds_max = stateSpaceModel.getWheelspeeds_max();
-    // TODO JONAS better way then floor
+    Scalar wheelspeed_max = stateSpaceModel.getWheelspeeds_max();
     List<Flow> list = new ArrayList<>();
-    for (Tensor wl : Subdivide.of(wheelspeeds_max.negate(), wheelspeeds_max, numSqr)) {
-      for (Tensor wr : Subdivide.of(wheelspeeds_max.negate(), wheelspeeds_max, numSqr)) {
+    for (Tensor wl : Subdivide.of(wheelspeed_max.negate(), wheelspeed_max, numSqr)) {
+      for (Tensor wr : Subdivide.of(wheelspeed_max.negate(), wheelspeed_max, numSqr)) {
         Tensor u = Tensors.of(wl, wr);
         list.add(StateSpaceModels.createFlow(stateSpaceModel, Tensors.of(wl, wr)));
       }
@@ -35,10 +35,22 @@ public enum TwdControls {
     return list;
   }
 
-  public static Collection<Flow> createControls2(TwdStateSpaceModel stateSpaceModel, Scalar wheelspeeds_max, int num) {
+  public static Collection<Flow> createControls2(TwdStateSpaceModel stateSpaceModel, int num) {
     @SuppressWarnings("unused")
-    TwdStateSpaceModel test = new TwdStateSpaceModel(RealScalar.of(3), RealScalar.of(3), RealScalar.of(3));
-    // TODO JONAS implement, zB |wl|+|wr|<=1
-    throw new RuntimeException();
+    int numSqr = num; // TODO to be checked with theory: simulated inputs is no R²
+    Scalar wheelspeed_max = stateSpaceModel.getWheelspeeds_max();
+    List<Flow> list = new ArrayList<>();
+    Tensor wlList = Subdivide.of(wheelspeed_max.negate(), wheelspeed_max, numSqr);
+    Scalar stepSize = wlList.Get(1).subtract(wlList.Get(0));
+    for (Tensor wl : wlList) {
+      // |wl|+|wr|<=1
+      Scalar wr = (wheelspeed_max.subtract(wl)).negate();
+      while (Scalars.lessEquals(wr, wheelspeed_max.subtract(wl))) {
+        Tensor u = Tensors.of((Scalar) wl, wr);
+        list.add(StateSpaceModels.createFlow(stateSpaceModel, Tensors.of(wl, wr)));
+        wr = wr.add(stepSize);
+      }
+    }
+    return list;
   }
 }
