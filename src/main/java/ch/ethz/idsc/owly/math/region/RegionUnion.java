@@ -1,10 +1,9 @@
 // code by jph & jl
 package ch.ethz.idsc.owly.math.region;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.List;
+import java.util.Collections;
 
 import ch.ethz.idsc.tensor.Tensor;
 
@@ -35,11 +34,9 @@ public class RegionUnion implements Region {
     this.collection = collection;
   }
 
+  // TODO functions not used yet
   public final Region add(Region region) {
-    List<Region> collectionToAdd = new ArrayList<>();
-    collectionToAdd.add(region);
-    this.add(collectionToAdd);
-    return this;
+    return add(Collections.singleton(region));
   }
 
   public final Region add(Collection<Region> collectionToAdd) {
@@ -53,10 +50,7 @@ public class RegionUnion implements Region {
   }
 
   public final Region remove(Region region) {
-    List<Region> collectionToRemove = new ArrayList<>();
-    collectionToRemove.add(region);
-    this.removeAll(collectionToRemove);
-    return this;
+    return removeAll(Collections.singleton(region));
   }
 
   @Override
@@ -65,5 +59,9 @@ public class RegionUnion implements Region {
     for (Region region : collection)
       isMember |= region.isMember(tensor);
     return isMember;
+    // TODO try this alternative on a working case
+    // return collection.stream().parallel() //
+    // .filter(region -> region.isMember(tensor)) //
+    // .findAny().isPresent();
   }
 }
