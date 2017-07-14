@@ -6,8 +6,6 @@ import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
-import ch.ethz.idsc.tensor.red.Max;
-import ch.ethz.idsc.tensor.red.Times;
 import ch.ethz.idsc.tensor.sca.Abs;
 import ch.ethz.idsc.tensor.sca.Cos;
 import ch.ethz.idsc.tensor.sca.Sin;
@@ -18,12 +16,13 @@ import ch.ethz.idsc.tensor.sca.Sin;
  * center of axle at (px, py)
  * 2 wheels (left, right) with separate controlled speed (wl, wr) [rad/s]
  * Theory from: http://planning.cs.uiuc.edu/node659.html */
-public class TwdStateSpaceModel implements StateSpaceModel {
+@SuppressWarnings("serial")
+public class TwdStateSpaceModel implements StateSpaceModel, MultiVariableLipschitz {
   private final Scalar wheelRadius; // R
   private final Scalar wheelDistance; // L
-  private final Tensor wheelspeeds_max;
+  private final Scalar wheelspeeds_max;
 
-  public TwdStateSpaceModel(Scalar wheelRadius, Scalar wheelDistance, Tensor wheelspeed_max) {
+  public TwdStateSpaceModel(Scalar wheelRadius, Scalar wheelDistance, Scalar wheelspeed_max) {
     this.wheelRadius = wheelRadius;
     this.wheelDistance = wheelDistance;
     this.wheelspeeds_max = wheelspeed_max;
@@ -40,23 +39,27 @@ public class TwdStateSpaceModel implements StateSpaceModel {
     // r*translateSpeed * sin(theta)
     Scalar yDot = wheelRadius.multiply(translateSpeed).multiply(Sin.of(x.Get(2)));
     return Tensors.of(xDot, yDot, rotationalSpeed);
-    // TODO JONAS implement
     // state contains (px, py, theta) == position of axis center, theta is orientation
     // u contains (wl, wr) == speed of left wheel and speed of right wheel
   }
 
-  public Tensor getWheelspeeds_max() {
+  public Scalar getWheelspeeds_max() {
     return wheelspeeds_max;
   }
 
   /** | f(x_1, u) - f(x_2, u) | <= L | x_1 - x_2 | */
   @Override
-  public Tensor getLipschitz() {
-    // TODO JONAS should be:
+  public Tensor getTensorLipschitz() {
     // max((wl+wr))*wheelRadius*0.5 for horizontal velocities
-    Scalar horizontalLipschitz = Times.of((getWheelspeeds_max().Get(0).add(getWheelspeeds_max()).Get(1)), wheelRadius, RealScalar.of(0.5));
+    Scalar horizontalLipschitz = getWheelspeeds_max().multiply(wheelRadius);
     // wheelRadius/wheelDistance *max(abs(wl),abs(wr)) for rotational
-    Scalar rotationalLipschitz = Max.of(Abs.of(getWheelspeeds_max().Get(0)), Abs.of(getWheelspeeds_max().Get(1)));
+    Scalar rotationalLipschitz = Abs.of(getWheelspeeds_max());
     return Tensors.of(horizontalLipschitz, horizontalLipschitz, rotationalLipschitz);
+  }
+
+  public Scalar getLipschitz() {
+    throw new RuntimeException();
+    // TODO JAN: otherway so compile error appears if in TWD parameter constructor getLipschitz is called
+    // currently not, because wants Tensor and Scalar is Tensor
   }
 }

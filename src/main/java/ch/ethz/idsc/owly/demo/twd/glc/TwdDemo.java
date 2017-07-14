@@ -4,9 +4,22 @@ package ch.ethz.idsc.owly.demo.twd.glc;
 import java.util.Collection;
 
 import ch.ethz.idsc.owly.demo.twd.TwdControls;
+import ch.ethz.idsc.owly.demo.twd.TwdHeuristicGoalManager;
 import ch.ethz.idsc.owly.demo.twd.TwdStateSpaceModel;
 import ch.ethz.idsc.owly.glc.adapter.Parameters;
+import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
+import ch.ethz.idsc.owly.glc.core.Expand;
+import ch.ethz.idsc.owly.glc.core.StandardTrajectoryPlanner;
+import ch.ethz.idsc.owly.glc.core.TrajectoryPlanner;
+import ch.ethz.idsc.owly.gui.Gui;
+import ch.ethz.idsc.owly.gui.OwlyFrame;
 import ch.ethz.idsc.owly.math.flow.Flow;
+import ch.ethz.idsc.owly.math.region.HyperplaneRegion;
+import ch.ethz.idsc.owly.math.region.RegionUnion;
+import ch.ethz.idsc.owly.math.state.FixedStateIntegrator;
+import ch.ethz.idsc.owly.math.state.StateIntegrator;
+import ch.ethz.idsc.owly.math.state.TimeInvariantRegion;
+import ch.ethz.idsc.owly.math.state.TrajectoryRegionQuery;
 import ch.ethz.idsc.tensor.RationalScalar;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
@@ -15,23 +28,50 @@ import ch.ethz.idsc.tensor.Tensors;
 
 enum TwdDemo {
   ;
-  public static void main(String[] args) {
-    RationalScalar resolution = (RationalScalar) RealScalar.of(4);
-    Scalar timeScale = RealScalar.of(10);
-    Scalar depthScale = RealScalar.of(5);
-    Tensor partitionScale = Tensors.vector(3, 3, 50 / Math.PI);
-    Scalar dtMax = RationalScalar.of(1, 6);
+  public static void main(String[] args) throws Exception {
+    RationalScalar resolution = (RationalScalar) RealScalar.of(8);
+    Scalar timeScale = RealScalar.of(6);
+    Scalar depthScale = RealScalar.of(20);
+    Tensor partitionScale = Tensors.vector(5, 5, 2 * Math.PI / 360 * 20);
+    Scalar dtMax = RationalScalar.of(1, 10);
     int maxIter = 2000;
     Scalar wheelDistance = RealScalar.of(0.2);
     Scalar wheelRadius = RealScalar.of(0.05);
-    Tensor wheelspeeds_max = Tensors.vector(3, 3).multiply(RealScalar.of(2 * Math.PI));
+    Scalar wheelspeeds_max = RealScalar.of(2).multiply(RealScalar.of(2 * Math.PI));
     TwdStateSpaceModel stateSpaceModel = new TwdStateSpaceModel(wheelRadius, wheelDistance, wheelspeeds_max);
     Parameters parameters = new TwdParameters( //
-        resolution, timeScale, depthScale, partitionScale, dtMax, maxIter, stateSpaceModel.getLipschitz());
-    Collection<Flow> controls = TwdControls.createControls1(//
-        stateSpaceModel, wheelspeeds_max, parameters.getResolutionInt());
+        resolution, timeScale, depthScale, partitionScale, dtMax, maxIter, stateSpaceModel.getTensorLipschitz());
     // --
-    // TODO JONAS definiere hier schritt fuer schritt fuer eine demo des TWD
-    // TODO JONAS experimentiere mit 2 kostenfunktionen
+    StateIntegrator stateIntegrator = FixedStateIntegrator.createDefault(parameters.getdtMax(), //
+        parameters.getTrajectorySize());
+    // --
+    Collection<Flow> controls = TwdControls.createControls1(//
+        stateSpaceModel, parameters.getResolutionInt());
+    // --
+    TrajectoryRegionQuery obstacleQuery = //
+        new SimpleTrajectoryRegionQuery(new TimeInvariantRegion( //
+            RegionUnion.of( //
+                new HyperplaneRegion(Tensors.vector(0, -1, 0), RealScalar.of(4)), //
+                new HyperplaneRegion(Tensors.vector(0, +1, 0), RealScalar.of(3)) //
+            )));
+    // --
+    Tensor goalCenter = Tensors.vector(2, -2, -0.5 * Math.PI);
+    Tensor radiusVector = Tensors.vector(0.5, 0.5, 2 * Math.PI / 360 * 50);
+    // TwdDefaultGoalManager goalManager = new TwdDefaultGoalManager(goalCenter, radiusVector);
+    TwdHeuristicGoalManager goalManager = new TwdHeuristicGoalManager(goalCenter, radiusVector);
+    // --
+    TrajectoryPlanner trajectoryPlanner = new StandardTrajectoryPlanner(parameters.getEta(), //
+        stateIntegrator, controls, obstacleQuery, goalManager.getGoalInterface());
+    trajectoryPlanner.insertRoot(Tensors.vector(0, 0, 0));
+    OwlyFrame owlyFrame = Gui.start();
+    owlyFrame.configCoordinateOffset(33, 416);
+    owlyFrame.jFrame.setBounds(100, 100, 620, 475);
+    // TODO JAN: look at Gui and how input is shown
+    while (!trajectoryPlanner.getBest().isPresent() && owlyFrame.jFrame.isVisible()) {
+      Expand.maxSteps(trajectoryPlanner, 30);
+      owlyFrame.setGlc(trajectoryPlanner);
+      Thread.sleep(1);
+      // TODO JONAS experimentie re mit 2 kostenfunktionen
+    }
   }
 }
