@@ -51,13 +51,9 @@ public class CarStateSpaceModel implements StateSpaceModel {
         System.out.println("dF_z=" + dF_z);
     }
     // (1.1)
-    // F + [Ux Uy 0] x [0 0 r]
-    // second term accounts for rotation of coordinate system, since Ux Uy are in body coordinates
-    Tensor dir = total.extract(0, 2).subtract(Cross2D.of(carState.u_2d()).multiply(vehicleModel.mass().multiply(carState.r)));
     final Scalar rollFric = gForce.multiply(vehicleModel.muRoll()); // TODO at the moment == 0!
-    // TODO deadzone should not have influence on rotation of coordinate system!
     Deadzone deadzone = Deadzone.of(rollFric.negate(), rollFric);
-    dir = dir.map(deadzone);
+    Tensor dir = total.extract(0, 2).map(deadzone);
     // TODO vectorize
     final Scalar dux = dir.Get(0).subtract(vehicleModel.coulombFriction(carState.Ux)).divide(vehicleModel.mass());
     final Scalar duy = dir.Get(1).subtract(RealScalar.ZERO.multiply(vehicleModel.coulombFriction(carState.Uy))).divide(vehicleModel.mass());
@@ -86,8 +82,11 @@ public class CarStateSpaceModel implements StateSpaceModel {
         .multiply(vehicleModel.wheel(index).Iw_invert()), //
         vehicleModel.wheels());
     // ---
-    Tensor fxu = Join.of(Tensors.of( //
-        dux, duy, dr, carState.r, dp.Get(0), dp.Get(1)), dw);
+    // change of coordinates
+    Tensor ucd = Cross2D.of(carState.u_2d()).multiply(carState.r); // [Ux Uy 0] x [0 0 r]
+    Tensor fxu = Join.of( //
+        Tensors.of(dux, duy).subtract(ucd), // F/m +
+        Tensors.of(dr, carState.r, dp.Get(0), dp.Get(1)), dw);
     // the observation is that dwXY oscillate a lot!
     // this is consistent with the MATLAB code
     // if (Scalars.lessThan(RealScalar.of(1e4), Norm.Infinity.of(fxu)))
