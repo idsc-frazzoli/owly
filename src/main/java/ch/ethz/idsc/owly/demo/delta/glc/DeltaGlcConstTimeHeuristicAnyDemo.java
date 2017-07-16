@@ -74,7 +74,7 @@ enum DeltaGlcConstTimeHeuristicAnyDemo {
         // regions.add(new EllipsoidRegion(center, radius));
       }
       // TODO JONAS form union of list of regions
-      Region union = RegionUnion.of(regions);
+      Region union = RegionUnion.wrap(regions);
       // TODO JONAS create and then later use StateTimeRegion
       new TimeInvariantRegion(union);
     }

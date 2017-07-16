@@ -13,39 +13,11 @@ package ch.ethz.idsc.owly.math.noise;
  * 
  * This code was placed in the public domain by its original author,
  * Stefan Gustavson. You may use it as you see fit, but attribution is appreciated. */
-public class SimplexNoise extends ContinuousNoise {
-  static class Grad {
-    double x, y, z, w;
-
-    Grad(double x, double y, double z) {
-      this.x = x;
-      this.y = y;
-      this.z = z;
-    }
-
-    Grad(double x, double y, double z, double w) {
-      this.x = x;
-      this.y = y;
-      this.z = z;
-      this.w = w;
-    }
-
-    double dot(double x, double y) {
-      return this.x * x + this.y * y;
-    }
-
-    double dot(double x, double y, double z) {
-      return this.x * x + this.y * y + this.z * z;
-    }
-
-    double dot(double x, double y, double z, double w) {
-      return this.x * x + this.y * y + this.z * z + this.w * w;
-    }
-  }
-
+public enum SimplexNoise implements ContinuousNoise {
+  ;
   // Inner class to speed up gradient computations
   // (array access is a lot slower than member access)
-  private static Grad[] grad3 = {
+  private static final Grad[] grad3 = {
       // ---
       new Grad(1, 1, 0), //
       new Grad(-1, 1, 0), //
@@ -60,7 +32,7 @@ public class SimplexNoise extends ContinuousNoise {
       new Grad(0, 1, -1), //
       new Grad(0, -1, -1) };
   // ---
-  private static Grad[] grad4 = {
+  private static final Grad[] grad4 = {
       // ---
       new Grad(0, 1, 1, 1), //
       new Grad(0, 1, 1, -1), //
@@ -107,12 +79,12 @@ public class SimplexNoise extends ContinuousNoise {
    * @param xin
    * @param yin
    * @return value in the interval [-1,1] */
-  public static final double at(double xin, double yin) {
+  public static double at(double xin, double yin) {
     double n0, n1, n2; // Noise contributions from the three corners
     // Skew the input space to determine which simplex cell we're in
     double s = (xin + yin) * F2; // Hairy factor for 2D
-    int i = floor(xin + s);
-    int j = floor(yin + s);
+    int i = Floor.of(xin + s);
+    int j = Floor.of(yin + s);
     double t = (i + j) * G2;
     double X0 = i - t; // Unskew the cell origin back to (x,y) space
     double Y0 = j - t;
@@ -139,9 +111,9 @@ public class SimplexNoise extends ContinuousNoise {
     // Work out the hashed gradient indices of the three simplex corners
     int ii = i & 255;
     int jj = j & 255;
-    int gi0 = permMod12[ii + perm[jj]];
-    int gi1 = permMod12[ii + i1 + perm[jj + j1]];
-    int gi2 = permMod12[ii + 1 + perm[jj + 1]];
+    int gi0 = PERMMOD12[ii + PERM[jj]];
+    int gi1 = PERMMOD12[ii + i1 + PERM[jj + j1]];
+    int gi2 = PERMMOD12[ii + 1 + PERM[jj + 1]];
     // Calculate the contribution from the three corners
     double t0 = 0.5 - x0 * x0 - y0 * y0;
     if (t0 < 0)
@@ -178,9 +150,9 @@ public class SimplexNoise extends ContinuousNoise {
     double n0, n1, n2, n3; // Noise contributions from the four corners
     // Skew the input space to determine which simplex cell we're in
     double s = (xin + yin + zin) * F3; // Very nice and simple skew factor for 3D
-    int i = floor(xin + s);
-    int j = floor(yin + s);
-    int k = floor(zin + s);
+    int i = Floor.of(xin + s);
+    int j = Floor.of(yin + s);
+    int k = Floor.of(zin + s);
     double t = (i + j + k) * G3;
     double X0 = i - t; // Unskew the cell origin back to (x,y,z) space
     double Y0 = j - t;
@@ -260,10 +232,10 @@ public class SimplexNoise extends ContinuousNoise {
     int ii = i & 255;
     int jj = j & 255;
     int kk = k & 255;
-    int gi0 = permMod12[ii + perm[jj + perm[kk]]];
-    int gi1 = permMod12[ii + i1 + perm[jj + j1 + perm[kk + k1]]];
-    int gi2 = permMod12[ii + i2 + perm[jj + j2 + perm[kk + k2]]];
-    int gi3 = permMod12[ii + 1 + perm[jj + 1 + perm[kk + 1]]];
+    int gi0 = PERMMOD12[ii + PERM[jj + PERM[kk]]];
+    int gi1 = PERMMOD12[ii + i1 + PERM[jj + j1 + PERM[kk + k1]]];
+    int gi2 = PERMMOD12[ii + i2 + PERM[jj + j2 + PERM[kk + k2]]];
+    int gi3 = PERMMOD12[ii + 1 + PERM[jj + 1 + PERM[kk + 1]]];
     // Calculate the contribution from the four corners
     double t0 = 0.6 - x0 * x0 - y0 * y0 - z0 * z0;
     if (t0 < 0)
@@ -308,10 +280,10 @@ public class SimplexNoise extends ContinuousNoise {
     double n0, n1, n2, n3, n4; // Noise contributions from the five corners
     // Skew the (x,y,z,w) space to determine which cell of 24 simplices we're in
     double s = (x + y + z + w) * F4; // Factor for 4D skewing
-    int i = floor(x + s);
-    int j = floor(y + s);
-    int k = floor(z + s);
-    int l = floor(w + s);
+    int i = Floor.of(x + s);
+    int j = Floor.of(y + s);
+    int k = Floor.of(z + s);
+    int l = Floor.of(w + s);
     double t = (i + j + k + l) * G4; // Factor for 4D unskewing
     double X0 = i - t; // Unskew the cell origin back to (x,y,z,w) space
     double Y0 = j - t;
@@ -398,11 +370,11 @@ public class SimplexNoise extends ContinuousNoise {
     int jj = j & 255;
     int kk = k & 255;
     int ll = l & 255;
-    int gi0 = perm[ii + perm[jj + perm[kk + perm[ll]]]] % 32;
-    int gi1 = perm[ii + i1 + perm[jj + j1 + perm[kk + k1 + perm[ll + l1]]]] % 32;
-    int gi2 = perm[ii + i2 + perm[jj + j2 + perm[kk + k2 + perm[ll + l2]]]] % 32;
-    int gi3 = perm[ii + i3 + perm[jj + j3 + perm[kk + k3 + perm[ll + l3]]]] % 32;
-    int gi4 = perm[ii + 1 + perm[jj + 1 + perm[kk + 1 + perm[ll + 1]]]] % 32;
+    int gi0 = PERM[ii + PERM[jj + PERM[kk + PERM[ll]]]] % 32;
+    int gi1 = PERM[ii + i1 + PERM[jj + j1 + PERM[kk + k1 + PERM[ll + l1]]]] % 32;
+    int gi2 = PERM[ii + i2 + PERM[jj + j2 + PERM[kk + k2 + PERM[ll + l2]]]] % 32;
+    int gi3 = PERM[ii + i3 + PERM[jj + j3 + PERM[kk + k3 + PERM[ll + l3]]]] % 32;
+    int gi4 = PERM[ii + 1 + PERM[jj + 1 + PERM[kk + 1 + PERM[ll + 1]]]] % 32;
     // Calculate the contribution from the five corners
     double t0 = 0.6 - x0 * x0 - y0 * y0 - z0 * z0 - w0 * w0;
     if (t0 < 0)
@@ -440,8 +412,5 @@ public class SimplexNoise extends ContinuousNoise {
       n4 = t4 * t4 * grad4[gi4].dot(x4, y4, z4, w4);
     }
     return 27.23 * (n0 + n1 + n2 + n3 + n4); // used to be 27.0
-  }
-
-  private SimplexNoise() {
   }
 }

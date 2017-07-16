@@ -31,7 +31,7 @@ public class DeltaTrajectoryGoalManager extends SimpleTrajectoryRegionQuery impl
 
   public DeltaTrajectoryGoalManager(List<Region> goalRegions, Tensor heuristicCenter, Tensor radius, Scalar maxSpeed, Scalar costScalingFactor) {
     // only for comliling reasons
-    super(new TimeInvariantRegion(RegionUnion.of(goalRegions)));
+    super(new TimeInvariantRegion(RegionUnion.wrap(goalRegions)));
     // --
     this.maxSpeed = maxSpeed;
     this.heuristicCenter = heuristicCenter;
