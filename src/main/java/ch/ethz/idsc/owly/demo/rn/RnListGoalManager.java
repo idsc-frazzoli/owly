@@ -22,7 +22,7 @@ public class RnListGoalManager extends SimpleTrajectoryRegionQuery implements Go
 
   // TODO JONAS change heuristic center to different way
   public RnListGoalManager(List<Region> goalRegions, Tensor heuristicCenter) {
-    super(new TimeInvariantRegion(RegionUnion.of(goalRegions)));
+    super(new TimeInvariantRegion(RegionUnion.wrap(goalRegions)));
     center = heuristicCenter;
   }
 
