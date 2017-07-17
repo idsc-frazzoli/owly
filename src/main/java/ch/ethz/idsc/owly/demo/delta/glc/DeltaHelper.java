@@ -13,7 +13,7 @@ import ch.ethz.idsc.owly.demo.util.Images;
 import ch.ethz.idsc.owly.demo.util.Resources;
 import ch.ethz.idsc.owly.glc.adapter.Parameters;
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
-import ch.ethz.idsc.owly.glc.core.AnyPlannerInterface;
+import ch.ethz.idsc.owly.glc.adapter.TrajectoryPlannerContainer;
 import ch.ethz.idsc.owly.glc.core.OptimalAnyTrajectoryPlanner;
 import ch.ethz.idsc.owly.glc.core.StandardTrajectoryPlanner;
 import ch.ethz.idsc.owly.glc.core.TrajectoryPlanner;
@@ -43,8 +43,9 @@ public enum DeltaHelper {
     ImageGradient ipr = new ImageGradient( //
         Images.displayOrientation(Import.of(Resources.fileFromRepository("/io/delta_uxy.png")).get(Tensor.ALL, Tensor.ALL, 0)), //
         range, amp);
+    Scalar maxInput = RealScalar.ONE;
     Collection<Flow> controls = DeltaControls.createControls( //
-        new DeltaStateSpaceModel(ipr), RealScalar.ONE, 25);
+        new DeltaStateSpaceModel(ipr, maxInput), maxInput, 25);
     Tensor obstacleImage = Images.displayOrientation(Import.of(Resources.fileFromRepository("/io/delta_free.png")).get(Tensor.ALL, Tensor.ALL, 0)); //
     TrajectoryRegionQuery obstacleQuery = //
         new SimpleTrajectoryRegionQuery(new TimeInvariantRegion( //
@@ -57,19 +58,19 @@ public enum DeltaHelper {
     return trajectoryPlanner;
   }
 
-  static TrajectoryPlanner createGlc(Scalar gradientAmp, RationalScalar resolution) throws Exception {
+  static TrajectoryPlannerContainer createGlc(Scalar gradientAmp, RationalScalar resolution) throws Exception {
     Scalar timeScale = RealScalar.of(5);
     Scalar depthScale = RealScalar.of(10);
-    Tensor partitionScale = Tensors.vector(10e5, 10e5);
+    Tensor partitionScale = Tensors.vector(10e22, 10e22);
     Scalar dtMax = RationalScalar.of(1, 6);
     int maxIter = 2000;
     Tensor range = Tensors.vector(9, 6.5);
     ImageGradient ipr = new ImageGradient( //
         Images.displayOrientation(Import.of(Resources.fileFromRepository("/io/delta_uxy.png")).get(Tensor.ALL, Tensor.ALL, 0)), //
         range, RealScalar.of(-.5)); // -.25 .5
-    DeltaStateSpaceModel stateSpaceModel = new DeltaStateSpaceModel(ipr);
     Scalar maxInput = RealScalar.ONE;
     Scalar maxSpeed = maxInput.add(ipr.maxNorm());
+    DeltaStateSpaceModel stateSpaceModel = new DeltaStateSpaceModel(ipr, maxInput);
     Collection<Flow> controls = DeltaControls.createControls( //
         stateSpaceModel, maxInput, resolution.number().intValue());
     Parameters parameters = new DeltaParameters(resolution, timeScale, depthScale, //
@@ -88,22 +89,22 @@ public enum DeltaHelper {
     TrajectoryPlanner trajectoryPlanner = new StandardTrajectoryPlanner( //
         parameters.getEta(), stateIntegrator, controls, obstacleQuery, deltaGoalManager);
     trajectoryPlanner.insertRoot(Tensors.vector(8.8, 0.5));
-    return trajectoryPlanner;
+    return new TrajectoryPlannerContainer(trajectoryPlanner, parameters);
   }
 
-  static AnyPlannerInterface createGlcAny(Scalar gradientAmp, RationalScalar resolution) throws Exception {
+  static TrajectoryPlannerContainer createGlcAny(Scalar gradientAmp, RationalScalar resolution) throws Exception {
     Scalar timeScale = RealScalar.of(5);
     Scalar depthScale = RealScalar.of(10);
-    Tensor partitionScale = Tensors.vector(10e5, 10e5);
+    Tensor partitionScale = Tensors.vector(10e22, 10e22);
     Scalar dtMax = RationalScalar.of(1, 6);
     int maxIter = 2000;
     Tensor range = Tensors.vector(9, 6.5);
     ImageGradient ipr = new ImageGradient( //
         Images.displayOrientation(Import.of(Resources.fileFromRepository("/io/delta_uxy.png")).get(Tensor.ALL, Tensor.ALL, 0)), //
         range, RealScalar.of(-.5)); // -.25 .5
-    DeltaStateSpaceModel stateSpaceModel = new DeltaStateSpaceModel(ipr);
     Scalar maxInput = RealScalar.ONE;
     Scalar maxSpeed = maxInput.add(ipr.maxNorm());
+    DeltaStateSpaceModel stateSpaceModel = new DeltaStateSpaceModel(ipr, maxInput);
     Collection<Flow> controls = DeltaControls.createControls( //
         stateSpaceModel, maxInput, resolution.number().intValue());
     Parameters parameters = new DeltaParameters(resolution, timeScale, depthScale, //
@@ -119,8 +120,9 @@ public enum DeltaHelper {
         Tensors.vector(2.9, 2.4), Tensors.vector(.3, .3), maxSpeed);
     // DeltaGoalManager deltaGoalManager = new DeltaGoalManager( //
     // Tensors.vector(2.1, 0.3), Tensors.vector(.3, .3));
-    AnyPlannerInterface trajectoryPlanner = new OptimalAnyTrajectoryPlanner(parameters.getEta(), stateIntegrator, controls, obstacleQuery, deltaGoalManager);
+    OptimalAnyTrajectoryPlanner trajectoryPlanner = new OptimalAnyTrajectoryPlanner(parameters.getEta(), stateIntegrator, controls, obstacleQuery,
+        deltaGoalManager);
     trajectoryPlanner.switchRootToState((Tensors.vector(8.8, 0.5)));
-    return trajectoryPlanner;
+    return new TrajectoryPlannerContainer(trajectoryPlanner, parameters);
   }
 }

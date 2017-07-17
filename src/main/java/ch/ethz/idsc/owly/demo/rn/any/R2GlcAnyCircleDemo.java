@@ -6,7 +6,7 @@ import java.util.Collection;
 import java.util.List;
 
 import ch.ethz.idsc.owly.demo.rn.R2Parameters;
-import ch.ethz.idsc.owly.demo.rn.RnGoalManager;
+import ch.ethz.idsc.owly.demo.rn.RnSimpleEllipsoidGoalManager;
 import ch.ethz.idsc.owly.demo.rn.RnPointclouds;
 import ch.ethz.idsc.owly.demo.util.R2Controls;
 import ch.ethz.idsc.owly.demo.util.UserHome;
@@ -58,7 +58,7 @@ enum R2GlcAnyCircleDemo {
     StateIntegrator stateIntegrator = FixedStateIntegrator.create(EulerIntegrator.INSTANCE, parameters.getdtMax(), //
         parameters.getTrajectorySize());
     Collection<Flow> controls = R2Controls.createRadial(parameters.getResolutionInt());
-    RnGoalManager rnGoal = new RnGoalManager(goal, DoubleScalar.of(.25));
+    RnSimpleEllipsoidGoalManager rnGoal = new RnSimpleEllipsoidGoalManager(goal, DoubleScalar.of(.25));
     // performance depends on heuristic: zeroHeuristic vs rnGoal
     // Heuristic heuristic = new ZeroHeuristic(); // rnGoal
     TrajectoryRegionQuery obstacleQuery = //
@@ -90,7 +90,7 @@ enum R2GlcAnyCircleDemo {
         StateTime goalState = new StateTime(goal, RealScalar.ZERO);
         goalStateList.add(goalState);
       } while (!obstacleQuery.isDisjoint(goalStateList));
-      RnGoalManager rnGoal2 = new RnGoalManager(goal, DoubleScalar.of(.25));
+      RnSimpleEllipsoidGoalManager rnGoal2 = new RnSimpleEllipsoidGoalManager(goal, DoubleScalar.of(.25));
       System.out.println("Switching to Goal:" + goal);
       trajectoryPlanner.changeToGoal(rnGoal2);
       // -- ROOTCHANGE

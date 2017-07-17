@@ -60,6 +60,6 @@ public class TwdStateSpaceModel implements StateSpaceModel, MultiVariableLipschi
   public Scalar getLipschitz() {
     throw new RuntimeException();
     // TODO JAN: otherway so compile error appears if in TWD parameter constructor getLipschitz is called
-    // currently not, because wants Tensor and Scalar is Tensor
+    // currently not, because function wants Tensor and Scalar is Tensor
   }
 }

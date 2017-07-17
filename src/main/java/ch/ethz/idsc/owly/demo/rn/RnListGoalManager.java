@@ -29,7 +29,6 @@ public class RnListGoalManager extends SimpleTrajectoryRegionQuery implements Go
   public RnListGoalManager(Region region, Tensor heuristicCenter) {
     super(new TimeInvariantRegion(region));
     center = heuristicCenter;
-    // TODO Auto-generated constructor stub
   }
 
   @Override
