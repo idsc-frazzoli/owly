@@ -29,8 +29,7 @@ public abstract class MultiVariableParameters extends DefaultParameters {
   /** @return if Lipschitz == 0: R² / PS
    * @return else : R^(1+Lipschitz) /PS */
   public final Tensor getEta() {
-    Tensor eta = Tensors.empty(); // eta can neverbe -5 thereofre only for init
-    // TODO JAN: smarter way?
+    Tensor eta = Tensors.empty();
     int index = 0;
     for (Tensor entry : lipschitz) {
       if (entry.isScalar()) {
@@ -39,7 +38,7 @@ public abstract class MultiVariableParameters extends DefaultParameters {
         if (!Scalars.isZero((Scalar) entry))
           eta.append(EtaLfNonZero((Scalar) entry).get(index));
       }
-      // TODO better way of solving tensor/Scalar issue
+      // TODO JAN smarter way of solving tensor/Scalar issue?
       // currently always calculating entire Eta vector with one lipschitz and all PartionScale,
       // and then picking index of Eta vector which is calculated with the right PartitionScale
       index++;

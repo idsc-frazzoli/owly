@@ -3,12 +3,15 @@ package ch.ethz.idsc.owly.glc.core;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
+import java.util.PriorityQueue;
 
 import ch.ethz.idsc.owly.data.tree.Nodes;
+import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
 import ch.ethz.idsc.owly.math.state.StateIntegrator;
 import ch.ethz.idsc.owly.math.state.StateTime;
 import ch.ethz.idsc.owly.math.state.TrajectoryRegionQuery;
@@ -164,5 +167,23 @@ public abstract class AbstractAnyTrajectoryPlanner extends AbstractStandardTraje
     if (optional.isPresent())
       return GlcTrajectories.connect(getStateIntegrator(), Nodes.listFromRoot(getBest().get()));
     return null;
+  }
+
+  /** Looks for the Node, which is the furthest in the GoalRegion,
+   * @return node with highest merit in GoalRegion */
+  public Optional<GlcNode> getFurthestGoalNode() {
+    TrajectoryRegionQuery trq = this.getGoalQuery();
+    PriorityQueue<GlcNode> queue = new PriorityQueue<>(Collections.reverseOrder(NodeMeritComparator.INSTANCE));
+    List<StateTime> listStateTime = new ArrayList<>();
+    if (trq instanceof SimpleTrajectoryRegionQuery) {
+      SimpleTrajectoryRegionQuery strq = (SimpleTrajectoryRegionQuery) trq;
+      listStateTime.addAll(strq.getDiscoveredMembers());
+    }
+    for (StateTime entry : listStateTime) {
+      Tensor domainKey = convertToKey(entry.x());
+      GlcNode node = getNode(domainKey);
+      queue.add(node);
+    }
+    return Optional.ofNullable(queue.peek());
   }
 }
