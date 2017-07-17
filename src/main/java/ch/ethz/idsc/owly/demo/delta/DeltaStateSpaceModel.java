@@ -2,14 +2,17 @@
 package ch.ethz.idsc.owly.demo.delta;
 
 import ch.ethz.idsc.owly.math.StateSpaceModel;
+import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
 
 public class DeltaStateSpaceModel implements StateSpaceModel {
   private final ImageGradient imageGradient;
+  private final Scalar maxInput;
 
-  public DeltaStateSpaceModel(ImageGradient imageGradient) {
+  public DeltaStateSpaceModel(ImageGradient imageGradient, Scalar maxInput) {
     this.imageGradient = imageGradient;
+    this.maxInput = maxInput;
   }
 
   @Override
@@ -19,9 +22,10 @@ public class DeltaStateSpaceModel implements StateSpaceModel {
 
   @Override
   public Scalar getLipschitz() {
-    // TODO not sure if |u| should appear in formula
-    // TODO maxNorm is very big--> therefore eta with R^(1+LF) is huge? real lipschitz?
-    // TODO change to real lipschitz
-    return imageGradient.maxNorm(); // .add(maxInput);
+    // maxNorm is very big--> therefore eta with R^(1+LF) is huge? real lipschitz?
+    Scalar n = RealScalar.of(4); // dimensions of StateSpace + Dimensions of InputSpace
+    // lipschitz constant on vector-valued function from:
+    // https://math.stackexchange.com/questions/1132078/proof-that-a-vector-valued-function-is-lipschitz-continuous-on-a-closed-rectangl
+    return imageGradient.maxNorm().add(maxInput).multiply(n);
   }
 }
