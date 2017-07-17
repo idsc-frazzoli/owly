@@ -24,7 +24,7 @@ class TreeRender implements AbstractRender {
   }
 
   @Override
-  public void render(OwlyLayer abstractLayer, Graphics2D graphics) {
+  public void render(OwlyLayer owlyLayer, Graphics2D graphics) {
     DoubleSummaryStatistics dss = collection.stream() //
         .map(StateCostNode::costFromRoot) //
         .map(Scalar::number) //
@@ -37,11 +37,11 @@ class TreeRender implements AbstractRender {
       double val = node.costFromRoot().number().doubleValue();
       final double interp = (val - min) / (max - min);
       graphics.setColor(new Hue(interp, 1, 1, 1).rgba);
-      final Point2D p1 = abstractLayer.toPoint2D(node.state());
+      final Point2D p1 = owlyLayer.toPoint2D(node.state());
       graphics.fill(new Rectangle2D.Double(p1.getX(), p1.getY(), NODE_WIDTH, NODE_WIDTH));
       StateCostNode parent = node.parent();
       if (parent != null) {
-        Point2D p2 = abstractLayer.toPoint2D(parent.state());
+        Point2D p2 = owlyLayer.toPoint2D(parent.state());
         graphics.setColor(new Hue(interp, 1, 1, .2).rgba);
         Shape shape = new Line2D.Double(p1.getX(), p1.getY(), p2.getX(), p2.getY());
         graphics.draw(shape);

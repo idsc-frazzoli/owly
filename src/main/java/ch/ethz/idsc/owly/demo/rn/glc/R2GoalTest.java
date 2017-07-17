@@ -29,7 +29,7 @@ import ch.ethz.idsc.tensor.RationalScalar;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
 
-enum R2SphereDemo {
+enum R2GoalTest {
   ;
   public static void main(String[] args) {
     Tensor partitionScale = Tensors.vector(3.5, 4);
@@ -46,7 +46,7 @@ enum R2SphereDemo {
     TrajectoryPlanner trajectoryPlanner = new StandardTrajectoryPlanner( //
         partitionScale, stateIntegrator, controls, obstacleQuery, rnGoal);
     trajectoryPlanner.insertRoot(Tensors.vector(0, 0));
-    int iters = Expand.steps(trajectoryPlanner, 1000);
+    int iters = Expand.maxSteps(trajectoryPlanner, 1000);
     System.out.println(iters);
     Optional<GlcNode> optional = trajectoryPlanner.getBest();
     if (optional.isPresent()) {

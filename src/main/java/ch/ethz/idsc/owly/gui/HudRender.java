@@ -17,7 +17,7 @@ class HudRender implements AbstractRender {
   }
 
   @Override
-  public void render(OwlyLayer abstractLayer, Graphics2D graphics) {
+  public void render(OwlyLayer owlyLayer, Graphics2D graphics) {
     graphics.setColor(SHADING);
     // for now, do nothing
   }

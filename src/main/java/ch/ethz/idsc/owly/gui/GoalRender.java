@@ -20,7 +20,7 @@ class GoalRender implements AbstractRender {
   }
 
   @Override
-  public void render(OwlyLayer abstractLayer, Graphics2D graphics) {
+  public void render(OwlyLayer owlyLayer, Graphics2D graphics) {
     { // draw convex hull of goal points
       Tensor points = Tensor.of(collection.stream().map(StateTime::x).map(x -> x.extract(0, 2)));
       if (2 < points.length()) {
@@ -28,7 +28,7 @@ class GoalRender implements AbstractRender {
         Path2D path2d = new Path2D.Double();
         boolean init = false;
         for (Tensor p : hull) {
-          Point2D point2d = abstractLayer.toPoint2D(p);
+          Point2D point2d = owlyLayer.toPoint2D(p);
           if (init) {
             path2d.lineTo(point2d.getX(), point2d.getY());
           } else {
@@ -45,7 +45,7 @@ class GoalRender implements AbstractRender {
       double offset = -radius * 0.5;
       graphics.setColor(new Color(224, 168, 0, 224));
       for (StateTime stateTime : collection) {
-        Point2D point2d = abstractLayer.toPoint2D(stateTime.x());
+        Point2D point2d = owlyLayer.toPoint2D(stateTime.x());
         graphics.draw(new Ellipse2D.Double(point2d.getX() + offset, point2d.getY() + offset, radius, radius));
       }
     }

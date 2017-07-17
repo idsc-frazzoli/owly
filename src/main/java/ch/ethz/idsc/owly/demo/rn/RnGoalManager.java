@@ -17,7 +17,7 @@ import ch.ethz.idsc.tensor.red.Norm;
 import ch.ethz.idsc.tensor.sca.Ramp;
 
 /** objective is minimum path length */
-// TODO JAN: rename to RnSimpleEllipsoidGoalManager
+// TODO JAN TOP rename to RnSimpleEllipsoidGoalManager
 public class RnGoalManager extends SimpleTrajectoryRegionQuery implements GoalInterface {
   private final Tensor center;
   private final Scalar radius;

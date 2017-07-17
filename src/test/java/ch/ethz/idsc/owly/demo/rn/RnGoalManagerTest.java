@@ -5,6 +5,7 @@ import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Tensors;
 import junit.framework.TestCase;
 
+// TODO JAN TOP rename to RnSimpleEllipsoidGoalManagerTest
 public class RnGoalManagerTest extends TestCase {
   public void testSimple() {
     RnGoalManager rnGoal = new RnGoalManager(Tensors.vector(5, 0), RealScalar.of(2));

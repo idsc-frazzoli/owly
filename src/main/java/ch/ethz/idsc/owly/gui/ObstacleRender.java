@@ -18,10 +18,10 @@ class ObstacleRender implements AbstractRender {
   }
 
   @Override
-  public void render(OwlyLayer abstractLayer, Graphics2D graphics) {
+  public void render(OwlyLayer owlyLayer, Graphics2D graphics) {
     graphics.setColor(new Color(0, 0, 0, 128));
     for (StateTime stateTime : collection) {
-      Point2D point2d = abstractLayer.toPoint2D(stateTime.x());
+      Point2D point2d = owlyLayer.toPoint2D(stateTime.x());
       Shape shape = new Rectangle2D.Double(point2d.getX(), point2d.getY(), 2, 2);
       graphics.draw(shape);
     }

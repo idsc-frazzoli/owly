@@ -5,7 +5,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Optional;
 
 import ch.ethz.idsc.owly.math.flow.Flow;
 import ch.ethz.idsc.owly.math.state.StateIntegrator;
@@ -14,7 +13,7 @@ import ch.ethz.idsc.owly.math.state.TrajectoryRegionQuery;
 import ch.ethz.idsc.tensor.Scalars;
 import ch.ethz.idsc.tensor.Tensor;
 
-public class StandardTrajectoryPlanner extends AbstractStandardTrajectoryPlanner {
+public class StandardTrajectoryPlanner extends AbstractTrajectoryPlanner {
   private final NodeIntegratorFlow nodeFlowBuilder;
 
   public StandardTrajectoryPlanner( //
@@ -43,9 +42,9 @@ public class StandardTrajectoryPlanner extends AbstractStandardTrajectoryPlanner
         domainQueueMap.insert(domainKey, next); // node is considered without comparison to any former node
     }
     processCandidates(node, connectors, domainQueueMap);
-    Optional<GlcNode> optional = getBestOrElsePeek();
-    if (optional.isPresent())
-      DebugUtils.nodeAmountCheck(optional.get(), node, domainMap().size());
+    // Optional<GlcNode> optional = getBestOrElsePeek();
+    // if (optional.isPresent())
+    // DebugUtils.nodeAmountCheck(optional.get(), node, domainMap().size());
   }
 
   private void processCandidates( //
