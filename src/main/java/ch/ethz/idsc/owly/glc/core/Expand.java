@@ -142,4 +142,24 @@ public enum Expand {
     }
     return expandCount;
   }
+
+  /** total number of expands are bounded by expandLimit
+   * 
+   * @param expandInterface
+   * @param expandLimit
+   * @return */
+  public static int steps(ExpandInterface expandInterface, int expandLimit) {
+    int expandCount = 0;
+    while (expandCount++ < expandLimit) {
+      Optional<GlcNode> next = expandInterface.pollNext();
+      if (!next.isPresent()) { // queue is empty
+        System.out.println("*** Queue is empty -- No Goal was found ***");
+        break;
+      }
+      expandInterface.expand(next.get());
+    }
+    // no printout here, since expand limit can deliberately set to a low number for animation
+    // see Se2rExpandDemo
+    return expandCount;
+  }
 }

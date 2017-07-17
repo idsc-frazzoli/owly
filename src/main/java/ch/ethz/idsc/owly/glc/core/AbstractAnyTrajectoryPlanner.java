@@ -17,7 +17,7 @@ import ch.ethz.idsc.owly.math.state.StateTime;
 import ch.ethz.idsc.owly.math.state.TrajectoryRegionQuery;
 import ch.ethz.idsc.tensor.Tensor;
 
-public abstract class AbstractAnyTrajectoryPlanner extends AbstractStandardTrajectoryPlanner implements AnyPlannerInterface {
+public abstract class AbstractAnyTrajectoryPlanner extends AbstractTrajectoryPlanner implements AnyPlannerInterface {
   protected AbstractAnyTrajectoryPlanner( //
       Tensor eta, //
       StateIntegrator stateIntegrator, //

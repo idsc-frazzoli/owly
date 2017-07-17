@@ -16,7 +16,8 @@ import ch.ethz.idsc.owly.glc.core.TrajectoryPlanner;
 import ch.ethz.idsc.owly.gui.Gui;
 import ch.ethz.idsc.owly.math.flow.EulerIntegrator;
 import ch.ethz.idsc.owly.math.flow.Flow;
-import ch.ethz.idsc.owly.math.region.PolygonRegion;
+import ch.ethz.idsc.owly.math.region.EllipsoidRegion;
+import ch.ethz.idsc.owly.math.region.RegionUnion;
 import ch.ethz.idsc.owly.math.state.FixedStateIntegrator;
 import ch.ethz.idsc.owly.math.state.StateIntegrator;
 import ch.ethz.idsc.owly.math.state.StateTime;
@@ -28,28 +29,24 @@ import ch.ethz.idsc.tensor.RationalScalar;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
 
-enum R2PolygonDemo {
+enum R2GoalTest {
   ;
   public static void main(String[] args) {
-    Tensor partitionScale = Tensors.vector(5, 5);
-    StateIntegrator stateIntegrator = FixedStateIntegrator.create(EulerIntegrator.INSTANCE, RationalScalar.of(1, 8), 4);
+    Tensor partitionScale = Tensors.vector(3.5, 4);
+    StateIntegrator stateIntegrator = FixedStateIntegrator.create(EulerIntegrator.INSTANCE, RationalScalar.of(1, 8), 5);
     Collection<Flow> controls = R2Controls.createRadial(20);
-    RnSimpleEllipsoidGoalManager rnGoal = new RnSimpleEllipsoidGoalManager(Tensors.vector(5, 5), DoubleScalar.of(.2));
+    RnSimpleEllipsoidGoalManager rnGoal = new RnSimpleEllipsoidGoalManager(Tensors.vector(5, 0), DoubleScalar.of(0.5));
     TrajectoryRegionQuery obstacleQuery = //
         new SimpleTrajectoryRegionQuery(new TimeInvariantRegion( //
-            new PolygonRegion(Tensors.matrix(new Number[][] { //
-                { 3, 0 }, //
-                { 4, 0 }, //
-                { 4, 6 }, //
-                { 1, 6 }, //
-                { 1, 3 }, //
-                { 3, 3 }//
-            }))));
+            RegionUnion.of( //
+                new EllipsoidRegion(Tensors.vector(3, 3), Tensors.vector(2, 2)), //
+                new EllipsoidRegion(Tensors.vector(2.5, 0), Tensors.vector(2, 1.5)) //
+            )));
     // ---
     TrajectoryPlanner trajectoryPlanner = new StandardTrajectoryPlanner( //
         partitionScale, stateIntegrator, controls, obstacleQuery, rnGoal);
     trajectoryPlanner.insertRoot(Tensors.vector(0, 0));
-    int iters = Expand.maxSteps(trajectoryPlanner, 1500);
+    int iters = Expand.maxSteps(trajectoryPlanner, 1000);
     System.out.println(iters);
     Optional<GlcNode> optional = trajectoryPlanner.getBest();
     if (optional.isPresent()) {

@@ -10,13 +10,14 @@ import ch.ethz.idsc.owly.math.state.TrajectoryRegionQuery;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Tensor;
 
-/** planner is shared between default and abstract-any */
-public abstract class AbstractStandardTrajectoryPlanner extends TrajectoryPlanner {
+/** planner is shared between
+ * {@link StandardTrajectoryPlanner} and {@link AbstractAnyTrajectoryPlanner} */
+/* package */ abstract class AbstractTrajectoryPlanner extends TrajectoryPlanner {
   private final StateIntegrator stateIntegrator;
   private final TrajectoryRegionQuery obstacleQuery;
   /* not final */ GoalInterface goalInterface;
 
-  protected AbstractStandardTrajectoryPlanner( //
+  protected AbstractTrajectoryPlanner( //
       Tensor eta, //
       StateIntegrator stateIntegrator, //
       TrajectoryRegionQuery obstacleQuery, //

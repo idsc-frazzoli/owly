@@ -17,12 +17,11 @@ import ch.ethz.idsc.tensor.red.Norm;
 import ch.ethz.idsc.tensor.sca.Ramp;
 
 /** objective is minimum path length */
-// TODO JAN: rename to RnSimpleEllipsoidGoalManager (Ok for owly3D?)
-public class RnGoalManager extends SimpleTrajectoryRegionQuery implements GoalInterface {
+public class RnSimpleEllipsoidGoalManager extends SimpleTrajectoryRegionQuery implements GoalInterface {
   private final Tensor center;
   private final Scalar radius;
 
-  public RnGoalManager(Tensor center, Scalar radius) {
+  public RnSimpleEllipsoidGoalManager(Tensor center, Scalar radius) {
     super(new TimeInvariantRegion(new EllipsoidRegion(center, Array.of(l -> radius, center.length()))));
     this.center = center;
     this.radius = radius;
