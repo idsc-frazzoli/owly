@@ -24,6 +24,10 @@ public enum MotorTorques {
     return Tensors.of(Tm1L, Tm1R, Tm2L, Tm2R);
   }
 
+  /** @param throttleL
+   * @param throttleR
+   * @return throttle on left/right rear tires according to input,
+   * zero throttle on the front wheels */
   public static Tensor electonicGokart(Scalar throttleL, Scalar throttleR) {
     return Tensors.of( //
         RealScalar.ZERO, RealScalar.ZERO, //

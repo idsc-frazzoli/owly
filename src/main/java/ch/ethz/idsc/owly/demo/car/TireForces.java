@@ -119,26 +119,4 @@ public class TireForces {
     Tensor tangent_3 = carState.u_3d().add(Cross.of(carState.rate_3d(), vehicleModel.wheel(index).lever()));
     return rotation_3.dot(tangent_3).extract(0, 2);
   }
-
-  /***************************************************/
-  // FOR TESTS ONLY
-  Tensor asVectorFX() { // Tensors.of(Fx1L, Fx1R, Fx2L, Fx2R);
-    return Forces.get(Tensor.ALL, 0);
-  }
-
-  Tensor asVectorFY() { // Tensors.of(Fy1L, Fy1R, Fy2L, Fy2R);
-    return Forces.get(Tensor.ALL, 1);
-  }
-
-  Tensor asVectorFZ() { // Tensors.of(Fz1L, Fz1R, Fz2L, Fz2R);
-    return Forces.get(Tensor.ALL, 2);
-  }
-
-  Tensor asVector_fX() { // Tensors.of(fx1L, fx1R, fx2L, fx2R);
-    return fwheel.get(Tensor.ALL, 0);
-  }
-
-  Tensor asVector_fY() { // Tensors.of(fy1L, fy1R, fy2L, fy2R);
-    return fwheel.get(Tensor.ALL, 1);
-  }
 }

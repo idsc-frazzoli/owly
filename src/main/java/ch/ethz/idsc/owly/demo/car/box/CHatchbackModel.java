@@ -134,7 +134,4 @@ public class CHatchbackModel extends DefaultCarModel {
     // for ==2 the car will not make a turn but slide in nose direction...
     return DoubleScalar.of(0); // rolling friction coefficient
   }
-  // public static final Scalar Dz1 = RealScalar.of(0.05); // dead zone tOLERANCE
-  // public static final Scalar Dz2 = RealScalar.of(3.1415 / 180);
-  // public static final Scalar T = RealScalar.of(0.1);
 }

@@ -15,6 +15,8 @@ import ch.ethz.idsc.tensor.red.Max;
 import ch.ethz.idsc.tensor.red.Min;
 
 public class RnPointcloudRegion implements Region {
+  private static final String PLACEHOLDER = "PLACEHOLDER";
+
   /** @param points
    * @param radius
    * @return */
@@ -35,7 +37,7 @@ public class RnPointcloudRegion implements Region {
     // System.out.println(ubounds);
     ndTreeMap = new NdTreeMap<>(lbounds, ubounds, 10, 5); // TODO magic const
     for (Tensor point : points)
-      ndTreeMap.add(point, point.toString()); // TODO different key
+      ndTreeMap.add(point, PLACEHOLDER);
     this.radius = radius;
   }
 

@@ -18,13 +18,13 @@ import ch.ethz.idsc.tensor.sca.Clip;
  * Time-Optimal Vehicle Posture Control to Mitigate Unavoidable
  * Collisions Using Conventional Control Inputs
  * Chakraborty, Tsiotras, Diaz */
+@Deprecated
 public class TsiotrasModel extends DefaultCarModel {
   public static TsiotrasModel standard() {
     return new TsiotrasModel(CarSteering.FRONT, RealScalar.ZERO);
   }
 
   // ---
-  private final Tensor levers;
   private final CarSteering carSteering;
   private final Scalar gammaM;
 
@@ -40,7 +40,7 @@ public class TsiotrasModel extends DefaultCarModel {
     final Scalar LF = DoubleScalar.of(1.1); // front axle distance from COG [m]
     final Scalar LR = DoubleScalar.of(1.3); // rear axle distance from COG [m]
     Scalar h_negate = HEIGHT_COG.negate();
-    levers = Tensors.of( //
+    Tensor levers = Tensors.of( //
         Tensors.of(LF, LW, h_negate), // 1L
         Tensors.of(LF, LW.negate(), h_negate), // 1R
         Tensors.of(LR.negate(), LW, h_negate), // 2L
