@@ -182,6 +182,7 @@ public abstract class AbstractAnyTrajectoryPlanner extends AbstractStandardTraje
     for (StateTime entry : listStateTime) {
       Tensor domainKey = convertToKey(entry.x());
       GlcNode node = getNode(domainKey);
+      System.out.println("Size of listStateTime: " + listStateTime.size());
       queue.add(node);
     }
     return Optional.ofNullable(queue.peek());

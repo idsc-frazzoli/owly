@@ -98,7 +98,6 @@ enum R2GlcConstTimeHeuristicAnyDemo {
     while (!finalGoalFound) {
       Thread.sleep(1);
       long tic = System.nanoTime();
-      // TODO: how to make get Best pick furthest goal
       // Check for final goal
       Optional<GlcNode> furthest = trajectoryPlanner.getFurthestGoalNode();
       int deleteIndex = -1;

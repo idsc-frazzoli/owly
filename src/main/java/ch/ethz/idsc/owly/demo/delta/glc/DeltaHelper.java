@@ -61,7 +61,7 @@ public enum DeltaHelper {
   static TrajectoryPlannerContainer createGlc(Scalar gradientAmp, RationalScalar resolution) throws Exception {
     Scalar timeScale = RealScalar.of(5);
     Scalar depthScale = RealScalar.of(10);
-    Tensor partitionScale = Tensors.vector(10e22, 10e22);
+    Tensor partitionScale = Tensors.vector(2e28, 2e28);
     Scalar dtMax = RationalScalar.of(1, 6);
     int maxIter = 2000;
     Tensor range = Tensors.vector(9, 6.5);
@@ -89,13 +89,13 @@ public enum DeltaHelper {
     TrajectoryPlanner trajectoryPlanner = new StandardTrajectoryPlanner( //
         parameters.getEta(), stateIntegrator, controls, obstacleQuery, deltaGoalManager);
     trajectoryPlanner.insertRoot(Tensors.vector(8.8, 0.5));
-    return new TrajectoryPlannerContainer(trajectoryPlanner, parameters);
+    return new TrajectoryPlannerContainer(trajectoryPlanner, parameters, stateSpaceModel);
   }
 
   static TrajectoryPlannerContainer createGlcAny(Scalar gradientAmp, RationalScalar resolution) throws Exception {
     Scalar timeScale = RealScalar.of(5);
     Scalar depthScale = RealScalar.of(10);
-    Tensor partitionScale = Tensors.vector(10e22, 10e22);
+    Tensor partitionScale = Tensors.vector(2e28, 2e28);
     Scalar dtMax = RationalScalar.of(1, 6);
     int maxIter = 2000;
     Tensor range = Tensors.vector(9, 6.5);
@@ -123,6 +123,6 @@ public enum DeltaHelper {
     OptimalAnyTrajectoryPlanner trajectoryPlanner = new OptimalAnyTrajectoryPlanner(parameters.getEta(), stateIntegrator, controls, obstacleQuery,
         deltaGoalManager);
     trajectoryPlanner.switchRootToState((Tensors.vector(8.8, 0.5)));
-    return new TrajectoryPlannerContainer(trajectoryPlanner, parameters);
+    return new TrajectoryPlannerContainer(trajectoryPlanner, parameters, stateSpaceModel);
   }
 }

@@ -12,7 +12,6 @@ import junit.framework.TestCase;
 
 public class RegionUnionTest extends TestCase {
   public void testSimple() {
-    // TODO JONAS
     List<StateTime> stateList = new ArrayList<>();
     List<Region> regionList = new ArrayList<>();
     Tensor radius = Tensors.vector(0.1, 0.1);

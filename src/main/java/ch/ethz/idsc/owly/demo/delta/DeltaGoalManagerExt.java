@@ -7,6 +7,7 @@ import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
 import ch.ethz.idsc.owly.glc.core.GoalInterface;
 import ch.ethz.idsc.owly.math.flow.Flow;
 import ch.ethz.idsc.owly.math.region.EllipsoidRegion;
+import ch.ethz.idsc.owly.math.region.Region;
 import ch.ethz.idsc.owly.math.state.StateTime;
 import ch.ethz.idsc.owly.math.state.TimeInvariantRegion;
 import ch.ethz.idsc.owly.math.state.Trajectories;
@@ -20,26 +21,38 @@ public class DeltaGoalManagerExt extends SimpleTrajectoryRegionQuery implements 
   private final Tensor center;
   private final Scalar radius;
   private final Scalar maxSpeed;
-  private final Scalar costScalingFactor;
+  private final Scalar timeCostScalingFactor;
 
   // Constructor with Default value in CostScaling
   public DeltaGoalManagerExt(Tensor center, Tensor radius, Scalar maxSpeed) {
     this(center, radius, maxSpeed, RealScalar.ONE);
   }
 
-  public DeltaGoalManagerExt(Tensor center, Tensor radius, Scalar maxSpeed, Scalar costScalingFactor) {
+  public DeltaGoalManagerExt(Tensor center, Tensor radius, Scalar maxSpeed, Scalar timeCostScalingFactor) {
     super(new TimeInvariantRegion(new EllipsoidRegion(center, radius)));
     this.center = center;
     this.maxSpeed = maxSpeed;
     if (!radius.Get(0).equals(radius.Get(1)))
       throw new RuntimeException(); // x-y radius have to be equal
     this.radius = radius.Get(0);
-    this.costScalingFactor = costScalingFactor;
+    this.timeCostScalingFactor = timeCostScalingFactor;
+  }
+
+  public DeltaGoalManagerExt(Region region, Tensor center, Scalar maxSpeed) {
+    this(region, center, maxSpeed, RealScalar.ONE);
+  }
+
+  public DeltaGoalManagerExt(Region region, Tensor center, Scalar maxSpeed, Scalar timeCostScalingFactor) {
+    super(new TimeInvariantRegion(region));
+    this.center = center;
+    this.maxSpeed = maxSpeed;
+    this.radius = RealScalar.ZERO;
+    this.timeCostScalingFactor = timeCostScalingFactor;
   }
 
   @Override
   public Scalar costIncrement(StateTime from, List<StateTime> trajectory, Flow flow) {
-    Scalar sum = Norm._2.of(flow.getU()).add(costScalingFactor);
+    Scalar sum = Norm._2.of(flow.getU()).add(timeCostScalingFactor);
     // Costfunction: integrate (u^2 +1, t)
     return sum.multiply(Trajectories.timeIncrement(from, trajectory));
   }
