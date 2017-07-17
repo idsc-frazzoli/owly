@@ -128,7 +128,6 @@ enum R2GlcConstTimeHeuristicAnyDemo {
       rnGoal = new RnListGoalManager(goalRegions, heuristicCenter);
       trajectoryPlanner.changeToGoal(rnGoal);
       // -- ROOTCHANGE
-      // TODO trajectory to actual goal, not queue node
       if (trajectory != null) {
         StateTime newRootState = trajectory.get(trajectory.size() > 5 ? 5 : 0);
         int increment = trajectoryPlanner.switchRootToState(newRootState.x());
