@@ -80,8 +80,6 @@ public class OptimalAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
                 // TODO Needs to be checked with theory, removal from queue is unsure.
                 final Collection<GlcNode> subDeleteTree = deleteSubtreeOf(formerLabel);
                 if (subDeleteTree.size() > 1)
-                  // TODO add leafs of Subtree to Queue instead of deleting subtree
-                  // not needed for optimality
                   System.err.println("Pruned Tree of Size: " + subDeleteTree.size());
                 // adding the formerLabel as formerCandidate to bucket
                 CandidatePair formerCandidate = new CandidatePair(formerLabel.parent(), formerLabel);

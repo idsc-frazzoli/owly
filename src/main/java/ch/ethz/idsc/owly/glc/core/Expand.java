@@ -33,6 +33,33 @@ public enum Expand {
     return expandCount;
   }
 
+  /** total number of expands are bounded by expandLimit & depthLimit
+   * 
+   * @param expandInterface
+   * @param expandLimit
+   * @param depthLimit
+   * @return */
+  public static int maxSteps(ExpandInterface expandInterface, int expandLimit, int depthLimit) {
+    int expandCount = 0;
+    while (expandCount++ < expandLimit) {
+      Optional<GlcNode> next = expandInterface.pollNext();
+      if (!next.isPresent()) { // queue is empty
+        System.out.println("*** Queue is empty -- No Goal was found ***");
+        break;
+      }
+      expandInterface.expand(next.get());
+      if (expandInterface.getBest().isPresent()) // found node in goal region
+        break;
+      if (depthLimit < next.get().depth()) {
+        System.err.println("*** DepthLimit reached -- No Goal was found ***");
+        break;
+      }
+    }
+    // no printout here, since expand limit can deliberately set to a low number for animation
+    // see Se2rExpandDemo
+    return expandCount;
+  }
+
   /** expands until the depth of the polled node exceeds given depthLimit
    * 
    * @param expandInterface
