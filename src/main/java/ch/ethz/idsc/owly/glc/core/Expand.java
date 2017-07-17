@@ -129,10 +129,7 @@ public enum Expand {
         System.out.println("*** Queue is empty -- No Goal was found ***");
         break;
       }
-      System.out.println("" + expandCount);
       expandInterface.expand(next.get());
-      // if (expandInterface.getBest().isPresent()) // found node in goal region
-      // break;
     }
     // no printout here, since expand limit can deliberately set to a low number for animation
     // see Se2rExpandDemo

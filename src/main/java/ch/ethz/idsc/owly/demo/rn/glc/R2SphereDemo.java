@@ -46,7 +46,7 @@ enum R2SphereDemo {
     TrajectoryPlanner trajectoryPlanner = new StandardTrajectoryPlanner( //
         partitionScale, stateIntegrator, controls, obstacleQuery, rnGoal);
     trajectoryPlanner.insertRoot(Tensors.vector(0, 0));
-    int iters = Expand.steps(trajectoryPlanner, 1000);
+    int iters = Expand.steps(trajectoryPlanner, 200);
     System.out.println(iters);
     Optional<GlcNode> optional = trajectoryPlanner.getBest();
     if (optional.isPresent()) {

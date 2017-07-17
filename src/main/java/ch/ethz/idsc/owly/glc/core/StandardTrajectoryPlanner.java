@@ -42,6 +42,7 @@ public class StandardTrajectoryPlanner extends AbstractTrajectoryPlanner {
         domainQueueMap.insert(domainKey, next); // node is considered without comparison to any former node
     }
     processCandidates(node, connectors, domainQueueMap);
+    // jan removed check. consistency checks should be implemented outside class
     // Optional<GlcNode> optional = getBestOrElsePeek();
     // if (optional.isPresent())
     // DebugUtils.nodeAmountCheck(optional.get(), node, domainMap().size());
@@ -52,45 +53,43 @@ public class StandardTrajectoryPlanner extends AbstractTrajectoryPlanner {
     for (Entry<Tensor, DomainQueue> entry : domainQueueMap.map.entrySet()) {
       final Tensor domainKey = entry.getKey();
       final DomainQueue domainQueue = entry.getValue();
-      if (domainQueueMap != null && !getBest().isPresent()) {
-        while (!domainQueue.isEmpty()) {
-          final GlcNode next = domainQueue.element();
-          final GlcNode formerLabel = getNode(domainKey);
-          if (formerLabel != null) {
-            if (Scalars.lessThan(next.merit(), formerLabel.merit())) {
-              if (getObstacleQuery().isDisjoint(connectors.get(next))) { // no collision
-                // TODO Needs to be checked with theory, if Queue removal is allowed
-                boolean removed = queue().remove(formerLabel);
-                if (!removed)
-                  throw new RuntimeException();
-                formerLabel.parent().removeEdgeTo(formerLabel);
-                node.insertEdgeTo(next);
-                boolean replaced = insert(domainKey, next);
-                if (!replaced)
-                  throw new RuntimeException();
-                domainQueue.remove();
-                if (!goalInterface.isDisjoint(connectors.get(next)))
-                  offerDestination(next);
-                // TODO Needs to be checked with theory, maybe only if goal was found?
-                // Same principle as in B. Paden's implementation, leaving while loop after first relabel
-                break; // leaves the while loop, but not the for loop
-              }
-            }
-          } else {// No formerLabel, so definitely adding a Node
-            if (getObstacleQuery().isDisjoint(connectors.get(next))) {
-              // removing the nextCandidate from bucket of this domain
-              // adding next to tree and DomainMap
+      while (!domainQueue.isEmpty()) {
+        final GlcNode next = domainQueue.element();
+        final GlcNode formerLabel = getNode(domainKey);
+        if (formerLabel != null) {
+          if (Scalars.lessThan(next.merit(), formerLabel.merit())) {
+            if (getObstacleQuery().isDisjoint(connectors.get(next))) { // no collision
+              // TODO Needs to be checked with theory, if Queue removal is allowed
+              boolean removed = queue().remove(formerLabel);
+              if (!removed)
+                throw new RuntimeException();
+              formerLabel.parent().removeEdgeTo(formerLabel);
               node.insertEdgeTo(next);
-              insert(domainKey, next);
+              boolean replaced = insert(domainKey, next);
+              if (!replaced)
+                throw new RuntimeException();
               domainQueue.remove();
-              // GOAL check
               if (!goalInterface.isDisjoint(connectors.get(next)))
                 offerDestination(next);
-              break;
+              // TODO Needs to be checked with theory, maybe only if goal was found?
+              // Same principle as in B. Paden's implementation, leaving while loop after first relabel
+              break; // leaves the while loop, but not the for loop
             }
           }
-          domainQueue.remove();
+        } else { // No formerLabel, so definitely adding a Node
+          if (getObstacleQuery().isDisjoint(connectors.get(next))) {
+            // removing the nextCandidate from bucket of this domain
+            // adding next to tree and DomainMap
+            node.insertEdgeTo(next);
+            insert(domainKey, next);
+            domainQueue.remove();
+            // GOAL check
+            if (!goalInterface.isDisjoint(connectors.get(next)))
+              offerDestination(next);
+            break;
+          }
         }
+        domainQueue.remove();
       }
     }
   }
