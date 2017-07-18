@@ -48,10 +48,10 @@ enum DeltaGlcConstTimeHeuristicAnyDemo {
       throw new RuntimeException();
     }
     System.out.println("***QUICK PLANNER FINISHED***");
-    // s --SLOWPLANNER
+    // -- SLOWPLANNER
     RationalScalar resolution = (RationalScalar) RationalScalar.of(12, 1);
     TrajectoryPlannerContainer slowTrajectoryPlannerContainer = DeltaHelper.createGlcAny(RealScalar.of(-0.25), resolution);
-    // GOALMANAGER
+    // -- GOALMANAGER
     // TODO: needs to be removed from main
     Iterator<StateTime> iterator = quickTrajectory.iterator();
     List<Region> goalRegions = new ArrayList<>();
@@ -67,20 +67,24 @@ enum DeltaGlcConstTimeHeuristicAnyDemo {
     owlyFrame.configCoordinateOffset(33, 416);
     owlyFrame.jFrame.setBounds(100, 100, 620, 475);
     Scalar planningTime = RealScalar.of(1);
+    // -- ANYTIMELOOP
     while (owlyFrame.jFrame.isVisible()) {
+      // get GlcNode (€ Goal) with highest Cost (furthest down the path)
       Optional<GlcNode> furthest = ((OptimalAnyTrajectoryPlanner) slowTrajectoryPlannerContainer//
           .getTrajectoryPlanner()).getFurthestGoalNode();
       int deleteIndex = -1;
       if (furthest.isPresent()) {
+        // checks if last Region was found
         if (goalRegions.get(goalRegions.size() - 1).isMember(furthest.get().state())) {
           System.out.println("***Last Goal was found***");
           break; // stops Anytimeloop
         }
-        int index = goalRegions.size();
-        while (index > 0) {
-          index--;
-          if (goalRegions.get(index).isMember(furthest.get().state())) {
-            deleteIndex = index;
+        int iter = goalRegions.size();
+        while (iter > 0) {
+          iter--;
+          // searches furthest Subregion corresponding to furthest GoalNode
+          if (goalRegions.get(iter).isMember(furthest.get().state())) {
+            deleteIndex = iter;
             break;
           }
         }
@@ -93,9 +97,12 @@ enum DeltaGlcConstTimeHeuristicAnyDemo {
       if (removed)
         System.out.println("All Regionparts before/with index: " + deleteUntilIndex + " were removed");// Deleting all goals before the first not found
       System.out.println("size of goal regions list: " + goalRegions.size());
-      trajectoryGoalManager = new DeltaGoalManagerExt(goalRegion, heuristicCenter, // // TODO: Smart new heuristiccenter
+      Region goalRegionAny = new RegionUnion(goalRegions);
+      trajectoryGoalManager = new DeltaGoalManagerExt(goalRegionAny, heuristicCenter, // // TODO: Smart new heuristiccenter
           ((DeltaStateSpaceModel) slowTrajectoryPlannerContainer.getStateSpaceModel()).getMaxInput());
-      ((OptimalAnyTrajectoryPlanner) slowTrajectoryPlannerContainer.getTrajectoryPlanner()).changeToGoal(trajectoryGoalManager);
+      // TODO JONAS: write is regionUnion changing? as contructed)
+      ((OptimalAnyTrajectoryPlanner) slowTrajectoryPlannerContainer.getTrajectoryPlanner()).changeToGoal(//
+          trajectoryGoalManager); // TODO JONAS Needed as Region Union is changed?
       //
       int expandIter = Expand.constTime(slowTrajectoryPlannerContainer.getTrajectoryPlanner(), //
           planningTime, slowTrajectoryPlannerContainer.getParameters().getDepthLimit());
