@@ -33,10 +33,12 @@ enum R2NoiseDemo {
   ;
   public static void main(String[] args) {
     Tensor partitionScale = Tensors.vector(6, 6);
-    Region region = new R2NoiseRegion(.4);
-    StateIntegrator stateIntegrator = FixedStateIntegrator.create(EulerIntegrator.INSTANCE, RationalScalar.of(1, 8), 4);
+    Region region = new R2NoiseRegion(.1);
+    StateIntegrator stateIntegrator = // 
+        FixedStateIntegrator.create(EulerIntegrator.INSTANCE, RationalScalar.of(1, 10), 4);
     Collection<Flow> controls = R2Controls.createRadial(23);
-    RnSimpleEllipsoidGoalManager rnGoal = new RnSimpleEllipsoidGoalManager(Tensors.vector(5, 10), DoubleScalar.of(.2));
+    RnSimpleEllipsoidGoalManager rnGoal = // 
+        new RnSimpleEllipsoidGoalManager(Tensors.vector(10, 0), DoubleScalar.of(.2));
     TrajectoryRegionQuery obstacleQuery = //
         new SimpleTrajectoryRegionQuery(new TimeInvariantRegion( //
             region));

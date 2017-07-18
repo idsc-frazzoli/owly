@@ -24,7 +24,7 @@ class QueueRender implements AbstractRender {
     for (GlcNode node : collection) {
       Tensor x = node.stateTime().x();
       Point2D p = owlyLayer.toPoint2D(x);
-      Shape shape2 = new Ellipse2D.Double(p.getX() - 4, p.getY() - 4, 8, 8);
+      Shape shape2 = new Ellipse2D.Double(p.getX() - 3, p.getY() - 3, 8, 8);
       graphics.fill(shape2);
     }
   }

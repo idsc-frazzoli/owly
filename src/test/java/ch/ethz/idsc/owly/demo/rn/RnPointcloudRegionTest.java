@@ -26,7 +26,7 @@ public class RnPointcloudRegionTest extends TestCase {
   public void testTwo2D() {
     Region rn = RnPointcloudRegion.of(Tensors.matrix(new Number[][] { //
         { 2, 3 }, //
-        { 7, 1 }//
+        { 7, 1 } //
     }), RealScalar.ONE);
     assertTrue(rn.isMember(Tensors.vector(2, 2.5)));
     assertTrue(rn.isMember(Tensors.vector(2, 2)));

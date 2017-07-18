@@ -23,7 +23,6 @@ import ch.ethz.idsc.tensor.sca.Clip;
 /** specifications of vehicle taken from:
  * http://www.rimo-germany.com/technische-daten-sinus-ion.html
  * 
- * 
  * L/B/H: 2020 / 1390 / 600-1200\
  * 186 kg
  * Motoren: 2 x 2.8 kW Motoren

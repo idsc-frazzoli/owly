@@ -5,8 +5,8 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
-import ch.ethz.idsc.owly.demo.rn.RnSimpleEllipsoidGoalManager;
 import ch.ethz.idsc.owly.demo.rn.RnPointclouds;
+import ch.ethz.idsc.owly.demo.rn.RnSimpleEllipsoidGoalManager;
 import ch.ethz.idsc.owly.demo.util.R2Controls;
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
 import ch.ethz.idsc.owly.glc.core.Expand;
