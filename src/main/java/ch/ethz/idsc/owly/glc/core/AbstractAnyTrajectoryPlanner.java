@@ -116,7 +116,7 @@ public abstract class AbstractAnyTrajectoryPlanner extends AbstractTrajectoryPla
       List<StateTime> currentState = new ArrayList<>();
       currentState.add(current.stateTime());
       if (!newGoal.isDisjoint(currentState)) // current Node in Goal
-        offerDestination(current); // overwrites worse Goal
+        offerDestination(current); // overwrites worse Goal, but does not stop
     }
     long toc = System.nanoTime();
     System.out.println("Checked current tree for goal in "//
@@ -169,6 +169,7 @@ public abstract class AbstractAnyTrajectoryPlanner extends AbstractTrajectoryPla
     return null;
   }
 
+  // TODO JONAS: Smarter way to get furthest Node?
   /** Looks for the Node, which is the furthest in the GoalRegion,
    * @return node with highest merit in GoalRegion */
   public Optional<GlcNode> getFurthestGoalNode() {
@@ -176,13 +177,28 @@ public abstract class AbstractAnyTrajectoryPlanner extends AbstractTrajectoryPla
     PriorityQueue<GlcNode> queue = new PriorityQueue<>(Collections.reverseOrder(NodeMeritComparator.INSTANCE));
     List<StateTime> listStateTime = new ArrayList<>();
     if (trq instanceof SimpleTrajectoryRegionQuery) {
-      SimpleTrajectoryRegionQuery strq = (SimpleTrajectoryRegionQuery) trq;
-      listStateTime.addAll(strq.getDiscoveredMembers());
-    }
-    for (StateTime entry : listStateTime) {
-      Tensor domainKey = convertToKey(entry.x());
-      GlcNode node = getNode(domainKey);
-      queue.add(node);
+      // TODO JAN: Does this constructor below makes a new instance? with seperate members?
+      final SimpleTrajectoryRegionQuery tempStrq = new SimpleTrajectoryRegionQuery((SimpleTrajectoryRegionQuery) trq);
+      listStateTime.addAll(tempStrq.getDiscoveredMembers());
+      for (StateTime entry : listStateTime) {
+        Tensor domainKey = convertToKey(entry.x());
+        Optional<GlcNode> node = Optional.ofNullable(getNode(domainKey));
+        if (node.isPresent()) {
+          boolean wasInTrq = false;
+          if (((SimpleTrajectoryRegionQuery) trq).getDiscoveredMembers().contains(node.get().stateTime()))
+            wasInTrq = true;
+          List<StateTime> nodeList = new ArrayList<>();
+          nodeList.add(node.get().stateTime());
+          // Check if found Node from Domain is in Goal
+          if (!tempStrq.isDisjoint(nodeList)) // TODO JAN: Does this add node to Discovered members? YES
+            // to which members, should only be tempStrq, NOT trq, but below test confirms also trq
+            if (!wasInTrq && ((SimpleTrajectoryRegionQuery) trq).getDiscoveredMembers().contains(node.get().stateTime()))
+              throw new RuntimeException(); // Node was added to members due to this check, not because it was in goal (IT IS NOT)
+          // sometimes Null, as strq.members are samples from Trajectories, therefore correspondign Domain does not need
+          // to be labelled. Also it means, that the a labeling Node (from this Domains does not need to be in the Goal
+          queue.add(node.get());
+        }
+      }
     }
     return Optional.ofNullable(queue.peek());
   }

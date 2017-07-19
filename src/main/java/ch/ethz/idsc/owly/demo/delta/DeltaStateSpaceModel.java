@@ -28,4 +28,8 @@ public class DeltaStateSpaceModel implements StateSpaceModel {
     // https://math.stackexchange.com/questions/1132078/proof-that-a-vector-valued-function-is-lipschitz-continuous-on-a-closed-rectangl
     return imageGradient.maxNorm().add(maxInput).multiply(n);
   }
+
+  public Scalar getMaxInput() {
+    return maxInput;
+  }
 }

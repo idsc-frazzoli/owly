@@ -15,10 +15,16 @@ import ch.ethz.idsc.tensor.Tensors;
 public class SimpleTrajectoryRegionQuery extends AbstractTrajectoryRegionQuery {
   private final StateTimeRegion stateTimeRegion;
   // TODO magic constants of scale are not universal
-  private final RasterMap<StateTime> discoveredMembers = new LinearRasterMap<>(Tensors.vector(10, 10));
+  private RasterMap<StateTime> discoveredMembers = new LinearRasterMap<>(Tensors.vector(10, 10));
+  // TODO make final again?
 
   public SimpleTrajectoryRegionQuery(StateTimeRegion stateTimeRegion) {
     this.stateTimeRegion = stateTimeRegion;
+  }
+
+  public SimpleTrajectoryRegionQuery(SimpleTrajectoryRegionQuery simpleTrajectoryRegionQuery) {
+    this.discoveredMembers = simpleTrajectoryRegionQuery.discoveredMembers;
+    this.stateTimeRegion = simpleTrajectoryRegionQuery.stateTimeRegion;
   }
 
   @Override

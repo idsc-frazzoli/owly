@@ -119,6 +119,7 @@ public enum Expand {
    * @param expandInterface
    * @param time Time of expandfunction in [s] */
   public static int constTime(ExpandInterface expandInterface, Scalar time, int depthLimit) {
+    System.out.println("Expanding");
     long tic = System.nanoTime();
     time = time.multiply(RealScalar.of(1e9));
     int expandCount = 0;
