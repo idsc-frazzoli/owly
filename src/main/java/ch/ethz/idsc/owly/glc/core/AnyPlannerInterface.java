@@ -35,5 +35,5 @@ public interface AnyPlannerInterface extends ExpandInterface {
   List<TrajectorySample> detailedTrajectoryToBest();
 
   /** @return best node in goal region, or Optional.empty() if no such node has been identified yet */
-  Optional<GlcNode> getFurthestGoalNode();
+  Optional<StateTime> getFurthestGoalState();
 }

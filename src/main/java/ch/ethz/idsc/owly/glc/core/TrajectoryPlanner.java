@@ -162,7 +162,7 @@ public abstract class TrajectoryPlanner implements ExpandInterface, Serializable
       TrajectoryRegionQuery trajectoryRegionQuery = getObstacleQuery();
       if (trajectoryRegionQuery instanceof SimpleTrajectoryRegionQuery) {
         SimpleTrajectoryRegionQuery strq = (SimpleTrajectoryRegionQuery) trajectoryRegionQuery;
-        Collection<StateTime> collection = strq.getDiscoveredMembers();
+        Collection<StateTime> collection = strq.getSparseDiscoveredMembers();
         stringBuilder.append("obstacles:" + collection.size() + ", ");
       }
     }

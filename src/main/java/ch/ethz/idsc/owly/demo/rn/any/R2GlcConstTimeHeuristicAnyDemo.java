@@ -12,8 +12,6 @@ import ch.ethz.idsc.owly.demo.util.R2Controls;
 import ch.ethz.idsc.owly.glc.adapter.Parameters;
 import ch.ethz.idsc.owly.glc.core.AnyPlannerInterface;
 import ch.ethz.idsc.owly.glc.core.Expand;
-import ch.ethz.idsc.owly.glc.core.GlcNode;
-import ch.ethz.idsc.owly.glc.core.GlcNodes;
 import ch.ethz.idsc.owly.glc.core.OptimalAnyTrajectoryPlanner;
 import ch.ethz.idsc.owly.glc.core.TrajectoryPlanner;
 import ch.ethz.idsc.owly.gui.Gui;
@@ -26,7 +24,6 @@ import ch.ethz.idsc.owly.math.state.EmptyTrajectoryRegionQuery;
 import ch.ethz.idsc.owly.math.state.FixedStateIntegrator;
 import ch.ethz.idsc.owly.math.state.StateIntegrator;
 import ch.ethz.idsc.owly.math.state.StateTime;
-import ch.ethz.idsc.owly.math.state.Trajectories;
 import ch.ethz.idsc.owly.math.state.TrajectoryRegionQuery;
 import ch.ethz.idsc.tensor.RationalScalar;
 import ch.ethz.idsc.tensor.RealScalar;
@@ -86,10 +83,10 @@ enum R2GlcConstTimeHeuristicAnyDemo {
     List<StateTime> trajectory = null;
     if (trajectoryPlanner.getBest().isPresent())
       System.out.println("closest Goal found during expanding was : " + trajectoryPlanner.getBest().get().state());
-    Optional<GlcNode> furthest = trajectoryPlanner.getFurthestGoalNode();
+    Optional<StateTime> furthest = trajectoryPlanner.getFurthestGoalState();
     if (furthest.isPresent()) {
-      System.out.println("furthest Goal found during expanding was : " + furthest.get().state());
-      trajectory = GlcNodes.getPathFromRootTo(furthest.get());
+      System.out.println("furthest Goal found during expanding was : " + furthest.get().x());
+      // trajectory = GlcNodes.getPathFromRootTo(furthest.get());
     }
     OwlyFrame owlyFrame = Gui.start();
     owlyFrame.configCoordinateOffset(400, 400);
@@ -101,17 +98,17 @@ enum R2GlcConstTimeHeuristicAnyDemo {
       Thread.sleep(1);
       long tic = System.nanoTime();
       // Check for final goal
-      furthest = trajectoryPlanner.getFurthestGoalNode();
+      furthest = trajectoryPlanner.getFurthestGoalState();
       int deleteIndex = -1;
       if (furthest.isPresent()) {
-        if (goalRegions.get(goalRegions.size() - 1).isMember(furthest.get().state())) {
+        if (goalRegions.get(goalRegions.size() - 1).isMember(furthest.get().x())) {
           System.out.println("***Last Goal was found***");
           break;
         }
         int index = goalRegions.size();
         while (index > 0) {
           index--;
-          if (goalRegions.get(index).isMember(furthest.get().state())) {
+          if (goalRegions.get(index).isMember(furthest.get().x())) {
             deleteIndex = index;
             break;
           }
@@ -126,7 +123,7 @@ enum R2GlcConstTimeHeuristicAnyDemo {
       if (removed)
         System.out.println("All Regionparts before " + deleteUntilIndex + " were removed");
       System.out.println("size of goal regions list: " + goalRegions.size());
-      rnGoal = new RnListGoalManager(goalRegions, goalStateList.get(deleteUntilIndex + 1).x());
+      rnGoal = new RnListGoalManager(goalRegions, goalStateList.get(7).x());
       trajectoryPlanner.changeToGoal(rnGoal);
       // -- ROOTCHANGE
       // if (trajectory != null) {
@@ -139,11 +136,12 @@ enum R2GlcConstTimeHeuristicAnyDemo {
       if (trajectoryPlanner.getBest().isPresent()) {
         System.out.println("Goal found during expanding was :" + trajectoryPlanner.getBest().get().state());
       }
-      furthest = trajectoryPlanner.getFurthestGoalNode();
+      furthest = trajectoryPlanner.getFurthestGoalState();
       if (furthest.isPresent()) {
-        System.out.println("furthest Goal found during expanding was : " + furthest.get().state());
-        trajectory = GlcNodes.getPathFromRootTo(furthest.get());
-        Trajectories.print(trajectory);
+        System.out.println("furthest Goal found during expanding was : " + furthest.get().x());
+        // trajectory = GlcNodes.getPathFromRootTo(furthest.get());
+        // Trajectories.print(trajectory);
+        // TODO create getFurthestGoalNode
       }
       owlyFrame.setGlc((TrajectoryPlanner) trajectoryPlanner);
       // --

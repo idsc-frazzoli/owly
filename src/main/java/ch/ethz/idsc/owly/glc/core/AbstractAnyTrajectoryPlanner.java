@@ -11,7 +11,7 @@ import java.util.Optional;
 import java.util.PriorityQueue;
 
 import ch.ethz.idsc.owly.data.tree.Nodes;
-import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
+import ch.ethz.idsc.owly.glc.adapter.GoalTrajectoryRegionQuery;
 import ch.ethz.idsc.owly.math.state.StateIntegrator;
 import ch.ethz.idsc.owly.math.state.StateTime;
 import ch.ethz.idsc.owly.math.state.TrajectoryRegionQuery;
@@ -172,34 +172,39 @@ public abstract class AbstractAnyTrajectoryPlanner extends AbstractTrajectoryPla
   // TODO JONAS: Smarter way to get furthest Node?
   /** Looks for the Node, which is the furthest in the GoalRegion,
    * @return node with highest merit in GoalRegion */
-  public Optional<GlcNode> getFurthestGoalNode() {
+  public Optional<StateTime> getFurthestGoalState() {
     final TrajectoryRegionQuery trq = this.getGoalQuery();
+    Optional<StateTime> furthest = Optional.ofNullable(null);
     PriorityQueue<GlcNode> queue = new PriorityQueue<>(Collections.reverseOrder(NodeMeritComparator.INSTANCE)); // highest merit first
     List<StateTime> listStateTime = new ArrayList<>();
-    if (trq instanceof SimpleTrajectoryRegionQuery) {
+    if (trq instanceof GoalTrajectoryRegionQuery) {
       // TODO JAN: Does this constructor below make a new instance? with seperate DiscoveredMembers?
-      final SimpleTrajectoryRegionQuery tempStrq = new SimpleTrajectoryRegionQuery((SimpleTrajectoryRegionQuery) trq);
-      listStateTime.addAll(tempStrq.getDiscoveredMembers());
+      final GoalTrajectoryRegionQuery tempGtrq = new GoalTrajectoryRegionQuery((GoalTrajectoryRegionQuery) trq);
+      listStateTime.addAll(tempGtrq.getAllDiscoveredMembersNodesStateTime());
       for (StateTime entry : listStateTime) {
-        Tensor domainKey = convertToKey(entry.x());
-        Optional<GlcNode> node = Optional.ofNullable(getNode(domainKey));
-        if (node.isPresent()) {
-          boolean wasInTrq = false;
-          if (((SimpleTrajectoryRegionQuery) trq).getDiscoveredMembers().contains(node.get().stateTime()))
-            wasInTrq = true;
-          List<StateTime> nodeList = new ArrayList<>();
-          nodeList.add(node.get().stateTime());
-          // Check if found Node from Domain is in Goal
-          if (!tempStrq.isDisjoint(nodeList)) // TODO JAN: Does this add node to Discovered members? tempStrq: YES, trq: YES (WHY?)
-            // to which members, should only be tempStrq, NOT trq, but below test confirms also trq
-            if (!wasInTrq && ((SimpleTrajectoryRegionQuery) trq).getDiscoveredMembers().contains(node.get().stateTime()))
-              // throw new RuntimeException(); // Node was added to members due to this check, not because it was in goal (IT IS NOT)
-              // sometimes Null, as strq.members are samples from Trajectories, therefore correspondign Domain does not need
-              // to be labelled. Also it means, that the a labeling Node (from this Domains does not need to be in the Goal
-              queue.add(node.get());
+        Optional<GlcNode> endNode = Optional.ofNullable(getNode(convertToKey(entry.x())));
+        if (endNode.isPresent()) {
+          // TODO find individuel Cost for each StateTime
+          // comparing Cost of GoalStates with EndNodeCost
+          queue.add(endNode.get());
         }
       }
+      if (!queue.isEmpty())
+        furthest = Optional.ofNullable(tempGtrq.getMap().get(queue.element().stateTime()));
     }
-    return Optional.ofNullable(queue.peek());
+    return furthest;
+  }
+
+  // TODO JONAS: Implement for trajectorycalculation
+  // problem; I have goal state but can not reference to Node at the end of this traj
+  // maybe double pointer map?
+  public Optional<GlcNode> getFurthestGoalNode() {
+    final TrajectoryRegionQuery trq = this.getGoalQuery();
+    Optional<GlcNode> furthest = Optional.ofNullable(null);
+    Optional<StateTime> furthestState = getFurthestGoalState();
+    if (trq instanceof GoalTrajectoryRegionQuery) {
+      GoalTrajectoryRegionQuery tempGrq = (GoalTrajectoryRegionQuery) trq;
+    }
+    return furthest;
   }
 }

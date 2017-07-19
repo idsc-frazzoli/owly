@@ -6,6 +6,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import ch.ethz.idsc.owly.data.tree.StateCostNode;
+import ch.ethz.idsc.owly.glc.adapter.GoalTrajectoryRegionQuery;
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
 import ch.ethz.idsc.owly.glc.core.OptimalAnyTrajectoryPlanner;
 import ch.ethz.idsc.owly.glc.core.TrajectoryPlanner;
@@ -23,7 +24,7 @@ class RenderElements {
       TrajectoryRegionQuery trq = trajectoryPlanner.getObstacleQuery();
       if (trq instanceof SimpleTrajectoryRegionQuery) {
         SimpleTrajectoryRegionQuery strq = (SimpleTrajectoryRegionQuery) trq;
-        list.add(new ObstacleRender(strq.getDiscoveredMembers()));
+        list.add(new ObstacleRender(strq.getSparseDiscoveredMembers()));
       }
     }
     list.add(new QueueRender(trajectoryPlanner.getQueue()));
@@ -39,7 +40,11 @@ class RenderElements {
       TrajectoryRegionQuery trq = trajectoryPlanner.getGoalQuery();
       if (trq instanceof SimpleTrajectoryRegionQuery) {
         SimpleTrajectoryRegionQuery strq = (SimpleTrajectoryRegionQuery) trq;
-        list.add(new GoalRender(strq.getDiscoveredMembers()));
+        list.add(new GoalRender(strq.getSparseDiscoveredMembers()));
+      }
+      if (trq instanceof GoalTrajectoryRegionQuery) {
+        GoalTrajectoryRegionQuery gtrq = (GoalTrajectoryRegionQuery) trq;
+        list.add(new GoalRender(gtrq.getAllDiscoveredMembers()));
       }
     }
     list.add(new HudRender(trajectoryPlanner));
