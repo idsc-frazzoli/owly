@@ -98,9 +98,11 @@ enum DeltaGlcConstTimeHeuristicAnyDemo {
         System.out.println("All Regionparts before/with index: " + deleteUntilIndex + " were removed");// Deleting all goals before the first not found
       System.out.println("size of goal regions list: " + goalRegions.size());
       Region goalRegionAny = new RegionUnion(goalRegions);
-      trajectoryGoalManager = new DeltaGoalManagerExt(goalRegionAny, heuristicCenter, // // TODO: Smart new heuristiccenter
+      // TODO: Smart new heuristiccenter:
+      trajectoryGoalManager = new DeltaGoalManagerExt(goalRegionAny, quickTrajectory.get(deleteUntilIndex + 1).x(), // Heuristic Center at next GoalRegion, if
+                                                                                                                    // found expanding around it
           ((DeltaStateSpaceModel) slowTrajectoryPlannerContainer.getStateSpaceModel()).getMaxInput());
-      // TODO JONAS: write is regionUnion changing? as contructed)
+      // TODO JONAS: write if regionUnion changing? as contructed)
       ((OptimalAnyTrajectoryPlanner) slowTrajectoryPlannerContainer.getTrajectoryPlanner()).changeToGoal(//
           trajectoryGoalManager); // TODO JONAS Needed as Region Union is changed?
       //

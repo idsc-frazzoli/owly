@@ -173,11 +173,11 @@ public abstract class AbstractAnyTrajectoryPlanner extends AbstractTrajectoryPla
   /** Looks for the Node, which is the furthest in the GoalRegion,
    * @return node with highest merit in GoalRegion */
   public Optional<GlcNode> getFurthestGoalNode() {
-    TrajectoryRegionQuery trq = this.getGoalQuery();
-    PriorityQueue<GlcNode> queue = new PriorityQueue<>(Collections.reverseOrder(NodeMeritComparator.INSTANCE));
+    final TrajectoryRegionQuery trq = this.getGoalQuery();
+    PriorityQueue<GlcNode> queue = new PriorityQueue<>(Collections.reverseOrder(NodeMeritComparator.INSTANCE)); // highest merit first
     List<StateTime> listStateTime = new ArrayList<>();
     if (trq instanceof SimpleTrajectoryRegionQuery) {
-      // TODO JAN: Does this constructor below makes a new instance? with seperate members?
+      // TODO JAN: Does this constructor below make a new instance? with seperate DiscoveredMembers?
       final SimpleTrajectoryRegionQuery tempStrq = new SimpleTrajectoryRegionQuery((SimpleTrajectoryRegionQuery) trq);
       listStateTime.addAll(tempStrq.getDiscoveredMembers());
       for (StateTime entry : listStateTime) {
@@ -190,13 +190,13 @@ public abstract class AbstractAnyTrajectoryPlanner extends AbstractTrajectoryPla
           List<StateTime> nodeList = new ArrayList<>();
           nodeList.add(node.get().stateTime());
           // Check if found Node from Domain is in Goal
-          if (!tempStrq.isDisjoint(nodeList)) // TODO JAN: Does this add node to Discovered members? YES
+          if (!tempStrq.isDisjoint(nodeList)) // TODO JAN: Does this add node to Discovered members? tempStrq: YES, trq: YES (WHY?)
             // to which members, should only be tempStrq, NOT trq, but below test confirms also trq
             if (!wasInTrq && ((SimpleTrajectoryRegionQuery) trq).getDiscoveredMembers().contains(node.get().stateTime()))
-              throw new RuntimeException(); // Node was added to members due to this check, not because it was in goal (IT IS NOT)
-          // sometimes Null, as strq.members are samples from Trajectories, therefore correspondign Domain does not need
-          // to be labelled. Also it means, that the a labeling Node (from this Domains does not need to be in the Goal
-          queue.add(node.get());
+              // throw new RuntimeException(); // Node was added to members due to this check, not because it was in goal (IT IS NOT)
+              // sometimes Null, as strq.members are samples from Trajectories, therefore correspondign Domain does not need
+              // to be labelled. Also it means, that the a labeling Node (from this Domains does not need to be in the Goal
+              queue.add(node.get());
         }
       }
     }
