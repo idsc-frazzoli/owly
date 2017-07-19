@@ -9,7 +9,6 @@ import ch.ethz.idsc.owly.math.state.StateTime;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
-import ch.ethz.idsc.tensor.red.Max;
 import ch.ethz.idsc.tensor.red.Norm;
 import ch.ethz.idsc.tensor.sca.Power;
 import ch.ethz.idsc.tensor.sca.Ramp;
@@ -33,7 +32,6 @@ public class TwdHeuristicGoalManager extends TwdDefaultGoalManager {
     Tensor cur_xy = x.extract(0, 2);
     Scalar cur_angle = x.Get(2);
     Scalar dxy = Norm._2.of(cur_xy.subtract(center.extract(0, 2))).subtract(radiusVector.Get(1));
-    Scalar dangle = PRINCIPAL.apply(cur_angle.subtract(center.Get(2))).abs().subtract(radiusVector.Get(2));
-    return Ramp.of(Max.of(dxy, dangle));
+    return Ramp.of(dxy);
   }
 }
