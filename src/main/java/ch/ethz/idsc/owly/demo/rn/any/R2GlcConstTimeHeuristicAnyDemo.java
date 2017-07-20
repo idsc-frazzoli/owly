@@ -6,10 +6,12 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
+import ch.ethz.idsc.owly.demo.rn.R2NoiseRegion;
 import ch.ethz.idsc.owly.demo.rn.R2Parameters;
 import ch.ethz.idsc.owly.demo.rn.RnListGoalManager;
 import ch.ethz.idsc.owly.demo.util.R2Controls;
 import ch.ethz.idsc.owly.glc.adapter.Parameters;
+import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
 import ch.ethz.idsc.owly.glc.core.AnyPlannerInterface;
 import ch.ethz.idsc.owly.glc.core.Expand;
 import ch.ethz.idsc.owly.glc.core.GlcNode;
@@ -22,10 +24,10 @@ import ch.ethz.idsc.owly.math.flow.EulerIntegrator;
 import ch.ethz.idsc.owly.math.flow.Flow;
 import ch.ethz.idsc.owly.math.region.EllipsoidRegion;
 import ch.ethz.idsc.owly.math.region.Region;
-import ch.ethz.idsc.owly.math.state.EmptyTrajectoryRegionQuery;
 import ch.ethz.idsc.owly.math.state.FixedStateIntegrator;
 import ch.ethz.idsc.owly.math.state.StateIntegrator;
 import ch.ethz.idsc.owly.math.state.StateTime;
+import ch.ethz.idsc.owly.math.state.TimeInvariantRegion;
 import ch.ethz.idsc.owly.math.state.Trajectories;
 import ch.ethz.idsc.owly.math.state.TrajectoryRegionQuery;
 import ch.ethz.idsc.tensor.RationalScalar;
@@ -66,18 +68,10 @@ enum R2GlcConstTimeHeuristicAnyDemo {
     }
     Tensor heuristicCenter = goalStateList.get(0).x();
     RnListGoalManager rnGoal = new RnListGoalManager(goalRegions, heuristicCenter);
-    // RnGoalManager rnGoal = new RnGoalManager(goal, DoubleScalar.of(.25));
-    // performance depends on heuristic: zeroHeuristic vs rnGoal
-    // Heuristic heuristic = new ZeroHeuristic(); // rnGoal
-    // TrajectoryRegionQuery obstacleQuery = //
-    // new SimpleTrajectoryRegionQuery(new TimeInvariantRegion( //
-    // RegionUnion.of( //
-    // new EllipsoidRegion(Tensors.vector(0, 0), Tensors.vector(1, 1).multiply(RealScalar.of(2))) //
-    // , new InvertedRegion(new EllipsoidRegion(Tensors.vector(0, 0), Tensors.vector(1, 1).multiply(RealScalar.of(6))))
-    // , RnPointclouds.createRandomRegion(30, Tensors.vector(12, 12), Tensors.vector(0, 0), RealScalar.of(0.6))//
-    // )));
-    // --
-    TrajectoryRegionQuery obstacleQuery = EmptyTrajectoryRegionQuery.INSTANCE;
+    Region region = new R2NoiseRegion(.1);
+    TrajectoryRegionQuery obstacleQuery = //
+        new SimpleTrajectoryRegionQuery(new TimeInvariantRegion( //
+            region));
     AnyPlannerInterface trajectoryPlanner = new OptimalAnyTrajectoryPlanner( //
         parameters.getEta(), stateIntegrator, controls, obstacleQuery, rnGoal);
     Tensor startState = Tensors.vector(-3, 0);
@@ -85,11 +79,13 @@ enum R2GlcConstTimeHeuristicAnyDemo {
     Expand.constTime(trajectoryPlanner, runTime, parameters.getDepthLimit());
     List<StateTime> trajectory = null;
     if (trajectoryPlanner.getBest().isPresent())
-      System.out.println("closest Goal found during expanding was : " + trajectoryPlanner.getBest().get().state());
+      System.out.println("closest Goal found was : " + trajectoryPlanner.getBest().get().state() //
+          + " with merit: " + trajectoryPlanner.getBest().get().merit());
     Optional<StateTime> furthestState = trajectoryPlanner.getFurthestGoalState();
     Optional<GlcNode> furthestGoalNode = trajectoryPlanner.getFurthestGoalNode();
     if (furthestState.isPresent()) {
-      System.out.println("furthest Goal found during expanding was : " + furthestState.get().x());
+      System.out.println("furthest Goal found was : " + furthestState.get().x() //
+          + " with merit: " + furthestGoalNode.get().merit());
       trajectory = GlcNodes.getPathFromRootTo(furthestGoalNode.get());
     }
     OwlyFrame owlyFrame = Gui.start();
@@ -128,34 +124,36 @@ enum R2GlcConstTimeHeuristicAnyDemo {
         System.out.println("All Regionparts before " + deleteUntilIndex + " were removed");
       System.out.println("size of goal regions list: " + goalRegions.size());
       rnGoal = new RnListGoalManager(goalRegions, goalStateList.get(7).x());
-      trajectoryPlanner.changeToGoal(rnGoal);
+      // trajectoryPlanner.changeToGoal(rnGoal);
       // -- ROOTCHANGE
       if (trajectory != null) {
         StateTime newRootState = trajectory.get(trajectory.size() > 5 ? 5 : 0);
         int increment = trajectoryPlanner.switchRootToState(newRootState.x());
         parameters.increaseDepthLimit(increment);
-        // }
-        // -- EXPANDING
-        int iters2 = Expand.constTime(trajectoryPlanner, runTime, parameters.getDepthLimit());
-        if (trajectoryPlanner.getBest().isPresent()) {
-          System.out.println("Goal found during expanding was :" + trajectoryPlanner.getBest().get().state());
-        }
-        furthestState = trajectoryPlanner.getFurthestGoalState();
-        if (furthestState.isPresent()) {
-          System.out.println("furthest Goal found during expanding was : " + furthestState.get().x());
-          trajectory = GlcNodes.getPathFromRootTo(furthestGoalNode.get());
-          Trajectories.print(trajectory);
-        }
-        owlyFrame.setGlc((TrajectoryPlanner) trajectoryPlanner);
-        // --
-        long toc = System.nanoTime();
-        System.out.println((toc - tic) * 1e-9 + " Seconds needed to replan");
-        System.out.println("After goal switch needed " + iters2 + " iterations");
-        System.out.println("*****Finished*****");
-        if (!owlyFrame.jFrame.isVisible())
-          break;
       }
-      System.out.println("Finished LOOP");
+      // -- EXPANDING
+      int iters2 = Expand.constTime(trajectoryPlanner, runTime, parameters.getDepthLimit());
+      if (trajectoryPlanner.getBest().isPresent()) {
+        System.out.println("Best Goal found was :" + trajectoryPlanner.getBest().get().state() //
+            + " with merit: " + trajectoryPlanner.getBest().get().merit());
+      }
+      furthestState = trajectoryPlanner.getFurthestGoalState();
+      furthestGoalNode = trajectoryPlanner.getFurthestGoalNode();
+      if (furthestGoalNode.isPresent()) {
+        System.out.println("Furthest Goal found was : " + furthestState.get().x() //
+            + " with merit: " + furthestGoalNode.get().merit());
+        trajectory = GlcNodes.getPathFromRootTo(furthestGoalNode.get());
+        Trajectories.print(trajectory);
+      }
+      owlyFrame.setGlc((TrajectoryPlanner) trajectoryPlanner);
+      // --
+      long toc = System.nanoTime();
+      System.out.println((toc - tic) * 1e-9 + " Seconds needed to replan");
+      System.out.println("After goal switch needed " + iters2 + " iterations");
+      System.out.println("*****Finished*****");
+      if (!owlyFrame.jFrame.isVisible())
+        break;
     }
+    System.out.println("Finished LOOP");
   }
 }

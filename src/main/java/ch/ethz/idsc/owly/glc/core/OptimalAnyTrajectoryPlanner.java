@@ -233,4 +233,9 @@ public class OptimalAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
     stringBuilder.append("OptimalAnyPlanner");
     return stringBuilder.toString();
   }
+
+  @Override
+  void RelabelingDomains(Collection<GlcNode> treeCollection) {
+    // TODO JONAS file in Code
+  }
 }
