@@ -12,6 +12,8 @@ import ch.ethz.idsc.owly.demo.util.R2Controls;
 import ch.ethz.idsc.owly.glc.adapter.Parameters;
 import ch.ethz.idsc.owly.glc.core.AnyPlannerInterface;
 import ch.ethz.idsc.owly.glc.core.Expand;
+import ch.ethz.idsc.owly.glc.core.GlcNode;
+import ch.ethz.idsc.owly.glc.core.GlcNodes;
 import ch.ethz.idsc.owly.glc.core.OptimalAnyTrajectoryPlanner;
 import ch.ethz.idsc.owly.glc.core.TrajectoryPlanner;
 import ch.ethz.idsc.owly.gui.Gui;
@@ -24,6 +26,7 @@ import ch.ethz.idsc.owly.math.state.EmptyTrajectoryRegionQuery;
 import ch.ethz.idsc.owly.math.state.FixedStateIntegrator;
 import ch.ethz.idsc.owly.math.state.StateIntegrator;
 import ch.ethz.idsc.owly.math.state.StateTime;
+import ch.ethz.idsc.owly.math.state.Trajectories;
 import ch.ethz.idsc.owly.math.state.TrajectoryRegionQuery;
 import ch.ethz.idsc.tensor.RationalScalar;
 import ch.ethz.idsc.tensor.RealScalar;
@@ -83,10 +86,11 @@ enum R2GlcConstTimeHeuristicAnyDemo {
     List<StateTime> trajectory = null;
     if (trajectoryPlanner.getBest().isPresent())
       System.out.println("closest Goal found during expanding was : " + trajectoryPlanner.getBest().get().state());
-    Optional<StateTime> furthest = trajectoryPlanner.getFurthestGoalState();
-    if (furthest.isPresent()) {
-      System.out.println("furthest Goal found during expanding was : " + furthest.get().x());
-      // trajectory = GlcNodes.getPathFromRootTo(furthest.get());
+    Optional<StateTime> furthestState = trajectoryPlanner.getFurthestGoalState();
+    Optional<GlcNode> furthestGoalNode = trajectoryPlanner.getFurthestGoalNode();
+    if (furthestState.isPresent()) {
+      System.out.println("furthest Goal found during expanding was : " + furthestState.get().x());
+      trajectory = GlcNodes.getPathFromRootTo(furthestGoalNode.get());
     }
     OwlyFrame owlyFrame = Gui.start();
     owlyFrame.configCoordinateOffset(400, 400);
@@ -98,17 +102,17 @@ enum R2GlcConstTimeHeuristicAnyDemo {
       Thread.sleep(1);
       long tic = System.nanoTime();
       // Check for final goal
-      furthest = trajectoryPlanner.getFurthestGoalState();
+      furthestState = trajectoryPlanner.getFurthestGoalState();
       int deleteIndex = -1;
-      if (furthest.isPresent()) {
-        if (goalRegions.get(goalRegions.size() - 1).isMember(furthest.get().x())) {
+      if (furthestState.isPresent()) {
+        if (goalRegions.get(goalRegions.size() - 1).isMember(furthestState.get().x())) {
           System.out.println("***Last Goal was found***");
           break;
         }
         int index = goalRegions.size();
         while (index > 0) {
           index--;
-          if (goalRegions.get(index).isMember(furthest.get().x())) {
+          if (goalRegions.get(index).isMember(furthestState.get().x())) {
             deleteIndex = index;
             break;
           }
@@ -126,32 +130,32 @@ enum R2GlcConstTimeHeuristicAnyDemo {
       rnGoal = new RnListGoalManager(goalRegions, goalStateList.get(7).x());
       trajectoryPlanner.changeToGoal(rnGoal);
       // -- ROOTCHANGE
-      // if (trajectory != null) {
-      // StateTime newRootState = trajectory.get(trajectory.size() > 5 ? 5 : 0);
-      // int increment = trajectoryPlanner.switchRootToState(newRootState.x());
-      // parameters.increaseDepthLimit(increment);
-      // }
-      // -- EXPANDING
-      int iters2 = Expand.constTime(trajectoryPlanner, runTime, parameters.getDepthLimit());
-      if (trajectoryPlanner.getBest().isPresent()) {
-        System.out.println("Goal found during expanding was :" + trajectoryPlanner.getBest().get().state());
+      if (trajectory != null) {
+        StateTime newRootState = trajectory.get(trajectory.size() > 5 ? 5 : 0);
+        int increment = trajectoryPlanner.switchRootToState(newRootState.x());
+        parameters.increaseDepthLimit(increment);
+        // }
+        // -- EXPANDING
+        int iters2 = Expand.constTime(trajectoryPlanner, runTime, parameters.getDepthLimit());
+        if (trajectoryPlanner.getBest().isPresent()) {
+          System.out.println("Goal found during expanding was :" + trajectoryPlanner.getBest().get().state());
+        }
+        furthestState = trajectoryPlanner.getFurthestGoalState();
+        if (furthestState.isPresent()) {
+          System.out.println("furthest Goal found during expanding was : " + furthestState.get().x());
+          trajectory = GlcNodes.getPathFromRootTo(furthestGoalNode.get());
+          Trajectories.print(trajectory);
+        }
+        owlyFrame.setGlc((TrajectoryPlanner) trajectoryPlanner);
+        // --
+        long toc = System.nanoTime();
+        System.out.println((toc - tic) * 1e-9 + " Seconds needed to replan");
+        System.out.println("After goal switch needed " + iters2 + " iterations");
+        System.out.println("*****Finished*****");
+        if (!owlyFrame.jFrame.isVisible())
+          break;
       }
-      furthest = trajectoryPlanner.getFurthestGoalState();
-      if (furthest.isPresent()) {
-        System.out.println("furthest Goal found during expanding was : " + furthest.get().x());
-        // trajectory = GlcNodes.getPathFromRootTo(furthest.get());
-        // Trajectories.print(trajectory);
-        // TODO create getFurthestGoalNode
-      }
-      owlyFrame.setGlc((TrajectoryPlanner) trajectoryPlanner);
-      // --
-      long toc = System.nanoTime();
-      System.out.println((toc - tic) * 1e-9 + " Seconds needed to replan");
-      System.out.println("After goal switch needed " + iters2 + " iterations");
-      System.out.println("*****Finished*****");
-      if (!owlyFrame.jFrame.isVisible())
-        break;
+      System.out.println("Finished LOOP");
     }
-    System.out.println("Finished LOOP");
   }
 }

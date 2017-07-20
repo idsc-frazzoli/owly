@@ -170,6 +170,7 @@ public abstract class AbstractAnyTrajectoryPlanner extends AbstractTrajectoryPla
   }
 
   // TODO JONAS: Smarter way to get furthest Node?
+  // maybe in a package: return StateTime and EndNode
   /** Looks for the Node, which is the furthest in the GoalRegion,
    * @return node with highest merit in GoalRegion */
   public Optional<StateTime> getFurthestGoalState() {
@@ -177,34 +178,40 @@ public abstract class AbstractAnyTrajectoryPlanner extends AbstractTrajectoryPla
     Optional<StateTime> furthest = Optional.ofNullable(null);
     PriorityQueue<GlcNode> queue = new PriorityQueue<>(Collections.reverseOrder(NodeMeritComparator.INSTANCE)); // highest merit first
     List<StateTime> listStateTime = new ArrayList<>();
-    if (trq instanceof GoalTrajectoryRegionQuery) {
-      // TODO JAN: Does this constructor below make a new instance? with seperate DiscoveredMembers?
+    if (trq instanceof GoalTrajectoryRegionQuery) { // TODO JAN: true if trq is class which extends from AbstractAny...?
       final GoalTrajectoryRegionQuery tempGtrq = new GoalTrajectoryRegionQuery((GoalTrajectoryRegionQuery) trq);
-      listStateTime.addAll(tempGtrq.getAllDiscoveredMembersNodesStateTime());
+      listStateTime.addAll(tempGtrq.getAllDiscoveredMembersNodesStateTime()); // getting ST of EndNodes
       for (StateTime entry : listStateTime) {
-        Optional<GlcNode> endNode = Optional.ofNullable(getNode(convertToKey(entry.x())));
+        Optional<GlcNode> endNode = Optional.ofNullable(getNode(convertToKey(entry.x()))); // getting EndNodes
         if (endNode.isPresent()) {
-          // TODO find individuel Cost for each StateTime
+          // TODO Jonas find individuel Cost for each StateTime
           // comparing Cost of GoalStates with EndNodeCost
           queue.add(endNode.get());
         }
       }
-      if (!queue.isEmpty())
-        furthest = Optional.ofNullable(tempGtrq.getMap().get(queue.element().stateTime()));
+      GlcNode endNode = null;
+      if (!queue.isEmpty()) {
+        endNode = queue.element();
+        GlcNode parent = endNode.parent();
+        final List<StateTime> trajectoryThroughGoal = //
+            getStateIntegrator().trajectory(parent.stateTime(), endNode.flow());
+        furthest = Optional.ofNullable(trajectoryThroughGoal.get(tempGtrq.firstMember(trajectoryThroughGoal)));
+      }
     }
     return furthest;
   }
 
-  // TODO JONAS: Implement for trajectorycalculation
-  // problem; I have goal state but can not reference to Node at the end of this traj
-  // maybe double pointer map?
+  /** Recieved the furthest Node, where the coming trajectory was in Goal, similar to getBest()
+   * @return furthest Node in Goal (highest merit, but in Goal) */
   public Optional<GlcNode> getFurthestGoalNode() {
     final TrajectoryRegionQuery trq = this.getGoalQuery();
-    Optional<GlcNode> furthest = Optional.ofNullable(null);
-    Optional<StateTime> furthestState = getFurthestGoalState();
-    if (trq instanceof GoalTrajectoryRegionQuery) {
-      GoalTrajectoryRegionQuery tempGrq = (GoalTrajectoryRegionQuery) trq;
+    final Optional<StateTime> furthestState = getFurthestGoalState();
+    Optional<GlcNode> furthestNode = Optional.empty();
+    if (trq instanceof GoalTrajectoryRegionQuery && furthestState.isPresent()) {
+      final GoalTrajectoryRegionQuery gtrq = (GoalTrajectoryRegionQuery) trq;
+      final StateTime endState = gtrq.getEndNode(furthestState.get());
+      furthestNode = Optional.ofNullable(getNode(convertToKey(endState.x())));
     }
-    return furthest;
+    return furthestNode;
   }
 }

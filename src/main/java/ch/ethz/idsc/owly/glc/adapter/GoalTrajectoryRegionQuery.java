@@ -3,19 +3,18 @@ package ch.ethz.idsc.owly.glc.adapter;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
-import ch.ethz.idsc.owly.data.SerialHashMap;
 import ch.ethz.idsc.owly.math.state.AbstractTrajectoryRegionQuery;
 import ch.ethz.idsc.owly.math.state.StateTime;
 import ch.ethz.idsc.owly.math.state.StateTimeRegion;
 import ch.ethz.idsc.tensor.io.Serialization;
 
 public class GoalTrajectoryRegionQuery extends AbstractTrajectoryRegionQuery {
-  private final StateTimeRegion stateTimeRegion;
-  // Key: endPoint of Trajectory (where Node is), Value: where the goal was found
-  private SerialHashMap<StateTime, StateTime> discoveredGoalMembers = new SerialHashMap<>();
+  protected final StateTimeRegion stateTimeRegion;
+  // Key StateTime of where Goal was found, Value: endpoint of traj /EndNode of traj
+  private HashMap<StateTime, StateTime> discoveredGoalMembers = new HashMap<>();
 
   public GoalTrajectoryRegionQuery(StateTimeRegion stateTimeRegion) {
     this.stateTimeRegion = stateTimeRegion;
@@ -36,22 +35,24 @@ public class GoalTrajectoryRegionQuery extends AbstractTrajectoryRegionQuery {
     for (StateTime stateTime : trajectory) {
       ++index;
       if (stateTimeRegion.isMember(stateTime)) {
-        discoveredGoalMembers.put(trajectory.get(trajectory.size() - 1), stateTime); // add first member and end of trajectory (Node)
+        discoveredGoalMembers.put(stateTime, trajectory.get(trajectory.size() - 1));
         return index;
       }
     }
     return NOMATCH;
   }
 
-  public Collection<StateTime> getAllDiscoveredMembers() {
-    return Collections.unmodifiableCollection(discoveredGoalMembers.values());
+  /** @param goalState: the State, which was found in the Goal
+   * @return endState: the State of the Node at the end of his trajectory */
+  public final StateTime getEndNode(StateTime goalState) {
+    return discoveredGoalMembers.get(goalState);
   }
 
-  public Collection<StateTime> getAllDiscoveredMembersNodesStateTime() {
+  public final Collection<StateTime> getAllDiscoveredMembers() {
     return Collections.unmodifiableCollection(discoveredGoalMembers.keySet());
   }
 
-  public Map<StateTime, StateTime> getMap() {
-    return Collections.unmodifiableMap(discoveredGoalMembers);
+  public final Collection<StateTime> getAllDiscoveredMembersNodesStateTime() {
+    return Collections.unmodifiableCollection(discoveredGoalMembers.values());
   }
 }
