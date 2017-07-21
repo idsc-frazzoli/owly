@@ -45,7 +45,7 @@ public class RegionUnion implements Region {
     for (Region region : collection)
       isMember |= region.isMember(tensor);
     return isMember;
-    // TODO try this alternative on a working/test case
+    // TODO try this alternative on a working/test case: works with RegionUnionTest
     // return collection.stream().parallel() //
     // .filter(region -> region.isMember(tensor)) //
     // .findAny().isPresent();

@@ -6,8 +6,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 
-import ch.ethz.idsc.owly.demo.delta.DeltaGoalManagerExt;
 import ch.ethz.idsc.owly.demo.delta.DeltaStateSpaceModel;
+import ch.ethz.idsc.owly.demo.delta.DeltaTrajectoryGoalManager;
 import ch.ethz.idsc.owly.glc.adapter.TrajectoryPlannerContainer;
 import ch.ethz.idsc.owly.glc.core.Expand;
 import ch.ethz.idsc.owly.glc.core.GlcNode;
@@ -18,7 +18,6 @@ import ch.ethz.idsc.owly.gui.Gui;
 import ch.ethz.idsc.owly.gui.OwlyFrame;
 import ch.ethz.idsc.owly.math.region.EllipsoidRegion;
 import ch.ethz.idsc.owly.math.region.Region;
-import ch.ethz.idsc.owly.math.region.RegionUnion;
 import ch.ethz.idsc.owly.math.state.StateTime;
 import ch.ethz.idsc.owly.math.state.Trajectories;
 import ch.ethz.idsc.tensor.DoubleScalar;
@@ -58,9 +57,8 @@ enum DeltaGlcConstTimeHeuristicAnyDemo {
     Tensor radius = Tensors.vector(0.05, 0.05);
     while (iterator.hasNext())
       goalRegions.add(new EllipsoidRegion(iterator.next().x(), radius));
-    RegionUnion goalRegion = new RegionUnion(goalRegions);
     Tensor heuristicCenter = Tensors.vector(2.1, 0.3);
-    DeltaGoalManagerExt trajectoryGoalManager = new DeltaGoalManagerExt(goalRegion, heuristicCenter, //
+    DeltaTrajectoryGoalManager trajectoryGoalManager = new DeltaTrajectoryGoalManager(goalRegions, heuristicCenter, //
         ((DeltaStateSpaceModel) slowTrajectoryPlannerContainer.getStateSpaceModel()).getMaxInput());
     ((OptimalAnyTrajectoryPlanner) slowTrajectoryPlannerContainer.getTrajectoryPlanner()).changeToGoal(trajectoryGoalManager);
     OwlyFrame owlyFrame = Gui.start();
@@ -97,10 +95,10 @@ enum DeltaGlcConstTimeHeuristicAnyDemo {
       if (removed)
         System.out.println("All Regionparts before/with index: " + deleteUntilIndex + " were removed");// Deleting all goals before the first not found
       System.out.println("size of goal regions list: " + goalRegions.size());
-      Region goalRegionAny = new RegionUnion(goalRegions);
       // TODO: Smart new heuristiccenter:
-      trajectoryGoalManager = new DeltaGoalManagerExt(goalRegionAny, quickTrajectory.get(deleteUntilIndex + 1).x(), // Heuristic Center at next GoalRegion, if
-                                                                                                                    // found expanding around it
+      trajectoryGoalManager = new DeltaTrajectoryGoalManager(goalRegions, quickTrajectory.get(deleteUntilIndex + 1).x(), // Heuristic Center at next
+                                                                                                                         // GoalRegion, if
+          // found expanding around it
           ((DeltaStateSpaceModel) slowTrajectoryPlannerContainer.getStateSpaceModel()).getMaxInput());
       ((OptimalAnyTrajectoryPlanner) slowTrajectoryPlannerContainer.getTrajectoryPlanner()).changeToGoal(//
           trajectoryGoalManager); // TODO JONAS Needed as Region Union is changed? YES to reset GoalMembers

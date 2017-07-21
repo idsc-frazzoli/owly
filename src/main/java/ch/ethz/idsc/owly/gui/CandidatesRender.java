@@ -28,31 +28,28 @@ public class CandidatesRender implements AbstractRender {
   public void render(OwlyLayer owlyLayer, Graphics2D graphics) {
     graphics.setColor(Color.black);
     graphics.drawString("candidates could appear in view", 50, 50);
-    // TODO JONAS: show only the some (smartway)
     Map<Tensor, Set<CandidatePair>> candidateMap = OptimalAnyTrajectoryPlanner.getCandidateMap();
     long totalCandidates = candidateMap.values().parallelStream().flatMap(Collection::stream).count();
-    long candidateThreshold = 1000; // Threshold, how many first candidates to Render
+    long candidateThreshold = 1000; // Threshold, rendering the first ___ Candidates
     long iter = 0;
-    if (totalCandidates < candidateThreshold) {
-      Iterator<Set<CandidatePair>> candidateMapIterator = candidateMap.values().iterator();
-      while (candidateMapIterator.hasNext()) {
+    Iterator<Set<CandidatePair>> candidateMapIterator = candidateMap.values().iterator();
+    while (candidateMapIterator.hasNext()) {
+      if (iter > candidateThreshold)
+        break;
+      Iterator<CandidatePair> candidateSetIterator = candidateMapIterator.next().iterator();
+      while (candidateSetIterator.hasNext()) {
         if (iter > candidateThreshold)
           break;
-        Iterator<CandidatePair> candidateSetIterator = candidateMapIterator.next().iterator();
-        while (candidateSetIterator.hasNext()) {
-          if (iter > candidateThreshold)
-            break;
-          final CandidatePair candidate = candidateSetIterator.next();
-          final Point2D p1 = owlyLayer.toPoint2D(candidate.getCandidate().state());
-          final Point2D p2 = owlyLayer.toPoint2D(candidate.getOrigin().state());
-          Stroke dashed = new BasicStroke(//
-              (float) 1, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL, 0, new float[] { 5 }, 0);
-          graphics.setStroke(dashed);
-          graphics.setColor(new Color(0, 0, 0, 30));
-          Shape shape = new Line2D.Double(p2.getX(), p2.getY(), p1.getX(), p1.getY());
-          graphics.draw(shape);
-          iter++;
-        }
+        final CandidatePair candidate = candidateSetIterator.next();
+        final Point2D p1 = owlyLayer.toPoint2D(candidate.getCandidate().state());
+        final Point2D p2 = owlyLayer.toPoint2D(candidate.getOrigin().state());
+        Stroke dashed = new BasicStroke(//
+            (float) 1, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL, 0, new float[] { 5 }, 0);
+        graphics.setStroke(dashed);
+        graphics.setColor(new Color(0, 0, 0, 30));
+        Shape shape = new Line2D.Double(p2.getX(), p2.getY(), p1.getX(), p1.getY());
+        graphics.draw(shape);
+        iter++;
       }
     }
   }

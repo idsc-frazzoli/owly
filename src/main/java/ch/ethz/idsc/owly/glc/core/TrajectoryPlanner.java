@@ -99,7 +99,6 @@ public abstract class TrajectoryPlanner implements ExpandInterface, Serializable
   /* package */ final void offerDestination(GlcNode node) {
     if (best == null || Scalars.lessThan(node.costFromRoot(), best.costFromRoot())) {
       best = node;
-      // TODO JONAS: if further goal (thresshold was find?) but higher cost choose that one
       System.out.println("found/improved goal, cost=" + best.costFromRoot());
     }
   }

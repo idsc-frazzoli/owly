@@ -128,6 +128,6 @@ public class SimpleAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
 
   @Override
   /** Nothing needs to be done, as Optimality is not keept */
-  void RelabelingDomains(Collection<GlcNode> treeCollection) {
+  void RelabelingDomains() {
   }
 }

@@ -30,7 +30,7 @@ public class ParametersTest extends TestCase {
       Parameters test = new Se2Parameters(//
           resolution, timeScale, depthScale, partitionScale, dtMax, maxIter, stateSpaceModel.getLipschitz());
       oldValue = newValue;
-      // TODO why R/depthlimit?
+      // from B. Paden: A Generalized Label Correcting Method for Optimal Kinodynamic Motion Planning: Formula 4.0.2
       newValue = resolution.divide(test.getDepthLimitExact());
       assertTrue(Scalars.lessEquals(newValue, oldValue));
       if (Scalars.lessThan(newValue.abs(), RealScalar.of(0.001)))

@@ -111,11 +111,13 @@ public abstract class AbstractAnyTrajectoryPlanner extends AbstractTrajectoryPla
     // Updating the merit of the entire tree
     long tic = System.nanoTime();
     // Changing the Merit in Queue for each Node
-    treeCollection.stream().parallel() // TODO JAN: Does this make !treeCollection.equals(compareCollection) if values are changed in treeCollection?
+    treeCollection.stream().parallel() // TODO JAN: Does this make !treeCollection.equals(compareCollection)==true? if values are changed in treeCollection?
         .forEach(glcNode -> glcNode.setMinCostToGoal(newGoal.minCostToGoal(glcNode.state())));
-    // TODO JONAS for optimiality if Heuristic was changed, check candidates in domains
+    // if (true) {
     if (!treeCollection.equals(compareCollection)) {// TODO JONAS smart way to check if before line modified sth.
-      RelabelingDomains(treeCollection);
+      System.err.println("checking for domainlabel changes due to heuristic change,  Treesize: " + treeCollection.size());
+      // TODO JONAS for optimiality if Heuristic was changed, check candidates in domains
+      RelabelingDomains();
     }
     // RESORTING OF LIST
     List<GlcNode> list = new LinkedList<>(queue());
@@ -132,11 +134,12 @@ public abstract class AbstractAnyTrajectoryPlanner extends AbstractTrajectoryPla
     Iterator<GlcNode> treeCollectionIterator = treeCollection.iterator();
     while (treeCollectionIterator.hasNext()) { // goes through entire tree
       GlcNode current = treeCollectionIterator.next();
-      List<StateTime> currentState = new ArrayList<>();
-      currentState.add(current.stateTime());
-      if (!newGoal.isDisjoint(currentState)) // current Node in Goal
+      final List<StateTime> nodeTrajectory = //
+          getStateIntegrator().trajectory(current.parent().stateTime(), current.flow());
+      if (!newGoal.isDisjoint(nodeTrajectory)) // current Node in Goal
         offerDestination(current); // overwrites worse Goal, but does not stop
     }
+    // treeCollection.stream().parallel().filter(node->!newGoal.is))
     toc = System.nanoTime();
     System.out.println("Checked current tree for goal in "//
         + (toc - tic) * 1e-9 + "s");
@@ -148,7 +151,7 @@ public abstract class AbstractAnyTrajectoryPlanner extends AbstractTrajectoryPla
     return false;
   }
 
-  abstract void RelabelingDomains(Collection<GlcNode> treeCollection);
+  abstract void RelabelingDomains();
 
   /** Finds the rootNode, by following the parents
    * from a random root Node in the tree/DomainMap
@@ -157,9 +160,8 @@ public abstract class AbstractAnyTrajectoryPlanner extends AbstractTrajectoryPla
     Iterator<GlcNode> node = domainMap().values().iterator();
     if (node.hasNext())
       return Nodes.rootFrom(node.next());
-    throw new RuntimeException();
+    return null;
     // if domainmap empty: no tree exists
-    // TODO what to do if No Tree exists?
   }
 
   @Override
@@ -193,7 +195,7 @@ public abstract class AbstractAnyTrajectoryPlanner extends AbstractTrajectoryPla
       for (StateTime entry : listStateTime) {
         Optional<GlcNode> endNode = Optional.ofNullable(getNode(convertToKey(entry.x()))); // getting EndNodes
         if (endNode.isPresent()) {
-          // TODO Jonas find individuel Cost for each StateTime
+          // TODO JONAS find individuel Cost for each StateTime
           // comparing Cost of GoalStates with EndNodeCost
           queue.add(endNode.get());
         }
