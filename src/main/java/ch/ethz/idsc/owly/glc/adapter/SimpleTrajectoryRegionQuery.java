@@ -11,19 +11,26 @@ import ch.ethz.idsc.owly.math.state.StateTime;
 import ch.ethz.idsc.owly.math.state.StateTimeRegion;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
+import ch.ethz.idsc.tensor.io.Serialization;
 
 public class SimpleTrajectoryRegionQuery extends AbstractTrajectoryRegionQuery {
   private final StateTimeRegion stateTimeRegion;
   // TODO magic constants of scale are not universal
-  private RasterMap<StateTime> discoveredMembers = new LinearRasterMap<>(Tensors.vector(10, 10));
+  private RasterMap<StateTime> discoveredSparseMembers = new LinearRasterMap<>(Tensors.vector(10, 10));
   // TODO make final again?
 
   public SimpleTrajectoryRegionQuery(StateTimeRegion stateTimeRegion) {
     this.stateTimeRegion = stateTimeRegion;
   }
 
+  // TODO JAN: Real Copy Constructor?
   public SimpleTrajectoryRegionQuery(SimpleTrajectoryRegionQuery simpleTrajectoryRegionQuery) {
-    this.discoveredMembers = simpleTrajectoryRegionQuery.discoveredMembers;
+    try {
+      discoveredSparseMembers = Serialization.copy(simpleTrajectoryRegionQuery.discoveredSparseMembers);
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+    // this.discoveredMembers = simpleTrajectoryRegionQuery.discoveredMembers;
     this.stateTimeRegion = simpleTrajectoryRegionQuery.stateTimeRegion;
   }
 
@@ -35,14 +42,18 @@ public class SimpleTrajectoryRegionQuery extends AbstractTrajectoryRegionQuery {
       if (stateTimeRegion.isMember(stateTime)) {
         Tensor x = stateTime.x();
         if (1 < x.length())
-          discoveredMembers.put(x.extract(0, 2), stateTime);
+          discoveredSparseMembers.put(x.extract(0, 2), stateTime);
         return index;
       }
     }
     return NOMATCH;
   }
 
-  public Collection<StateTime> getDiscoveredMembers() {
-    return discoveredMembers.values();
+  /** Region members, which were found in Region
+   * for GUI as only 1 State is allowed in 1 Raster (for sparsity)
+   * 
+   * @return Collection<stateTime> the members of the sparse Raster */
+  public Collection<StateTime> getSparseDiscoveredMembers() {
+    return discoveredSparseMembers.values();
   }
 }

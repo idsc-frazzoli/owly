@@ -11,7 +11,7 @@ import java.util.Optional;
 import java.util.PriorityQueue;
 
 import ch.ethz.idsc.owly.data.tree.Nodes;
-import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
+import ch.ethz.idsc.owly.glc.adapter.GoalTrajectoryRegionQuery;
 import ch.ethz.idsc.owly.math.state.StateIntegrator;
 import ch.ethz.idsc.owly.math.state.StateTime;
 import ch.ethz.idsc.owly.math.state.TrajectoryRegionQuery;
@@ -101,15 +101,34 @@ public abstract class AbstractAnyTrajectoryPlanner extends AbstractTrajectoryPla
    * @return boolean, true if Goal was already found in oldTree */
   @Override
   public boolean changeToGoal(final GoalInterface newGoal) {
-    // TODO JONAS Check if Goal is reachable
     this.goalInterface = newGoal;
     GlcNode root = getRoot();
-    setBestNull();
-    // -- GOALCHECK TREE
-    long tic = System.nanoTime();
     Collection<GlcNode> treeCollection = Nodes.ofSubtree(root);
+    Collection<GlcNode> compareCollection = new ArrayList<>();
+    compareCollection.addAll(treeCollection); // Copied or just referernced
+    setBestNull();
+    // -- TREE
+    // Updating the merit of the entire tree
+    long tic = System.nanoTime();
+    // Changing the Merit in Queue for each Node
+    treeCollection.stream().parallel() // TODO JAN: Does this make !treeCollection.equals(compareCollection) if values are changed in treeCollection?
+        .forEach(glcNode -> glcNode.setMinCostToGoal(newGoal.minCostToGoal(glcNode.state())));
+    // TODO JONAS for optimiality if Heuristic was changed, check candidates in domains
+    if (!treeCollection.equals(compareCollection)) {// TODO JONAS smart way to check if before line modified sth.
+      RelabelingDomains(treeCollection);
+    }
+    // RESORTING OF LIST
+    List<GlcNode> list = new LinkedList<>(queue());
+    queue().clear();
+    queue().addAll(list);
+    long toc = System.nanoTime();
+    System.out.println("Updated Merit of Tree with " + list.size() + " nodes in: " //
+        + ((toc - tic) * 1e-9) + "s");
+    // --
+    // -- GOALCHECK TREE
+    tic = System.nanoTime();
     System.out.println("treesize for goal checking: " + treeCollection.size());
-    // TODO can parallelize?
+    // TODO JAN: can parallelize?
     Iterator<GlcNode> treeCollectionIterator = treeCollection.iterator();
     while (treeCollectionIterator.hasNext()) { // goes through entire tree
       GlcNode current = treeCollectionIterator.next();
@@ -118,28 +137,18 @@ public abstract class AbstractAnyTrajectoryPlanner extends AbstractTrajectoryPla
       if (!newGoal.isDisjoint(currentState)) // current Node in Goal
         offerDestination(current); // overwrites worse Goal, but does not stop
     }
-    long toc = System.nanoTime();
+    toc = System.nanoTime();
     System.out.println("Checked current tree for goal in "//
         + (toc - tic) * 1e-9 + "s");
     if (getBest().isPresent()) {
       System.out.println("New Goal was found in current tree --> No new search needed");
       return true;
     }
-    // -- TREE
-    // Updating the merit of the entire tree
-    tic = System.nanoTime();
-    // Changing the Merit in Queue for each Node
-    List<GlcNode> list = new LinkedList<>(queue());
-    treeCollection.stream().parallel() //
-        .forEach(glcNode -> glcNode.setMinCostToGoal(newGoal.minCostToGoal(glcNode.state())));
-    queue().clear();
-    queue().addAll(list);
-    toc = System.nanoTime();
-    System.out.println("Updated Merit of Tree with " + list.size() + " nodes in: " //
-        + ((toc - tic) * 1e-9) + "s");
     System.out.println("**Goalswitch finished**");
     return false;
   }
+
+  abstract void RelabelingDomains(Collection<GlcNode> treeCollection);
 
   /** Finds the rootNode, by following the parents
    * from a random root Node in the tree/DomainMap
@@ -170,36 +179,53 @@ public abstract class AbstractAnyTrajectoryPlanner extends AbstractTrajectoryPla
   }
 
   // TODO JONAS: Smarter way to get furthest Node?
+  // maybe in a package: return StateTime and EndNode
   /** Looks for the Node, which is the furthest in the GoalRegion,
    * @return node with highest merit in GoalRegion */
-  public Optional<GlcNode> getFurthestGoalNode() {
-    TrajectoryRegionQuery trq = this.getGoalQuery();
-    PriorityQueue<GlcNode> queue = new PriorityQueue<>(Collections.reverseOrder(NodeMeritComparator.INSTANCE));
+  public Optional<StateTime> getFurthestGoalState() {
+    final TrajectoryRegionQuery trq = this.getGoalQuery();
+    Optional<StateTime> furthest = Optional.ofNullable(null);
+    PriorityQueue<GlcNode> queue = new PriorityQueue<>(Collections.reverseOrder(NodeMeritComparator.INSTANCE)); // highest merit first
     List<StateTime> listStateTime = new ArrayList<>();
-    if (trq instanceof SimpleTrajectoryRegionQuery) {
-      // TODO JAN: Does this constructor below makes a new instance? with seperate members?
-      final SimpleTrajectoryRegionQuery tempStrq = new SimpleTrajectoryRegionQuery((SimpleTrajectoryRegionQuery) trq);
-      listStateTime.addAll(tempStrq.getDiscoveredMembers());
+    if (trq instanceof GoalTrajectoryRegionQuery) { // TODO JAN: true if trq is class which extends from AbstractAny...?
+      final GoalTrajectoryRegionQuery tempGtrq = new GoalTrajectoryRegionQuery((GoalTrajectoryRegionQuery) trq);
+      listStateTime.addAll(tempGtrq.getAllDiscoveredMembersNodesStateTime()); // getting ST of EndNodes
       for (StateTime entry : listStateTime) {
-        Tensor domainKey = convertToKey(entry.x());
-        Optional<GlcNode> node = Optional.ofNullable(getNode(domainKey));
-        if (node.isPresent()) {
-          boolean wasInTrq = false;
-          if (((SimpleTrajectoryRegionQuery) trq).getDiscoveredMembers().contains(node.get().stateTime()))
-            wasInTrq = true;
-          List<StateTime> nodeList = new ArrayList<>();
-          nodeList.add(node.get().stateTime());
-          // Check if found Node from Domain is in Goal
-          if (!tempStrq.isDisjoint(nodeList)) // TODO JAN: Does this add node to Discovered members? YES
-            // to which members, should only be tempStrq, NOT trq, but below test confirms also trq
-            if (!wasInTrq && ((SimpleTrajectoryRegionQuery) trq).getDiscoveredMembers().contains(node.get().stateTime()))
-              throw new RuntimeException(); // Node was added to members due to this check, not because it was in goal (IT IS NOT)
-          // sometimes Null, as strq.members are samples from Trajectories, therefore correspondign Domain does not need
-          // to be labelled. Also it means, that the a labeling Node (from this Domains does not need to be in the Goal
-          queue.add(node.get());
+        Optional<GlcNode> endNode = Optional.ofNullable(getNode(convertToKey(entry.x()))); // getting EndNodes
+        if (endNode.isPresent()) {
+          // TODO Jonas find individuel Cost for each StateTime
+          // comparing Cost of GoalStates with EndNodeCost
+          queue.add(endNode.get());
         }
       }
+      GlcNode endNode = null;
+      if (!queue.isEmpty()) {
+        endNode = queue.element();
+        GlcNode parent = endNode.parent();
+        final List<StateTime> trajectoryThroughGoal = //
+            getStateIntegrator().trajectory(parent.stateTime(), endNode.flow());
+        final int index = tempGtrq.firstMember(trajectoryThroughGoal);
+        if (index == -1)
+          throw new RuntimeException(); // Trajectory through Goal should find firstMember
+        furthest = Optional.ofNullable(trajectoryThroughGoal.get(index));
+      }
     }
-    return Optional.ofNullable(queue.peek());
+    return furthest;
+  }
+
+  /** Recieved the furthest Node, where the coming trajectory was in Goal, similar to getBest()
+   * @return furthest Node in Goal (highest merit, but in Goal) */
+  public Optional<GlcNode> getFurthestGoalNode() {
+    final TrajectoryRegionQuery trq = this.getGoalQuery();
+    final Optional<StateTime> furthestState = getFurthestGoalState();
+    Optional<GlcNode> furthestNode = Optional.empty();
+    if (trq instanceof GoalTrajectoryRegionQuery && furthestState.isPresent()) {
+      final GoalTrajectoryRegionQuery gtrq = (GoalTrajectoryRegionQuery) trq;
+      final StateTime endState = gtrq.getEndNode(furthestState.get());
+      if (endState == null)
+        throw new RuntimeException(); // the furthestState should be in the Map as it was taken from it
+      furthestNode = Optional.ofNullable(getNode(convertToKey(endState.x())));
+    }
+    return furthestNode;
   }
 }

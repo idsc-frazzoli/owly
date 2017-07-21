@@ -31,7 +31,7 @@ public class SampledTransitionRegionQuery implements TransitionRegionQuery {
   public Collection<StateTime> getDiscoveredMembers() {
     if (trajectoryRegionQuery instanceof SimpleTrajectoryRegionQuery) {
       SimpleTrajectoryRegionQuery strq = (SimpleTrajectoryRegionQuery) trajectoryRegionQuery;
-      return strq.getDiscoveredMembers();
+      return strq.getSparseDiscoveredMembers();
     }
     return Collections.emptyList();
   }

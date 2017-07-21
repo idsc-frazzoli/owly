@@ -125,4 +125,9 @@ public class SimpleAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
     stringBuilder.append("SimpleAny...");
     return stringBuilder.toString();
   }
+
+  @Override
+  /** Nothing needs to be done, as Optimality is not keept */
+  void RelabelingDomains(Collection<GlcNode> treeCollection) {
+  }
 }

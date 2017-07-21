@@ -70,12 +70,12 @@ enum DeltaGlcConstTimeHeuristicAnyDemo {
     // -- ANYTIMELOOP
     while (owlyFrame.jFrame.isVisible()) {
       // get GlcNode (€ Goal) with highest Cost (furthest down the path)
-      Optional<GlcNode> furthest = ((OptimalAnyTrajectoryPlanner) slowTrajectoryPlannerContainer//
-          .getTrajectoryPlanner()).getFurthestGoalNode();
+      Optional<StateTime> furthestState = ((OptimalAnyTrajectoryPlanner) slowTrajectoryPlannerContainer//
+          .getTrajectoryPlanner()).getFurthestGoalState();
       int deleteIndex = -1;
-      if (furthest.isPresent()) {
+      if (furthestState.isPresent()) {
         // checks if last Region was found
-        if (goalRegions.get(goalRegions.size() - 1).isMember(furthest.get().state())) {
+        if (goalRegions.get(goalRegions.size() - 1).isMember(furthestState.get().x())) {
           System.out.println("***Last Goal was found***");
           break; // stops Anytimeloop
         }
@@ -83,7 +83,7 @@ enum DeltaGlcConstTimeHeuristicAnyDemo {
         while (iter > 0) {
           iter--;
           // searches furthest Subregion corresponding to furthest GoalNode
-          if (goalRegions.get(iter).isMember(furthest.get().state())) {
+          if (goalRegions.get(iter).isMember(furthestState.get().x())) {
             deleteIndex = iter;
             break;
           }
@@ -98,11 +98,12 @@ enum DeltaGlcConstTimeHeuristicAnyDemo {
         System.out.println("All Regionparts before/with index: " + deleteUntilIndex + " were removed");// Deleting all goals before the first not found
       System.out.println("size of goal regions list: " + goalRegions.size());
       Region goalRegionAny = new RegionUnion(goalRegions);
-      trajectoryGoalManager = new DeltaGoalManagerExt(goalRegionAny, heuristicCenter, // // TODO: Smart new heuristiccenter
+      // TODO: Smart new heuristiccenter:
+      trajectoryGoalManager = new DeltaGoalManagerExt(goalRegionAny, quickTrajectory.get(deleteUntilIndex + 1).x(), // Heuristic Center at next GoalRegion, if
+                                                                                                                    // found expanding around it
           ((DeltaStateSpaceModel) slowTrajectoryPlannerContainer.getStateSpaceModel()).getMaxInput());
-      // TODO JONAS: write is regionUnion changing? as contructed)
       ((OptimalAnyTrajectoryPlanner) slowTrajectoryPlannerContainer.getTrajectoryPlanner()).changeToGoal(//
-          trajectoryGoalManager); // TODO JONAS Needed as Region Union is changed?
+          trajectoryGoalManager); // TODO JONAS Needed as Region Union is changed? YES to reset GoalMembers
       //
       int expandIter = Expand.constTime(slowTrajectoryPlannerContainer.getTrajectoryPlanner(), //
           planningTime, slowTrajectoryPlannerContainer.getParameters().getDepthLimit());
