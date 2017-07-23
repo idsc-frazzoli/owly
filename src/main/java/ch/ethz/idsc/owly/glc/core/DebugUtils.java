@@ -15,11 +15,12 @@ public enum DebugUtils {
   }
 
   // ---
-  public static final void nodeAmountCompare(GlcNode node, int size) {
-    if (size != Nodes.ofSubtree(node).size()) {
+  public static final void nodeAmountCompare(GlcNode best, int size) {
+    final GlcNode root = Nodes.rootFrom(best);
+    if (size != Nodes.ofSubtree(root).size()) {
       System.out.println("****NODE CHECK****");
       System.out.println("Nodes in DomainMap: " + size);
-      System.out.println("Nodes in SubTree from Node: " + Nodes.ofSubtree(node).size());
+      System.out.println("Nodes in SubTree from Node: " + Nodes.ofSubtree(best).size());
       throw new RuntimeException();
     }
   }

@@ -13,6 +13,7 @@ import ch.ethz.idsc.owly.demo.util.R2Controls;
 import ch.ethz.idsc.owly.glc.adapter.Parameters;
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
 import ch.ethz.idsc.owly.glc.core.AnyPlannerInterface;
+import ch.ethz.idsc.owly.glc.core.DebugUtils;
 import ch.ethz.idsc.owly.glc.core.Expand;
 import ch.ethz.idsc.owly.glc.core.GlcNode;
 import ch.ethz.idsc.owly.glc.core.GlcNodes;
@@ -124,7 +125,8 @@ enum R2GlcConstTimeHeuristicAnyDemo {
         System.out.println("All Regionparts before " + deleteUntilIndex + " were removed");
       System.out.println("size of goal regions list: " + goalRegions.size());
       rnGoal = new RnListGoalManager(goalRegions, goalStateList.get(7).x());
-      // trajectoryPlanner.changeToGoal(rnGoal);
+      DebugUtils.nodeAmountCompare((TrajectoryPlanner) trajectoryPlanner);
+      trajectoryPlanner.changeToGoal(rnGoal);
       // -- ROOTCHANGE
       if (trajectory != null) {
         StateTime newRootState = trajectory.get(trajectory.size() > 5 ? 5 : 0);

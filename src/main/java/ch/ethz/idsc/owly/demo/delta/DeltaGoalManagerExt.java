@@ -3,7 +3,7 @@ package ch.ethz.idsc.owly.demo.delta;
 
 import java.util.List;
 
-import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
+import ch.ethz.idsc.owly.glc.adapter.GoalTrajectoryRegionQuery;
 import ch.ethz.idsc.owly.glc.core.GoalInterface;
 import ch.ethz.idsc.owly.math.flow.Flow;
 import ch.ethz.idsc.owly.math.region.EllipsoidRegion;
@@ -17,7 +17,7 @@ import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.red.Norm;
 import ch.ethz.idsc.tensor.sca.Ramp;
 
-public class DeltaGoalManagerExt extends SimpleTrajectoryRegionQuery implements GoalInterface {
+public class DeltaGoalManagerExt extends GoalTrajectoryRegionQuery implements GoalInterface {
   private final Tensor center;
   private final Scalar radius;
   private final Scalar maxSpeed;
@@ -38,17 +38,21 @@ public class DeltaGoalManagerExt extends SimpleTrajectoryRegionQuery implements 
     this.timeCostScalingFactor = timeCostScalingFactor;
   }
 
-  public DeltaGoalManagerExt(Region region, Tensor center, Scalar maxSpeed) {
-    this(region, center, maxSpeed, RealScalar.ONE);
+  // --
+  public DeltaGoalManagerExt(Region region, Tensor center, Tensor radius, Scalar maxSpeed) {
+    this(region, center, radius, maxSpeed, RealScalar.ONE);
   }
 
-  public DeltaGoalManagerExt(Region region, Tensor center, Scalar maxSpeed, Scalar timeCostScalingFactor) {
+  public DeltaGoalManagerExt(Region region, Tensor center, Tensor radius, Scalar maxSpeed, Scalar timeCostScalingFactor) {
     super(new TimeInvariantRegion(region));
     this.center = center;
     this.maxSpeed = maxSpeed;
-    this.radius = RealScalar.ZERO;
+    if (!radius.Get(0).equals(radius.Get(1)))
+      throw new RuntimeException(); // x-y radius have to be equal
+    this.radius = radius.Get(0);
     this.timeCostScalingFactor = timeCostScalingFactor;
   }
+  // --
 
   @Override
   public Scalar costIncrement(StateTime from, List<StateTime> trajectory, Flow flow) {

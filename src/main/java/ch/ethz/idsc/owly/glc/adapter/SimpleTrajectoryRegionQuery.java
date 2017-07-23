@@ -23,14 +23,12 @@ public class SimpleTrajectoryRegionQuery extends AbstractTrajectoryRegionQuery {
     this.stateTimeRegion = stateTimeRegion;
   }
 
-  // TODO JAN: Real Copy Constructor?
   public SimpleTrajectoryRegionQuery(SimpleTrajectoryRegionQuery simpleTrajectoryRegionQuery) {
     try {
       discoveredSparseMembers = Serialization.copy(simpleTrajectoryRegionQuery.discoveredSparseMembers);
     } catch (Exception e) {
       e.printStackTrace();
     }
-    // this.discoveredMembers = simpleTrajectoryRegionQuery.discoveredMembers;
     this.stateTimeRegion = simpleTrajectoryRegionQuery.stateTimeRegion;
   }
 

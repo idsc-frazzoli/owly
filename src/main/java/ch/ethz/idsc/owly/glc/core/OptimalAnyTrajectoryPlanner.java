@@ -1,10 +1,12 @@
 // code by jl
 package ch.ethz.idsc.owly.glc.core;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -58,7 +60,6 @@ public class OptimalAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
       candidateMap.get(entry.getKey()).addAll(entry.getValue());
     }
     processCandidates(node, connectors, candidatePairQueueMap);
-    // DebugUtils.nodeAmountCheck(getBestOrElsePeek(), node, domainMap().size());
   }
 
   private void processCandidates( //
@@ -66,8 +67,7 @@ public class OptimalAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
     for (Entry<Tensor, CandidatePairQueue> entry : candidatePairQueueMap.map.entrySet()) {
       final Tensor domainKey = entry.getKey();
       final CandidatePairQueue candidateQueue = entry.getValue();
-      // TODO getBest check is double, as also checked before expanding each Node
-      if (candidateQueue != null) { // && !getBest().isPresent()) {
+      if (candidateQueue != null) {
         while (!candidateQueue.isEmpty()) {
           // retrieving the Candidates
           final CandidatePair nextCandidatePair = candidateQueue.element();
@@ -77,7 +77,6 @@ public class OptimalAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
             if (Scalars.lessThan(next.merit(), formerLabel.merit())) {
               // collision check only if new node is better
               if (getObstacleQuery().isDisjoint(connectors.get(next))) {// better node not collision
-                // TODO JONAS Nodes in collision to be deleted?
                 // TODO Needs to be checked with theory, removal from queue is unsure.
                 final Collection<GlcNode> subDeleteTree = deleteSubtreeOf(formerLabel);
                 if (subDeleteTree.size() > 1)
@@ -183,8 +182,6 @@ public class OptimalAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
         // Merit of Candidates can have changed--> update
         tempCandidateSet.parallelStream().forEach(cp -> //
         cp.getCandidate().setMinCostToGoal(goalInterface.minCostToGoal(cp.getCandidate().state())));
-        // TODO modify constructor of CandidatePairQueue so below statement works
-        // CandidatePairQueue candidateQueue = new CandidatePairQueue(tempCandidateSet);
         PriorityQueue<CandidatePair> candidateQueue = new PriorityQueue<>(tempCandidateSet);
         while (!candidateQueue.isEmpty()) {
           // retrieving the Candidates
@@ -235,7 +232,51 @@ public class OptimalAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
   }
 
   @Override
-  void RelabelingDomains(Collection<GlcNode> treeCollection) {
-    // TODO JONAS file in Code
+  void RelabelingDomains() {
+    GlcNode root = getRoot();
+    List<GlcNode> treeList = new ArrayList<GlcNode>(Nodes.ofSubtree(root));
+    Collections.sort(treeList, NodeDepthComparator.INSTANCE);
+    Iterator<GlcNode> iterator = treeList.iterator();
+    int deletedNodes = 0;
+    while (iterator.hasNext()) {
+      // iterating through all Nodes in Tree starting at lowest depth
+      GlcNode node = iterator.next();
+      while (!domainMap().containsValue(node) && iterator.hasNext()) {// check if this node was deleted
+        node = iterator.next(); // pick next
+      }
+      Tensor domainKey = convertToKey(node.state());
+      if (candidateMap.containsKey(domainKey)) {
+        Set<CandidatePair> tempCandidateSet = candidateMap.get(domainKey);
+        if (node != getNode(domainKey)) {
+          System.err.println("Deleted Nodes till now: " + deletedNodes);
+          throw new RuntimeException();
+        } // node should be label
+        tempCandidateSet.parallelStream().forEach(cp -> //
+        cp.getCandidate().setMinCostToGoal(goalInterface.minCostToGoal(cp.getCandidate().state())));
+        PriorityQueue<CandidatePair> candidateQueue = new PriorityQueue<>(tempCandidateSet);
+        while (!candidateQueue.isEmpty()) {
+          final CandidatePair possibleCandidate = candidateQueue.element();
+          final GlcNode possibleCandidateNode = possibleCandidate.getCandidate();
+          final GlcNode possibleCandidateOrigin = possibleCandidate.getOrigin();
+          if (Scalars.lessThan(possibleCandidateNode.merit(), node.merit())) {
+            // collision check only if new node is better
+            final List<StateTime> connector = //
+                getStateIntegrator().trajectory(possibleCandidateOrigin.stateTime(), node.flow());
+            if (getObstacleQuery().isDisjoint(connector)) {
+              Collection<GlcNode> deleteTree = deleteSubtreeOf(node);
+              deletedNodes = deletedNodes + deleteTree.size();
+              insertNodeInTree(possibleCandidateOrigin, possibleCandidateNode);
+              if (!goalInterface.isDisjoint(connector))
+                offerDestination(node);
+              break; // leaves the while loop if a better was found
+            }
+          } else {
+            break; // if no better Candidates are found leave while loop -> Speedgain
+          }
+          candidateQueue.remove();
+        }
+      }
+    }
+    System.out.println("Deleted " + deletedNodes + " Nodes, due to Heuristic change");// stopped iterating over tree
   }
 }
