@@ -96,15 +96,16 @@ enum DeltaGlcConstTimeHeuristicAnyDemo {
         System.out.println("All Regionparts before/with index: " + deleteUntilIndex + " were removed");// Deleting all goals before the first not found
       System.out.println("size of goal regions list: " + goalRegions.size());
       // TODO: Smart new heuristiccenter:
-      trajectoryGoalManager = new DeltaTrajectoryGoalManager(goalRegions, quickTrajectory.get(deleteUntilIndex + 1).x(), // Heuristic Center at next
-                                                                                                                         // GoalRegion, if
-          // found expanding around it
+      // Heuristic Center at next GoalRegion, if found expanding around it
+      trajectoryGoalManager = new DeltaTrajectoryGoalManager(goalRegions, quickTrajectory.get(deleteUntilIndex + 1).x(),
           ((DeltaStateSpaceModel) slowTrajectoryPlannerContainer.getStateSpaceModel()).getMaxInput());
       ((OptimalAnyTrajectoryPlanner) slowTrajectoryPlannerContainer.getTrajectoryPlanner()).changeToGoal(//
           trajectoryGoalManager); // TODO JONAS Needed as Region Union is changed? YES to reset GoalMembers
       //
+      System.out.println("Trajectories through Goal after goalswitch: " + trajectoryGoalManager.getAllDiscoveredMembersEndNodesStateTime().size());
       int expandIter = Expand.constTime(slowTrajectoryPlannerContainer.getTrajectoryPlanner(), //
           planningTime, slowTrajectoryPlannerContainer.getParameters().getDepthLimit());
+      System.out.println("Trajectories through Goal after Expand: " + trajectoryGoalManager.getAllDiscoveredMembersEndNodesStateTime().size());
       owlyFrame.setGlc((TrajectoryPlanner) slowTrajectoryPlannerContainer.getTrajectoryPlanner());
       if (expandIter < 1)
         break;

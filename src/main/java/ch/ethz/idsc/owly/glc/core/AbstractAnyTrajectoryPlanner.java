@@ -67,6 +67,8 @@ public abstract class AbstractAnyTrajectoryPlanner extends AbstractTrajectoryPla
     }
   }
 
+  /** @param baseNode Node, of which all children and itself should be deleted
+   * @return the Collection of Nodes, which should be deleted */
   protected final Collection<GlcNode> deleteSubtreeOf(GlcNode baseNode) {
     Collection<GlcNode> deleteTreeCollection = Nodes.ofSubtree(baseNode);
     // -- GOAL: goalNode deleted?
@@ -105,7 +107,7 @@ public abstract class AbstractAnyTrajectoryPlanner extends AbstractTrajectoryPla
     GlcNode root = getRoot();
     Collection<GlcNode> treeCollection = Nodes.ofSubtree(root);
     Collection<GlcNode> compareCollection = new ArrayList<>();
-    compareCollection.addAll(treeCollection); // Copied or just referernced
+    compareCollection.addAll(treeCollection); // TODO: Copied or just referernced
     setBestNull();
     // -- TREE
     // Updating the merit of the entire tree
@@ -113,31 +115,33 @@ public abstract class AbstractAnyTrajectoryPlanner extends AbstractTrajectoryPla
     // Changing the Merit in Queue for each Node
     treeCollection.stream().parallel() // TODO JAN: Does this make !treeCollection.equals(compareCollection)==true? if values are changed in treeCollection?
         .forEach(glcNode -> glcNode.setMinCostToGoal(newGoal.minCostToGoal(glcNode.state())));
-    // if (true) {
-    if (!treeCollection.equals(compareCollection)) {// TODO JONAS smart way to check if before line modified sth.
+    if (false) {
+      // if (!treeCollection.equals(compareCollection)) {// TODO JONAS smart way to check if before line modified sth.
       System.err.println("checking for domainlabel changes due to heuristic change,  Treesize: " + treeCollection.size());
       // TODO JONAS for optimiality if Heuristic was changed, check candidates in domains
       RelabelingDomains();
     }
+    treeCollection = Nodes.ofSubtree(root);
     // RESORTING OF LIST
     List<GlcNode> list = new LinkedList<>(queue());
     queue().clear();
     queue().addAll(list);
     long toc = System.nanoTime();
-    System.out.println("Updated Merit of Tree with " + list.size() + " nodes in: " //
+    System.out.println("Updated Merit of Tree with " + treeCollection.size() + " nodes in: " //
         + ((toc - tic) * 1e-9) + "s");
     // --
     // -- GOALCHECK TREE
     tic = System.nanoTime();
-    System.out.println("treesize for goal checking: " + treeCollection.size());
     // TODO JAN: can parallelize?
     Iterator<GlcNode> treeCollectionIterator = treeCollection.iterator();
     while (treeCollectionIterator.hasNext()) { // goes through entire tree
       GlcNode current = treeCollectionIterator.next();
-      final List<StateTime> nodeTrajectory = //
-          getStateIntegrator().trajectory(current.parent().stateTime(), current.flow());
-      if (!newGoal.isDisjoint(nodeTrajectory)) // current Node in Goal
-        offerDestination(current); // overwrites worse Goal, but does not stop
+      if (current.parent() != null) { // checking nodes backwards
+        final List<StateTime> nodeTrajectory = //
+            getStateIntegrator().trajectory(current.parent().stateTime(), current.flow());
+        if (!newGoal.isDisjoint(nodeTrajectory)) // current Node in Goal
+          offerDestination(current); // overwrites worse Goal, but does not stop
+      }
     }
     // treeCollection.stream().parallel().filter(node->!newGoal.is))
     toc = System.nanoTime();
@@ -188,12 +192,14 @@ public abstract class AbstractAnyTrajectoryPlanner extends AbstractTrajectoryPla
     final TrajectoryRegionQuery trq = this.getGoalQuery();
     Optional<StateTime> furthest = Optional.ofNullable(null);
     PriorityQueue<GlcNode> queue = new PriorityQueue<>(Collections.reverseOrder(NodeMeritComparator.INSTANCE)); // highest merit first
-    List<StateTime> listStateTime = new ArrayList<>();
+    List<StateTime> listStateTimeInGoal = new ArrayList<>();
     if (trq instanceof GoalTrajectoryRegionQuery) { // TODO JAN: true if trq is class which extends from AbstractAny...?
       final GoalTrajectoryRegionQuery tempGtrq = new GoalTrajectoryRegionQuery((GoalTrajectoryRegionQuery) trq);
-      listStateTime.addAll(tempGtrq.getAllDiscoveredMembersNodesStateTime()); // getting ST of EndNodes
-      for (StateTime entry : listStateTime) {
-        Optional<GlcNode> endNode = Optional.ofNullable(getNode(convertToKey(entry.x()))); // getting EndNodes
+      listStateTimeInGoal.addAll(tempGtrq.getAllDiscoveredMembersStateTimeInGoal()); // getting ST of EndNodes
+      for (StateTime stateTimeInGoal : listStateTimeInGoal) {
+        StateTime endNodeStateTime = tempGtrq.getEndNode(stateTimeInGoal);
+        Tensor domainKey = convertToKey(endNodeStateTime.x());
+        Optional<GlcNode> endNode = Optional.ofNullable(getNode(domainKey)); // getting EndNodes
         if (endNode.isPresent()) {
           // TODO JONAS find individuel Cost for each StateTime
           // comparing Cost of GoalStates with EndNodeCost
@@ -205,8 +211,8 @@ public abstract class AbstractAnyTrajectoryPlanner extends AbstractTrajectoryPla
         endNode = queue.element();
         GlcNode parent = endNode.parent();
         final List<StateTime> trajectoryThroughGoal = //
-            getStateIntegrator().trajectory(parent.stateTime(), endNode.flow());
-        final int index = tempGtrq.firstMember(trajectoryThroughGoal);
+            this.getStateIntegrator().trajectory(parent.stateTime(), endNode.flow());
+        final int index = this.getGoalQuery().firstMember(trajectoryThroughGoal);
         if (index == -1)
           throw new RuntimeException(); // Trajectory through Goal should find firstMember
         furthest = Optional.ofNullable(trajectoryThroughGoal.get(index));

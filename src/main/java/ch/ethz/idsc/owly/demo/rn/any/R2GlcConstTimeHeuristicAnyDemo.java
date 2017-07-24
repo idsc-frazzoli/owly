@@ -120,19 +120,19 @@ enum R2GlcConstTimeHeuristicAnyDemo {
       final int deleteUntilIndex = deleteIndex; // index of Goal,which was not found yet
       if (deleteIndex < 0)
         System.out.println("No new Goal was found in last run");
-      boolean removed = goalRegions.removeIf(gr -> goalRegions.indexOf(gr) < deleteUntilIndex);
+      boolean removed = goalRegions.removeIf(gr -> goalRegions.indexOf(gr) <= deleteUntilIndex);
       if (removed)
         System.out.println("All Regionparts before " + deleteUntilIndex + " were removed");
       System.out.println("size of goal regions list: " + goalRegions.size());
-      rnGoal = new RnListGoalManager(goalRegions, goalStateList.get(7).x());
+      rnGoal = new RnListGoalManager(goalRegions, goalStateList.get(deleteUntilIndex + 1).x());
       DebugUtils.nodeAmountCompare((TrajectoryPlanner) trajectoryPlanner);
       trajectoryPlanner.changeToGoal(rnGoal);
       // -- ROOTCHANGE
-      if (trajectory != null) {
-        StateTime newRootState = trajectory.get(trajectory.size() > 5 ? 5 : 0);
-        int increment = trajectoryPlanner.switchRootToState(newRootState.x());
-        parameters.increaseDepthLimit(increment);
-      }
+      // if (trajectory != null) {
+      // StateTime newRootState = trajectory.get(trajectory.size() > 5 ? 5 : 0);
+      // int increment = trajectoryPlanner.switchRootToState(newRootState.x());
+      // parameters.increaseDepthLimit(increment);
+      // }
       // -- EXPANDING
       int iters2 = Expand.constTime(trajectoryPlanner, runTime, parameters.getDepthLimit());
       if (trajectoryPlanner.getBest().isPresent()) {

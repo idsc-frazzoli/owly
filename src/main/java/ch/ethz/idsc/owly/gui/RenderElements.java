@@ -44,7 +44,7 @@ class RenderElements {
       }
       if (trq instanceof GoalTrajectoryRegionQuery) {
         GoalTrajectoryRegionQuery gtrq = (GoalTrajectoryRegionQuery) trq;
-        list.add(new GoalRender(gtrq.getAllDiscoveredMembers()));
+        list.add(new GoalRender(gtrq.getAllDiscoveredMembersStateTimeInGoal()));
       }
     }
     list.add(new HudRender(trajectoryPlanner));

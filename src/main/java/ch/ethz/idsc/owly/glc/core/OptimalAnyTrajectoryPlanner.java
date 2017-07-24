@@ -45,7 +45,7 @@ public class OptimalAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
   @Override // from ExpandInterface
   public void expand(final GlcNode node) {
     Map<GlcNode, List<StateTime>> connectors = //
-        SharedUtils.integrate(node, controls, getStateIntegrator(), goalInterface, false);
+        SharedUtils.integrate(node, controls, getStateIntegrator(), goalInterface, true);
     CandidatePairQueueMap candidatePairQueueMap = new CandidatePairQueueMap();
     for (GlcNode next : connectors.keySet()) { // <- order of keys is non-deterministic
       // ALL Candidates are saved in temporary CandidateList
@@ -70,7 +70,7 @@ public class OptimalAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
       if (candidateQueue != null) {
         while (!candidateQueue.isEmpty()) {
           // retrieving the Candidates
-          final CandidatePair nextCandidatePair = candidateQueue.element();
+          final CandidatePair nextCandidatePair = candidateQueue.poll();
           final GlcNode formerLabel = getNode(domainKey);
           final GlcNode next = nextCandidatePair.getCandidate();
           if (formerLabel != null) {
@@ -95,7 +95,6 @@ public class OptimalAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
                 insertNodeInTree(nextParent, next);
                 // removing the nextCandidate from bucket of this domain
                 candidateMap.get(domainKey).remove(nextCandidatePair);
-                candidateQueue.remove();
                 // GOAL check
                 if (!goalInterface.isDisjoint(connectors.get(next)))
                   offerDestination(next);
@@ -113,7 +112,6 @@ public class OptimalAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
                 throw new RuntimeException();
               }
               candidateMap.get(domainKey).remove(nextCandidatePair);
-              candidateQueue.remove();
               // GOAL check
               if (!goalInterface.isDisjoint(connectors.get(next)))
                 offerDestination(next);
@@ -121,7 +119,6 @@ public class OptimalAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
             }
           }
           // remove from TemporaryQueue as was not better/or in Collision
-          candidateQueue.remove();
         }
       }
     }
@@ -185,7 +182,7 @@ public class OptimalAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
         PriorityQueue<CandidatePair> candidateQueue = new PriorityQueue<>(tempCandidateSet);
         while (!candidateQueue.isEmpty()) {
           // retrieving the Candidates
-          final CandidatePair nextCandidatePair = candidateQueue.element();
+          final CandidatePair nextCandidatePair = candidateQueue.poll();
           final GlcNode next = nextCandidatePair.getCandidate();
           final GlcNode nextParent = nextCandidatePair.getOrigin();
           // CandidateOrigin needs to be part of tree
@@ -202,7 +199,6 @@ public class OptimalAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
                 formerLabel.parent().removeEdgeTo(formerLabel);
               insertNodeInTree(nextParent, next);
               candidateMap.get(domainKey).remove(nextCandidatePair);
-              candidateQueue.remove();
               // BUG
               addedNodesToQueue++;
               if (!goalInterface.isDisjoint(connector))
@@ -210,8 +206,6 @@ public class OptimalAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
               break; // leaves the while loop, but not the for loop
             }
           }
-          // remove from TemporaryQueue as was not better/or in Collision
-          candidateQueue.remove();
         }
       }
     }
@@ -233,50 +227,66 @@ public class OptimalAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
 
   @Override
   void RelabelingDomains() {
+    long tic = System.nanoTime();
     GlcNode root = getRoot();
     List<GlcNode> treeList = new ArrayList<GlcNode>(Nodes.ofSubtree(root));
     Collections.sort(treeList, NodeDepthComparator.INSTANCE);
     Iterator<GlcNode> iterator = treeList.iterator();
     int deletedNodes = 0;
+    int replacedNodes = 0;
     while (iterator.hasNext()) {
       // iterating through all Nodes in Tree starting at lowest depth
-      GlcNode node = iterator.next();
-      while (!domainMap().containsValue(node) && iterator.hasNext()) {// check if this node was deleted
-        node = iterator.next(); // pick next
-      }
-      Tensor domainKey = convertToKey(node.state());
-      if (candidateMap.containsKey(domainKey)) {
-        Set<CandidatePair> tempCandidateSet = candidateMap.get(domainKey);
-        if (node != getNode(domainKey)) {
-          System.err.println("Deleted Nodes till now: " + deletedNodes);
-          throw new RuntimeException();
-        } // node should be label
-        tempCandidateSet.parallelStream().forEach(cp -> //
-        cp.getCandidate().setMinCostToGoal(goalInterface.minCostToGoal(cp.getCandidate().state())));
-        PriorityQueue<CandidatePair> candidateQueue = new PriorityQueue<>(tempCandidateSet);
-        while (!candidateQueue.isEmpty()) {
-          final CandidatePair possibleCandidate = candidateQueue.element();
-          final GlcNode possibleCandidateNode = possibleCandidate.getCandidate();
-          final GlcNode possibleCandidateOrigin = possibleCandidate.getOrigin();
-          if (Scalars.lessThan(possibleCandidateNode.merit(), node.merit())) {
-            // collision check only if new node is better
-            final List<StateTime> connector = //
-                getStateIntegrator().trajectory(possibleCandidateOrigin.stateTime(), node.flow());
-            if (getObstacleQuery().isDisjoint(connector)) {
-              Collection<GlcNode> deleteTree = deleteSubtreeOf(node);
-              deletedNodes = deletedNodes + deleteTree.size();
-              insertNodeInTree(possibleCandidateOrigin, possibleCandidateNode);
-              if (!goalInterface.isDisjoint(connector))
-                offerDestination(node);
-              break; // leaves the while loop if a better was found
+      GlcNode current = iterator.next();
+      Tensor domainKey = convertToKey(current.state());
+      if (getNode(domainKey) != null) {
+        if (getNode(domainKey).equals(current)) {
+          if (candidateMap.containsKey(domainKey)) {
+            Set<CandidatePair> tempCandidateSet = candidateMap.get(domainKey);
+            if (!current.equals(getNode(domainKey))) {
+              System.err.println("Deleted Nodes till now: " + deletedNodes);
+              throw new RuntimeException();
+            } // node should be label
+            tempCandidateSet.stream().parallel().forEach(cp -> //
+            cp.getCandidate().setMinCostToGoal(goalInterface.minCostToGoal(cp.getCandidate().state())));
+            PriorityQueue<CandidatePair> candidateQueue = new PriorityQueue<>(tempCandidateSet);
+            while (!candidateQueue.isEmpty()) {
+              final CandidatePair possibleCandidate = candidateQueue.poll();
+              final GlcNode possibleCandidateNode = possibleCandidate.getCandidate();
+              if (Scalars.lessThan(possibleCandidateNode.merit(), current.merit())) {
+                // collision check only if new node is better
+                final GlcNode possibleCandidateOrigin = possibleCandidate.getOrigin();
+                if (Nodes.listFromRoot(possibleCandidateOrigin).get(0) == root) {
+                  final List<StateTime> connector = //
+                      getStateIntegrator().trajectory(possibleCandidateOrigin.stateTime(), possibleCandidateNode.flow());
+                  if (getObstacleQuery().isDisjoint(connector)) {
+                    // System.out.println("Comparing: " + possibleCandidateNode.merit().add(RealScalar.of(1e-14)) + " < " + current.merit());
+                    Collection<GlcNode> deleteTree = deleteSubtreeOf(current);
+                    deletedNodes = deletedNodes + deleteTree.size() - 1; // -1 as this node was replaced
+                    replacedNodes++;
+                    if (current.parent() != null)
+                      current.parent().removeEdgeTo(current);
+                    insertNodeInTree(possibleCandidateOrigin, possibleCandidateNode);
+                    if (!goalInterface.isDisjoint(connector))
+                      offerDestination(possibleCandidateNode);
+                    break; // leaves the while loop if a better was found
+                  }
+                } else {
+                  // System.out.println("Origin of this candidate is not connected anymore");
+                }
+              } else {
+                break; // if no better Candidates are found leave while of Candidates loop -> Speedgain
+              }
             }
-          } else {
-            break; // if no better Candidates are found leave while loop -> Speedgain
           }
-          candidateQueue.remove();
         }
       }
     }
-    System.out.println("Deleted " + deletedNodes + " Nodes, due to Heuristic change");// stopped iterating over tree
+    System.out.println("replaced Nodes: " + replacedNodes + " deleted Nodes: " + deletedNodes + ", due to Heuristic change");// stopped iterating over tree
+    candidateMap.entrySet().parallelStream().forEach(candidateSet -> candidateSet.getValue()//
+        .removeIf(cp -> !Nodes.rootFrom(cp.getOrigin()).equals(root)));
+    // Deleting CandidateBuckets, if they are empty
+    candidateMap.values().removeIf(bucket -> bucket.isEmpty());
+    long toc = System.nanoTime();
+    System.out.println("Relabel during goalSwitch took: " + (toc - tic) * 10e-9 + "s");
   }
 }
