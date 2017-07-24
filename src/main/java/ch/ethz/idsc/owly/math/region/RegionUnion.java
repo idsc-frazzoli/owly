@@ -41,13 +41,15 @@ public class RegionUnion implements Region {
 
   @Override
   public boolean isMember(Tensor tensor) {
-    boolean isMember = false;
-    for (Region region : collection)
-      isMember |= region.isMember(tensor);
-    return isMember;
-    // TODO try this alternative on a working/test case: works with RegionUnionTest
-    // return collection.stream().parallel() //
-    // .filter(region -> region.isMember(tensor)) //
-    // .findAny().isPresent();
+    /** straight forward implementation: */
+    // boolean isMember = false;
+    // for (Region region : collection)
+    // isMember |= region.isMember(tensor);
+    // return isMember;
+    /** parallel implementation: */
+    return collection.stream() //
+        .parallel() //
+        .filter(region -> region.isMember(tensor)) //
+        .findAny().isPresent();
   }
 }

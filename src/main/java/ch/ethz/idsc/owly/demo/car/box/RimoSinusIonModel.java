@@ -44,7 +44,6 @@ import ch.ethz.idsc.tensor.sca.Clip;
  * Gesamtbreite: 210mm
  * Außendurchmesser: 280mm
  * Felgengrösse (inch): 8.0 (210mm) */
-// TODO the gokart allows to put throttle to the rear wheels separately
 public class RimoSinusIonModel extends DefaultCarModel {
   private static final VehicleModel STANDARD = new RimoSinusIonModel();
 

@@ -32,7 +32,8 @@ class TrajectoryRender implements AbstractRender {
 
   @Override
   public void render(OwlyLayer owlyLayer, Graphics2D graphics) {
-    Optional<GlcNode> optional = trajectoryPlanner.getBestOrElsePeek(); // TODO CHANGE BACK
+    // TODO CHANGE BACK
+    Optional<GlcNode> optional = trajectoryPlanner.getBestOrElsePeek();
     // Optional<GlcNode> optional = ((OptimalAnyTrajectoryPlanner) trajectoryPlanner).getFurthestGoalNode();
     if (optional.isPresent()) {
       final GlcNode node = optional.get();

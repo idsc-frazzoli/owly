@@ -130,7 +130,6 @@ public class CHatchbackModel extends DefaultCarModel {
 
   @Override
   public Scalar muRoll() {
-    // TODO check if == 0 ok
     // for ==2 the car will not make a turn but slide in nose direction...
     return DoubleScalar.of(0); // rolling friction coefficient
   }

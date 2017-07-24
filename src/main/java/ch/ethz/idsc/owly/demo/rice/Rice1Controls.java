@@ -17,6 +17,7 @@ import ch.ethz.idsc.tensor.alg.Subdivide;
 public enum Rice1Controls {
   ;
   public static Collection<Flow> createControls(Scalar lambda, int num) {
+    // FIXME JAN top priority
     StateSpaceModel stateSpaceModel = new Rice2StateSpaceModel(lambda);
     List<Flow> list = new ArrayList<>();
     for (Tensor u : Subdivide.of(DoubleScalar.of(-1), DoubleScalar.of(1), num))

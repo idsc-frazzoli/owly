@@ -9,9 +9,10 @@ import ch.ethz.idsc.owly.math.state.StateTime;
 
 public enum GlcNodes {
   ;
-  // TODO perhaps rename to coarse path ...
-  /** @return path to goal if found, or path to current Node in queue
-   * @throws Exception if best is null and queue is empty */
+  /** coarse path of {@link StateTime}s of nodes from root to given node
+   * 
+   * @return path to goal if found, or path to current Node in queue
+   * @throws Exception if node is null */
   public static List<StateTime> getPathFromRootTo(GlcNode node) {
     return Nodes.listFromRoot(node).stream() //
         .map(GlcNode::stateTime).collect(Collectors.toList());

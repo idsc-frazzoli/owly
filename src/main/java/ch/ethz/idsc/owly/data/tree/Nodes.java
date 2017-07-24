@@ -43,14 +43,14 @@ public enum Nodes {
   }
 
   @SuppressWarnings("unchecked")
-  private static <T extends Node> void _ofSubtree(T node, Collection<T> collection) {
+  public static <T extends Node> void ofSubtree(T node, Collection<T> collection) {
     collection.add(node);
-    node.children().stream().forEach(child -> _ofSubtree((T) child, collection));
+    node.children().stream().forEach(child -> ofSubtree((T) child, collection));
   }
 
   public static <T extends Node> Collection<T> ofSubtree(T node) {
     Collection<T> collection = new ArrayList<>();
-    _ofSubtree(node, collection);
+    ofSubtree(node, collection);
     return collection;
   }
 
