@@ -9,7 +9,8 @@ import ch.ethz.idsc.tensor.Tensors;
 /** DO NOT CHANGE THE VALUES IN THE EXISTING FUNCTIONS */
 public enum CarStatic {
   ;
-  private static final double Dz1 = 0.05; // TODO not final code design
+  /** constant motivated by previous design. not relevant for application layer */
+  private static final double Dz1 = 0.05;
 
   public static final Scalar noSlipRate(Scalar speed, Scalar radius) {
     return speed.divide(radius);

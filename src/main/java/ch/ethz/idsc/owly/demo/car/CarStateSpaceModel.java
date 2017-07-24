@@ -51,7 +51,8 @@ public class CarStateSpaceModel implements StateSpaceModel {
         System.out.println("dF_z=" + dF_z);
     }
     // (1.1)
-    final Scalar rollFric = gForce.multiply(vehicleModel.muRoll()); // TODO at the moment == 0!
+    // TODO at the moment muRoll == 0!
+    final Scalar rollFric = gForce.multiply(vehicleModel.muRoll());
     Deadzone deadzone = Deadzone.of(rollFric.negate(), rollFric);
     Tensor dir = total.extract(0, 2).map(deadzone);
     // TODO vectorize

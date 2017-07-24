@@ -11,7 +11,9 @@ import ch.ethz.idsc.tensor.Scalar;
  * immutable except for children, parent, and depth which are only modified in
  * {@link GlcNode#addChild(GlcNode)} */
 public interface GlcNode extends StateCostNode {
-  /** @param flow
+  /** creates {@link GlcNode} without parent and without descendants/children
+   * 
+   * @param flow
    * @param stateTime
    * @param costFromRoot
    * @param minCostToGoal

@@ -5,8 +5,8 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
+import ch.ethz.idsc.owly.demo.rice.Rice1GoalManager;
 import ch.ethz.idsc.owly.demo.rice.Rice2Controls;
-import ch.ethz.idsc.owly.demo.rice.Rice2GoalManager;
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
 import ch.ethz.idsc.owly.glc.core.Expand;
 import ch.ethz.idsc.owly.glc.core.GlcNode;
@@ -15,8 +15,7 @@ import ch.ethz.idsc.owly.glc.core.StandardTrajectoryPlanner;
 import ch.ethz.idsc.owly.glc.core.TrajectoryPlanner;
 import ch.ethz.idsc.owly.gui.Gui;
 import ch.ethz.idsc.owly.math.flow.Flow;
-import ch.ethz.idsc.owly.math.flow.MidpointIntegrator;
-import ch.ethz.idsc.owly.math.region.HyperplaneRegion;
+import ch.ethz.idsc.owly.math.region.EllipsoidRegion;
 import ch.ethz.idsc.owly.math.region.RegionUnion;
 import ch.ethz.idsc.owly.math.state.FixedStateIntegrator;
 import ch.ethz.idsc.owly.math.state.StateIntegrator;
@@ -29,35 +28,36 @@ import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
 
-enum Rice2Demo {
+/** position and velocity control in 1D with friction
+ * 
+ * References:
+ * "Mobility and Autonomous Reconfiguration of Marsokhod" */
+enum RiceD1Demo {
   ;
-  // TODO in general ensure that goal region contains at least 1 domain etc.
-  public static void main(String[] args) {
-    Tensor eta = Tensors.vector(3, 3, 6, 6);
-    StateIntegrator stateIntegrator = FixedStateIntegrator.create( //
-        MidpointIntegrator.INSTANCE, RationalScalar.of(1, 2), 5);
-    Collection<Flow> controls = Rice2Controls.createControls(RealScalar.of(.5), 3, 15);
-    Rice2GoalManager rice2Goal = new Rice2GoalManager( //
-        Tensors.vector(3, 3, -1, 0), Tensors.vector(.5, .5, .4, .4));
+  public static TrajectoryPlanner simple() {
+    Tensor eta = Tensors.vector(5, 8);
+    StateIntegrator stateIntegrator = FixedStateIntegrator.createDefault(RationalScalar.of(1, 5), 5);
+    Collection<Flow> controls = Rice2Controls.createControls(RealScalar.of(.5), 15); //
+    Rice1GoalManager rice1Goal = new Rice1GoalManager(Tensors.vector(6, -.7), Tensors.vector(.4, .3));
     TrajectoryRegionQuery obstacleQuery = //
         new SimpleTrajectoryRegionQuery(new TimeInvariantRegion( //
             RegionUnion.of( //
-                new HyperplaneRegion(Tensors.vector(1, +0, 0, 0), RealScalar.ZERO), //
-                new HyperplaneRegion(Tensors.vector(0, +1, 0, 0), RealScalar.ZERO), //
-                new HyperplaneRegion(Tensors.vector(0, -1, 0, 0), RealScalar.of(3.2)), //
-                new HyperplaneRegion(Tensors.vector(0, +0, 0, 1), RealScalar.ZERO) //
+                new EllipsoidRegion(Tensors.vector(+3, +1), Tensors.vector(1.75, .75)),
+                // , // speed limit along the way
+                new EllipsoidRegion(Tensors.vector(-2, +0), Tensors.vector(1, 1)) // block to the left
             )));
     // ---
     TrajectoryPlanner trajectoryPlanner = new StandardTrajectoryPlanner( //
-        eta, stateIntegrator, controls, obstacleQuery, rice2Goal);
+        eta, stateIntegrator, controls, obstacleQuery, rice1Goal);
     // ---
-    trajectoryPlanner.insertRoot(Tensors.vector(0.1, 0.1, 0, 0));
-    long tic = System.nanoTime();
+    trajectoryPlanner.insertRoot(Tensors.vector(0, 0));
     int iters = Expand.maxSteps(trajectoryPlanner, 1000);
-    long toc = System.nanoTime();
-    // 550 1.6898229210000002 without parallel integration of trajectories
-    // 555 1.149214356 with parallel integration of trajectories
-    System.out.println(iters + " " + ((toc - tic) * 1e-9));
+    System.out.println(iters);
+    return trajectoryPlanner;
+  }
+
+  public static void main(String[] args) {
+    TrajectoryPlanner trajectoryPlanner = simple();
     Optional<GlcNode> optional = trajectoryPlanner.getBest();
     if (optional.isPresent()) {
       List<StateTime> trajectory = GlcNodes.getPathFromRootTo(optional.get());
