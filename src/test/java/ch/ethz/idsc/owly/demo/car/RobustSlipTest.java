@@ -40,7 +40,6 @@ public class RobustSlipTest extends TestCase {
     _isContinuous(pacejka3, Tensors.vector(1, 0));
     // FIXME not continuous at important case !!!
     _isContinuous(pacejka3, Tensors.vector(0, 1));
-    // FIXME not continuous at important case !!!
     _isContinuous(pacejka3, Tensors.vector(0, 0));
   }
 

@@ -59,7 +59,7 @@ public class StandardTrajectoryPlanner extends AbstractTrajectoryPlanner {
         if (formerLabel != null) {
           if (Scalars.lessThan(next.merit(), formerLabel.merit())) {
             if (getObstacleQuery().isDisjoint(connectors.get(next))) { // no collision
-              // TODO Needs to be checked with theory, removal from queue is unsure.
+              /** removal from queue is unsure; needs to be checked with theory. */
               boolean removed = queue().remove(formerLabel);
               if (!removed)
                 throw new RuntimeException();

@@ -113,7 +113,8 @@ public abstract class AbstractAnyTrajectoryPlanner extends AbstractTrajectoryPla
     // Updating the merit of the entire tree
     long tic = System.nanoTime();
     // Changing the Merit in Queue for each Node
-    treeCollection.stream().parallel() // TODO JAN: Does this make !treeCollection.equals(compareCollection)==true? if values are changed in treeCollection?
+    // TODO JAN: Does this make !treeCollection.equals(compareCollection)==true? if values are changed in treeCollection?
+    treeCollection.stream().parallel() //
         .forEach(glcNode -> glcNode.setMinCostToGoal(newGoal.minCostToGoal(glcNode.state())));
     if (false) {
       // if (!treeCollection.equals(compareCollection)) {// TODO JONAS smart way to check if before line modified sth.
@@ -188,12 +189,13 @@ public abstract class AbstractAnyTrajectoryPlanner extends AbstractTrajectoryPla
   // maybe in a package: return StateTime and EndNode
   /** Looks for the Node, which is the furthest in the GoalRegion,
    * @return node with highest merit in GoalRegion */
+  @Override
   public Optional<StateTime> getFurthestGoalState() {
     final TrajectoryRegionQuery trq = this.getGoalQuery();
     Optional<StateTime> furthest = Optional.ofNullable(null);
     PriorityQueue<GlcNode> queue = new PriorityQueue<>(Collections.reverseOrder(NodeMeritComparator.INSTANCE)); // highest merit first
     List<StateTime> listStateTimeInGoal = new ArrayList<>();
-    if (trq instanceof GoalTrajectoryRegionQuery) { // TODO JAN: true if trq is class which extends from AbstractAny...?
+    if (trq instanceof GoalTrajectoryRegionQuery) {
       final GoalTrajectoryRegionQuery tempGtrq = new GoalTrajectoryRegionQuery((GoalTrajectoryRegionQuery) trq);
       listStateTimeInGoal.addAll(tempGtrq.getAllDiscoveredMembersStateTimeInGoal()); // getting ST of EndNodes
       for (StateTime stateTimeInGoal : listStateTimeInGoal) {
@@ -223,6 +225,7 @@ public abstract class AbstractAnyTrajectoryPlanner extends AbstractTrajectoryPla
 
   /** Recieved the furthest Node, where the coming trajectory was in Goal, similar to getBest()
    * @return furthest Node in Goal (highest merit, but in Goal) */
+  @Override
   public Optional<GlcNode> getFurthestGoalNode() {
     final TrajectoryRegionQuery trq = this.getGoalQuery();
     final Optional<StateTime> furthestState = getFurthestGoalState();

@@ -26,6 +26,8 @@ import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
 
+/** if the controls are significantly larger than 1,
+ * the gui features long black lines indicating the control vectors */
 enum TwdGlcDemo {
   ;
   public static void main(String[] args) throws Exception {
@@ -68,7 +70,6 @@ enum TwdGlcDemo {
     OwlyFrame owlyFrame = Gui.start();
     owlyFrame.configCoordinateOffset(33, 416);
     owlyFrame.jFrame.setBounds(100, 100, 620, 475);
-    // TODO JAN: look at Gui and how input is shown
     while (!trajectoryPlanner.getBest().isPresent() && owlyFrame.jFrame.isVisible()) {
       Expand.maxSteps(trajectoryPlanner, 30, parameters.getDepthLimit());
       owlyFrame.setGlc(trajectoryPlanner);

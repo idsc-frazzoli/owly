@@ -28,6 +28,7 @@ public class TwdHeuristicGoalManager extends TwdDefaultGoalManager {
     return RealScalar.ONE.add(Power.of(end.x().Get(2).subtract(from.x().Get(2)), 2));
   }
 
+  @Override
   public Scalar minCostToGoal(Tensor x) {
     Tensor cur_xy = x.extract(0, 2);
     Scalar cur_angle = x.Get(2);

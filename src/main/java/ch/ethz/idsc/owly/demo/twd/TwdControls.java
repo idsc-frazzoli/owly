@@ -14,6 +14,7 @@ import ch.ethz.idsc.tensor.Tensors;
 import ch.ethz.idsc.tensor.alg.Subdivide;
 
 /** two wheel drive */
+// TODO to be checked with theory: simulated inputs is no R²
 public enum TwdControls {
   ;
   /** @param wheelspeeds_max the maximum absolut values for the rotationalspeed of each wheel.
@@ -22,12 +23,11 @@ public enum TwdControls {
   public static Collection<Flow> createControls1(TwdStateSpaceModel stateSpaceModel, int num) {
     // TODO JONAS better way then floor
     // int numSqr = Floor.of(Sqrt.of(RealScalar.of(num))).number().intValue();
-    int numSqr = num; // TODO to be checked with theory: simulated inputs is no R²
+    int numSqr = num;
     Scalar wheelspeed_max = stateSpaceModel.getWheelspeeds_max();
     List<Flow> list = new ArrayList<>();
     for (Tensor wl : Subdivide.of(wheelspeed_max.negate(), wheelspeed_max, numSqr)) {
       for (Tensor wr : Subdivide.of(wheelspeed_max.negate(), wheelspeed_max, numSqr)) {
-        Tensor u = Tensors.of(wl, wr);
         list.add(StateSpaceModels.createFlow(stateSpaceModel, Tensors.of(wl, wr)));
       }
     }
@@ -36,8 +36,7 @@ public enum TwdControls {
   }
 
   public static Collection<Flow> createControls2(TwdStateSpaceModel stateSpaceModel, int num) {
-    @SuppressWarnings("unused")
-    int numSqr = num; // TODO to be checked with theory: simulated inputs is no R²
+    int numSqr = num;
     Scalar wheelspeed_max = stateSpaceModel.getWheelspeeds_max();
     List<Flow> list = new ArrayList<>();
     Tensor wlList = Subdivide.of(wheelspeed_max.negate(), wheelspeed_max, numSqr);
