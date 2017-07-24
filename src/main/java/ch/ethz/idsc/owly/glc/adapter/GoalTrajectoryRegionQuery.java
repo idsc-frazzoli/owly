@@ -48,11 +48,11 @@ public class GoalTrajectoryRegionQuery extends AbstractTrajectoryRegionQuery {
     return discoveredGoalMembers.get(goalState);
   }
 
-  public final Collection<StateTime> getAllDiscoveredMembers() {
+  public final Collection<StateTime> getAllDiscoveredMembersStateTimeInGoal() {
     return Collections.unmodifiableCollection(discoveredGoalMembers.keySet());
   }
 
-  public final Collection<StateTime> getAllDiscoveredMembersNodesStateTime() {
+  public final Collection<StateTime> getAllDiscoveredMembersEndNodesStateTime() {
     return Collections.unmodifiableCollection(discoveredGoalMembers.values());
   }
 }

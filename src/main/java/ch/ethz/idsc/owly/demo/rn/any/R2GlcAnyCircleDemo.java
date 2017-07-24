@@ -94,9 +94,11 @@ enum R2GlcAnyCircleDemo {
       System.out.println("Switching to Goal:" + goal);
       trajectoryPlanner.changeToGoal(rnGoal2);
       // -- ROOTCHANGE
-      StateTime newRootState = trajectory.get(trajectory.size() > 5 ? 5 : 0);
-      int increment = trajectoryPlanner.switchRootToState(newRootState.x());
-      parameters.increaseDepthLimit(increment);
+      if (trajectory.size() > 0) {
+        StateTime newRootState = trajectory.get(trajectory.size() > 5 ? 5 : 0);
+        int increment = trajectoryPlanner.switchRootToState(newRootState.x());
+        parameters.increaseDepthLimit(increment);
+      }
       // -- EXPANDING
       int iters2 = Expand.maxDepth(trajectoryPlanner, parameters.getDepthLimit());
       owlyFrame.setGlc((TrajectoryPlanner) trajectoryPlanner);
