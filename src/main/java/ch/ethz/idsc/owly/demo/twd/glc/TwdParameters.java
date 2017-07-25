@@ -1,17 +1,17 @@
 // code by jl
 package ch.ethz.idsc.owly.demo.twd.glc;
 
-import ch.ethz.idsc.owly.glc.adapter.MultiVariableParameters;
+import ch.ethz.idsc.owly.glc.adapter.DefaultParameters;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.sca.Log;
 import ch.ethz.idsc.tensor.sca.Power;
 
-public class TwdParameters extends MultiVariableParameters {
+public class TwdParameters extends DefaultParameters {
   public TwdParameters( //
       Scalar resolution, Scalar timeScale, Scalar depthScale, Tensor partitionScale, Scalar dtMax, int maxIter, //
-      Tensor lipschitz) {
+      Scalar lipschitz) {
     super(resolution, timeScale, depthScale, partitionScale, dtMax, maxIter, lipschitz);
   }
 
@@ -24,6 +24,7 @@ public class TwdParameters extends MultiVariableParameters {
 
   @Override
   /** @return R^(5/Pi)/partitionScale */
+  // Formula from: B. Paden: A Generalized Label correcting Method: P. 57 Figure: 5-11
   protected Tensor EtaLfNonZero(Scalar lipschitz) {
     return getPartitionScale().map(Scalar::invert) //
         .multiply(Power.of(getResolution(), RealScalar.of(5).divide(RealScalar.of(Math.PI))));

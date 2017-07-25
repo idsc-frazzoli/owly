@@ -6,7 +6,6 @@ import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
-import ch.ethz.idsc.tensor.sca.Abs;
 import ch.ethz.idsc.tensor.sca.Cos;
 import ch.ethz.idsc.tensor.sca.Sin;
 
@@ -15,17 +14,18 @@ import ch.ethz.idsc.tensor.sca.Sin;
  * robot with one axle
  * center of axle at (px, py)
  * 2 wheels (left, right) with separate controlled speed (wl, wr) [rad/s]
+ * max (wl) = max (wr) = 1
  * Theory from: http://planning.cs.uiuc.edu/node659.html */
 @SuppressWarnings("serial")
-public class TwdStateSpaceModel implements StateSpaceModel, MultiVariableLipschitz {
+public class TwdStateSpaceModel implements StateSpaceModel {
   private final Scalar wheelRadius; // R
   private final Scalar wheelDistance; // L
-  private final Scalar wheelspeeds_max;
 
-  public TwdStateSpaceModel(Scalar wheelRadius, Scalar wheelDistance, Scalar wheelspeed_max) {
+  // TODO JONAS: set wheelspeed_max to 1
+  // wheelspeed_max = angular wheel velocity
+  public TwdStateSpaceModel(Scalar wheelRadius, Scalar wheelDistance ) {
     this.wheelRadius = wheelRadius;
     this.wheelDistance = wheelDistance;
-    this.wheelspeeds_max = wheelspeed_max;
   }
 
   @Override
@@ -43,23 +43,15 @@ public class TwdStateSpaceModel implements StateSpaceModel, MultiVariableLipschi
     // u contains (wl, wr) == speed of left wheel and speed of right wheel
   }
 
-  public Scalar getWheelspeeds_max() {
-    return wheelspeeds_max;
-  }
-
-  /** | f(x_1, u) - f(x_2, u) | <= L | x_1 - x_2 | */
-  @Override
-  public Tensor getTensorLipschitz() {
-    // max((wl+wr))*wheelRadius*0.5 for horizontal velocities
-    Scalar horizontalLipschitz = getWheelspeeds_max().multiply(wheelRadius);
-    // wheelRadius/wheelDistance *max(abs(wl),abs(wr)) for rotational
-    Scalar rotationalLipschitz = Abs.of(getWheelspeeds_max());
-    return Tensors.of(horizontalLipschitz, horizontalLipschitz, rotationalLipschitz);
-  }
-
+  /** Returns the Lipschitzconstant of the TWDmodel.
+   * /** | f(x_1, u) - f(x_2, u) | <= L | x_1 - x_2 |
+   * f = r/2*(Ul+Ur)*cos(theta) r/2(Ul*Ur)*sin(theta) r/L(UR-Ul)
+   * L = max (eig(gradient(f))
+   * with mathematica:
+   * L = 1/2|r|*|Ul+Ur|
+   * Assumption: max(rotational_wheelspeed) = max (Ul) = max(Ur) = 1
+   * L = r */
   public Scalar getLipschitz() {
-    throw new RuntimeException();
-    // TODO JAN: otherway so compile error appears if in TWD parameter constructor getLipschitz is called
-    // currently not, because function wants Tensor and Scalar is Tensor
+    return wheelRadius;
   }
 }

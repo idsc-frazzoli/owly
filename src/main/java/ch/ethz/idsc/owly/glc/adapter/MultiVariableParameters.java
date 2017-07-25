@@ -8,6 +8,8 @@ import ch.ethz.idsc.tensor.Tensors;
 import ch.ethz.idsc.tensor.mat.VectorQ;
 import ch.ethz.idsc.tensor.red.Mean;
 
+//TODO Delete?
+@Deprecated
 public abstract class MultiVariableParameters extends DefaultParameters {
   private final Tensor lipschitz;
 

@@ -7,6 +7,7 @@ import java.util.List;
 
 import ch.ethz.idsc.owly.math.StateSpaceModels;
 import ch.ethz.idsc.owly.math.flow.Flow;
+import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Scalars;
 import ch.ethz.idsc.tensor.Tensor;
@@ -24,20 +25,20 @@ public enum TwdControls {
     // TODO JONAS better way then floor
     // int numSqr = Floor.of(Sqrt.of(RealScalar.of(num))).number().intValue();
     int numSqr = num;
-    Scalar wheelspeed_max = stateSpaceModel.getWheelspeeds_max();
+    Scalar wheelspeed_max = RealScalar.ONE;
     List<Flow> list = new ArrayList<>();
     for (Tensor wl : Subdivide.of(wheelspeed_max.negate(), wheelspeed_max, numSqr)) {
       for (Tensor wr : Subdivide.of(wheelspeed_max.negate(), wheelspeed_max, numSqr)) {
         list.add(StateSpaceModels.createFlow(stateSpaceModel, Tensors.of(wl, wr)));
       }
     }
-    // |wl|<=wheelspeedmax, && |wr| <=wheelspeedmax implemented over argument.
+    // max|wl|= max|wr| = 1
     return list;
   }
 
   public static Collection<Flow> createControls2(TwdStateSpaceModel stateSpaceModel, int num) {
     int numSqr = num;
-    Scalar wheelspeed_max = stateSpaceModel.getWheelspeeds_max();
+    Scalar wheelspeed_max = RealScalar.ONE;
     List<Flow> list = new ArrayList<>();
     Tensor wlList = Subdivide.of(wheelspeed_max.negate(), wheelspeed_max, numSqr);
     Scalar stepSize = wlList.Get(1).subtract(wlList.Get(0));
