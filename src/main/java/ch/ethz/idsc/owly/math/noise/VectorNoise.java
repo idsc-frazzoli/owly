@@ -15,7 +15,7 @@ public enum VectorNoise {
           tensor.Get(0).number().doubleValue(), //
           tensor.Get(1).number().doubleValue()));
     case 3:
-      return RealScalar.of(SimplexNoise.at( //
+      return RealScalar.of(SimplexNoise.FUNCTION.at( //
           tensor.Get(0).number().doubleValue(), //
           tensor.Get(1).number().doubleValue(), //
           tensor.Get(2).number().doubleValue()));

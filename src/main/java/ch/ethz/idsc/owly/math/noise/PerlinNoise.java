@@ -2,8 +2,10 @@
 package ch.ethz.idsc.owly.math.noise;
 
 public enum PerlinNoise implements ContinuousNoise {
+  FUNCTION //
   ;
-  public static double at(double x, double y, double z) {
+  @Override
+  public double at(double x, double y, double z) {
     int X = Floor.of(x) & 255; // FIND UNIT CUBE THAT
     int Y = Floor.of(y) & 255; // CONTAINS POINT.
     int Z = Floor.of(z) & 255;
@@ -13,25 +15,36 @@ public enum PerlinNoise implements ContinuousNoise {
     double u = fade(x); // COMPUTE FADE CURVES
     double v = fade(y); // FOR EACH OF X,Y,Z.
     double w = fade(z);
-    int A = PERM[X] + Y; // HASH COORDINATES OF
-    int AA = PERM[A] + Z; // THE 8 CUBE CORNERS,
-    int AB = PERM[A + 1] + Z;
-    int B = PERM[X + 1] + Y;
-    int BA = PERM[B] + Z;
-    int BB = PERM[B + 1] + Z;
-    return lerp(w, lerp(v, lerp(u, grad(PERM[AA], x, y, z), // AND ADD
-        grad(PERM[BA], x - 1, y, z)), // BLENDED
-        lerp(u, grad(PERM[AB], x, y - 1, z), // RESULTS
-            grad(PERM[BB], x - 1, y - 1, z))), // FROM 8
-        lerp(v, lerp(u, grad(PERM[AA + 1], x, y, z - 1), // CORNERS
-            grad(PERM[BA + 1], x - 1, y, z - 1)), // OF CUBE
-            lerp(u, grad(PERM[AB + 1], x, y - 1, z - 1), grad(PERM[BB + 1], x - 1, y - 1, z - 1))));
+    int A = StaticHelper.PERM[X] + Y; // HASH COORDINATES OF
+    int AA = StaticHelper.PERM[A] + Z; // THE 8 CUBE CORNERS,
+    int AB = StaticHelper.PERM[A + 1] + Z;
+    int B = StaticHelper.PERM[X + 1] + Y;
+    int BA = StaticHelper.PERM[B] + Z;
+    int BB = StaticHelper.PERM[B + 1] + Z;
+    double i1a = lerp(u, grad(StaticHelper.PERM[AA], x, y, z), grad(StaticHelper.PERM[BA], x - 1, y, z));
+    double i1b = lerp(u, grad(StaticHelper.PERM[AB], x, y - 1, z), grad(StaticHelper.PERM[BB], x - 1, y - 1, z));
+    double i2a = lerp(u, grad(StaticHelper.PERM[AA + 1], x, y, z - 1), grad(StaticHelper.PERM[BA + 1], x - 1, y, z - 1));
+    double i2b = lerp(u, grad(StaticHelper.PERM[AB + 1], x, y - 1, z - 1), grad(StaticHelper.PERM[BB + 1], x - 1, y - 1, z - 1));
+    return lerp(w, lerp(v, i1a, i1b), lerp(v, i2a, i2b));
   }
 
+  /** smooth transition function f:[0,1] -> [0,1] with
+   * f(0) == 0
+   * f(1) == 1
+   * f'(0) == f'(1) == 0
+   * f''(0) == f''(1) == 0
+   * 
+   * @param t
+   * @return */
+  // TODO extract function
   private static double fade(double t) {
     return t * t * t * (t * (t * 6 - 15) + 10);
   }
 
+  /** @param t
+   * @param a
+   * @param b
+   * @return linear interpolation between a and b at parameter t */
   private static double lerp(double t, double a, double b) {
     return a + t * (b - a);
   }
