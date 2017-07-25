@@ -14,6 +14,7 @@ package ch.ethz.idsc.owly.math.noise;
  * This code was placed in the public domain by its original author,
  * Stefan Gustavson. You may use it as you see fit, but attribution is appreciated. */
 public enum SimplexNoise implements ContinuousNoise {
+  FUNCTION //
   ;
   // Inner class to speed up gradient computations
   // (array access is a lot slower than member access)
@@ -111,9 +112,9 @@ public enum SimplexNoise implements ContinuousNoise {
     // Work out the hashed gradient indices of the three simplex corners
     int ii = i & 255;
     int jj = j & 255;
-    int gi0 = PERMMOD12[ii + PERM[jj]];
-    int gi1 = PERMMOD12[ii + i1 + PERM[jj + j1]];
-    int gi2 = PERMMOD12[ii + 1 + PERM[jj + 1]];
+    int gi0 = StaticHelper.PERMMOD12[ii + StaticHelper.PERM[jj]];
+    int gi1 = StaticHelper.PERMMOD12[ii + i1 + StaticHelper.PERM[jj + j1]];
+    int gi2 = StaticHelper.PERMMOD12[ii + 1 + StaticHelper.PERM[jj + 1]];
     // Calculate the contribution from the three corners
     double t0 = 0.5 - x0 * x0 - y0 * y0;
     if (t0 < 0)
@@ -146,7 +147,8 @@ public enum SimplexNoise implements ContinuousNoise {
    * @param yin
    * @param zin
    * @return value in the interval [-1,1] */
-  public static double at(double xin, double yin, double zin) {
+  @Override
+  public double at(double xin, double yin, double zin) {
     double n0, n1, n2, n3; // Noise contributions from the four corners
     // Skew the input space to determine which simplex cell we're in
     double s = (xin + yin + zin) * F3; // Very nice and simple skew factor for 3D
@@ -232,10 +234,10 @@ public enum SimplexNoise implements ContinuousNoise {
     int ii = i & 255;
     int jj = j & 255;
     int kk = k & 255;
-    int gi0 = PERMMOD12[ii + PERM[jj + PERM[kk]]];
-    int gi1 = PERMMOD12[ii + i1 + PERM[jj + j1 + PERM[kk + k1]]];
-    int gi2 = PERMMOD12[ii + i2 + PERM[jj + j2 + PERM[kk + k2]]];
-    int gi3 = PERMMOD12[ii + 1 + PERM[jj + 1 + PERM[kk + 1]]];
+    int gi0 = StaticHelper.PERMMOD12[ii + StaticHelper.PERM[jj + StaticHelper.PERM[kk]]];
+    int gi1 = StaticHelper.PERMMOD12[ii + i1 + StaticHelper.PERM[jj + j1 + StaticHelper.PERM[kk + k1]]];
+    int gi2 = StaticHelper.PERMMOD12[ii + i2 + StaticHelper.PERM[jj + j2 + StaticHelper.PERM[kk + k2]]];
+    int gi3 = StaticHelper.PERMMOD12[ii + 1 + StaticHelper.PERM[jj + 1 + StaticHelper.PERM[kk + 1]]];
     // Calculate the contribution from the four corners
     double t0 = 0.6 - x0 * x0 - y0 * y0 - z0 * z0;
     if (t0 < 0)
@@ -370,11 +372,11 @@ public enum SimplexNoise implements ContinuousNoise {
     int jj = j & 255;
     int kk = k & 255;
     int ll = l & 255;
-    int gi0 = PERM[ii + PERM[jj + PERM[kk + PERM[ll]]]] % 32;
-    int gi1 = PERM[ii + i1 + PERM[jj + j1 + PERM[kk + k1 + PERM[ll + l1]]]] % 32;
-    int gi2 = PERM[ii + i2 + PERM[jj + j2 + PERM[kk + k2 + PERM[ll + l2]]]] % 32;
-    int gi3 = PERM[ii + i3 + PERM[jj + j3 + PERM[kk + k3 + PERM[ll + l3]]]] % 32;
-    int gi4 = PERM[ii + 1 + PERM[jj + 1 + PERM[kk + 1 + PERM[ll + 1]]]] % 32;
+    int gi0 = StaticHelper.PERM[ii + StaticHelper.PERM[jj + StaticHelper.PERM[kk + StaticHelper.PERM[ll]]]] % 32;
+    int gi1 = StaticHelper.PERM[ii + i1 + StaticHelper.PERM[jj + j1 + StaticHelper.PERM[kk + k1 + StaticHelper.PERM[ll + l1]]]] % 32;
+    int gi2 = StaticHelper.PERM[ii + i2 + StaticHelper.PERM[jj + j2 + StaticHelper.PERM[kk + k2 + StaticHelper.PERM[ll + l2]]]] % 32;
+    int gi3 = StaticHelper.PERM[ii + i3 + StaticHelper.PERM[jj + j3 + StaticHelper.PERM[kk + k3 + StaticHelper.PERM[ll + l3]]]] % 32;
+    int gi4 = StaticHelper.PERM[ii + 1 + StaticHelper.PERM[jj + 1 + StaticHelper.PERM[kk + 1 + StaticHelper.PERM[ll + 1]]]] % 32;
     // Calculate the contribution from the five corners
     double t0 = 0.6 - x0 * x0 - y0 * y0 - z0 * z0 - w0 * w0;
     if (t0 < 0)

@@ -11,7 +11,7 @@ import junit.framework.TestCase;
 
 public class PerlinNoiseTest extends TestCase {
   public void testSimple() {
-    Tensor noise = Tensors.vector(i -> DoubleScalar.of(10 * (1 + PerlinNoise.at(1.6, .1 * i, .1 + i))), 1000);
+    Tensor noise = Tensors.vector(i -> DoubleScalar.of(10 * (1 + PerlinNoise.FUNCTION.at(1.6, .1 * i, .1 + i))), 1000);
     Tensor bins = BinCounts.of(noise);
     // System.out.println(bins);
     assertEquals(bins.length(), 18);
