@@ -3,15 +3,12 @@ package ch.ethz.idsc.owly.glc.core;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
-import java.util.PriorityQueue;
 
 import ch.ethz.idsc.owly.data.tree.Nodes;
-import ch.ethz.idsc.owly.glc.adapter.GoalTrajectoryRegionQuery;
 import ch.ethz.idsc.owly.math.state.StateIntegrator;
 import ch.ethz.idsc.owly.math.state.StateTime;
 import ch.ethz.idsc.owly.math.state.TrajectoryRegionQuery;
@@ -25,6 +22,11 @@ public abstract class AbstractAnyTrajectoryPlanner extends AbstractTrajectoryPla
       GoalInterface goalInterface //
   ) {
     super(eta, stateIntegrator, obstacleQuery, goalInterface);
+  }
+
+  @Override
+  void offerDestination(GlcNode node, List<StateTime> connector) {
+    best.put(node, connector); // always put new GoalNodes in Map
   }
 
   /** Includes all the functionality of the RootSwitch
@@ -141,7 +143,7 @@ public abstract class AbstractAnyTrajectoryPlanner extends AbstractTrajectoryPla
         final List<StateTime> nodeTrajectory = //
             getStateIntegrator().trajectory(current.parent().stateTime(), current.flow());
         if (!newGoal.isDisjoint(nodeTrajectory)) // current Node in Goal
-          offerDestination(current); // overwrites worse Goal, but does not stop
+          offerDestination(current, nodeTrajectory); // overwrites worse Goal, but does not stop
       }
     }
     // treeCollection.stream().parallel().filter(node->!newGoal.is))
@@ -185,58 +187,73 @@ public abstract class AbstractAnyTrajectoryPlanner extends AbstractTrajectoryPla
     return null;
   }
 
-  // TODO JONAS: Smarter way to get furthest Node?
   // maybe in a package: return StateTime and EndNode
+  // /** Looks for the Node, which is the furthest in the GoalRegion,
+  // * @return node with highest merit in GoalRegion */
+  // @Override
+  // public Optional<StateTime> getFurthestGoalState() {
+  // final TrajectoryRegionQuery trq = this.getGoalQuery();
+  // Optional<StateTime> furthest = Optional.ofNullable(null);
+  // PriorityQueue<GlcNode> queue = new PriorityQueue<>(Collections.reverseOrder(NodeMeritComparator.INSTANCE)); // highest merit first
+  // List<StateTime> listStateTimeInGoal = new ArrayList<>();
+  // if (trq instanceof GoalTrajectoryRegionQuery) {
+  // final GoalTrajectoryRegionQuery tempGtrq = new GoalTrajectoryRegionQuery((GoalTrajectoryRegionQuery) trq);
+  // listStateTimeInGoal.addAll(tempGtrq.getAllDiscoveredMembersStateTimeInGoal()); // getting ST of EndNodes
+  // for (StateTime stateTimeInGoal : listStateTimeInGoal) {
+  // StateTime endNodeStateTime = tempGtrq.getEndNode(stateTimeInGoal);
+  // Tensor domainKey = convertToKey(endNodeStateTime.x());
+  // Optional<GlcNode> endNode = Optional.ofNullable(getNode(domainKey)); // getting EndNodes
+  // if (endNode.isPresent()) {
+  // // TODO JONAS find individuel Cost for each StateTime
+  // // comparing Cost of GoalStates with EndNodeCost
+  // queue.add(endNode.get());
+  // }
+  // }
+  // GlcNode endNode = null;
+  // if (!queue.isEmpty()) {
+  // endNode = queue.element();
+  // GlcNode parent = endNode.parent();
+  // final List<StateTime> trajectoryThroughGoal = //
+  // this.getStateIntegrator().trajectory(parent.stateTime(), endNode.flow());
+  // final int index = this.getGoalQuery().firstMember(trajectoryThroughGoal);
+  // if (index == -1)
+  // throw new RuntimeException(); // Trajectory through Goal should find firstMember
+  // furthest = Optional.ofNullable(trajectoryThroughGoal.get(index));
+  // }
+  // }
+  // return furthest;
+  // }
   /** Looks for the Node, which is the furthest in the GoalRegion,
    * @return node with highest merit in GoalRegion */
   @Override
   public Optional<StateTime> getFurthestGoalState() {
-    final TrajectoryRegionQuery trq = this.getGoalQuery();
-    Optional<StateTime> furthest = Optional.ofNullable(null);
-    PriorityQueue<GlcNode> queue = new PriorityQueue<>(Collections.reverseOrder(NodeMeritComparator.INSTANCE)); // highest merit first
-    List<StateTime> listStateTimeInGoal = new ArrayList<>();
-    if (trq instanceof GoalTrajectoryRegionQuery) {
-      final GoalTrajectoryRegionQuery tempGtrq = new GoalTrajectoryRegionQuery((GoalTrajectoryRegionQuery) trq);
-      listStateTimeInGoal.addAll(tempGtrq.getAllDiscoveredMembersStateTimeInGoal()); // getting ST of EndNodes
-      for (StateTime stateTimeInGoal : listStateTimeInGoal) {
-        StateTime endNodeStateTime = tempGtrq.getEndNode(stateTimeInGoal);
-        Tensor domainKey = convertToKey(endNodeStateTime.x());
-        Optional<GlcNode> endNode = Optional.ofNullable(getNode(domainKey)); // getting EndNodes
-        if (endNode.isPresent()) {
-          // TODO JONAS find individuel Cost for each StateTime
-          // comparing Cost of GoalStates with EndNodeCost
-          queue.add(endNode.get());
-        }
-      }
-      GlcNode endNode = null;
-      if (!queue.isEmpty()) {
-        endNode = queue.element();
-        GlcNode parent = endNode.parent();
-        final List<StateTime> trajectoryThroughGoal = //
-            this.getStateIntegrator().trajectory(parent.stateTime(), endNode.flow());
-        final int index = this.getGoalQuery().firstMember(trajectoryThroughGoal);
-        if (index == -1)
-          throw new RuntimeException(); // Trajectory through Goal should find firstMember
-        furthest = Optional.ofNullable(trajectoryThroughGoal.get(index));
-      }
-    }
-    return furthest;
+    if (!best.isEmpty())
+      return Optional.ofNullable(best.lastKey().stateTime());
+    return Optional.empty();
   }
 
+  // /** Recieved the furthest Node, where the coming trajectory was in Goal, similar to getBest()
+  // * @return furthest Node in Goal (highest merit, but in Goal) */
+  // @Override
+  // public Optional<GlcNode> getFurthestGoalNode() {
+  // final TrajectoryRegionQuery trq = this.getGoalQuery();
+  // final Optional<StateTime> furthestState = getFurthestGoalState();
+  // Optional<GlcNode> furthestNode = Optional.empty();
+  // if (trq instanceof GoalTrajectoryRegionQuery && furthestState.isPresent()) {
+  // final GoalTrajectoryRegionQuery gtrq = (GoalTrajectoryRegionQuery) trq;
+  // final StateTime endState = gtrq.getEndNode(furthestState.get());
+  // if (endState == null)
+  // throw new RuntimeException(); // the furthestState should be in the Map as it was taken from it
+  // furthestNode = Optional.ofNullable(getNode(convertToKey(endState.x())));
+  // }
+  // return furthestNode;
+  // }
   /** Recieved the furthest Node, where the coming trajectory was in Goal, similar to getBest()
    * @return furthest Node in Goal (highest merit, but in Goal) */
   @Override
   public Optional<GlcNode> getFurthestGoalNode() {
-    final TrajectoryRegionQuery trq = this.getGoalQuery();
-    final Optional<StateTime> furthestState = getFurthestGoalState();
-    Optional<GlcNode> furthestNode = Optional.empty();
-    if (trq instanceof GoalTrajectoryRegionQuery && furthestState.isPresent()) {
-      final GoalTrajectoryRegionQuery gtrq = (GoalTrajectoryRegionQuery) trq;
-      final StateTime endState = gtrq.getEndNode(furthestState.get());
-      if (endState == null)
-        throw new RuntimeException(); // the furthestState should be in the Map as it was taken from it
-      furthestNode = Optional.ofNullable(getNode(convertToKey(endState.x())));
-    }
-    return furthestNode;
+    if (!best.isEmpty())
+      return Optional.ofNullable(best.lastKey());
+    return Optional.empty();
   }
 }

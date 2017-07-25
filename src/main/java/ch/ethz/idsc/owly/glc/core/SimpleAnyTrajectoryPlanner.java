@@ -73,7 +73,7 @@ public class SimpleAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
                 formerLabel.parent().removeEdgeTo(formerLabel);
                 insertNodeInTree(nextParent, next);
                 if (!goalInterface.isDisjoint(connectors.get(next)))
-                  offerDestination(next);
+                  offerDestination(next, connectors.get(next));
                 candidateQueue.remove();
                 break;
               }
@@ -83,7 +83,7 @@ public class SimpleAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
               nextParent.insertEdgeTo(next);
               insert(domain_key, next);
               if (!goalInterface.isDisjoint(connectors.get(next)))
-                offerDestination(next);
+                offerDestination(next, connectors.get(next));
               candidateQueue.remove();
               break;
             }

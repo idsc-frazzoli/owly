@@ -13,6 +13,7 @@ import java.util.stream.Collectors;
 
 import ch.ethz.idsc.owly.glc.core.GlcNode;
 import ch.ethz.idsc.owly.glc.core.GlcNodes;
+import ch.ethz.idsc.owly.glc.core.OptimalAnyTrajectoryPlanner;
 import ch.ethz.idsc.owly.glc.core.TrajectoryPlanner;
 import ch.ethz.idsc.owly.glc.core.TrajectorySample;
 import ch.ethz.idsc.owly.math.flow.Flow;
@@ -33,8 +34,8 @@ class TrajectoryRender implements AbstractRender {
   @Override
   public void render(OwlyLayer owlyLayer, Graphics2D graphics) {
     // TODO CHANGE BACK
-    Optional<GlcNode> optional = trajectoryPlanner.getBestOrElsePeek();
-    // Optional<GlcNode> optional = ((OptimalAnyTrajectoryPlanner) trajectoryPlanner).getFurthestGoalNode();
+    // Optional<GlcNode> optional = trajectoryPlanner.getBestOrElsePeek();
+    Optional<GlcNode> optional = ((OptimalAnyTrajectoryPlanner) trajectoryPlanner).getFurthestGoalNode();
     if (optional.isPresent()) {
       final GlcNode node = optional.get();
       {// draw detailed trajectory from root to goal

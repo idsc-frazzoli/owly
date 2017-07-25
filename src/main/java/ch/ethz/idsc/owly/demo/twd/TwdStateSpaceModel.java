@@ -23,7 +23,7 @@ public class TwdStateSpaceModel implements StateSpaceModel {
 
   // TODO JONAS: set wheelspeed_max to 1
   // wheelspeed_max = angular wheel velocity
-  public TwdStateSpaceModel(Scalar wheelRadius, Scalar wheelDistance ) {
+  public TwdStateSpaceModel(Scalar wheelRadius, Scalar wheelDistance) {
     this.wheelRadius = wheelRadius;
     this.wheelDistance = wheelDistance;
   }

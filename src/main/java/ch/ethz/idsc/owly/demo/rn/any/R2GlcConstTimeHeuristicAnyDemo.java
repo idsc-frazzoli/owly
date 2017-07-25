@@ -120,7 +120,7 @@ enum R2GlcConstTimeHeuristicAnyDemo {
       final int deleteUntilIndex = deleteIndex; // index of Goal,which was not found yet
       if (deleteIndex < 0)
         System.out.println("No new Goal was found in last run");
-      boolean removed = goalRegions.removeIf(gr -> goalRegions.indexOf(gr) <= deleteUntilIndex);
+      boolean removed = goalRegions.removeIf(gr -> goalRegions.indexOf(gr) < deleteUntilIndex);
       if (removed)
         System.out.println("All Regionparts before " + deleteUntilIndex + " were removed");
       System.out.println("size of goal regions list: " + goalRegions.size());

@@ -14,6 +14,7 @@ import ch.ethz.idsc.tensor.io.Serialization;
 public class GoalTrajectoryRegionQuery extends AbstractTrajectoryRegionQuery {
   protected final StateTimeRegion stateTimeRegion;
   // Key StateTime of where Goal was found, Value: endpoint of traj /EndNode of traj
+  // TODO JAN: you said I can remove Hash, but gives error, due to Serialization
   private HashMap<StateTime, StateTime> discoveredGoalMembers = new HashMap<>();
 
   public GoalTrajectoryRegionQuery(StateTimeRegion stateTimeRegion) {
