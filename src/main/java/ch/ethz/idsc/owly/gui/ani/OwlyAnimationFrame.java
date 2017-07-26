@@ -6,6 +6,8 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
@@ -19,15 +21,22 @@ import javax.swing.JPanel;
 import javax.swing.JToolBar;
 import javax.swing.WindowConstants;
 
+import ch.ethz.idsc.owly.demo.rn.R2NoiseRegion;
+import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
 import ch.ethz.idsc.owly.glc.core.GlcNode;
 import ch.ethz.idsc.owly.glc.core.GlcNodes;
+import ch.ethz.idsc.owly.glc.core.StandardTrajectoryPlanner;
 import ch.ethz.idsc.owly.glc.core.TrajectoryPlanner;
+import ch.ethz.idsc.owly.gui.ObstacleRender;
 import ch.ethz.idsc.owly.gui.OwlyComponent;
 import ch.ethz.idsc.owly.gui.RenderElements;
 import ch.ethz.idsc.owly.gui.RenderInterface;
 import ch.ethz.idsc.owly.gui.TrajectoryRender;
+import ch.ethz.idsc.owly.math.region.Region;
 import ch.ethz.idsc.owly.math.state.StateTime;
+import ch.ethz.idsc.owly.math.state.TimeInvariantRegion;
 import ch.ethz.idsc.owly.math.state.Trajectories;
+import ch.ethz.idsc.owly.math.state.TrajectoryRegionQuery;
 import ch.ethz.idsc.owly.util.TimeKeeper;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
@@ -38,6 +47,9 @@ public class OwlyAnimationFrame {
   private final JLabel jLabel = new JLabel();
   private final Timer timer = new Timer();
   // ---
+  TrajectoryRender trajectoryRender = new TrajectoryRender(null);
+  // Collection<StateTime> obstacles = new HashSet<>();
+  ObstacleRender obstacleRender = new ObstacleRender(null);
   List<AnimationInterface> animationInterfaces = new LinkedList<>(); // TODO temporary
 
   public OwlyAnimationFrame() {
@@ -58,7 +70,9 @@ public class OwlyAnimationFrame {
     jFrame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
     TimeKeeper timeKeeper = new TimeKeeper();
     owlyComponent.renderElements = new RenderElements();
-    TimerTask renderTask = new TimerTask() {
+    owlyComponent.renderElements.list.add(trajectoryRender);
+    owlyComponent.renderElements.list.add(obstacleRender);
+    TimerTask timerTask = new TimerTask() {
       @Override
       public void run() {
         Scalar now = timeKeeper.now();
@@ -66,20 +80,24 @@ public class OwlyAnimationFrame {
         owlyComponent.jComponent.repaint();
       }
     };
-    timer.schedule(renderTask, 100, 50);
+    timer.schedule(timerTask, 100, 50);
     jFrame.addWindowListener(new WindowAdapter() {
       @Override
       public void windowClosing(WindowEvent windowEvent) {
         timer.cancel();
       }
     });
+    Region region = new R2NoiseRegion(.3);
+    TrajectoryRegionQuery obstacleQuery = //
+        new SimpleTrajectoryRegionQuery(new TimeInvariantRegion(region));
     owlyComponent.jComponent.addMouseListener(new MouseAdapter() {
       @Override
       public void mouseClicked(MouseEvent mouseEvent) {
         if (mouseEvent.getButton() == 1) {
           Tensor goal = owlyComponent.toModel(mouseEvent.getPoint());
           MotionPlanWorker mpw = new MotionPlanWorker(trajectoryPlannerCallback);
-          mpw.start(goal);
+          Rice2Entity rice2Entity = (Rice2Entity) animationInterfaces.get(0);
+          mpw.start(rice2Entity.episodeIntegrator.tail().x(), goal, obstacleQuery);
         }
       }
     });
@@ -96,7 +114,16 @@ public class OwlyAnimationFrame {
         List<StateTime> trajectory = GlcNodes.getPathFromRootTo(optional.get());
         Trajectories.print(trajectory);
       }
-      owlyComponent.renderElements.list.add(new TrajectoryRender(trajectoryPlanner));
+      trajectoryRender.setTrajectoryPlanner(trajectoryPlanner);
+      StandardTrajectoryPlanner stp = (StandardTrajectoryPlanner) trajectoryPlanner;
+      TrajectoryRegionQuery trq = stp.getObstacleQuery();
+      if (trq instanceof SimpleTrajectoryRegionQuery) {
+        SimpleTrajectoryRegionQuery simpleTrajectoryRegionQuery = (SimpleTrajectoryRegionQuery) trq;
+        Collection<StateTime> collection = simpleTrajectoryRegionQuery.getSparseDiscoveredMembers();
+        obstacleRender.setCollection(new HashSet<>(collection));
+      }
+      // trajectoryRender
+      owlyComponent.jComponent.repaint();
     }
   };
 
