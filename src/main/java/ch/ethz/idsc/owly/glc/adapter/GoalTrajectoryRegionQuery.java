@@ -43,6 +43,20 @@ public class GoalTrajectoryRegionQuery extends AbstractTrajectoryRegionQuery {
     return NOMATCH;
   }
 
+  /** The same functionality as firstMember, but does not save the found state
+   * @param trajectory
+   * @return */
+  public final int firstMemberCheck(List<StateTime> trajectory) {
+    int index = -1;
+    for (StateTime stateTime : trajectory) {
+      ++index;
+      if (stateTimeRegion.isMember(stateTime)) {
+        return index;
+      }
+    }
+    return NOMATCH;
+  }
+
   /** @param goalState: the State, which was found in the Goal
    * @return endState: the State of the Node at the end of his trajectory */
   public final StateTime getEndNode(StateTime goalState) {

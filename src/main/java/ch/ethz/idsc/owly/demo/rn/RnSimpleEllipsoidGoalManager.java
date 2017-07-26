@@ -3,10 +3,11 @@ package ch.ethz.idsc.owly.demo.rn;
 
 import java.util.List;
 
-import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
+import ch.ethz.idsc.owly.glc.adapter.GoalTrajectoryRegionQuery;
 import ch.ethz.idsc.owly.glc.core.GoalInterface;
 import ch.ethz.idsc.owly.math.flow.Flow;
 import ch.ethz.idsc.owly.math.region.EllipsoidRegion;
+import ch.ethz.idsc.owly.math.region.Region;
 import ch.ethz.idsc.owly.math.state.StateTime;
 import ch.ethz.idsc.owly.math.state.TimeInvariantRegion;
 import ch.ethz.idsc.owly.math.state.Trajectories;
@@ -17,12 +18,20 @@ import ch.ethz.idsc.tensor.red.Norm;
 import ch.ethz.idsc.tensor.sca.Ramp;
 
 /** objective is minimum path length */
-public class RnSimpleEllipsoidGoalManager extends SimpleTrajectoryRegionQuery implements GoalInterface {
+public class RnSimpleEllipsoidGoalManager extends GoalTrajectoryRegionQuery implements GoalInterface {
   private final Tensor center;
   private final Scalar radius;
 
   public RnSimpleEllipsoidGoalManager(Tensor center, Scalar radius) {
     super(new TimeInvariantRegion(new EllipsoidRegion(center, Array.of(l -> radius, center.length()))));
+    this.center = center;
+    this.radius = radius;
+  }
+
+  public RnSimpleEllipsoidGoalManager(Region region, Tensor center, Scalar radius) {
+    super(new TimeInvariantRegion(region));
+    if (!(region instanceof EllipsoidRegion))
+      throw new RuntimeException();
     this.center = center;
     this.radius = radius;
   }

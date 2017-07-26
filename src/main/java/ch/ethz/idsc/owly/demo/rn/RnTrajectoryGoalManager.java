@@ -4,6 +4,7 @@ package ch.ethz.idsc.owly.demo.rn;
 import java.util.List;
 
 import ch.ethz.idsc.owly.glc.adapter.GoalTrajectoryRegionQuery;
+import ch.ethz.idsc.owly.glc.adapter.TrajectoryGoalManager;
 import ch.ethz.idsc.owly.glc.core.GoalInterface;
 import ch.ethz.idsc.owly.math.flow.Flow;
 import ch.ethz.idsc.owly.math.region.Region;
@@ -11,24 +12,27 @@ import ch.ethz.idsc.owly.math.region.RegionUnion;
 import ch.ethz.idsc.owly.math.state.StateTime;
 import ch.ethz.idsc.owly.math.state.TimeInvariantRegion;
 import ch.ethz.idsc.owly.math.state.Trajectories;
-import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.red.Norm;
+import ch.ethz.idsc.tensor.sca.Ramp;
 
 /** objective is minimum path length */
-public class RnListGoalManager extends GoalTrajectoryRegionQuery implements GoalInterface {
+public class RnTrajectoryGoalManager extends GoalTrajectoryRegionQuery implements GoalInterface, TrajectoryGoalManager {
   private final Tensor center;
+  private final Scalar radius;
 
   // TODO JONAS change heuristic center to different way
-  public RnListGoalManager(List<Region> goalRegions, Tensor heuristicCenter) {
+  public RnTrajectoryGoalManager(List<Region> goalRegions, Tensor heuristicCenter, Scalar radius) {
     super(new TimeInvariantRegion(RegionUnion.wrap(goalRegions)));
     center = heuristicCenter;
+    this.radius = radius;
   }
 
-  public RnListGoalManager(Region region, Tensor heuristicCenter) {
+  public RnTrajectoryGoalManager(Region region, Tensor heuristicCenter, Scalar radius) {
     super(new TimeInvariantRegion(region));
     center = heuristicCenter;
+    this.radius = radius;
   }
 
   @Override
@@ -38,7 +42,7 @@ public class RnListGoalManager extends GoalTrajectoryRegionQuery implements Goal
 
   @Override
   public Scalar minCostToGoal(Tensor x) {
-    return RealScalar.ZERO;
-    // return Ramp.of(Norm._2.of(x.subtract(center)));
+    // return RealScalar.ZERO;
+    return Ramp.of(Norm._2.of(x.subtract(center)).subtract(radius));
   }
 }

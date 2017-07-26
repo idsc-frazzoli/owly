@@ -83,7 +83,6 @@ enum R2GlcAnyCircleDemo {
     for (int iter = 1; iter < 31; iter++) {
       Thread.sleep(1);
       long tic = System.nanoTime();
-      
       // -- GOALCHANGE
       List<StateTime> goalStateList = new ArrayList<>();
       do {
