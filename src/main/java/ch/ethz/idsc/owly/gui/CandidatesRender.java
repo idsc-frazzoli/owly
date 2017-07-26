@@ -17,7 +17,7 @@ import ch.ethz.idsc.owly.glc.core.CandidatePair;
 import ch.ethz.idsc.owly.glc.core.OptimalAnyTrajectoryPlanner;
 import ch.ethz.idsc.tensor.Tensor;
 
-public class CandidatesRender implements AbstractRender {
+public class CandidatesRender implements RenderInterface {
   private final OptimalAnyTrajectoryPlanner OptimalAnyTrajectoryPlanner;
 
   public CandidatesRender(OptimalAnyTrajectoryPlanner OptimalAnyTrajectoryPlanner) {

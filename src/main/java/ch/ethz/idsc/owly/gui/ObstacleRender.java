@@ -10,7 +10,7 @@ import java.util.Collection;
 
 import ch.ethz.idsc.owly.math.state.StateTime;
 
-class ObstacleRender implements AbstractRender {
+class ObstacleRender implements RenderInterface {
   private final Collection<StateTime> collection;
 
   ObstacleRender(Collection<StateTime> collection) {

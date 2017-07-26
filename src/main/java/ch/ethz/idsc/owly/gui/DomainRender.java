@@ -13,7 +13,7 @@ import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
 
-class DomainRender implements AbstractRender {
+class DomainRender implements RenderInterface {
   private static final Color SHADING = new Color(192, 192, 192, 64);
   // ---
   private final Map<Tensor, GlcNode> map;

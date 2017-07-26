@@ -4,6 +4,8 @@ package ch.ethz.idsc.owly.gui.ani;
 import java.awt.BorderLayout;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -15,6 +17,8 @@ import javax.swing.JToolBar;
 import javax.swing.WindowConstants;
 
 import ch.ethz.idsc.owly.gui.OwlyComponent;
+import ch.ethz.idsc.owly.gui.RenderElements;
+import ch.ethz.idsc.owly.gui.RenderInterface;
 import ch.ethz.idsc.owly.util.TimeKeeper;
 import ch.ethz.idsc.tensor.Scalar;
 
@@ -24,7 +28,7 @@ public class OwlyAnimationFrame {
   private final JLabel jLabel = new JLabel();
   private final Timer timer = new Timer();
   // ---
-  AnimationInterface ani; // TODO temporary
+  List<AnimationInterface> animationInterfaces = new LinkedList<>(); // TODO temporary
 
   public OwlyAnimationFrame() {
     JPanel jPanel = new JPanel(new BorderLayout());
@@ -43,16 +47,16 @@ public class OwlyAnimationFrame {
     jFrame.setBounds(100, 50, 800, 800);
     jFrame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
     TimeKeeper timeKeeper = new TimeKeeper();
+    owlyComponent.renderElements = new RenderElements();
     TimerTask renderTask = new TimerTask() {
       @Override
       public void run() {
         Scalar now = timeKeeper.now();
-        // System.out.println("rep "+);
-        ani.integrate(now);
+        animationInterfaces.forEach(ani -> ani.integrate(now));
         owlyComponent.jComponent.repaint();
       }
     };
-    timer.schedule(renderTask, 100, 100);
+    timer.schedule(renderTask, 100, 50);
     jFrame.addWindowListener(new WindowAdapter() {
       @Override
       public void windowClosing(WindowEvent windowEvent) {
@@ -61,13 +65,9 @@ public class OwlyAnimationFrame {
     });
   }
 
-  // public void configCoordinateOffset(int px, int py) {
-  // owlyAnimationComponent.model2pixel.set(RealScalar.of(px), 0, 2);
-  // owlyAnimationComponent.model2pixel.set(RealScalar.of(py), 1, 2);
-  // }
-  //
-  public void add(AnimationInterface ani) {
-    this.ani = ani;
-    // owlyAnimationComponent.ani = ani;
+  public void add(AnimationInterface animationInterface) {
+    animationInterfaces.add(animationInterface);
+    if (animationInterface instanceof RenderInterface)
+      owlyComponent.renderElements.list.add((RenderInterface) animationInterface);
   }
 }

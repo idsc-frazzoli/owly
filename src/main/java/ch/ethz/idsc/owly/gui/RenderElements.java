@@ -14,8 +14,11 @@ import ch.ethz.idsc.owly.math.state.TrajectoryRegionQuery;
 import ch.ethz.idsc.owly.rrts.adapter.SampledTransitionRegionQuery;
 import ch.ethz.idsc.owly.rrts.core.TransitionRegionQuery;
 
-class RenderElements {
-  final List<AbstractRender> list = new LinkedList<>();
+public class RenderElements {
+  public final List<RenderInterface> list = new LinkedList<>();
+
+  public RenderElements() {
+  }
 
   public RenderElements(TrajectoryPlanner trajectoryPlanner) {
     list.add(new EtaRender(trajectoryPlanner.getEta()));

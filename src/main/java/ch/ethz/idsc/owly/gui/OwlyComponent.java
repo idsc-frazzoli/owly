@@ -41,8 +41,8 @@ public class OwlyComponent {
   }
 
   Tensor model2pixel;
-  final OwlyLayer owlyLayer = new OwlyLayer(this);
-  RenderElements renderElements;
+  final OwlyLayer owlyLayer = new OwlyLayer(this::toPoint2D);
+  public RenderElements renderElements; // TODO use setter function
 
   public OwlyComponent() {
     reset_model2pixel();
@@ -124,7 +124,7 @@ public class OwlyComponent {
       graphics.draw(new Line2D.Double(toPoint2D(Tensors.vector(0, -10)), toPoint2D(Tensors.vector(0, 10))));
     }
     if (renderElements != null) {
-      renderElements.list.forEach(abstractRender -> abstractRender.render(owlyLayer, graphics));
+      renderElements.list.forEach(renderInterface -> renderInterface.render(owlyLayer, graphics));
     }
   }
 
