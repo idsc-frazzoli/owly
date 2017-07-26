@@ -11,7 +11,7 @@ import ch.ethz.idsc.owly.math.state.StateTime;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.opt.ConvexHull;
 
-class GoalRender implements AbstractRender {
+class GoalRender implements RenderInterface {
   private final Collection<StateTime> collection;
 
   GoalRender(Collection<StateTime> collection) {

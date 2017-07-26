@@ -8,7 +8,7 @@ import ch.ethz.idsc.tensor.Tensor;
 /** implementation for arbitrary dimensions
  * 
  * formerly "IdentityStateSpaceModel" */
-public enum SingleIntegrator implements StateSpaceModel {
+public enum SingleIntegratorStateSpaceModel implements StateSpaceModel {
   INSTANCE;
   // ---
   /** f(x,u) == u */

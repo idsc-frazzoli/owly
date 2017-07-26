@@ -11,7 +11,7 @@ import java.util.Collection;
 import ch.ethz.idsc.owly.glc.core.GlcNode;
 import ch.ethz.idsc.tensor.Tensor;
 
-class QueueRender implements AbstractRender {
+class QueueRender implements RenderInterface {
   private Collection<GlcNode> collection;
 
   QueueRender(Collection<GlcNode> collection) {

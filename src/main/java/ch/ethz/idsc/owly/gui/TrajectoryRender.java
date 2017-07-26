@@ -21,7 +21,7 @@ import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
 
-class TrajectoryRender implements AbstractRender {
+class TrajectoryRender implements RenderInterface {
   public static Scalar U_SCALE = RealScalar.of(.33);
   // ---
   private final TrajectoryPlanner trajectoryPlanner;

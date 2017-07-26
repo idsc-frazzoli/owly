@@ -6,7 +6,7 @@ import java.awt.Graphics2D;
 
 import ch.ethz.idsc.owly.glc.core.TrajectoryPlanner;
 
-class HudRender implements AbstractRender {
+class HudRender implements RenderInterface {
   private static final Color SHADING = new Color(0, 0, 0, 64);
   // ---
   @SuppressWarnings("unused")
