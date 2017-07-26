@@ -28,8 +28,8 @@ import ch.ethz.idsc.tensor.mat.LinearSolve;
 import ch.ethz.idsc.tensor.sca.Power;
 import ch.ethz.idsc.tensor.sca.Round;
 
-class OwlyComponent {
-  static final Tensor MODEL2PIXEL_INITIAL = Tensors.matrix(new Number[][] { //
+public class OwlyComponent {
+  private static final Tensor MODEL2PIXEL_INITIAL = Tensors.matrix(new Number[][] { //
       { 60, 0, 300 }, //
       { 0, -60, 300 }, //
       { 0, 0, 1 }, //
@@ -37,14 +37,11 @@ class OwlyComponent {
 
   // function ignores all but the first and second entry of x
   private static Tensor toAffinePoint(Tensor x) {
-    return Tensors.of( //
-        x.get(0), //
-        x.get(1), //
-        RealScalar.ONE);
+    return Tensors.of(x.get(0), x.get(1), RealScalar.ONE);
   }
 
   Tensor model2pixel;
-  final OwlyLayer abstractLayer = new OwlyLayer(this);
+  final OwlyLayer owlyLayer = new OwlyLayer(this);
   RenderElements renderElements;
 
   public OwlyComponent() {
@@ -106,7 +103,7 @@ class OwlyComponent {
     model2pixel = MODEL2PIXEL_INITIAL.copy();
   }
 
-  final JComponent jComponent = new JComponent() {
+  public final JComponent jComponent = new JComponent() {
     @Override
     protected void paintComponent(Graphics g) {
       render((Graphics2D) g, getSize());
@@ -127,7 +124,7 @@ class OwlyComponent {
       graphics.draw(new Line2D.Double(toPoint2D(Tensors.vector(0, -10)), toPoint2D(Tensors.vector(0, 10))));
     }
     if (renderElements != null) {
-      renderElements.list.forEach(ar -> ar.render(abstractLayer, graphics));
+      renderElements.list.forEach(abstractRender -> abstractRender.render(owlyLayer, graphics));
     }
   }
 
@@ -139,8 +136,6 @@ class OwlyComponent {
   }
 
   public Tensor toTensor(Point point) {
-    return LinearSolve.of( //
-        model2pixel, //
-        toAffinePoint(Tensors.vector(point.x, point.y)));
+    return LinearSolve.of(model2pixel, toAffinePoint(Tensors.vector(point.x, point.y)));
   }
 }

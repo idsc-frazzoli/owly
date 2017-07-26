@@ -1,7 +1,7 @@
 // code by jph
 package ch.ethz.idsc.owly.math.flow;
 
-import ch.ethz.idsc.owly.math.SingleIntegrator;
+import ch.ethz.idsc.owly.math.SingleIntegratorStateSpaceModel;
 import ch.ethz.idsc.owly.math.StateSpaceModel;
 import ch.ethz.idsc.owly.math.StateSpaceModels;
 import ch.ethz.idsc.tensor.ExactNumberQ;
@@ -13,7 +13,7 @@ import junit.framework.TestCase;
 
 public class IntegratorTest extends TestCase {
   public void testSimple() {
-    StateSpaceModel ssm = SingleIntegrator.INSTANCE;
+    StateSpaceModel ssm = SingleIntegratorStateSpaceModel.INSTANCE;
     Flow flow = StateSpaceModels.createFlow(ssm, Tensors.vector(1, 2));
     Tensor x = Tensors.vector(7, 2);
     Scalar h = RealScalar.of(3);

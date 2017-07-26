@@ -8,15 +8,15 @@ import java.util.List;
 import ch.ethz.idsc.owly.math.state.StateTime;
 import ch.ethz.idsc.tensor.Tensor;
 
-class OwlyLayer {
-  private final OwlyComponent glcComponent;
+public class OwlyLayer {
+  private final OwlyComponent owlyComponent;
 
   OwlyLayer(OwlyComponent glcComponent) {
-    this.glcComponent = glcComponent;
+    this.owlyComponent = glcComponent;
   }
 
   final Point2D toPoint2D(Tensor x) {
-    return glcComponent.toPoint2D(x);
+    return owlyComponent.toPoint2D(x);
   }
 
   final Path2D toVector(Tensor x, Tensor dx) {
