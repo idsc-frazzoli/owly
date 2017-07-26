@@ -73,14 +73,17 @@ enum R2GlcAnyCircleDemo {
         parameters.getEta(), stateIntegrator, controls, obstacleQuery, rnGoal);
     trajectoryPlanner.switchRootToState(Tensors.vector(0, 1).multiply(circleRadius));
     Expand.maxDepth(trajectoryPlanner, parameters.getDepthLimit());
+    List<StateTime> trajectory = trajectoryPlanner.trajectoryToBest();
+    Trajectories.print(trajectory);
     GifSequenceWriter gsw = GifSequenceWriter.of(UserHome.Pictures("R2_Circle_Gif.gif"), 250);
     OwlyFrame owlyFrame = Gui.start();
     owlyFrame.configCoordinateOffset(400, 400);
     owlyFrame.jFrame.setBounds(0, 0, 800, 800);
+    owlyFrame.setGlc((TrajectoryPlanner) trajectoryPlanner);
     for (int iter = 1; iter < 31; iter++) {
       Thread.sleep(1);
       long tic = System.nanoTime();
-      List<StateTime> trajectory = trajectoryPlanner.trajectoryToBest();
+      
       // -- GOALCHANGE
       List<StateTime> goalStateList = new ArrayList<>();
       do {
@@ -95,12 +98,14 @@ enum R2GlcAnyCircleDemo {
       trajectoryPlanner.changeToGoal(rnGoal2);
       // -- ROOTCHANGE
       if (trajectory.size() > 0) {
+        // --
         StateTime newRootState = trajectory.get(trajectory.size() > 5 ? 5 : 0);
         int increment = trajectoryPlanner.switchRootToState(newRootState.x());
         parameters.increaseDepthLimit(increment);
       }
       // -- EXPANDING
       int iters2 = Expand.maxDepth(trajectoryPlanner, parameters.getDepthLimit());
+      trajectory = trajectoryPlanner.trajectoryToBest();
       owlyFrame.setGlc((TrajectoryPlanner) trajectoryPlanner);
       Trajectories.print(trajectory);
       gsw.append(owlyFrame.offscreen());
