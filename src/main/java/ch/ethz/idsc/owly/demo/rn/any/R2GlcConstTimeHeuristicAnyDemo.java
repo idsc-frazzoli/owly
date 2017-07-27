@@ -8,12 +8,11 @@ import java.util.Optional;
 
 import ch.ethz.idsc.owly.demo.rn.R2NoiseRegion;
 import ch.ethz.idsc.owly.demo.rn.R2Parameters;
-import ch.ethz.idsc.owly.demo.rn.RnListGoalManager;
+import ch.ethz.idsc.owly.demo.rn.RnSimpleEllipsoidGoalManager;
+import ch.ethz.idsc.owly.demo.rn.RnTrajectoryGoalManager;
 import ch.ethz.idsc.owly.demo.util.R2Controls;
 import ch.ethz.idsc.owly.glc.adapter.Parameters;
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
-import ch.ethz.idsc.owly.glc.core.AnyPlannerInterface;
-import ch.ethz.idsc.owly.glc.core.DebugUtils;
 import ch.ethz.idsc.owly.glc.core.Expand;
 import ch.ethz.idsc.owly.glc.core.GlcNode;
 import ch.ethz.idsc.owly.glc.core.GlcNodes;
@@ -68,12 +67,13 @@ enum R2GlcConstTimeHeuristicAnyDemo {
       goalRegions.add(new EllipsoidRegion(goal, radius));
     }
     Tensor heuristicCenter = goalStateList.get(0).x();
-    RnListGoalManager rnGoal = new RnListGoalManager(goalRegions, heuristicCenter);
+    RnTrajectoryGoalManager rnGoal = new RnTrajectoryGoalManager(goalRegions, heuristicCenter, radius.Get(0));
     Region region = new R2NoiseRegion(.1);
     TrajectoryRegionQuery obstacleQuery = //
         new SimpleTrajectoryRegionQuery(new TimeInvariantRegion( //
             region));
-    AnyPlannerInterface trajectoryPlanner = new OptimalAnyTrajectoryPlanner( //
+    // TODO change back to AnyPlannerInterface
+    OptimalAnyTrajectoryPlanner trajectoryPlanner = new OptimalAnyTrajectoryPlanner( //
         parameters.getEta(), stateIntegrator, controls, obstacleQuery, rnGoal);
     Tensor startState = Tensors.vector(-3, 0);
     trajectoryPlanner.switchRootToState(startState);
@@ -83,29 +83,27 @@ enum R2GlcConstTimeHeuristicAnyDemo {
       System.out.println("closest Goal found was : " + trajectoryPlanner.getBest().get().state() //
           + " with merit: " + trajectoryPlanner.getBest().get().merit());
     Optional<StateTime> furthestState = trajectoryPlanner.getFurthestGoalState();
-    Optional<GlcNode> furthestGoalNode = trajectoryPlanner.getFurthestGoalNode();
+    Optional<GlcNode> finalGoalNode = trajectoryPlanner.getFinalGoalNode();
     if (furthestState.isPresent()) {
       System.out.println("furthest Goal found was : " + furthestState.get().x() //
-          + " with merit: " + furthestGoalNode.get().merit());
-      trajectory = GlcNodes.getPathFromRootTo(furthestGoalNode.get());
+          + " with merit: " + finalGoalNode.get().merit());
     }
+    trajectory = GlcNodes.getPathFromRootTo(finalGoalNode.get());
+    Trajectories.print(trajectory);
     OwlyFrame owlyFrame = Gui.start();
     owlyFrame.configCoordinateOffset(400, 400);
     owlyFrame.jFrame.setBounds(0, 0, 800, 800);
     owlyFrame.setGlc((TrajectoryPlanner) trajectoryPlanner);
     // -- Anytime loop
     boolean finalGoalFound = false;
-    while (!finalGoalFound) {
+    while (trajectory.size() > 5) {
       Thread.sleep(1);
       long tic = System.nanoTime();
-      // Check for final goal
+      // -- GOALCHANGE
+      // Check which is the furthest Goal which was found
       furthestState = trajectoryPlanner.getFurthestGoalState();
       int deleteIndex = -1;
       if (furthestState.isPresent()) {
-        if (goalRegions.get(goalRegions.size() - 1).isMember(furthestState.get().x())) {
-          System.out.println("***Last Goal was found***");
-          break;
-        }
         int index = goalRegions.size();
         while (index > 0) {
           index--;
@@ -115,45 +113,66 @@ enum R2GlcConstTimeHeuristicAnyDemo {
           }
         }
       }
-      // TODO JONAS put in class: of goalmanager?
-      // -- GOALCHANGE
-      final int deleteUntilIndex = deleteIndex; // index of Goal,which was not found yet
+      final int deleteUntilIndex = deleteIndex; // index of furthest found Goal
       if (deleteIndex < 0)
         System.out.println("No new Goal was found in last run");
-      boolean removed = goalRegions.removeIf(gr -> goalRegions.indexOf(gr) <= deleteUntilIndex);
+      // TODO JONAS BUG if <=
+      // remove goals before
+      boolean removed = goalRegions.removeIf(gr -> goalRegions.indexOf(gr) < deleteUntilIndex);
       if (removed)
         System.out.println("All Regionparts before " + deleteUntilIndex + " were removed");
-      System.out.println("size of goal regions list: " + goalRegions.size());
-      rnGoal = new RnListGoalManager(goalRegions, goalStateList.get(deleteUntilIndex + 1).x());
-      DebugUtils.nodeAmountCompare((TrajectoryPlanner) trajectoryPlanner);
-      trajectoryPlanner.changeToGoal(rnGoal);
+      System.out.println("Current size of goal regions list: " + goalRegions.size());
+      // only change goal if we are not at the end yet
+      if (!finalGoalFound) {
+        // creates new RegionUnin form Regionlist and puts Heuristic to next Goal in RegionList
+        rnGoal = new RnTrajectoryGoalManager(goalRegions, goalStateList.get(deleteUntilIndex + 1).x(), radius.Get(0));
+        trajectoryPlanner.changeToGoal(rnGoal);
+      } else {
+        if (goalRegions.size() != 1) // only the last Goal is left in the list
+          throw new RuntimeException(); // should only include last Goalregion, therefore size ==1
+        RnSimpleEllipsoidGoalManager rnGoalFinal = new RnSimpleEllipsoidGoalManager(goalRegions.get(0), goalStateList.get(0).x(), radius.Get(0));
+        trajectoryPlanner.changeToGoal(rnGoalFinal);
+      }
       // -- ROOTCHANGE
-      // if (trajectory != null) {
-      // StateTime newRootState = trajectory.get(trajectory.size() > 5 ? 5 : 0);
-      // int increment = trajectoryPlanner.switchRootToState(newRootState.x());
-      // parameters.increaseDepthLimit(increment);
-      // }
+      finalGoalNode = trajectoryPlanner.getFinalGoalNode();
+      if (finalGoalNode.isPresent())
+        trajectory = GlcNodes.getPathFromRootTo(finalGoalNode.get());
+      System.out.println("trajectorys size: " + trajectory.size());
+      if (trajectory.size() > 5) {
+        //
+        StateTime newRootState = trajectory.get(trajectory.size() > 5 ? 5 : 0);
+        int increment = trajectoryPlanner.switchRootToState(newRootState.x());
+        parameters.increaseDepthLimit(increment);
+      }
       // -- EXPANDING
-      int iters2 = Expand.constTime(trajectoryPlanner, runTime, parameters.getDepthLimit());
+      int expanditer = Expand.constTime(trajectoryPlanner, runTime, parameters.getDepthLimit());
       if (trajectoryPlanner.getBest().isPresent()) {
         System.out.println("Best Goal found was :" + trajectoryPlanner.getBest().get().state() //
             + " with merit: " + trajectoryPlanner.getBest().get().merit());
       }
+      // TODO JONAS BUG: if furtheststate is empty, why is best empty?
       furthestState = trajectoryPlanner.getFurthestGoalState();
-      furthestGoalNode = trajectoryPlanner.getFurthestGoalNode();
-      if (furthestGoalNode.isPresent()) {
+      // check if furthest Goal is already in last Region in List
+      if (furthestState.isPresent()) {
+        if (goalRegions.get(goalRegions.size() - 1).isMember(furthestState.get().x())) {
+          System.out.println("***Last Goal was found***");
+          finalGoalFound = true;
+        }
+      }
+      finalGoalNode = trajectoryPlanner.getFinalGoalNode();
+      if (finalGoalNode.isPresent() && furthestState.isPresent()) {
         System.out.println("Furthest Goal found was : " + furthestState.get().x() //
-            + " with merit: " + furthestGoalNode.get().merit());
-        trajectory = GlcNodes.getPathFromRootTo(furthestGoalNode.get());
+            + " with merit: " + finalGoalNode.get().merit());
+        trajectory = GlcNodes.getPathFromRootTo(finalGoalNode.get());
         Trajectories.print(trajectory);
       }
       owlyFrame.setGlc((TrajectoryPlanner) trajectoryPlanner);
       // --
       long toc = System.nanoTime();
       System.out.println((toc - tic) * 1e-9 + " Seconds needed to replan");
-      System.out.println("After goal switch needed " + iters2 + " iterations");
+      System.out.println("After goal switch needed " + expanditer + " iterations");
       System.out.println("*****Finished*****");
-      if (!owlyFrame.jFrame.isVisible())
+      if (!owlyFrame.jFrame.isVisible() || expanditer < 1)
         break;
     }
     System.out.println("Finished LOOP");

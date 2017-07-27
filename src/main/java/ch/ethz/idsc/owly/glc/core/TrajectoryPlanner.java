@@ -10,6 +10,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.PriorityQueue;
 import java.util.Queue;
+import java.util.TreeMap;
 
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
 import ch.ethz.idsc.owly.math.TensorUnaryOperator;
@@ -30,7 +31,9 @@ public abstract class TrajectoryPlanner implements ExpandInterface, Serializable
    * or null if such a node has not been identified
    * 
    * use function setBestNull() to reset best to null */
-  private GlcNode best = null;
+  // private GlcNode best = null;
+  // TODO make private again?
+  /* package */ TreeMap<GlcNode, List<StateTime>> best = new TreeMap<GlcNode, List<StateTime>>(NodeMeritComparator.INSTANCE);
   private int replaceCount = 0;
 
   protected TrajectoryPlanner(Tensor eta) {
@@ -96,20 +99,30 @@ public abstract class TrajectoryPlanner implements ExpandInterface, Serializable
     return Optional.ofNullable(queue.poll()); // Queue#poll() returns the head of queue, or null if queue is empty
   }
 
-  /* package */ final void offerDestination(GlcNode node) {
-    if (best == null || Scalars.lessThan(node.costFromRoot(), best.costFromRoot())) {
-      best = node;
-      System.out.println("found/improved goal, cost=" + best.costFromRoot());
+  /* package */ void offerDestination(GlcNode node, List<StateTime> connector) {
+    if (!best.isEmpty()) {
+      // Merit = CostFromRoot in goal, as CostToGoal == 0, for consistency use merit
+      if (Scalars.lessThan(node.merit(), best.firstKey().merit())) {
+        // if best not empty only put, when new one is better
+        best.clear();
+        System.out.println("found/improved goal, cost=" + node.merit());
+        best.put(node, connector);
+      }
+    } else {
+      // if best empty always put
+      best.put(node, connector);
     }
   }
 
   @Override // from ExpandInterface
   public final Optional<GlcNode> getBest() {
-    return Optional.ofNullable(best);
+    if (!best.isEmpty())
+      return Optional.ofNullable(best.firstKey());
+    return Optional.empty();
   }
 
   /* package */ final void setBestNull() {
-    best = null;
+    best.clear();
   }
 
   /** @return best node known to be in goal, or top node in queue, or null,
@@ -169,5 +182,12 @@ public abstract class TrajectoryPlanner implements ExpandInterface, Serializable
       stringBuilder.append("replacements:" + replaceCount());
     }
     return stringBuilder.toString();
+  }
+
+  // TODO smart solution? assuming that no TrajectoryGoalManager is used in standardplanner.
+  // Does this make sense?
+  /** @return the node, to which the trajectory should lead */
+  public Optional<GlcNode> getFinalGoalNode() {
+    return getBestOrElsePeek();
   }
 }

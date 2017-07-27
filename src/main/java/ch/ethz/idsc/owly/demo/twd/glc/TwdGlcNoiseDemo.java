@@ -37,17 +37,16 @@ enum TwdGlcNoiseDemo {
   ;
   public static void main(String[] args) {
     RationalScalar resolution = (RationalScalar) RealScalar.of(6);
-    Scalar timeScale = RealScalar.of(10);
+    Scalar timeScale = RealScalar.of(32);
     Scalar depthScale = RealScalar.of(20);
     Tensor partitionScale = Tensors.vector(5, 5, 2 * Math.PI / 360 * 10);
     Scalar dtMax = RationalScalar.of(1, 10);
     int maxIter = 2000;
     Scalar wheelDistance = RealScalar.of(0.2);
     Scalar wheelRadius = RealScalar.of(0.05);
-    Scalar wheelspeeds_max = RealScalar.of(2).multiply(RealScalar.of(2 * Math.PI));
-    TwdStateSpaceModel stateSpaceModel = new TwdStateSpaceModel(wheelRadius, wheelDistance, wheelspeeds_max);
+    TwdStateSpaceModel stateSpaceModel = new TwdStateSpaceModel(wheelRadius, wheelDistance);
     Parameters parameters = new TwdParameters( //
-        resolution, timeScale, depthScale, partitionScale, dtMax, maxIter, stateSpaceModel.getTensorLipschitz());
+        resolution, timeScale, depthScale, partitionScale, dtMax, maxIter, stateSpaceModel.getLipschitz());
     parameters.printResolution();
     System.out.println("DomainSize: 1/Eta: " + parameters.getEta().map(n -> RealScalar.ONE.divide(n)));
     Region region = new R2NoiseRegion(.1);

@@ -3,6 +3,7 @@ package ch.ethz.idsc.owly.demo.delta;
 
 import java.util.List;
 
+import ch.ethz.idsc.owly.glc.adapter.TrajectoryGoalManager;
 import ch.ethz.idsc.owly.math.region.Region;
 import ch.ethz.idsc.owly.math.region.RegionUnion;
 import ch.ethz.idsc.tensor.RealScalar;
@@ -10,7 +11,7 @@ import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
 
-public class DeltaTrajectoryGoalManager extends DeltaGoalManagerExt {
+public class DeltaTrajectoryGoalManager extends DeltaGoalManagerExt implements TrajectoryGoalManager {
   // Constructor with Default value in CostScaling
   public DeltaTrajectoryGoalManager(List<Region> goalRegions, Tensor center, Tensor radius, Scalar maxSpeed, Scalar costScalingFactor) {
     super(RegionUnion.wrap(goalRegions), center, radius, maxSpeed, costScalingFactor);

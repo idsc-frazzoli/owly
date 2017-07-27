@@ -1,8 +1,11 @@
-package ch.ethz.idsc.owly.demo.se2;
+// code by jl
+package ch.ethz.idsc.owly.demo.se2.any;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import ch.ethz.idsc.owly.demo.se2.Se2MinCurvatureGoalManager;
+import ch.ethz.idsc.owly.demo.se2.Se2Utils;
 import ch.ethz.idsc.owly.glc.core.AbstractAnyTrajectoryPlanner;
 import ch.ethz.idsc.owly.math.state.StateTime;
 import ch.ethz.idsc.tensor.DoubleScalar;
@@ -13,7 +16,8 @@ import ch.ethz.idsc.tensor.Tensors;
 import ch.ethz.idsc.tensor.sca.Cos;
 import ch.ethz.idsc.tensor.sca.Sin;
 
-public class Se2CircleAnyDemo {
+enum Se2CircleAnyDemo {
+  ;
   public static boolean switchToNextCircularGoal(AbstractAnyTrajectoryPlanner trajectoryPlanner, int iter) {
     List<StateTime> goalStateList = new ArrayList<>();
     Scalar stepsPerCircle = RealScalar.of(4);

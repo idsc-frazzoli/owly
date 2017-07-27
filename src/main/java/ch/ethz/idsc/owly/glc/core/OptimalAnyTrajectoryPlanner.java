@@ -97,7 +97,7 @@ public class OptimalAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
                 candidateMap.get(domainKey).remove(nextCandidatePair);
                 // GOAL check
                 if (!goalInterface.isDisjoint(connectors.get(next)))
-                  offerDestination(next);
+                  offerDestination(next, connectors.get(next));
                 break;
               }
             }
@@ -114,7 +114,7 @@ public class OptimalAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
               candidateMap.get(domainKey).remove(nextCandidatePair);
               // GOAL check
               if (!goalInterface.isDisjoint(connectors.get(next)))
-                offerDestination(next);
+                offerDestination(next, connectors.get(next));
               break;
             }
           }
@@ -202,7 +202,7 @@ public class OptimalAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
               // BUG
               addedNodesToQueue++;
               if (!goalInterface.isDisjoint(connector))
-                offerDestination(next);
+                offerDestination(next, connector);
               break; // leaves the while loop, but not the for loop
             }
           }
@@ -267,7 +267,7 @@ public class OptimalAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
                       current.parent().removeEdgeTo(current);
                     insertNodeInTree(possibleCandidateOrigin, possibleCandidateNode);
                     if (!goalInterface.isDisjoint(connector))
-                      offerDestination(possibleCandidateNode);
+                      offerDestination(possibleCandidateNode, connector);
                     break; // leaves the while loop if a better was found
                   }
                 } else {

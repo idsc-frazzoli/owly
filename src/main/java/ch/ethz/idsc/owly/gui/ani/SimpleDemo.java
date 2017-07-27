@@ -1,6 +1,7 @@
 // code by jph
 package ch.ethz.idsc.owly.gui.ani;
 
+// EXPERIMENTAL !!! UNDER DEVELOPMENT !!!
 enum SimpleDemo {
   ;
   public static void main(String[] args) {

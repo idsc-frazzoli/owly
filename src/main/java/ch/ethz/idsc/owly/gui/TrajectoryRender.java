@@ -40,7 +40,7 @@ public class TrajectoryRender implements RenderInterface {
     Optional<GlcNode> optional = trajectoryPlanner.getBestOrElsePeek();
     if (optional.isPresent()) {
       final GlcNode node = optional.get();
-      {// draw detailed trajectory from root to goal
+      {// draw detailed trajectory from root to goal/furthestgo
         final List<TrajectorySample> list = trajectoryPlanner.detailedTrajectoryTo(node);
         { // draw control vectors u along trajectory
           int rgb = 64;

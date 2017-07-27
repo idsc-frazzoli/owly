@@ -66,7 +66,7 @@ public class StandardTrajectoryPlanner extends AbstractTrajectoryPlanner {
                 throw new RuntimeException();
               domainQueue.remove();
               if (!goalInterface.isDisjoint(connectors.get(next)))
-                offerDestination(next);
+                offerDestination(next, connectors.get(next));
               // Same principle as in B. Paden's implementation, leaving while loop after first relabel
               break; // leaves the while loop, but not the for loop
             }
@@ -80,7 +80,7 @@ public class StandardTrajectoryPlanner extends AbstractTrajectoryPlanner {
             domainQueue.remove();
             // GOAL check
             if (!goalInterface.isDisjoint(connectors.get(next)))
-              offerDestination(next);
+              offerDestination(next, connectors.get(next));
             break;
           }
         }
