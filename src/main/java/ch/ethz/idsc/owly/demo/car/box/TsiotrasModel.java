@@ -26,10 +26,12 @@ public class TsiotrasModel extends DefaultCarModel {
 
   // ---
   private final CarSteering carSteering;
+  @SuppressWarnings("unused")
   private final Scalar gammaM;
 
   /** @param carSteering
    * @param gammaM rear/total drive ratio; 0 is FWD, 1 is RWD, 0.5 is AWD */
+  @SuppressWarnings("unused")
   public TsiotrasModel(CarSteering carSteering, Scalar gammaM) {
     this.carSteering = carSteering;
     this.gammaM = gammaM;
@@ -88,6 +90,7 @@ public class TsiotrasModel extends DefaultCarModel {
   private static final Scalar maxThb = DoubleScalar.of(1000.0); // max handbrake torque [Nm]
   private static final Scalar maxThrottle = DoubleScalar.of(2000.0);
 
+  @SuppressWarnings("unused")
   @Override
   public CarControl createControl(Tensor u) {
     if (!Clip.ABSOLUTE_ONE.of(u.Get(0)).equals(u.Get(0)))

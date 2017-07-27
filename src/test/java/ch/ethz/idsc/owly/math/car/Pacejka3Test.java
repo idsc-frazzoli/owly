@@ -32,6 +32,7 @@ public class Pacejka3Test extends TestCase {
     }
   }
 
+  @SuppressWarnings("unused")
   public void testLimit() {
     final Pacejka3 pacejka3 = new Pacejka3(13.8509, 1.3670, 0.9622);
     Scalar value = DoubleScalar.of(1.0);
