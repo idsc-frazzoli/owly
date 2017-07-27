@@ -8,6 +8,7 @@ import ch.ethz.idsc.owly.math.state.StateTime;
 import ch.ethz.idsc.owly.math.state.StateTimeRegion;
 
 public class SimpleTrajectoryRegionQuery extends StandardTrajectoryRegionQuery {
+  // TODO make static function for construction
   public SimpleTrajectoryRegionQuery(StateTimeRegion stateTimeRegion) {
     super(stateTimeRegion, new SparseStateTimeRegionMembers());
   }

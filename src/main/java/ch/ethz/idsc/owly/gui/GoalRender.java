@@ -6,20 +6,23 @@ import java.awt.Graphics2D;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Point2D;
 import java.util.Collection;
+import java.util.Objects;
 
 import ch.ethz.idsc.owly.math.state.StateTime;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.opt.ConvexHull;
 
-class GoalRender implements RenderInterface {
-  private final Collection<StateTime> collection;
+public class GoalRender implements RenderInterface {
+  private Collection<StateTime> collection;
 
-  GoalRender(Collection<StateTime> collection) {
+  public GoalRender(Collection<StateTime> collection) {
     this.collection = collection;
   }
 
   @Override
   public void render(OwlyLayer owlyLayer, Graphics2D graphics) {
+    if (Objects.isNull(collection))
+      return;
     { // draw convex hull of goal points
       Tensor points = Tensor.of(collection.stream().map(StateTime::x).map(x -> x.extract(0, 2)));
       if (2 < points.length()) {
@@ -36,5 +39,9 @@ class GoalRender implements RenderInterface {
         graphics.draw(new Ellipse2D.Double(point2d.getX() + offset, point2d.getY() + offset, radius, radius));
       }
     }
+  }
+
+  public void setCollection(Collection<StateTime> collection) {
+    this.collection = collection;
   }
 }

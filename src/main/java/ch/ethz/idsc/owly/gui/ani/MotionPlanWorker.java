@@ -12,6 +12,7 @@ import ch.ethz.idsc.owly.math.flow.EulerIntegrator;
 import ch.ethz.idsc.owly.math.flow.Flow;
 import ch.ethz.idsc.owly.math.state.FixedStateIntegrator;
 import ch.ethz.idsc.owly.math.state.StateIntegrator;
+import ch.ethz.idsc.owly.math.state.StateTime;
 import ch.ethz.idsc.owly.math.state.TrajectoryRegionQuery;
 import ch.ethz.idsc.tensor.DoubleScalar;
 import ch.ethz.idsc.tensor.RationalScalar;
@@ -27,7 +28,7 @@ public class MotionPlanWorker {
     this.trajectoryPlannerCallback = trajectoryPlannerCallback;
   }
 
-  public void start(final Tensor root, final Tensor goal, TrajectoryRegionQuery obstacleQuery) {
+  public void start(Tensor root, StateTime goal, TrajectoryRegionQuery obstacleQuery) {
     thread = new Thread(new Runnable() {
       @Override
       public void run() {
@@ -37,7 +38,7 @@ public class MotionPlanWorker {
             FixedStateIntegrator.create(EulerIntegrator.INSTANCE, RationalScalar.of(1, 10), 4);
         Collection<Flow> controls = R2Controls.createRadial(23);
         RnSimpleEllipsoidGoalManager rnGoal = //
-            new RnSimpleEllipsoidGoalManager(goal, DoubleScalar.of(.2));
+            new RnSimpleEllipsoidGoalManager(goal.x(), DoubleScalar.of(.2));
         // ---
         TrajectoryPlanner trajectoryPlanner = new StandardTrajectoryPlanner( //
             partitionScale, stateIntegrator, controls, obstacleQuery, rnGoal);

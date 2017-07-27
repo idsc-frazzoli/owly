@@ -7,9 +7,11 @@ import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -24,9 +26,10 @@ import javax.swing.WindowConstants;
 import ch.ethz.idsc.owly.demo.rn.R2NoiseRegion;
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
 import ch.ethz.idsc.owly.glc.core.GlcNode;
-import ch.ethz.idsc.owly.glc.core.GlcNodes;
 import ch.ethz.idsc.owly.glc.core.StandardTrajectoryPlanner;
 import ch.ethz.idsc.owly.glc.core.TrajectoryPlanner;
+import ch.ethz.idsc.owly.glc.core.TrajectorySample;
+import ch.ethz.idsc.owly.gui.GoalRender;
 import ch.ethz.idsc.owly.gui.ObstacleRender;
 import ch.ethz.idsc.owly.gui.OwlyComponent;
 import ch.ethz.idsc.owly.gui.RenderElements;
@@ -35,12 +38,12 @@ import ch.ethz.idsc.owly.gui.TrajectoryRender;
 import ch.ethz.idsc.owly.math.region.Region;
 import ch.ethz.idsc.owly.math.state.StateTime;
 import ch.ethz.idsc.owly.math.state.TimeInvariantRegion;
-import ch.ethz.idsc.owly.math.state.Trajectories;
 import ch.ethz.idsc.owly.math.state.TrajectoryRegionQuery;
 import ch.ethz.idsc.owly.util.TimeKeeper;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
 
+// TODO class is in draft status! API will change drastically 
 public class OwlyAnimationFrame {
   public final JFrame jFrame = new JFrame();
   private final OwlyComponent owlyComponent = new OwlyComponent();
@@ -48,9 +51,10 @@ public class OwlyAnimationFrame {
   private final Timer timer = new Timer();
   // ---
   TrajectoryRender trajectoryRender = new TrajectoryRender(null);
-  // Collection<StateTime> obstacles = new HashSet<>();
   ObstacleRender obstacleRender = new ObstacleRender(null);
-  List<AnimationInterface> animationInterfaces = new LinkedList<>(); // TODO temporary
+  GoalRender goalRender = new GoalRender(null);
+  List<AnimationInterface> animationInterfaces = new LinkedList<>();
+  AnimationInterface controllable = null;
 
   public OwlyAnimationFrame() {
     JPanel jPanel = new JPanel(new BorderLayout());
@@ -72,6 +76,7 @@ public class OwlyAnimationFrame {
     owlyComponent.renderElements = new RenderElements();
     owlyComponent.renderElements.list.add(trajectoryRender);
     owlyComponent.renderElements.list.add(obstacleRender);
+    owlyComponent.renderElements.list.add(goalRender);
     TimerTask timerTask = new TimerTask() {
       @Override
       public void run() {
@@ -96,8 +101,14 @@ public class OwlyAnimationFrame {
         if (mouseEvent.getButton() == 1) {
           Tensor goal = owlyComponent.toModel(mouseEvent.getPoint());
           MotionPlanWorker mpw = new MotionPlanWorker(trajectoryPlannerCallback);
-          Rice2Entity rice2Entity = (Rice2Entity) animationInterfaces.get(0);
-          mpw.start(rice2Entity.episodeIntegrator.tail().x(), goal, obstacleQuery);
+          if (controllable instanceof R2Entity) {
+            R2Entity r2Entity = (R2Entity) controllable;
+            mpw.start(goal, r2Entity.episodeIntegrator.tail(), obstacleQuery);
+          }
+          if (controllable instanceof Rice2Entity) {
+            Rice2Entity rice2Entity = (Rice2Entity) controllable;
+            mpw.start(goal, rice2Entity.episodeIntegrator.tail(), obstacleQuery);
+          }
         }
       }
     });
@@ -111,23 +122,43 @@ public class OwlyAnimationFrame {
       // System.out.println(iters + " " + ((toc - tic) * 1e-9));
       Optional<GlcNode> optional = trajectoryPlanner.getBest();
       if (optional.isPresent()) {
-        List<StateTime> trajectory = GlcNodes.getPathFromRootTo(optional.get());
-        Trajectories.print(trajectory);
+        // List<StateTime> trajectory = GlcNodes.getPathFromRootTo(optional.get());
+        // Trajectories.print(trajectory);
+        if (controllable instanceof R2Entity) {
+          R2Entity r2Entity = (R2Entity) controllable;
+          List<TrajectorySample> trajectory = trajectoryPlanner.detailedTrajectoryTo(optional.get());
+          Collections.reverse(trajectory);
+          r2Entity.setTrajectory(trajectory);
+        }
+        trajectoryRender.setTrajectoryPlanner(trajectoryPlanner);
+      } else {
+        System.err.println("NO TRAJECTORY BETWEEN ROOT TO GOAL");
       }
-      trajectoryRender.setTrajectoryPlanner(trajectoryPlanner);
       StandardTrajectoryPlanner stp = (StandardTrajectoryPlanner) trajectoryPlanner;
-      TrajectoryRegionQuery trq = stp.getObstacleQuery();
-      if (trq instanceof SimpleTrajectoryRegionQuery) {
-        SimpleTrajectoryRegionQuery simpleTrajectoryRegionQuery = (SimpleTrajectoryRegionQuery) trq;
-        Collection<StateTime> collection = simpleTrajectoryRegionQuery.getSparseDiscoveredMembers();
-        obstacleRender.setCollection(new HashSet<>(collection));
+      {
+        TrajectoryRegionQuery trq = stp.getObstacleQuery();
+        if (trq instanceof SimpleTrajectoryRegionQuery) {
+          SimpleTrajectoryRegionQuery simpleTrajectoryRegionQuery = (SimpleTrajectoryRegionQuery) trq;
+          Collection<StateTime> collection = simpleTrajectoryRegionQuery.getSparseDiscoveredMembers();
+          obstacleRender.setCollection(new HashSet<>(collection));
+        }
       }
-      // trajectoryRender
+      {
+        TrajectoryRegionQuery trq = stp.getGoalQuery();
+        if (trq instanceof SimpleTrajectoryRegionQuery) {
+          SimpleTrajectoryRegionQuery simpleTrajectoryRegionQuery = (SimpleTrajectoryRegionQuery) trq;
+          Collection<StateTime> collection = simpleTrajectoryRegionQuery.getSparseDiscoveredMembers();
+          goalRender.setCollection(new HashSet<>(collection));
+        }
+      }
       owlyComponent.jComponent.repaint();
     }
   };
 
   public void add(AnimationInterface animationInterface) {
+    if (Objects.isNull(controllable))
+      controllable = animationInterface;
+    // ---
     animationInterfaces.add(animationInterface);
     if (animationInterface instanceof RenderInterface)
       owlyComponent.renderElements.list.add((RenderInterface) animationInterface);

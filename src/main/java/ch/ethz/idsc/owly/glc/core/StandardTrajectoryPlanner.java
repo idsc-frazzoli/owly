@@ -42,10 +42,6 @@ public class StandardTrajectoryPlanner extends AbstractTrajectoryPlanner {
         domainQueueMap.insert(domainKey, next); // node is considered without comparison to any former node
     }
     processCandidates(node, connectors, domainQueueMap);
-    // jan removed check. consistency checks should be implemented outside class
-    // Optional<GlcNode> optional = getBestOrElsePeek();
-    // if (optional.isPresent())
-    // DebugUtils.nodeAmountCheck(optional.get(), node, domainMap().size());
   }
 
   private void processCandidates( //
