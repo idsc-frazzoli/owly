@@ -28,7 +28,7 @@ import ch.ethz.idsc.owly.demo.util.UserHome;
 import ch.ethz.idsc.owly.glc.core.TrajectoryPlanner;
 import ch.ethz.idsc.owly.rrts.core.RrtsNode;
 import ch.ethz.idsc.owly.rrts.core.TransitionRegionQuery;
-import ch.ethz.idsc.tensor.RealScalar;
+import ch.ethz.idsc.tensor.Tensors;
 import ch.ethz.idsc.tensor.io.Serialization;
 
 public class OwlyFrame {
@@ -138,8 +138,7 @@ public class OwlyFrame {
   }
 
   public void configCoordinateOffset(int px, int py) {
-    owlyComponent.model2pixel.set(RealScalar.of(px), 0, 2);
-    owlyComponent.model2pixel.set(RealScalar.of(py), 1, 2);
+    owlyComponent.setOffset(Tensors.vector(px, py));
   }
 
   public void setGlc(TrajectoryPlanner trajectoryPlanner) {

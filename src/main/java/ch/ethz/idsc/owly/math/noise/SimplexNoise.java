@@ -16,9 +16,7 @@ package ch.ethz.idsc.owly.math.noise;
 public enum SimplexNoise implements ContinuousNoise {
   FUNCTION //
   ;
-  // Inner class to speed up gradient computations
-  // (array access is a lot slower than member access)
-  private static final Grad[] grad3 = {
+  private static final Grad[] GRAD3 = {
       // ---
       new Grad(1, 1, 0), //
       new Grad(-1, 1, 0), //
@@ -33,7 +31,7 @@ public enum SimplexNoise implements ContinuousNoise {
       new Grad(0, 1, -1), //
       new Grad(0, -1, -1) };
   // ---
-  private static final Grad[] grad4 = {
+  private static final Grad[] GRAD4 = {
       // ---
       new Grad(0, 1, 1, 1), //
       new Grad(0, 1, 1, -1), //
@@ -112,30 +110,30 @@ public enum SimplexNoise implements ContinuousNoise {
     // Work out the hashed gradient indices of the three simplex corners
     int ii = i & 255;
     int jj = j & 255;
-    int gi0 = StaticHelper.PERMMOD12[ii + StaticHelper.PERM[jj]];
-    int gi1 = StaticHelper.PERMMOD12[ii + i1 + StaticHelper.PERM[jj + j1]];
-    int gi2 = StaticHelper.PERMMOD12[ii + 1 + StaticHelper.PERM[jj + 1]];
+    int gi0 = Noise.TABLE.perm_12[ii + Noise.TABLE.perm[jj]];
+    int gi1 = Noise.TABLE.perm_12[ii + i1 + Noise.TABLE.perm[jj + j1]];
+    int gi2 = Noise.TABLE.perm_12[ii + 1 + Noise.TABLE.perm[jj + 1]];
     // Calculate the contribution from the three corners
     double t0 = 0.5 - x0 * x0 - y0 * y0;
     if (t0 < 0)
       n0 = 0.0;
     else {
       t0 *= t0;
-      n0 = t0 * t0 * grad3[gi0].dot(x0, y0); // (x,y) of grad3 used for 2D gradient
+      n0 = t0 * t0 * GRAD3[gi0].dot(x0, y0); // (x,y) of grad3 used for 2D gradient
     }
     double t1 = 0.5 - x1 * x1 - y1 * y1;
     if (t1 < 0)
       n1 = 0.0;
     else {
       t1 *= t1;
-      n1 = t1 * t1 * grad3[gi1].dot(x1, y1);
+      n1 = t1 * t1 * GRAD3[gi1].dot(x1, y1);
     }
     double t2 = 0.5 - x2 * x2 - y2 * y2;
     if (t2 < 0)
       n2 = 0.0;
     else {
       t2 *= t2;
-      n2 = t2 * t2 * grad3[gi2].dot(x2, y2);
+      n2 = t2 * t2 * GRAD3[gi2].dot(x2, y2);
     }
     // Add contributions from each corner to get the final noise value.
     return 70.148058127 * (n0 + n1 + n2); // used to be 70
@@ -234,38 +232,38 @@ public enum SimplexNoise implements ContinuousNoise {
     int ii = i & 255;
     int jj = j & 255;
     int kk = k & 255;
-    int gi0 = StaticHelper.PERMMOD12[ii + StaticHelper.PERM[jj + StaticHelper.PERM[kk]]];
-    int gi1 = StaticHelper.PERMMOD12[ii + i1 + StaticHelper.PERM[jj + j1 + StaticHelper.PERM[kk + k1]]];
-    int gi2 = StaticHelper.PERMMOD12[ii + i2 + StaticHelper.PERM[jj + j2 + StaticHelper.PERM[kk + k2]]];
-    int gi3 = StaticHelper.PERMMOD12[ii + 1 + StaticHelper.PERM[jj + 1 + StaticHelper.PERM[kk + 1]]];
+    int gi0 = Noise.TABLE.perm_12[ii + Noise.TABLE.perm[jj + Noise.TABLE.perm[kk]]];
+    int gi1 = Noise.TABLE.perm_12[ii + i1 + Noise.TABLE.perm[jj + j1 + Noise.TABLE.perm[kk + k1]]];
+    int gi2 = Noise.TABLE.perm_12[ii + i2 + Noise.TABLE.perm[jj + j2 + Noise.TABLE.perm[kk + k2]]];
+    int gi3 = Noise.TABLE.perm_12[ii + 1 + Noise.TABLE.perm[jj + 1 + Noise.TABLE.perm[kk + 1]]];
     // Calculate the contribution from the four corners
     double t0 = 0.6 - x0 * x0 - y0 * y0 - z0 * z0;
     if (t0 < 0)
       n0 = 0.0;
     else {
       t0 *= t0;
-      n0 = t0 * t0 * grad3[gi0].dot(x0, y0, z0);
+      n0 = t0 * t0 * GRAD3[gi0].dot(x0, y0, z0);
     }
     double t1 = 0.6 - x1 * x1 - y1 * y1 - z1 * z1;
     if (t1 < 0)
       n1 = 0.0;
     else {
       t1 *= t1;
-      n1 = t1 * t1 * grad3[gi1].dot(x1, y1, z1);
+      n1 = t1 * t1 * GRAD3[gi1].dot(x1, y1, z1);
     }
     double t2 = 0.6 - x2 * x2 - y2 * y2 - z2 * z2;
     if (t2 < 0)
       n2 = 0.0;
     else {
       t2 *= t2;
-      n2 = t2 * t2 * grad3[gi2].dot(x2, y2, z2);
+      n2 = t2 * t2 * GRAD3[gi2].dot(x2, y2, z2);
     }
     double t3 = 0.6 - x3 * x3 - y3 * y3 - z3 * z3;
     if (t3 < 0)
       n3 = 0.0;
     else {
       t3 *= t3;
-      n3 = t3 * t3 * grad3[gi3].dot(x3, y3, z3);
+      n3 = t3 * t3 * GRAD3[gi3].dot(x3, y3, z3);
     }
     // Add contributions from each corner to get the final noise value.
     return 32.7 * (n0 + n1 + n2 + n3); // used to be 32.0
@@ -372,46 +370,46 @@ public enum SimplexNoise implements ContinuousNoise {
     int jj = j & 255;
     int kk = k & 255;
     int ll = l & 255;
-    int gi0 = StaticHelper.PERM[ii + StaticHelper.PERM[jj + StaticHelper.PERM[kk + StaticHelper.PERM[ll]]]] % 32;
-    int gi1 = StaticHelper.PERM[ii + i1 + StaticHelper.PERM[jj + j1 + StaticHelper.PERM[kk + k1 + StaticHelper.PERM[ll + l1]]]] % 32;
-    int gi2 = StaticHelper.PERM[ii + i2 + StaticHelper.PERM[jj + j2 + StaticHelper.PERM[kk + k2 + StaticHelper.PERM[ll + l2]]]] % 32;
-    int gi3 = StaticHelper.PERM[ii + i3 + StaticHelper.PERM[jj + j3 + StaticHelper.PERM[kk + k3 + StaticHelper.PERM[ll + l3]]]] % 32;
-    int gi4 = StaticHelper.PERM[ii + 1 + StaticHelper.PERM[jj + 1 + StaticHelper.PERM[kk + 1 + StaticHelper.PERM[ll + 1]]]] % 32;
+    int gi0 = Noise.TABLE.perm[ii + Noise.TABLE.perm[jj + Noise.TABLE.perm[kk + Noise.TABLE.perm[ll]]]] % 32;
+    int gi1 = Noise.TABLE.perm[ii + i1 + Noise.TABLE.perm[jj + j1 + Noise.TABLE.perm[kk + k1 + Noise.TABLE.perm[ll + l1]]]] % 32;
+    int gi2 = Noise.TABLE.perm[ii + i2 + Noise.TABLE.perm[jj + j2 + Noise.TABLE.perm[kk + k2 + Noise.TABLE.perm[ll + l2]]]] % 32;
+    int gi3 = Noise.TABLE.perm[ii + i3 + Noise.TABLE.perm[jj + j3 + Noise.TABLE.perm[kk + k3 + Noise.TABLE.perm[ll + l3]]]] % 32;
+    int gi4 = Noise.TABLE.perm[ii + 1 + Noise.TABLE.perm[jj + 1 + Noise.TABLE.perm[kk + 1 + Noise.TABLE.perm[ll + 1]]]] % 32;
     // Calculate the contribution from the five corners
     double t0 = 0.6 - x0 * x0 - y0 * y0 - z0 * z0 - w0 * w0;
     if (t0 < 0)
       n0 = 0.0;
     else {
       t0 *= t0;
-      n0 = t0 * t0 * grad4[gi0].dot(x0, y0, z0, w0);
+      n0 = t0 * t0 * GRAD4[gi0].dot(x0, y0, z0, w0);
     }
     double t1 = 0.6 - x1 * x1 - y1 * y1 - z1 * z1 - w1 * w1;
     if (t1 < 0)
       n1 = 0.0;
     else {
       t1 *= t1;
-      n1 = t1 * t1 * grad4[gi1].dot(x1, y1, z1, w1);
+      n1 = t1 * t1 * GRAD4[gi1].dot(x1, y1, z1, w1);
     }
     double t2 = 0.6 - x2 * x2 - y2 * y2 - z2 * z2 - w2 * w2;
     if (t2 < 0)
       n2 = 0.0;
     else {
       t2 *= t2;
-      n2 = t2 * t2 * grad4[gi2].dot(x2, y2, z2, w2);
+      n2 = t2 * t2 * GRAD4[gi2].dot(x2, y2, z2, w2);
     }
     double t3 = 0.6 - x3 * x3 - y3 * y3 - z3 * z3 - w3 * w3;
     if (t3 < 0)
       n3 = 0.0;
     else {
       t3 *= t3;
-      n3 = t3 * t3 * grad4[gi3].dot(x3, y3, z3, w3);
+      n3 = t3 * t3 * GRAD4[gi3].dot(x3, y3, z3, w3);
     }
     double t4 = 0.6 - x4 * x4 - y4 * y4 - z4 * z4 - w4 * w4;
     if (t4 < 0)
       n4 = 0.0;
     else {
       t4 *= t4;
-      n4 = t4 * t4 * grad4[gi4].dot(x4, y4, z4, w4);
+      n4 = t4 * t4 * GRAD4[gi4].dot(x4, y4, z4, w4);
     }
     return 27.23 * (n0 + n1 + n2 + n3 + n4); // used to be 27.0
   }

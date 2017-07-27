@@ -20,4 +20,9 @@ public class SimplexNoiseTest extends TestCase {
         .count();
     assertTrue(10 < len);
   }
+
+  public void testExample() {
+    double value = SimplexNoise.FUNCTION.at(.3, 300.3, -600.5);
+    assertEquals(value, -0.12579872366423636);
+  }
 }

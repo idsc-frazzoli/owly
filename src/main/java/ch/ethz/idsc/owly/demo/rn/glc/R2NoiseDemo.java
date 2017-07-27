@@ -40,8 +40,7 @@ enum R2NoiseDemo {
     RnSimpleCircleGoalManager rnGoal = //
         new RnSimpleCircleGoalManager(Tensors.vector(10, 0), DoubleScalar.of(.2));
     TrajectoryRegionQuery obstacleQuery = //
-        new SimpleTrajectoryRegionQuery(new TimeInvariantRegion( //
-            region));
+        new SimpleTrajectoryRegionQuery(new TimeInvariantRegion(region));
     // ---
     TrajectoryPlanner trajectoryPlanner = new StandardTrajectoryPlanner( //
         partitionScale, stateIntegrator, controls, obstacleQuery, rnGoal);

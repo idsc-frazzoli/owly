@@ -15,16 +15,16 @@ public enum PerlinNoise implements ContinuousNoise {
     double u = fade(x); // COMPUTE FADE CURVES
     double v = fade(y); // FOR EACH OF X,Y,Z.
     double w = fade(z);
-    int A = StaticHelper.PERM[X] + Y; // HASH COORDINATES OF
-    int AA = StaticHelper.PERM[A] + Z; // THE 8 CUBE CORNERS,
-    int AB = StaticHelper.PERM[A + 1] + Z;
-    int B = StaticHelper.PERM[X + 1] + Y;
-    int BA = StaticHelper.PERM[B] + Z;
-    int BB = StaticHelper.PERM[B + 1] + Z;
-    double i1a = lerp(u, grad(StaticHelper.PERM[AA], x, y, z), grad(StaticHelper.PERM[BA], x - 1, y, z));
-    double i1b = lerp(u, grad(StaticHelper.PERM[AB], x, y - 1, z), grad(StaticHelper.PERM[BB], x - 1, y - 1, z));
-    double i2a = lerp(u, grad(StaticHelper.PERM[AA + 1], x, y, z - 1), grad(StaticHelper.PERM[BA + 1], x - 1, y, z - 1));
-    double i2b = lerp(u, grad(StaticHelper.PERM[AB + 1], x, y - 1, z - 1), grad(StaticHelper.PERM[BB + 1], x - 1, y - 1, z - 1));
+    int A = Noise.TABLE.perm[X] + Y; // HASH COORDINATES OF
+    int AA = Noise.TABLE.perm[A] + Z; // THE 8 CUBE CORNERS,
+    int AB = Noise.TABLE.perm[A + 1] + Z;
+    int B = Noise.TABLE.perm[X + 1] + Y;
+    int BA = Noise.TABLE.perm[B] + Z;
+    int BB = Noise.TABLE.perm[B + 1] + Z;
+    double i1a = lerp(u, grad(Noise.TABLE.perm[AA], x, y, z), grad(Noise.TABLE.perm[BA], x - 1, y, z));
+    double i1b = lerp(u, grad(Noise.TABLE.perm[AB], x, y - 1, z), grad(Noise.TABLE.perm[BB], x - 1, y - 1, z));
+    double i2a = lerp(u, grad(Noise.TABLE.perm[AA + 1], x, y, z - 1), grad(Noise.TABLE.perm[BA + 1], x - 1, y, z - 1));
+    double i2b = lerp(u, grad(Noise.TABLE.perm[AB + 1], x, y - 1, z - 1), grad(Noise.TABLE.perm[BB + 1], x - 1, y - 1, z - 1));
     return lerp(w, lerp(v, i1a, i1b), lerp(v, i2a, i2b));
   }
 

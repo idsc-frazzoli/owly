@@ -10,7 +10,7 @@ import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
 import ch.ethz.idsc.tensor.sca.Ceiling;
 
-class EtaRender implements AbstractRender {
+class EtaRender implements RenderInterface {
   private final Tensor eta;
 
   EtaRender(Tensor eta) {

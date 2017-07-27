@@ -4,22 +4,23 @@ package ch.ethz.idsc.owly.gui;
 import java.awt.geom.Path2D;
 import java.awt.geom.Point2D;
 import java.util.List;
+import java.util.function.Function;
 
 import ch.ethz.idsc.owly.math.state.StateTime;
 import ch.ethz.idsc.tensor.Tensor;
 
-class OwlyLayer {
-  private final OwlyComponent glcComponent;
+public final class OwlyLayer {
+  private final Function<Tensor, Point2D> toPoint2D_function;
 
-  OwlyLayer(OwlyComponent glcComponent) {
-    this.glcComponent = glcComponent;
+  OwlyLayer(Function<Tensor, Point2D> function) {
+    this.toPoint2D_function = function;
   }
 
-  final Point2D toPoint2D(Tensor x) {
-    return glcComponent.toPoint2D(x);
+  public Point2D toPoint2D(Tensor x) {
+    return toPoint2D_function.apply(x);
   }
 
-  final Path2D toVector(Tensor x, Tensor dx) {
+  public Path2D toVector(Tensor x, Tensor dx) {
     x = x.extract(0, 2);
     dx = dx.extract(0, 2);
     Path2D path2d = new Path2D.Double();
@@ -30,7 +31,7 @@ class OwlyLayer {
     return path2d;
   }
 
-  final Path2D toPath2D(List<StateTime> trajectory) {
+  public Path2D toPath2D(List<StateTime> trajectory) {
     Path2D path2d = new Path2D.Double();
     if (!trajectory.isEmpty()) {
       StateTime prev = trajectory.get(0);
@@ -44,7 +45,7 @@ class OwlyLayer {
     return path2d;
   }
 
-  final Path2D toPath2D(Tensor polygon) {
+  public Path2D toPath2D(Tensor polygon) {
     Path2D path2d = new Path2D.Double();
     {
       Point2D point2d = toPoint2D(polygon.get(0));
