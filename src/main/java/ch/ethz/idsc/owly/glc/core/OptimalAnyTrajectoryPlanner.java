@@ -288,6 +288,6 @@ public class OptimalAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
     // Deleting CandidateBuckets, if they are empty
     candidateMap.values().removeIf(bucket -> bucket.isEmpty());
     long toc = System.nanoTime();
-    System.out.println("Relabel during goalSwitch took: " + (toc - tic) * 10e-9 + "s");
+    System.out.println("Relabel during goalSwitch took: " + (toc - tic) * 1e-9 + "s");
   }
 }

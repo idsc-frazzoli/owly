@@ -3,7 +3,7 @@ package ch.ethz.idsc.owly.demo.rn;
 
 import java.util.List;
 
-import ch.ethz.idsc.owly.glc.adapter.GoalTrajectoryRegionQuery;
+import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
 import ch.ethz.idsc.owly.glc.core.GoalInterface;
 import ch.ethz.idsc.owly.math.flow.Flow;
 import ch.ethz.idsc.owly.math.region.EllipsoidRegion;
@@ -18,7 +18,7 @@ import ch.ethz.idsc.tensor.red.Norm;
 import ch.ethz.idsc.tensor.sca.Ramp;
 
 /** objective is minimum path length */
-public class RnSimpleCircleGoalManager extends GoalTrajectoryRegionQuery implements GoalInterface {
+public class RnSimpleCircleGoalManager extends SimpleTrajectoryRegionQuery implements GoalInterface {
   private final Tensor center;
   private final Scalar radius;
 

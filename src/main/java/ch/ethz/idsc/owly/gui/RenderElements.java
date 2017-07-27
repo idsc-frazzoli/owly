@@ -6,7 +6,6 @@ import java.util.LinkedList;
 import java.util.List;
 
 import ch.ethz.idsc.owly.data.tree.StateCostNode;
-import ch.ethz.idsc.owly.glc.adapter.GoalTrajectoryRegionQuery;
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
 import ch.ethz.idsc.owly.glc.core.OptimalAnyTrajectoryPlanner;
 import ch.ethz.idsc.owly.glc.core.TrajectoryPlanner;
@@ -45,9 +44,9 @@ public class RenderElements {
         SimpleTrajectoryRegionQuery strq = (SimpleTrajectoryRegionQuery) trq;
         list.add(new GoalRender(strq.getSparseDiscoveredMembers()));
       }
-      if (trq instanceof GoalTrajectoryRegionQuery) {
-        GoalTrajectoryRegionQuery gtrq = (GoalTrajectoryRegionQuery) trq;
-        list.add(new GoalRender(gtrq.getAllDiscoveredMembersStateTimeInGoal()));
+      if (trq instanceof SimpleTrajectoryRegionQuery) {
+        SimpleTrajectoryRegionQuery strq = (SimpleTrajectoryRegionQuery) trq;
+        list.add(new GoalRender(strq.getSparseDiscoveredMembers()));
       }
     }
     list.add(new HudRender(trajectoryPlanner));

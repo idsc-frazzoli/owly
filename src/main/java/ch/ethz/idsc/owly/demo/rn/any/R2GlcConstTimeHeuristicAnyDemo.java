@@ -92,6 +92,7 @@ enum R2GlcConstTimeHeuristicAnyDemo {
       Thread.sleep(1);
       long tic = System.nanoTime();
       // -- GOALCHANGE
+      long ticTemp = tic;
       // Check which is the furthest Goal which was found
       Optional<StateTime> furthestState = trajectoryPlanner.getFurthestGoalState();
       int deleteIndex = -1;
@@ -116,7 +117,7 @@ enum R2GlcConstTimeHeuristicAnyDemo {
       // only change goal if we are not at the end yet
       if (!finalGoalFound) {
         // creates new RegionUnin form Regionlist and puts Heuristic to next Goal in RegionList
-        rnGoal = new RnTrajectoryGoalManager(goalRegions, goalStateList.get(deleteUntilIndex + 1).x(), radius.Get(0));
+        rnGoal = new RnTrajectoryGoalManager(goalRegions, goalStateList.get(goalStateList.size() - 1).x(), radius.Get(0));
         trajectoryPlanner.changeToGoal(rnGoal);
       } else {
         if (goalRegions.size() != 1) // only the last Goal is left in the list
@@ -124,7 +125,10 @@ enum R2GlcConstTimeHeuristicAnyDemo {
         RnSimpleCircleGoalManager rnGoalFinal = new RnSimpleCircleGoalManager(goalRegions.get(0), goalStateList.get(0).x(), radius.Get(0));
         trajectoryPlanner.changeToGoal(rnGoalFinal);
       }
+      long tocTemp = System.nanoTime();
+      System.out.println("Goalchange took: " + (tocTemp - ticTemp) * 1e-9 + "s");
       // -- ROOTCHANGE
+      ticTemp = System.nanoTime();
       finalGoalNode = trajectoryPlanner.getFinalGoalNode();
       if (finalGoalNode.isPresent())
         trajectory = GlcNodes.getPathFromRootTo(finalGoalNode.get());
@@ -135,12 +139,11 @@ enum R2GlcConstTimeHeuristicAnyDemo {
         int increment = trajectoryPlanner.switchRootToState(newRootState.x());
         parameters.increaseDepthLimit(increment);
       }
+      tocTemp = System.nanoTime();
+      System.out.println("Rootchange took: " + (tocTemp - ticTemp) * 1e-9 + "s");
       // -- EXPANDING
+      ticTemp = System.nanoTime();
       int expanditer = Expand.constTime(trajectoryPlanner, runTime, parameters.getDepthLimit());
-      if (trajectoryPlanner.getBest().isPresent()) {
-        System.out.println("Best Goal found was :" + trajectoryPlanner.getBest().get().state() //
-            + " with merit: " + trajectoryPlanner.getBest().get().merit());
-      }
       furthestState = trajectoryPlanner.getFurthestGoalState();
       // check if furthest Goal is already in last Region in List
       if (furthestState.isPresent()) {
@@ -151,10 +154,12 @@ enum R2GlcConstTimeHeuristicAnyDemo {
       }
       finalGoalNode = trajectoryPlanner.getFinalGoalNode();
       trajectory = GlcNodes.getPathFromRootTo(finalGoalNode.get());
-      Trajectories.print(trajectory);
-      owlyFrame.setGlc((TrajectoryPlanner) trajectoryPlanner);
+      tocTemp = System.nanoTime();
+      System.out.println("Expanding took: " + (tocTemp - ticTemp) * 1e-9 + "s");
+      // Trajectories.print(trajectory);
       // --
       long toc = System.nanoTime();
+      owlyFrame.setGlc((TrajectoryPlanner) trajectoryPlanner);
       System.out.println((toc - tic) * 1e-9 + " Seconds needed to replan");
       System.out.println("After goal switch needed " + expanditer + " iterations");
       System.out.println("*****Finished*****");
