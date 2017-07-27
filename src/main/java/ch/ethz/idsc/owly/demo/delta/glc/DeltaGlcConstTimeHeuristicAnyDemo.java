@@ -102,10 +102,8 @@ enum DeltaGlcConstTimeHeuristicAnyDemo {
       ((OptimalAnyTrajectoryPlanner) slowTrajectoryPlannerContainer.getTrajectoryPlanner()).changeToGoal(//
           trajectoryGoalManager); // TODO JONAS Needed as Region Union is changed? YES to reset GoalMembers
       //
-      System.out.println("Trajectories through Goal after goalswitch: " + trajectoryGoalManager.getAllDiscoveredMembersEndNodesStateTime().size());
       int expandIter = Expand.constTime(slowTrajectoryPlannerContainer.getTrajectoryPlanner(), //
           planningTime, slowTrajectoryPlannerContainer.getParameters().getDepthLimit());
-      System.out.println("Trajectories through Goal after Expand: " + trajectoryGoalManager.getAllDiscoveredMembersEndNodesStateTime().size());
       owlyFrame.setGlc((TrajectoryPlanner) slowTrajectoryPlannerContainer.getTrajectoryPlanner());
       if (expandIter < 1)
         break;

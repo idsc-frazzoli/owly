@@ -3,7 +3,7 @@ package ch.ethz.idsc.owly.gui.ani;
 
 import java.util.Collection;
 
-import ch.ethz.idsc.owly.demo.rn.RnSimpleEllipsoidGoalManager;
+import ch.ethz.idsc.owly.demo.rn.RnSimpleCircleGoalManager;
 import ch.ethz.idsc.owly.demo.util.R2Controls;
 import ch.ethz.idsc.owly.glc.core.Expand;
 import ch.ethz.idsc.owly.glc.core.StandardTrajectoryPlanner;
@@ -37,8 +37,8 @@ public class MotionPlanWorker {
         StateIntegrator stateIntegrator = //
             FixedStateIntegrator.create(EulerIntegrator.INSTANCE, RationalScalar.of(1, 10), 4);
         Collection<Flow> controls = R2Controls.createRadial(23);
-        RnSimpleEllipsoidGoalManager rnGoal = //
-            new RnSimpleEllipsoidGoalManager(goal.x(), DoubleScalar.of(.2));
+        RnSimpleCircleGoalManager rnGoal = //
+            new RnSimpleCircleGoalManager(goal.x(), DoubleScalar.of(.2));
         // ---
         TrajectoryPlanner trajectoryPlanner = new StandardTrajectoryPlanner( //
             partitionScale, stateIntegrator, controls, obstacleQuery, rnGoal);

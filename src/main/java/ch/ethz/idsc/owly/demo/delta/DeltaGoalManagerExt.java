@@ -3,7 +3,7 @@ package ch.ethz.idsc.owly.demo.delta;
 
 import java.util.List;
 
-import ch.ethz.idsc.owly.glc.adapter.GoalTrajectoryRegionQuery;
+import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
 import ch.ethz.idsc.owly.glc.core.GoalInterface;
 import ch.ethz.idsc.owly.math.flow.Flow;
 import ch.ethz.idsc.owly.math.region.EllipsoidRegion;
@@ -17,7 +17,7 @@ import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.red.Norm;
 import ch.ethz.idsc.tensor.sca.Ramp;
 
-public class DeltaGoalManagerExt extends GoalTrajectoryRegionQuery implements GoalInterface {
+public class DeltaGoalManagerExt extends SimpleTrajectoryRegionQuery implements GoalInterface {
   private final Tensor center;
   private final Scalar radius;
   private final Scalar maxSpeed;

@@ -7,7 +7,7 @@ import java.util.List;
 
 import ch.ethz.idsc.owly.demo.rn.R2Parameters;
 import ch.ethz.idsc.owly.demo.rn.RnPointclouds;
-import ch.ethz.idsc.owly.demo.rn.RnSimpleEllipsoidGoalManager;
+import ch.ethz.idsc.owly.demo.rn.RnSimpleCircleGoalManager;
 import ch.ethz.idsc.owly.demo.util.R2Controls;
 import ch.ethz.idsc.owly.demo.util.UserHome;
 import ch.ethz.idsc.owly.glc.adapter.Parameters;
@@ -58,14 +58,14 @@ enum R2GlcAnyCircleDemo {
     StateIntegrator stateIntegrator = FixedStateIntegrator.create(EulerIntegrator.INSTANCE, parameters.getdtMax(), //
         parameters.getTrajectorySize());
     Collection<Flow> controls = R2Controls.createRadial(parameters.getResolutionInt());
-    RnSimpleEllipsoidGoalManager rnGoal = new RnSimpleEllipsoidGoalManager(goal, DoubleScalar.of(.25));
+    RnSimpleCircleGoalManager rnGoal = new RnSimpleCircleGoalManager(goal, DoubleScalar.of(.25));
     // performance depends on heuristic: zeroHeuristic vs rnGoal
     // Heuristic heuristic = new ZeroHeuristic(); // rnGoal
     TrajectoryRegionQuery obstacleQuery = //
         new SimpleTrajectoryRegionQuery(new TimeInvariantRegion( //
             RegionUnion.of( //
                 new EllipsoidRegion(Tensors.vector(0, 0), Tensors.vector(1, 1).multiply(circleRadius).multiply(RealScalar.of(0.5))) //
-                , new InvertedRegion(new EllipsoidRegion(Tensors.vector(0, 0), Tensors.vector(1, 1).multiply(circleRadius).multiply(RealScalar.of(2)))),
+                , new InvertedRegion(new EllipsoidRegion(Tensors.vector(0, 0), Tensors.vector(1, 1).multiply(circleRadius).multiply(RealScalar.of(1.3)))),
                 RnPointclouds.createRandomRegion(30, Tensors.vector(12, 12), Tensors.vector(0, 0), RealScalar.of(0.6))//
             )));
     // --
@@ -92,7 +92,7 @@ enum R2GlcAnyCircleDemo {
         StateTime goalState = new StateTime(goal, RealScalar.ZERO);
         goalStateList.add(goalState);
       } while (!obstacleQuery.isDisjoint(goalStateList));
-      RnSimpleEllipsoidGoalManager rnGoal2 = new RnSimpleEllipsoidGoalManager(goal, DoubleScalar.of(.25));
+      RnSimpleCircleGoalManager rnGoal2 = new RnSimpleCircleGoalManager(goal, DoubleScalar.of(.25));
       System.out.println("Switching to Goal:" + goal);
       trajectoryPlanner.changeToGoal(rnGoal2);
       // -- ROOTCHANGE

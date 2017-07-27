@@ -37,7 +37,7 @@ public class TrajectoryRender implements RenderInterface {
       return;
     // ---
     TrajectoryPlanner trajectoryPlanner = this.trajectoryPlanner;
-    Optional<GlcNode> optional = trajectoryPlanner.getBestOrElsePeek();
+    Optional<GlcNode> optional = trajectoryPlanner.getFinalGoalNode();
     if (optional.isPresent()) {
       final GlcNode node = optional.get();
       {// draw detailed trajectory from root to goal/furthestgo

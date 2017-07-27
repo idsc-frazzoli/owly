@@ -9,7 +9,6 @@ import java.util.List;
 import java.util.Optional;
 
 import ch.ethz.idsc.owly.data.tree.Nodes;
-import ch.ethz.idsc.owly.glc.adapter.GoalTrajectoryRegionQuery;
 import ch.ethz.idsc.owly.glc.adapter.TrajectoryGoalManager;
 import ch.ethz.idsc.owly.math.state.StateIntegrator;
 import ch.ethz.idsc.owly.math.state.StateTime;
@@ -77,7 +76,16 @@ public abstract class AbstractAnyTrajectoryPlanner extends AbstractTrajectoryPla
     Collection<GlcNode> deleteTreeCollection = Nodes.ofSubtree(baseNode);
     // -- GOAL: goalNode deleted?
     {
-      best.descendingKeySet().removeAll(deleteTreeCollection);
+      if (!best.isEmpty()) {
+        if (deleteTreeCollection.contains(best.lastEntry().getKey()))
+          System.out.println("Best GoalNode is deleted");
+        if (deleteTreeCollection.contains(best.firstEntry().getKey()))
+          System.out.println("FurthestGoalNode is deleted");
+      }
+      int size = best.size();
+      boolean test = best.descendingKeySet().removeAll(deleteTreeCollection);
+      if (test)
+        System.out.println("min. 1 GoalNode removed from best, " + (size - best.size()) + "/" + size);
     }
     // -- QUEUE: Deleting Nodes from Queue
     queue().removeAll(deleteTreeCollection);
@@ -134,7 +142,7 @@ public abstract class AbstractAnyTrajectoryPlanner extends AbstractTrajectoryPla
     // --
     // -- GOALCHECK TREE
     tic = System.nanoTime();
-    // TODO JAN: can parallelize?
+    // TODO JAN: can parallelize? takes long due to integrator (~20% of everything)
     Iterator<GlcNode> treeCollectionIterator = treeCollection.iterator();
     while (treeCollectionIterator.hasNext()) { // goes through entire tree
       GlcNode current = treeCollectionIterator.next();
@@ -195,16 +203,14 @@ public abstract class AbstractAnyTrajectoryPlanner extends AbstractTrajectoryPla
     Optional<GlcNode> key = getFurthestGoalNode();
     if (key.isPresent()) {
       List<StateTime> bestTrajectory = best.get(key.get());
-      int index = ((GoalTrajectoryRegionQuery) this.getGoalQuery()).firstMemberCheck(bestTrajectory);
+      // int index = ((GoalTrajectoryRegionQuery) this.getGoalQuery()).firstMemberCheck(bestTrajectory);
+      int index = this.getGoalQuery().firstMember(bestTrajectory);
       if (index >= 0)
         return Optional.ofNullable(bestTrajectory.get(index));
     }
-    System.err.println("3");
     return Optional.empty();
   }
 
-  /** Recieved the furthest Node, where the coming trajectory was in Goal, similar to getBest()
-   * @return furthest Node in Goal (highest merit, but in Goal) or the best in Queue */
   @Override
   public Optional<GlcNode> getFurthestGoalNode() {
     if (!best.isEmpty())
@@ -216,10 +222,8 @@ public abstract class AbstractAnyTrajectoryPlanner extends AbstractTrajectoryPla
   public Optional<GlcNode> getFinalGoalNode() {
     if (this.getGoalQuery() instanceof TrajectoryGoalManager) {
       Optional<GlcNode> furthest = getFurthestGoalNode();
-      if (furthest.isPresent()) {
-        System.out.println("getting FurthestNode");
+      if (furthest.isPresent())
         return furthest;
-      }
     }
     return getBestOrElsePeek();
   }

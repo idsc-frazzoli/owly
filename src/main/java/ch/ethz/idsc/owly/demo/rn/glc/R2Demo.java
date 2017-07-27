@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Optional;
 
 import ch.ethz.idsc.owly.demo.rn.R2Bubbles;
-import ch.ethz.idsc.owly.demo.rn.RnSimpleEllipsoidGoalManager;
+import ch.ethz.idsc.owly.demo.rn.RnSimpleCircleGoalManager;
 import ch.ethz.idsc.owly.demo.util.R2Controls;
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
 import ch.ethz.idsc.owly.glc.core.Expand;
@@ -54,7 +54,7 @@ enum R2Demo {
     Tensor eta = Tensors.vector(4, 4);
     StateIntegrator stateIntegrator = FixedStateIntegrator.create(EulerIntegrator.INSTANCE, RationalScalar.of(1, 5), 5);
     Collection<Flow> controls = R2Controls.createRadial(36);
-    RnSimpleEllipsoidGoalManager rnGoal = new RnSimpleEllipsoidGoalManager(stateGoal, radius);
+    RnSimpleCircleGoalManager rnGoal = new RnSimpleCircleGoalManager(stateGoal, radius);
     // ---
     TrajectoryPlanner trajectoryPlanner = new StandardTrajectoryPlanner( //
         eta, stateIntegrator, controls, obstacleQuery, rnGoal);

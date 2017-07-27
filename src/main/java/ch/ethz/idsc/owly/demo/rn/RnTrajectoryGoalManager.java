@@ -3,7 +3,7 @@ package ch.ethz.idsc.owly.demo.rn;
 
 import java.util.List;
 
-import ch.ethz.idsc.owly.glc.adapter.GoalTrajectoryRegionQuery;
+import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
 import ch.ethz.idsc.owly.glc.adapter.TrajectoryGoalManager;
 import ch.ethz.idsc.owly.glc.core.GoalInterface;
 import ch.ethz.idsc.owly.math.flow.Flow;
@@ -18,20 +18,20 @@ import ch.ethz.idsc.tensor.red.Norm;
 import ch.ethz.idsc.tensor.sca.Ramp;
 
 /** objective is minimum path length */
-public class RnTrajectoryGoalManager extends GoalTrajectoryRegionQuery implements GoalInterface, TrajectoryGoalManager {
+public class RnTrajectoryGoalManager extends SimpleTrajectoryRegionQuery implements GoalInterface, TrajectoryGoalManager {
   private final Tensor center;
   private final Scalar radius;
 
   // TODO JONAS change heuristic center to different way
   public RnTrajectoryGoalManager(List<Region> goalRegions, Tensor heuristicCenter, Scalar radius) {
     super(new TimeInvariantRegion(RegionUnion.wrap(goalRegions)));
-    center = heuristicCenter;
+    this.center = heuristicCenter;
     this.radius = radius;
   }
 
   public RnTrajectoryGoalManager(Region region, Tensor heuristicCenter, Scalar radius) {
     super(new TimeInvariantRegion(region));
-    center = heuristicCenter;
+    this.center = heuristicCenter;
     this.radius = radius;
   }
 
