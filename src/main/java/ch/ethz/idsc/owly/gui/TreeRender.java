@@ -15,7 +15,7 @@ import ch.ethz.idsc.tensor.Scalar;
 /** renders the edges between nodes
  * 
  * the edges are drawn as straight lines with the color of the cost to root */
-class TreeRender implements AbstractRender {
+class TreeRender implements RenderInterface {
   private static final int NODE_WIDTH = 2;
   private final Collection<? extends StateCostNode> collection;
 

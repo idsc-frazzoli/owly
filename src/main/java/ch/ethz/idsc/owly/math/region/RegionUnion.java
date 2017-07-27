@@ -47,9 +47,6 @@ public class RegionUnion implements Region {
     // isMember |= region.isMember(tensor);
     // return isMember;
     /** parallel implementation: */
-    return collection.stream() //
-        .parallel() //
-        .filter(region -> region.isMember(tensor)) //
-        .findAny().isPresent();
+    return collection.stream().parallel().anyMatch(region -> region.isMember(tensor));
   }
 }

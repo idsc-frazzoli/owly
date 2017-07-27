@@ -8,6 +8,7 @@ import java.awt.geom.Path2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -21,19 +22,22 @@ import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
 
-class TrajectoryRender implements AbstractRender {
+public class TrajectoryRender implements RenderInterface {
   public static Scalar U_SCALE = RealScalar.of(.33);
   // ---
-  private final TrajectoryPlanner trajectoryPlanner;
+  private TrajectoryPlanner trajectoryPlanner;
 
-  TrajectoryRender(TrajectoryPlanner trajectoryPlanner) {
+  public TrajectoryRender(TrajectoryPlanner trajectoryPlanner) {
     this.trajectoryPlanner = trajectoryPlanner;
   }
 
   @Override
   public void render(OwlyLayer owlyLayer, Graphics2D graphics) {
-    Optional<GlcNode> optional = Optional.empty();
-    optional = trajectoryPlanner.getFinalGoalNode();
+    if (Objects.isNull(trajectoryPlanner))
+      return;
+    // ---
+    TrajectoryPlanner trajectoryPlanner = this.trajectoryPlanner;
+    Optional<GlcNode> optional = trajectoryPlanner.getBestOrElsePeek();
     if (optional.isPresent()) {
       final GlcNode node = optional.get();
       {// draw detailed trajectory from root to goal/furthestgo
@@ -74,5 +78,9 @@ class TrajectoryRender implements AbstractRender {
         }
       }
     }
+  }
+
+  public void setTrajectoryPlanner(TrajectoryPlanner trajectoryPlanner) {
+    this.trajectoryPlanner = trajectoryPlanner;
   }
 }

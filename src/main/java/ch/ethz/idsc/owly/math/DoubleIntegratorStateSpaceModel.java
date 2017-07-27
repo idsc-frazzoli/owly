@@ -7,7 +7,7 @@ import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.alg.Join;
 
 /** implementation for R^n */
-public enum DoubleIntegrator implements StateSpaceModel {
+public enum DoubleIntegratorStateSpaceModel implements StateSpaceModel {
   INSTANCE;
   // ---
   /** f((x, v), u) == (v, u) */

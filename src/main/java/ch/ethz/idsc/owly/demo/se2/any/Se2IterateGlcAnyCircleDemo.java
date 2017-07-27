@@ -4,7 +4,6 @@ package ch.ethz.idsc.owly.demo.se2.any;
 import java.util.Collection;
 import java.util.List;
 
-import ch.ethz.idsc.owly.demo.se2.Se2CircleAnyDemo;
 import ch.ethz.idsc.owly.demo.se2.Se2Controls;
 import ch.ethz.idsc.owly.demo.se2.Se2MinCurvatureGoalManager;
 import ch.ethz.idsc.owly.demo.se2.Se2StateSpaceModel;
@@ -42,7 +41,7 @@ import ch.ethz.idsc.tensor.sca.Cos;
 import ch.ethz.idsc.tensor.sca.Sin;
 
 /** (x,y,theta) */
-class Se2IterateGlcAnyCircleDemo extends Se2CircleAnyDemo {
+class Se2IterateGlcAnyCircleDemo {
   public static void main(String[] args) throws Exception {
     RationalScalar resolution = (RationalScalar) RealScalar.of(8);
     Scalar timeScale = RealScalar.of(4);
@@ -105,7 +104,7 @@ class Se2IterateGlcAnyCircleDemo extends Se2CircleAnyDemo {
       }
       owlyFrame.setGlc((TrajectoryPlanner) trajectoryPlanner);
       Thread.sleep(delay.number().intValue() / 2);
-      goalFound = switchToNextCircularGoal((AbstractAnyTrajectoryPlanner) trajectoryPlanner, iter);
+      goalFound = Se2CircleAnyDemo.switchToNextCircularGoal((AbstractAnyTrajectoryPlanner) trajectoryPlanner, iter);
       iter++;
       Thread.sleep(delay.number().intValue() / 2);
       // --

@@ -1,14 +1,14 @@
+// code by jph
 package ch.ethz.idsc.owly.math.noise;
 
-enum StaticHelper {
-  ;
+/* package */ enum Noise {
+  TABLE;
   // To remove the need for index wrapping, double the permutation table length
-  static final short[] PERM = new short[512];
-  static final short[] PERMMOD12 = new short[512];
-  static final int _dummy = _dummy();
+  final int[] perm = new int[512];
+  final int[] perm_12 = new int[512];
 
-  static int _dummy() {
-    short[] value = { //
+  Noise() {
+    int[] value = { //
         151, 160, 137, 91, 90, 15, 131, 13, 201, 95, 96, 53, 194, 233, 7, 225, 140, 36, 103, 30, 69, //
         142, 8, 99, 37, 240, 21, 10, 23, 190, 6, 148, 247, 120, 234, 75, 0, 26, 197, 62, 94, 252, 219, //
         203, 117, 35, 11, 32, 57, 177, 33, 88, 237, 149, 56, 87, 174, 20, 125, 136, 171, 168, 68, 175, //
@@ -25,10 +25,9 @@ enum StaticHelper {
     // ---
     if (value.length != 256)
       throw new RuntimeException("corrupted");
-    System.arraycopy(value, 0, PERM, 0, value.length);
-    System.arraycopy(value, 0, PERM, value.length, value.length);
+    System.arraycopy(value, 0, perm, 0, value.length);
+    System.arraycopy(value, 0, perm, value.length, value.length);
     for (int i = 0; i < 512; i++)
-      PERMMOD12[i] = (short) (PERM[i] % 12);
-    return 0;
+      perm_12[i] = perm[i] % 12;
   }
 }

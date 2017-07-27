@@ -8,6 +8,7 @@ import ch.ethz.idsc.tensor.Tensors;
 import junit.framework.TestCase;
 
 public class CarStateSpaceModelTest extends TestCase {
+  @SuppressWarnings("unused")
   public void testSimple() {
     VehicleModel carModel = CHatchbackModel.standard();
     CarState carState = CarStatic.x0_demo3();
