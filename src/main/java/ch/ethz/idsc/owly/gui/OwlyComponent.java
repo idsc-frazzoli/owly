@@ -29,6 +29,7 @@ import ch.ethz.idsc.tensor.sca.Power;
 import ch.ethz.idsc.tensor.sca.Round;
 
 public class OwlyComponent {
+  private static final int BUTTON_DRAG = 3;
   private static final Tensor MODEL2PIXEL_INITIAL = Tensors.matrix(new Number[][] { //
       { 60, 0, 300 }, //
       { 0, -60, 300 }, //
@@ -40,8 +41,18 @@ public class OwlyComponent {
     return Tensors.of(x.get(0), x.get(1), RealScalar.ONE);
   }
 
-  Tensor model2pixel;
-  final OwlyLayer owlyLayer = new OwlyLayer(this::toPoint2D);
+  /***************************************************/
+  // 3x3 affine matrix that maps model to pixel coordinates
+  private Tensor model2pixel;
+  private final OwlyLayer owlyLayer = new OwlyLayer(this::toPoint2D);
+  /** public access to final JComponent: attach mouse listeners, get/set properties, ... */
+  public final JComponent jComponent = new JComponent() {
+    @Override
+    protected void paintComponent(Graphics graphics) {
+      render((Graphics2D) graphics, getSize());
+    }
+  };
+  // EXPERIMENTAL
   public RenderElements renderElements; // TODO use setter function
 
   public OwlyComponent() {
@@ -61,19 +72,27 @@ public class OwlyComponent {
         Point down = null;
 
         @Override
-        public void mousePressed(MouseEvent event) {
-          down = event.getPoint();
+        public void mousePressed(MouseEvent mouseEvent) {
+          if (mouseEvent.getButton() == BUTTON_DRAG)
+            down = mouseEvent.getPoint();
         }
 
         @Override
-        public void mouseDragged(MouseEvent event) {
-          Point now = event.getPoint();
-          int dx = now.x - down.x;
-          int dy = now.y - down.y;
-          down = now;
-          model2pixel.set(s -> s.add(RealScalar.of(dx)), 0, 2);
-          model2pixel.set(s -> s.add(RealScalar.of(dy)), 1, 2);
-          jComponent.repaint();
+        public void mouseDragged(MouseEvent mouseEvent) {
+          if (down != null) {
+            Point now = mouseEvent.getPoint();
+            int dx = now.x - down.x;
+            int dy = now.y - down.y;
+            down = now;
+            model2pixel.set(s -> s.add(RealScalar.of(dx)), 0, 2);
+            model2pixel.set(s -> s.add(RealScalar.of(dy)), 1, 2);
+            jComponent.repaint();
+          }
+        }
+
+        @Override
+        public void mouseReleased(MouseEvent mouseEvent) {
+          down = null;
         }
       };
       jComponent.addMouseMotionListener(mouseInputListener);
@@ -82,16 +101,8 @@ public class OwlyComponent {
     {
       MouseListener mouseListener = new MouseAdapter() {
         @Override
-        public void mouseClicked(MouseEvent mouseEvent) {
-          // System.out.println("model2pixel=");
-          // System.out.println(Pretty.of(model2pixel));
-        }
-
-        @Override
         public void mousePressed(MouseEvent mouseEvent) {
-          Tensor location = toTensor(mouseEvent.getPoint());
-          location = location.extract(0, 2);
-          // info for user to design obstacles or check distances
+          Tensor location = toModel(mouseEvent.getPoint());
           System.out.println(location.map(Round.toMultipleOf(DecimalScalar.of(0.001))) + ",");
         }
       };
@@ -102,13 +113,6 @@ public class OwlyComponent {
   void reset_model2pixel() {
     model2pixel = MODEL2PIXEL_INITIAL.copy();
   }
-
-  public final JComponent jComponent = new JComponent() {
-    @Override
-    protected void paintComponent(Graphics g) {
-      render((Graphics2D) g, getSize());
-    }
-  };
 
   void render(Graphics2D graphics, Dimension dimension) {
     graphics.setColor(Color.WHITE);
@@ -135,7 +139,17 @@ public class OwlyComponent {
         point.Get(1).number().doubleValue());
   }
 
-  public Tensor toTensor(Point point) {
-    return LinearSolve.of(model2pixel, toAffinePoint(Tensors.vector(point.x, point.y)));
+  /** transforms point in pixel space to coordinates of model space
+   * inverse of function {@link OwlyComponent#toPoint2D(Tensor)}
+   * 
+   * @param point
+   * @return tensor of length 2 */
+  public Tensor toModel(Point point) {
+    return LinearSolve.of(model2pixel, toAffinePoint(Tensors.vector(point.x, point.y))).extract(0, 2);
+  }
+
+  void setOffset(Tensor vector) {
+    model2pixel.set(vector.get(0), 0, 2);
+    model2pixel.set(vector.get(1), 1, 2);
   }
 }

@@ -17,6 +17,7 @@ import ch.ethz.idsc.tensor.red.Norm;
 import ch.ethz.idsc.tensor.sca.Ramp;
 
 /** objective is minimum path length */
+// TODO for goal managers use complete discovery!
 public class RnSimpleEllipsoidGoalManager extends SimpleTrajectoryRegionQuery implements GoalInterface {
   private final Tensor center;
   private final Scalar radius;
