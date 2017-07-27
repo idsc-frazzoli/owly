@@ -32,8 +32,7 @@ class TrajectoryRender implements AbstractRender {
 
   @Override
   public void render(OwlyLayer owlyLayer, Graphics2D graphics) {
-    Optional<GlcNode> optional = Optional.empty();
-    optional = trajectoryPlanner.getFinalGoalNode();
+    Optional<GlcNode> optional = trajectoryPlanner.getFinalGoalNode();
     if (optional.isPresent()) {
       final GlcNode node = optional.get();
       {// draw detailed trajectory from root to goal/furthestgo

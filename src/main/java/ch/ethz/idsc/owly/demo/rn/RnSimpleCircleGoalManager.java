@@ -18,17 +18,17 @@ import ch.ethz.idsc.tensor.red.Norm;
 import ch.ethz.idsc.tensor.sca.Ramp;
 
 /** objective is minimum path length */
-public class RnSimpleEllipsoidGoalManager extends GoalTrajectoryRegionQuery implements GoalInterface {
+public class RnSimpleCircleGoalManager extends GoalTrajectoryRegionQuery implements GoalInterface {
   private final Tensor center;
   private final Scalar radius;
 
-  public RnSimpleEllipsoidGoalManager(Tensor center, Scalar radius) {
+  public RnSimpleCircleGoalManager(Tensor center, Scalar radius) {
     super(new TimeInvariantRegion(new EllipsoidRegion(center, Array.of(l -> radius, center.length()))));
     this.center = center;
     this.radius = radius;
   }
 
-  public RnSimpleEllipsoidGoalManager(Region region, Tensor center, Scalar radius) {
+  public RnSimpleCircleGoalManager(Region region, Tensor center, Scalar radius) {
     super(new TimeInvariantRegion(region));
     if (!(region instanceof EllipsoidRegion))
       throw new RuntimeException();

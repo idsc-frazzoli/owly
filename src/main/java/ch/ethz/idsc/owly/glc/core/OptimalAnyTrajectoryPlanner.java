@@ -14,6 +14,7 @@ import java.util.PriorityQueue;
 import java.util.Set;
 
 import ch.ethz.idsc.owly.data.tree.Nodes;
+import ch.ethz.idsc.owly.glc.adapter.TrajectoryGoalManager;
 import ch.ethz.idsc.owly.math.flow.Flow;
 import ch.ethz.idsc.owly.math.state.StateIntegrator;
 import ch.ethz.idsc.owly.math.state.StateTime;
@@ -222,6 +223,8 @@ public class OptimalAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
   public String infoString() {
     StringBuilder stringBuilder = new StringBuilder(super.infoString() + ", ");
     stringBuilder.append("OptimalAnyPlanner");
+    if (this.getGoalQuery() instanceof TrajectoryGoalManager)
+      stringBuilder.append(", with a TrajectoryGoalManger");
     return stringBuilder.toString();
   }
 
@@ -270,8 +273,6 @@ public class OptimalAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
                       offerDestination(possibleCandidateNode, connector);
                     break; // leaves the while loop if a better was found
                   }
-                } else {
-                  // System.out.println("Origin of this candidate is not connected anymore");
                 }
               } else {
                 break; // if no better Candidates are found leave while of Candidates loop -> Speedgain

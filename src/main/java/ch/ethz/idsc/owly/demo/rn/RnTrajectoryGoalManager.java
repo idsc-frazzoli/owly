@@ -25,13 +25,13 @@ public class RnTrajectoryGoalManager extends GoalTrajectoryRegionQuery implement
   // TODO JONAS change heuristic center to different way
   public RnTrajectoryGoalManager(List<Region> goalRegions, Tensor heuristicCenter, Scalar radius) {
     super(new TimeInvariantRegion(RegionUnion.wrap(goalRegions)));
-    center = heuristicCenter;
+    this.center = heuristicCenter;
     this.radius = radius;
   }
 
   public RnTrajectoryGoalManager(Region region, Tensor heuristicCenter, Scalar radius) {
     super(new TimeInvariantRegion(region));
-    center = heuristicCenter;
+    this.center = heuristicCenter;
     this.radius = radius;
   }
 

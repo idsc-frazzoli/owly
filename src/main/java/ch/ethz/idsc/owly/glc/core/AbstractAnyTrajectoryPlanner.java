@@ -9,7 +9,6 @@ import java.util.List;
 import java.util.Optional;
 
 import ch.ethz.idsc.owly.data.tree.Nodes;
-import ch.ethz.idsc.owly.glc.adapter.GoalTrajectoryRegionQuery;
 import ch.ethz.idsc.owly.glc.adapter.TrajectoryGoalManager;
 import ch.ethz.idsc.owly.math.state.StateIntegrator;
 import ch.ethz.idsc.owly.math.state.StateTime;
@@ -195,16 +194,14 @@ public abstract class AbstractAnyTrajectoryPlanner extends AbstractTrajectoryPla
     Optional<GlcNode> key = getFurthestGoalNode();
     if (key.isPresent()) {
       List<StateTime> bestTrajectory = best.get(key.get());
-      int index = ((GoalTrajectoryRegionQuery) this.getGoalQuery()).firstMemberCheck(bestTrajectory);
+      // int index = ((GoalTrajectoryRegionQuery) this.getGoalQuery()).firstMemberCheck(bestTrajectory);
+      int index = this.getGoalQuery().firstMember(bestTrajectory);
       if (index >= 0)
         return Optional.ofNullable(bestTrajectory.get(index));
     }
-    System.err.println("3");
     return Optional.empty();
   }
 
-  /** Recieved the furthest Node, where the coming trajectory was in Goal, similar to getBest()
-   * @return furthest Node in Goal (highest merit, but in Goal) or the best in Queue */
   @Override
   public Optional<GlcNode> getFurthestGoalNode() {
     if (!best.isEmpty())

@@ -186,7 +186,8 @@ public abstract class TrajectoryPlanner implements ExpandInterface, Serializable
 
   // TODO smart solution? assuming that no TrajectoryGoalManager is used in standardplanner.
   // Does this make sense?
-  /** @return the node, to which the trajectory should lead */
+  /** @return the node, to which the trajectory should lead:
+   * The Furthest, the best or the top of the Queue */
   public Optional<GlcNode> getFinalGoalNode() {
     return getBestOrElsePeek();
   }

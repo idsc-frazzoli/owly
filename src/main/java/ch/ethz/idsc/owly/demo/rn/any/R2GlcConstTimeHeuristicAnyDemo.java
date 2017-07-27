@@ -8,7 +8,7 @@ import java.util.Optional;
 
 import ch.ethz.idsc.owly.demo.rn.R2NoiseRegion;
 import ch.ethz.idsc.owly.demo.rn.R2Parameters;
-import ch.ethz.idsc.owly.demo.rn.RnSimpleEllipsoidGoalManager;
+import ch.ethz.idsc.owly.demo.rn.RnSimpleCircleGoalManager;
 import ch.ethz.idsc.owly.demo.rn.RnTrajectoryGoalManager;
 import ch.ethz.idsc.owly.demo.util.R2Controls;
 import ch.ethz.idsc.owly.glc.adapter.Parameters;
@@ -78,17 +78,9 @@ enum R2GlcConstTimeHeuristicAnyDemo {
     Tensor startState = Tensors.vector(-3, 0);
     trajectoryPlanner.switchRootToState(startState);
     Expand.constTime(trajectoryPlanner, runTime, parameters.getDepthLimit());
-    List<StateTime> trajectory = null;
-    if (trajectoryPlanner.getBest().isPresent())
-      System.out.println("closest Goal found was : " + trajectoryPlanner.getBest().get().state() //
-          + " with merit: " + trajectoryPlanner.getBest().get().merit());
-    Optional<StateTime> furthestState = trajectoryPlanner.getFurthestGoalState();
+    // --
     Optional<GlcNode> finalGoalNode = trajectoryPlanner.getFinalGoalNode();
-    if (furthestState.isPresent()) {
-      System.out.println("furthest Goal found was : " + furthestState.get().x() //
-          + " with merit: " + finalGoalNode.get().merit());
-    }
-    trajectory = GlcNodes.getPathFromRootTo(finalGoalNode.get());
+    List<StateTime> trajectory = GlcNodes.getPathFromRootTo(finalGoalNode.get());
     Trajectories.print(trajectory);
     OwlyFrame owlyFrame = Gui.start();
     owlyFrame.configCoordinateOffset(400, 400);
@@ -101,7 +93,7 @@ enum R2GlcConstTimeHeuristicAnyDemo {
       long tic = System.nanoTime();
       // -- GOALCHANGE
       // Check which is the furthest Goal which was found
-      furthestState = trajectoryPlanner.getFurthestGoalState();
+      Optional<StateTime> furthestState = trajectoryPlanner.getFurthestGoalState();
       int deleteIndex = -1;
       if (furthestState.isPresent()) {
         int index = goalRegions.size();
@@ -116,7 +108,6 @@ enum R2GlcConstTimeHeuristicAnyDemo {
       final int deleteUntilIndex = deleteIndex; // index of furthest found Goal
       if (deleteIndex < 0)
         System.out.println("No new Goal was found in last run");
-      // TODO JONAS BUG if <=
       // remove goals before
       boolean removed = goalRegions.removeIf(gr -> goalRegions.indexOf(gr) < deleteUntilIndex);
       if (removed)
@@ -130,7 +121,7 @@ enum R2GlcConstTimeHeuristicAnyDemo {
       } else {
         if (goalRegions.size() != 1) // only the last Goal is left in the list
           throw new RuntimeException(); // should only include last Goalregion, therefore size ==1
-        RnSimpleEllipsoidGoalManager rnGoalFinal = new RnSimpleEllipsoidGoalManager(goalRegions.get(0), goalStateList.get(0).x(), radius.Get(0));
+        RnSimpleCircleGoalManager rnGoalFinal = new RnSimpleCircleGoalManager(goalRegions.get(0), goalStateList.get(0).x(), radius.Get(0));
         trajectoryPlanner.changeToGoal(rnGoalFinal);
       }
       // -- ROOTCHANGE
@@ -150,7 +141,6 @@ enum R2GlcConstTimeHeuristicAnyDemo {
         System.out.println("Best Goal found was :" + trajectoryPlanner.getBest().get().state() //
             + " with merit: " + trajectoryPlanner.getBest().get().merit());
       }
-      // TODO JONAS BUG: if furtheststate is empty, why is best empty?
       furthestState = trajectoryPlanner.getFurthestGoalState();
       // check if furthest Goal is already in last Region in List
       if (furthestState.isPresent()) {
@@ -160,12 +150,8 @@ enum R2GlcConstTimeHeuristicAnyDemo {
         }
       }
       finalGoalNode = trajectoryPlanner.getFinalGoalNode();
-      if (finalGoalNode.isPresent() && furthestState.isPresent()) {
-        System.out.println("Furthest Goal found was : " + furthestState.get().x() //
-            + " with merit: " + finalGoalNode.get().merit());
-        trajectory = GlcNodes.getPathFromRootTo(finalGoalNode.get());
-        Trajectories.print(trajectory);
-      }
+      trajectory = GlcNodes.getPathFromRootTo(finalGoalNode.get());
+      Trajectories.print(trajectory);
       owlyFrame.setGlc((TrajectoryPlanner) trajectoryPlanner);
       // --
       long toc = System.nanoTime();

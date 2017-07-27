@@ -30,22 +30,29 @@ public class GoalTrajectoryRegionQuery extends AbstractTrajectoryRegionQuery {
     this.stateTimeRegion = goalTrajectoryRegionQuery.stateTimeRegion;
   }
 
+  // TODO JONAS to be confirmed, that if this function is called in getfurtheststate, that value stays the same
   @Override
   public final int firstMember(List<StateTime> trajectory) {
     int index = -1;
     for (StateTime stateTime : trajectory) {
       ++index;
       if (stateTimeRegion.isMember(stateTime)) {
-        discoveredGoalMembers.put(stateTime, trajectory.get(trajectory.size() - 1));
+        StateTime test = discoveredGoalMembers.put(stateTime, trajectory.get(trajectory.size() - 1));
+        if (test != null)
+          if (test != trajectory.get(trajectory.size() - 1))
+            throw new RuntimeException();
         return index;
       }
     }
     return NOMATCH;
   }
 
+  // TODO JAN: this class is only needed for this function,
+  // could also copy the instance of SimpletrajectoryRQ, in getFurthestGoalState
   /** The same functionality as firstMember, but does not save the found state
    * @param trajectory
    * @return */
+  @Deprecated
   public final int firstMemberCheck(List<StateTime> trajectory) {
     int index = -1;
     for (StateTime stateTime : trajectory) {
