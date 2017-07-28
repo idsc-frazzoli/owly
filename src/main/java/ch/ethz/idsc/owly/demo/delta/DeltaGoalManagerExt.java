@@ -19,8 +19,8 @@ import ch.ethz.idsc.tensor.sca.Ramp;
 
 public class DeltaGoalManagerExt extends SimpleTrajectoryRegionQuery implements GoalInterface {
   private final Tensor center;
-  private final Scalar radius;
-  private final Scalar maxSpeed;
+  protected final Scalar radius;
+  protected final Scalar maxSpeed;
   private final Scalar timeCostScalingFactor;
 
   // Constructor with Default value in CostScaling

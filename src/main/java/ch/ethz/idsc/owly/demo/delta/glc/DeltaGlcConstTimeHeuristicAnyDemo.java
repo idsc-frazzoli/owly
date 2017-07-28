@@ -56,11 +56,11 @@ enum DeltaGlcConstTimeHeuristicAnyDemo {
     // TODO: needs to be removed from main
     Iterator<StateTime> iterator = quickTrajectory.iterator();
     List<Region> goalRegions = new ArrayList<>();
-    Tensor radius = Tensors.vector(0.05, 0.05);
+    Tensor radius = Tensors.vector(0.1, 0.1);
     while (iterator.hasNext())
       goalRegions.add(new EllipsoidRegion(iterator.next().x(), radius));
     Tensor heuristicCenter = Tensors.vector(2.1, 0.3);
-    DeltaTrajectoryGoalManager trajectoryGoalManager = new DeltaTrajectoryGoalManager(goalRegions, heuristicCenter, //
+    DeltaTrajectoryGoalManager trajectoryGoalManager = new DeltaTrajectoryGoalManager(goalRegions, quickTrajectory, radius, //
         ((DeltaStateSpaceModel) slowTrajectoryPlannerContainer.getStateSpaceModel()).getMaxInput());
     ((OptimalAnyTrajectoryPlanner) slowTrajectoryPlannerContainer.getTrajectoryPlanner()).changeToGoal(trajectoryGoalManager);
     OwlyFrame owlyFrame = Gui.start();
@@ -102,7 +102,7 @@ enum DeltaGlcConstTimeHeuristicAnyDemo {
       // Heuristic Center at next GoalRegion, if found expanding around it
       Scalar maxSpeed = ((DeltaStateSpaceModel) slowTrajectoryPlannerContainer.getStateSpaceModel()).getMaxInput();
       if (!finalGoalFound) {
-        trajectoryGoalManager = new DeltaTrajectoryGoalManager(goalRegions, Trajectories.getLast(quickTrajectory).x(), maxSpeed);
+        trajectoryGoalManager = new DeltaTrajectoryGoalManager(goalRegions, quickTrajectory, radius, maxSpeed);
         ((OptimalAnyTrajectoryPlanner) slowTrajectoryPlannerContainer.getTrajectoryPlanner()).changeToGoal(//
             trajectoryGoalManager);
       } else {
@@ -154,7 +154,7 @@ enum DeltaGlcConstTimeHeuristicAnyDemo {
       System.out.println("After goal switch needed " + expandIter + " iterations");
       owlyFrame.setGlc((TrajectoryPlanner) slowTrajectoryPlannerContainer.getTrajectoryPlanner());
       System.out.println("*****Finished*****");
-      if (!owlyFrame.jFrame.isVisible() || expandIter < 1)
+      if (!owlyFrame.jFrame.isVisible() || expandIter < 1 )
         break;
       Thread.sleep(1);
     }
