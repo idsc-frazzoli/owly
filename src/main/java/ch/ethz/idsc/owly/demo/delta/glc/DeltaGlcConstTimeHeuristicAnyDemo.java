@@ -6,8 +6,10 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 
+import ch.ethz.idsc.owly.demo.delta.DeltaGoalManagerExt;
 import ch.ethz.idsc.owly.demo.delta.DeltaStateSpaceModel;
 import ch.ethz.idsc.owly.demo.delta.DeltaTrajectoryGoalManager;
+import ch.ethz.idsc.owly.glc.adapter.TrajectoryGoalManager;
 import ch.ethz.idsc.owly.glc.adapter.TrajectoryPlannerContainer;
 import ch.ethz.idsc.owly.glc.core.Expand;
 import ch.ethz.idsc.owly.glc.core.GlcNode;
@@ -66,23 +68,24 @@ enum DeltaGlcConstTimeHeuristicAnyDemo {
     owlyFrame.jFrame.setBounds(100, 100, 620, 475);
     Scalar planningTime = RealScalar.of(1);
     // -- ANYTIMELOOP
+    boolean finalGoalFound = false;
     while (owlyFrame.jFrame.isVisible()) {
+      List<StateTime> trajectory = null;
+      Optional<GlcNode> finalGoalNode = null;
+      // --
+      // -- GOALCHANGE
+      long tic = System.nanoTime();
+      long ticTemp = tic;
       // get GlcNode (€ Goal) with highest Cost (furthest down the path)
       Optional<StateTime> furthestState = ((OptimalAnyTrajectoryPlanner) slowTrajectoryPlannerContainer//
           .getTrajectoryPlanner()).getFurthestGoalState();
       int deleteIndex = -1;
       if (furthestState.isPresent()) {
-        // checks if last Region was found
-        if (goalRegions.get(goalRegions.size() - 1).isMember(furthestState.get().x())) {
-          System.out.println("***Last Goal was found***");
-          break; // stops Anytimeloop
-        }
-        int iter = goalRegions.size();
-        while (iter > 0) {
-          iter--;
-          // searches furthest Subregion corresponding to furthest GoalNode
-          if (goalRegions.get(iter).isMember(furthestState.get().x())) {
-            deleteIndex = iter;
+        int index = goalRegions.size();
+        while (index > 0) {
+          index--;
+          if (goalRegions.get(index).isMember(furthestState.get().x())) {
+            deleteIndex = index;
             break;
           }
         }
@@ -97,17 +100,64 @@ enum DeltaGlcConstTimeHeuristicAnyDemo {
       System.out.println("size of goal regions list: " + goalRegions.size());
       // TODO: Smart new heuristiccenter:
       // Heuristic Center at next GoalRegion, if found expanding around it
-      trajectoryGoalManager = new DeltaTrajectoryGoalManager(goalRegions, quickTrajectory.get(deleteUntilIndex + 1).x(),
-          ((DeltaStateSpaceModel) slowTrajectoryPlannerContainer.getStateSpaceModel()).getMaxInput());
-      ((OptimalAnyTrajectoryPlanner) slowTrajectoryPlannerContainer.getTrajectoryPlanner()).changeToGoal(//
-          trajectoryGoalManager); // TODO JONAS Needed as Region Union is changed? YES to reset GoalMembers
-      //
+      Scalar maxSpeed = ((DeltaStateSpaceModel) slowTrajectoryPlannerContainer.getStateSpaceModel()).getMaxInput();
+      if (!finalGoalFound) {
+        trajectoryGoalManager = new DeltaTrajectoryGoalManager(goalRegions, Trajectories.getLast(quickTrajectory).x(), maxSpeed);
+        ((OptimalAnyTrajectoryPlanner) slowTrajectoryPlannerContainer.getTrajectoryPlanner()).changeToGoal(//
+            trajectoryGoalManager);
+      } else {
+        if (goalRegions.size() != 1) // only the last Goal is left in the list
+          throw new RuntimeException(); // should only include last Goalregion, therefore size ==1
+        if (slowTrajectoryPlannerContainer.getTrajectoryPlanner().getGoalQuery() instanceof TrajectoryGoalManager) {
+          // only to change GoalManager to final Simple#
+          DeltaGoalManagerExt deltaGoalFinal = new DeltaGoalManagerExt(goalRegions.get(0), Trajectories.getLast(quickTrajectory).x(), radius, maxSpeed);
+          ((OptimalAnyTrajectoryPlanner) slowTrajectoryPlannerContainer.getTrajectoryPlanner()).changeToGoal(deltaGoalFinal);
+          System.err.println("Changed Goal for last Time");
+        }
+      }
+      long tocTemp = System.nanoTime();
+      System.out.println("Goalchange took: " + (tocTemp - ticTemp) * 1e-9 + "s");
+      // --
+      // -- ROOTCHANGE
+      ticTemp = System.nanoTime();
+      finalGoalNode = slowTrajectoryPlannerContainer.getTrajectoryPlanner().getFinalGoalNode();
+      if (finalGoalNode.isPresent())
+        trajectory = GlcNodes.getPathFromRootTo(finalGoalNode.get());
+      System.out.println("trajectorys size: " + trajectory.size());
+      if (trajectory.size() > 5) {
+        //
+        StateTime newRootState = trajectory.get(trajectory.size() > 7 ? 2 : 0);
+        int increment = ((OptimalAnyTrajectoryPlanner) slowTrajectoryPlannerContainer.getTrajectoryPlanner()).switchRootToState(newRootState.x());
+        slowTrajectoryPlannerContainer.getParameters().increaseDepthLimit(increment);
+      }
+      tocTemp = System.nanoTime();
+      System.out.println("Rootchange took: " + (tocTemp - ticTemp) * 1e-9 + "s");
+      // -- EXPANDING
+      ticTemp = System.nanoTime();
       int expandIter = Expand.constTime(slowTrajectoryPlannerContainer.getTrajectoryPlanner(), //
           planningTime, slowTrajectoryPlannerContainer.getParameters().getDepthLimit());
+      furthestState = ((OptimalAnyTrajectoryPlanner) slowTrajectoryPlannerContainer.getTrajectoryPlanner()).getFurthestGoalState();
+      // check if furthest Goal is already in last Region in List
+      if (furthestState.isPresent()) {
+        if (goalRegions.get(goalRegions.size() - 1).isMember(furthestState.get().x())) {
+          System.out.println("***Last Goal was found***");
+          finalGoalFound = true;
+        }
+      }
+      finalGoalNode = slowTrajectoryPlannerContainer.getTrajectoryPlanner().getFinalGoalNode();
+      trajectory = GlcNodes.getPathFromRootTo(finalGoalNode.get());
+      tocTemp = System.nanoTime();
+      System.out.println("Expanding took: " + (tocTemp - ticTemp) * 1e-9 + "s");
+      long toc = System.nanoTime();
       owlyFrame.setGlc((TrajectoryPlanner) slowTrajectoryPlannerContainer.getTrajectoryPlanner());
-      if (expandIter < 1)
+      System.out.println((toc - tic) * 1e-9 + " Seconds needed to replan");
+      System.out.println("After goal switch needed " + expandIter + " iterations");
+      owlyFrame.setGlc((TrajectoryPlanner) slowTrajectoryPlannerContainer.getTrajectoryPlanner());
+      System.out.println("*****Finished*****");
+      if (!owlyFrame.jFrame.isVisible() || expandIter < 1)
         break;
       Thread.sleep(1);
     }
+    System.out.println("Finished LOOP");
   }
 }

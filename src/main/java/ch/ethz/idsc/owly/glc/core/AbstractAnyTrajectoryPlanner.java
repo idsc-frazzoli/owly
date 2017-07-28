@@ -12,7 +12,6 @@ import ch.ethz.idsc.owly.glc.adapter.TrajectoryGoalManager;
 import ch.ethz.idsc.owly.math.state.StateIntegrator;
 import ch.ethz.idsc.owly.math.state.StateTime;
 import ch.ethz.idsc.owly.math.state.TrajectoryRegionQuery;
-import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Tensor;
 
 public abstract class AbstractAnyTrajectoryPlanner extends AbstractTrajectoryPlanner implements AnyPlannerInterface {
@@ -117,7 +116,8 @@ public abstract class AbstractAnyTrajectoryPlanner extends AbstractTrajectoryPla
     // TODO JAN: Does this make !treeCollection.equals(compareCollection)==true? if values are changed in treeCollection?
     treeCollection.stream().parallel() //
         .forEach(glcNode -> glcNode.setMinCostToGoal(newGoal.minCostToGoal(glcNode.state())));
-    if (newGoal.minCostToGoal(root.state()) != RealScalar.ZERO) {
+    if (false) {
+      // if (newGoal.minCostToGoal(root.state()) != RealScalar.ZERO) {
       // TODO JONAS smart way to check if before line modified sth.
       System.err.println("checking for domainlabel changes due to heuristic change,  Treesize: " + treeCollection.size());
       // TODO JONAS for optimiality if Heuristic was changed, check candidates in domains

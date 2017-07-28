@@ -148,7 +148,7 @@ enum R2GlcConstTimeHeuristicAnyDemo {
       System.out.println("Rootchange took: " + (tocTemp - ticTemp) * 1e-9 + "s");
       // -- EXPANDING
       ticTemp = System.nanoTime();
-      int expanditer = Expand.constTime(trajectoryPlanner, runTime, parameters.getDepthLimit());
+      int expandIter = Expand.constTime(trajectoryPlanner, runTime, parameters.getDepthLimit());
       furthestState = trajectoryPlanner.getFurthestGoalState();
       // check if furthest Goal is already in last Region in List
       if (furthestState.isPresent()) {
@@ -166,9 +166,9 @@ enum R2GlcConstTimeHeuristicAnyDemo {
       long toc = System.nanoTime();
       owlyFrame.setGlc((TrajectoryPlanner) trajectoryPlanner);
       System.out.println((toc - tic) * 1e-9 + " Seconds needed to replan");
-      System.out.println("After goal switch needed " + expanditer + " iterations");
+      System.out.println("After goal switch needed " + expandIter + " iterations");
       System.out.println("*****Finished*****");
-      if (!owlyFrame.jFrame.isVisible() || expanditer < 1)
+      if (!owlyFrame.jFrame.isVisible() || expandIter < 1)
         break;
     }
     System.out.println("Finished LOOP");

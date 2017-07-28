@@ -25,7 +25,7 @@ import ch.ethz.idsc.tensor.Tensor;
     super(eta);
     this.stateIntegrator = stateIntegrator;
     this.obstacleQuery = obstacleQuery;
-    this.setGoalInterface(goalInterface);
+    this.goalInterface = goalInterface;
   }
 
   @Override

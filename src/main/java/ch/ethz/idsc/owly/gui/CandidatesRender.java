@@ -8,7 +8,6 @@ import java.awt.Shape;
 import java.awt.Stroke;
 import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
-import java.util.Collection;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
@@ -27,9 +26,7 @@ public class CandidatesRender implements RenderInterface {
   @Override
   public void render(OwlyLayer owlyLayer, Graphics2D graphics) {
     graphics.setColor(Color.black);
-    graphics.drawString("candidates could appear in view", 50, 50);
     Map<Tensor, Set<CandidatePair>> candidateMap = OptimalAnyTrajectoryPlanner.getCandidateMap();
-    long totalCandidates = candidateMap.values().parallelStream().flatMap(Collection::stream).count();
     long candidateThreshold = 1000; // Threshold, rendering the first ___ Candidates
     long iter = 0;
     Iterator<Set<CandidatePair>> candidateMapIterator = candidateMap.values().iterator();
