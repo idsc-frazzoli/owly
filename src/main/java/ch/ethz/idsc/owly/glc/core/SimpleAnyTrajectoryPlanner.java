@@ -1,12 +1,14 @@
 // code by jl
 package ch.ethz.idsc.owly.glc.core;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
 import ch.ethz.idsc.owly.data.tree.Nodes;
+import ch.ethz.idsc.owly.glc.adapter.TrajectoryGoalManager;
 import ch.ethz.idsc.owly.math.flow.Flow;
 import ch.ethz.idsc.owly.math.state.StateIntegrator;
 import ch.ethz.idsc.owly.math.state.StateTime;
@@ -37,7 +39,7 @@ public class SimpleAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
   @Override // from ExpandInterface
   public void expand(final GlcNode node) {
     Map<GlcNode, List<StateTime>> connectors = //
-        SharedUtils.integrate(node, controls, getStateIntegrator(), goalInterface, false);
+        SharedUtils.integrate(node, controls, getStateIntegrator(), getGoalInterface(), false);
     // --
     CandidatePairQueueMap candidates = new CandidatePairQueueMap();
     for (GlcNode next : connectors.keySet()) { // <- order of keys is non-deterministic
@@ -72,7 +74,7 @@ public class SimpleAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
                 // formerLabel disconnecting
                 formerLabel.parent().removeEdgeTo(formerLabel);
                 insertNodeInTree(nextParent, next);
-                if (!goalInterface.isDisjoint(connectors.get(next)))
+                if (!getGoalInterface().isDisjoint(connectors.get(next)))
                   offerDestination(next, connectors.get(next));
                 candidateQueue.remove();
                 break;
@@ -82,7 +84,7 @@ public class SimpleAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
             if (getObstacleQuery().isDisjoint(connectors.get(next))) {
               nextParent.insertEdgeTo(next);
               insert(domain_key, next);
-              if (!goalInterface.isDisjoint(connectors.get(next)))
+              if (!getGoalInterface().isDisjoint(connectors.get(next)))
                 offerDestination(next, connectors.get(next));
               candidateQueue.remove();
               break;
@@ -122,12 +124,24 @@ public class SimpleAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
   @Override
   public String infoString() {
     StringBuilder stringBuilder = new StringBuilder(super.infoString() + ", ");
-    stringBuilder.append("SimpleAny...");
+    stringBuilder.append("SimpleAnyPlanner");
+    if (this.getGoalQuery() instanceof TrajectoryGoalManager)
+      stringBuilder.append(", with a TrajectoryGoalManger");
     return stringBuilder.toString();
   }
 
   @Override
-  /** Nothing needs to be done, as Optimality is not keept */
+  /** Nothing needs to be done, as Optimality is not kept */
   void RelabelingDomains() {
+  }
+
+  @Override
+  boolean GoalCheckTree(Collection<GlcNode> treeCollection) {
+    // TODO JAN: Does this work like this? tested with demos
+    treeCollection.parallelStream().forEach(node -> {
+      if (!this.getGoalQuery().isDisjoint(Arrays.asList(node.stateTime())))
+        offerDestination(node, Arrays.asList(node.stateTime()));
+    });
+    return getBest().isPresent();
   }
 }

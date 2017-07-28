@@ -28,7 +28,7 @@ public class StandardTrajectoryPlanner extends AbstractTrajectoryPlanner {
 
   @Override // from ExpandInterface
   public void expand(final GlcNode node) {
-    Map<GlcNode, List<StateTime>> connectors = nodeFlowBuilder.parallel(node, goalInterface);
+    Map<GlcNode, List<StateTime>> connectors = nodeFlowBuilder.parallel(node, getGoalInterface());
     // ---
     DomainQueueMap domainQueueMap = new DomainQueueMap(); // holds candidates for insertion
     for (GlcNode next : connectors.keySet()) { // <- order of keys is non-deterministic
@@ -65,7 +65,7 @@ public class StandardTrajectoryPlanner extends AbstractTrajectoryPlanner {
               if (!replaced)
                 throw new RuntimeException();
               domainQueue.remove();
-              if (!goalInterface.isDisjoint(connectors.get(next)))
+              if (!getGoalInterface().isDisjoint(connectors.get(next)))
                 offerDestination(next, connectors.get(next));
               // Same principle as in B. Paden's implementation, leaving while loop after first relabel
               break; // leaves the while loop, but not the for loop
@@ -79,7 +79,7 @@ public class StandardTrajectoryPlanner extends AbstractTrajectoryPlanner {
             insert(domainKey, next);
             domainQueue.remove();
             // GOAL check
-            if (!goalInterface.isDisjoint(connectors.get(next)))
+            if (!getGoalInterface().isDisjoint(connectors.get(next)))
               offerDestination(next, connectors.get(next));
             break;
           }

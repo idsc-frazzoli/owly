@@ -29,11 +29,9 @@ public abstract class TrajectoryPlanner implements ExpandInterface, Serializable
   private final Map<Tensor, GlcNode> domainMap = new HashMap<>();
   /** best is a reference to a Node in the goal region,
    * or null if such a node has not been identified
-   * 
    * use function setBestNull() to reset best to null */
-  // private GlcNode best = null;
-  // TODO make private again?
-  /* package */ TreeMap<GlcNode, List<StateTime>> best = new TreeMap<GlcNode, List<StateTime>>(NodeMeritComparator.INSTANCE);
+  // TODO Make private again?
+  protected TreeMap<GlcNode, List<StateTime>> best = new TreeMap<GlcNode, List<StateTime>>(NodeMeritComparator.INSTANCE);
   private int replaceCount = 0;
 
   protected TrajectoryPlanner(Tensor eta) {

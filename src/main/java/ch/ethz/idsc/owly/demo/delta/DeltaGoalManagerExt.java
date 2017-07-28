@@ -19,8 +19,8 @@ import ch.ethz.idsc.tensor.sca.Ramp;
 
 public class DeltaGoalManagerExt extends SimpleTrajectoryRegionQuery implements GoalInterface {
   private final Tensor center;
-  private final Scalar radius;
-  private final Scalar maxSpeed;
+  protected final Scalar radius;
+  protected final Scalar maxSpeed;
   private final Scalar timeCostScalingFactor;
 
   // Constructor with Default value in CostScaling
@@ -66,6 +66,7 @@ public class DeltaGoalManagerExt extends SimpleTrajectoryRegionQuery implements 
     // B. Paden: A Generalized Label Correcting Method for Optimal Kinodynamic Motion Planning
     // p. 79 Eq: 6.4.14
     // Heuristic needs to be underestimating: (Euclideandistance-radius) / (MaxControl+Max(|Vectorfield|)
+    // return RealScalar.ZERO;
     return Ramp.of(Norm._2.of(x.subtract(center)).subtract(radius).divide(maxSpeed));
   }
 }
