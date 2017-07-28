@@ -5,6 +5,11 @@ public enum PerlinNoise implements ContinuousNoise {
   FUNCTION //
   ;
   @Override
+  public double at(double x, double y) {
+    return at(x, y, 0);
+  }
+
+  @Override
   public double at(double x, double y, double z) {
     int X = Floor.of(x) & 255; // FIND UNIT CUBE THAT
     int Y = Floor.of(y) & 255; // CONTAINS POINT.
