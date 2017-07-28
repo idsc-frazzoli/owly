@@ -69,7 +69,7 @@ enum DeltaGlcConstTimeHeuristicAnyDemo {
     Scalar planningTime = RealScalar.of(1);
     // -- ANYTIMELOOP
     boolean finalGoalFound = false;
-    while (owlyFrame.jFrame.isVisible()) {
+    while (!finalGoalFound) {
       List<StateTime> trajectory = null;
       Optional<GlcNode> finalGoalNode = null;
       // --
@@ -154,7 +154,7 @@ enum DeltaGlcConstTimeHeuristicAnyDemo {
       System.out.println("After goal switch needed " + expandIter + " iterations");
       owlyFrame.setGlc((TrajectoryPlanner) slowTrajectoryPlannerContainer.getTrajectoryPlanner());
       System.out.println("*****Finished*****");
-      if (!owlyFrame.jFrame.isVisible() || expandIter < 1 )
+      if (!owlyFrame.jFrame.isVisible() || expandIter < 1)
         break;
       Thread.sleep(1);
     }

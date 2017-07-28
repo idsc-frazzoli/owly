@@ -36,8 +36,6 @@ public class DeltaTrajectoryGoalManager extends DeltaGoalManagerExt implements T
 
   @Override
   public Scalar minCostToGoal(Tensor x) {
-    // B. Paden: A Generalized Label Correcting Method for Optimal Kinodynamic Motion Planning
-    // p. 79 Eq: 6.4.14
     // Heuristic needs to be underestimating: (Euclideandistance-radius) / (MaxControl+Max(|Vectorfield|)
     Scalar bestDistance = DoubleScalar.POSITIVE_INFINITY;
     StateTime closestState = null;
@@ -52,7 +50,9 @@ public class DeltaTrajectoryGoalManager extends DeltaGoalManagerExt implements T
       }
     }
     Scalar trajectoryIndex = RealScalar.of(heuristicTrajectory.size() - heuristicTrajectory.indexOf(closestState));
-    Scalar magicConstant = maxSpeed.multiply(RealScalar.of(0.8));
-    return Ramp.of(bestDistance.subtract(radius).divide(maxSpeed).add(trajectoryIndex.multiply(magicConstant)));
+    Scalar trajectoryToGoalDistance = maxSpeed.multiply(RealScalar.of(5)).divide(RealScalar.of(12)).multiply(trajectoryIndex);
+    // TODO JONAS:Heuristic needs to be consistent with brians rules
+    return Ramp.of(trajectoryToGoalDistance);
+    // return Ramp.of(bestDistance.subtract(radius).divide(maxSpeed).add(trajectoryToGoalDistance));
   }
 }
