@@ -13,6 +13,7 @@ import ch.ethz.idsc.owly.demo.rn.RnTrajectoryGoalManager;
 import ch.ethz.idsc.owly.demo.util.R2Controls;
 import ch.ethz.idsc.owly.glc.adapter.Parameters;
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
+import ch.ethz.idsc.owly.glc.adapter.TrajectoryGoalManager;
 import ch.ethz.idsc.owly.glc.core.Expand;
 import ch.ethz.idsc.owly.glc.core.GlcNode;
 import ch.ethz.idsc.owly.glc.core.GlcNodes;
@@ -122,8 +123,12 @@ enum R2GlcConstTimeHeuristicAnyDemo {
       } else {
         if (goalRegions.size() != 1) // only the last Goal is left in the list
           throw new RuntimeException(); // should only include last Goalregion, therefore size ==1
-        RnSimpleCircleGoalManager rnGoalFinal = new RnSimpleCircleGoalManager(goalRegions.get(0), goalStateList.get(0).x(), radius.Get(0));
-        trajectoryPlanner.changeToGoal(rnGoalFinal);
+        if (trajectoryPlanner.getGoalQuery() instanceof TrajectoryGoalManager) {
+          // only to change GoalManager to final Simple
+          RnSimpleCircleGoalManager rnGoalFinal = new RnSimpleCircleGoalManager(goalRegions.get(0), goalStateList.get(0).x(), radius.Get(0));
+          trajectoryPlanner.changeToGoal(rnGoalFinal);
+          System.err.println("Changed Goal for last Time");
+        }
       }
       long tocTemp = System.nanoTime();
       System.out.println("Goalchange took: " + (tocTemp - ticTemp) * 1e-9 + "s");

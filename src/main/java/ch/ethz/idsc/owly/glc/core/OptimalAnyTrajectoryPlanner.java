@@ -2,6 +2,7 @@
 package ch.ethz.idsc.owly.glc.core;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -46,7 +47,7 @@ public class OptimalAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
   @Override // from ExpandInterface
   public void expand(final GlcNode node) {
     Map<GlcNode, List<StateTime>> connectors = //
-        SharedUtils.integrate(node, controls, getStateIntegrator(), goalInterface, true);
+        SharedUtils.integrate(node, controls, getStateIntegrator(), getGoalInterface(), true);
     CandidatePairQueueMap candidatePairQueueMap = new CandidatePairQueueMap();
     for (GlcNode next : connectors.keySet()) { // <- order of keys is non-deterministic
       // ALL Candidates are saved in temporary CandidateList
@@ -97,7 +98,7 @@ public class OptimalAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
                 // removing the nextCandidate from bucket of this domain
                 candidateMap.get(domainKey).remove(nextCandidatePair);
                 // GOAL check
-                if (!goalInterface.isDisjoint(connectors.get(next)))
+                if (!getGoalInterface().isDisjoint(connectors.get(next)))
                   offerDestination(next, connectors.get(next));
                 break;
               }
@@ -114,7 +115,7 @@ public class OptimalAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
               }
               candidateMap.get(domainKey).remove(nextCandidatePair);
               // GOAL check
-              if (!goalInterface.isDisjoint(connectors.get(next)))
+              if (!getGoalInterface().isDisjoint(connectors.get(next)))
                 offerDestination(next, connectors.get(next));
               break;
             }
@@ -179,7 +180,7 @@ public class OptimalAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
         Set<CandidatePair> tempCandidateSet = candidateMap.get(domainKey);
         // Merit of Candidates can have changed--> update
         tempCandidateSet.parallelStream().forEach(cp -> //
-        cp.getCandidate().setMinCostToGoal(goalInterface.minCostToGoal(cp.getCandidate().state())));
+        cp.getCandidate().setMinCostToGoal(getGoalInterface().minCostToGoal(cp.getCandidate().state())));
         PriorityQueue<CandidatePair> candidateQueue = new PriorityQueue<>(tempCandidateSet);
         while (!candidateQueue.isEmpty()) {
           // retrieving the Candidates
@@ -202,7 +203,7 @@ public class OptimalAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
               candidateMap.get(domainKey).remove(nextCandidatePair);
               // BUG
               addedNodesToQueue++;
-              if (!goalInterface.isDisjoint(connector))
+              if (!getGoalInterface().isDisjoint(connector))
                 offerDestination(next, connector);
               break; // leaves the while loop, but not the for loop
             }
@@ -250,7 +251,7 @@ public class OptimalAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
               throw new RuntimeException();
             } // node should be label
             tempCandidateSet.stream().parallel().forEach(cp -> //
-            cp.getCandidate().setMinCostToGoal(goalInterface.minCostToGoal(cp.getCandidate().state())));
+            cp.getCandidate().setMinCostToGoal(getGoalInterface().minCostToGoal(cp.getCandidate().state())));
             PriorityQueue<CandidatePair> candidateQueue = new PriorityQueue<>(tempCandidateSet);
             while (!candidateQueue.isEmpty()) {
               final CandidatePair possibleCandidate = candidateQueue.poll();
@@ -262,17 +263,18 @@ public class OptimalAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
                   final List<StateTime> connector = //
                       getStateIntegrator().trajectory(possibleCandidateOrigin.stateTime(), possibleCandidateNode.flow());
                   if (getObstacleQuery().isDisjoint(connector)) {
-                    // System.out.println("Comparing: " + possibleCandidateNode.merit().add(RealScalar.of(1e-14)) + " < " + current.merit());
                     Collection<GlcNode> deleteTree = deleteSubtreeOf(current);
                     deletedNodes = deletedNodes + deleteTree.size() - 1; // -1 as this node was replaced
                     replacedNodes++;
                     if (current.parent() != null)
                       current.parent().removeEdgeTo(current);
                     insertNodeInTree(possibleCandidateOrigin, possibleCandidateNode);
-                    if (!goalInterface.isDisjoint(connector))
+                    if (!getGoalInterface().isDisjoint(connector))
                       offerDestination(possibleCandidateNode, connector);
-                    break; // leaves the while loop if a better was found
+                    break; // leaves the Candidate Queue while loop if a better was found
                   }
+                } else { // CandidateOrigin is not connected to tree anymore --> Remove this Candidate from Map
+                  candidateMap.get(convertToKey(possibleCandidateNode.state())).remove(possibleCandidate);
                 }
               } else {
                 break; // if no better Candidates are found leave while of Candidates loop -> Speedgain
@@ -289,5 +291,17 @@ public class OptimalAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
     candidateMap.values().removeIf(bucket -> bucket.isEmpty());
     long toc = System.nanoTime();
     System.out.println("Relabel during goalSwitch took: " + (toc - tic) * 1e-9 + "s");
+  }
+
+  @Override
+  protected boolean GoalCheckTree(Collection<GlcNode> treeCollection) {
+    // TODO JAN: Does this work like this?
+    // 15%-50% Speedgain, tested with R2GlcConstTimeHeuristicAnyDemo
+    treeCollection.parallelStream().forEach(node -> {
+      if (!node.isRoot())
+        if (!this.getGoalQuery().isDisjoint(getStateIntegrator().trajectory(node.parent().stateTime(), node.flow())))
+          offerDestination(node, Arrays.asList(node.stateTime()));
+    });
+    return getBest().isPresent();
   }
 }

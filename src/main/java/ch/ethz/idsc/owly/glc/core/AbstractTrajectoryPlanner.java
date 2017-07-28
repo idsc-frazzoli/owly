@@ -15,7 +15,7 @@ import ch.ethz.idsc.tensor.Tensor;
 /* package */ abstract class AbstractTrajectoryPlanner extends TrajectoryPlanner {
   private final StateIntegrator stateIntegrator;
   private final TrajectoryRegionQuery obstacleQuery;
-  /* not final */ GoalInterface goalInterface;
+  private /* not final */ GoalInterface goalInterface;
 
   protected AbstractTrajectoryPlanner( //
       Tensor eta, //
@@ -25,7 +25,7 @@ import ch.ethz.idsc.tensor.Tensor;
     super(eta);
     this.stateIntegrator = stateIntegrator;
     this.obstacleQuery = obstacleQuery;
-    this.goalInterface = goalInterface;
+    this.setGoalInterface(goalInterface);
   }
 
   @Override
@@ -44,12 +44,20 @@ import ch.ethz.idsc.tensor.Tensor;
 
   @Override
   public final TrajectoryRegionQuery getGoalQuery() {
-    return goalInterface;
+    return getGoalInterface();
   }
 
   @Override
   /* package */ final GlcNode createRootNode(Tensor x) {
     return GlcNode.of(null, new StateTime(x, RealScalar.ZERO), RealScalar.ZERO, //
-        goalInterface.minCostToGoal(x));
+        getGoalInterface().minCostToGoal(x));
+  }
+
+  protected final GoalInterface getGoalInterface() {
+    return goalInterface;
+  }
+
+  protected final void setGoalInterface(GoalInterface goalInterface) {
+    this.goalInterface = goalInterface;
   }
 }
