@@ -78,7 +78,8 @@ public enum SimplexNoise implements ContinuousNoise {
    * @param xin
    * @param yin
    * @return value in the interval [-1,1] */
-  public static double at(double xin, double yin) {
+  @Override
+  public double at(double xin, double yin) {
     double n0, n1, n2; // Noise contributions from the three corners
     // Skew the input space to determine which simplex cell we're in
     double s = (xin + yin) * F2; // Hairy factor for 2D

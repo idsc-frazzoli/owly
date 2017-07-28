@@ -20,7 +20,7 @@ public class R2NoiseRegion implements Region {
 
   @Override
   public boolean isMember(Tensor tensor) {
-    return threshold < SimplexNoise.at( //
+    return threshold < SimplexNoise.FUNCTION.at( //
         tensor.Get(0).number().doubleValue(), //
         tensor.Get(1).number().doubleValue());
   }
