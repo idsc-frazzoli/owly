@@ -1,7 +1,7 @@
 // JAVA REFERENCE IMPLEMENTATION OF IMPROVED NOISE - COPYRIGHT 2002 KEN PERLIN.
 package ch.ethz.idsc.owly.math.noise;
 
-public enum PerlinNoise implements ContinuousNoise {
+public enum PerlinContinuousNoise implements NativeContinuousNoise {
   FUNCTION //
   ;
   @Override
@@ -11,9 +11,9 @@ public enum PerlinNoise implements ContinuousNoise {
 
   @Override
   public double at(double x, double y, double z) {
-    int X = Floor.of(x) & 255; // FIND UNIT CUBE THAT
-    int Y = Floor.of(y) & 255; // CONTAINS POINT.
-    int Z = Floor.of(z) & 255;
+    int X = Noise.floor(x) & 255; // FIND UNIT CUBE THAT
+    int Y = Noise.floor(y) & 255; // CONTAINS POINT.
+    int Z = Noise.floor(z) & 255;
     x -= Math.floor(x); // FIND RELATIVE X,Y,Z
     y -= Math.floor(y); // OF POINT IN CUBE.
     z -= Math.floor(z);

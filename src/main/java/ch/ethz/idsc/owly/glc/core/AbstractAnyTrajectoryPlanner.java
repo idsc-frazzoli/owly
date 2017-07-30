@@ -25,7 +25,7 @@ public abstract class AbstractAnyTrajectoryPlanner extends AbstractTrajectoryPla
   }
 
   @Override
-  void offerDestination(GlcNode node, List<StateTime> connector) {
+  final void offerDestination(GlcNode node, List<StateTime> connector) {
     best.put(node, connector); // always put new GoalNodes in Map
   }
 
@@ -104,8 +104,8 @@ public abstract class AbstractAnyTrajectoryPlanner extends AbstractTrajectoryPla
    * @param newGoal New GoalRegion
    * @return boolean, true if Goal was already found in oldTree */
   @Override
-  public boolean changeToGoal(final GoalInterface newGoal) {
-    this.setGoalInterface(newGoal);
+  public final boolean changeToGoal(final GoalInterface newGoal) {
+    setGoalInterface(newGoal);
     GlcNode root = getRoot();
     Collection<GlcNode> treeCollection = Nodes.ofSubtree(root);
     setBestNull();
@@ -163,7 +163,7 @@ public abstract class AbstractAnyTrajectoryPlanner extends AbstractTrajectoryPla
   }
 
   @Override
-  public List<StateTime> trajectoryToBest() {
+  public final List<StateTime> trajectoryToBest() {
     Optional<GlcNode> tempBest = getBestOrElsePeek();
     if (tempBest.isPresent())
       return GlcNodes.getPathFromRootTo(tempBest.get());
@@ -171,7 +171,7 @@ public abstract class AbstractAnyTrajectoryPlanner extends AbstractTrajectoryPla
   }
 
   @Override
-  public List<TrajectorySample> detailedTrajectoryToBest() {
+  public final List<TrajectorySample> detailedTrajectoryToBest() {
     Optional<GlcNode> optional = getBestOrElsePeek();
     if (optional.isPresent())
       return GlcTrajectories.connect(getStateIntegrator(), Nodes.listFromRoot(getBest().get()));
@@ -182,12 +182,12 @@ public abstract class AbstractAnyTrajectoryPlanner extends AbstractTrajectoryPla
    * @return node with highest merit in GoalRegion */
   @Override
   // TODO JONAS: modify similar to finalgoal
-  public Optional<StateTime> getFurthestGoalState() {
+  public final Optional<StateTime> getFurthestGoalState() {
     Optional<GlcNode> key = getFurthestGoalNode();
     if (key.isPresent()) {
       List<StateTime> bestTrajectory = best.get(key.get());
-      // int index = ((GoalTrajectoryRegionQuery) this.getGoalQuery()).firstMemberCheck(bestTrajectory);
-      int index = this.getGoalQuery().firstMember(bestTrajectory);
+      // int index = ((GoalTrajectoryRegionQuery) getGoalQuery()).firstMemberCheck(bestTrajectory);
+      int index = getGoalQuery().firstMember(bestTrajectory);
       if (index >= 0)
         return Optional.ofNullable(bestTrajectory.get(index));
     }
@@ -195,15 +195,15 @@ public abstract class AbstractAnyTrajectoryPlanner extends AbstractTrajectoryPla
   }
 
   @Override
-  public Optional<GlcNode> getFurthestGoalNode() {
+  public final Optional<GlcNode> getFurthestGoalNode() {
     if (!best.isEmpty())
       return Optional.ofNullable(best.lastKey());
     return Optional.empty();
   }
 
   @Override
-  public Optional<GlcNode> getFinalGoalNode() {
-    if (this.getGoalQuery() instanceof TrajectoryGoalManager) {
+  public final Optional<GlcNode> getFinalGoalNode() {
+    if (getGoalQuery() instanceof TrajectoryGoalManager) {
       Optional<GlcNode> furthest = getFurthestGoalNode();
       if (furthest.isPresent())
         return furthest;

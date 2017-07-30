@@ -1,15 +1,14 @@
-// adapted by jph
+// code by jph
 package ch.ethz.idsc.owly.math.noise;
 
-public interface ContinuousNoise {
-  /** @param x
-   * @param y
-   * @return value in the interval [-1, 1] that varies smoothly with x, y */
-  double at(double x, double y);
+import java.io.Serializable;
+import java.util.function.Function;
 
-  /** @param x
-   * @param y
-   * @param z
-   * @return value in the interval [-1, 1] that varies smoothly with x, y, z */
-  double at(double x, double y, double z);
+import ch.ethz.idsc.tensor.Scalar;
+import ch.ethz.idsc.tensor.Tensor;
+
+/** maps given tensor to a scalar noise value
+ * result should depend continuously on input */
+public interface ContinuousNoise extends Function<Tensor, Scalar>, Serializable {
+  // ---
 }

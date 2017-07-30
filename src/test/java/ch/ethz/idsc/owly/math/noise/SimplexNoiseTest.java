@@ -11,7 +11,7 @@ import junit.framework.TestCase;
 
 public class SimplexNoiseTest extends TestCase {
   public void testSimple() {
-    Tensor noise = Tensors.vector(i -> DoubleScalar.of(10 * (1 + SimplexNoise.FUNCTION.at(.1 * i, .1 + i))), 1000);
+    Tensor noise = Tensors.vector(i -> DoubleScalar.of(10 * (1 + SimplexContinuousNoise.FUNCTION.at(.1 * i, .1 + i))), 1000);
     Tensor bins = BinCounts.of(noise);
     assertEquals(bins.length(), 20);
     long len = bins.flatten(0) //
@@ -22,7 +22,7 @@ public class SimplexNoiseTest extends TestCase {
   }
 
   public void testExample() {
-    double value = SimplexNoise.FUNCTION.at(.3, 300.3, -600.5);
+    double value = SimplexContinuousNoise.FUNCTION.at(.3, 300.3, -600.5);
     assertEquals(value, -0.12579872366423636);
   }
 }

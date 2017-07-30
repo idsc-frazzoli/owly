@@ -7,6 +7,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.NavigableMap;
 import java.util.Optional;
 import java.util.PriorityQueue;
 import java.util.Queue;
@@ -16,7 +17,6 @@ import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
 import ch.ethz.idsc.owly.math.TensorUnaryOperator;
 import ch.ethz.idsc.owly.math.state.StateTime;
 import ch.ethz.idsc.owly.math.state.TrajectoryRegionQuery;
-import ch.ethz.idsc.tensor.Scalars;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.sca.Floor;
 
@@ -30,11 +30,11 @@ public abstract class TrajectoryPlanner implements ExpandInterface, Serializable
   /** best is a reference to a Node in the goal region,
    * or null if such a node has not been identified
    * use function setBestNull() to reset best to null */
-  // TODO Make private again?
-  protected TreeMap<GlcNode, List<StateTime>> best = new TreeMap<GlcNode, List<StateTime>>(NodeMeritComparator.INSTANCE);
+  /* package */ final NavigableMap<GlcNode, List<StateTime>> best = //
+      new TreeMap<GlcNode, List<StateTime>>(NodeMeritComparator.INSTANCE);
   private int replaceCount = 0;
 
-  protected TrajectoryPlanner(Tensor eta) {
+  /* package */ TrajectoryPlanner(Tensor eta) {
     this.eta = eta.copy().unmodifiable();
   }
 
@@ -97,26 +97,24 @@ public abstract class TrajectoryPlanner implements ExpandInterface, Serializable
     return Optional.ofNullable(queue.poll()); // Queue#poll() returns the head of queue, or null if queue is empty
   }
 
+  /** method is invoked to notify planner that the
+   * intersection of the goal interface and the connector is non-empty
+   * 
+   * {@link AbstractAnyTrajectoryPlanner} overrides this method
+   * 
+   * @param node
+   * @param connector */
   /* package */ void offerDestination(GlcNode node, List<StateTime> connector) {
-    if (!best.isEmpty()) {
-      // Merit = CostFromRoot in goal, as CostToGoal == 0, for consistency use merit
-      if (Scalars.lessThan(node.merit(), best.firstKey().merit())) {
-        // if best not empty only put, when new one is better
-        best.clear();
-        System.out.println("found/improved goal, cost=" + node.merit());
-        best.put(node, connector);
-      }
-    } else {
-      // if best empty always put
-      best.put(node, connector);
-    }
+    best.put(node, connector); // if best empty always put
+    if (1 < best.size())
+      best.remove(best.lastKey());
+    if (1 < best.size()) // TODO JAN remove consistency check after a while
+      throw new RuntimeException("" + best.size());
   }
 
   @Override // from ExpandInterface
   public final Optional<GlcNode> getBest() {
-    if (!best.isEmpty())
-      return Optional.ofNullable(best.firstKey());
-    return Optional.empty();
+    return Optional.ofNullable(best.isEmpty() ? null : best.firstKey());
   }
 
   /* package */ final void setBestNull() {
@@ -126,7 +124,8 @@ public abstract class TrajectoryPlanner implements ExpandInterface, Serializable
   /** @return best node known to be in goal, or top node in queue, or null,
    * in this order depending on existence */
   public final Optional<GlcNode> getBestOrElsePeek() {
-    return Optional.ofNullable(getBest().orElse(queue.peek())); // Queue#peek() returns the head of queue, or null if queue is empty
+    // Queue#peek() returns the head of queue, or null if queue is empty
+    return Optional.ofNullable(getBest().orElse(queue.peek()));
   }
 
   /** @return number of replacements in the domain map caused by {@link TrajectoryPlanner#insert(Tensor, GlcNode)} */

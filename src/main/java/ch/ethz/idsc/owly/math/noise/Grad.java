@@ -1,7 +1,7 @@
 // code by stegu
 package ch.ethz.idsc.owly.math.noise;
 
-/** class extracted from {@link SimplexNoise} */
+/** class extracted from {@link SimplexContinuousNoise} */
 /* package */ class Grad {
   double x, y, z, w;
 

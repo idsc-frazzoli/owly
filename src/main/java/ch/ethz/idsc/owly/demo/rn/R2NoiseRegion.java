@@ -1,7 +1,9 @@
 // code by jph
 package ch.ethz.idsc.owly.demo.rn;
 
-import ch.ethz.idsc.owly.math.noise.SimplexNoise;
+import ch.ethz.idsc.owly.math.noise.ContinuousNoise;
+import ch.ethz.idsc.owly.math.noise.ContinuousNoiseUtils;
+import ch.ethz.idsc.owly.math.noise.SimplexContinuousNoise;
 import ch.ethz.idsc.owly.math.region.Region;
 import ch.ethz.idsc.tensor.Tensor;
 
@@ -13,6 +15,7 @@ import ch.ethz.idsc.tensor.Tensor;
  * membership in the region for coordinates (x,y) that evaluate the noise function above a given threshold. */
 public class R2NoiseRegion implements Region {
   private final double threshold;
+  private final ContinuousNoise continuousNoise = ContinuousNoiseUtils.wrap(SimplexContinuousNoise.FUNCTION);
 
   public R2NoiseRegion(double threshold) {
     this.threshold = threshold;
@@ -20,8 +23,6 @@ public class R2NoiseRegion implements Region {
 
   @Override
   public boolean isMember(Tensor tensor) {
-    return threshold < SimplexNoise.FUNCTION.at( //
-        tensor.Get(0).number().doubleValue(), //
-        tensor.Get(1).number().doubleValue());
+    return threshold < continuousNoise.apply(tensor).number().doubleValue();
   }
 }

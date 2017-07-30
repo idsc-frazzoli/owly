@@ -224,7 +224,7 @@ public class OptimalAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
   public String infoString() {
     StringBuilder stringBuilder = new StringBuilder(super.infoString() + ", ");
     stringBuilder.append("OptimalAnyPlanner");
-    if (this.getGoalQuery() instanceof TrajectoryGoalManager)
+    if (getGoalQuery() instanceof TrajectoryGoalManager)
       stringBuilder.append(", with a TrajectoryGoalManger");
     return stringBuilder.toString();
   }
@@ -299,7 +299,7 @@ public class OptimalAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
     // 15%-50% Speedgain, tested with R2GlcConstTimeHeuristicAnyDemo
     treeCollection.parallelStream().forEach(node -> {
       if (!node.isRoot())
-        if (!this.getGoalQuery().isDisjoint(getStateIntegrator().trajectory(node.parent().stateTime(), node.flow())))
+        if (!getGoalQuery().isDisjoint(getStateIntegrator().trajectory(node.parent().stateTime(), node.flow())))
           offerDestination(node, Arrays.asList(node.stateTime()));
     });
     return getBest().isPresent();

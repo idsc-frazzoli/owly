@@ -125,7 +125,7 @@ public class SimpleAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
   public String infoString() {
     StringBuilder stringBuilder = new StringBuilder(super.infoString() + ", ");
     stringBuilder.append("SimpleAnyPlanner");
-    if (this.getGoalQuery() instanceof TrajectoryGoalManager)
+    if (getGoalQuery() instanceof TrajectoryGoalManager)
       stringBuilder.append(", with a TrajectoryGoalManger");
     return stringBuilder.toString();
   }
@@ -139,7 +139,7 @@ public class SimpleAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
   boolean GoalCheckTree(Collection<GlcNode> treeCollection) {
     // TODO JAN: Does this work like this? tested with demos
     treeCollection.parallelStream().forEach(node -> {
-      if (!this.getGoalQuery().isDisjoint(Arrays.asList(node.stateTime())))
+      if (!getGoalQuery().isDisjoint(Arrays.asList(node.stateTime())))
         offerDestination(node, Arrays.asList(node.stateTime()));
     });
     return getBest().isPresent();
