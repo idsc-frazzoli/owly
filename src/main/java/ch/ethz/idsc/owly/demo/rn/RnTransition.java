@@ -12,6 +12,8 @@ import ch.ethz.idsc.tensor.Scalars;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.red.Norm;
 
+/** agents moves with unit speed, i.e.
+ * Euclidean length of line segment equals the time required to traverse */
 public class RnTransition extends AbstractTransition {
   public RnTransition(Tensor start, Tensor end) {
     super(start, end);

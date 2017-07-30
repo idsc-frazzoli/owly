@@ -1,7 +1,6 @@
 // code by jph
 package ch.ethz.idsc.owly.demo.rn;
 
-import ch.ethz.idsc.owly.demo.util.UserHome;
 import ch.ethz.idsc.owly.math.noise.NativeContinuousNoise;
 import ch.ethz.idsc.owly.math.noise.SimplexContinuousNoise;
 import ch.ethz.idsc.tensor.DoubleScalar;
@@ -10,17 +9,14 @@ import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
 import ch.ethz.idsc.tensor.alg.Subdivide;
-import ch.ethz.idsc.tensor.img.ArrayPlot;
-import ch.ethz.idsc.tensor.img.ColorDataGradients;
-import ch.ethz.idsc.tensor.io.Export;
 import ch.ethz.idsc.tensor.sca.Clip;
 import ch.ethz.idsc.tensor.sca.UnitStep;
 
-// TODO update when tensor lib 030 is used
+// TODO JAN update when tensor lib 030 is used
 enum R2NoisePlot {
   ;
   // ---
-  private static final NativeContinuousNoise NOISE = SimplexContinuousNoise.FUNCTION; //
+  private static final NativeContinuousNoise NOISE = SimplexContinuousNoise.FUNCTION;
   // PolyNoise.of(SimplexNoise.FUNCTION, new double[] { 1, 0 }, new double[] { .3, 3 });
   private static final int RES = 512;
   private static final Tensor RE = Subdivide.of(0, 25, RES - 1);
@@ -36,7 +32,7 @@ enum R2NoisePlot {
   public static void main(String[] args) throws Exception {
     @SuppressWarnings("unused")
     Tensor matrix = Tensors.matrix(R2NoisePlot::function, RES, RES);
-    Export.of(UserHome.Pictures("perlinnoise.png"), //
-        ArrayPlot.of(matrix, ColorDataGradients.COPPER));
+    // Export.of(UserHome.Pictures("perlinnoise.png"), //
+    // ArrayPlot.of(matrix, ColorDataGradients.COPPER));
   }
 }

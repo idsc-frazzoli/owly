@@ -105,11 +105,9 @@ public abstract class TrajectoryPlanner implements ExpandInterface, Serializable
    * @param node
    * @param connector */
   /* package */ void offerDestination(GlcNode node, List<StateTime> connector) {
-    best.put(node, connector); // if best empty always put
-    if (1 < best.size())
+    best.put(node, connector);
+    while (1 < best.size()) // `if` should be sufficient, but `while` to be sure
       best.remove(best.lastKey());
-    if (1 < best.size()) // TODO JAN remove consistency check after a while
-      throw new RuntimeException("" + best.size());
   }
 
   @Override // from ExpandInterface

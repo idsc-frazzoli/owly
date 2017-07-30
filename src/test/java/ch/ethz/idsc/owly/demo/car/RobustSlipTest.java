@@ -17,7 +17,7 @@ public class RobustSlipTest extends TestCase {
       Tensor slip = new RobustSlip(pacejka3, U, U.Get(0).add(eps)).slip();
       boolean cont = Chop._08.close(muLim, slip);
       if (!cont)
-        System.out.println(muLim + " " + slip);
+        System.out.println("! " + muLim + " " + slip);
       else
         assertTrue(cont);
     }
@@ -25,7 +25,7 @@ public class RobustSlipTest extends TestCase {
       Tensor slip = new RobustSlip(pacejka3, U, U.Get(0).subtract(eps)).slip();
       boolean cont = Chop._08.close(muLim, slip);
       if (!cont)
-        System.out.println(muLim + " " + slip);
+        System.out.println("! " + muLim + " " + slip);
       else
         assertTrue(cont);
     }
@@ -42,9 +42,8 @@ public class RobustSlipTest extends TestCase {
     _isContinuous(pacejka3, Tensors.vector(0, 1));
     _isContinuous(pacejka3, Tensors.vector(0, 0));
   }
-
-  public void testMathematica() {
-    final Pacejka3 pacejka3 = new Pacejka3(13, 1.3, 0.96);
-    System.out.println(new RobustSlip(pacejka3, Tensors.vector(10, 1), RealScalar.of(11)).slip());
-  }
+  // public void testMathematica() {
+  // final Pacejka3 pacejka3 = new Pacejka3(13, 1.3, 0.96);
+  // System.out.println(new RobustSlip(pacejka3, Tensors.vector(10, 1), RealScalar.of(11)).slip());
+  // }
 }

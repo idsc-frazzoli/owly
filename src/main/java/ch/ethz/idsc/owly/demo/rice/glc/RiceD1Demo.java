@@ -52,7 +52,8 @@ enum RiceD1Demo {
     // ---
     trajectoryPlanner.insertRoot(Tensors.vector(0, 0));
     int iters = Expand.maxSteps(trajectoryPlanner, 1000);
-    System.out.println(iters);
+    if (900 < iters)
+      System.out.println("close to upper bound: " + iters);
     return trajectoryPlanner;
   }
 

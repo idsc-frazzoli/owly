@@ -27,29 +27,27 @@ public class PolygonsTest extends TestCase {
   public void testSome() {
     Tensor asd = Tensors.vector(2, 3, 4, 5);
     asd.set(RealScalar.of(8), 1);
-    System.out.println(asd);
-    // asd.get(3).set(tensor, index);
-    // Collections.emptyList() = 123;
+    assertEquals(asd.Get(1), RealScalar.of(8));
     List<Integer> list = new ArrayList<>();
     list.add(6);
     list.add(2);
     list.add(3);
     list.add(9);
     list.get(1).longValue();
+  }
+
+  public void testCPointers() {
     {
       String wer = "asdf";
       String wer2 = wer;
-      wer = "987345";
-      "987345".toString();
-      System.out.println(wer);
-      System.out.println(wer2);
+      wer = "987345"; // does not change wer2
+      assertFalse(wer.equals(wer2));
     }
     {
       Tensor wo = Tensors.vector(2, 3, 4, 5);
       Tensor wo2 = wo;
-      wo = Tensors.vector(9, 9);
-      System.out.println(wo);
-      System.out.println(wo2);
+      wo = Tensors.vector(9, 9); // does not change wo2
+      assertFalse(wo.equals(wo2));
     }
   }
 }
