@@ -13,8 +13,15 @@ import ch.ethz.idsc.owly.math.state.TrajectoryRegionQuery;
 import ch.ethz.idsc.tensor.Scalars;
 import ch.ethz.idsc.tensor.Tensor;
 
+/** translation of the c++ implementation by bapaden
+ * 
+ * subsequent modifications include:
+ * <ul>
+ * <li>parallel integration of trajectories
+ * <li>nodes that get replaced in a domain, are also removed from the queue
+ * </ul> */
 public class StandardTrajectoryPlanner extends AbstractTrajectoryPlanner {
-  private final NodeIntegratorFlow nodeFlowBuilder;
+  private final NodeIntegratorFlow nodeIntegratorFlow;
 
   public StandardTrajectoryPlanner( //
       Tensor eta, //
@@ -23,12 +30,12 @@ public class StandardTrajectoryPlanner extends AbstractTrajectoryPlanner {
       TrajectoryRegionQuery obstacleQuery, //
       GoalInterface goalInterface) {
     super(eta, stateIntegrator, obstacleQuery, goalInterface);
-    nodeFlowBuilder = new NodeIntegratorFlow(stateIntegrator, controls);
+    nodeIntegratorFlow = new NodeIntegratorFlow(stateIntegrator, controls);
   }
 
   @Override // from ExpandInterface
   public void expand(final GlcNode node) {
-    Map<GlcNode, List<StateTime>> connectors = nodeFlowBuilder.parallel(node, getGoalInterface());
+    Map<GlcNode, List<StateTime>> connectors = nodeIntegratorFlow.parallel(node, getGoalInterface());
     // ---
     DomainQueueMap domainQueueMap = new DomainQueueMap(); // holds candidates for insertion
     for (GlcNode next : connectors.keySet()) { // <- order of keys is non-deterministic

@@ -36,7 +36,7 @@ public class ParametersTest extends TestCase {
       if (Scalars.lessThan(newValue.abs(), RealScalar.of(0.001)))
         break;
     }
-    System.out.println(iter);
+    // System.out.println(iter);
     assertTrue(iter < 1000);
   }
 
@@ -69,7 +69,7 @@ public class ParametersTest extends TestCase {
       if (Scalars.lessThan(newValue.abs(), RealScalar.of(0.001)))
         break;
     }
-    System.out.println(iter);
+    // System.out.println(iter);
     assertTrue(iter < 1000);
   }
 }

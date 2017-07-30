@@ -12,6 +12,7 @@ import ch.ethz.idsc.owly.demo.util.R2Controls;
 import ch.ethz.idsc.owly.demo.util.UserHome;
 import ch.ethz.idsc.owly.glc.adapter.Parameters;
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
+import ch.ethz.idsc.owly.glc.adapter.StateTimeTrajectories;
 import ch.ethz.idsc.owly.glc.core.AnyPlannerInterface;
 import ch.ethz.idsc.owly.glc.core.Expand;
 import ch.ethz.idsc.owly.glc.core.OptimalAnyTrajectoryPlanner;
@@ -27,7 +28,6 @@ import ch.ethz.idsc.owly.math.state.FixedStateIntegrator;
 import ch.ethz.idsc.owly.math.state.StateIntegrator;
 import ch.ethz.idsc.owly.math.state.StateTime;
 import ch.ethz.idsc.owly.math.state.TimeInvariantRegion;
-import ch.ethz.idsc.owly.math.state.Trajectories;
 import ch.ethz.idsc.owly.math.state.TrajectoryRegionQuery;
 import ch.ethz.idsc.tensor.DoubleScalar;
 import ch.ethz.idsc.tensor.RationalScalar;
@@ -74,7 +74,7 @@ enum R2GlcAnyCircleDemo {
     trajectoryPlanner.switchRootToState(Tensors.vector(0, 1).multiply(circleRadius));
     Expand.maxDepth(trajectoryPlanner, parameters.getDepthLimit());
     List<StateTime> trajectory = trajectoryPlanner.trajectoryToBest();
-    Trajectories.print(trajectory);
+    StateTimeTrajectories.print(trajectory);
     GifSequenceWriter gsw = GifSequenceWriter.of(UserHome.Pictures("R2_Circle_Gif.gif"), 250);
     OwlyFrame owlyFrame = Gui.start();
     owlyFrame.configCoordinateOffset(400, 400);
@@ -99,14 +99,14 @@ enum R2GlcAnyCircleDemo {
       if (trajectory.size() > 0) {
         // --
         StateTime newRootState = trajectory.get(trajectory.size() > 5 ? 5 : 0);
-        int increment = trajectoryPlanner.switchRootToState(newRootState.x());
+        int increment = trajectoryPlanner.switchRootToState(newRootState.state());
         parameters.increaseDepthLimit(increment);
       }
       // -- EXPANDING
       int iters2 = Expand.maxDepth(trajectoryPlanner, parameters.getDepthLimit());
       trajectory = trajectoryPlanner.trajectoryToBest();
       owlyFrame.setGlc((TrajectoryPlanner) trajectoryPlanner);
-      Trajectories.print(trajectory);
+      StateTimeTrajectories.print(trajectory);
       gsw.append(owlyFrame.offscreen());
       // --
       long toc = System.nanoTime();

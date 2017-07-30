@@ -24,7 +24,7 @@ public class GoalRender implements RenderInterface {
     if (Objects.isNull(collection))
       return;
     { // draw convex hull of goal points
-      Tensor points = Tensor.of(collection.stream().map(StateTime::x).map(x -> x.extract(0, 2)));
+      Tensor points = Tensor.of(collection.stream().map(StateTime::state).map(x -> x.extract(0, 2)));
       if (2 < points.length()) {
         graphics.setColor(new Color(224, 168, 0, 128));
         graphics.fill(owlyLayer.toPath2D(ConvexHull.of(points)));
@@ -35,7 +35,7 @@ public class GoalRender implements RenderInterface {
       double offset = -radius * 0.5;
       graphics.setColor(new Color(224, 168, 0, 224));
       for (StateTime stateTime : collection) {
-        Point2D point2d = owlyLayer.toPoint2D(stateTime.x());
+        Point2D point2d = owlyLayer.toPoint2D(stateTime.state());
         graphics.draw(new Ellipse2D.Double(point2d.getX() + offset, point2d.getY() + offset, radius, radius));
       }
     }

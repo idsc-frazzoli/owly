@@ -25,7 +25,7 @@ public class ObstacleRender implements RenderInterface {
     // ---
     graphics.setColor(new Color(0, 0, 0, 128));
     for (StateTime stateTime : collection) {
-      Point2D point2d = owlyLayer.toPoint2D(stateTime.x());
+      Point2D point2d = owlyLayer.toPoint2D(stateTime.state());
       Shape shape = new Rectangle2D.Double(point2d.getX(), point2d.getY(), 2, 2);
       graphics.draw(shape);
     }

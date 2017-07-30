@@ -42,7 +42,6 @@ class TextbookSlip implements SlipInterface {
 
   private static Scalar robustDiv(Scalar num, Scalar den, Scalar eps) {
     if (Scalars.isZero(den)) {
-      System.out.println("ROBUST DIV " + num);
       if (Scalars.nonZero(num))
         return num.divide(eps);
       return RealScalar.ZERO;

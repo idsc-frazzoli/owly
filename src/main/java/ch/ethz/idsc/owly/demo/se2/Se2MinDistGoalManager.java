@@ -3,9 +3,9 @@ package ch.ethz.idsc.owly.demo.se2;
 
 import java.util.List;
 
+import ch.ethz.idsc.owly.glc.adapter.StateTimeTrajectories;
 import ch.ethz.idsc.owly.math.flow.Flow;
 import ch.ethz.idsc.owly.math.state.StateTime;
-import ch.ethz.idsc.owly.math.state.Trajectories;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
@@ -26,7 +26,7 @@ public class Se2MinDistGoalManager extends Se2DefaultGoalManagerExt {
     // TODO currently all Se2models only change angle, no amplitude changes
     // integrate(||u||²+1,t)
     return RealScalar.ONE.add(Norm._2SQUARED.of(flow.getU()))//
-        .multiply(Trajectories.timeIncrement(from, trajectory));
+        .multiply(StateTimeTrajectories.timeIncrement(from, trajectory));
   }
 
   @Override // Heuristic function

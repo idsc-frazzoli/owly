@@ -5,19 +5,16 @@ import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.geom.Path2D;
-import java.awt.geom.Point2D;
-import java.awt.geom.Rectangle2D;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
 import ch.ethz.idsc.owly.glc.core.GlcNode;
-import ch.ethz.idsc.owly.glc.core.GlcNodes;
 import ch.ethz.idsc.owly.glc.core.TrajectoryPlanner;
 import ch.ethz.idsc.owly.glc.core.TrajectorySample;
 import ch.ethz.idsc.owly.math.flow.Flow;
-import ch.ethz.idsc.owly.math.state.StateTime;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
@@ -25,23 +22,34 @@ import ch.ethz.idsc.tensor.Tensor;
 public class TrajectoryRender implements RenderInterface {
   public static Scalar U_SCALE = RealScalar.of(.33);
   // ---
-  private TrajectoryPlanner trajectoryPlanner;
+  private List<TrajectorySample> trajectory = new ArrayList<>();
 
   public TrajectoryRender(TrajectoryPlanner trajectoryPlanner) {
-    this.trajectoryPlanner = trajectoryPlanner;
+    // TODO design not elegant!
+    if (Objects.nonNull(trajectoryPlanner)) {
+      Optional<GlcNode> optional = trajectoryPlanner.getFinalGoalNode();
+      if (optional.isPresent()) {
+        final GlcNode node = optional.get();
+        {// draw detailed trajectory from root to goal/furthestgo
+          setTrajectory(trajectoryPlanner.detailedTrajectoryTo(node));
+        }
+      }
+    }
   }
 
   @Override
   public void render(OwlyLayer owlyLayer, Graphics2D graphics) {
-    if (Objects.isNull(trajectoryPlanner))
-      return;
+    // if (Objects.isNull(trajectoryPlanner))
+    // return;
     // ---
-    TrajectoryPlanner trajectoryPlanner = this.trajectoryPlanner;
-    Optional<GlcNode> optional = trajectoryPlanner.getFinalGoalNode();
-    if (optional.isPresent()) {
-      final GlcNode node = optional.get();
+    // TrajectoryPlanner trajectoryPlanner = this.trajectoryPlanner;
+    // Optional<GlcNode> optional = trajectoryPlanner.getFinalGoalNode();
+    // if (optional.isPresent())
+    {
+      // final GlcNode node = optional.get();
       {// draw detailed trajectory from root to goal/furthestgo
-        final List<TrajectorySample> list = trajectoryPlanner.detailedTrajectoryTo(node);
+       // setTrajectory(trajectoryPlanner.detailedTrajectoryTo(node));
+        final List<TrajectorySample> list = trajectory;
         { // draw control vectors u along trajectory
           int rgb = 64;
           graphics.setColor(new Color(rgb, rgb, rgb, 192));
@@ -53,7 +61,7 @@ public class TrajectoryRender implements RenderInterface {
                 u.append(RealScalar.ZERO);
               graphics.draw( //
                   owlyLayer.toVector( //
-                      trajectorySample.stateTime().x(), //
+                      trajectorySample.stateTime().state(), //
                       u.multiply(U_SCALE) //
                   ));
             }
@@ -72,15 +80,16 @@ public class TrajectoryRender implements RenderInterface {
       }
       { // draw boxes at nodes in path from root to goal
         graphics.setColor(new Color(255, 0, 0, 128));
-        for (StateTime stateTime : GlcNodes.getPathFromRootTo(node)) {
-          Point2D point2d = owlyLayer.toPoint2D(stateTime.x());
-          graphics.draw(new Rectangle2D.Double(point2d.getX() - 1, point2d.getY() - 1, 2, 2));
-        }
+        // TODO reinstate functionality
+        // for (StateTime stateTime : GlcNodes.getPathFromRootTo(node)) {
+        // Point2D point2d = owlyLayer.toPoint2D(stateTime.state());
+        // graphics.draw(new Rectangle2D.Double(point2d.getX() - 1, point2d.getY() - 1, 2, 2));
+        // }
       }
     }
   }
 
-  public void setTrajectoryPlanner(TrajectoryPlanner trajectoryPlanner) {
-    this.trajectoryPlanner = trajectoryPlanner;
+  public void setTrajectory(List<TrajectorySample> trajectory) {
+    this.trajectory = trajectory;
   }
 }

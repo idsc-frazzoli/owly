@@ -1,9 +1,10 @@
 // code by jph
-package ch.ethz.idsc.owly.util;
+package ch.ethz.idsc.owly.data;
 
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
 
+/** TimeKeeper is also used in owly3d */
 public class TimeKeeper {
   private final long tic = System.nanoTime();
 

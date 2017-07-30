@@ -13,6 +13,7 @@ import ch.ethz.idsc.owly.demo.rn.RnTrajectoryGoalManager;
 import ch.ethz.idsc.owly.demo.util.R2Controls;
 import ch.ethz.idsc.owly.glc.adapter.Parameters;
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
+import ch.ethz.idsc.owly.glc.adapter.StateTimeTrajectories;
 import ch.ethz.idsc.owly.glc.adapter.TrajectoryGoalManager;
 import ch.ethz.idsc.owly.glc.core.Expand;
 import ch.ethz.idsc.owly.glc.core.GlcNode;
@@ -29,7 +30,6 @@ import ch.ethz.idsc.owly.math.state.FixedStateIntegrator;
 import ch.ethz.idsc.owly.math.state.StateIntegrator;
 import ch.ethz.idsc.owly.math.state.StateTime;
 import ch.ethz.idsc.owly.math.state.TimeInvariantRegion;
-import ch.ethz.idsc.owly.math.state.Trajectories;
 import ch.ethz.idsc.owly.math.state.TrajectoryRegionQuery;
 import ch.ethz.idsc.tensor.RationalScalar;
 import ch.ethz.idsc.tensor.RealScalar;
@@ -67,7 +67,7 @@ enum R2GlcConstTimeHeuristicAnyDemo {
       goalStateList.add(new StateTime(goal, RealScalar.ZERO));
       goalRegions.add(new EllipsoidRegion(goal, radius));
     }
-    Tensor heuristicCenter = goalStateList.get(0).x();
+    Tensor heuristicCenter = goalStateList.get(0).state();
     RnTrajectoryGoalManager rnGoal = new RnTrajectoryGoalManager(goalRegions, heuristicCenter, radius.Get(0));
     Region region = new R2NoiseRegion(.1);
     TrajectoryRegionQuery obstacleQuery = //
@@ -82,7 +82,7 @@ enum R2GlcConstTimeHeuristicAnyDemo {
     // --
     Optional<GlcNode> finalGoalNode = trajectoryPlanner.getFinalGoalNode();
     List<StateTime> trajectory = GlcNodes.getPathFromRootTo(finalGoalNode.get());
-    Trajectories.print(trajectory);
+    StateTimeTrajectories.print(trajectory);
     OwlyFrame owlyFrame = Gui.start();
     owlyFrame.configCoordinateOffset(400, 400);
     owlyFrame.jFrame.setBounds(0, 0, 800, 800);
@@ -101,7 +101,7 @@ enum R2GlcConstTimeHeuristicAnyDemo {
         int index = goalRegions.size();
         while (index > 0) {
           index--;
-          if (goalRegions.get(index).isMember(furthestState.get().x())) {
+          if (goalRegions.get(index).isMember(furthestState.get().state())) {
             deleteIndex = index;
             break;
           }
@@ -118,14 +118,14 @@ enum R2GlcConstTimeHeuristicAnyDemo {
       // only change goal if we are not at the end yet
       if (!finalGoalFound) {
         // creates new RegionUnin form Regionlist and puts Heuristic to next Goal in RegionList
-        rnGoal = new RnTrajectoryGoalManager(goalRegions, goalStateList.get(goalStateList.size() - 1).x(), radius.Get(0));
+        rnGoal = new RnTrajectoryGoalManager(goalRegions, goalStateList.get(goalStateList.size() - 1).state(), radius.Get(0));
         trajectoryPlanner.changeToGoal(rnGoal);
       } else {
         if (goalRegions.size() != 1) // only the last Goal is left in the list
           throw new RuntimeException(); // should only include last Goalregion, therefore size ==1
         if (trajectoryPlanner.getGoalQuery() instanceof TrajectoryGoalManager) {
           // only to change GoalManager to final Simple
-          RnSimpleCircleGoalManager rnGoalFinal = new RnSimpleCircleGoalManager(goalRegions.get(0), goalStateList.get(0).x(), radius.Get(0));
+          RnSimpleCircleGoalManager rnGoalFinal = new RnSimpleCircleGoalManager(goalRegions.get(0), goalStateList.get(0).state(), radius.Get(0));
           trajectoryPlanner.changeToGoal(rnGoalFinal);
           System.err.println("Changed Goal for last Time");
         }
@@ -141,7 +141,7 @@ enum R2GlcConstTimeHeuristicAnyDemo {
       if (trajectory.size() > 5) {
         //
         StateTime newRootState = trajectory.get(trajectory.size() > 5 ? 5 : 0);
-        int increment = trajectoryPlanner.switchRootToState(newRootState.x());
+        int increment = trajectoryPlanner.switchRootToState(newRootState.state());
         parameters.increaseDepthLimit(increment);
       }
       tocTemp = System.nanoTime();
@@ -152,7 +152,7 @@ enum R2GlcConstTimeHeuristicAnyDemo {
       furthestState = trajectoryPlanner.getFurthestGoalState();
       // check if furthest Goal is already in last Region in List
       if (furthestState.isPresent()) {
-        if (goalRegions.get(goalRegions.size() - 1).isMember(furthestState.get().x())) {
+        if (goalRegions.get(goalRegions.size() - 1).isMember(furthestState.get().state())) {
           System.out.println("***Last Goal was found***");
           finalGoalFound = true;
         }

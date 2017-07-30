@@ -4,10 +4,10 @@ package ch.ethz.idsc.owly.demo.se2;
 import java.util.ArrayList;
 import java.util.List;
 
+import ch.ethz.idsc.owly.glc.adapter.StateTimeTrajectories;
 import ch.ethz.idsc.owly.math.SignedCurvature2D;
 import ch.ethz.idsc.owly.math.flow.Flow;
 import ch.ethz.idsc.owly.math.state.StateTime;
-import ch.ethz.idsc.owly.math.state.Trajectories;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
@@ -33,12 +33,12 @@ public class Se2MinCurvatureGoalManager extends Se2DefaultGoalManagerExt {
     List<Integer> indices2 = new ArrayList<Integer>();
     indices1.add(0);
     indices2.add(2);
-    Tensor a = from.x().block(indices1, indices2);
-    Tensor b = trajectory.get(middleIndex).x().block(indices1, indices2);
-    Tensor c = trajectory.get(endIndex).x().block(indices1, indices2);
+    Tensor a = from.state().block(indices1, indices2);
+    Tensor b = trajectory.get(middleIndex).state().block(indices1, indices2);
+    Tensor c = trajectory.get(endIndex).state().block(indices1, indices2);
     Scalar curvature = SignedCurvature2D.of(a, b, c);
     return RealScalar.ONE.add(Power.of(curvature.abs(), 2)) //
-        .multiply(Trajectories.timeIncrement(from, trajectory));
+        .multiply(StateTimeTrajectories.timeIncrement(from, trajectory));
   }
 
   @Override

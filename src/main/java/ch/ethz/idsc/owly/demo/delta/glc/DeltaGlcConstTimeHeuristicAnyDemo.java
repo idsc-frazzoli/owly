@@ -9,6 +9,7 @@ import java.util.Optional;
 import ch.ethz.idsc.owly.demo.delta.DeltaGoalManagerExt;
 import ch.ethz.idsc.owly.demo.delta.DeltaStateSpaceModel;
 import ch.ethz.idsc.owly.demo.delta.DeltaTrajectoryGoalManager;
+import ch.ethz.idsc.owly.glc.adapter.StateTimeTrajectories;
 import ch.ethz.idsc.owly.glc.adapter.TrajectoryGoalManager;
 import ch.ethz.idsc.owly.glc.adapter.TrajectoryPlannerContainer;
 import ch.ethz.idsc.owly.glc.core.Expand;
@@ -21,7 +22,6 @@ import ch.ethz.idsc.owly.gui.OwlyFrame;
 import ch.ethz.idsc.owly.math.region.EllipsoidRegion;
 import ch.ethz.idsc.owly.math.region.Region;
 import ch.ethz.idsc.owly.math.state.StateTime;
-import ch.ethz.idsc.owly.math.state.Trajectories;
 import ch.ethz.idsc.tensor.DoubleScalar;
 import ch.ethz.idsc.tensor.RationalScalar;
 import ch.ethz.idsc.tensor.RealScalar;
@@ -44,7 +44,7 @@ enum DeltaGlcConstTimeHeuristicAnyDemo {
     List<StateTime> quickTrajectory = null;
     if (optional.isPresent()) {
       quickTrajectory = GlcNodes.getPathFromRootTo(optional.get());
-      Trajectories.print(quickTrajectory);
+      StateTimeTrajectories.print(quickTrajectory);
     } else {
       throw new RuntimeException();
     }
@@ -58,7 +58,7 @@ enum DeltaGlcConstTimeHeuristicAnyDemo {
     List<Region> goalRegions = new ArrayList<>();
     Tensor radius = Tensors.vector(0.1, 0.1);
     while (iterator.hasNext())
-      goalRegions.add(new EllipsoidRegion(iterator.next().x(), radius));
+      goalRegions.add(new EllipsoidRegion(iterator.next().state(), radius));
     Tensor heuristicCenter = Tensors.vector(2.1, 0.3);
     DeltaTrajectoryGoalManager trajectoryGoalManager = new DeltaTrajectoryGoalManager(goalRegions, quickTrajectory, radius, //
         ((DeltaStateSpaceModel) slowTrajectoryPlannerContainer.getStateSpaceModel()).getMaxInput());
@@ -84,7 +84,7 @@ enum DeltaGlcConstTimeHeuristicAnyDemo {
         int index = goalRegions.size();
         while (index > 0) {
           index--;
-          if (goalRegions.get(index).isMember(furthestState.get().x())) {
+          if (goalRegions.get(index).isMember(furthestState.get().state())) {
             deleteIndex = index;
             break;
           }
@@ -110,7 +110,8 @@ enum DeltaGlcConstTimeHeuristicAnyDemo {
           throw new RuntimeException(); // should only include last Goalregion, therefore size ==1
         if (slowTrajectoryPlannerContainer.getTrajectoryPlanner().getGoalQuery() instanceof TrajectoryGoalManager) {
           // only to change GoalManager to final Simple#
-          DeltaGoalManagerExt deltaGoalFinal = new DeltaGoalManagerExt(goalRegions.get(0), Trajectories.getLast(quickTrajectory).x(), radius, maxSpeed);
+          DeltaGoalManagerExt deltaGoalFinal = new DeltaGoalManagerExt(goalRegions.get(0), StateTimeTrajectories.getLast(quickTrajectory).state(), radius,
+              maxSpeed);
           ((OptimalAnyTrajectoryPlanner) slowTrajectoryPlannerContainer.getTrajectoryPlanner()).changeToGoal(deltaGoalFinal);
           System.err.println("Changed Goal for last Time");
         }
@@ -127,7 +128,7 @@ enum DeltaGlcConstTimeHeuristicAnyDemo {
       if (trajectory.size() > 5) {
         //
         StateTime newRootState = trajectory.get(trajectory.size() > 7 ? 2 : 0);
-        int increment = ((OptimalAnyTrajectoryPlanner) slowTrajectoryPlannerContainer.getTrajectoryPlanner()).switchRootToState(newRootState.x());
+        int increment = ((OptimalAnyTrajectoryPlanner) slowTrajectoryPlannerContainer.getTrajectoryPlanner()).switchRootToState(newRootState.state());
         slowTrajectoryPlannerContainer.getParameters().increaseDepthLimit(increment);
       }
       tocTemp = System.nanoTime();
@@ -139,7 +140,7 @@ enum DeltaGlcConstTimeHeuristicAnyDemo {
       furthestState = ((OptimalAnyTrajectoryPlanner) slowTrajectoryPlannerContainer.getTrajectoryPlanner()).getFurthestGoalState();
       // check if furthest Goal is already in last Region in List
       if (furthestState.isPresent()) {
-        if (goalRegions.get(goalRegions.size() - 1).isMember(furthestState.get().x())) {
+        if (goalRegions.get(goalRegions.size() - 1).isMember(furthestState.get().state())) {
           System.out.println("***Last Goal was found***");
           finalGoalFound = true;
         }

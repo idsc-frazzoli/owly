@@ -48,7 +48,7 @@ public class FixedStateIntegrator implements StateIntegrator {
     StateTime prev = stateTime;
     for (int count = 0; count < trajectorySize; ++count) {
       StateTime next = new StateTime( //
-          integrator.step(flow, prev.x(), timeStep), //
+          integrator.step(flow, prev.state(), timeStep), //
           prev.time().add(timeStep));
       trajectory.add(next);
       prev = next;

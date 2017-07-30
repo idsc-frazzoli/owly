@@ -13,7 +13,7 @@ package ch.ethz.idsc.owly.math.noise;
  * 
  * This code was placed in the public domain by its original author,
  * Stefan Gustavson. You may use it as you see fit, but attribution is appreciated. */
-public enum SimplexNoise implements ContinuousNoise {
+public enum SimplexContinuousNoise implements NativeContinuousNoise {
   FUNCTION //
   ;
   private static final Grad[] GRAD3 = {
@@ -83,8 +83,8 @@ public enum SimplexNoise implements ContinuousNoise {
     double n0, n1, n2; // Noise contributions from the three corners
     // Skew the input space to determine which simplex cell we're in
     double s = (xin + yin) * F2; // Hairy factor for 2D
-    int i = Floor.of(xin + s);
-    int j = Floor.of(yin + s);
+    int i = Noise.floor(xin + s);
+    int j = Noise.floor(yin + s);
     double t = (i + j) * G2;
     double X0 = i - t; // Unskew the cell origin back to (x,y) space
     double Y0 = j - t;
@@ -151,9 +151,9 @@ public enum SimplexNoise implements ContinuousNoise {
     double n0, n1, n2, n3; // Noise contributions from the four corners
     // Skew the input space to determine which simplex cell we're in
     double s = (xin + yin + zin) * F3; // Very nice and simple skew factor for 3D
-    int i = Floor.of(xin + s);
-    int j = Floor.of(yin + s);
-    int k = Floor.of(zin + s);
+    int i = Noise.floor(xin + s);
+    int j = Noise.floor(yin + s);
+    int k = Noise.floor(zin + s);
     double t = (i + j + k) * G3;
     double X0 = i - t; // Unskew the cell origin back to (x,y,z) space
     double Y0 = j - t;
@@ -281,10 +281,10 @@ public enum SimplexNoise implements ContinuousNoise {
     double n0, n1, n2, n3, n4; // Noise contributions from the five corners
     // Skew the (x,y,z,w) space to determine which cell of 24 simplices we're in
     double s = (x + y + z + w) * F4; // Factor for 4D skewing
-    int i = Floor.of(x + s);
-    int j = Floor.of(y + s);
-    int k = Floor.of(z + s);
-    int l = Floor.of(w + s);
+    int i = Noise.floor(x + s);
+    int j = Noise.floor(y + s);
+    int k = Noise.floor(z + s);
+    int l = Noise.floor(w + s);
     double t = (i + j + k + l) * G4; // Factor for 4D unskewing
     double X0 = i - t; // Unskew the cell origin back to (x,y,z,w) space
     double Y0 = j - t;

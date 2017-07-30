@@ -1,4 +1,4 @@
-// code by jph
+// code by stegu
 package ch.ethz.idsc.owly.math.noise;
 
 /* package */ enum Noise {
@@ -29,5 +29,14 @@ package ch.ethz.idsc.owly.math.noise;
     System.arraycopy(value, 0, perm, value.length, value.length);
     for (int i = 0; i < 512; i++)
       perm_12[i] = perm[i] % 12;
+  }
+
+  /** method is faster than (int)Math.floor(x)
+   * 
+   * @param x
+   * @return */
+  static int floor(double x) {
+    int xi = (int) x;
+    return x < xi ? xi - 1 : xi;
   }
 }

@@ -9,6 +9,13 @@ import ch.ethz.idsc.owly.math.state.StateTime;
 
 /** container class that bundles information to follow a trajectory */
 public class TrajectorySample implements Serializable {
+  /** @param stateTime
+   * @return first entry of a trajectory that does not specify flow */
+  public static TrajectorySample head(StateTime stateTime) {
+    return new TrajectorySample(stateTime, null);
+  }
+
+  // ---
   private final StateTime stateTime;
   private final Flow flow;
 
@@ -31,5 +38,10 @@ public class TrajectorySample implements Serializable {
    * @return Optional.ofNullable(flow) */
   public Optional<Flow> getFlow() {
     return Optional.ofNullable(flow);
+  }
+
+  public String toInfoString() {
+    String ustring = flow == null ? "null" : flow.getU().toString();
+    return stateTime.toInfoString() + "  u=" + ustring;
   }
 }

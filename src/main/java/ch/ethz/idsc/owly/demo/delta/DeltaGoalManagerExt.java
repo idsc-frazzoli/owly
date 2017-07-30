@@ -4,13 +4,13 @@ package ch.ethz.idsc.owly.demo.delta;
 import java.util.List;
 
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
+import ch.ethz.idsc.owly.glc.adapter.StateTimeTrajectories;
 import ch.ethz.idsc.owly.glc.core.GoalInterface;
 import ch.ethz.idsc.owly.math.flow.Flow;
 import ch.ethz.idsc.owly.math.region.EllipsoidRegion;
 import ch.ethz.idsc.owly.math.region.Region;
 import ch.ethz.idsc.owly.math.state.StateTime;
 import ch.ethz.idsc.owly.math.state.TimeInvariantRegion;
-import ch.ethz.idsc.owly.math.state.Trajectories;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
@@ -58,7 +58,7 @@ public class DeltaGoalManagerExt extends SimpleTrajectoryRegionQuery implements 
   public Scalar costIncrement(StateTime from, List<StateTime> trajectory, Flow flow) {
     Scalar sum = Norm._2.of(flow.getU()).add(timeCostScalingFactor);
     // Costfunction: integrate (u^2 +1, t)
-    return sum.multiply(Trajectories.timeIncrement(from, trajectory));
+    return sum.multiply(StateTimeTrajectories.timeIncrement(from, trajectory));
   }
 
   @Override

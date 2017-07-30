@@ -35,10 +35,10 @@ public final class OwlyLayer {
     Path2D path2d = new Path2D.Double();
     if (!trajectory.isEmpty()) {
       StateTime prev = trajectory.get(0);
-      Point2D p0 = toPoint2D(prev.x());
+      Point2D p0 = toPoint2D(prev.state());
       path2d.moveTo(p0.getX(), p0.getY());
       for (StateTime stateTime : trajectory.subList(1, trajectory.size())) {
-        Point2D p1 = toPoint2D(stateTime.x());
+        Point2D p1 = toPoint2D(stateTime.state());
         path2d.lineTo(p1.getX(), p1.getY());
       }
     }

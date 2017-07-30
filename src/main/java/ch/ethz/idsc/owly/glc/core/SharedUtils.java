@@ -7,11 +7,11 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Stream;
 
+import ch.ethz.idsc.owly.glc.adapter.StateTimeTrajectories;
 import ch.ethz.idsc.owly.math.flow.Flow;
 import ch.ethz.idsc.owly.math.state.CostFunction;
 import ch.ethz.idsc.owly.math.state.StateIntegrator;
 import ch.ethz.idsc.owly.math.state.StateTime;
-import ch.ethz.idsc.owly.math.state.Trajectories;
 
 /* package */ enum SharedUtils {
   ;
@@ -25,10 +25,10 @@ import ch.ethz.idsc.owly.math.state.Trajectories;
     // TODO integrate parallel OR deterministic in linkedHashMap
     stream.forEach(flow -> {
       final List<StateTime> trajectory = stateIntegrator.trajectory(node.stateTime(), flow);
-      final StateTime last = Trajectories.getLast(trajectory);
+      final StateTime last = StateTimeTrajectories.getLast(trajectory);
       final GlcNode next = GlcNode.of(flow, last, //
           node.costFromRoot().add(costFunction.costIncrement(node.stateTime(), trajectory, flow)), //
-          costFunction.minCostToGoal(last.x()) //
+          costFunction.minCostToGoal(last.state()) //
       );
       map.put(next, trajectory);
     });

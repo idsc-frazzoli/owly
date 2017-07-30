@@ -7,16 +7,18 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.NavigableMap;
 import java.util.Optional;
 import java.util.PriorityQueue;
 import java.util.Queue;
 import java.util.TreeMap;
 
+import ch.ethz.idsc.owly.data.GlobalAssert;
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
 import ch.ethz.idsc.owly.math.TensorUnaryOperator;
 import ch.ethz.idsc.owly.math.state.StateTime;
 import ch.ethz.idsc.owly.math.state.TrajectoryRegionQuery;
-import ch.ethz.idsc.tensor.Scalars;
+import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.sca.Floor;
 
@@ -30,11 +32,11 @@ public abstract class TrajectoryPlanner implements ExpandInterface, Serializable
   /** best is a reference to a Node in the goal region,
    * or null if such a node has not been identified
    * use function setBestNull() to reset best to null */
-  // TODO Make private again?
-  protected TreeMap<GlcNode, List<StateTime>> best = new TreeMap<GlcNode, List<StateTime>>(NodeMeritComparator.INSTANCE);
+  /* package */ final NavigableMap<GlcNode, List<StateTime>> best = //
+      new TreeMap<GlcNode, List<StateTime>>(NodeMeritComparator.INSTANCE);
   private int replaceCount = 0;
 
-  protected TrajectoryPlanner(Tensor eta) {
+  /* package */ TrajectoryPlanner(Tensor eta) {
     this.eta = eta.copy().unmodifiable();
   }
 
@@ -54,19 +56,19 @@ public abstract class TrajectoryPlanner implements ExpandInterface, Serializable
     return eta.pmul(represent.apply(x)).map(Floor.FUNCTION);
   }
 
-  /** the current API assumes that the root node will be assigned a {@link StateTime} with
-   * state == x and time == 0. should another time be required, the API can be extended.
-   * 
-   * @param x
-   * @return */
-  abstract GlcNode createRootNode(Tensor x);
+  abstract GlcNode createRootNode(StateTime stateTime);
 
+  /** function may be deprecated in the future
+   * in new applications use {@link #insertRoot(StateTime)} instead */
   public final void insertRoot(Tensor x) {
+    insertRoot(new StateTime(x, RealScalar.ZERO));
+  }
+
+  public final void insertRoot(StateTime stateTime) {
     if (!queue.isEmpty() || !domainMap.isEmpty())
       throw new RuntimeException(); // root insertion requires empty planner
-    boolean replaced = insert(convertToKey(x), createRootNode(x));
-    if (replaced)
-      throw new RuntimeException(); // root insertion should not replace any other node
+    boolean replaced = insert(convertToKey(stateTime.state()), createRootNode(stateTime));
+    GlobalAssert.that(!replaced); // root insertion should not replace any other node
   }
 
   /** @param domain_key
@@ -97,26 +99,22 @@ public abstract class TrajectoryPlanner implements ExpandInterface, Serializable
     return Optional.ofNullable(queue.poll()); // Queue#poll() returns the head of queue, or null if queue is empty
   }
 
+  /** method is invoked to notify planner that the
+   * intersection of the goal interface and the connector is non-empty
+   * 
+   * {@link AbstractAnyTrajectoryPlanner} overrides this method
+   * 
+   * @param node
+   * @param connector */
   /* package */ void offerDestination(GlcNode node, List<StateTime> connector) {
-    if (!best.isEmpty()) {
-      // Merit = CostFromRoot in goal, as CostToGoal == 0, for consistency use merit
-      if (Scalars.lessThan(node.merit(), best.firstKey().merit())) {
-        // if best not empty only put, when new one is better
-        best.clear();
-        System.out.println("found/improved goal, cost=" + node.merit());
-        best.put(node, connector);
-      }
-    } else {
-      // if best empty always put
-      best.put(node, connector);
-    }
+    best.put(node, connector);
+    while (1 < best.size()) // `if` should be sufficient, but `while` to be sure
+      best.remove(best.lastKey());
   }
 
   @Override // from ExpandInterface
   public final Optional<GlcNode> getBest() {
-    if (!best.isEmpty())
-      return Optional.ofNullable(best.firstKey());
-    return Optional.empty();
+    return Optional.ofNullable(best.isEmpty() ? null : best.firstKey());
   }
 
   /* package */ final void setBestNull() {
@@ -126,7 +124,8 @@ public abstract class TrajectoryPlanner implements ExpandInterface, Serializable
   /** @return best node known to be in goal, or top node in queue, or null,
    * in this order depending on existence */
   public final Optional<GlcNode> getBestOrElsePeek() {
-    return Optional.ofNullable(getBest().orElse(queue.peek())); // Queue#peek() returns the head of queue, or null if queue is empty
+    // Queue#peek() returns the head of queue, or null if queue is empty
+    return Optional.ofNullable(getBest().orElse(queue.peek()));
   }
 
   /** @return number of replacements in the domain map caused by {@link TrajectoryPlanner#insert(Tensor, GlcNode)} */

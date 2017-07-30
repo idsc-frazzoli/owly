@@ -25,7 +25,7 @@ public class TwdHeuristicGoalManager extends TwdDefaultGoalManager {
   public Scalar costIncrement(StateTime from, List<StateTime> trajectory, Flow flow) {
     StateTime end = trajectory.get(trajectory.size() - 1);
     // J(x,u) = 1+delta(theta)²
-    return RealScalar.ONE.add(Power.of(end.x().Get(2).subtract(from.x().Get(2)), 2));
+    return RealScalar.ONE.add(Power.of(end.state().Get(2).subtract(from.state().Get(2)), 2));
   }
 
   @Override

@@ -42,4 +42,6 @@ public enum DebugUtils {
       throw new RuntimeException();
     }
   }
+  // TODO JONAS/JAN TOP PRIORITY: consistency check of merit/cost for found trajectory to goal
+  // for each node merit+cost should be better than cost in goal... ?
 }

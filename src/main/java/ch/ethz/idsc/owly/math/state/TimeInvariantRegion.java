@@ -16,6 +16,6 @@ public final class TimeInvariantRegion implements StateTimeRegion {
   /** @param StateTime of point to check
    * @return true if stateTime is member/part of/inside region */
   public boolean isMember(StateTime stateTime) {
-    return region.isMember(stateTime.x());
+    return region.isMember(stateTime.state());
   }
 }

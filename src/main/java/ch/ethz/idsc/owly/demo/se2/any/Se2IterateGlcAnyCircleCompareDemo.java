@@ -120,7 +120,7 @@ class Se2IterateGlcAnyCircleCompareDemo {
       System.out.println("***ANY***");
       tic = RealScalar.of(System.nanoTime());
       {
-        int increment = anyTrajectoryPlanner.switchRootToState(newRootState.x());
+        int increment = anyTrajectoryPlanner.switchRootToState(newRootState.state());
         parameters.increaseDepthLimit(increment);
         // --
         goalFound = anyTrajectoryPlanner.changeToGoal(se2GoalManager2.getGoalInterface());
@@ -138,7 +138,7 @@ class Se2IterateGlcAnyCircleCompareDemo {
       {
         StandardTrajectoryPlanner defaultTrajectoryPlanner = new StandardTrajectoryPlanner( //
             parameters.getEta(), stateIntegrator, controls, obstacleQuery, se2GoalManager2.getGoalInterface());
-        defaultTrajectoryPlanner.insertRoot(newRootState.x());
+        defaultTrajectoryPlanner.insertRoot(newRootState.state());
         iters = Expand.maxDepth(defaultTrajectoryPlanner, parameters.getDepthLimit());
         System.out.println("After " + iters + " iterations");
         toc = RealScalar.of(System.nanoTime());

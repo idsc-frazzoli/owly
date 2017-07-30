@@ -23,6 +23,9 @@ public class DomainQueueTest extends TestCase {
     assertTrue(dq.isEmpty());
   }
 
+  /** the test shows that removing elements
+   * from the collection Map::values
+   * also removes the entry in the map */
   public void testMap() {
     Map<Integer, String> map = new HashMap<>();
     map.put(1, "one");
@@ -30,7 +33,7 @@ public class DomainQueueTest extends TestCase {
     map.put(3, "three");
     Collection<String> asd = map.values();
     asd.remove("two");
-    System.out.println(map.size());
-    System.out.println(map);
+    assertEquals(map.size(), 2);
+    assertFalse(map.containsKey(2));
   }
 }

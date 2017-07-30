@@ -6,7 +6,6 @@ import java.util.List;
 import ch.ethz.idsc.owly.glc.core.GoalInterface;
 import ch.ethz.idsc.owly.math.flow.Flow;
 import ch.ethz.idsc.owly.math.state.StateTime;
-import ch.ethz.idsc.owly.math.state.Trajectories;
 import ch.ethz.idsc.owly.math.state.TrajectoryRegionQuery;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
@@ -22,7 +21,7 @@ public enum EmptyGoalInterface implements GoalInterface {
   // ---
   @Override
   public Scalar costIncrement(StateTime from, List<StateTime> trajectory, Flow flow) {
-    return Trajectories.timeIncrement(from, trajectory);
+    return StateTimeTrajectories.timeIncrement(from, trajectory);
   }
 
   @Override

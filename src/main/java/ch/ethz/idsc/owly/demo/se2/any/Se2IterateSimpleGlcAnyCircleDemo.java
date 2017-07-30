@@ -12,6 +12,7 @@ import ch.ethz.idsc.owly.demo.se2.Se2Utils;
 import ch.ethz.idsc.owly.demo.se2.glc.Se2Parameters;
 import ch.ethz.idsc.owly.glc.adapter.Parameters;
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
+import ch.ethz.idsc.owly.glc.adapter.StateTimeTrajectories;
 import ch.ethz.idsc.owly.glc.core.DebugUtils;
 import ch.ethz.idsc.owly.glc.core.Expand;
 import ch.ethz.idsc.owly.glc.core.GlcNode;
@@ -28,7 +29,6 @@ import ch.ethz.idsc.owly.math.state.FixedStateIntegrator;
 import ch.ethz.idsc.owly.math.state.StateIntegrator;
 import ch.ethz.idsc.owly.math.state.StateTime;
 import ch.ethz.idsc.owly.math.state.TimeInvariantRegion;
-import ch.ethz.idsc.owly.math.state.Trajectories;
 import ch.ethz.idsc.owly.math.state.TrajectoryRegionQuery;
 import ch.ethz.idsc.tensor.DoubleScalar;
 import ch.ethz.idsc.tensor.RationalScalar;
@@ -103,13 +103,13 @@ class Se2IterateSimpleGlcAnyCircleDemo {
         }
       }
       StateTime newRootState = trajectory.get(2);
-      int increment = trajectoryPlanner.switchRootToState(newRootState.x());
+      int increment = trajectoryPlanner.switchRootToState(newRootState.state());
       parameters.increaseDepthLimit(increment);
       boolean foundGoal = Se2CircleAnyDemo.switchToNextCircularGoal(trajectoryPlanner, iter);
       int expandIter = 0;
       if (!foundGoal)
         expandIter = Expand.maxDepth(trajectoryPlanner, parameters.getDepthLimit());
-      Trajectories.print(trajectory);
+      StateTimeTrajectories.print(trajectory);
       // ---
       toc = System.nanoTime();
       timeSum = RealScalar.of(toc - tic).multiply(RealScalar.of(1e-9)).add(timeSum);

@@ -20,7 +20,7 @@ public final class StateTime implements Serializable {
   }
 
   /** @return the state */
-  public Tensor x() {
+  public Tensor state() {
     return x;
   }
 
@@ -28,8 +28,8 @@ public final class StateTime implements Serializable {
     return time;
   }
 
-  public String info() {
-    return String.format("t=%s  x=%s", time, x.toString());
+  public String toInfoString() {
+    return String.format("t=%s  x=%s", time(), state().toString());
   }
 
   @Override // from Object
@@ -41,7 +41,7 @@ public final class StateTime implements Serializable {
   public boolean equals(Object object) {
     if (object instanceof StateTime) {
       StateTime stateTime = (StateTime) object;
-      return x.equals(stateTime.x) && time.equals(stateTime.time);
+      return state().equals(stateTime.state()) && time().equals(stateTime.time());
     }
     return false;
   }
