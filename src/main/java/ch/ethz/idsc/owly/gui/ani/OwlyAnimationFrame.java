@@ -6,6 +6,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -102,7 +103,7 @@ public class OwlyAnimationFrame {
           MotionPlanWorker mpw = new MotionPlanWorker(trajectoryPlannerCallback);
           if (controllable instanceof R2Entity) {
             R2Entity r2Entity = (R2Entity) controllable;
-            mpw.start(r2Entity.episodeIntegrator.tail().state(), goal, obstacleQuery);
+            mpw.start(r2Entity.getFutureTrajectoryUntil(R2Entity.DELAY_HINT), goal, obstacleQuery);
           }
           // if (controllable instanceof Rice2Entity) {
           // Rice2Entity rice2Entity = (Rice2Entity) controllable;
@@ -115,21 +116,24 @@ public class OwlyAnimationFrame {
 
   TrajectoryPlannerCallback trajectoryPlannerCallback = new TrajectoryPlannerCallback() {
     @Override
-    public void hasTrajectoryPlanner(TrajectoryPlanner trajectoryPlanner) {
+    public void hasTrajectoryPlanner(List<TrajectorySample> head, TrajectoryPlanner trajectoryPlanner) {
       System.out.println("finished");
       // long toc = System.nanoTime();
       // System.out.println(iters + " " + ((toc - tic) * 1e-9));
       Optional<GlcNode> optional = trajectoryPlanner.getBest();
       if (optional.isPresent()) {
-        // List<StateTime> trajectory = GlcNodes.getPathFromRootTo(optional.get());
-        // Trajectories.print(trajectory);
+        List<TrajectorySample> trajectory = new ArrayList<>();
         if (controllable instanceof R2Entity) {
           R2Entity r2Entity = (R2Entity) controllable;
-          List<TrajectorySample> trajectory = trajectoryPlanner.detailedTrajectoryTo(optional.get());
-          // Collections.reverse(trajectory);
+          trajectory.addAll(head);
+          List<TrajectorySample> tail = trajectoryPlanner.detailedTrajectoryTo(optional.get());
+          // TODO consistency check of time of statetime entries of trajectory
+          System.out.println("last of head: " + head.get(head.size() - 1).toInfoString());
+          System.out.println("1st  of tail: " + tail.get(0).toInfoString());
+          trajectory.addAll(tail.subList(1, tail.size()));
           r2Entity.setTrajectory(trajectory);
         }
-        trajectoryRender.setTrajectoryPlanner(trajectoryPlanner);
+        trajectoryRender.setTrajectory(trajectory);
       } else {
         System.err.println("NO TRAJECTORY BETWEEN ROOT TO GOAL");
       }

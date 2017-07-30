@@ -13,10 +13,12 @@ import java.util.PriorityQueue;
 import java.util.Queue;
 import java.util.TreeMap;
 
+import ch.ethz.idsc.owly.data.GlobalAssert;
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
 import ch.ethz.idsc.owly.math.TensorUnaryOperator;
 import ch.ethz.idsc.owly.math.state.StateTime;
 import ch.ethz.idsc.owly.math.state.TrajectoryRegionQuery;
+import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.sca.Floor;
 
@@ -54,19 +56,19 @@ public abstract class TrajectoryPlanner implements ExpandInterface, Serializable
     return eta.pmul(represent.apply(x)).map(Floor.FUNCTION);
   }
 
-  /** the current API assumes that the root node will be assigned a {@link StateTime} with
-   * state == x and time == 0. should another time be required, the API can be extended.
-   * 
-   * @param x
-   * @return */
-  abstract GlcNode createRootNode(Tensor x);
+  abstract GlcNode createRootNode(StateTime stateTime);
 
+  /** function may be deprecated in the future
+   * in new applications use {@link #insertRoot(StateTime)} instead */
   public final void insertRoot(Tensor x) {
+    insertRoot(new StateTime(x, RealScalar.ZERO));
+  }
+
+  public final void insertRoot(StateTime stateTime) {
     if (!queue.isEmpty() || !domainMap.isEmpty())
       throw new RuntimeException(); // root insertion requires empty planner
-    boolean replaced = insert(convertToKey(x), createRootNode(x));
-    if (replaced)
-      throw new RuntimeException(); // root insertion should not replace any other node
+    boolean replaced = insert(convertToKey(stateTime.state()), createRootNode(stateTime));
+    GlobalAssert.that(!replaced); // root insertion should not replace any other node
   }
 
   /** @param domain_key

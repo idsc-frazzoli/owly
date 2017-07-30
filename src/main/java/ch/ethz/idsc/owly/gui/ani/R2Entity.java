@@ -5,9 +5,10 @@ import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
+import java.util.stream.Collectors;
 
 import ch.ethz.idsc.owly.data.GlobalAssert;
 import ch.ethz.idsc.owly.glc.core.TrajectorySample;
@@ -28,6 +29,9 @@ import ch.ethz.idsc.tensor.red.ArgMin;
 import ch.ethz.idsc.tensor.red.Norm;
 
 public class R2Entity implements AnimationInterface, RenderInterface {
+  /** preserve 1[s] of the former trajectory */
+  public static final Scalar DELAY_HINT = RealScalar.ONE;
+  // ---
   StateSpaceModel ssm = SingleIntegratorStateSpaceModel.INSTANCE;
   EpisodeIntegrator episodeIntegrator = new SimpleEpisodeIntegrator( //
       ssm, //
@@ -36,12 +40,16 @@ public class R2Entity implements AnimationInterface, RenderInterface {
   // ---
   private List<TrajectorySample> trajectory = null;
 
-  void setTrajectory(List<TrajectorySample> trajectory) {
+  synchronized void setTrajectory(List<TrajectorySample> trajectory) {
     this.trajectory = trajectory;
   }
 
+  // /** @return possibly null */
+  // List<TrajectorySample> getTrajectory() {
+  // return trajectory;
+  // }
   /** @return index of sample of trajectory that is closest to current position */
-  private int indexOfClosestTrajectorySample() {
+  private synchronized int indexOfClosestTrajectorySample() {
     final Tensor x = episodeIntegrator.tail().state();
     return ArgMin.of(Tensor.of(trajectory.stream() //
         .map(TrajectorySample::stateTime) //
@@ -50,7 +58,7 @@ public class R2Entity implements AnimationInterface, RenderInterface {
   }
 
   @Override
-  public void integrate(Scalar now) {
+  public synchronized void integrate(Scalar now) {
     // implementation does not require that current position is perfectly located on trajectory
     Tensor u = Tensors.vector(0, 0); // default control
     if (Objects.nonNull(trajectory)) {
@@ -66,8 +74,6 @@ public class R2Entity implements AnimationInterface, RenderInterface {
       }
     }
     episodeIntegrator.move(u, now);
-    // ---
-    // System.out.println(getEstimatedLocationAt(RealScalar.ONE));
   }
 
   @Override
@@ -78,8 +84,8 @@ public class R2Entity implements AnimationInterface, RenderInterface {
       graphics.setColor(new Color(128 - 64, 128, 128 - 64, 128 + 64));
       graphics.fill(new Rectangle2D.Double(point.getX() - 2, point.getY() - 2, 5, 5));
     }
-    { // indicate position 1 sec into the future
-      Tensor state = getEstimatedLocationAt(RealScalar.of(1.0));
+    { // indicate position 1[s] into the future
+      Tensor state = getEstimatedLocationAt(DELAY_HINT);
       Point2D point = owlyLayer.toPoint2D(state);
       graphics.setColor(new Color(255, 128, 128 - 64, 128 + 64));
       graphics.fill(new Rectangle2D.Double(point.getX() - 2, point.getY() - 2, 5, 5));
@@ -91,14 +97,20 @@ public class R2Entity implements AnimationInterface, RenderInterface {
   Tensor getEstimatedLocationAt(Scalar delay) {
     if (Objects.isNull(trajectory))
       return episodeIntegrator.tail().state();
-    // TODO JAN this code is almost generic => extract to util class
+    List<TrajectorySample> relevant = getFutureTrajectoryUntil(delay);
+    return relevant.get(relevant.size() - 1).stateTime().state();
+  }
+
+  /** @param delay
+   * @return estimated location of agent after given delay */
+  synchronized List<TrajectorySample> getFutureTrajectoryUntil(Scalar delay) {
+    if (Objects.isNull(trajectory))
+      return Collections.singletonList(TrajectorySample.head(episodeIntegrator.tail()));
     int index = indexOfClosestTrajectorySample();
-    TrajectorySample current = trajectory.get(index);
-    Scalar threshold = current.stateTime().time().add(delay);
-    Optional<TrajectorySample> optional = trajectory.stream() //
-        .filter(ts -> Scalars.lessEquals(threshold, ts.stateTime().time())) //
-        .findFirst();
-    return optional.orElse(trajectory.get(trajectory.size() - 1)) //
-        .stateTime().state();
+    // TODO JAN this code is almost generic => extract to util class
+    Scalar threshold = trajectory.get(index).stateTime().time().add(delay);
+    return trajectory.stream().skip(index) //
+        .filter(trajectorySample -> Scalars.lessEquals(trajectorySample.stateTime().time(), threshold)) //
+        .collect(Collectors.toList());
   }
 }

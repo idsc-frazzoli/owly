@@ -48,9 +48,9 @@ import ch.ethz.idsc.tensor.Tensor;
   }
 
   @Override
-  /* package */ final GlcNode createRootNode(Tensor x) {
-    return GlcNode.of(null, new StateTime(x, RealScalar.ZERO), RealScalar.ZERO, //
-        getGoalInterface().minCostToGoal(x));
+  /* package */ final GlcNode createRootNode(StateTime stateTime) {
+    return GlcNode.of(null, stateTime, RealScalar.ZERO, //
+        getGoalInterface().minCostToGoal(stateTime.state()));
   }
 
   protected final GoalInterface getGoalInterface() {

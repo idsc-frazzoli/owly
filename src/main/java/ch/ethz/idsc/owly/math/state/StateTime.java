@@ -28,7 +28,7 @@ public final class StateTime implements Serializable {
     return time;
   }
 
-  public String info() {
+  public String toInfoString() {
     return String.format("t=%s  x=%s", time(), state().toString());
   }
 

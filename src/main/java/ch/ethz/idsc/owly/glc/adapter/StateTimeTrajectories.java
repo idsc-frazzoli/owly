@@ -29,6 +29,6 @@ public enum StateTimeTrajectories {
   public static void print(List<StateTime> list) {
     System.out.println("Trajectory (" + list.size() + ")");
     for (StateTime stateTime : list)
-      System.out.println(stateTime.info());
+      System.out.println(stateTime.toInfoString());
   }
 }
