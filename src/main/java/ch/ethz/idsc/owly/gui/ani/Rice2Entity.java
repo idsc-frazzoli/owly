@@ -33,7 +33,7 @@ public class Rice2Entity implements AnimationInterface, RenderInterface {
   @Override
   public void render(OwlyLayer owlyLayer, Graphics2D graphics) {
     StateTime stateTime = episodeIntegrator.tail();
-    Point2D p = owlyLayer.toPoint2D(stateTime.x());
+    Point2D p = owlyLayer.toPoint2D(stateTime.state());
     graphics.setColor(Color.BLACK);
     graphics.draw(new Rectangle2D.Double(p.getX(), p.getY(), 2, 2));
   }

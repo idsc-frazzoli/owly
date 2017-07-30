@@ -35,7 +35,7 @@ class TnGoalManager implements Region, CostFunction {
 
   @Override
   public Scalar costIncrement(StateTime from, List<StateTime> trajectory, Flow flow) {
-    return Norm._2.of(from.x().subtract(Trajectories.getLast(trajectory).x()));
+    return Norm._2.of(from.state().subtract(Trajectories.getLast(trajectory).state()));
   }
 
   @Override

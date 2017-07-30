@@ -7,7 +7,6 @@ import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -103,12 +102,12 @@ public class OwlyAnimationFrame {
           MotionPlanWorker mpw = new MotionPlanWorker(trajectoryPlannerCallback);
           if (controllable instanceof R2Entity) {
             R2Entity r2Entity = (R2Entity) controllable;
-            mpw.start(goal, r2Entity.episodeIntegrator.tail(), obstacleQuery);
+            mpw.start(r2Entity.episodeIntegrator.tail().state(), goal, obstacleQuery);
           }
-          if (controllable instanceof Rice2Entity) {
-            Rice2Entity rice2Entity = (Rice2Entity) controllable;
-            mpw.start(goal, rice2Entity.episodeIntegrator.tail(), obstacleQuery);
-          }
+          // if (controllable instanceof Rice2Entity) {
+          // Rice2Entity rice2Entity = (Rice2Entity) controllable;
+          // mpw.start(goal, rice2Entity.episodeIntegrator.tail(), obstacleQuery);
+          // }
         }
       }
     });
@@ -127,7 +126,7 @@ public class OwlyAnimationFrame {
         if (controllable instanceof R2Entity) {
           R2Entity r2Entity = (R2Entity) controllable;
           List<TrajectorySample> trajectory = trajectoryPlanner.detailedTrajectoryTo(optional.get());
-          Collections.reverse(trajectory);
+          // Collections.reverse(trajectory);
           r2Entity.setTrajectory(trajectory);
         }
         trajectoryRender.setTrajectoryPlanner(trajectoryPlanner);

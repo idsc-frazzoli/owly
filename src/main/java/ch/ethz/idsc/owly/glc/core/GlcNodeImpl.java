@@ -45,7 +45,7 @@ import ch.ethz.idsc.tensor.Tensor;
 
   @Override // from StateCostNode
   public Tensor state() {
-    return stateTime.x();
+    return stateTime.state();
   }
 
   @Override // from StateCostNode

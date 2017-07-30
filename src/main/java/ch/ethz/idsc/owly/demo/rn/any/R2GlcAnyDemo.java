@@ -70,7 +70,7 @@ enum R2GlcAnyDemo {
       if (trajectory != null) {
         StateTime newRootState = trajectory.get(trajectory.size() > 1 ? 1 : 0);
         // ---
-        int increment = trajectoryPlanner.switchRootToState(newRootState.x());
+        int increment = trajectoryPlanner.switchRootToState(newRootState.state());
         parameters.increaseDepthLimit(increment);
       } else {
         throw new RuntimeException();

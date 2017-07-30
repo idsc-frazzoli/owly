@@ -17,7 +17,7 @@ public class SparseStateTimeRegionMembers implements StateTimeRegionCallback {
 
   @Override
   public void notify_isMember(StateTime stateTime) {
-    Tensor x = stateTime.x();
+    Tensor x = stateTime.state();
     if (1 < x.length())
       rasterMap.put(x.extract(0, 2), stateTime);
   }

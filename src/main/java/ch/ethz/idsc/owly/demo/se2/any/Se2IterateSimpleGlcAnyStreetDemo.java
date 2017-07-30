@@ -86,7 +86,7 @@ class Se2IterateSimpleGlcAnyStreetDemo {
       List<StateTime> trajectory = trajectoryPlanner.trajectoryToBest();
       if (trajectory != null) {
         StateTime newRootState = trajectory.get(trajectory.size() > 2 ? 2 : 0);
-        trajectoryPlanner.switchRootToState(newRootState.x());
+        trajectoryPlanner.switchRootToState(newRootState.state());
       } else {
         throw new RuntimeException();
       }

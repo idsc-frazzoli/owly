@@ -21,7 +21,7 @@ public class DeltaTrajectoryGoalManager extends DeltaGoalManagerExt implements T
   private final List<StateTime> heuristicTrajectory;
 
   public DeltaTrajectoryGoalManager(List<Region> goalRegions, List<StateTime> heuristicTrajectory, Tensor radius, Scalar maxSpeed, Scalar costScalingFactor) {
-    super(RegionUnion.wrap(goalRegions), Trajectories.getLast(heuristicTrajectory).x(), radius, maxSpeed, costScalingFactor);
+    super(RegionUnion.wrap(goalRegions), Trajectories.getLast(heuristicTrajectory).state(), radius, maxSpeed, costScalingFactor);
     this.heuristicTrajectory = heuristicTrajectory;
   }
 
@@ -39,11 +39,11 @@ public class DeltaTrajectoryGoalManager extends DeltaGoalManagerExt implements T
     // Heuristic needs to be underestimating: (Euclideandistance-radius) / (MaxControl+Max(|Vectorfield|)
     Scalar bestDistance = DoubleScalar.POSITIVE_INFINITY;
     StateTime closestState = null;
-    if (x.length() != heuristicTrajectory.get(0).x().length()) {
+    if (x.length() != heuristicTrajectory.get(0).state().length()) {
       throw new RuntimeException();
     }
     for (StateTime entry : heuristicTrajectory) {
-      Scalar distance = Norm._2.of(entry.x().subtract(x));
+      Scalar distance = Norm._2.of(entry.state().subtract(x));
       if (Scalars.lessThan(distance, bestDistance)) {
         bestDistance = distance;
         closestState = entry;

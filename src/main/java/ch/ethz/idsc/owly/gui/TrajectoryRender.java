@@ -53,7 +53,7 @@ public class TrajectoryRender implements RenderInterface {
                 u.append(RealScalar.ZERO);
               graphics.draw( //
                   owlyLayer.toVector( //
-                      trajectorySample.stateTime().x(), //
+                      trajectorySample.stateTime().state(), //
                       u.multiply(U_SCALE) //
                   ));
             }
@@ -73,7 +73,7 @@ public class TrajectoryRender implements RenderInterface {
       { // draw boxes at nodes in path from root to goal
         graphics.setColor(new Color(255, 0, 0, 128));
         for (StateTime stateTime : GlcNodes.getPathFromRootTo(node)) {
-          Point2D point2d = owlyLayer.toPoint2D(stateTime.x());
+          Point2D point2d = owlyLayer.toPoint2D(stateTime.state());
           graphics.draw(new Rectangle2D.Double(point2d.getX() - 1, point2d.getY() - 1, 2, 2));
         }
       }

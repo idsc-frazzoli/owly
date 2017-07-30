@@ -97,7 +97,7 @@ class Se2IterateGlcAnyCircleDemo {
       List<StateTime> trajectory = trajectoryPlanner.trajectoryToBest();
       if (trajectory != null) {
         StateTime newRootState = trajectory.get(trajectory.size() > 5 ? 5 : 0);
-        int increment = trajectoryPlanner.switchRootToState(newRootState.x());
+        int increment = trajectoryPlanner.switchRootToState(newRootState.state());
         parameters.increaseDepthLimit(increment);
       } else {
         throw new RuntimeException();

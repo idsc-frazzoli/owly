@@ -87,7 +87,7 @@ class Se2glcAnyDemo {
       throw new RuntimeException();
     }
     // ---
-    trajectoryPlanner.switchRootToState(newRootState.x());
+    trajectoryPlanner.switchRootToState(newRootState.state());
     trajectoryPlanner.changeToGoal(se2GoalManager2.getGoalInterface());
     int iters2 = Expand.maxDepth(trajectoryPlanner, parameters.getDepthLimit());
     // ---

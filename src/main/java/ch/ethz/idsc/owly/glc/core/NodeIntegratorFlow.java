@@ -39,7 +39,7 @@ import ch.ethz.idsc.owly.math.state.Trajectories;
       final StateTime last = Trajectories.getLast(trajectory);
       final GlcNode next = GlcNode.of(flow, last, //
           node.costFromRoot().add(costFunction.costIncrement(node.stateTime(), trajectory, flow)), //
-          costFunction.minCostToGoal(last.x()) //
+          costFunction.minCostToGoal(last.state()) //
       );
       map.put(next, trajectory);
     });

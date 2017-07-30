@@ -99,7 +99,7 @@ enum R2GlcAnyCircleDemo {
       if (trajectory.size() > 0) {
         // --
         StateTime newRootState = trajectory.get(trajectory.size() > 5 ? 5 : 0);
-        int increment = trajectoryPlanner.switchRootToState(newRootState.x());
+        int increment = trajectoryPlanner.switchRootToState(newRootState.state());
         parameters.increaseDepthLimit(increment);
       }
       // -- EXPANDING
