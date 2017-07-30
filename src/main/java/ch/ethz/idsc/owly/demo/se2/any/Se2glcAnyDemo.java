@@ -11,6 +11,7 @@ import ch.ethz.idsc.owly.demo.se2.Se2Utils;
 import ch.ethz.idsc.owly.demo.se2.glc.Se2Parameters;
 import ch.ethz.idsc.owly.glc.adapter.Parameters;
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
+import ch.ethz.idsc.owly.glc.adapter.StateTimeTrajectories;
 import ch.ethz.idsc.owly.glc.core.AnyPlannerInterface;
 import ch.ethz.idsc.owly.glc.core.Expand;
 import ch.ethz.idsc.owly.glc.core.OptimalAnyTrajectoryPlanner;
@@ -24,7 +25,6 @@ import ch.ethz.idsc.owly.math.state.FixedStateIntegrator;
 import ch.ethz.idsc.owly.math.state.StateIntegrator;
 import ch.ethz.idsc.owly.math.state.StateTime;
 import ch.ethz.idsc.owly.math.state.TimeInvariantRegion;
-import ch.ethz.idsc.owly.math.state.Trajectories;
 import ch.ethz.idsc.owly.math.state.TrajectoryRegionQuery;
 import ch.ethz.idsc.tensor.DoubleScalar;
 import ch.ethz.idsc.tensor.RationalScalar;
@@ -82,7 +82,7 @@ class Se2glcAnyDemo {
     StateTime newRootState = null;
     if (trajectory != null) {
       newRootState = trajectory.get(trajectory.size() > 3 ? 3 : 0);
-      Trajectories.print(trajectory);
+      StateTimeTrajectories.print(trajectory);
     } else {
       throw new RuntimeException();
     }

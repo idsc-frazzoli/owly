@@ -13,6 +13,7 @@ import ch.ethz.idsc.owly.demo.rn.RnTrajectoryGoalManager;
 import ch.ethz.idsc.owly.demo.util.R2Controls;
 import ch.ethz.idsc.owly.glc.adapter.Parameters;
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
+import ch.ethz.idsc.owly.glc.adapter.StateTimeTrajectories;
 import ch.ethz.idsc.owly.glc.adapter.TrajectoryGoalManager;
 import ch.ethz.idsc.owly.glc.core.Expand;
 import ch.ethz.idsc.owly.glc.core.GlcNode;
@@ -29,7 +30,6 @@ import ch.ethz.idsc.owly.math.state.FixedStateIntegrator;
 import ch.ethz.idsc.owly.math.state.StateIntegrator;
 import ch.ethz.idsc.owly.math.state.StateTime;
 import ch.ethz.idsc.owly.math.state.TimeInvariantRegion;
-import ch.ethz.idsc.owly.math.state.Trajectories;
 import ch.ethz.idsc.owly.math.state.TrajectoryRegionQuery;
 import ch.ethz.idsc.tensor.RationalScalar;
 import ch.ethz.idsc.tensor.RealScalar;
@@ -82,7 +82,7 @@ enum R2GlcConstTimeHeuristicAnyDemo {
     // --
     Optional<GlcNode> finalGoalNode = trajectoryPlanner.getFinalGoalNode();
     List<StateTime> trajectory = GlcNodes.getPathFromRootTo(finalGoalNode.get());
-    Trajectories.print(trajectory);
+    StateTimeTrajectories.print(trajectory);
     OwlyFrame owlyFrame = Gui.start();
     owlyFrame.configCoordinateOffset(400, 400);
     owlyFrame.jFrame.setBounds(0, 0, 800, 800);

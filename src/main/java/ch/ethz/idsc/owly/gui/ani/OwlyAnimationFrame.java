@@ -159,7 +159,9 @@ public class OwlyAnimationFrame {
       controllable = animationInterface;
     // ---
     animationInterfaces.add(animationInterface);
-    if (animationInterface instanceof RenderInterface)
-      owlyComponent.renderElements.list.add((RenderInterface) animationInterface);
+    if (animationInterface instanceof RenderInterface) {
+      RenderInterface renderInterface = (RenderInterface) animationInterface;
+      owlyComponent.renderElements.list.add(renderInterface);
+    }
   }
 }

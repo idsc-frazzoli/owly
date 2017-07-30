@@ -9,6 +9,7 @@ import java.util.Optional;
 import ch.ethz.idsc.owly.demo.delta.DeltaGoalManagerExt;
 import ch.ethz.idsc.owly.demo.delta.DeltaStateSpaceModel;
 import ch.ethz.idsc.owly.demo.delta.DeltaTrajectoryGoalManager;
+import ch.ethz.idsc.owly.glc.adapter.StateTimeTrajectories;
 import ch.ethz.idsc.owly.glc.adapter.TrajectoryGoalManager;
 import ch.ethz.idsc.owly.glc.adapter.TrajectoryPlannerContainer;
 import ch.ethz.idsc.owly.glc.core.Expand;
@@ -21,7 +22,6 @@ import ch.ethz.idsc.owly.gui.OwlyFrame;
 import ch.ethz.idsc.owly.math.region.EllipsoidRegion;
 import ch.ethz.idsc.owly.math.region.Region;
 import ch.ethz.idsc.owly.math.state.StateTime;
-import ch.ethz.idsc.owly.math.state.Trajectories;
 import ch.ethz.idsc.tensor.DoubleScalar;
 import ch.ethz.idsc.tensor.RationalScalar;
 import ch.ethz.idsc.tensor.RealScalar;
@@ -44,7 +44,7 @@ enum DeltaGlcConstTimeHeuristicAnyDemo {
     List<StateTime> quickTrajectory = null;
     if (optional.isPresent()) {
       quickTrajectory = GlcNodes.getPathFromRootTo(optional.get());
-      Trajectories.print(quickTrajectory);
+      StateTimeTrajectories.print(quickTrajectory);
     } else {
       throw new RuntimeException();
     }
@@ -110,7 +110,8 @@ enum DeltaGlcConstTimeHeuristicAnyDemo {
           throw new RuntimeException(); // should only include last Goalregion, therefore size ==1
         if (slowTrajectoryPlannerContainer.getTrajectoryPlanner().getGoalQuery() instanceof TrajectoryGoalManager) {
           // only to change GoalManager to final Simple#
-          DeltaGoalManagerExt deltaGoalFinal = new DeltaGoalManagerExt(goalRegions.get(0), Trajectories.getLast(quickTrajectory).state(), radius, maxSpeed);
+          DeltaGoalManagerExt deltaGoalFinal = new DeltaGoalManagerExt(goalRegions.get(0), StateTimeTrajectories.getLast(quickTrajectory).state(), radius,
+              maxSpeed);
           ((OptimalAnyTrajectoryPlanner) slowTrajectoryPlannerContainer.getTrajectoryPlanner()).changeToGoal(deltaGoalFinal);
           System.err.println("Changed Goal for last Time");
         }

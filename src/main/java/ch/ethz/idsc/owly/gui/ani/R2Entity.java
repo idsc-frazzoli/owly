@@ -7,6 +7,7 @@ import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 import ch.ethz.idsc.owly.data.GlobalAssert;
 import ch.ethz.idsc.owly.glc.core.TrajectorySample;
@@ -20,6 +21,7 @@ import ch.ethz.idsc.owly.math.state.SimpleEpisodeIntegrator;
 import ch.ethz.idsc.owly.math.state.StateTime;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
+import ch.ethz.idsc.tensor.Scalars;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
 import ch.ethz.idsc.tensor.red.ArgMin;
@@ -38,11 +40,13 @@ public class R2Entity implements AnimationInterface, RenderInterface {
     this.trajectory = trajectory;
   }
 
+  /** @return index of sample of trajectory that is closest to current position */
   private int indexOfClosestTrajectorySample() {
     final Tensor x = episodeIntegrator.tail().state();
-    Tensor dif = Tensor.of( //
-        trajectory.stream().map(ts -> Norm._2.of(ts.stateTime().state().subtract(x))));
-    return ArgMin.of(dif);
+    return ArgMin.of(Tensor.of(trajectory.stream() //
+        .map(TrajectorySample::stateTime) //
+        .map(StateTime::state) //
+        .map(state -> Norm._2SQUARED.of(state.subtract(x)))));
   }
 
   @Override
@@ -63,21 +67,38 @@ public class R2Entity implements AnimationInterface, RenderInterface {
     }
     episodeIntegrator.move(u, now);
     // ---
-  }
-
-  /** @param future
-   * @return estimated location of agent at given future */
-  Tensor getEstimatedLocationAt(Scalar future) {
-    if (Objects.isNull(trajectory))
-      return episodeIntegrator.tail().state();
-    return null;
+    // System.out.println(getEstimatedLocationAt(RealScalar.ONE));
   }
 
   @Override
   public void render(OwlyLayer owlyLayer, Graphics2D graphics) {
-    StateTime stateTime = episodeIntegrator.tail();
-    Point2D p = owlyLayer.toPoint2D(stateTime.state());
-    graphics.setColor(new Color(255, 128, 128 - 64, 128 + 64));
-    graphics.fill(new Rectangle2D.Double(p.getX() - 2, p.getY() - 2, 5, 5));
+    { // indicate current position
+      Tensor state = episodeIntegrator.tail().state();
+      Point2D point = owlyLayer.toPoint2D(state);
+      graphics.setColor(new Color(128 - 64, 128, 128 - 64, 128 + 64));
+      graphics.fill(new Rectangle2D.Double(point.getX() - 2, point.getY() - 2, 5, 5));
+    }
+    { // indicate position 1 sec into the future
+      Tensor state = getEstimatedLocationAt(RealScalar.of(1.0));
+      Point2D point = owlyLayer.toPoint2D(state);
+      graphics.setColor(new Color(255, 128, 128 - 64, 128 + 64));
+      graphics.fill(new Rectangle2D.Double(point.getX() - 2, point.getY() - 2, 5, 5));
+    }
+  }
+
+  /** @param delay
+   * @return estimated location of agent after given delay */
+  Tensor getEstimatedLocationAt(Scalar delay) {
+    if (Objects.isNull(trajectory))
+      return episodeIntegrator.tail().state();
+    // TODO JAN this code is almost generic => extract to util class
+    int index = indexOfClosestTrajectorySample();
+    TrajectorySample current = trajectory.get(index);
+    Scalar threshold = current.stateTime().time().add(delay);
+    Optional<TrajectorySample> optional = trajectory.stream() //
+        .filter(ts -> Scalars.lessEquals(threshold, ts.stateTime().time())) //
+        .findFirst();
+    return optional.orElse(trajectory.get(trajectory.size() - 1)) //
+        .stateTime().state();
   }
 }

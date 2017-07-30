@@ -4,6 +4,7 @@ package ch.ethz.idsc.owly.demo.rn;
 import java.util.List;
 
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
+import ch.ethz.idsc.owly.glc.adapter.StateTimeTrajectories;
 import ch.ethz.idsc.owly.glc.adapter.TrajectoryGoalManager;
 import ch.ethz.idsc.owly.glc.core.GoalInterface;
 import ch.ethz.idsc.owly.math.flow.Flow;
@@ -11,7 +12,6 @@ import ch.ethz.idsc.owly.math.region.Region;
 import ch.ethz.idsc.owly.math.region.RegionUnion;
 import ch.ethz.idsc.owly.math.state.StateTime;
 import ch.ethz.idsc.owly.math.state.TimeInvariantRegion;
-import ch.ethz.idsc.owly.math.state.Trajectories;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.red.Norm;
@@ -37,7 +37,7 @@ public class RnTrajectoryGoalManager extends SimpleTrajectoryRegionQuery impleme
 
   @Override
   public Scalar costIncrement(StateTime from, List<StateTime> trajectory, Flow flow) {
-    return Norm._2.of(from.state().subtract(Trajectories.getLast(trajectory).state()));
+    return Norm._2.of(from.state().subtract(StateTimeTrajectories.getLast(trajectory).state()));
   }
 
   @Override

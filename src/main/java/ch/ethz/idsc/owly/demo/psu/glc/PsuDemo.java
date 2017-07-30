@@ -8,6 +8,7 @@ import java.util.Optional;
 import ch.ethz.idsc.owly.demo.psu.PsuControls;
 import ch.ethz.idsc.owly.demo.psu.PsuGoalManager;
 import ch.ethz.idsc.owly.demo.psu.PsuWrap;
+import ch.ethz.idsc.owly.glc.adapter.StateTimeTrajectories;
 import ch.ethz.idsc.owly.glc.core.Expand;
 import ch.ethz.idsc.owly.glc.core.GlcNode;
 import ch.ethz.idsc.owly.glc.core.GlcNodes;
@@ -21,7 +22,6 @@ import ch.ethz.idsc.owly.math.state.EmptyTrajectoryRegionQuery;
 import ch.ethz.idsc.owly.math.state.FixedStateIntegrator;
 import ch.ethz.idsc.owly.math.state.StateIntegrator;
 import ch.ethz.idsc.owly.math.state.StateTime;
-import ch.ethz.idsc.owly.math.state.Trajectories;
 import ch.ethz.idsc.tensor.RationalScalar;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Tensor;
@@ -76,7 +76,7 @@ enum PsuDemo {
     Optional<GlcNode> optional = trajectoryPlanner.getBest();
     if (optional.isPresent()) {
       List<StateTime> trajectory = GlcNodes.getPathFromRootTo(optional.get());
-      Trajectories.print(trajectory);
+      StateTimeTrajectories.print(trajectory);
     }
     Gui.glc(trajectoryPlanner);
   }

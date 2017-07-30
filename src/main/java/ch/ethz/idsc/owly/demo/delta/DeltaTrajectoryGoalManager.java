@@ -3,11 +3,11 @@ package ch.ethz.idsc.owly.demo.delta;
 
 import java.util.List;
 
+import ch.ethz.idsc.owly.glc.adapter.StateTimeTrajectories;
 import ch.ethz.idsc.owly.glc.adapter.TrajectoryGoalManager;
 import ch.ethz.idsc.owly.math.region.Region;
 import ch.ethz.idsc.owly.math.region.RegionUnion;
 import ch.ethz.idsc.owly.math.state.StateTime;
-import ch.ethz.idsc.owly.math.state.Trajectories;
 import ch.ethz.idsc.tensor.DoubleScalar;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
@@ -21,7 +21,7 @@ public class DeltaTrajectoryGoalManager extends DeltaGoalManagerExt implements T
   private final List<StateTime> heuristicTrajectory;
 
   public DeltaTrajectoryGoalManager(List<Region> goalRegions, List<StateTime> heuristicTrajectory, Tensor radius, Scalar maxSpeed, Scalar costScalingFactor) {
-    super(RegionUnion.wrap(goalRegions), Trajectories.getLast(heuristicTrajectory).state(), radius, maxSpeed, costScalingFactor);
+    super(RegionUnion.wrap(goalRegions), StateTimeTrajectories.getLast(heuristicTrajectory).state(), radius, maxSpeed, costScalingFactor);
     this.heuristicTrajectory = heuristicTrajectory;
   }
 

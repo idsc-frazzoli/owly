@@ -5,13 +5,13 @@ import java.util.List;
 
 import ch.ethz.idsc.owly.glc.adapter.GoalAdapter;
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
+import ch.ethz.idsc.owly.glc.adapter.StateTimeTrajectories;
 import ch.ethz.idsc.owly.glc.core.GoalInterface;
 import ch.ethz.idsc.owly.math.flow.Flow;
 import ch.ethz.idsc.owly.math.region.Region;
 import ch.ethz.idsc.owly.math.state.CostFunction;
 import ch.ethz.idsc.owly.math.state.StateTime;
 import ch.ethz.idsc.owly.math.state.TimeInvariantRegion;
-import ch.ethz.idsc.owly.math.state.Trajectories;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Scalars;
@@ -40,7 +40,7 @@ public class Se2DefaultGoalManager implements Region, CostFunction {
   @Override // Cost Function
   public Scalar costIncrement(StateTime from, List<StateTime> trajectory, Flow flow) {
     // integrate(1,t)
-    return Trajectories.timeIncrement(from, trajectory);
+    return StateTimeTrajectories.timeIncrement(from, trajectory);
   }
 
   @Override // Heuristic function
