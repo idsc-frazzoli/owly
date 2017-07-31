@@ -11,7 +11,21 @@ public enum ContinuousNoiseUtils {
     return new ContinuousNoise() {
       @Override
       public Scalar apply(Tensor tensor) {
-        return RealScalar.of(nativeContinuousNoise.at(tensor.Get(0).number().doubleValue(), tensor.Get(1).number().doubleValue()));
+        return RealScalar.of(nativeContinuousNoise.at( //
+            tensor.Get(0).number().doubleValue(), //
+            tensor.Get(1).number().doubleValue()));
+      }
+    };
+  }
+
+  public static ContinuousNoise wrap3D(NativeContinuousNoise nativeContinuousNoise) {
+    return new ContinuousNoise() {
+      @Override
+      public Scalar apply(Tensor tensor) {
+        return RealScalar.of(nativeContinuousNoise.at( //
+            tensor.Get(0).number().doubleValue(), //
+            tensor.Get(1).number().doubleValue(), //
+            tensor.Get(2).number().doubleValue()));
       }
     };
   }

@@ -48,7 +48,7 @@ enum TwdGlcDemo {
     StateIntegrator stateIntegrator = FixedStateIntegrator.createDefault(parameters.getdtMax(), //
         parameters.getTrajectorySize());
     // --
-    Collection<Flow> controls = TwdControls.createControls2(//
+    Collection<Flow> controls = TwdControls.createControls2( //
         stateSpaceModel, parameters.getResolutionInt());
     // --
     TrajectoryRegionQuery obstacleQuery = //

@@ -3,6 +3,7 @@ package ch.ethz.idsc.owly.gui.ani;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
+import java.awt.geom.Path2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.util.Collection;
@@ -14,6 +15,7 @@ import ch.ethz.idsc.owly.glc.core.StandardTrajectoryPlanner;
 import ch.ethz.idsc.owly.glc.core.TrajectoryPlanner;
 import ch.ethz.idsc.owly.glc.core.TrajectorySample;
 import ch.ethz.idsc.owly.gui.OwlyLayer;
+import ch.ethz.idsc.owly.math.Se2Utils;
 import ch.ethz.idsc.owly.math.flow.Flow;
 import ch.ethz.idsc.owly.math.flow.Integrator;
 import ch.ethz.idsc.owly.math.flow.MidpointIntegrator;
@@ -28,11 +30,12 @@ import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
 import ch.ethz.idsc.tensor.red.ArgMin;
-import ch.ethz.idsc.tensor.red.Norm;
 
 public class TwdEntity extends AbstractEntity {
   private static final Tensor FALLBACK_CONTROL = Tensors.vector(0, 0).unmodifiable();
   private static final Scalar DELAY_HINT = RealScalar.ONE;
+  private static final Tensor SHAPE = Tensors.matrixDouble( //
+      new double[][] { { .3, 0, 1 }, { -.1, -.1, 1 }, { -.1, +.1, 1 } }).unmodifiable();
 
   public static TwdEntity create(TwdStateSpaceModel twdStateSpaceModel) {
     return new TwdEntity(twdStateSpaceModel, MidpointIntegrator.INSTANCE);
@@ -66,7 +69,13 @@ public class TwdEntity extends AbstractEntity {
     return ArgMin.of(Tensor.of(trajectory.stream() //
         .map(TrajectorySample::stateTime) //
         .map(StateTime::state) //
-        .map(state -> Norm._2SQUARED.of(state.subtract(x))))); // FIXME NOT GENERIC DISTANCE
+        .map(state -> errorCombined(state, x))));
+  }
+
+  private static Scalar errorCombined(Tensor state1, Tensor state2) {
+    Scalar ep = TwdStateSpaceModel.errorPosition(state1, state2);
+    Scalar er = TwdStateSpaceModel.errorRotation(state1, state2);
+    return ep.add(er);
   }
 
   @Override
@@ -95,6 +104,13 @@ public class TwdEntity extends AbstractEntity {
   public void render(OwlyLayer owlyLayer, Graphics2D graphics) {
     { // indicate current position
       Tensor state = episodeIntegrator.tail().state();
+      Tensor matrix = Se2Utils.toSE2Matrix(state);
+      Tensor polygon = Tensor.of(SHAPE.flatten(0).map(matrix::dot));
+      {
+        Path2D path2d = owlyLayer.toPath2D(polygon);
+        graphics.setColor(new Color(64, 64, 64, 128));
+        graphics.fill(path2d);
+      }
       Point2D point = owlyLayer.toPoint2D(state);
       graphics.setColor(new Color(128 - 64, 128, 128 - 64, 128 + 64));
       graphics.fill(new Rectangle2D.Double(point.getX() - 2, point.getY() - 2, 5, 5));
