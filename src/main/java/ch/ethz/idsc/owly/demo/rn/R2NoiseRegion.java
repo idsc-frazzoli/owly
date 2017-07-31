@@ -15,7 +15,7 @@ import ch.ethz.idsc.tensor.Tensor;
  * membership in the region for coordinates (x,y) that evaluate the noise function above a given threshold. */
 public class R2NoiseRegion implements Region {
   private final double threshold;
-  private final ContinuousNoise continuousNoise = ContinuousNoiseUtils.wrap(SimplexContinuousNoise.FUNCTION);
+  private final ContinuousNoise continuousNoise = ContinuousNoiseUtils.wrap2D(SimplexContinuousNoise.FUNCTION);
 
   public R2NoiseRegion(double threshold) {
     this.threshold = threshold;
