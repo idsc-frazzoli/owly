@@ -53,7 +53,7 @@ import ch.ethz.idsc.tensor.Tensor;
         getGoalInterface().minCostToGoal(stateTime.state()));
   }
 
-  protected final GoalInterface getGoalInterface() {
+  public final GoalInterface getGoalInterface() {
     return goalInterface;
   }
 
