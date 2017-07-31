@@ -135,9 +135,9 @@ public class SimpleAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
   void RelabelingDomains() {
   }
 
+  /** Only checking the Nodes of the tree, not the trajectory */
   @Override
   boolean GoalCheckTree(Collection<GlcNode> treeCollection) {
-    // TODO JAN: Does this work like this? tested with demos
     treeCollection.parallelStream().forEach(node -> {
       if (!getGoalQuery().isDisjoint(Arrays.asList(node.stateTime())))
         offerDestination(node, Arrays.asList(node.stateTime()));

@@ -15,6 +15,7 @@ import ch.ethz.idsc.owly.glc.adapter.Parameters;
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
 import ch.ethz.idsc.owly.glc.adapter.StateTimeTrajectories;
 import ch.ethz.idsc.owly.glc.adapter.TrajectoryGoalManager;
+import ch.ethz.idsc.owly.glc.core.DebugUtils;
 import ch.ethz.idsc.owly.glc.core.Expand;
 import ch.ethz.idsc.owly.glc.core.GlcNode;
 import ch.ethz.idsc.owly.glc.core.GlcNodes;
@@ -62,7 +63,7 @@ enum R2GlcConstTimeHeuristicAnyDemo {
     Tensor radius = Tensors.vector(0.2, 0.2);
     System.out.println("Goalstates: ");
     for (int i = 0; i < 8; i++) {
-      Tensor goal = Tensors.of(RealScalar.of(0.7 * i), Sin.of(RealScalar.of(2 * Math.PI * i / 10)).multiply(RealScalar.of(i * 0.6)));
+      Tensor goal = Tensors.of(RealScalar.of(1.3 * i), Sin.of(RealScalar.of(2 * Math.PI * i / 10)).multiply(RealScalar.of(i * 0.6)));
       System.out.println(goal);
       goalStateList.add(new StateTime(goal, RealScalar.ZERO));
       goalRegions.add(new EllipsoidRegion(goal, radius));
@@ -89,7 +90,7 @@ enum R2GlcConstTimeHeuristicAnyDemo {
     owlyFrame.setGlc((TrajectoryPlanner) trajectoryPlanner);
     // -- Anytime loop
     boolean finalGoalFound = false;
-    while (trajectory.size() > 5) {
+    while (trajectory.size() > 3) {
       Thread.sleep(1);
       long tic = System.nanoTime();
       // -- GOALCHANGE
@@ -140,7 +141,7 @@ enum R2GlcConstTimeHeuristicAnyDemo {
       System.out.println("trajectorys size: " + trajectory.size());
       if (trajectory.size() > 5) {
         //
-        StateTime newRootState = trajectory.get(trajectory.size() > 5 ? 5 : 0);
+        StateTime newRootState = trajectory.get(trajectory.size() > 3 ? 3 : 0);
         int increment = trajectoryPlanner.switchRootToState(newRootState.state());
         parameters.increaseDepthLimit(increment);
       }
@@ -157,17 +158,16 @@ enum R2GlcConstTimeHeuristicAnyDemo {
           finalGoalFound = true;
         }
       }
-      finalGoalNode = trajectoryPlanner.getFinalGoalNode();
       trajectory = GlcNodes.getPathFromRootTo(finalGoalNode.get());
       tocTemp = System.nanoTime();
       System.out.println("Expanding took: " + (tocTemp - ticTemp) * 1e-9 + "s");
-      // Trajectories.print(trajectory);
       // --
       long toc = System.nanoTime();
       owlyFrame.setGlc((TrajectoryPlanner) trajectoryPlanner);
       System.out.println((toc - tic) * 1e-9 + " Seconds needed to replan");
       System.out.println("After goal switch needed " + expandIter + " iterations");
       System.out.println("*****Finished*****");
+      DebugUtils.heuristicConsistencyCheck(trajectoryPlanner);
       if (!owlyFrame.jFrame.isVisible() || expandIter < 1)
         break;
     }

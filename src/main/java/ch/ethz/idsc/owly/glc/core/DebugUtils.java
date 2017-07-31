@@ -1,7 +1,12 @@
 // code by jl
 package ch.ethz.idsc.owly.glc.core;
 
+import java.util.List;
+import java.util.Optional;
+
 import ch.ethz.idsc.owly.data.tree.Nodes;
+import ch.ethz.idsc.owly.glc.adapter.StateTimeTrajectories;
+import ch.ethz.idsc.tensor.Scalars;
 
 public enum DebugUtils {
   ;
@@ -42,6 +47,40 @@ public enum DebugUtils {
       throw new RuntimeException();
     }
   }
-  // TODO JONAS/JAN TOP PRIORITY: consistency check of merit/cost for found trajectory to goal
-  // for each node merit+cost should be better than cost in goal... ?
+
+  /** Checks if the Cost and the Heuristic along the found trajectory are consistent
+   * @param trajectoryPlanner */
+  public static final void heuristicConsistencyCheck(TrajectoryPlanner trajectoryPlanner) {
+    Optional<GlcNode> finalNode = trajectoryPlanner.getFinalGoalNode();
+    if (!finalNode.isPresent()) {
+      System.out.println("No Final GoalNode, therefore no ConsistencyCheck");
+      return;
+    }
+    if (!(trajectoryPlanner instanceof AbstractTrajectoryPlanner))
+      throw new RuntimeException(); // checking of wierd planner
+    GoalInterface goal = ((AbstractTrajectoryPlanner) trajectoryPlanner).getGoalInterface();
+    List<GlcNode> trajectory = Nodes.listFromRoot(finalNode.get());
+    if (!trajectory.get(0).isRoot())
+      throw new RuntimeException(); // RootNode check
+    for (int i = 1; i < trajectory.size() - 1; i++) { // last Node is maybe outside of goal, as Trajectory to it was in
+      GlcNode current = trajectory.get(i);
+      GlcNode parent = current.parent();
+      if (parent != trajectory.get(i - 1))
+        throw new RuntimeException(); // parent should be the in trajectory just before
+      if (!parent.children().contains(current))
+        throw new RuntimeException(); // parent should have this one add child.
+      if (Scalars.lessThan(current.costFromRoot(), parent.costFromRoot())) {
+        System.err.println("At time " + current.stateTime().time() + " cost from root decreased from " + //
+            parent.costFromRoot() + " to " + current.costFromRoot());
+        StateTimeTrajectories.print(GlcNodes.getPathFromRootTo(finalNode.get()));
+        throw new RuntimeException();
+      }
+      if (Scalars.lessThan(current.merit(), parent.merit())) {
+        System.err.println("At time " + current.stateTime().time() + " merit decreased from  " + //
+            parent.merit() + " to " + current.merit());
+        StateTimeTrajectories.print(GlcNodes.getPathFromRootTo(finalNode.get()));
+        throw new RuntimeException();
+      }
+    }
+  }
 }

@@ -295,7 +295,6 @@ public class OptimalAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
 
   @Override
   protected boolean GoalCheckTree(Collection<GlcNode> treeCollection) {
-    // TODO JAN: Does this work like this?
     // 15%-50% Speedgain, tested with R2GlcConstTimeHeuristicAnyDemo
     treeCollection.parallelStream().forEach(node -> {
       if (!node.isRoot())

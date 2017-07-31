@@ -67,7 +67,7 @@ public enum DeltaHelper {
     Tensor range = Tensors.vector(9, 6.5);
     ImageGradient ipr = new ImageGradient( //
         Images.displayOrientation(Import.of(Resources.fileFromRepository("/io/delta_uxy.png")).get(Tensor.ALL, Tensor.ALL, 0)), //
-        range, RealScalar.of(-.5)); // -.25 .5
+        range, gradientAmp); // -.25 .5
     Scalar maxInput = RealScalar.ONE;
     Scalar maxSpeed = maxInput.add(ipr.maxNorm());
     DeltaStateSpaceModel stateSpaceModel = new DeltaStateSpaceModel(ipr, maxInput);
@@ -101,7 +101,7 @@ public enum DeltaHelper {
     Tensor range = Tensors.vector(9, 6.5);
     ImageGradient ipr = new ImageGradient( //
         Images.displayOrientation(Import.of(Resources.fileFromRepository("/io/delta_uxy.png")).get(Tensor.ALL, Tensor.ALL, 0)), //
-        range, RealScalar.of(-.5)); // -.25 .5
+        range, gradientAmp); // -.25 .5
     Scalar maxInput = RealScalar.ONE;
     Scalar maxSpeed = maxInput.add(ipr.maxNorm());
     DeltaStateSpaceModel stateSpaceModel = new DeltaStateSpaceModel(ipr, maxInput);

@@ -3,6 +3,7 @@ package ch.ethz.idsc.owly.demo.rnn;
 
 import java.util.List;
 
+import ch.ethz.idsc.owly.data.GlobalAssert;
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
 import ch.ethz.idsc.owly.glc.core.GoalInterface;
 import ch.ethz.idsc.owly.math.flow.Flow;
@@ -30,7 +31,8 @@ class RnnGoalManager extends SimpleTrajectoryRegionQuery implements GoalInterfac
     super(new TimeInvariantRegion(new EllipsoidRegion(center, Array.of(l -> radius, center.length()))));
     this.center = center;
     this.radius = radius;
-    continuousNoise = ContinuousNoiseUtils.wrap(SimplexContinuousNoise.FUNCTION);
+    GlobalAssert.that(center.length() == 2);
+    continuousNoise = ContinuousNoiseUtils.wrap2D(SimplexContinuousNoise.FUNCTION);
   }
 
   @Override
