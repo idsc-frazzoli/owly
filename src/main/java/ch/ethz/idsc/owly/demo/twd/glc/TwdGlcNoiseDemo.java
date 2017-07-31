@@ -7,7 +7,7 @@ import java.util.Optional;
 
 import ch.ethz.idsc.owly.demo.rn.R2NoiseRegion;
 import ch.ethz.idsc.owly.demo.twd.TwdControls;
-import ch.ethz.idsc.owly.demo.twd.TwdHeuristicGoalManager;
+import ch.ethz.idsc.owly.demo.twd.TwdMinCurvatureGoalManager;
 import ch.ethz.idsc.owly.demo.twd.TwdStateSpaceModel;
 import ch.ethz.idsc.owly.glc.adapter.Parameters;
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
@@ -57,8 +57,10 @@ enum TwdGlcNoiseDemo {
         stateSpaceModel, parameters.getResolutionInt());
     // GoalRegion
     Tensor goalCenter = Tensors.vector(5.5, 0, -1 * Math.PI);
-    Tensor radiusVector = Tensors.vector(0.2, 0.2, 2 * Math.PI / 360 * 50);
-    TwdHeuristicGoalManager twdGoal = new TwdHeuristicGoalManager(goalCenter, radiusVector);
+    // Tensor radiusVector = Tensors.vector(0.2, 0.2, 2 * Math.PI / 360 * 50);
+    TwdMinCurvatureGoalManager twdGoal = //
+        new TwdMinCurvatureGoalManager(goalCenter, RealScalar.of(0.2), RealScalar.of(50 * Math.PI / 180));
+    // new TwdMinCurvatureGoalManager(goalCenter, radiusVector);
     // ObstacleRegion
     TrajectoryRegionQuery obstacleQuery = //
         new SimpleTrajectoryRegionQuery(new TimeInvariantRegion( //

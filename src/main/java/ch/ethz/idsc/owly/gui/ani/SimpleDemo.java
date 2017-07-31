@@ -7,7 +7,8 @@ enum SimpleDemo {
   public static void main(String[] args) {
     OwlyAnimationFrame f = new OwlyAnimationFrame();
     // f.add(new Rice2Entity());
-    f.add(new R2Entity());
+    // f.add(new R2Entity());
+    f.add(TwdEntity.createDefault());
     f.jFrame.setVisible(true);
   }
 }

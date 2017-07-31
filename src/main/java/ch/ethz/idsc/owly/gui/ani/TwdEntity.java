@@ -7,21 +7,21 @@ import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.util.Collection;
 
-import ch.ethz.idsc.owly.demo.rn.RnSimpleCircleGoalManager;
-import ch.ethz.idsc.owly.demo.util.R2Controls;
+import ch.ethz.idsc.owly.demo.twd.TwdControls;
+import ch.ethz.idsc.owly.demo.twd.TwdMinTimeGoalManager;
+import ch.ethz.idsc.owly.demo.twd.TwdStateSpaceModel;
 import ch.ethz.idsc.owly.glc.core.StandardTrajectoryPlanner;
 import ch.ethz.idsc.owly.glc.core.TrajectoryPlanner;
 import ch.ethz.idsc.owly.glc.core.TrajectorySample;
 import ch.ethz.idsc.owly.gui.OwlyLayer;
-import ch.ethz.idsc.owly.math.SingleIntegratorStateSpaceModel;
-import ch.ethz.idsc.owly.math.flow.EulerIntegrator;
 import ch.ethz.idsc.owly.math.flow.Flow;
+import ch.ethz.idsc.owly.math.flow.Integrator;
+import ch.ethz.idsc.owly.math.flow.MidpointIntegrator;
 import ch.ethz.idsc.owly.math.state.FixedStateIntegrator;
 import ch.ethz.idsc.owly.math.state.SimpleEpisodeIntegrator;
 import ch.ethz.idsc.owly.math.state.StateIntegrator;
 import ch.ethz.idsc.owly.math.state.StateTime;
 import ch.ethz.idsc.owly.math.state.TrajectoryRegionQuery;
-import ch.ethz.idsc.tensor.DoubleScalar;
 import ch.ethz.idsc.tensor.RationalScalar;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
@@ -30,28 +30,43 @@ import ch.ethz.idsc.tensor.Tensors;
 import ch.ethz.idsc.tensor.red.ArgMin;
 import ch.ethz.idsc.tensor.red.Norm;
 
-/** omni-directional movement with constant speed */
-public class R2Entity extends AbstractEntity {
+public class TwdEntity extends AbstractEntity {
   private static final Tensor FALLBACK_CONTROL = Tensors.vector(0, 0).unmodifiable();
-  /** preserve 1[s] of the former trajectory */
   private static final Scalar DELAY_HINT = RealScalar.ONE;
 
-  // ---
-  public R2Entity() {
-    super(new SimpleEpisodeIntegrator( //
-        SingleIntegratorStateSpaceModel.INSTANCE, //
-        EulerIntegrator.INSTANCE, //
-        new StateTime(Tensors.vector(0, 0), RealScalar.ZERO)));
+  public static TwdEntity create(TwdStateSpaceModel twdStateSpaceModel) {
+    return new TwdEntity(twdStateSpaceModel, MidpointIntegrator.INSTANCE);
   }
 
-  /** @return index of sample of trajectory that is closest to current position */
+  public static TwdEntity createDefault() {
+    Scalar wheelRadius = RationalScalar.of(100, 100); // 1[m] -> results in speed 1[m/s]
+    Scalar wheelDistance = RationalScalar.of(40, 10); // 40[cm]
+    TwdStateSpaceModel twdStateSpaceModel = new TwdStateSpaceModel(wheelRadius, wheelDistance);
+    return create(twdStateSpaceModel);
+  }
+
+  // ---
+  final TwdStateSpaceModel twdStateSpaceModel;
+  final Integrator integrator;
+  final Collection<Flow> controls;
+
+  public TwdEntity(TwdStateSpaceModel twdStateSpaceModel, Integrator integrator) {
+    super(new SimpleEpisodeIntegrator( //
+        twdStateSpaceModel, //
+        integrator, //
+        new StateTime(Tensors.vector(0, 0, 0), RealScalar.ZERO)));
+    this.twdStateSpaceModel = twdStateSpaceModel;
+    this.integrator = integrator;
+    controls = TwdControls.createControls(twdStateSpaceModel, 4);
+  }
+
   @Override
-  synchronized int indexOfClosestTrajectorySample() {
+  int indexOfClosestTrajectorySample() {
     final Tensor x = episodeIntegrator.tail().state();
     return ArgMin.of(Tensor.of(trajectory.stream() //
         .map(TrajectorySample::stateTime) //
         .map(StateTime::state) //
-        .map(state -> Norm._2SQUARED.of(state.subtract(x))))); // TODO NOT GENERIC DISTANCE
+        .map(state -> Norm._2SQUARED.of(state.subtract(x))))); // FIXME NOT GENERIC DISTANCE
   }
 
   @Override
@@ -66,14 +81,14 @@ public class R2Entity extends AbstractEntity {
 
   @Override
   TrajectoryPlanner createTrajectoryPlanner(TrajectoryRegionQuery obstacleQuery, Tensor goal) {
-    Tensor partitionScale = Tensors.vector(6, 6);
+    Tensor partitionScale = Tensors.vector(6, 6, 20);
     StateIntegrator stateIntegrator = //
-        FixedStateIntegrator.create(EulerIntegrator.INSTANCE, RationalScalar.of(1, 10), 4);
-    Collection<Flow> controls = R2Controls.createRadial(23);
-    RnSimpleCircleGoalManager rnGoal = //
-        new RnSimpleCircleGoalManager(goal, DoubleScalar.of(.2));
+        FixedStateIntegrator.create(integrator, RationalScalar.of(1, 10), 4);
+    TwdMinTimeGoalManager twdMinTimeGoalManager = //
+        new TwdMinTimeGoalManager(Tensors.of(goal.Get(0), goal.Get(1), RealScalar.ZERO), RealScalar.of(.5), RealScalar.of(Math.PI));
+    // obstacleQuery = EmptyTrajectoryRegionQuery.INSTANCE; // TODO temporary
     return new StandardTrajectoryPlanner( //
-        partitionScale, stateIntegrator, controls, obstacleQuery, rnGoal);
+        partitionScale, stateIntegrator, controls, obstacleQuery, twdMinTimeGoalManager.getGoalInterface());
   }
 
   @Override

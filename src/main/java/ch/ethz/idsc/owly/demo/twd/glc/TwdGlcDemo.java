@@ -4,7 +4,7 @@ package ch.ethz.idsc.owly.demo.twd.glc;
 import java.util.Collection;
 
 import ch.ethz.idsc.owly.demo.twd.TwdControls;
-import ch.ethz.idsc.owly.demo.twd.TwdHeuristicGoalManager;
+import ch.ethz.idsc.owly.demo.twd.TwdMinCurvatureGoalManager;
 import ch.ethz.idsc.owly.demo.twd.TwdStateSpaceModel;
 import ch.ethz.idsc.owly.glc.adapter.Parameters;
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
@@ -59,9 +59,9 @@ enum TwdGlcDemo {
             )));
     // --
     Tensor goalCenter = Tensors.vector(2, -2, -1 * Math.PI);
-    Tensor radiusVector = Tensors.vector(0.5, 0.5, 2 * Math.PI / 360 * 50);
     // TwdDefaultGoalManager goalManager = new TwdDefaultGoalManager(goalCenter, radiusVector);
-    TwdHeuristicGoalManager goalManager = new TwdHeuristicGoalManager(goalCenter, radiusVector);
+    TwdMinCurvatureGoalManager goalManager = //
+        new TwdMinCurvatureGoalManager(goalCenter, RealScalar.of(0.5), RealScalar.of(50 * Math.PI / 180));
     // --
     TrajectoryPlanner trajectoryPlanner = new StandardTrajectoryPlanner(parameters.getEta(), //
         stateIntegrator, controls, obstacleQuery, goalManager.getGoalInterface());

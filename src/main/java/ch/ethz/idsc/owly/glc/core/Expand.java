@@ -24,6 +24,7 @@ public enum Expand {
         System.out.println("*** Queue is empty -- No Goal was found ***");
         break;
       }
+      // System.out.println("expand "+next.get().stateTime().toInfoString());
       expandInterface.expand(next.get());
       if (expandInterface.getBest().isPresent()) // found node in goal region
         break;
