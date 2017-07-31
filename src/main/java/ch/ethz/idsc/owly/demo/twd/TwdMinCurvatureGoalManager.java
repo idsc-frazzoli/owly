@@ -16,9 +16,9 @@ import ch.ethz.idsc.tensor.sca.Ramp;
 /** Se2 goal region is not elliptic, therefore we implement {@link Region}
  * 
  * bapaden phd thesis: (6.4.10) */
-public class TwdHeuristicGoalManager extends TwdDefaultGoalManager {
-  public TwdHeuristicGoalManager(Tensor center, Tensor radiusVector) {
-    super(center, radiusVector);
+public class TwdMinCurvatureGoalManager extends TwdAbstractGoalManager {
+  public TwdMinCurvatureGoalManager(Tensor center, Scalar tolerance_xy, Scalar tolerance_angle) {
+    super(center, tolerance_xy, tolerance_angle);
   }
 
   @Override // Cost Function
@@ -30,9 +30,8 @@ public class TwdHeuristicGoalManager extends TwdDefaultGoalManager {
 
   @Override
   public Scalar minCostToGoal(Tensor x) {
-    Tensor cur_xy = x.extract(0, 2);
-    Scalar cur_angle = x.Get(2);
-    Scalar dxy = Norm._2.of(cur_xy.subtract(center.extract(0, 2))).subtract(radiusVector.Get(1));
+    Tensor xy = x.extract(0, 2);
+    Scalar dxy = Norm._2.of(xy.subtract(center.extract(0, 2))).subtract(tolerance_xy);
     return Ramp.of(dxy);
   }
 }

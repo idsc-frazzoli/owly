@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import ch.ethz.idsc.owly.math.StateSpaceModel;
 import ch.ethz.idsc.owly.math.StateSpaceModels;
 import ch.ethz.idsc.owly.math.flow.Flow;
 import ch.ethz.idsc.tensor.RealScalar;
@@ -15,15 +16,27 @@ import ch.ethz.idsc.tensor.Tensors;
 import ch.ethz.idsc.tensor.alg.Subdivide;
 
 /** two wheel drive */
-// TODO to be checked with theory: simulated inputs is no R²
 public enum TwdControls {
   ;
-  /** @param wheelspeeds_max the maximum absolut values for the rotationalspeed of each wheel.
-   * @param num number of flows to produce
+  /** @param twdStateSpaceModel
+   * @param resolution
+   * @return collection of flows with size == 4 * resolution */
+  public static Collection<Flow> createControls(StateSpaceModel stateSpaceModel, int resolution) {
+    List<Flow> list = new ArrayList<>();
+    Tensor range = Subdivide.of(-1, 1, resolution).extract(0, resolution); // [-1, ..., 1)
+    for (Tensor omega : range) {
+      list.add(StateSpaceModels.createFlow(stateSpaceModel, Tensors.of(RealScalar.ONE, omega)));
+      list.add(StateSpaceModels.createFlow(stateSpaceModel, Tensors.of(omega.negate(), RealScalar.ONE)));
+      list.add(StateSpaceModels.createFlow(stateSpaceModel, Tensors.of(RealScalar.ONE.negate(), omega.negate())));
+      list.add(StateSpaceModels.createFlow(stateSpaceModel, Tensors.of(omega, RealScalar.ONE.negate())));
+    }
+    return list;
+  }
+
+  /** @param wheelspeeds_max the maximum absolute values for the rotationalspeed of each wheel.
+   * @param num resolution
    * @return list of Flows */
   public static Collection<Flow> createControls1(TwdStateSpaceModel stateSpaceModel, int num) {
-    // TODO JONAS better way then floor
-    // int numSqr = Floor.of(Sqrt.of(RealScalar.of(num))).number().intValue();
     int numSqr = num;
     Scalar wheelspeed_max = RealScalar.ONE;
     List<Flow> list = new ArrayList<>();
@@ -46,7 +59,6 @@ public enum TwdControls {
       // |wl|+|wr|<=1
       Scalar wr = (wheelspeed_max.subtract(wl)).negate();
       while (Scalars.lessEquals(wr, wheelspeed_max.subtract(wl))) {
-        Tensor u = Tensors.of((Scalar) wl, wr);
         list.add(StateSpaceModels.createFlow(stateSpaceModel, Tensors.of(wl, wr)));
         wr = wr.add(stepSize);
       }
