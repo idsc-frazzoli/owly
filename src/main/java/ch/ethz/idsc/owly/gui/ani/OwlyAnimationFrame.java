@@ -98,17 +98,16 @@ public class OwlyAnimationFrame {
     owlyComponent.jComponent.addMouseListener(new MouseAdapter() {
       @Override
       public void mouseClicked(MouseEvent mouseEvent) {
+        // FIXME ensure that any running worker is stopped
         if (mouseEvent.getButton() == 1) {
           Tensor goal = owlyComponent.toModel(mouseEvent.getPoint());
           MotionPlanWorker mpw = new MotionPlanWorker(trajectoryPlannerCallback);
-          if (controllable instanceof R2Entity) {
-            R2Entity r2Entity = (R2Entity) controllable;
-            mpw.start(r2Entity.getFutureTrajectoryUntil(R2Entity.DELAY_HINT), goal, obstacleQuery);
+          if (controllable instanceof AbstractEntity) {
+            AbstractEntity abstractEntity = (AbstractEntity) controllable;
+            TrajectoryPlanner trajectoryPlanner = //
+                abstractEntity.createTrajectoryPlanner(obstacleQuery, goal);
+            mpw.start(abstractEntity.getFutureTrajectoryUntil(abstractEntity.delayHint()), trajectoryPlanner);
           }
-          // if (controllable instanceof Rice2Entity) {
-          // Rice2Entity rice2Entity = (Rice2Entity) controllable;
-          // mpw.start(goal, rice2Entity.episodeIntegrator.tail(), obstacleQuery);
-          // }
         }
       }
     });
@@ -123,15 +122,15 @@ public class OwlyAnimationFrame {
       Optional<GlcNode> optional = trajectoryPlanner.getBest();
       if (optional.isPresent()) {
         List<TrajectorySample> trajectory = new ArrayList<>();
-        if (controllable instanceof R2Entity) {
-          R2Entity r2Entity = (R2Entity) controllable;
+        if (controllable instanceof AbstractEntity) {
+          AbstractEntity abstractEntity = (AbstractEntity) controllable;
           trajectory.addAll(head);
           List<TrajectorySample> tail = trajectoryPlanner.detailedTrajectoryTo(optional.get());
           // TODO consistency check of time of statetime entries of trajectory
           System.out.println("last of head: " + head.get(head.size() - 1).toInfoString());
           System.out.println("1st  of tail: " + tail.get(0).toInfoString());
           trajectory.addAll(tail.subList(1, tail.size()));
-          r2Entity.setTrajectory(trajectory);
+          abstractEntity.setTrajectory(trajectory);
         }
         trajectoryRender.setTrajectory(trajectory);
       } else {

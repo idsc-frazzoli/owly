@@ -18,4 +18,11 @@ public class TwdMinTimeGoalManagerTest extends TestCase {
     assertTrue(manager.isMember(Tensors.vector(10, 0, Math.PI + 2 * Math.PI + 0.9)));
     assertFalse(manager.isMember(Tensors.vector(10, 0, Math.PI + 2 * Math.PI + 1.1)));
   }
+
+  public void testAllAngles() {
+    TwdMinTimeGoalManager manager = //
+        new TwdMinTimeGoalManager(Tensors.vector(0, 0, Math.PI), RealScalar.ONE, RealScalar.of(Math.PI));
+    for (int index = -100; index < 100; ++index)
+      assertTrue(manager.isMember(Tensors.vector(0, 0, index)));
+  }
 }

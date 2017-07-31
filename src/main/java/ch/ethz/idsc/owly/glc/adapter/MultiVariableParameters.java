@@ -5,7 +5,6 @@ import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Scalars;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
-import ch.ethz.idsc.tensor.mat.VectorQ;
 import ch.ethz.idsc.tensor.red.Mean;
 
 //TODO Delete?
@@ -34,7 +33,7 @@ public abstract class MultiVariableParameters extends DefaultParameters {
   public final Tensor getEta() {
     Tensor eta = Tensors.empty();
     int index = 0;
-    if (VectorQ.of(lipschitz))
+    if (!lipschitz.isScalar())
       for (Tensor entry : lipschitz) {
         Scalar scalar = entry.Get();
         if (Scalars.isZero(scalar))
