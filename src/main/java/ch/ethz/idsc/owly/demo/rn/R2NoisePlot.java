@@ -24,6 +24,7 @@ enum R2NoisePlot {
   private static final int RES = 512;
   private static final Tensor RE = Subdivide.of(0, 25, RES - 1);
   private static final Tensor IM = Subdivide.of(0, 25, RES - 1);
+  @SuppressWarnings("unused")
   private static final Clip CLIP = Clip.UNIT;
 
   private static Scalar function(int x, int y) {

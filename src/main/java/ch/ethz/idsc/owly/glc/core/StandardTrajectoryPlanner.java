@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import ch.ethz.idsc.owly.data.GlobalAssert;
 import ch.ethz.idsc.owly.math.flow.Flow;
 import ch.ethz.idsc.owly.math.state.StateIntegrator;
 import ch.ethz.idsc.owly.math.state.StateTime;
@@ -64,13 +65,11 @@ public class StandardTrajectoryPlanner extends AbstractTrajectoryPlanner {
             if (getObstacleQuery().isDisjoint(connectors.get(next))) { // no collision
               /** removal from queue is unsure; needs to be checked with theory. */
               boolean removed = queue().remove(formerLabel);
-              if (!removed)
-                throw new RuntimeException();
+              GlobalAssert.that(removed);
               formerLabel.parent().removeEdgeTo(formerLabel);
               node.insertEdgeTo(next);
               boolean replaced = insert(domainKey, next);
-              if (!replaced)
-                throw new RuntimeException();
+              GlobalAssert.that(replaced);
               domainQueue.remove();
               if (!getGoalInterface().isDisjoint(connectors.get(next)))
                 offerDestination(next, connectors.get(next));

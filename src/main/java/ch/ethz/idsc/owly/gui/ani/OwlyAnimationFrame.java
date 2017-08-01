@@ -26,6 +26,7 @@ import javax.swing.WindowConstants;
 import ch.ethz.idsc.owly.data.TimeKeeper;
 import ch.ethz.idsc.owly.demo.rn.R2NoiseRegion;
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
+import ch.ethz.idsc.owly.glc.adapter.Trajectories;
 import ch.ethz.idsc.owly.glc.core.GlcNode;
 import ch.ethz.idsc.owly.glc.core.StandardTrajectoryPlanner;
 import ch.ethz.idsc.owly.glc.core.TrajectoryPlanner;
@@ -124,12 +125,8 @@ public class OwlyAnimationFrame {
         List<TrajectorySample> trajectory = new ArrayList<>();
         if (controllable instanceof AbstractEntity) {
           AbstractEntity abstractEntity = (AbstractEntity) controllable;
-          trajectory.addAll(head);
           List<TrajectorySample> tail = trajectoryPlanner.detailedTrajectoryTo(optional.get());
-          // TODO consistency check of time of statetime entries of trajectory
-          System.out.println("last of head: " + head.get(head.size() - 1).toInfoString());
-          System.out.println("1st  of tail: " + tail.get(0).toInfoString());
-          trajectory.addAll(tail.subList(1, tail.size()));
+          trajectory = Trajectories.glue(head, tail);
           abstractEntity.setTrajectory(trajectory);
         }
         trajectoryRender.setTrajectory(trajectory);
