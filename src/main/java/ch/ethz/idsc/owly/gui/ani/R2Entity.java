@@ -3,6 +3,7 @@ package ch.ethz.idsc.owly.gui.ani;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
+import java.awt.geom.Ellipse2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.util.Collection;
@@ -81,8 +82,8 @@ public class R2Entity extends AbstractEntity {
     { // indicate current position
       Tensor state = episodeIntegrator.tail().state();
       Point2D point = owlyLayer.toPoint2D(state);
-      graphics.setColor(new Color(128 - 64, 128, 128 - 64, 128 + 64));
-      graphics.fill(new Rectangle2D.Double(point.getX() - 2, point.getY() - 2, 5, 5));
+      graphics.setColor(new Color(64, 128, 64, 192));
+      graphics.fill(new Ellipse2D.Double(point.getX() - 2, point.getY() - 2, 7, 7));
     }
     { // indicate position 1[s] into the future
       Tensor state = getEstimatedLocationAt(DELAY_HINT);

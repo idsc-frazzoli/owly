@@ -1,6 +1,8 @@
 // code by jph
 package ch.ethz.idsc.owly.rrts.adapter;
 
+import java.util.Objects;
+
 import ch.ethz.idsc.owly.rrts.core.Rrts;
 import ch.ethz.idsc.owly.rrts.core.RrtsNode;
 import ch.ethz.idsc.owly.rrts.core.RrtsNodeCollection;
@@ -63,7 +65,7 @@ public class DefaultRrts implements Rrts {
       Transition transition = transitionSpace.connect(node.state(), state);
       Scalar cost = transitionCostFunction.cost(transition);
       Scalar compare = node.costFromRoot().add(cost);
-      if (costFromRoot == null || Scalars.lessThan(compare, costFromRoot))
+      if (Objects.isNull(costFromRoot) || Scalars.lessThan(compare, costFromRoot))
         if (transitionRegionQuery.isDisjoint(transition)) {
           parent = node;
           costFromRoot = compare;

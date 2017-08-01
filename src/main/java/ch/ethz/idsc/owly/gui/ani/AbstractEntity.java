@@ -50,12 +50,12 @@ public abstract class AbstractEntity implements RenderInterface, AnimationInterf
   }
 
   /** @param delay
-   * @return estimated location of agent after given delay */
+   * @return trajectory until delay[s] in the future of entity,
+   * or current position if entity does not have a trajectory */
   final synchronized List<TrajectorySample> getFutureTrajectoryUntil(Scalar delay) {
-    if (Objects.isNull(trajectory))
+    if (Objects.isNull(trajectory)) // agent does not have a trajectory
       return Collections.singletonList(TrajectorySample.head(episodeIntegrator.tail()));
     int index = indexOfClosestTrajectorySample();
-    // TODO JAN this code is almost generic => extract to util class
     Scalar threshold = trajectory.get(index).stateTime().time().add(delay);
     return trajectory.stream().skip(index) //
         .filter(trajectorySample -> Scalars.lessEquals(trajectorySample.stateTime().time(), threshold)) //

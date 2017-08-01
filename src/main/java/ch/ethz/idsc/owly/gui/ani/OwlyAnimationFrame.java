@@ -115,7 +115,7 @@ public class OwlyAnimationFrame {
 
   TrajectoryPlannerCallback trajectoryPlannerCallback = new TrajectoryPlannerCallback() {
     @Override
-    public void hasTrajectoryPlanner(List<TrajectorySample> head, TrajectoryPlanner trajectoryPlanner) {
+    public void expandResult(List<TrajectorySample> head, TrajectoryPlanner trajectoryPlanner) {
       System.out.println("finished");
       // long toc = System.nanoTime();
       // System.out.println(iters + " " + ((toc - tic) * 1e-9));

@@ -7,7 +7,10 @@ import java.awt.geom.Path2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Objects;
 
+import ch.ethz.idsc.owly.demo.se2.Se2Wrap;
 import ch.ethz.idsc.owly.demo.twd.TwdControls;
 import ch.ethz.idsc.owly.demo.twd.TwdMinTimeGoalManager;
 import ch.ethz.idsc.owly.demo.twd.TwdStateSpaceModel;
@@ -28,14 +31,23 @@ import ch.ethz.idsc.tensor.RationalScalar;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
+import ch.ethz.idsc.tensor.TensorRuntimeException;
 import ch.ethz.idsc.tensor.Tensors;
 import ch.ethz.idsc.tensor.red.ArgMin;
+import ch.ethz.idsc.tensor.sca.Sqrt;
 
 public class TwdEntity extends AbstractEntity {
   private static final Tensor FALLBACK_CONTROL = Tensors.vector(0, 0).unmodifiable();
   private static final Scalar DELAY_HINT = RealScalar.ONE;
   private static final Tensor SHAPE = Tensors.matrixDouble( //
       new double[][] { { .3, 0, 1 }, { -.1, -.1, 1 }, { -.1, +.1, 1 } }).unmodifiable();
+  private static final Se2Wrap SE2WRAP = new Se2Wrap(Tensors.vector(1, 1, 2));
+  private static final Tensor PARTITIONSCALE = Tensors.vector(4, 4, 50 / Math.PI); // 50/pi == 15.9155
+  // ---
+  static {
+    if (!PARTITIONSCALE.get(0).equals(PARTITIONSCALE.get(1)))
+      throw TensorRuntimeException.of(PARTITIONSCALE);
+  }
 
   public static TwdEntity create(TwdStateSpaceModel twdStateSpaceModel) {
     return new TwdEntity(twdStateSpaceModel, MidpointIntegrator.INSTANCE);
@@ -52,15 +64,18 @@ public class TwdEntity extends AbstractEntity {
   final TwdStateSpaceModel twdStateSpaceModel;
   final Integrator integrator;
   final Collection<Flow> controls;
+  final Scalar goalRadius_xy;
+  TrajectoryRegionQuery obstacleQuery = null;
 
   public TwdEntity(TwdStateSpaceModel twdStateSpaceModel, Integrator integrator) {
     super(new SimpleEpisodeIntegrator( //
         twdStateSpaceModel, //
         integrator, //
-        new StateTime(Tensors.vector(0, 0, 0), RealScalar.ZERO)));
+        new StateTime(Tensors.vector(0, 0, 0), RealScalar.ZERO))); // initial position
     this.twdStateSpaceModel = twdStateSpaceModel;
     this.integrator = integrator;
     controls = TwdControls.createControls(twdStateSpaceModel, 4);
+    goalRadius_xy = Sqrt.of(RealScalar.of(2)).divide(PARTITIONSCALE.Get(0));
   }
 
   @Override
@@ -69,13 +84,7 @@ public class TwdEntity extends AbstractEntity {
     return ArgMin.of(Tensor.of(trajectory.stream() //
         .map(TrajectorySample::stateTime) //
         .map(StateTime::state) //
-        .map(state -> errorCombined(state, x))));
-  }
-
-  private static Scalar errorCombined(Tensor state1, Tensor state2) {
-    Scalar ep = TwdStateSpaceModel.errorPosition(state1, state2);
-    Scalar er = TwdStateSpaceModel.errorRotation(state1, state2);
-    return ep.add(er);
+        .map(state -> SE2WRAP.distance(state, x))));
   }
 
   @Override
@@ -90,35 +99,35 @@ public class TwdEntity extends AbstractEntity {
 
   @Override
   TrajectoryPlanner createTrajectoryPlanner(TrajectoryRegionQuery obstacleQuery, Tensor goal) {
-    Tensor partitionScale = Tensors.vector(6, 6, 20);
+    // obstacleQuery = EmptyTrajectoryRegionQuery.INSTANCE; // <- for testing
+    this.obstacleQuery = obstacleQuery;
     StateIntegrator stateIntegrator = //
         FixedStateIntegrator.create(integrator, RationalScalar.of(1, 10), 4);
     TwdMinTimeGoalManager twdMinTimeGoalManager = //
-        new TwdMinTimeGoalManager(Tensors.of(goal.Get(0), goal.Get(1), RealScalar.ZERO), RealScalar.of(.5), RealScalar.of(Math.PI));
-    // obstacleQuery = EmptyTrajectoryRegionQuery.INSTANCE; // TODO temporary
-    return new StandardTrajectoryPlanner( //
-        partitionScale, stateIntegrator, controls, obstacleQuery, twdMinTimeGoalManager.getGoalInterface());
+        new TwdMinTimeGoalManager(Tensors.of(goal.Get(0), goal.Get(1), RealScalar.ZERO), goalRadius_xy, RealScalar.of(Math.PI));
+    TrajectoryPlanner trajectoryPlanner = new StandardTrajectoryPlanner( //
+        PARTITIONSCALE, stateIntegrator, controls, obstacleQuery, twdMinTimeGoalManager.getGoalInterface());
+    trajectoryPlanner.represent = SE2WRAP::represent;
+    return trajectoryPlanner;
   }
 
   @Override
   public void render(OwlyLayer owlyLayer, Graphics2D graphics) {
     { // indicate current position
-      Tensor state = episodeIntegrator.tail().state();
-      Tensor matrix = Se2Utils.toSE2Matrix(state);
-      Tensor polygon = Tensor.of(SHAPE.flatten(0).map(matrix::dot));
-      {
-        Path2D path2d = owlyLayer.toPath2D(polygon);
-        graphics.setColor(new Color(64, 64, 64, 128));
-        graphics.fill(path2d);
-      }
-      Point2D point = owlyLayer.toPoint2D(state);
-      graphics.setColor(new Color(128 - 64, 128, 128 - 64, 128 + 64));
-      graphics.fill(new Rectangle2D.Double(point.getX() - 2, point.getY() - 2, 5, 5));
+      StateTime stateTime = episodeIntegrator.tail();
+      Color color = new Color(64, 64, 64, 128);
+      if (Objects.nonNull(obstacleQuery))
+        if (!obstacleQuery.isDisjoint(Collections.singletonList(stateTime)))
+          color = new Color(255, 64, 64, 128);
+      graphics.setColor(color);
+      Tensor matrix = Se2Utils.toSE2Matrix(stateTime.state());
+      Path2D path2d = owlyLayer.toPath2D(Tensor.of(SHAPE.flatten(0).map(matrix::dot)));
+      graphics.fill(path2d);
     }
-    { // indicate position 1[s] into the future
+    { // indicate position delay[s] into the future
       Tensor state = getEstimatedLocationAt(DELAY_HINT);
       Point2D point = owlyLayer.toPoint2D(state);
-      graphics.setColor(new Color(255, 128, 128 - 64, 128 + 64));
+      graphics.setColor(new Color(255, 128, 64, 192));
       graphics.fill(new Rectangle2D.Double(point.getX() - 2, point.getY() - 2, 5, 5));
     }
   }

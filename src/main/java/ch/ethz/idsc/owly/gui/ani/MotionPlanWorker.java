@@ -18,9 +18,10 @@ public class MotionPlanWorker {
     this.trajectoryPlannerCallback = trajectoryPlannerCallback;
   }
 
-  /** @param head is the old trajectory that is preserved. the planner continues from the last {@link StateTime} in head
-   * @param goal
-   * @param obstacleQuery */
+  /** the planner motion plans from the last {@link StateTime} in head
+   * 
+   * @param head non-empty trajectory
+   * @param trajectoryPlanner */
   public void start(List<TrajectorySample> head, TrajectoryPlanner trajectoryPlanner) {
     thread = new Thread(new Runnable() {
       @Override
@@ -28,9 +29,9 @@ public class MotionPlanWorker {
         System.out.println("start computation");
         StateTime root = head.get(head.size() - 1).stateTime(); // last statetime in head trajectory
         trajectoryPlanner.insertRoot(root);
-        Expand.maxSteps(trajectoryPlanner, 4000); // TODO magic const
-        // TODO treat success failure cases?
-        trajectoryPlannerCallback.hasTrajectoryPlanner(head, trajectoryPlanner);
+        // TODO define API do allow entity to abort/continue expand; right now: magic const
+        Expand.maxSteps(trajectoryPlanner, 4000);
+        trajectoryPlannerCallback.expandResult(head, trajectoryPlanner);
       }
     });
     thread.start();
