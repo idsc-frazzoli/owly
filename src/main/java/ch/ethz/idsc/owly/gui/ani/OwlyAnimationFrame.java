@@ -93,7 +93,7 @@ public class OwlyAnimationFrame {
         timer.cancel();
       }
     });
-    Region region = new R2NoiseRegion(.3);
+    Region region = new R2NoiseRegion(.4); // TODO not final design
     TrajectoryRegionQuery obstacleQuery = //
         new SimpleTrajectoryRegionQuery(new TimeInvariantRegion(region));
     owlyComponent.jComponent.addMouseListener(new MouseAdapter() {
