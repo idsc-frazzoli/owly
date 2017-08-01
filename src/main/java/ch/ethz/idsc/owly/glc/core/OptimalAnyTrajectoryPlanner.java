@@ -303,4 +303,11 @@ public class OptimalAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
     });
     return getBest().isPresent();
   }
+
+  /** in Development
+   * @return */
+  protected boolean GoalCheckTree1() {
+    Collection<GlcNode> treeCollection = Nodes.ofSubtree(getRoot());
+    return getBest().isPresent();
+  }
 }

@@ -69,7 +69,7 @@ enum R2GlcConstTimeHeuristicAnyDemo {
       goalRegions.add(new EllipsoidRegion(goal, radius));
     }
     Tensor heuristicCenter = goalStateList.get(0).state();
-    RnTrajectoryGoalManager rnGoal = new RnTrajectoryGoalManager(goalRegions, heuristicCenter, radius.Get(0));
+    RnTrajectoryGoalManager rnGoal = new RnTrajectoryGoalManager(goalRegions, goalStateList, radius.Get(0));
     Region region = new R2NoiseRegion(.1);
     TrajectoryRegionQuery obstacleQuery = //
         new SimpleTrajectoryRegionQuery(new TimeInvariantRegion( //
@@ -96,7 +96,7 @@ enum R2GlcConstTimeHeuristicAnyDemo {
       // -- GOALCHANGE
       long ticTemp = tic;
       // Check which is the furthest Goal which was found
-      Optional<StateTime> furthestState = trajectoryPlanner.getFurthestGoalState();
+      Optional<StateTime> furthestState = trajectoryPlanner.getFurthestGoalState(goalRegions);
       int deleteIndex = -1;
       if (furthestState.isPresent()) {
         int index = goalRegions.size();
@@ -119,7 +119,7 @@ enum R2GlcConstTimeHeuristicAnyDemo {
       // only change goal if we are not at the end yet
       if (!finalGoalFound) {
         // creates new RegionUnin form Regionlist and puts Heuristic to next Goal in RegionList
-        rnGoal = new RnTrajectoryGoalManager(goalRegions, goalStateList.get(goalStateList.size() - 1).state(), radius.Get(0));
+        rnGoal = new RnTrajectoryGoalManager(goalRegions, goalStateList, radius);
         trajectoryPlanner.changeToGoal(rnGoal);
       } else {
         if (goalRegions.size() != 1) // only the last Goal is left in the list
@@ -150,7 +150,7 @@ enum R2GlcConstTimeHeuristicAnyDemo {
       // -- EXPANDING
       ticTemp = System.nanoTime();
       int expandIter = Expand.constTime(trajectoryPlanner, runTime, parameters.getDepthLimit());
-      furthestState = trajectoryPlanner.getFurthestGoalState();
+      furthestState = trajectoryPlanner.getFurthestGoalState(goalRegions);
       // check if furthest Goal is already in last Region in List
       if (furthestState.isPresent()) {
         if (goalRegions.get(goalRegions.size() - 1).isMember(furthestState.get().state())) {

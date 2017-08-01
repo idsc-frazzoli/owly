@@ -4,6 +4,7 @@ package ch.ethz.idsc.owly.glc.core;
 import java.util.List;
 import java.util.Optional;
 
+import ch.ethz.idsc.owly.math.region.Region;
 import ch.ethz.idsc.owly.math.state.StateTime;
 import ch.ethz.idsc.tensor.Tensor;
 
@@ -35,9 +36,9 @@ public interface AnyPlannerInterface extends ExpandInterface {
   List<TrajectorySample> detailedTrajectoryToBest();
 
   /** @return worst (highest Merit) State in goal region, or Optional.empty() if no such node has been identified yet */
-  Optional<StateTime> getFurthestGoalState();
+  Optional<StateTime> getFurthestGoalState(List<Region> goalRegions);
 
   /** @return worst (highest Merit) Node, whose incoming trajectory is in GoalRegion,
    * or Optional.empty() if no such node has been identified yet */
-  Optional<GlcNode> getFurthestGoalNode();
+  Optional<GlcNode> getFurthestGoalNode(List<Region> goalRegions);
 }
