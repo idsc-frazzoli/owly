@@ -34,7 +34,7 @@ enum DeltaGlcConstTimeHeuristicAnyDemo {
   ;
   public static void main(String[] args) throws Exception {
     // -- Quick Planner init
-    RationalScalar quickResolution = (RationalScalar) RationalScalar.of(12, 1);
+    RationalScalar quickResolution = (RationalScalar) RationalScalar.of(10, 1);
     TrajectoryPlannerContainer quickTrajectoryPlannerContainer = DeltaHelper.createGlc(RealScalar.of(-0.5), quickResolution);
     Expand.maxDepth(quickTrajectoryPlannerContainer.getTrajectoryPlanner(), DoubleScalar.POSITIVE_INFINITY.number().intValue());
     OwlyFrame quickOwlyFrame = Gui.start();
@@ -52,7 +52,7 @@ enum DeltaGlcConstTimeHeuristicAnyDemo {
     DebugUtils.heuristicConsistencyCheck(quickTrajectoryPlannerContainer.getTrajectoryPlanner());
     System.out.println("***QUICK PLANNER FINISHED***");
     // -- SLOWPLANNER
-    RationalScalar resolution = (RationalScalar) RationalScalar.of(12, 1);
+    RationalScalar resolution = (RationalScalar) RationalScalar.of(14, 1);
     TrajectoryPlannerContainer slowTrajectoryPlannerContainer = DeltaHelper.createGlcAny(RealScalar.of(-0.5), resolution);
     // -- GOALMANAGER
     // TODO: needs to be removed from main
@@ -106,19 +106,19 @@ enum DeltaGlcConstTimeHeuristicAnyDemo {
       System.out.println("Goalchange took: " + (tocTemp - ticTemp) * 1e-9 + "s");
       // --
       // -- ROOTCHANGE
-      // ticTemp = System.nanoTime();
-      // finalGoalNode = slowTrajectoryPlannerContainer.getTrajectoryPlanner().getFinalGoalNode();
-      // if (finalGoalNode.isPresent())
-      // trajectory = GlcNodes.getPathFromRootTo(finalGoalNode.get());
-      // System.out.println("trajectorys size: " + trajectory.size());
-      // if (trajectory.size() > 5) {
-      // //
-      // StateTime newRootState = trajectory.get(trajectory.size() > 7 ? 2 : 0);
-      // int increment = ((OptimalAnyTrajectoryPlanner) slowTrajectoryPlannerContainer.getTrajectoryPlanner()).switchRootToState(newRootState.state());
-      // slowTrajectoryPlannerContainer.getParameters().increaseDepthLimit(increment);
-      // }
-      // tocTemp = System.nanoTime();
-      // System.out.println("Rootchange took: " + (tocTemp - ticTemp) * 1e-9 + "s");
+//       ticTemp = System.nanoTime();
+//       finalGoalNode = slowTrajectoryPlannerContainer.getTrajectoryPlanner().getFinalGoalNode();
+//       if (finalGoalNode.isPresent())
+//       trajectory = GlcNodes.getPathFromRootTo(finalGoalNode.get());
+//       System.out.println("trajectorys size: " + trajectory.size());
+//       if (trajectory.size() > 5) {
+//       //
+//       StateTime newRootState = trajectory.get(trajectory.size() > 7 ? 2 : 0);
+//       int increment = ((OptimalAnyTrajectoryPlanner) slowTrajectoryPlannerContainer.getTrajectoryPlanner()).switchRootToState(newRootState.state());
+//       slowTrajectoryPlannerContainer.getParameters().increaseDepthLimit(increment);
+//       }
+//       tocTemp = System.nanoTime();
+//       System.out.println("Rootchange took: " + (tocTemp - ticTemp) * 1e-9 + "s");
       // -- EXPANDING
       ticTemp = System.nanoTime();
       int expandIter = Expand.constTime(slowTrajectoryPlannerContainer.getTrajectoryPlanner(), //
