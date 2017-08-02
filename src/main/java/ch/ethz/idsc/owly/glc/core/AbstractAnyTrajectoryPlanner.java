@@ -16,7 +16,6 @@ import ch.ethz.idsc.owly.math.state.StateIntegrator;
 import ch.ethz.idsc.owly.math.state.StateTime;
 import ch.ethz.idsc.owly.math.state.TimeInvariantRegion;
 import ch.ethz.idsc.owly.math.state.TrajectoryRegionQuery;
-import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Tensor;
 
 public abstract class AbstractAnyTrajectoryPlanner extends AbstractTrajectoryPlanner implements AnyPlannerInterface {
@@ -79,12 +78,7 @@ public abstract class AbstractAnyTrajectoryPlanner extends AbstractTrajectoryPla
   protected final Collection<GlcNode> deleteSubtreeOf(GlcNode baseNode) {
     Collection<GlcNode> deleteTreeCollection = Nodes.ofSubtree(baseNode);
     // -- GOAL: goalNode deleted?
-    {
-      int size = best.size();
-      boolean test = best.keySet().removeAll(deleteTreeCollection);
-      if (test)
-        System.out.println("min. 1 GoalNode removed from best, " + (size - best.size()) + "/" + size);
-    }
+    best.keySet().removeAll(deleteTreeCollection);
     // -- QUEUE: Deleting Nodes from Queue
     queue().removeAll(deleteTreeCollection);
     // -- DOMAINMAP: Removing Nodes (DeleteTree) from DomainMap
@@ -118,14 +112,12 @@ public abstract class AbstractAnyTrajectoryPlanner extends AbstractTrajectoryPla
     // Updating the merit of the entire tree
     long tic = System.nanoTime();
     // Changing the Merit in Queue for each Node
-    // TODO TALK TO JAN: Does this make !treeCollection.equals(compareCollection)==true? if values are changed in treeCollection?
     treeCollection.stream().parallel() //
         .forEach(glcNode -> glcNode.setMinCostToGoal(newGoal.minCostToGoal(glcNode.state())));
-    // if (false) {
-    if (newGoal.minCostToGoal(root.state()) != RealScalar.ZERO) {
+    if (true) {
+      // if (newGoal.minCostToGoal(root.state()) != RealScalar.ZERO) {
       // TODO JONAS smart way to check if before line modified sth.
       System.err.println("checking for domainlabel changes due to heuristic change,  Treesize: " + treeCollection.size());
-      // TODO JONAS for optimiality if Heuristic was changed, check candidates in domains
       RelabelingDomains();
     }
     // RESORTING OF LIST
@@ -139,8 +131,6 @@ public abstract class AbstractAnyTrajectoryPlanner extends AbstractTrajectoryPla
     // -- GOALCHECK TREE
     tic = System.nanoTime();
     treeCollection = Nodes.ofSubtree(root);
-    // TODO JONAS: would a sorted list make sense, as GoalCheck could stop if 1 Goal was found
-    // only for "normal" goals not for TrajectoryGoalmanager
     boolean treeFound = GoalCheckTree(treeCollection);
     toc = System.nanoTime();
     System.out.println("Checked current tree for goal in "//
@@ -154,6 +144,8 @@ public abstract class AbstractAnyTrajectoryPlanner extends AbstractTrajectoryPla
     return false;
   }
 
+  /** Checks if relabeling is needed for all domains with their Candidates and relabels those.
+   * Trees which are suboptimal are deleted */
   abstract void RelabelingDomains();
 
   /** Checks the tree in the collection if some Nodes are in the Goal
@@ -189,10 +181,7 @@ public abstract class AbstractAnyTrajectoryPlanner extends AbstractTrajectoryPla
     return null;
   }
 
-  /** Looks for the Node, which is the furthest in the GoalRegion,
-   * @return node with highest merit in GoalRegion */
   @Override
-  // TODO JONAS: modify similar to finalgoal
   public final Optional<StateTime> getFurthestGoalState(List<Region> goalRegions) {
     Optional<GlcNode> key = getFurthestGoalNode(goalRegions);
     if (key.isPresent()) {
@@ -204,12 +193,6 @@ public abstract class AbstractAnyTrajectoryPlanner extends AbstractTrajectoryPla
     return Optional.empty();
   }
 
-  // @Override
-  // public final Optional<GlcNode> getFurthestGoalNode() {
-  // if (!best.isEmpty())
-  // return Optional.ofNullable(best.lastKey());
-  // return Optional.empty();
-  // }
   @Override
   public final Optional<GlcNode> getFurthestGoalNode(List<Region> goalRegions) {
     ListIterator<Region> iter = goalRegions.listIterator(goalRegions.size());

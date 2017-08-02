@@ -12,6 +12,7 @@ import java.util.Objects;
 
 import ch.ethz.idsc.owly.demo.se2.Se2Wrap;
 import ch.ethz.idsc.owly.demo.twd.TwdControls;
+import ch.ethz.idsc.owly.demo.twd.TwdMinCurvatureGoalManager;
 import ch.ethz.idsc.owly.demo.twd.TwdMinTimeGoalManager;
 import ch.ethz.idsc.owly.demo.twd.TwdStateSpaceModel;
 import ch.ethz.idsc.owly.glc.core.StandardTrajectoryPlanner;
@@ -72,7 +73,7 @@ public class TwdEntity extends AbstractEntity {
         integrator, //
         new StateTime(Tensors.vector(0, 0, 0), RealScalar.ZERO))); // initial position
     this.integrator = integrator;
-    controls = TwdControls.createControls(twdStateSpaceModel, 4);
+    controls = TwdControls.createControls(twdStateSpaceModel, 8);
     goalRadius_xy = Sqrt.of(RealScalar.of(2)).divide(PARTITIONSCALE.Get(0));
   }
 
@@ -103,8 +104,10 @@ public class TwdEntity extends AbstractEntity {
         FixedStateIntegrator.create(integrator, RationalScalar.of(1, 10), 4);
     TwdMinTimeGoalManager twdMinTimeGoalManager = //
         new TwdMinTimeGoalManager(Tensors.of(goal.Get(0), goal.Get(1), RealScalar.ZERO), goalRadius_xy, RealScalar.of(Math.PI));
+     TwdMinCurvatureGoalManager twdMinCurvatureGoalManager = //
+     new TwdMinCurvatureGoalManager(Tensors.of(goal.Get(0), goal.Get(1), RealScalar.ZERO), goalRadius_xy, RealScalar.of(Math.PI));
     TrajectoryPlanner trajectoryPlanner = new StandardTrajectoryPlanner( //
-        PARTITIONSCALE, stateIntegrator, controls, obstacleQuery, twdMinTimeGoalManager.getGoalInterface());
+        PARTITIONSCALE, stateIntegrator, controls, obstacleQuery, twdMinCurvatureGoalManager.getGoalInterface());
     trajectoryPlanner.represent = SE2WRAP::represent;
     return trajectoryPlanner;
   }

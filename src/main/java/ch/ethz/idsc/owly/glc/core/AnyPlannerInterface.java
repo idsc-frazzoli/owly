@@ -35,10 +35,10 @@ public interface AnyPlannerInterface extends ExpandInterface {
    * @return TrajectorySample Trajectory to the best Goal or if no goal was found NULL */
   List<TrajectorySample> detailedTrajectoryToBest();
 
-  /** @return worst (highest Merit) State in goal region, or Optional.empty() if no such node has been identified yet */
+  /** @return first State in goal region from furthest Node, or Optional.empty() if no such node has been identified yet */
   Optional<StateTime> getFurthestGoalState(List<Region> goalRegions);
 
-  /** @return worst (highest Merit) Node, whose incoming trajectory is in GoalRegion,
+  /** @return furthest Node (lowest cost in higehst listindex), whose incoming trajectory is in GoalRegion,
    * or Optional.empty() if no such node has been identified yet */
   Optional<GlcNode> getFurthestGoalNode(List<Region> goalRegions);
 }

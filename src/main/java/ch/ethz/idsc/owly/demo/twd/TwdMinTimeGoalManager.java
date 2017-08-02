@@ -21,6 +21,7 @@ public class TwdMinTimeGoalManager extends TwdAbstractGoalManager {
     return StateTimeTrajectories.timeIncrement(from, trajectory);
   }
 
+  // TODO only valid for assumption of maxSpeed = 1
   @Override // from CostFunction
   public Scalar minCostToGoal(Tensor x) {
     return Ramp.of(TwdStateSpaceModel.errorPosition(x, center).subtract(tolerance_xy));

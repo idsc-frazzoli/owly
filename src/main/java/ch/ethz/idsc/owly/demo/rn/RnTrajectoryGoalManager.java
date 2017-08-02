@@ -18,7 +18,6 @@ public class RnTrajectoryGoalManager extends TrajectoryGoalManager {
   private final List<StateTime> heuristicTrajectory;
   private final Scalar radius;
 
-  // TODO JONAS change heuristic center to different way
   public RnTrajectoryGoalManager(List<Region> goalRegions, List<StateTime> heuristicTrajectory, Tensor radius) {
     super(goalRegions);
     this.heuristicTrajectory = heuristicTrajectory;
@@ -34,7 +33,6 @@ public class RnTrajectoryGoalManager extends TrajectoryGoalManager {
 
   @Override
   public Scalar minCostToGoal(Tensor x) {
-    // return RealScalar.ZERO;
     return Ramp.of(Norm._2.of(x.subtract(StateTimeTrajectories.getLast(heuristicTrajectory).state())).subtract(radius));
   }
 }
