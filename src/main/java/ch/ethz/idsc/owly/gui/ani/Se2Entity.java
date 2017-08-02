@@ -37,7 +37,7 @@ import ch.ethz.idsc.tensor.red.ArgMin;
 import ch.ethz.idsc.tensor.sca.Sqrt;
 
 public class Se2Entity extends AbstractEntity {
-  private static final Tensor FALLBACK_CONTROL = Tensors.vector(0, 0).unmodifiable();
+  private static final Tensor FALLBACK_CONTROL = Tensors.vector(0).unmodifiable();
   private static final Scalar DELAY_HINT = RealScalar.ONE;
   private static final Tensor SHAPE = Tensors.matrixDouble( //
       new double[][] { //
