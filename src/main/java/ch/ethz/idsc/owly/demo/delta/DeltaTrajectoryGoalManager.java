@@ -14,6 +14,7 @@ import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
 
 public class DeltaTrajectoryGoalManager extends DeltaGoalManagerExt implements TrajectoryGoalManager {
+  // FIXME JONAS heuristicTrajectory not used yet
   private final List<StateTime> heuristicTrajectory;
 
   public DeltaTrajectoryGoalManager(List<Region> goalRegions, List<StateTime> heuristicTrajectory, Tensor radius, Scalar maxSpeed, Scalar costScalingFactor) {

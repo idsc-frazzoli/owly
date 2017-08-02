@@ -114,7 +114,7 @@ public abstract class AbstractAnyTrajectoryPlanner extends AbstractTrajectoryPla
     // Updating the merit of the entire tree
     long tic = System.nanoTime();
     // Changing the Merit in Queue for each Node
-    // TODO JAN: Does this make !treeCollection.equals(compareCollection)==true? if values are changed in treeCollection?
+    // TODO TALK TO JAN: Does this make !treeCollection.equals(compareCollection)==true? if values are changed in treeCollection?
     treeCollection.stream().parallel() //
         .forEach(glcNode -> glcNode.setMinCostToGoal(newGoal.minCostToGoal(glcNode.state())));
     // if (false) {

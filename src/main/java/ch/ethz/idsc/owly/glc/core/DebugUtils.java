@@ -4,6 +4,7 @@ package ch.ethz.idsc.owly.glc.core;
 import java.util.List;
 import java.util.Optional;
 
+import ch.ethz.idsc.owly.data.GlobalAssert;
 import ch.ethz.idsc.owly.data.tree.Nodes;
 import ch.ethz.idsc.owly.glc.adapter.StateTimeTrajectories;
 import ch.ethz.idsc.tensor.Scalars;
@@ -49,6 +50,7 @@ public enum DebugUtils {
   }
 
   /** Checks if the Cost and the Heuristic along the found trajectory are consistent
+   * 
    * @param trajectoryPlanner */
   public static final void heuristicConsistencyCheck(TrajectoryPlanner trajectoryPlanner) {
     Optional<GlcNode> finalNode = trajectoryPlanner.getFinalGoalNode();
@@ -56,31 +58,29 @@ public enum DebugUtils {
       System.out.println("No Final GoalNode, therefore no ConsistencyCheck");
       return;
     }
-    if (!(trajectoryPlanner instanceof AbstractTrajectoryPlanner))
-      throw new RuntimeException(); // checking of wierd planner
-    GoalInterface goal = ((AbstractTrajectoryPlanner) trajectoryPlanner).getGoalInterface();
     List<GlcNode> trajectory = Nodes.listFromRoot(finalNode.get());
-    if (!trajectory.get(0).isRoot())
-      throw new RuntimeException(); // RootNode check
-    for (int i = 1; i < trajectory.size() - 1; i++) { // last Node is maybe outside of goal, as Trajectory to it was in
+    GlobalAssert.that(trajectory.get(0).isRoot());
+    // omit last Node, since last node may lie outside of goal region, as Trajectory to it was in
+    for (int i = 1; i < trajectory.size() - 1; i++) {
       GlcNode current = trajectory.get(i);
       GlcNode parent = current.parent();
-      if (parent != trajectory.get(i - 1))
-        throw new RuntimeException(); // parent should be the in trajectory just before
-      if (!parent.children().contains(current))
-        throw new RuntimeException(); // parent should have this one add child.
-      if (Scalars.lessThan(current.costFromRoot(), parent.costFromRoot())) {
+      // TODO JONAS extract the next two checks to a separate function since they check some other property
+      // ... write tests that fail the "trajectory property"
+      GlobalAssert.that(parent == trajectory.get(i - 1)); // parent should be the in trajectory just before current node
+      GlobalAssert.that(parent.children().contains(current)); // parent should have current node add child
+      if (Scalars.lessEquals(current.costFromRoot(), parent.costFromRoot())) {
         System.err.println("At time " + current.stateTime().time() + " cost from root decreased from " + //
             parent.costFromRoot() + " to " + current.costFromRoot());
         StateTimeTrajectories.print(GlcNodes.getPathFromRootTo(finalNode.get()));
         throw new RuntimeException();
       }
-      if (Scalars.lessThan(current.merit(), parent.merit())) {
+      if (Scalars.lessEquals(current.merit(), parent.merit())) {
         System.err.println("At time " + current.stateTime().time() + " merit decreased from  " + //
             parent.merit() + " to " + current.merit());
         StateTimeTrajectories.print(GlcNodes.getPathFromRootTo(finalNode.get()));
         throw new RuntimeException();
       }
+      // TODO JONAS check that heuristic does not overestimate cost to goal!
     }
   }
 }

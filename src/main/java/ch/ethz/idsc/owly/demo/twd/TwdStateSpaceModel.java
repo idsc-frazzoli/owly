@@ -4,11 +4,14 @@ package ch.ethz.idsc.owly.demo.twd;
 import ch.ethz.idsc.owly.data.GlobalAssert;
 import ch.ethz.idsc.owly.math.StateSpaceModel;
 import ch.ethz.idsc.tensor.NumberQ;
+import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
 import ch.ethz.idsc.tensor.red.Mean;
+import ch.ethz.idsc.tensor.red.Norm;
 import ch.ethz.idsc.tensor.sca.Cos;
+import ch.ethz.idsc.tensor.sca.Mod;
 import ch.ethz.idsc.tensor.sca.Sin;
 
 /** two wheel drive (non-holonomic wheeled mobile robot)
@@ -19,6 +22,8 @@ import ch.ethz.idsc.tensor.sca.Sin;
  * max (wl) = max (wr) = 1
  * Theory from: http://planning.cs.uiuc.edu/node659.html */
 public class TwdStateSpaceModel implements StateSpaceModel {
+  private static final Mod PRINCIPAL = Mod.function(RealScalar.of(2 * Math.PI), RealScalar.of(-Math.PI));
+  // ---
   private final Scalar wheelRadius; // R
   private final Scalar wheelDistanceInverse; // L
 
@@ -69,5 +74,17 @@ public class TwdStateSpaceModel implements StateSpaceModel {
   @Override
   public Scalar getLipschitz() {
     return wheelRadius;
+  }
+
+  /***************************************************/
+  /** @param state1 = {px1, py1, theta1}
+   * @param state2 = {px2, py2, theta2}
+   * @return non-negative positional distance between state1 and state2 */
+  public static Scalar errorPosition(Tensor state1, Tensor state2) {
+    return Norm._2.of(state1.extract(0, 2).subtract(state2.extract(0, 2)));
+  }
+
+  public static Scalar errorRotation(Tensor state1, Tensor state2) {
+    return PRINCIPAL.apply(state1.Get(2).subtract(state2.Get(2))).abs();
   }
 }

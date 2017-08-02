@@ -5,8 +5,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import ch.ethz.idsc.owly.demo.se2.Se2MinCurvatureGoalManager;
-import ch.ethz.idsc.owly.demo.se2.Se2Utils;
 import ch.ethz.idsc.owly.glc.core.AbstractAnyTrajectoryPlanner;
+import ch.ethz.idsc.owly.math.Se2Utils;
 import ch.ethz.idsc.owly.math.state.StateTime;
 import ch.ethz.idsc.tensor.DoubleScalar;
 import ch.ethz.idsc.tensor.RealScalar;

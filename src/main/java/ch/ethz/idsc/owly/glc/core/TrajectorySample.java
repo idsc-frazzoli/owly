@@ -2,6 +2,7 @@
 package ch.ethz.idsc.owly.glc.core;
 
 import java.io.Serializable;
+import java.util.Objects;
 import java.util.Optional;
 
 import ch.ethz.idsc.owly.math.flow.Flow;
@@ -41,7 +42,7 @@ public class TrajectorySample implements Serializable {
   }
 
   public String toInfoString() {
-    String ustring = flow == null ? "null" : flow.getU().toString();
+    String ustring = Objects.isNull(flow) ? "null" : flow.getU().toString();
     return stateTime.toInfoString() + "  u=" + ustring;
   }
 }

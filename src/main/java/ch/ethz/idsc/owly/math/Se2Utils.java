@@ -1,6 +1,7 @@
 // code by jph
-package ch.ethz.idsc.owly.demo.se2;
+package ch.ethz.idsc.owly.math;
 
+import ch.ethz.idsc.owly.data.GlobalAssert;
 import ch.ethz.idsc.tensor.ComplexScalar;
 import ch.ethz.idsc.tensor.DoubleScalar;
 import ch.ethz.idsc.tensor.RationalScalar;
@@ -8,21 +9,26 @@ import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
+import ch.ethz.idsc.tensor.alg.VectorQ;
 import ch.ethz.idsc.tensor.sca.Arg;
 import ch.ethz.idsc.tensor.sca.Cos;
 import ch.ethz.idsc.tensor.sca.Sin;
 
 public enum Se2Utils {
   ;
-  public static final Scalar DEGREE(int value) {
-    return RationalScalar.of(value, 180).multiply(DoubleScalar.of(Math.PI));
+  /** @param degree
+   * @return radians */
+  public static final Scalar DEGREE(int degree) {
+    return RationalScalar.of(degree, 180).multiply(DoubleScalar.of(Math.PI));
   }
 
   // ---
-  // function not called
-  static Tensor vec2mat(Tensor x) {
+  /** @param x = {px, py, angle}
+   * @return 3x3 matrix */
+  public static Tensor toSE2Matrix(Tensor x) {
+    GlobalAssert.that(VectorQ.ofLength(x, 3));
     Scalar angle = x.Get(2);
-    return Tensors.matrix(new Tensor[][] { //
+    return Tensors.matrix(new Scalar[][] { //
         { Cos.of(angle), Sin.of(angle).negate(), x.Get(0) }, //
         { Sin.of(angle), Cos.of(angle), x.Get(1) }, //
         { RealScalar.ZERO, RealScalar.ZERO, RealScalar.ONE }, //

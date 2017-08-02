@@ -7,9 +7,10 @@ import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
 import ch.ethz.idsc.tensor.red.Mean;
 
-//TODO Delete?
+// TODO Delete?
+/** work on this class is on hold, because no definition for desired functionality is available */
 @Deprecated
-public abstract class MultiVariableParameters extends DefaultParameters {
+abstract class MultiVariableParameters extends DefaultParameters {
   private final Tensor lipschitz;
 
   public MultiVariableParameters( //
@@ -40,7 +41,6 @@ public abstract class MultiVariableParameters extends DefaultParameters {
           eta.append(EtaLfZero().get(index));
         else
           eta.append(EtaLfNonZero(scalar).get(index));
-        // TODO JAN smarter way of solving tensor/Scalar issue?
         // currently always calculating entire Eta vector with one lipschitz and all PartionScale,
         // and then picking index of Eta vector which is calculated with the right PartitionScale
         ++index;
