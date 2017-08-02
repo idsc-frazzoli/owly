@@ -48,7 +48,7 @@ enum R2GlcConstTimeHeuristicAnyDemo {
     Tensor partitionScale = Tensors.vector(20, 20);
     Scalar dtMax = RationalScalar.of(1, 6);
     int maxIter = 2000;
-    Scalar runTime = RealScalar.of(0.8);
+    Scalar runTime = RealScalar.of(0.4);
     Scalar lipschitz = RealScalar.ONE;
     Parameters parameters = new R2Parameters( //
         resolution, timeScale, depthScale, partitionScale, dtMax, maxIter, lipschitz);
@@ -58,17 +58,17 @@ enum R2GlcConstTimeHeuristicAnyDemo {
     System.out.println("DomainSize: 1/Eta: " + parameters.getEta().map(n -> RealScalar.ONE.divide(n)));
     Collection<Flow> controls = R2Controls.createRadial(parameters.getResolutionInt());
     // Creating Goals
-    List<StateTime> goalStateList = new ArrayList<>();
+    List<StateTime> precomputedTrajectory = new ArrayList<>();
     List<Region> goalRegions = new ArrayList<>();
     Tensor radius = Tensors.vector(0.2, 0.2);
     System.out.println("Goalstates: ");
     for (int i = 0; i < 8; i++) {
       Tensor goal = Tensors.of(RealScalar.of(1.3 * i), Sin.of(RealScalar.of(2 * Math.PI * i / 10)).multiply(RealScalar.of(i * 0.8)));
       System.out.println(goal);
-      goalStateList.add(new StateTime(goal, RealScalar.ZERO));
+      precomputedTrajectory.add(new StateTime(goal, RealScalar.ZERO));
       goalRegions.add(new EllipsoidRegion(goal, radius));
     }
-    RnTrajectoryGoalManager rnGoal = new RnTrajectoryGoalManager(goalRegions, goalStateList, radius);
+    RnTrajectoryGoalManager rnGoal = new RnTrajectoryGoalManager(goalRegions, precomputedTrajectory, radius);
     Region region = new R2NoiseRegion(.1);
     TrajectoryRegionQuery obstacleQuery = //
         new SimpleTrajectoryRegionQuery(new TimeInvariantRegion( //
@@ -89,7 +89,7 @@ enum R2GlcConstTimeHeuristicAnyDemo {
     owlyFrame.setGlc((TrajectoryPlanner) trajectoryPlanner);
     // -- Anytime loop
     boolean finalGoalFound = false;
-    while (trajectory.size() > 3) {
+    while (!finalGoalFound) {
       Thread.sleep(1);
       long tic = System.nanoTime();
       // -- GOALCHANGE
@@ -105,13 +105,13 @@ enum R2GlcConstTimeHeuristicAnyDemo {
       // only change goal if we are not at the end yet
       if (!finalGoalFound) {
         // creates new RegionUnin form Regionlist and puts Heuristic to next Goal in RegionList
-        rnGoal = new RnTrajectoryGoalManager(rnGoal.deleteRegionsBefore(furthestState), goalStateList, radius);
+        rnGoal = new RnTrajectoryGoalManager(rnGoal.deleteRegionsBefore(furthestState), precomputedTrajectory, radius);
         trajectoryPlanner.changeToGoal(rnGoal);
       } else {
         if (trajectoryPlanner.getGoalQuery() instanceof TrajectoryGoalManager) {
           // only to change GoalManager to final Simple
-          RnSimpleCircleGoalManager rnGoalFinal = new RnSimpleCircleGoalManager(rnGoal.deleteRegionsBefore(furthestState).get(0), goalStateList.get(0).state(),
-              radius.Get(0));
+          RnSimpleCircleGoalManager rnGoalFinal = new RnSimpleCircleGoalManager(rnGoal.deleteRegionsBefore(furthestState).get(0), //
+              StateTimeTrajectories.getLast(precomputedTrajectory).state(), radius.Get(0));
           trajectoryPlanner.changeToGoal(rnGoalFinal);
           System.err.println("Changed Goal for last Time");
         }

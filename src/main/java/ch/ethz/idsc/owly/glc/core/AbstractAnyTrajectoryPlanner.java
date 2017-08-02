@@ -78,12 +78,7 @@ public abstract class AbstractAnyTrajectoryPlanner extends AbstractTrajectoryPla
   protected final Collection<GlcNode> deleteSubtreeOf(GlcNode baseNode) {
     Collection<GlcNode> deleteTreeCollection = Nodes.ofSubtree(baseNode);
     // -- GOAL: goalNode deleted?
-    {
-      int size = best.size();
-      boolean test = best.keySet().removeAll(deleteTreeCollection);
-      if (test)
-        System.out.println("min. 1 GoalNode removed from best, " + (size - best.size()) + "/" + size);
-    }
+    best.keySet().removeAll(deleteTreeCollection);
     // -- QUEUE: Deleting Nodes from Queue
     queue().removeAll(deleteTreeCollection);
     // -- DOMAINMAP: Removing Nodes (DeleteTree) from DomainMap
@@ -117,14 +112,12 @@ public abstract class AbstractAnyTrajectoryPlanner extends AbstractTrajectoryPla
     // Updating the merit of the entire tree
     long tic = System.nanoTime();
     // Changing the Merit in Queue for each Node
-    // TODO TALK TO JAN: Does this make !treeCollection.equals(compareCollection)==true? if values are changed in treeCollection?
     treeCollection.stream().parallel() //
         .forEach(glcNode -> glcNode.setMinCostToGoal(newGoal.minCostToGoal(glcNode.state())));
-    if (false) {
+    if (true) {
       // if (newGoal.minCostToGoal(root.state()) != RealScalar.ZERO) {
       // TODO JONAS smart way to check if before line modified sth.
       System.err.println("checking for domainlabel changes due to heuristic change,  Treesize: " + treeCollection.size());
-      // TODO JONAS for optimiality if Heuristic was changed, check candidates in domains
       RelabelingDomains();
     }
     // RESORTING OF LIST
@@ -138,8 +131,6 @@ public abstract class AbstractAnyTrajectoryPlanner extends AbstractTrajectoryPla
     // -- GOALCHECK TREE
     tic = System.nanoTime();
     treeCollection = Nodes.ofSubtree(root);
-    // TODO JONAS: would a sorted list make sense, as GoalCheck could stop if 1 Goal was found
-    // only for "normal" goals not for TrajectoryGoalmanager
     boolean treeFound = GoalCheckTree(treeCollection);
     toc = System.nanoTime();
     System.out.println("Checked current tree for goal in "//
