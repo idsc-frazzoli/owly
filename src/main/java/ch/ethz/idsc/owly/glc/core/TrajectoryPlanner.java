@@ -181,7 +181,7 @@ public abstract class TrajectoryPlanner implements ExpandInterface, Serializable
     return stringBuilder.toString();
   }
 
-  // TODO smart solution? assuming that no TrajectoryGoalManager is used in standardplanner.
+  // TODO assuming that no TrajectoryGoalManager is used in standardplanner.
   // Does this make sense?
   /** @return the node, to which the trajectory should lead:
    * The Furthest, the best or the top of the Queue */
