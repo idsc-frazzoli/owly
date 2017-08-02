@@ -8,7 +8,8 @@ enum SimpleDemo {
     OwlyAnimationFrame f = new OwlyAnimationFrame();
     // f.add(new Rice2Entity());
     // f.add(new R2Entity());
-    f.add(TwdEntity.createDefault());
+    // f.add(TwdEntity.createDefault());
+    f.add(Se2Entity.createDefault());
     f.jFrame.setVisible(true);
   }
 }

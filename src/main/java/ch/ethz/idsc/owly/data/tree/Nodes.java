@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 /** utility functions */
 public enum Nodes {
@@ -24,7 +25,7 @@ public enum Nodes {
    * @return */
   @SuppressWarnings("unchecked")
   public static <T extends Node> List<T> listToRoot(T node) {
-    if (node == null)
+    if (Objects.isNull(node))
       throw new RuntimeException();
     List<T> list = new ArrayList<>();
     while (node != null) {

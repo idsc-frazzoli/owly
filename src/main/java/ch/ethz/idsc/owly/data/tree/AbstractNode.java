@@ -1,6 +1,8 @@
 // code by jph
 package ch.ethz.idsc.owly.data.tree;
 
+import java.util.Objects;
+
 public abstract class AbstractNode<T extends Node> implements Node {
   /** parent is null for root node */
   private T parent = null;
@@ -53,7 +55,7 @@ public abstract class AbstractNode<T extends Node> implements Node {
 
   @Override // from Node
   public final boolean isRoot() {
-    return parent() == null;
+    return Objects.isNull(parent);
   }
 
   @Override // from Node

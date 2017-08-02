@@ -58,17 +58,17 @@ public abstract class TrajectoryPlanner implements ExpandInterface, Serializable
 
   abstract GlcNode createRootNode(StateTime stateTime);
 
-  /** function may be deprecated in the future
+  /** @param stateTime */
+  public final void insertRoot(StateTime stateTime) {
+    GlobalAssert.that(queue.isEmpty() && domainMap.isEmpty()); // root insertion requires empty planner
+    boolean replaced = insert(convertToKey(stateTime.state()), createRootNode(stateTime));
+    GlobalAssert.that(!replaced); // root insertion should not replace any other node
+  }
+
+  /** this function may be deprecated in the future.
    * in new applications use {@link #insertRoot(StateTime)} instead */
   public final void insertRoot(Tensor x) {
     insertRoot(new StateTime(x, RealScalar.ZERO));
-  }
-
-  public final void insertRoot(StateTime stateTime) {
-    if (!queue.isEmpty() || !domainMap.isEmpty())
-      throw new RuntimeException(); // root insertion requires empty planner
-    boolean replaced = insert(convertToKey(stateTime.state()), createRootNode(stateTime));
-    GlobalAssert.that(!replaced); // root insertion should not replace any other node
   }
 
   /** @param domain_key

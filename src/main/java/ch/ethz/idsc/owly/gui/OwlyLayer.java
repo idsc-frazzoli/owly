@@ -16,6 +16,10 @@ public final class OwlyLayer {
     this.toPoint2D_function = function;
   }
 
+  /** only the first 2 entries of x are taken into account
+   * 
+   * @param x = {px, py, ...}
+   * @return */
   public Point2D toPoint2D(Tensor x) {
     return toPoint2D_function.apply(x);
   }

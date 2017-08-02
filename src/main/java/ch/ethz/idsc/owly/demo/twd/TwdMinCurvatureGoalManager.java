@@ -9,7 +9,6 @@ import ch.ethz.idsc.owly.math.state.StateTime;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
-import ch.ethz.idsc.tensor.red.Norm;
 import ch.ethz.idsc.tensor.sca.Power;
 import ch.ethz.idsc.tensor.sca.Ramp;
 
@@ -30,8 +29,6 @@ public class TwdMinCurvatureGoalManager extends TwdAbstractGoalManager {
 
   @Override
   public Scalar minCostToGoal(Tensor x) {
-    Tensor xy = x.extract(0, 2);
-    Scalar dxy = Norm._2.of(xy.subtract(center.extract(0, 2))).subtract(tolerance_xy);
-    return Ramp.of(dxy);
+    return Ramp.of(TwdStateSpaceModel.errorPosition(x, center).subtract(tolerance_xy));
   }
 }

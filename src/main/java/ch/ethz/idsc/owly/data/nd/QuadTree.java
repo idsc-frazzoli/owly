@@ -725,6 +725,7 @@ public class QuadTree<T> implements Serializable {
       return values;
     }
 
+    @SuppressWarnings({ "rawtypes", "unchecked" })
     private void stepInto(Node node, double x, double y, double r_min, double r_max, Collection<T> values) {
       double minDistance = node.bounds.calcDistance(x, y);
       double maxDistance = node.bounds.calcMaxDistance(x, y);

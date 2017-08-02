@@ -26,6 +26,7 @@ import javax.swing.WindowConstants;
 import ch.ethz.idsc.owly.data.TimeKeeper;
 import ch.ethz.idsc.owly.demo.rn.R2NoiseRegion;
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
+import ch.ethz.idsc.owly.glc.adapter.Trajectories;
 import ch.ethz.idsc.owly.glc.core.GlcNode;
 import ch.ethz.idsc.owly.glc.core.StandardTrajectoryPlanner;
 import ch.ethz.idsc.owly.glc.core.TrajectoryPlanner;
@@ -92,7 +93,7 @@ public class OwlyAnimationFrame {
         timer.cancel();
       }
     });
-    Region region = new R2NoiseRegion(.3);
+    Region region = new R2NoiseRegion(.4); // TODO not final design
     TrajectoryRegionQuery obstacleQuery = //
         new SimpleTrajectoryRegionQuery(new TimeInvariantRegion(region));
     owlyComponent.jComponent.addMouseListener(new MouseAdapter() {
@@ -115,7 +116,7 @@ public class OwlyAnimationFrame {
 
   TrajectoryPlannerCallback trajectoryPlannerCallback = new TrajectoryPlannerCallback() {
     @Override
-    public void hasTrajectoryPlanner(List<TrajectorySample> head, TrajectoryPlanner trajectoryPlanner) {
+    public void expandResult(List<TrajectorySample> head, TrajectoryPlanner trajectoryPlanner) {
       System.out.println("finished");
       // long toc = System.nanoTime();
       // System.out.println(iters + " " + ((toc - tic) * 1e-9));
@@ -124,12 +125,8 @@ public class OwlyAnimationFrame {
         List<TrajectorySample> trajectory = new ArrayList<>();
         if (controllable instanceof AbstractEntity) {
           AbstractEntity abstractEntity = (AbstractEntity) controllable;
-          trajectory.addAll(head);
           List<TrajectorySample> tail = trajectoryPlanner.detailedTrajectoryTo(optional.get());
-          // TODO consistency check of time of statetime entries of trajectory
-          System.out.println("last of head: " + head.get(head.size() - 1).toInfoString());
-          System.out.println("1st  of tail: " + tail.get(0).toInfoString());
-          trajectory.addAll(tail.subList(1, tail.size()));
+          trajectory = Trajectories.glue(head, tail);
           abstractEntity.setTrajectory(trajectory);
         }
         trajectoryRender.setTrajectory(trajectory);

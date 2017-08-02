@@ -10,10 +10,10 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Objects;
 
+import ch.ethz.idsc.owly.demo.se2.Se2Controls;
+import ch.ethz.idsc.owly.demo.se2.Se2StateSpaceModel;
 import ch.ethz.idsc.owly.demo.se2.Se2Wrap;
-import ch.ethz.idsc.owly.demo.twd.TwdControls;
 import ch.ethz.idsc.owly.demo.twd.TwdMinTimeGoalManager;
-import ch.ethz.idsc.owly.demo.twd.TwdStateSpaceModel;
 import ch.ethz.idsc.owly.glc.core.StandardTrajectoryPlanner;
 import ch.ethz.idsc.owly.glc.core.TrajectoryPlanner;
 import ch.ethz.idsc.owly.glc.core.TrajectorySample;
@@ -21,7 +21,7 @@ import ch.ethz.idsc.owly.gui.OwlyLayer;
 import ch.ethz.idsc.owly.math.Se2Utils;
 import ch.ethz.idsc.owly.math.flow.Flow;
 import ch.ethz.idsc.owly.math.flow.Integrator;
-import ch.ethz.idsc.owly.math.flow.MidpointIntegrator;
+import ch.ethz.idsc.owly.math.flow.RungeKutta4Integrator;
 import ch.ethz.idsc.owly.math.state.FixedStateIntegrator;
 import ch.ethz.idsc.owly.math.state.SimpleEpisodeIntegrator;
 import ch.ethz.idsc.owly.math.state.StateIntegrator;
@@ -36,11 +36,16 @@ import ch.ethz.idsc.tensor.Tensors;
 import ch.ethz.idsc.tensor.red.ArgMin;
 import ch.ethz.idsc.tensor.sca.Sqrt;
 
-public class TwdEntity extends AbstractEntity {
+public class Se2Entity extends AbstractEntity {
   private static final Tensor FALLBACK_CONTROL = Tensors.vector(0, 0).unmodifiable();
   private static final Scalar DELAY_HINT = RealScalar.ONE;
   private static final Tensor SHAPE = Tensors.matrixDouble( //
-      new double[][] { { .3, 0, 1 }, { -.1, -.1, 1 }, { -.1, +.1, 1 } }).unmodifiable();
+      new double[][] { //
+          { .2, +.07, 1 }, //
+          { .2, -.07, 1 }, //
+          { -.1, -.07, 1 }, //
+          { -.1, +.07, 1 } //
+      }).unmodifiable();
   private static final Se2Wrap SE2WRAP = new Se2Wrap(Tensors.vector(1, 1, 2));
   private static final Tensor PARTITIONSCALE = Tensors.vector(4, 4, 50 / Math.PI); // 50/pi == 15.9155
   // ---
@@ -49,15 +54,8 @@ public class TwdEntity extends AbstractEntity {
       throw TensorRuntimeException.of(PARTITIONSCALE);
   }
 
-  public static TwdEntity create(TwdStateSpaceModel twdStateSpaceModel) {
-    return new TwdEntity(twdStateSpaceModel, MidpointIntegrator.INSTANCE);
-  }
-
-  public static TwdEntity createDefault() {
-    Scalar wheelRadius = RationalScalar.of(100, 100); // 1[m] -> results in speed 1[m/s]
-    Scalar wheelDistance = RationalScalar.of(40, 10); // 40[cm]
-    TwdStateSpaceModel twdStateSpaceModel = new TwdStateSpaceModel(wheelRadius, wheelDistance);
-    return create(twdStateSpaceModel);
+  public static Se2Entity createDefault() {
+    return new Se2Entity(RungeKutta4Integrator.INSTANCE);
   }
 
   // ---
@@ -66,13 +64,13 @@ public class TwdEntity extends AbstractEntity {
   final Scalar goalRadius_xy;
   TrajectoryRegionQuery obstacleQuery = null;
 
-  public TwdEntity(TwdStateSpaceModel twdStateSpaceModel, Integrator integrator) {
+  public Se2Entity(Integrator integrator) {
     super(new SimpleEpisodeIntegrator( //
-        twdStateSpaceModel, //
+        Se2StateSpaceModel.INSTANCE, //
         integrator, //
         new StateTime(Tensors.vector(0, 0, 0), RealScalar.ZERO))); // initial position
     this.integrator = integrator;
-    controls = TwdControls.createControls(twdStateSpaceModel, 4);
+    controls = Se2Controls.createControls(RealScalar.ONE, 6); // TODO magic const
     goalRadius_xy = Sqrt.of(RealScalar.of(2)).divide(PARTITIONSCALE.Get(0));
   }
 

@@ -24,7 +24,7 @@ public interface Node extends Serializable {
    * @param child */
   void insertEdgeTo(Node child);
 
-  /** @return true if this node has parent == null */
+  /** @return true if this node does not link to a parent, i.e. parent == null */
   boolean isRoot();
 
   /** @return true if this node has no children */

@@ -5,6 +5,8 @@ import ch.ethz.idsc.owly.math.CoordinateWrap;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
+import ch.ethz.idsc.tensor.TensorRuntimeException;
+import ch.ethz.idsc.tensor.alg.VectorQ;
 import ch.ethz.idsc.tensor.red.Norm;
 import ch.ethz.idsc.tensor.sca.Mod;
 
@@ -23,6 +25,8 @@ public class Se2Wrap implements CoordinateWrap {
    * 
    * @param scale weighs the differences in (x,y,theta) */
   public Se2Wrap(Tensor scale) {
+    if (!VectorQ.ofLength(scale, 3))
+      throw TensorRuntimeException.of(scale);
     this.scale = scale;
   }
 

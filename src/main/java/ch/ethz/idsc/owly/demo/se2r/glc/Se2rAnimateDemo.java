@@ -3,7 +3,6 @@ package ch.ethz.idsc.owly.demo.se2r.glc;
 
 import java.util.Collection;
 
-import ch.ethz.idsc.owly.demo.se2.Se2Utils;
 import ch.ethz.idsc.owly.demo.se2r.Se2rControls;
 import ch.ethz.idsc.owly.demo.se2r.Se2rGoalManager;
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
@@ -12,6 +11,7 @@ import ch.ethz.idsc.owly.glc.core.StandardTrajectoryPlanner;
 import ch.ethz.idsc.owly.glc.core.TrajectoryPlanner;
 import ch.ethz.idsc.owly.gui.Gui;
 import ch.ethz.idsc.owly.gui.OwlyFrame;
+import ch.ethz.idsc.owly.math.Se2Utils;
 import ch.ethz.idsc.owly.math.flow.Flow;
 import ch.ethz.idsc.owly.math.flow.RungeKutta4Integrator;
 import ch.ethz.idsc.owly.math.region.HyperplaneRegion;
