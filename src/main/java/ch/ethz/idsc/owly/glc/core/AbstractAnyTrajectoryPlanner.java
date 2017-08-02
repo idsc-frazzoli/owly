@@ -5,12 +5,16 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Optional;
 
 import ch.ethz.idsc.owly.data.tree.Nodes;
+import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
 import ch.ethz.idsc.owly.glc.adapter.TrajectoryGoalManager;
+import ch.ethz.idsc.owly.math.region.Region;
 import ch.ethz.idsc.owly.math.state.StateIntegrator;
 import ch.ethz.idsc.owly.math.state.StateTime;
+import ch.ethz.idsc.owly.math.state.TimeInvariantRegion;
 import ch.ethz.idsc.owly.math.state.TrajectoryRegionQuery;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Tensor;
@@ -189,11 +193,10 @@ public abstract class AbstractAnyTrajectoryPlanner extends AbstractTrajectoryPla
    * @return node with highest merit in GoalRegion */
   @Override
   // TODO JONAS: modify similar to finalgoal
-  public final Optional<StateTime> getFurthestGoalState() {
-    Optional<GlcNode> key = getFurthestGoalNode();
+  public final Optional<StateTime> getFurthestGoalState(List<Region> goalRegions) {
+    Optional<GlcNode> key = getFurthestGoalNode(goalRegions);
     if (key.isPresent()) {
       List<StateTime> bestTrajectory = best.get(key.get());
-      // int index = ((GoalTrajectoryRegionQuery) getGoalQuery()).firstMemberCheck(bestTrajectory);
       int index = getGoalQuery().firstMember(bestTrajectory);
       if (index >= 0)
         return Optional.ofNullable(bestTrajectory.get(index));
@@ -201,17 +204,34 @@ public abstract class AbstractAnyTrajectoryPlanner extends AbstractTrajectoryPla
     return Optional.empty();
   }
 
+  // @Override
+  // public final Optional<GlcNode> getFurthestGoalNode() {
+  // if (!best.isEmpty())
+  // return Optional.ofNullable(best.lastKey());
+  // return Optional.empty();
+  // }
   @Override
-  public final Optional<GlcNode> getFurthestGoalNode() {
-    if (!best.isEmpty())
-      return Optional.ofNullable(best.lastKey());
-    return Optional.empty();
+  public final Optional<GlcNode> getFurthestGoalNode(List<Region> goalRegions) {
+    ListIterator<Region> iter = goalRegions.listIterator(goalRegions.size());
+    DomainQueue regionQueue = new DomainQueue(); // priority queue over merit of GlcNodes
+    while (iter.hasPrevious()) { // goes through all regions from last to first
+      SimpleTrajectoryRegionQuery strq = new SimpleTrajectoryRegionQuery(new TimeInvariantRegion(iter.previous()));// go through Regions from the last to first:
+      for (GlcNode tempBest : best.keySet()) {
+        List<StateTime> trajectory = best.get(tempBest);
+        if (strq.firstMember(trajectory) >= 0)
+          regionQueue.add(tempBest); // saves members in PQ
+      }
+      if (!regionQueue.isEmpty())
+        break; // leave while loop when Nodes where found in latest Goalregion
+    }
+    return Optional.ofNullable(regionQueue.peek());
   }
 
   @Override
   public final Optional<GlcNode> getFinalGoalNode() {
     if (getGoalQuery() instanceof TrajectoryGoalManager) {
-      Optional<GlcNode> furthest = getFurthestGoalNode();
+      List<Region> goalRegions = ((TrajectoryGoalManager) getGoalQuery()).getGoalRegionList();
+      Optional<GlcNode> furthest = getFurthestGoalNode(goalRegions);
       if (furthest.isPresent())
         return furthest;
     }

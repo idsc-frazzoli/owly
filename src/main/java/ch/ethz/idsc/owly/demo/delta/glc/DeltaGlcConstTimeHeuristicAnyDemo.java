@@ -52,7 +52,7 @@ enum DeltaGlcConstTimeHeuristicAnyDemo {
     DebugUtils.heuristicConsistencyCheck(quickTrajectoryPlannerContainer.getTrajectoryPlanner());
     System.out.println("***QUICK PLANNER FINISHED***");
     // -- SLOWPLANNER
-    RationalScalar resolution = (RationalScalar) RationalScalar.of(16, 1);
+    RationalScalar resolution = (RationalScalar) RationalScalar.of(12, 1);
     TrajectoryPlannerContainer slowTrajectoryPlannerContainer = DeltaHelper.createGlcAny(RealScalar.of(-0.5), resolution);
     // -- GOALMANAGER
     // TODO: needs to be removed from main
@@ -80,7 +80,7 @@ enum DeltaGlcConstTimeHeuristicAnyDemo {
       long ticTemp = tic;
       // get GlcNode (€ Goal) with highest Cost (furthest down the path)
       Optional<StateTime> furthestState = ((OptimalAnyTrajectoryPlanner) slowTrajectoryPlannerContainer//
-          .getTrajectoryPlanner()).getFurthestGoalState();
+          .getTrajectoryPlanner()).getFurthestGoalState(goalRegions);
       if (furthestState.isPresent()) {
         if (goalRegions.get(goalRegions.size() - 1).isMember(furthestState.get().state())) {
           System.out.println("***Last Goal was found***");
@@ -129,24 +129,24 @@ enum DeltaGlcConstTimeHeuristicAnyDemo {
       System.out.println("Goalchange took: " + (tocTemp - ticTemp) * 1e-9 + "s");
       // --
       // -- ROOTCHANGE
-      ticTemp = System.nanoTime();
-      finalGoalNode = slowTrajectoryPlannerContainer.getTrajectoryPlanner().getFinalGoalNode();
-      if (finalGoalNode.isPresent())
-        trajectory = GlcNodes.getPathFromRootTo(finalGoalNode.get());
-      System.out.println("trajectorys size: " + trajectory.size());
-      if (trajectory.size() > 5) {
-        //
-        StateTime newRootState = trajectory.get(trajectory.size() > 7 ? 2 : 0);
-        int increment = ((OptimalAnyTrajectoryPlanner) slowTrajectoryPlannerContainer.getTrajectoryPlanner()).switchRootToState(newRootState.state());
-        slowTrajectoryPlannerContainer.getParameters().increaseDepthLimit(increment);
-      }
-      tocTemp = System.nanoTime();
-      System.out.println("Rootchange took: " + (tocTemp - ticTemp) * 1e-9 + "s");
+      // ticTemp = System.nanoTime();
+      // finalGoalNode = slowTrajectoryPlannerContainer.getTrajectoryPlanner().getFinalGoalNode();
+      // if (finalGoalNode.isPresent())
+      // trajectory = GlcNodes.getPathFromRootTo(finalGoalNode.get());
+      // System.out.println("trajectorys size: " + trajectory.size());
+      // if (trajectory.size() > 5) {
+      // //
+      // StateTime newRootState = trajectory.get(trajectory.size() > 7 ? 2 : 0);
+      // int increment = ((OptimalAnyTrajectoryPlanner) slowTrajectoryPlannerContainer.getTrajectoryPlanner()).switchRootToState(newRootState.state());
+      // slowTrajectoryPlannerContainer.getParameters().increaseDepthLimit(increment);
+      // }
+      // tocTemp = System.nanoTime();
+      // System.out.println("Rootchange took: " + (tocTemp - ticTemp) * 1e-9 + "s");
       // -- EXPANDING
       ticTemp = System.nanoTime();
       int expandIter = Expand.constTime(slowTrajectoryPlannerContainer.getTrajectoryPlanner(), //
           planningTime, slowTrajectoryPlannerContainer.getParameters().getDepthLimit());
-      furthestState = ((OptimalAnyTrajectoryPlanner) slowTrajectoryPlannerContainer.getTrajectoryPlanner()).getFurthestGoalState();
+      furthestState = ((OptimalAnyTrajectoryPlanner) slowTrajectoryPlannerContainer.getTrajectoryPlanner()).getFurthestGoalState(goalRegions);
       finalGoalNode = slowTrajectoryPlannerContainer.getTrajectoryPlanner().getFinalGoalNode();
       trajectory = GlcNodes.getPathFromRootTo(finalGoalNode.get());
       tocTemp = System.nanoTime();
