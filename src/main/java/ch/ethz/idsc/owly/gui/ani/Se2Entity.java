@@ -35,12 +35,13 @@ import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.TensorRuntimeException;
 import ch.ethz.idsc.tensor.Tensors;
+import ch.ethz.idsc.tensor.alg.Array;
 import ch.ethz.idsc.tensor.alg.VectorQ;
 import ch.ethz.idsc.tensor.red.ArgMin;
 import ch.ethz.idsc.tensor.sca.Sqrt;
 
 public class Se2Entity extends AbstractEntity {
-  private static final Tensor FALLBACK_CONTROL = Tensors.vector(0).unmodifiable();
+  private static final Tensor FALLBACK_CONTROL = Array.zeros(2).unmodifiable(); // {angle=0, vel=0}
   private static final Scalar DELAY_HINT = RealScalar.ONE;
   private static final Tensor SHAPE = Tensors.matrixDouble( //
       new double[][] { //

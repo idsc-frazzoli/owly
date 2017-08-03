@@ -5,7 +5,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
-import ch.ethz.idsc.owly.demo.se2r.Se2rControls;
+import ch.ethz.idsc.owly.demo.se2.Se2Controls;
 import ch.ethz.idsc.owly.demo.se2r.Se2rGoalManager;
 import ch.ethz.idsc.owly.demo.util.ImageRegions;
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
@@ -39,7 +39,7 @@ enum Se2rImageDemo {
     Tensor partitionScale = Tensors.vector(3, 3, 50 / Math.PI);
     StateIntegrator stateIntegrator = FixedStateIntegrator.create( //
         RungeKutta45Integrator.INSTANCE, RationalScalar.of(1, 6), 5);
-    Collection<Flow> controls = Se2rControls.createControls(Se2Utils.DEGREE(45), 6);
+    Collection<Flow> controls = Se2Controls.createForwardAndReverseControls(Se2Utils.DEGREE(45), 6);
     Se2rGoalManager se2GoalManager = new Se2rGoalManager( //
         Tensors.vector(5.3, 4.4), RealScalar.of(0), //
         RealScalar.of(.1), Se2Utils.DEGREE(10));
