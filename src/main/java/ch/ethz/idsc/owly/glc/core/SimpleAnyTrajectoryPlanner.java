@@ -10,6 +10,7 @@ import java.util.Map.Entry;
 import ch.ethz.idsc.owly.data.tree.Nodes;
 import ch.ethz.idsc.owly.glc.adapter.TrajectoryGoalManager;
 import ch.ethz.idsc.owly.math.flow.Flow;
+import ch.ethz.idsc.owly.math.region.Region;
 import ch.ethz.idsc.owly.math.state.StateIntegrator;
 import ch.ethz.idsc.owly.math.state.StateTime;
 import ch.ethz.idsc.owly.math.state.TrajectoryRegionQuery;
@@ -137,11 +138,18 @@ public class SimpleAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
 
   /** Only checking the Nodes of the tree, not the trajectory */
   @Override
-  boolean GoalCheckTree(Collection<GlcNode> treeCollection) {
+  boolean GoalCheckTree(Collection<GlcNode> treeCollection, Region goalCheckTree) {
     treeCollection.parallelStream().forEach(node -> {
       if (!getGoalQuery().isDisjoint(Arrays.asList(node.stateTime())))
         offerDestination(node, Arrays.asList(node.stateTime()));
     });
     return getBest().isPresent();
+  }
+
+  @Override
+  @Deprecated
+  boolean GoalCheckTree(Collection<GlcNode> treeCollection) {
+    // TODO Auto-generated method stub
+    return false;
   }
 }

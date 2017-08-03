@@ -23,6 +23,7 @@ import ch.ethz.idsc.owly.math.flow.EulerIntegrator;
 import ch.ethz.idsc.owly.math.flow.Flow;
 import ch.ethz.idsc.owly.math.region.EllipsoidRegion;
 import ch.ethz.idsc.owly.math.region.InvertedRegion;
+import ch.ethz.idsc.owly.math.region.Region;
 import ch.ethz.idsc.owly.math.region.RegionUnion;
 import ch.ethz.idsc.owly.math.state.FixedStateIntegrator;
 import ch.ethz.idsc.owly.math.state.StateIntegrator;
@@ -35,6 +36,7 @@ import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
+import ch.ethz.idsc.tensor.alg.Array;
 import ch.ethz.idsc.tensor.io.GifSequenceWriter;
 import ch.ethz.idsc.tensor.sca.Cos;
 import ch.ethz.idsc.tensor.sca.Sin;
@@ -52,13 +54,14 @@ enum R2GlcAnyCircleDemo {
     Scalar circleRadius = RealScalar.of(6);
     Scalar goalAngle = RealScalar.ZERO;
     Tensor goal = Tensors.of(Cos.of(goalAngle), Sin.of(goalAngle)).multiply(circleRadius);
+    Scalar goalRadius = DoubleScalar.of(.25);
     System.out.println("Goal is: " + goal);
     Parameters parameters = new R2Parameters( //
         resolution, timeScale, depthScale, partitionScale, dtMax, maxIter, lipschitz);
     StateIntegrator stateIntegrator = FixedStateIntegrator.create(EulerIntegrator.INSTANCE, parameters.getdtMax(), //
         parameters.getTrajectorySize());
-    Collection<Flow> controls = R2Controls.createRadial(parameters.getResolutionInt());
-    RnSimpleCircleGoalManager rnGoal = new RnSimpleCircleGoalManager(goal, DoubleScalar.of(.25));
+    Collection<Flow> controls = R2Controls.createRadial(parameters.getResolutionInt()); // max (grad(F)) ==1
+    RnSimpleCircleGoalManager rnGoal = new RnSimpleCircleGoalManager(goal, goalRadius);
     // performance depends on heuristic: zeroHeuristic vs rnGoal
     // Heuristic heuristic = new ZeroHeuristic(); // rnGoal
     TrajectoryRegionQuery obstacleQuery = //
@@ -93,9 +96,13 @@ enum R2GlcAnyCircleDemo {
         StateTime goalState = new StateTime(goal, RealScalar.ZERO);
         goalStateList.add(goalState);
       } while (!obstacleQuery.isDisjoint(goalStateList));
-      RnSimpleCircleGoalManager rnGoal2 = new RnSimpleCircleGoalManager(goal, DoubleScalar.of(.25));
+      RnSimpleCircleGoalManager rnGoal2 = new RnSimpleCircleGoalManager(goal, goalRadius);
       System.out.println("Switching to Goal:" + goal);
-      trajectoryPlanner.changeToGoal(rnGoal2);
+      Scalar goalSearchHelperRadius = goalRadius.add(RealScalar.ONE).multiply(RealScalar.of(3));
+      Region goalSearchHelper = new EllipsoidRegion(goal, Array.of(l -> goalSearchHelperRadius, goal.length()));
+      trajectoryPlanner.changeToGoal(rnGoal2, goalSearchHelper);
+      // trajectoryPlanner.changeToGoal(rnGoal2);
+      owlyFrame.setGlc((TrajectoryPlanner) trajectoryPlanner);
       // -- ROOTCHANGE
       if (trajectory.size() > 0) {
         // --
@@ -107,7 +114,7 @@ enum R2GlcAnyCircleDemo {
       int iters2 = Expand.maxDepth(trajectoryPlanner, parameters.getDepthLimit());
       trajectory = trajectoryPlanner.trajectoryToBest();
       owlyFrame.setGlc((TrajectoryPlanner) trajectoryPlanner);
-      // StateTimeTrajectories.print(trajectory);
+      StateTimeTrajectories.print(trajectory);
       gsw.append(owlyFrame.offscreen());
       // --
       long toc = System.nanoTime();

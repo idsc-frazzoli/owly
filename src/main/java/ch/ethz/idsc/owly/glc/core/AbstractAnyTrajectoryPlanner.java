@@ -1,6 +1,7 @@
 // code by jl
 package ch.ethz.idsc.owly.glc.core;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -11,11 +12,15 @@ import java.util.Optional;
 import ch.ethz.idsc.owly.data.tree.Nodes;
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
 import ch.ethz.idsc.owly.glc.adapter.TrajectoryGoalManager;
+import ch.ethz.idsc.owly.math.region.EmptyRegion;
+import ch.ethz.idsc.owly.math.region.InvertedRegion;
 import ch.ethz.idsc.owly.math.region.Region;
 import ch.ethz.idsc.owly.math.state.StateIntegrator;
 import ch.ethz.idsc.owly.math.state.StateTime;
 import ch.ethz.idsc.owly.math.state.TimeInvariantRegion;
 import ch.ethz.idsc.owly.math.state.TrajectoryRegionQuery;
+import ch.ethz.idsc.tensor.RealScalar;
+import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
 
 public abstract class AbstractAnyTrajectoryPlanner extends AbstractTrajectoryPlanner implements AnyPlannerInterface {
@@ -97,13 +102,15 @@ public abstract class AbstractAnyTrajectoryPlanner extends AbstractTrajectoryPla
     return deleteTreeCollection;
   }
 
-  /** Changes the Goal of the current planner:
-   * rechecks the tree if expanding is needed, updates Merit of Nodes in Queue
-   * @param newCostFunction modified Costfunction for heuristic
-   * @param newGoal New GoalRegion
-   * @return boolean, true if Goal was already found in oldTree */
   @Override
   public final boolean changeToGoal(final GoalInterface newGoal) {
+    return changeToGoal(newGoal, new InvertedRegion(EmptyRegion.INSTANCE));
+    // creates always true Region
+  }
+
+  @Override
+  public final boolean changeToGoal(final GoalInterface newGoal, Region goalCheckHelp) {
+    boolean noHeuristic = ((getGoalInterface() instanceof NoHeuristic) && (newGoal instanceof NoHeuristic));
     setGoalInterface(newGoal);
     GlcNode root = getRoot();
     Collection<GlcNode> treeCollection = Nodes.ofSubtree(root);
@@ -114,9 +121,7 @@ public abstract class AbstractAnyTrajectoryPlanner extends AbstractTrajectoryPla
     // Changing the Merit in Queue for each Node
     treeCollection.stream().parallel() //
         .forEach(glcNode -> glcNode.setMinCostToGoal(newGoal.minCostToGoal(glcNode.state())));
-    if (true) {
-      // if (newGoal.minCostToGoal(root.state()) != RealScalar.ZERO) {
-      // TODO JONAS smart way to check if before line modified sth.
+    if (!noHeuristic) {
       System.err.println("checking for domainlabel changes due to heuristic change,  Treesize: " + treeCollection.size());
       RelabelingDomains();
     }
@@ -129,12 +134,31 @@ public abstract class AbstractAnyTrajectoryPlanner extends AbstractTrajectoryPla
         + ((toc - tic) * 1e-9) + "s");
     // --
     // -- GOALCHECK TREE
-    tic = System.nanoTime();
     treeCollection = Nodes.ofSubtree(root);
+    tic = System.nanoTime();
+    // old check
     boolean treeFound = GoalCheckTree(treeCollection);
-    toc = System.nanoTime();
-    System.out.println("Checked current tree for goal in "//
-        + (toc - tic) * 1e-9 + "s");
+    Scalar timeDiffOld = RealScalar.of((System.nanoTime() - tic) * 1e-9);
+    Collection<GlcNode> oldBest = new ArrayList<>(best.keySet());
+    setBestNull();
+    // new check
+    tic = System.nanoTime();
+    treeFound = GoalCheckTree(treeCollection, goalCheckHelp);
+    Scalar timeDiffNew = RealScalar.of((System.nanoTime() - tic) * 1e-9);
+    System.err
+        .println("The NEW GoalCheck needed: " + timeDiffNew.divide(timeDiffOld).multiply(RealScalar.of(100)).number().intValue() + "% of the time of the OLD");
+    if (!(oldBest.containsAll(best.keySet()) && best.keySet().containsAll(oldBest))) {
+      System.err.println("Not the same GoalNodes found in both runs");
+      System.err.println("OldVersion found: " + oldBest.size() + " GoalNodes: ");
+      for (GlcNode node : oldBest)
+        System.out.println(node.state());
+      System.err.println("NewVersion found: " + best.size() + " GoalNodes");
+      for (GlcNode node : best.keySet())
+        System.out.println(node.state());
+      throw new RuntimeException();
+    }
+    // System.out.println("Checked current tree for goal in "//
+    // + (toc - tic) * 1e-9 + "s");
     if (treeFound) {
       System.out.println("New Goal was found in current tree --> No new search needed");
       System.out.println("**Goalswitch finished**");
@@ -151,7 +175,10 @@ public abstract class AbstractAnyTrajectoryPlanner extends AbstractTrajectoryPla
   /** Checks the tree in the collection if some Nodes are in the Goal
    * 
    * @param treeCollection of Nodes, which should be checked if they are in the goal
+   * @param goalCheckHelp
    * @return true if a Node in the Goal was found in this Collection */
+  abstract boolean GoalCheckTree(Collection<GlcNode> treeCollection, Region goalCheckHelp);
+
   abstract boolean GoalCheckTree(Collection<GlcNode> treeCollection);
 
   /** Finds the rootNode, by following the parents

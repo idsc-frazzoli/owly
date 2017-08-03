@@ -110,7 +110,8 @@ enum R2GlcConstTimeHeuristicAnyDemo {
       } else {
         if (trajectoryPlanner.getGoalQuery() instanceof TrajectoryGoalManager) {
           // only to change GoalManager to final Simple
-          RnSimpleCircleGoalManager rnGoalFinal = new RnSimpleCircleGoalManager(rnGoal.deleteRegionsBefore(furthestState).get(0), //
+          RnSimpleCircleGoalManager rnGoalFinal = new RnSimpleCircleGoalManager(//
+              rnGoal.deleteRegionsBefore(furthestState).get(0), //
               StateTimeTrajectories.getLast(precomputedTrajectory).state(), radius.Get(0));
           trajectoryPlanner.changeToGoal(rnGoalFinal);
           System.err.println("Changed Goal for last Time");

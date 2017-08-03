@@ -50,7 +50,7 @@ enum R2GlcAnyDemo {
     RnSimpleCircleGoalManager rnGoal = new RnSimpleCircleGoalManager(Tensors.vector(5, 5), DoubleScalar.of(.25));
     // performance depends on heuristic: zeroHeuristic vs rnGoal
     // Heuristic heuristic = new ZeroHeuristic(); // rnGoal
-    TrajectoryRegionQuery obstacleQuery = new SimpleTrajectoryRegionQuery(new TimeInvariantRegion(new EmptyRegion()));
+    TrajectoryRegionQuery obstacleQuery = new SimpleTrajectoryRegionQuery(new TimeInvariantRegion(EmptyRegion.INSTANCE));
     // TrajectoryRegionQuery obstacleQuery = new SimpleTrajectoryRegionQuery( //
     // new TimeInvariantRegion(new R2Bubbles()));
     // ---

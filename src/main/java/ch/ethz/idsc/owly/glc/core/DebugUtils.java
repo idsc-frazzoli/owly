@@ -1,6 +1,8 @@
 // code by jl
 package ch.ethz.idsc.owly.glc.core;
 
+import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 
@@ -49,6 +51,23 @@ public enum DebugUtils {
     }
   }
 
+  public static final void connectivityCheck(Collection<GlcNode> treeCollection) {
+    Iterator<GlcNode> iterator = treeCollection.iterator();
+    while (iterator.hasNext()) {
+      GlcNode node = iterator.next();
+      if (!node.isRoot())
+        GlobalAssert.that(node.parent().children().contains(node));
+    }
+    if (treeCollection instanceof List<?>) {
+      GlobalAssert.that(((List<GlcNode>) treeCollection).get(0).isRoot());
+      for (int i = 1; i < treeCollection.size(); i++) {
+        GlcNode node = ((List<GlcNode>) treeCollection).get(i);
+        GlcNode previous = ((List<GlcNode>) treeCollection).get(i - 1);
+        GlobalAssert.that(node.parent() == previous);
+      }
+    }
+  }
+
   /** Checks if the Cost and the Heuristic along the found trajectory are consistent
    * 
    * @param trajectoryPlanner */
@@ -59,15 +78,12 @@ public enum DebugUtils {
       return;
     }
     List<GlcNode> trajectory = Nodes.listFromRoot(finalNode.get());
-    GlobalAssert.that(trajectory.get(0).isRoot());
     // omit last Node, since last node may lie outside of goal region, as Trajectory to it was in
+    connectivityCheck(trajectory);
     for (int i = 1; i < trajectory.size() - 1; i++) {
       GlcNode current = trajectory.get(i);
       GlcNode parent = current.parent();
-      // TODO JONAS extract the next two checks to a separate function since they check some other property
-      // ... write tests that fail the "trajectory property"
-      GlobalAssert.that(parent == trajectory.get(i - 1)); // parent should be the in trajectory just before current node
-      GlobalAssert.that(parent.children().contains(current)); // parent should have current node add child
+      // TODO: write tests that fail the "trajectory property"
       if (Scalars.lessEquals(current.costFromRoot(), parent.costFromRoot())) {
         System.err.println("At time " + current.stateTime().time() + " cost from root decreased from " + //
             parent.costFromRoot() + " to " + current.costFromRoot());
@@ -80,7 +96,8 @@ public enum DebugUtils {
         StateTimeTrajectories.print(GlcNodes.getPathFromRootTo(finalNode.get()));
         throw new RuntimeException();
       }
-      // TODO JONAS check that heuristic does not overestimate cost to goal!
+      // monotonously increasing merit means, that delta(Cost) >= delta(CostToGo)
+      // as: Cost(Goal)== Merit(Goal) >= (Cost(Node) + CostToGo(Node)) = Merit (Node)
     }
   }
 }
