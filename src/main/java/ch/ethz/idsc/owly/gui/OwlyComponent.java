@@ -117,7 +117,7 @@ public class OwlyComponent {
           System.out.println(location.map(Round.toMultipleOf(DecimalScalar.of(0.001))) + ",");
         }
       };
-      // jComponent.addMouseListener(mouseListener);
+      jComponent.addMouseListener(mouseListener);
     }
   }
 

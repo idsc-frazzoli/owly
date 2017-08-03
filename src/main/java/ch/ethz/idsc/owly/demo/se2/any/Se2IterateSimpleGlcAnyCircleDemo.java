@@ -105,7 +105,7 @@ class Se2IterateSimpleGlcAnyCircleDemo {
       StateTime newRootState = trajectory.get(2);
       int increment = trajectoryPlanner.switchRootToState(newRootState.state());
       parameters.increaseDepthLimit(increment);
-      boolean foundGoal = Se2CircleAnyDemo.switchToNextCircularGoal(trajectoryPlanner, iter);
+      boolean foundGoal = Se2CircleAnyGoalSwitch.switchToNextCircularGoal(trajectoryPlanner, iter);
       int expandIter = 0;
       if (!foundGoal)
         expandIter = Expand.maxDepth(trajectoryPlanner, parameters.getDepthLimit());

@@ -22,9 +22,15 @@ public interface AnyPlannerInterface extends ExpandInterface {
   int switchRootToNode(GlcNode newRoot);
 
   /** Changes the Goal of the current planner:
-   * rechecks the tree if expanding is needed, updates Merit of Nodes in Queue
-   * @param newCostFunction modified Costfunction for heuristic
-   * @param newGoal New GoalRegion
+   * rechecks the tree if goal was found and expanding is needed, updates Merit of Nodes in Queue, relabels domains
+   * @param newGoal, new Goalmanager
+   * @param goalCheckHelp, which includes all Nodes, which could have a trajectory in the Goal
+   * @return boolean, true if Goal was already found in oldTree */
+  boolean changeToGoal(GoalInterface newGoal, Region goalCheckHelp);
+
+  /** Changes the Goal of the current planner:
+   * rechecks the tree if Goal was found and expanding is needed, updates Merit of Nodes in Queue, relabels domains
+   * @param newGoal, new Goalmanager
    * @return boolean, true if Goal was already found in oldTree */
   boolean changeToGoal(final GoalInterface newGoal);
 

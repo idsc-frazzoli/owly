@@ -114,7 +114,7 @@ class Se2IterateGlcAnyCircleWrapDemo {
       owlyFrame.setGlc((TrajectoryPlanner) trajectoryPlanner);
       Thread.sleep(delay.number().intValue() / 2);
       // --
-      goalFound = Se2CircleAnyDemo.switchToNextCircularGoal((AbstractAnyTrajectoryPlanner) trajectoryPlanner, iter);
+      goalFound = Se2CircleAnyGoalSwitch.switchToNextCircularGoal((AbstractAnyTrajectoryPlanner) trajectoryPlanner, iter, parameters);
       Thread.sleep(delay.number().intValue() / 2);
       // --
       if (!goalFound)

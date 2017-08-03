@@ -2,7 +2,6 @@
 package ch.ethz.idsc.owly.glc.core;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -12,10 +11,12 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.PriorityQueue;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import ch.ethz.idsc.owly.data.tree.Nodes;
 import ch.ethz.idsc.owly.glc.adapter.TrajectoryGoalManager;
 import ch.ethz.idsc.owly.math.flow.Flow;
+import ch.ethz.idsc.owly.math.region.Region;
 import ch.ethz.idsc.owly.math.state.StateIntegrator;
 import ch.ethz.idsc.owly.math.state.StateTime;
 import ch.ethz.idsc.owly.math.state.TrajectoryRegionQuery;
@@ -288,21 +289,35 @@ public class OptimalAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
   }
 
   @Override
-  protected boolean GoalCheckTree(Collection<GlcNode> treeCollection) {
-    // 15%-50% Speedgain, tested with R2GlcConstTimeHeuristicAnyDemo
-    treeCollection.parallelStream().forEach(node -> {
-      if (!node.isRoot())
-        if (!getGoalQuery().isDisjoint(getStateIntegrator().trajectory(node.parent().stateTime(), node.flow())))
-          offerDestination(node, Arrays.asList(node.stateTime()));
+  protected boolean GoalCheckTree(final Collection<GlcNode> treeCollection, final Region possibleGoalNodesRegion) {
+    // parralel: 15%-50% Speedgain, tested with R2GlcConstTimeHeuristicAnyDemo
+    Collection<GlcNode> possibleGoalNodes = new ArrayList<>();
+    possibleGoalNodes = treeCollection.parallelStream()//
+        .filter(node -> possibleGoalNodesRegion.isMember(node.state()))//
+        .collect(Collectors.toList());
+    // checking only Nodes, which could reach the Goal
+    System.out.println("Comparing Lists: Tree: " + treeCollection.size() + " possibleGoalNodes: " + possibleGoalNodes.size());
+    possibleGoalNodes.parallelStream().forEach(node -> {
+      if (!node.isRoot()) {
+        final List<StateTime> trajectory = getStateIntegrator().trajectory(node.parent().stateTime(), node.flow());
+        if (!getGoalQuery().isDisjoint(trajectory))
+          offerDestination(node, trajectory);
+      }
     });
     return getBest().isPresent();
   }
 
-  // TODO JAN: Jonas ask how to get goalradius and maxSpeed in here?
-  /** in Development
-   * @return */
-  protected boolean GoalCheckTree1() {
-    List<GlcNode> treeCollection = (List<GlcNode>) Nodes.ofSubtree(getRoot()); // is an ArrayList
+  @Deprecated
+  @Override
+  protected boolean GoalCheckTree(Collection<GlcNode> treeCollection) {
+    // parralel: 15%-50% Speedgain, tested with R2GlcConstTimeHeuristicAnyDemo
+    treeCollection.parallelStream().forEach(node -> {
+      if (!node.isRoot()) {
+        final List<StateTime> trajectory = getStateIntegrator().trajectory(node.parent().stateTime(), node.flow());
+        if (!getGoalQuery().isDisjoint(trajectory))
+          offerDestination(node, trajectory);
+      }
+    });
     return getBest().isPresent();
   }
 }

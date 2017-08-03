@@ -69,6 +69,11 @@ public abstract class Parameters {
     return depthLimit;
   }
 
+  /** @return expandTime = timeScale/R */
+  public Scalar getExpandTime() {
+    return expandTime;
+  }
+
   public int getDepthLimit() {
     return depthLimit.number().intValue();
   }

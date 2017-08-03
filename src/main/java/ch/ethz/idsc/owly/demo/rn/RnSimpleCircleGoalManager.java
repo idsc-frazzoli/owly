@@ -11,11 +11,11 @@ import ch.ethz.idsc.owly.math.region.EllipsoidRegion;
 import ch.ethz.idsc.owly.math.region.Region;
 import ch.ethz.idsc.owly.math.state.StateTime;
 import ch.ethz.idsc.owly.math.state.TimeInvariantRegion;
+import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.alg.Array;
 import ch.ethz.idsc.tensor.red.Norm;
-import ch.ethz.idsc.tensor.sca.Ramp;
 
 /** objective is minimum path length */
 public class RnSimpleCircleGoalManager extends SimpleTrajectoryRegionQuery implements GoalInterface {
@@ -43,6 +43,7 @@ public class RnSimpleCircleGoalManager extends SimpleTrajectoryRegionQuery imple
 
   @Override
   public Scalar minCostToGoal(Tensor x) {
-    return Ramp.of(Norm._2.of(x.subtract(center)).subtract(radius));
+    return RealScalar.ZERO;
+    // return Ramp.of(Norm._2.of(x.subtract(center)).subtract(radius));
   }
 }
