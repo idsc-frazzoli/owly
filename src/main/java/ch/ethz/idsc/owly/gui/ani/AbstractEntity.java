@@ -42,7 +42,7 @@ public abstract class AbstractEntity implements RenderInterface, AnimationInterf
         GlobalAssert.that(trajectory.get(index).getFlow().isPresent());
         u = trajectory.get(index).getFlow().get().getU();
       } else {
-        System.out.println("trajectory finished");
+        System.err.println("out of trajectory");
         trajectory = null;
       }
     }

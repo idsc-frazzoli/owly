@@ -23,7 +23,6 @@ import ch.ethz.idsc.owly.math.Se2Utils;
 import ch.ethz.idsc.owly.math.flow.Flow;
 import ch.ethz.idsc.owly.math.flow.Integrator;
 import ch.ethz.idsc.owly.math.flow.RungeKutta4Integrator;
-import ch.ethz.idsc.owly.math.state.EmptyTrajectoryRegionQuery;
 import ch.ethz.idsc.owly.math.state.FixedStateIntegrator;
 import ch.ethz.idsc.owly.math.state.SimpleEpisodeIntegrator;
 import ch.ethz.idsc.owly.math.state.StateIntegrator;
@@ -75,7 +74,7 @@ public class Se2Entity extends AbstractEntity {
         integrator, //
         new StateTime(Tensors.vector(0, 0, 0), RealScalar.ZERO))); // initial position
     this.integrator = integrator;
-    controls = Se2Controls.createControls(RealScalar.ONE, 6); // TODO magic const
+    controls = Se2Controls.createControlsForwardAndReverse(RealScalar.ONE, 6); // TODO magic const
     goalRadius_xy = Sqrt.of(RealScalar.of(2)).divide(PARTITIONSCALE.Get(0));
     goalRadius_theta = Sqrt.of(RealScalar.of(2)).divide(PARTITIONSCALE.Get(2));
   }
@@ -102,7 +101,7 @@ public class Se2Entity extends AbstractEntity {
   @Override
   TrajectoryPlanner createTrajectoryPlanner(TrajectoryRegionQuery obstacleQuery, Tensor goal) {
     GlobalAssert.that(VectorQ.ofLength(goal, 3));
-    obstacleQuery = EmptyTrajectoryRegionQuery.INSTANCE; // TODO <- for testing
+    // obstacleQuery = EmptyTrajectoryRegionQuery.INSTANCE; // TODO <- for testing
     this.obstacleQuery = obstacleQuery;
     StateIntegrator stateIntegrator = //
         FixedStateIntegrator.create(integrator, RationalScalar.of(1, 10), 4); // TODO magic const

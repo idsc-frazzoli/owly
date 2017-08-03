@@ -33,7 +33,7 @@ enum Se2rAnimateDemo {
     Tensor eta = Tensors.vector(6, 6, 50 / Math.PI);
     StateIntegrator stateIntegrator = FixedStateIntegrator.create( //
         RungeKutta4Integrator.INSTANCE, RationalScalar.of(1, 6), 5);
-    Collection<Flow> controls = Se2Controls.createForwardAndReverseControls(Se2Utils.DEGREE(45), 6);
+    Collection<Flow> controls = Se2Controls.createControlsForwardAndReverse(Se2Utils.DEGREE(45), 6);
     // place holder for parameter class
     Se2rGoalManager se2GoalManager = new Se2rGoalManager( //
         Tensors.vector(-1, -1), RealScalar.of(Math.PI * 2), //

@@ -30,15 +30,12 @@ public enum Se2Controls {
     if (num % 2 == 1)
       ++num;
     List<Flow> list = new ArrayList<>();
-    for (Tensor angle : Subdivide.of(rate_max.negate(), rate_max, num)) {
-      // Tensor u = Tensors.of(angle, RealScalar.ONE);
+    for (Tensor angle : Subdivide.of(rate_max.negate(), rate_max, num))
       list.add(create((Scalar) angle, RealScalar.ONE));
-      // list.add(StateSpaceModels.createFlow(Se2StateSpaceModel.INSTANCE, u));
-    }
     return Collections.unmodifiableList(list);
   }
 
-  public static Collection<Flow> createForwardAndReverseControls(Scalar angle_max, int num) {
+  public static Collection<Flow> createControlsForwardAndReverse(Scalar angle_max, int num) {
     List<Flow> list = new ArrayList<>();
     for (Tensor angle : Subdivide.of(angle_max.negate(), angle_max, num)) {
       list.add(create(angle.Get(), RealScalar.ONE));

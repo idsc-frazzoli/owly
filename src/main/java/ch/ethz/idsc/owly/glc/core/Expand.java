@@ -2,6 +2,7 @@
 package ch.ethz.idsc.owly.glc.core;
 
 import java.util.Optional;
+import java.util.function.Supplier;
 
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
@@ -11,12 +12,20 @@ import ch.ethz.idsc.tensor.Scalars;
  * {@link ExpandInterface} */
 public enum Expand {
   ;
-  /** total number of expands are bounded by expandLimit
+  /** @param expandInterface
+   * @param expandLimit
+   * @return total number of expands are bounded by expandLimit */
+  public static int maxSteps(ExpandInterface expandInterface, int expandLimit) {
+    return maxSteps(expandInterface, expandLimit, () -> true);
+  }
+
+  /** planner aborts if isContinued supplies false
    * 
    * @param expandInterface
    * @param expandLimit
-   * @return */
-  public static int maxSteps(ExpandInterface expandInterface, int expandLimit) {
+   * @param isContinued
+   * @return total number of expands are bounded by expandLimit */
+  public static int maxSteps(ExpandInterface expandInterface, int expandLimit, Supplier<Boolean> isContinued) {
     int expandCount = 0;
     while (expandCount++ < expandLimit) {
       Optional<GlcNode> next = expandInterface.pollNext();
@@ -27,6 +36,8 @@ public enum Expand {
       // System.out.println("expand "+next.get().stateTime().toInfoString());
       expandInterface.expand(next.get());
       if (expandInterface.getBest().isPresent()) // found node in goal region
+        break;
+      if (!isContinued.get())
         break;
     }
     // no printout here, since expand limit can deliberately set to a low number for animation

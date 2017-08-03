@@ -109,6 +109,7 @@ public class OwlyComponent {
       jComponent.addMouseListener(mouseInputListener);
     }
     {
+      @SuppressWarnings("unused")
       MouseListener mouseListener = new MouseAdapter() {
         @Override
         public void mousePressed(MouseEvent mouseEvent) {
@@ -116,7 +117,7 @@ public class OwlyComponent {
           System.out.println(location.map(Round.toMultipleOf(DecimalScalar.of(0.001))) + ",");
         }
       };
-      jComponent.addMouseListener(mouseListener);
+      // jComponent.addMouseListener(mouseListener);
     }
   }
 
