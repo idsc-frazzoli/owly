@@ -52,7 +52,7 @@ public class R2Entity extends AbstractEntity {
     return ArgMin.of(Tensor.of(trajectory.stream() //
         .map(TrajectorySample::stateTime) //
         .map(StateTime::state) //
-        .map(state -> Norm._2SQUARED.of(state.subtract(x))))); // TODO NOT GENERIC DISTANCE
+        .map(state -> Norm._2SQUARED.of(state.subtract(x)))));
   }
 
   @Override
@@ -72,7 +72,7 @@ public class R2Entity extends AbstractEntity {
         FixedStateIntegrator.create(EulerIntegrator.INSTANCE, RationalScalar.of(1, 10), 4);
     Collection<Flow> controls = R2Controls.createRadial(23);
     RnSimpleCircleGoalManager rnGoal = //
-        new RnSimpleCircleGoalManager(goal, DoubleScalar.of(.2));
+        new RnSimpleCircleGoalManager(goal.extract(0, 2), DoubleScalar.of(.2));
     return new StandardTrajectoryPlanner( //
         partitionScale, stateIntegrator, controls, obstacleQuery, rnGoal);
   }

@@ -106,19 +106,19 @@ enum DeltaGlcConstTimeHeuristicAnyDemo {
       System.out.println("Goalchange took: " + (tocTemp - ticTemp) * 1e-9 + "s");
       // --
       // -- ROOTCHANGE
-//       ticTemp = System.nanoTime();
-//       finalGoalNode = slowTrajectoryPlannerContainer.getTrajectoryPlanner().getFinalGoalNode();
-//       if (finalGoalNode.isPresent())
-//       trajectory = GlcNodes.getPathFromRootTo(finalGoalNode.get());
-//       System.out.println("trajectorys size: " + trajectory.size());
-//       if (trajectory.size() > 5) {
-//       //
-//       StateTime newRootState = trajectory.get(trajectory.size() > 7 ? 2 : 0);
-//       int increment = ((OptimalAnyTrajectoryPlanner) slowTrajectoryPlannerContainer.getTrajectoryPlanner()).switchRootToState(newRootState.state());
-//       slowTrajectoryPlannerContainer.getParameters().increaseDepthLimit(increment);
-//       }
-//       tocTemp = System.nanoTime();
-//       System.out.println("Rootchange took: " + (tocTemp - ticTemp) * 1e-9 + "s");
+      // ticTemp = System.nanoTime();
+      // finalGoalNode = slowTrajectoryPlannerContainer.getTrajectoryPlanner().getFinalGoalNode();
+      // if (finalGoalNode.isPresent())
+      // trajectory = GlcNodes.getPathFromRootTo(finalGoalNode.get());
+      // System.out.println("trajectorys size: " + trajectory.size());
+      // if (trajectory.size() > 5) {
+      // //
+      // StateTime newRootState = trajectory.get(trajectory.size() > 7 ? 2 : 0);
+      // int increment = ((OptimalAnyTrajectoryPlanner) slowTrajectoryPlannerContainer.getTrajectoryPlanner()).switchRootToState(newRootState.state());
+      // slowTrajectoryPlannerContainer.getParameters().increaseDepthLimit(increment);
+      // }
+      // tocTemp = System.nanoTime();
+      // System.out.println("Rootchange took: " + (tocTemp - ticTemp) * 1e-9 + "s");
       // -- EXPANDING
       ticTemp = System.nanoTime();
       int expandIter = Expand.constTime(slowTrajectoryPlannerContainer.getTrajectoryPlanner(), //

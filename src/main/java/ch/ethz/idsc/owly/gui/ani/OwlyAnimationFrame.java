@@ -101,7 +101,7 @@ public class OwlyAnimationFrame {
       public void mouseClicked(MouseEvent mouseEvent) {
         // FIXME ensure that any running worker is stopped
         if (mouseEvent.getButton() == 1) {
-          Tensor goal = owlyComponent.toModel(mouseEvent.getPoint());
+          Tensor goal = owlyComponent.getMouseGoal();
           MotionPlanWorker mpw = new MotionPlanWorker(trajectoryPlannerCallback);
           if (controllable instanceof AbstractEntity) {
             AbstractEntity abstractEntity = (AbstractEntity) controllable;

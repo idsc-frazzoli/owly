@@ -77,5 +77,8 @@ public abstract class AbstractEntity implements RenderInterface, AnimationInterf
 
   abstract Scalar delayHint();
 
+  /** @param obstacleQuery
+   * @param goal for instance {px, py, angle}
+   * @return */
   abstract TrajectoryPlanner createTrajectoryPlanner(TrajectoryRegionQuery obstacleQuery, Tensor goal);
 }

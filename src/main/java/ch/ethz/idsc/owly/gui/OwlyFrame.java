@@ -120,6 +120,7 @@ public class OwlyFrame {
       }
       jPanel.add(jToolBar, BorderLayout.NORTH);
       {
+        jSlider.setOpaque(false);
         jSlider.addChangeListener(new ChangeListener() {
           @Override
           public void stateChanged(ChangeEvent e) {
@@ -156,13 +157,14 @@ public class OwlyFrame {
   }
 
   private void repaint(int index) {
-    try {
-      owlyComponent.renderElements = new RenderElements(backup.get(index));
-      jLabel.setText(backup.get(index).infoString());
-      owlyComponent.jComponent.repaint();
-    } catch (Exception exception) {
-      exception.printStackTrace();
-    }
+    if (0 <= index && index < backup.size())
+      try {
+        owlyComponent.renderElements = new RenderElements(backup.get(index));
+        jLabel.setText(backup.get(index).infoString());
+        owlyComponent.jComponent.repaint();
+      } catch (Exception exception) {
+        exception.printStackTrace();
+      }
   }
 
   @SuppressWarnings("unchecked")

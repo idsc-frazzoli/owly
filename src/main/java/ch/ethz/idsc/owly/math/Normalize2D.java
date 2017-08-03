@@ -18,9 +18,12 @@ public enum Normalize2D {
    * @param y
    * @return {x, y} / |{x, y}|, or {0, 0} */
   public static Tensor unlessZero(Scalar x, Scalar y) {
+    // TODO refactor using tensor lib 0.3.1: Normalize.of(Tensors.of(x,y));
     Scalar norm = Hypot.of(x, y);
     if (Scalars.isZero(norm))
       return Tensors.vector(0, 0);
+    // typically the while loop is executed only once
+    // for challenging input such as {eps, eps} it is executed twice
     while (!Chop._15.close(norm, RealScalar.ONE)) {
       x = x.divide(norm);
       y = y.divide(norm);
