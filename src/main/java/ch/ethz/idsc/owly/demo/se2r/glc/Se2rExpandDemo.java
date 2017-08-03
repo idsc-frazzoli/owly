@@ -3,7 +3,7 @@ package ch.ethz.idsc.owly.demo.se2r.glc;
 
 import java.util.Collection;
 
-import ch.ethz.idsc.owly.demo.se2r.Se2rControls;
+import ch.ethz.idsc.owly.demo.se2.Se2Controls;
 import ch.ethz.idsc.owly.demo.se2r.Se2rGoalManager;
 import ch.ethz.idsc.owly.demo.util.UserHome;
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
@@ -35,7 +35,7 @@ enum Se2rExpandDemo {
     Tensor eta = Tensors.vector(6, 6, 50 / Math.PI);
     StateIntegrator stateIntegrator = FixedStateIntegrator.create( //
         RungeKutta45Integrator.INSTANCE, RationalScalar.of(1, 6), 5);
-    Collection<Flow> controls = Se2rControls.createControls(Se2Utils.DEGREE(45), 6);
+    Collection<Flow> controls = Se2Controls.createControlsForwardAndReverse(Se2Utils.DEGREE(45), 6);
     // place holder for parameter class
     Se2rGoalManager se2GoalManager = new Se2rGoalManager( //
         Tensors.vector(-1, -1), RealScalar.of(Math.PI * 2), //

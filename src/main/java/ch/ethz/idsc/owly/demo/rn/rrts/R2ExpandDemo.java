@@ -1,8 +1,6 @@
 // code by jph
 package ch.ethz.idsc.owly.demo.rn.rrts;
 
-import java.util.Random;
-
 import ch.ethz.idsc.owly.demo.rn.RnNodeCollection;
 import ch.ethz.idsc.owly.demo.rn.RnTransitionSpace;
 import ch.ethz.idsc.owly.demo.util.UserHome;
@@ -23,13 +21,18 @@ import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
 import ch.ethz.idsc.tensor.io.GifSequenceWriter;
+import ch.ethz.idsc.tensor.pdf.Distribution;
+import ch.ethz.idsc.tensor.pdf.RandomVariate;
+import ch.ethz.idsc.tensor.pdf.UniformDistribution;
 
 enum R2ExpandDemo {
   ;
   public static void main(String[] args) throws Exception {
     int wid = 7;
+    Tensor MIN = Tensors.vector(0, 0);
+    Tensor MAX = Tensors.vector(wid, wid);
     RnTransitionSpace rnss = new RnTransitionSpace();
-    RrtsNodeCollection nc = new RnNodeCollection(Tensors.vector(0, 0), Tensors.vector(wid, wid));
+    RrtsNodeCollection nc = new RnNodeCollection(MIN, MAX);
     TransitionRegionQuery trq = //
         new SampledTransitionRegionQuery(new SimpleTrajectoryRegionQuery( //
             new TimeInvariantRegion( //
@@ -44,7 +47,8 @@ enum R2ExpandDemo {
     // ---
     Rrts rrts = new DefaultRrts(rnss, nc, trq, LengthCostFunction.IDENTITY);
     RrtsNode root = rrts.insertAsNode(Tensors.vector(0, 0), 5);
-    Random random = new Random();
+    Distribution distributionX = UniformDistribution.of(MIN.Get(0), MAX.Get(0));
+    Distribution distributionY = UniformDistribution.of(MIN.Get(1), MAX.Get(1));
     GifSequenceWriter gsw = GifSequenceWriter.of(UserHome.Pictures("r2rrts.gif"), 250);
     OwlyFrame owlyFrame = Gui.start();
     owlyFrame.configCoordinateOffset(42, 456);
@@ -52,9 +56,9 @@ enum R2ExpandDemo {
     int frame = 0;
     while (frame++ < 40 && owlyFrame.jFrame.isVisible()) {
       for (int c = 0; c < 10; ++c) {
-        Tensor pnt = Tensors.vector( //
-            random.nextDouble() * wid, //
-            random.nextDouble() * wid);
+        Tensor pnt = Tensors.of( //
+            RandomVariate.of(distributionX), //
+            RandomVariate.of(distributionY));
         rrts.insertAsNode(pnt, 20);
       }
       owlyFrame.setRrts(root, trq);

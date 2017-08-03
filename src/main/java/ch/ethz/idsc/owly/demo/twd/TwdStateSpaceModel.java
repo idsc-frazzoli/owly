@@ -23,6 +23,19 @@ import ch.ethz.idsc.tensor.sca.Sin;
  * Theory from: http://planning.cs.uiuc.edu/node659.html */
 public class TwdStateSpaceModel implements StateSpaceModel {
   private static final Mod PRINCIPAL = Mod.function(RealScalar.of(2 * Math.PI), RealScalar.of(-Math.PI));
+
+  /** the default twd state space model works well with the standardized controls
+   * {@link TwdControls#createControls(StateSpaceModel, int)}
+   * 
+   * for the default twd state space model
+   * the max speed == 1[m/s] and
+   * the max turning rate == 1[rad/s]
+   * 
+   * @return */
+  public static TwdStateSpaceModel createDefault() {
+    return new TwdStateSpaceModel(RealScalar.ONE, RealScalar.of(2));
+  }
+
   // ---
   private final Scalar wheelRadius; // R
   private final Scalar wheelDistanceInverse; // L
@@ -77,7 +90,9 @@ public class TwdStateSpaceModel implements StateSpaceModel {
   }
 
   /***************************************************/
-  /** @param state1 = {px1, py1, theta1}
+  /** one application of the function is as a heuristic
+   * 
+   * @param state1 = {px1, py1, theta1}
    * @param state2 = {px2, py2, theta2}
    * @return non-negative positional distance between state1 and state2 */
   public static Scalar errorPosition(Tensor state1, Tensor state2) {

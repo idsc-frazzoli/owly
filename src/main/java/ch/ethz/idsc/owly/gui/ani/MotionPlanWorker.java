@@ -7,12 +7,14 @@ import ch.ethz.idsc.owly.glc.core.Expand;
 import ch.ethz.idsc.owly.glc.core.TrajectoryPlanner;
 import ch.ethz.idsc.owly.glc.core.TrajectorySample;
 import ch.ethz.idsc.owly.math.state.StateTime;
-import ch.ethz.idsc.tensor.Tensor;
+import ch.ethz.idsc.tensor.RealScalar;
+import ch.ethz.idsc.tensor.Scalar;
+import ch.ethz.idsc.tensor.sca.Round;
 
 public class MotionPlanWorker {
-  TrajectoryPlannerCallback trajectoryPlannerCallback;
-  Tensor goal;
-  Thread thread;
+  private TrajectoryPlannerCallback trajectoryPlannerCallback;
+  private Thread thread;
+  private volatile boolean isRelevant = true;
 
   public MotionPlanWorker(TrajectoryPlannerCallback trajectoryPlannerCallback) {
     this.trajectoryPlannerCallback = trajectoryPlannerCallback;
@@ -26,14 +28,21 @@ public class MotionPlanWorker {
     thread = new Thread(new Runnable() {
       @Override
       public void run() {
-        System.out.println("start computation");
+        long tic = System.nanoTime();
         StateTime root = head.get(head.size() - 1).stateTime(); // last statetime in head trajectory
         trajectoryPlanner.insertRoot(root);
-        // TODO define API do allow entity to abort/continue expand; right now: magic const
-        Expand.maxSteps(trajectoryPlanner, 4000);
-        trajectoryPlannerCallback.expandResult(head, trajectoryPlanner);
+        Expand.maxSteps(trajectoryPlanner, 5000, () -> isRelevant); // magic const
+        if (isRelevant) {
+          Scalar duration = RealScalar.of((System.nanoTime() - tic) * 1E-9);
+          System.out.println("planning: " + duration.map(Round._3) + " [sec]");
+          trajectoryPlannerCallback.expandResult(head, trajectoryPlanner);
+        }
       }
     });
     thread.start();
+  }
+
+  public void flagShutdown() {
+    isRelevant = false;
   }
 }

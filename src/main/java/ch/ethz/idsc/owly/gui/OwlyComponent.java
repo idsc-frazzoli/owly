@@ -60,16 +60,26 @@ public class OwlyComponent {
     jComponent.addMouseWheelListener(new MouseWheelListener() {
       @Override
       public void mouseWheelMoved(MouseWheelEvent event) {
-        int exp = -event.getWheelRotation(); // either 1 or -1
-        Scalar factor = Power.of(RealScalar.of(2), exp);
-        Tensor scale = DiagonalMatrix.of(Tensors.of(factor, factor, RealScalar.ONE));
-        model2pixel = model2pixel.dot(scale);
+        final int delta = -event.getWheelRotation(); // either 1 or -1
+        int mods = event.getModifiersEx();
+        if ((mods & 128) == 0) { // ctrl pressed?
+          owlyLayer.incrementMouseWheel(delta);
+        } else {
+          Scalar factor = Power.of(RealScalar.of(2), delta);
+          Tensor scale = DiagonalMatrix.of(Tensors.of(factor, factor, RealScalar.ONE));
+          model2pixel = model2pixel.dot(scale);
+        }
         jComponent.repaint();
       }
     });
     {
       MouseInputListener mouseInputListener = new MouseInputAdapter() {
         Point down = null;
+
+        @Override
+        public void mouseMoved(MouseEvent mouseEvent) {
+          owlyLayer.setMouseLocation(toModel(mouseEvent.getPoint()));
+        }
 
         @Override
         public void mousePressed(MouseEvent mouseEvent) {
@@ -99,6 +109,7 @@ public class OwlyComponent {
       jComponent.addMouseListener(mouseInputListener);
     }
     {
+      @SuppressWarnings("unused")
       MouseListener mouseListener = new MouseAdapter() {
         @Override
         public void mousePressed(MouseEvent mouseEvent) {
@@ -106,7 +117,7 @@ public class OwlyComponent {
           System.out.println(location.map(Round.toMultipleOf(DecimalScalar.of(0.001))) + ",");
         }
       };
-      jComponent.addMouseListener(mouseListener);
+      // jComponent.addMouseListener(mouseListener);
     }
   }
 
@@ -151,5 +162,10 @@ public class OwlyComponent {
   void setOffset(Tensor vector) {
     model2pixel.set(vector.get(0), 0, 2);
     model2pixel.set(vector.get(1), 1, 2);
+  }
+
+  /** @return {px, py, angle} in model space */
+  public Tensor getMouseGoal() {
+    return owlyLayer.getMouseSe2State();
   }
 }

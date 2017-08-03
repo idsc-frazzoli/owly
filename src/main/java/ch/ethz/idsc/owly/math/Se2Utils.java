@@ -24,7 +24,10 @@ public enum Se2Utils {
 
   // ---
   /** @param x = {px, py, angle}
-   * @return 3x3 matrix */
+   * @return 3x3 matrix
+   * [+Ca -Sa px]
+   * [+Sa +Ca py]
+   * [0 0 1] */
   public static Tensor toSE2Matrix(Tensor x) {
     GlobalAssert.that(VectorQ.ofLength(x, 3));
     Scalar angle = x.Get(2);

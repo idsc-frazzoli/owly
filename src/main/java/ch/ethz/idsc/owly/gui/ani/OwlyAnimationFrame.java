@@ -97,16 +97,21 @@ public class OwlyAnimationFrame {
     TrajectoryRegionQuery obstacleQuery = //
         new SimpleTrajectoryRegionQuery(new TimeInvariantRegion(region));
     owlyComponent.jComponent.addMouseListener(new MouseAdapter() {
+      MotionPlanWorker mpw = null;
+
       @Override
       public void mouseClicked(MouseEvent mouseEvent) {
-        // FIXME ensure that any running worker is stopped
         if (mouseEvent.getButton() == 1) {
-          Tensor goal = owlyComponent.toModel(mouseEvent.getPoint());
-          MotionPlanWorker mpw = new MotionPlanWorker(trajectoryPlannerCallback);
+          if (Objects.nonNull(mpw)) {
+            mpw.flagShutdown();
+            mpw = null;
+          }
           if (controllable instanceof AbstractEntity) {
             AbstractEntity abstractEntity = (AbstractEntity) controllable;
+            Tensor goal = owlyComponent.getMouseGoal();
             TrajectoryPlanner trajectoryPlanner = //
                 abstractEntity.createTrajectoryPlanner(obstacleQuery, goal);
+            mpw = new MotionPlanWorker(trajectoryPlannerCallback);
             mpw.start(abstractEntity.getFutureTrajectoryUntil(abstractEntity.delayHint()), trajectoryPlanner);
           }
         }
@@ -117,9 +122,6 @@ public class OwlyAnimationFrame {
   TrajectoryPlannerCallback trajectoryPlannerCallback = new TrajectoryPlannerCallback() {
     @Override
     public void expandResult(List<TrajectorySample> head, TrajectoryPlanner trajectoryPlanner) {
-      System.out.println("finished");
-      // long toc = System.nanoTime();
-      // System.out.println(iters + " " + ((toc - tic) * 1e-9));
       Optional<GlcNode> optional = trajectoryPlanner.getBest();
       if (optional.isPresent()) {
         List<TrajectorySample> trajectory = new ArrayList<>();
