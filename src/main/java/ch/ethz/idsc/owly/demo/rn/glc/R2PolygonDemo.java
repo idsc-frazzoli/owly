@@ -5,7 +5,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
-import ch.ethz.idsc.owly.demo.rn.RnSimpleCircleHeuristicGoalManager;
+import ch.ethz.idsc.owly.demo.rn.RnSimpleEllipsoidHeuristicGoalManager;
 import ch.ethz.idsc.owly.demo.util.R2Controls;
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
 import ch.ethz.idsc.owly.glc.adapter.StateTimeTrajectories;
@@ -34,7 +34,7 @@ enum R2PolygonDemo {
     Tensor partitionScale = Tensors.vector(5, 5);
     StateIntegrator stateIntegrator = FixedStateIntegrator.create(EulerIntegrator.INSTANCE, RationalScalar.of(1, 8), 4);
     Collection<Flow> controls = R2Controls.createRadial(20);
-    RnSimpleCircleHeuristicGoalManager rnGoal = new RnSimpleCircleHeuristicGoalManager(Tensors.vector(5, 5), DoubleScalar.of(.2));
+    RnSimpleEllipsoidHeuristicGoalManager rnGoal = new RnSimpleEllipsoidHeuristicGoalManager(Tensors.vector(5, 5), DoubleScalar.of(.2));
     TrajectoryRegionQuery obstacleQuery = //
         new SimpleTrajectoryRegionQuery(new TimeInvariantRegion( //
             new PolygonRegion(Tensors.matrix(new Number[][] { //

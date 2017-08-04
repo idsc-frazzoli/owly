@@ -20,19 +20,29 @@ import ch.ethz.idsc.tensor.red.Norm;
 
 /** objective is minimum path length
  * path length is measured in Euclidean distance */
-public class RnSimpleCircleGoalManager extends SimpleTrajectoryRegionQuery implements GoalInterface {
+public class RnSimpleEllipsoidGoalManager extends SimpleTrajectoryRegionQuery implements GoalInterface {
   // protected as used in subclasses
   protected final Tensor center;
-  protected final Scalar radius;
+  protected final Tensor radius;
 
   /** constructor creates a spherical region in R^n with given center and radius.
    * distance measure is Euclidean distance.
    * 
    * @param center vector with length == n
    * @param radius positive */
-  public RnSimpleCircleGoalManager(Tensor center, Scalar radius) {
-    super(new TimeInvariantRegion(new EllipsoidRegion(center, Array.of(l -> radius, center.length()))));
-    GlobalAssert.that(Scalars.lessThan(RealScalar.ZERO, radius));
+  public RnSimpleEllipsoidGoalManager(Tensor center, Scalar radius) {
+    this(center, Array.of(l -> radius, center.length()));
+  }
+
+  /** constructor creates a ellipsoid region in R^n with given center and radius.
+   * distance measure is Euclidean distance
+   * 
+   * @param center vector with length == n
+   * @param radius vector with length == n & positive in all entrys */
+  public RnSimpleEllipsoidGoalManager(Tensor center, Tensor radius) {
+    super(new TimeInvariantRegion(new EllipsoidRegion(center, radius)));
+    for (Tensor radiusTemp : radius)
+      GlobalAssert.that(Scalars.lessThan(RealScalar.ZERO, (Scalar) radiusTemp));
     this.center = center;
     this.radius = radius;
   }
