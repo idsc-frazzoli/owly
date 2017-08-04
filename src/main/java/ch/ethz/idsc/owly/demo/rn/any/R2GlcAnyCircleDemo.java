@@ -86,7 +86,14 @@ enum R2GlcAnyCircleDemo {
     owlyFrame.setGlc((TrajectoryPlanner) trajectoryPlanner);
     for (int iter = 1; iter < 100; iter++) {
       Thread.sleep(100);
+      // -- ROOTCHANGE
       long tic = System.nanoTime();
+      if (trajectory.size() > 0) {
+        // --
+        StateTime newRootState = trajectory.get(trajectory.size() > 5 ? 5 : 0);
+        int increment = trajectoryPlanner.switchRootToState(newRootState.state());
+        parameters.increaseDepthLimit(increment);
+      }
       // -- GOALCHANGE
       List<StateTime> goalStateList = new ArrayList<>();
       do {
@@ -101,15 +108,6 @@ enum R2GlcAnyCircleDemo {
       Scalar goalSearchHelperRadius = goalRadius.add(RealScalar.ONE);// .multiply(RealScalar.of(1e14));
       Region goalSearchHelper = new EllipsoidRegion(goal, Array.of(l -> goalSearchHelperRadius, goal.length()));
       trajectoryPlanner.changeToGoal(rnGoal2, goalSearchHelper);
-      // trajectoryPlanner.changeToGoal(rnGoal2);
-      owlyFrame.setGlc((TrajectoryPlanner) trajectoryPlanner);
-      // -- ROOTCHANGE
-      if (trajectory.size() > 0) {
-        // --
-        StateTime newRootState = trajectory.get(trajectory.size() > 5 ? 5 : 0);
-        int increment = trajectoryPlanner.switchRootToState(newRootState.state());
-        parameters.increaseDepthLimit(increment);
-      }
       // -- EXPANDING
       int iters2 = Expand.maxDepth(trajectoryPlanner, parameters.getDepthLimit());
       trajectory = trajectoryPlanner.trajectoryToBest();
