@@ -3,7 +3,7 @@ package ch.ethz.idsc.owly.demo.rnn;
 
 import java.util.Collection;
 
-import ch.ethz.idsc.owly.demo.util.R2Controls;
+import ch.ethz.idsc.owly.demo.rn.R2Controls;
 import ch.ethz.idsc.owly.glc.core.Expand;
 import ch.ethz.idsc.owly.glc.core.StandardTrajectoryPlanner;
 import ch.ethz.idsc.owly.glc.core.TrajectoryPlanner;

@@ -1,12 +1,11 @@
 // code by jph
-package ch.ethz.idsc.owly.demo.rn.glc;
+package ch.ethz.idsc.owly.demo.rnxt.glc;
 
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
 import ch.ethz.idsc.owly.demo.rn.RnSimpleEllipsoidGoalManager;
-import ch.ethz.idsc.owly.demo.util.R2xTControls;
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
 import ch.ethz.idsc.owly.glc.adapter.StateTimeTrajectories;
 import ch.ethz.idsc.owly.glc.core.Expand;
@@ -14,6 +13,7 @@ import ch.ethz.idsc.owly.glc.core.GlcNode;
 import ch.ethz.idsc.owly.glc.core.GlcNodes;
 import ch.ethz.idsc.owly.glc.core.StandardTrajectoryPlanner;
 import ch.ethz.idsc.owly.glc.core.TrajectoryPlanner;
+import ch.ethz.idsc.owly.gui.Gui;
 import ch.ethz.idsc.owly.math.flow.EulerIntegrator;
 import ch.ethz.idsc.owly.math.flow.Flow;
 import ch.ethz.idsc.owly.math.region.EllipsoidRegion;
@@ -28,20 +28,20 @@ import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
 
-enum R2xTEllipsoidDemo {
+enum R2xtEllipsoidDemo {
   ;
   public static void main(String[] args) {
     Tensor partitionScale = Tensors.vector(5, 5, 1);
     StateIntegrator stateIntegrator = FixedStateIntegrator.create(EulerIntegrator.INSTANCE, RationalScalar.of(1, 8), 4);
-    Collection<Flow> controls = R2xTControls.createRadial(20);
-    Tensor goal = Tensors.vector(5,5,0);
+    Collection<Flow> controls = R2xtControls.createRadial(20);
+    Tensor goal = Tensors.vector(5, 5, 0);
     RnSimpleEllipsoidGoalManager rnGoal = new RnSimpleEllipsoidGoalManager(//
         goal, Tensors.of(RealScalar.of(0.2), RealScalar.of(0.2), DoubleScalar.POSITIVE_INFINITY));
     // GoalRegion at x:5, y= 5 and all time
     TrajectoryRegionQuery obstacleQuery = //
         new SimpleTrajectoryRegionQuery(new TimeInvariantRegion( //
-            new EllipsoidRegion(goal, Tensors.vector(3, 3, 10)))); 
-    // Ellipsoid around goal, which disappears after 10s
+            new EllipsoidRegion(goal, Tensors.vector(3, 3, 10))));
+    // ObstacleEllipsoid around goal, which disappears after 10s
     // ---
     TrajectoryPlanner trajectoryPlanner = new StandardTrajectoryPlanner( //
         partitionScale, stateIntegrator, controls, obstacleQuery, rnGoal);
@@ -53,5 +53,6 @@ enum R2xTEllipsoidDemo {
       List<StateTime> trajectory = GlcNodes.getPathFromRootTo(optional.get());
       StateTimeTrajectories.print(trajectory);
     }
+    Gui.glc(trajectoryPlanner);
   }
 }

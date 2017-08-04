@@ -7,9 +7,9 @@ import java.util.List;
 import java.util.Optional;
 import java.util.zip.DataFormatException;
 
+import ch.ethz.idsc.owly.demo.rn.R2Controls;
 import ch.ethz.idsc.owly.demo.rn.RnSimpleEllipsoidHeuristicGoalManager;
 import ch.ethz.idsc.owly.demo.util.ImageRegions;
-import ch.ethz.idsc.owly.demo.util.R2Controls;
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
 import ch.ethz.idsc.owly.glc.adapter.StateTimeTrajectories;
 import ch.ethz.idsc.owly.glc.core.Expand;

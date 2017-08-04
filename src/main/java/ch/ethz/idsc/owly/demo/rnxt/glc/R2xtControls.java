@@ -1,5 +1,5 @@
 // code by jph & jl
-package ch.ethz.idsc.owly.demo.util;
+package ch.ethz.idsc.owly.demo.rnxt.glc;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -20,7 +20,7 @@ import ch.ethz.idsc.tensor.sca.Sin;
 
 // create radial controls
 // class is intentionally public 
-public enum R2xTControls {
+public enum R2xtControls {
   ;
   // ---
   public static Collection<Flow> createRadial(final int num) {

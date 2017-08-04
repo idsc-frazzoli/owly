@@ -1,5 +1,5 @@
 // code by jph
-package ch.ethz.idsc.owly.demo.util;
+package ch.ethz.idsc.owly.demo.rn;
 
 import java.util.ArrayList;
 import java.util.Collection;
