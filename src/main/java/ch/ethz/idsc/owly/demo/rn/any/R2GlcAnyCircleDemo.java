@@ -84,8 +84,8 @@ enum R2GlcAnyCircleDemo {
     owlyFrame.configCoordinateOffset(400, 400);
     owlyFrame.jFrame.setBounds(0, 0, 800, 800);
     owlyFrame.setGlc((TrajectoryPlanner) trajectoryPlanner);
-    for (int iter = 1; iter < 31; iter++) {
-      Thread.sleep(1);
+    for (int iter = 1; iter < 100; iter++) {
+      Thread.sleep(100);
       long tic = System.nanoTime();
       // -- GOALCHANGE
       List<StateTime> goalStateList = new ArrayList<>();
@@ -98,7 +98,7 @@ enum R2GlcAnyCircleDemo {
       } while (!obstacleQuery.isDisjoint(goalStateList));
       RnSimpleCircleGoalManager rnGoal2 = new RnSimpleCircleGoalManager(goal, goalRadius);
       System.out.println("Switching to Goal:" + goal);
-      Scalar goalSearchHelperRadius = goalRadius.add(RealScalar.ONE).multiply(RealScalar.of(3));
+      Scalar goalSearchHelperRadius = goalRadius.add(RealScalar.ONE);// .multiply(RealScalar.of(1e14));
       Region goalSearchHelper = new EllipsoidRegion(goal, Array.of(l -> goalSearchHelperRadius, goal.length()));
       trajectoryPlanner.changeToGoal(rnGoal2, goalSearchHelper);
       // trajectoryPlanner.changeToGoal(rnGoal2);

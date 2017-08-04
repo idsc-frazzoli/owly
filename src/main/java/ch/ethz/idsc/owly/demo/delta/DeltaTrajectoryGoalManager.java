@@ -54,6 +54,7 @@ public class DeltaTrajectoryGoalManager extends TrajectoryGoalManager {
     // p. 79 Eq: 6.4.14
     // Heuristic needs to be underestimating: (Euclideandistance-radius) / (MaxControl+Max(|Vectorfield|)
     // return RealScalar.ZERO;
-    return Ramp.of(Norm._2.of(x.subtract(StateTimeTrajectories.getLast(heuristicTrajectory).state())).subtract(radius).divide(maxSpeed));
+    return Ramp.of(Norm._2.of(x.subtract(StateTimeTrajectories.getLast(heuristicTrajectory).state())) //
+        .subtract(radius).divide(maxSpeed));
   }
 }

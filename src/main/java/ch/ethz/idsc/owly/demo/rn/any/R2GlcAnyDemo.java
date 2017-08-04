@@ -5,7 +5,7 @@ import java.util.Collection;
 import java.util.List;
 
 import ch.ethz.idsc.owly.demo.rn.R2Parameters;
-import ch.ethz.idsc.owly.demo.rn.RnSimpleCircleGoalManager;
+import ch.ethz.idsc.owly.demo.rn.RnSimpleCircleHeuristicGoalManager;
 import ch.ethz.idsc.owly.demo.util.R2Controls;
 import ch.ethz.idsc.owly.glc.adapter.Parameters;
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
@@ -47,7 +47,7 @@ enum R2GlcAnyDemo {
     StateIntegrator stateIntegrator = FixedStateIntegrator.create(EulerIntegrator.INSTANCE, parameters.getdtMax(), //
         parameters.getTrajectorySize());
     Collection<Flow> controls = R2Controls.createRadial(parameters.getResolutionInt());
-    RnSimpleCircleGoalManager rnGoal = new RnSimpleCircleGoalManager(Tensors.vector(5, 5), DoubleScalar.of(.25));
+    RnSimpleCircleHeuristicGoalManager rnGoal = new RnSimpleCircleHeuristicGoalManager(Tensors.vector(5, 5), DoubleScalar.of(.25));
     // performance depends on heuristic: zeroHeuristic vs rnGoal
     // Heuristic heuristic = new ZeroHeuristic(); // rnGoal
     TrajectoryRegionQuery obstacleQuery = new SimpleTrajectoryRegionQuery(new TimeInvariantRegion(EmptyRegion.INSTANCE));
@@ -65,7 +65,7 @@ enum R2GlcAnyDemo {
       goal = goal.add(Tensors.vector(1, 1));
       goal.set(Mod.function(RealScalar.of(5)), 0);
       goal.set(Mod.function(RealScalar.of(5)), 1);
-      RnSimpleCircleGoalManager rnGoal2 = new RnSimpleCircleGoalManager(goal, DoubleScalar.of(.25));
+      RnSimpleCircleHeuristicGoalManager rnGoal2 = new RnSimpleCircleHeuristicGoalManager(goal, DoubleScalar.of(.25));
       List<StateTime> trajectory = trajectoryPlanner.trajectoryToBest();
       if (trajectory != null) {
         StateTime newRootState = trajectory.get(trajectory.size() > 1 ? 1 : 0);

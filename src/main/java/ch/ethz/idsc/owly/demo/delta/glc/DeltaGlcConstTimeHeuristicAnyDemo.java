@@ -6,11 +6,9 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 
-import ch.ethz.idsc.owly.demo.delta.DeltaGoalManagerExt;
 import ch.ethz.idsc.owly.demo.delta.DeltaStateSpaceModel;
 import ch.ethz.idsc.owly.demo.delta.DeltaTrajectoryGoalManager;
 import ch.ethz.idsc.owly.glc.adapter.StateTimeTrajectories;
-import ch.ethz.idsc.owly.glc.adapter.TrajectoryGoalManager;
 import ch.ethz.idsc.owly.glc.adapter.TrajectoryPlannerContainer;
 import ch.ethz.idsc.owly.glc.core.DebugUtils;
 import ch.ethz.idsc.owly.glc.core.Expand;
@@ -62,7 +60,7 @@ enum DeltaGlcConstTimeHeuristicAnyDemo {
     while (iterator.hasNext())
       goalRegions.add(new EllipsoidRegion(iterator.next().state(), radius));
     DeltaTrajectoryGoalManager trajectoryGoalManager = new DeltaTrajectoryGoalManager(goalRegions, quickTrajectory, radius, //
-        ((DeltaStateSpaceModel) slowTrajectoryPlannerContainer.getStateSpaceModel()).getMaxSpeed());
+        ((DeltaStateSpaceModel) slowTrajectoryPlannerContainer.getStateSpaceModel()).getMaxPossibleChange());
     ((OptimalAnyTrajectoryPlanner) slowTrajectoryPlannerContainer.getTrajectoryPlanner()).changeToGoal(trajectoryGoalManager);
     OwlyFrame owlyFrame = Gui.start();
     owlyFrame.configCoordinateOffset(33, 416);
@@ -88,20 +86,13 @@ enum DeltaGlcConstTimeHeuristicAnyDemo {
       }
       // TODO: Smart new heuristiccenter:
       // Heuristic Center at next GoalRegion, if found expanding around it
-      Scalar maxSpeed = ((DeltaStateSpaceModel) slowTrajectoryPlannerContainer.getStateSpaceModel()).getMaxSpeed();
-      if (!finalGoalFound) {
-        trajectoryGoalManager = new DeltaTrajectoryGoalManager(trajectoryGoalManager.deleteRegionsBefore(furthestState), quickTrajectory, radius, maxSpeed);
-        ((OptimalAnyTrajectoryPlanner) slowTrajectoryPlannerContainer.getTrajectoryPlanner()).changeToGoal(//
-            trajectoryGoalManager);
-      } else {
-        if (slowTrajectoryPlannerContainer.getTrajectoryPlanner().getGoalQuery() instanceof TrajectoryGoalManager) {
-          // only to change GoalManager to final Simple#
-          DeltaGoalManagerExt deltaGoalFinal = new DeltaGoalManagerExt(trajectoryGoalManager.deleteRegionsBefore(furthestState).get(0), //
-              StateTimeTrajectories.getLast(quickTrajectory).state(), radius, maxSpeed);
-          ((OptimalAnyTrajectoryPlanner) slowTrajectoryPlannerContainer.getTrajectoryPlanner()).changeToGoal(deltaGoalFinal);
-          System.err.println("Changed Goal for last Time");
-        }
-      }
+      Scalar maxSpeed = ((DeltaStateSpaceModel) slowTrajectoryPlannerContainer.getStateSpaceModel()).getMaxPossibleChange();
+      trajectoryGoalManager = new DeltaTrajectoryGoalManager(trajectoryGoalManager.deleteRegionsBefore(furthestState) //
+          , quickTrajectory, radius, maxSpeed);
+      ((OptimalAnyTrajectoryPlanner) slowTrajectoryPlannerContainer.getTrajectoryPlanner()).changeToGoal(//
+          trajectoryGoalManager);
+      if (trajectoryGoalManager.getGoalRegionList().size() < 2)
+        System.err.println("GoalRegion in singular --> FINAL GOAL");
       long tocTemp = System.nanoTime();
       System.out.println("Goalchange took: " + (tocTemp - ticTemp) * 1e-9 + "s");
       // --

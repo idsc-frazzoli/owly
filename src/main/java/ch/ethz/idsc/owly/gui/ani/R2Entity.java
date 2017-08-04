@@ -8,7 +8,7 @@ import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.util.Collection;
 
-import ch.ethz.idsc.owly.demo.rn.RnSimpleCircleGoalManager;
+import ch.ethz.idsc.owly.demo.rn.RnSimpleCircleHeuristicGoalManager;
 import ch.ethz.idsc.owly.demo.util.R2Controls;
 import ch.ethz.idsc.owly.glc.core.StandardTrajectoryPlanner;
 import ch.ethz.idsc.owly.glc.core.TrajectoryPlanner;
@@ -71,8 +71,8 @@ public class R2Entity extends AbstractEntity {
     StateIntegrator stateIntegrator = //
         FixedStateIntegrator.create(EulerIntegrator.INSTANCE, RationalScalar.of(1, 10), 4);
     Collection<Flow> controls = R2Controls.createRadial(23);
-    RnSimpleCircleGoalManager rnGoal = //
-        new RnSimpleCircleGoalManager(goal.extract(0, 2), DoubleScalar.of(.2));
+    RnSimpleCircleHeuristicGoalManager rnGoal = //
+        new RnSimpleCircleHeuristicGoalManager(goal.extract(0, 2), DoubleScalar.of(.2));
     return new StandardTrajectoryPlanner( //
         partitionScale, stateIntegrator, controls, obstacleQuery, rnGoal);
   }

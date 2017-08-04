@@ -138,7 +138,7 @@ public class SimpleAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
 
   /** Only checking the Nodes of the tree, not the trajectory */
   @Override
-  boolean GoalCheckTree(Collection<GlcNode> treeCollection, Region goalCheckTree) {
+  boolean GoalCheckTree(final Collection<GlcNode> treeCollection, final Region goalCheckTree) {
     treeCollection.parallelStream().forEach(node -> {
       if (!getGoalQuery().isDisjoint(Arrays.asList(node.stateTime())))
         offerDestination(node, Arrays.asList(node.stateTime()));
@@ -147,9 +147,7 @@ public class SimpleAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
   }
 
   @Override
-  @Deprecated
-  boolean GoalCheckTree(Collection<GlcNode> treeCollection) {
-    // TODO Auto-generated method stub
-    return false;
+  boolean GoalCheckTree(final Collection<GlcNode> treeCollection) {
+    return GoalCheckTree(treeCollection, null);
   }
 }

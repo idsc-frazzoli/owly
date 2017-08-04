@@ -145,16 +145,19 @@ public abstract class AbstractAnyTrajectoryPlanner extends AbstractTrajectoryPla
     tic = System.nanoTime();
     treeFound = GoalCheckTree(treeCollection, goalCheckHelp);
     Scalar timeDiffNew = RealScalar.of((System.nanoTime() - tic) * 1e-9);
-    System.err
-        .println("The NEW GoalCheck needed: " + timeDiffNew.divide(timeDiffOld).multiply(RealScalar.of(100)).number().intValue() + "% of the time of the OLD");
-    if (!(oldBest.containsAll(best.keySet()) && best.keySet().containsAll(oldBest))) {
-      System.err.println("Not the same GoalNodes found in both runs");
+    System.err.println("The NEW GoalCheck needed: " //
+        + timeDiffNew.divide(timeDiffOld).multiply(RealScalar.of(100)).number().intValue()//
+        + "% of the time of the OLD");
+    if (!best.isEmpty() || !oldBest.isEmpty()) {
       System.err.println("OldVersion found: " + oldBest.size() + " GoalNodes: ");
       for (GlcNode node : oldBest)
         System.out.println(node.state());
       System.err.println("NewVersion found: " + best.size() + " GoalNodes");
       for (GlcNode node : best.keySet())
         System.out.println(node.state());
+    }
+    if (!(oldBest.containsAll(best.keySet()) && best.keySet().containsAll(oldBest))) {
+      System.err.println("Not the same GoalNodes found in both runs");
       throw new RuntimeException();
     }
     // System.out.println("Checked current tree for goal in "//
@@ -174,12 +177,12 @@ public abstract class AbstractAnyTrajectoryPlanner extends AbstractTrajectoryPla
 
   /** Checks the tree in the collection if some Nodes are in the Goal
    * 
-   * @param treeCollection of Nodes, which should be checked if they are in the goal
-   * @param goalCheckHelp
+   * @param treeCollection of Nodes, which should be checked if they are in the goal, needs to be List for parallel
+   * @param goalCheckHelp a Region, which includes ALL Nodes, which could have a leaving trajectory in the Goal
    * @return true if a Node in the Goal was found in this Collection */
-  abstract boolean GoalCheckTree(Collection<GlcNode> treeCollection, Region goalCheckHelp);
+  abstract boolean GoalCheckTree(final Collection<GlcNode> treeCollection, final Region goalCheckHelp);
 
-  abstract boolean GoalCheckTree(Collection<GlcNode> treeCollection);
+  abstract boolean GoalCheckTree(final Collection<GlcNode> treeCollection);
 
   /** Finds the rootNode, by following the parents
    * from a random root Node in the tree/DomainMap

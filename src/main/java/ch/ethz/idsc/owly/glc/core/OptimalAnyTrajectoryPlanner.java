@@ -290,14 +290,18 @@ public class OptimalAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
 
   @Override
   protected boolean GoalCheckTree(final Collection<GlcNode> treeCollection, final Region possibleGoalNodesRegion) {
-    // parralel: 15%-50% Speedgain, tested with R2GlcConstTimeHeuristicAnyDemo
-    Collection<GlcNode> possibleGoalNodes = new ArrayList<>();
-    possibleGoalNodes = treeCollection.parallelStream()//
+    // Smart way: uses 15% -> 30% of the time of normal implemenation
+    // Smart way: uses 30% -> 40% of the time of paralel implementation
+    // , tested with R2GlcAnyCircleDemo
+    List<GlcNode> possibleGoalNodes = new ArrayList<>();
+    // Parallel computation only works with this copy
+    possibleGoalNodes = treeCollection.stream().parallel()//
         .filter(node -> possibleGoalNodesRegion.isMember(node.state()))//
         .collect(Collectors.toList());
     // checking only Nodes, which could reach the Goal
     System.out.println("Comparing Lists: Tree: " + treeCollection.size() + " possibleGoalNodes: " + possibleGoalNodes.size());
-    possibleGoalNodes.parallelStream().forEach(node -> {
+    // return GoalCheckTree(possibleGoalNodes);
+    possibleGoalNodes.stream().forEach(node -> {
       if (!node.isRoot()) {
         final List<StateTime> trajectory = getStateIntegrator().trajectory(node.parent().stateTime(), node.flow());
         if (!getGoalQuery().isDisjoint(trajectory))
@@ -307,11 +311,11 @@ public class OptimalAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
     return getBest().isPresent();
   }
 
-  @Deprecated
   @Override
-  protected boolean GoalCheckTree(Collection<GlcNode> treeCollection) {
-    // parralel: 15%-50% Speedgain, tested with R2GlcConstTimeHeuristicAnyDemo
-    treeCollection.parallelStream().forEach(node -> {
+  protected boolean GoalCheckTree(final Collection<GlcNode> treeCollection) {
+    // Parallel: 15%-50% Speedgain, tested with R2GlcConstTimeHeuristicAnyDemo, but does inconsistent results,
+    // TODO: why does parralel give different result? then non parallel?
+    treeCollection.stream().parallel().forEach(node -> {
       if (!node.isRoot()) {
         final List<StateTime> trajectory = getStateIntegrator().trajectory(node.parent().stateTime(), node.flow());
         if (!getGoalQuery().isDisjoint(trajectory))

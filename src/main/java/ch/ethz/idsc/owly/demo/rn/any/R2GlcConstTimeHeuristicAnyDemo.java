@@ -8,13 +8,11 @@ import java.util.Optional;
 
 import ch.ethz.idsc.owly.demo.rn.R2NoiseRegion;
 import ch.ethz.idsc.owly.demo.rn.R2Parameters;
-import ch.ethz.idsc.owly.demo.rn.RnSimpleCircleGoalManager;
 import ch.ethz.idsc.owly.demo.rn.RnTrajectoryGoalManager;
 import ch.ethz.idsc.owly.demo.util.R2Controls;
 import ch.ethz.idsc.owly.glc.adapter.Parameters;
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
 import ch.ethz.idsc.owly.glc.adapter.StateTimeTrajectories;
-import ch.ethz.idsc.owly.glc.adapter.TrajectoryGoalManager;
 import ch.ethz.idsc.owly.glc.core.DebugUtils;
 import ch.ethz.idsc.owly.glc.core.Expand;
 import ch.ethz.idsc.owly.glc.core.GlcNode;
@@ -103,20 +101,11 @@ enum R2GlcConstTimeHeuristicAnyDemo {
       }
       System.out.println("Current size of goal regions list: " + rnGoal.getGoalRegionList().size());
       // only change goal if we are not at the end yet
-      if (!finalGoalFound) {
-        // creates new RegionUnin form Regionlist and puts Heuristic to next Goal in RegionList
-        rnGoal = new RnTrajectoryGoalManager(rnGoal.deleteRegionsBefore(furthestState), precomputedTrajectory, radius);
-        trajectoryPlanner.changeToGoal(rnGoal);
-      } else {
-        if (trajectoryPlanner.getGoalQuery() instanceof TrajectoryGoalManager) {
-          // only to change GoalManager to final Simple
-          RnSimpleCircleGoalManager rnGoalFinal = new RnSimpleCircleGoalManager(//
-              rnGoal.deleteRegionsBefore(furthestState).get(0), //
-              StateTimeTrajectories.getLast(precomputedTrajectory).state(), radius.Get(0));
-          trajectoryPlanner.changeToGoal(rnGoalFinal);
-          System.err.println("Changed Goal for last Time");
-        }
-      }
+      // creates new RegionUnin form Regionlist and puts Heuristic to next Goal in RegionList
+      rnGoal = new RnTrajectoryGoalManager(rnGoal.deleteRegionsBefore(furthestState), precomputedTrajectory, radius);
+      trajectoryPlanner.changeToGoal(rnGoal);
+      if (rnGoal.getGoalRegionList().size() < 2)
+        System.err.println("changed to single region goal --> Last Change");
       long tocTemp = System.nanoTime();
       System.out.println("Goalchange took: " + (tocTemp - ticTemp) * 1e-9 + "s");
       // -- ROOTCHANGE

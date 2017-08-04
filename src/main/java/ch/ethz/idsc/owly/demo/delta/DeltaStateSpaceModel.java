@@ -33,7 +33,7 @@ public class DeltaStateSpaceModel implements StateSpaceModel {
     return maxInput;
   }
 
-  public Scalar getMaxSpeed() {
+  public Scalar getMaxPossibleChange() {
     return maxInput.add(imageGradient.maxNorm());
   }
 }
