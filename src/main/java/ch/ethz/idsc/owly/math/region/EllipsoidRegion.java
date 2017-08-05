@@ -20,7 +20,7 @@ public class EllipsoidRegion extends ImplicitFunctionRegion {
     this.center = center;
     if (!radius.equals(Ramp.of(radius))) // assert that radius are non-negative
       throw new RuntimeException();
-    invert = radius.map(Scalar::invert); // throws an exception if any radius == 0
+    invert = radius.map(Scalar::reciprocal); // throws an exception if any radius == 0
   }
 
   @Override

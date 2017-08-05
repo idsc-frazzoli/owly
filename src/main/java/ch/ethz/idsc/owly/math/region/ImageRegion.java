@@ -27,7 +27,7 @@ public class ImageRegion implements Region {
       throw new RuntimeException();
     this.image = image;
     dimensions = Dimensions.of(image);
-    scale = Tensors.vector(dimensions).pmul(range.map(Scalar::invert));
+    scale = Tensors.vector(dimensions).pmul(range.map(Scalar::reciprocal));
     this.outside = outside;
   }
 

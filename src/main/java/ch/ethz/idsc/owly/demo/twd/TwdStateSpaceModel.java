@@ -44,7 +44,7 @@ public class TwdStateSpaceModel implements StateSpaceModel {
    * @param wheelDistance */
   public TwdStateSpaceModel(Scalar wheelRadius, Scalar wheelDistance) {
     this.wheelRadius = wheelRadius;
-    this.wheelDistanceInverse = wheelDistance.invert();
+    this.wheelDistanceInverse = wheelDistance.reciprocal();
     GlobalAssert.that(NumberQ.of(wheelDistanceInverse));
   }
 

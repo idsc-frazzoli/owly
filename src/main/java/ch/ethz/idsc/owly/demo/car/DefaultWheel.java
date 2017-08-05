@@ -16,7 +16,7 @@ public class DefaultWheel implements WheelInterface {
   public DefaultWheel(Scalar radius, Scalar width, Scalar iw, Pacejka3 pacejka3, Tensor lever) {
     this.radius = radius;
     this.width = width;
-    this.iw_invert = iw.invert();
+    this.iw_invert = iw.reciprocal();
     this.pacejka3 = pacejka3;
     this.lever = lever.unmodifiable();
   }
