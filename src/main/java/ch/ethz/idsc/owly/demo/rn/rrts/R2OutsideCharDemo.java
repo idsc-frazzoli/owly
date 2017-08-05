@@ -1,9 +1,9 @@
 // code by jph
 package ch.ethz.idsc.owly.demo.rn.rrts;
 
+import ch.ethz.idsc.owly.demo.rn.R2ImageRegions;
 import ch.ethz.idsc.owly.demo.rn.RnNodeCollection;
 import ch.ethz.idsc.owly.demo.rn.RnTransitionSpace;
-import ch.ethz.idsc.owly.demo.util.ImageRegions;
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
 import ch.ethz.idsc.owly.gui.Gui;
 import ch.ethz.idsc.owly.gui.OwlyFrame;
@@ -20,12 +20,12 @@ import ch.ethz.idsc.owly.rrts.core.TransitionRegionQuery;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Tensors;
 
-enum R2ImageDemo {
+enum R2OutsideCharDemo {
   ;
   public static void main(String[] args) throws Exception {
-    ImageRegion imageRegion = ImageRegions.loadFromRepository("/io/track0_100.png", Tensors.vector(7, 7), false);
+    ImageRegion imageRegion = R2ImageRegions.outside_0b36();
     RnTransitionSpace rnss = new RnTransitionSpace();
-    RrtsNodeCollection nc = new RnNodeCollection(imageRegion.origin(), imageRegion.range());
+    RrtsNodeCollection nc = new RnNodeCollection(Tensors.vector(0, 0), imageRegion.range());
     TransitionRegionQuery trq = //
         new SampledTransitionRegionQuery(new SimpleTrajectoryRegionQuery( //
             new TimeInvariantRegion(imageRegion)), RealScalar.of(.1));
@@ -36,7 +36,7 @@ enum R2ImageDemo {
     owlyFrame.configCoordinateOffset(60, 477);
     owlyFrame.jFrame.setBounds(100, 100, 550, 550);
     owlyFrame.addDrawable(imageRegion);
-    RnUniformSampler rnUniformSampler = new RnUniformSampler(imageRegion.origin(), imageRegion.range());
+    RnUniformSampler rnUniformSampler = new RnUniformSampler(Tensors.vector(0, 0), imageRegion.range());
     int frame = 0;
     while (frame++ < 20 && owlyFrame.jFrame.isVisible()) {
       for (int c = 0; c < 50; ++c)

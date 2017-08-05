@@ -8,8 +8,10 @@ import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Scalars;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
+import ch.ethz.idsc.tensor.alg.Array;
 import ch.ethz.idsc.tensor.alg.Dimensions;
 import ch.ethz.idsc.tensor.alg.MatrixQ;
+import ch.ethz.idsc.tensor.alg.VectorQ;
 import ch.ethz.idsc.tensor.sca.Floor;
 
 /** only the first two coordinates are tested for membership
@@ -26,6 +28,7 @@ public class ImageRegion implements Region {
    * @param outside point member status */
   public ImageRegion(Tensor image, Tensor range, boolean outside) {
     GlobalAssert.that(MatrixQ.of(image));
+    GlobalAssert.that(VectorQ.ofLength(range, 2));
     this.image = image;
     dimensions = Dimensions.of(image);
     this.range = range;
@@ -51,5 +54,9 @@ public class ImageRegion implements Region {
 
   public Tensor range() {
     return range.unmodifiable();
+  }
+
+  public Tensor origin() {
+    return Array.zeros(2);
   }
 }

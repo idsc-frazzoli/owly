@@ -4,6 +4,7 @@ package ch.ethz.idsc.owly.gui.region;
 import java.awt.Graphics2D;
 import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
+import java.awt.image.ImageObserver;
 
 import javax.swing.JLabel;
 
@@ -22,7 +23,7 @@ import ch.ethz.idsc.tensor.io.ImageFormat;
 public class ImageRegionRender implements RenderInterface {
   private static final Scalar TFF = RealScalar.of(255);
   private static final Scalar OBS = RealScalar.of(230);
-  private static final JLabel jLabel = new JLabel();
+  private static final ImageObserver OBSERVER = new JLabel();
   // ---
   private final BufferedImage bufferedImage;
   private final Tensor range;
@@ -51,6 +52,6 @@ public class ImageRegionRender implements RenderInterface {
     graphics.drawImage(bufferedImage, //
         (int) origin.getX(), //
         (int) origin.getY(), //
-        width, height, jLabel);
+        width, height, OBSERVER);
   }
 }

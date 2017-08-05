@@ -49,9 +49,11 @@ public class CharImage {
 
   // demo
   public static void main(String[] args) throws IOException {
-    CharImage charImage = CharImage.fillBlack(new Dimension(256, 256));
-    charImage.draw('\u0b36', new Point(0, 240)); // 0b14
-    // charImage.draw('\u0b14', new Point(100, 240)); // 0b14
+    CharImage charImage = CharImage.fillWhite(new Dimension(480, 320));
+    // charImage.draw('\u2182', new Point(-10, 305));
+    // charImage.draw('\u265b', new Point(-20, 300));
+    // charImage.draw('\u0b36', new Point(0, 240));
+    // charImage.draw('\u0b14', new Point(100, 240));
     BufferedImage bufferedImage = charImage.getBufferedImage();
     ImageIO.write(bufferedImage, "png", UserHome.Pictures("letter.png"));
   }

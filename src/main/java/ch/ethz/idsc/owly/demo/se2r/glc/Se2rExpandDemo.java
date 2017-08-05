@@ -59,7 +59,7 @@ enum Se2rExpandDemo {
       Expand.maxSteps(trajectoryPlanner, 1);
       owlyFrame.setGlc(trajectoryPlanner);
       gsw.append(owlyFrame.offscreen());
-      Thread.sleep(100);
+      Thread.sleep(10);
     }
     int repeatLast = 6;
     while (0 < repeatLast--)
