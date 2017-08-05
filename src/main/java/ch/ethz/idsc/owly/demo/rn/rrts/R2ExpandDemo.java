@@ -20,7 +20,7 @@ import ch.ethz.idsc.owly.rrts.core.TransitionRegionQuery;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
-import ch.ethz.idsc.tensor.io.GifSequenceWriter;
+import ch.ethz.idsc.tensor.io.AnimationWriter;
 import ch.ethz.idsc.tensor.pdf.Distribution;
 import ch.ethz.idsc.tensor.pdf.RandomVariate;
 import ch.ethz.idsc.tensor.pdf.UniformDistribution;
@@ -49,7 +49,7 @@ enum R2ExpandDemo {
     RrtsNode root = rrts.insertAsNode(Tensors.vector(0, 0), 5);
     Distribution distributionX = UniformDistribution.of(MIN.Get(0), MAX.Get(0));
     Distribution distributionY = UniformDistribution.of(MIN.Get(1), MAX.Get(1));
-    GifSequenceWriter gsw = GifSequenceWriter.of(UserHome.Pictures("r2rrts.gif"), 250);
+    AnimationWriter gsw = AnimationWriter.of(UserHome.Pictures("r2rrts.gif"), 250);
     OwlyFrame owlyFrame = Gui.start();
     owlyFrame.configCoordinateOffset(42, 456);
     owlyFrame.jFrame.setBounds(100, 100, 500, 500);

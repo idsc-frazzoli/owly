@@ -26,7 +26,7 @@ import ch.ethz.idsc.tensor.RationalScalar;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
-import ch.ethz.idsc.tensor.io.GifSequenceWriter;
+import ch.ethz.idsc.tensor.io.AnimationWriter;
 
 /** (x,y,theta) */
 enum Se2rExpandDemo {
@@ -54,7 +54,7 @@ enum Se2rExpandDemo {
     OwlyFrame owlyFrame = Gui.start();
     owlyFrame.configCoordinateOffset(169, 71);
     owlyFrame.jFrame.setBounds(100, 100, 300, 200);
-    GifSequenceWriter gsw = GifSequenceWriter.of(UserHome.Pictures("se2r.gif"), 250);
+    AnimationWriter gsw = AnimationWriter.of(UserHome.Pictures("se2r.gif"), 250);
     while (!trajectoryPlanner.getBest().isPresent() && owlyFrame.jFrame.isVisible()) {
       Expand.maxSteps(trajectoryPlanner, 1);
       owlyFrame.setGlc(trajectoryPlanner);
