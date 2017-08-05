@@ -18,8 +18,6 @@ import javax.swing.JComponent;
 import javax.swing.event.MouseInputAdapter;
 import javax.swing.event.MouseInputListener;
 
-import ch.ethz.idsc.owly.gui.region.ImageRegionRender;
-import ch.ethz.idsc.owly.math.region.ImageRegion;
 import ch.ethz.idsc.tensor.DecimalScalar;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
@@ -172,7 +170,7 @@ public class OwlyComponent {
     return owlyLayer.getMouseSe2State();
   }
 
-  public void addDrawable(ImageRegion imageRegion) {
-    renderBackground.list.add(new ImageRegionRender(imageRegion));
+  public void addDrawable(RenderInterface renderInterface) {
+    renderBackground.list.add(renderInterface);
   }
 }

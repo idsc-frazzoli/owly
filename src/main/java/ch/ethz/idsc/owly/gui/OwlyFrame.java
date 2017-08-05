@@ -26,6 +26,7 @@ import javax.swing.event.ChangeListener;
 import ch.ethz.idsc.owly.data.tree.Nodes;
 import ch.ethz.idsc.owly.demo.util.UserHome;
 import ch.ethz.idsc.owly.glc.core.TrajectoryPlanner;
+import ch.ethz.idsc.owly.gui.misc.ImageRegionRender;
 import ch.ethz.idsc.owly.math.region.ImageRegion;
 import ch.ethz.idsc.owly.rrts.core.RrtsNode;
 import ch.ethz.idsc.owly.rrts.core.TransitionRegionQuery;
@@ -188,6 +189,6 @@ public class OwlyFrame {
   }
 
   public void addDrawable(ImageRegion imageRegion) {
-    owlyComponent.addDrawable(imageRegion);
+    owlyComponent.addDrawable(new ImageRegionRender(imageRegion));
   }
 }

@@ -36,4 +36,11 @@ public enum R2ImageRegions {
     charImage.draw('\u2182', new Point(-10, 305));
     return ImageRegions.fromGrayscale(charImage.getBufferedImage(), Tensors.vector(9, 6), false);
   }
+
+  public static ImageRegion inside_0f5c() {
+    CharImage charImage = CharImage.fillWhite(new Dimension(320, 640));
+    charImage.setFont(new Font(Font.DIALOG, Font.PLAIN, 600));
+    charImage.draw('\u0f5c', new Point(20, 560));
+    return ImageRegions.fromGrayscale(charImage.getBufferedImage(), Tensors.vector(10, 20), false);
+  }
 }

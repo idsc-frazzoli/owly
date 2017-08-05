@@ -49,7 +49,9 @@ public class CharImage {
 
   // demo
   public static void main(String[] args) throws IOException {
-    CharImage charImage = CharImage.fillWhite(new Dimension(480, 320));
+    CharImage charImage = CharImage.fillWhite(new Dimension(320, 640));
+    charImage.setFont(new Font(Font.DIALOG, Font.PLAIN, 600));
+    charImage.draw('\u0f5c', new Point(20, 560));
     // charImage.draw('\u2182', new Point(-10, 305));
     // charImage.draw('\u265b', new Point(-20, 300));
     // charImage.draw('\u0b36', new Point(0, 240));
