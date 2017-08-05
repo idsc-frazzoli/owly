@@ -1,6 +1,11 @@
 // code by jph
 package ch.ethz.idsc.owly.demo.rn.rrts;
 
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.Point;
+
+import ch.ethz.idsc.owly.data.CharImage;
 import ch.ethz.idsc.owly.demo.rn.RnNodeCollection;
 import ch.ethz.idsc.owly.demo.rn.RnTransitionSpace;
 import ch.ethz.idsc.owly.demo.util.ImageRegions;
@@ -21,7 +26,7 @@ import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
 
-enum R2ImageDemo {
+enum R2CharDemo {
   ;
   public static void main(String[] args) throws Exception {
     final int wid = 7;
@@ -29,7 +34,10 @@ enum R2ImageDemo {
     Tensor max = Tensors.vector(wid, wid);
     RnTransitionSpace rnss = new RnTransitionSpace();
     RrtsNodeCollection nc = new RnNodeCollection(min, max);
-    Region region = ImageRegions.loadFromRepository("/io/track0_100.png", Tensors.vector(wid, wid), false);
+    CharImage charImage = CharImage.fillBlack(new Dimension(256, 256));
+    charImage.setFont(new Font(Font.DIALOG, Font.PLAIN, 256));
+    charImage.draw('\u0b36', new Point(30, 200)); // 0b14
+    Region region = ImageRegions.fromGrayscale(charImage.getBufferedImage(), Tensors.vector(wid, wid), false);
     TransitionRegionQuery trq = //
         new SampledTransitionRegionQuery(new SimpleTrajectoryRegionQuery( //
             new TimeInvariantRegion(region)), RealScalar.of(.1));

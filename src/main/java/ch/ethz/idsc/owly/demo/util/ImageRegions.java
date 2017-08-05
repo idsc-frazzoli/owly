@@ -1,6 +1,7 @@
 // code by jph
 package ch.ethz.idsc.owly.demo.util;
 
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.zip.DataFormatException;
@@ -9,6 +10,7 @@ import ch.ethz.idsc.owly.math.region.ImageRegion;
 import ch.ethz.idsc.owly.math.region.Region;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.alg.TensorRank;
+import ch.ethz.idsc.tensor.io.ImageFormat;
 import ch.ethz.idsc.tensor.io.Import;
 
 public enum ImageRegions {
@@ -24,5 +26,10 @@ public enum ImageRegions {
     if (TensorRank.of(image) == 3)
       image = image.get(Tensor.ALL, Tensor.ALL, 0);
     return new ImageRegion(image, range, strict);
+  }
+
+  public static Region fromGrayscale(BufferedImage bufferedImage, Tensor range, boolean strict) {
+    return new ImageRegion( //
+        Images.displayOrientation(ImageFormat.fromGrayscale(bufferedImage)), range, strict);
   }
 }
