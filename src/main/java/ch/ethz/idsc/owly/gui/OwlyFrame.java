@@ -26,6 +26,7 @@ import javax.swing.event.ChangeListener;
 import ch.ethz.idsc.owly.data.tree.Nodes;
 import ch.ethz.idsc.owly.demo.util.UserHome;
 import ch.ethz.idsc.owly.glc.core.TrajectoryPlanner;
+import ch.ethz.idsc.owly.math.region.ImageRegion;
 import ch.ethz.idsc.owly.rrts.core.RrtsNode;
 import ch.ethz.idsc.owly.rrts.core.TransitionRegionQuery;
 import ch.ethz.idsc.tensor.Tensors;
@@ -184,5 +185,9 @@ public class OwlyFrame {
     BufferedImage myBufferedImage = new BufferedImage(dimension.width, dimension.height, BufferedImage.TYPE_INT_ARGB);
     owlyComponent.render(myBufferedImage.createGraphics(), dimension);
     return myBufferedImage;
+  }
+
+  public void addDrawable(ImageRegion imageRegion) {
+    owlyComponent.addDrawable(imageRegion);
   }
 }

@@ -13,11 +13,15 @@ import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
 import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
+import java.util.LinkedList;
+import java.util.List;
 
 import javax.swing.JComponent;
 import javax.swing.event.MouseInputAdapter;
 import javax.swing.event.MouseInputListener;
 
+import ch.ethz.idsc.owly.gui.region.ImageRegionRender;
+import ch.ethz.idsc.owly.math.region.ImageRegion;
 import ch.ethz.idsc.tensor.DecimalScalar;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
@@ -52,7 +56,7 @@ public class OwlyComponent {
       render((Graphics2D) graphics, getSize());
     }
   };
-  // EXPERIMENTAL
+  private List<RenderInterface> renderInterfaces = new LinkedList<>(); // TODO API not finalized
   public RenderElements renderElements; // TODO use setter function
 
   public OwlyComponent() {
@@ -109,7 +113,7 @@ public class OwlyComponent {
       jComponent.addMouseListener(mouseInputListener);
     }
     {
-      @SuppressWarnings("unused")
+      // @SuppressWarnings("unused")
       MouseListener mouseListener = new MouseAdapter() {
         @Override
         public void mousePressed(MouseEvent mouseEvent) {
@@ -138,6 +142,7 @@ public class OwlyComponent {
       graphics.draw(new Line2D.Double(toPoint2D(Tensors.vector(-10, 0)), toPoint2D(Tensors.vector(10, 0))));
       graphics.draw(new Line2D.Double(toPoint2D(Tensors.vector(0, -10)), toPoint2D(Tensors.vector(0, 10))));
     }
+    renderInterfaces.forEach(renderInterface -> renderInterface.render(owlyLayer, graphics));
     if (renderElements != null) {
       renderElements.list.forEach(renderInterface -> renderInterface.render(owlyLayer, graphics));
     }
@@ -167,5 +172,9 @@ public class OwlyComponent {
   /** @return {px, py, angle} in model space */
   public Tensor getMouseGoal() {
     return owlyLayer.getMouseSe2State();
+  }
+
+  public void addDrawable(ImageRegion imageRegion) {
+    renderInterfaces.add(new ImageRegionRender(imageRegion));
   }
 }

@@ -12,9 +12,9 @@ public final class TimeInvariantRegion implements StateTimeRegion {
     this.region = region;
   }
 
-  @Override
   /** @param StateTime of point to check
    * @return true if stateTime is member/part of/inside region */
+  @Override
   public boolean isMember(StateTime stateTime) {
     return region.isMember(stateTime.state());
   }
