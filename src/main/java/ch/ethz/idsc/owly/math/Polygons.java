@@ -5,7 +5,8 @@ import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Scalars;
 import ch.ethz.idsc.tensor.Tensor;
 
-public class Polygons {
+public enum Polygons {
+  ;
   /** @param polygon in the 2d-plane
    * @param point of which only the first two coordinates will be considered
    * @return true, if point is inside polygon, otherwise false */

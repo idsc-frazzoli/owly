@@ -5,6 +5,7 @@ import java.io.Serializable;
 import java.util.List;
 
 import ch.ethz.idsc.owly.math.flow.Flow;
+import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
 
@@ -16,7 +17,7 @@ public interface CostFunction extends Serializable {
   Scalar costIncrement(StateTime from, List<StateTime> trajectory, Flow flow);
 
   /** if a lower bound of the cost to goal is unknown,
-   * the function should return ZeroScalar.get()
+   * the function should return {@link RealScalar#ZERO}.
    * 
    * it is imperative that the function does not return a
    * greater number than is absolutely necessary to reach the goal

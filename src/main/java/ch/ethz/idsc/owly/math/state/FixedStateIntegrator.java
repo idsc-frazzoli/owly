@@ -20,7 +20,7 @@ public class FixedStateIntegrator implements StateIntegrator {
    * @param trajectorySize
    * @return */
   public static StateIntegrator createDefault(Scalar timeStep, int trajectorySize) {
-    return new FixedStateIntegrator(MidpointIntegrator.INSTANCE, timeStep, trajectorySize);
+    return create(MidpointIntegrator.INSTANCE, timeStep, trajectorySize);
   }
 
   public static StateIntegrator create(Integrator integrator, Scalar timeStep, int trajectorySize) {

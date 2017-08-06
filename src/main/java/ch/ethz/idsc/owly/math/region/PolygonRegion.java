@@ -4,6 +4,7 @@ package ch.ethz.idsc.owly.math.region;
 import ch.ethz.idsc.owly.math.Polygons;
 import ch.ethz.idsc.tensor.Tensor;
 
+/** check if input tensor is inside a polygon */
 public class PolygonRegion implements Region {
   private final Tensor polygon;
 

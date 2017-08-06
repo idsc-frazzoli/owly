@@ -42,6 +42,16 @@ public class Normalize2DTest extends TestCase {
     assertTrue(Chop._12.close(Norm._2.of(vec), RealScalar.ONE));
   }
 
+  public void testFail() {
+    Normalize.unlessZero(Tensors.vectorDouble(0.0, 0.0), Norm._2);
+    try {
+      Normalize.of(Tensors.vectorDouble(0.0, 0.0));
+      assertTrue(false);
+    } catch (Exception exception) {
+      // ---
+    }
+  }
+
   public void testNumberQFail1() {
     try {
       unlessZero(DoubleScalar.POSITIVE_INFINITY, RealScalar.ZERO);
