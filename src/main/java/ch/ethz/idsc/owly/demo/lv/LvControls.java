@@ -14,10 +14,10 @@ import ch.ethz.idsc.tensor.Tensors;
 import ch.ethz.idsc.tensor.alg.Subdivide;
 
 public class LvControls {
-  public static Collection<Flow> set(Scalar f0, Scalar f1) {
+  public static Collection<Flow> create(Scalar f0, Scalar f1, int num) {
     StateSpaceModel stateSpaceModel = new LvStateSpaceModel(f0, f1);
     List<Flow> list = new ArrayList<>();
-    for (Tensor u : Subdivide.of(0, 1, 1))
+    for (Tensor u : Subdivide.of(0, 1, num))
       list.add(StateSpaceModels.createFlow(stateSpaceModel, Tensors.of(u)));
     // list.add(StateSpaceModels.createFlow(stateSpaceModel, Tensors.vector(0)));
     return list;

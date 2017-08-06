@@ -19,7 +19,7 @@ class EtaRender implements RenderInterface {
 
   @Override
   public void render(OwlyLayer owlyLayer, Graphics2D graphics) {
-    Tensor inv = eta.map(Scalar::invert);
+    Tensor inv = eta.map(Scalar::reciprocal);
     graphics.setColor(Color.LIGHT_GRAY);
     Tensor ceiling = Ceiling.of(eta);
     for (int i = 0; i < ceiling.Get(1).number().intValue(); ++i) {

@@ -52,7 +52,7 @@ public class OwlyComponent {
       render((Graphics2D) graphics, getSize());
     }
   };
-  // EXPERIMENTAL
+  private RenderElements renderBackground = new RenderElements();
   public RenderElements renderElements; // TODO use setter function
 
   public OwlyComponent() {
@@ -109,7 +109,7 @@ public class OwlyComponent {
       jComponent.addMouseListener(mouseInputListener);
     }
     {
-      @SuppressWarnings("unused")
+      // @SuppressWarnings("unused")
       MouseListener mouseListener = new MouseAdapter() {
         @Override
         public void mousePressed(MouseEvent mouseEvent) {
@@ -138,6 +138,7 @@ public class OwlyComponent {
       graphics.draw(new Line2D.Double(toPoint2D(Tensors.vector(-10, 0)), toPoint2D(Tensors.vector(10, 0))));
       graphics.draw(new Line2D.Double(toPoint2D(Tensors.vector(0, -10)), toPoint2D(Tensors.vector(0, 10))));
     }
+    renderBackground.list.forEach(renderInterface -> renderInterface.render(owlyLayer, graphics));
     if (renderElements != null) {
       renderElements.list.forEach(renderInterface -> renderInterface.render(owlyLayer, graphics));
     }
@@ -167,5 +168,9 @@ public class OwlyComponent {
   /** @return {px, py, angle} in model space */
   public Tensor getMouseGoal() {
     return owlyLayer.getMouseSe2State();
+  }
+
+  public void addDrawable(RenderInterface renderInterface) {
+    renderBackground.list.add(renderInterface);
   }
 }

@@ -32,7 +32,7 @@ public class ImageGradient implements Serializable {
    * @param amp factor */
   public ImageGradient(Tensor image, Tensor range, Scalar amp) {
     List<Integer> dims = Dimensions.of(image);
-    scale = Tensors.vector(dims).pmul(range.map(Scalar::invert));
+    scale = Tensors.vector(dims).pmul(range.map(Scalar::reciprocal));
     Tensor diffx = Differences.of(image);
     diffx = TensorMap.of(t -> t.extract(0, dims.get(1) - 1), diffx, 1);
     Tensor diffy = Transpose.of(Differences.of(Transpose.of(image)));

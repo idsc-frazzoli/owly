@@ -4,6 +4,7 @@ package ch.ethz.idsc.owly.math.region;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
+import ch.ethz.idsc.tensor.TensorRuntimeException;
 import ch.ethz.idsc.tensor.red.Norm;
 import ch.ethz.idsc.tensor.sca.Ramp;
 
@@ -19,8 +20,8 @@ public class EllipsoidRegion extends ImplicitFunctionRegion {
   public EllipsoidRegion(Tensor center, Tensor radius) {
     this.center = center;
     if (!radius.equals(Ramp.of(radius))) // assert that radius are non-negative
-      throw new RuntimeException();
-    invert = radius.map(Scalar::invert); // throws an exception if any radius == 0
+      throw TensorRuntimeException.of(radius);
+    invert = radius.map(Scalar::reciprocal); // throws an exception if any radius == 0
   }
 
   @Override

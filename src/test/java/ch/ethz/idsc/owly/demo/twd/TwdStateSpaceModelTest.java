@@ -21,15 +21,15 @@ public class TwdStateSpaceModelTest extends TestCase {
     Scalar wheelDistance = RationalScalar.of(40, 10); // 40[cm]
     StateSpaceModel ssm = new TwdStateSpaceModel(wheelRadius, wheelDistance);
     { // full speed ahead
-      Tensor xdot = ssm.f(Array.zeros(3), Tensors.vector(1, 1).multiply(wheelRadius.invert())); // 1[rad]
+      Tensor xdot = ssm.f(Array.zeros(3), Tensors.vector(1, 1).divide(wheelRadius)); // 1[rad]
       assertEquals(xdot, Tensors.vector(1, 0, 0));
     }
     { // only ccw rotation
-      Tensor xdot = ssm.f(Array.zeros(3), Tensors.vector(-1, 1).multiply(wheelRadius.invert())); // 1[rad]
+      Tensor xdot = ssm.f(Array.zeros(3), Tensors.vector(-1, 1).divide(wheelRadius)); // 1[rad]
       assertEquals(xdot, Tensors.vector(0, 0, 0.5));
     }
     { // foward motion with ccw rotation
-      Tensor xdot = ssm.f(Array.zeros(3), Tensors.vector(0, 1).multiply(wheelRadius.invert())); // 1[rad]
+      Tensor xdot = ssm.f(Array.zeros(3), Tensors.vector(0, 1).divide(wheelRadius)); // 1[rad]
       assertEquals(xdot, Tensors.vector(0.5, 0, 0.25));
     }
   }

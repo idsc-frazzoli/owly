@@ -7,7 +7,7 @@ import ch.ethz.idsc.owly.glc.core.TrajectoryPlanner;
 import ch.ethz.idsc.owly.gui.Gui;
 import ch.ethz.idsc.owly.gui.OwlyFrame;
 import ch.ethz.idsc.tensor.RealScalar;
-import ch.ethz.idsc.tensor.io.GifSequenceWriter;
+import ch.ethz.idsc.tensor.io.AnimationWriter;
 
 /** simple animation of small boat driving upstream, or downstream in a river delta
  * 
@@ -19,7 +19,7 @@ enum DeltaExpandDemo {
     OwlyFrame owlyFrame = Gui.start();
     owlyFrame.configCoordinateOffset(33, 416);
     owlyFrame.jFrame.setBounds(100, 100, 620, 475);
-    GifSequenceWriter gsw = GifSequenceWriter.of(UserHome.Pictures("delta_s.gif"), 250);
+    AnimationWriter gsw = AnimationWriter.of(UserHome.Pictures("delta_s.gif"), 250);
     while (!trajectoryPlanner.getBest().isPresent() && owlyFrame.jFrame.isVisible()) {
       Expand.maxSteps(trajectoryPlanner, 40);
       owlyFrame.setGlc(trajectoryPlanner);

@@ -24,7 +24,7 @@ import javax.swing.JToolBar;
 import javax.swing.WindowConstants;
 
 import ch.ethz.idsc.owly.data.TimeKeeper;
-import ch.ethz.idsc.owly.demo.rn.R2NoiseRegion;
+import ch.ethz.idsc.owly.demo.rn.R2ImageRegions;
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
 import ch.ethz.idsc.owly.glc.adapter.Trajectories;
 import ch.ethz.idsc.owly.glc.core.GlcNode;
@@ -37,7 +37,8 @@ import ch.ethz.idsc.owly.gui.OwlyComponent;
 import ch.ethz.idsc.owly.gui.RenderElements;
 import ch.ethz.idsc.owly.gui.RenderInterface;
 import ch.ethz.idsc.owly.gui.TrajectoryRender;
-import ch.ethz.idsc.owly.math.region.Region;
+import ch.ethz.idsc.owly.gui.misc.ImageRegionRender;
+import ch.ethz.idsc.owly.math.region.ImageRegion;
 import ch.ethz.idsc.owly.math.state.StateTime;
 import ch.ethz.idsc.owly.math.state.TimeInvariantRegion;
 import ch.ethz.idsc.owly.math.state.TrajectoryRegionQuery;
@@ -93,9 +94,11 @@ public class OwlyAnimationFrame {
         timer.cancel();
       }
     });
-    Region region = new R2NoiseRegion(.4); // TODO not final design
+    // Region region = new R2NoiseRegion(.4); // TODO not final design
+    ImageRegion imageRegion = R2ImageRegions.inside_0f5c();
     TrajectoryRegionQuery obstacleQuery = //
-        new SimpleTrajectoryRegionQuery(new TimeInvariantRegion(region));
+        new SimpleTrajectoryRegionQuery(new TimeInvariantRegion(imageRegion));
+    owlyComponent.addDrawable(new ImageRegionRender(imageRegion));
     owlyComponent.jComponent.addMouseListener(new MouseAdapter() {
       MotionPlanWorker mpw = null;
 

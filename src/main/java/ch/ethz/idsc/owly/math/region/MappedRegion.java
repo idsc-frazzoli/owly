@@ -1,15 +1,15 @@
 // code by jph
 package ch.ethz.idsc.owly.math.region;
 
-import java.util.function.Function;
-
+import ch.ethz.idsc.owly.math.TensorUnaryOperator;
 import ch.ethz.idsc.tensor.Tensor;
 
+/** member check is carried on the input tensor mapped by the given operator */
 public class MappedRegion implements Region {
-  final Region region;
-  final Function<Tensor, Tensor> function;
+  private final Region region;
+  private final TensorUnaryOperator function;
 
-  public MappedRegion(Region region, Function<Tensor, Tensor> function) {
+  public MappedRegion(Region region, TensorUnaryOperator function) {
     this.region = region;
     this.function = function;
   }
