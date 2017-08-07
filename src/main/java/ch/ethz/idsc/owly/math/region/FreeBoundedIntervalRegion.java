@@ -5,8 +5,10 @@ import ch.ethz.idsc.tensor.RationalScalar;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Scalars;
 import ch.ethz.idsc.tensor.Tensor;
+import ch.ethz.idsc.tensor.TensorRuntimeException;
 import ch.ethz.idsc.tensor.sca.Abs;
 
+/** axis-aligned region of infinity extension in the direction of other axes */
 public class FreeBoundedIntervalRegion extends ImplicitFunctionRegion {
   public static final Scalar HALF = RationalScalar.of(1, 2);
   // ---
@@ -16,7 +18,7 @@ public class FreeBoundedIntervalRegion extends ImplicitFunctionRegion {
 
   public FreeBoundedIntervalRegion(int index, Scalar lo, Scalar hi) {
     if (!Scalars.lessThan(lo, hi))
-      throw new RuntimeException();
+      throw TensorRuntimeException.of(lo, hi);
     this.index = index;
     semiwidth = hi.subtract(lo).multiply(HALF);
     center = hi.add(lo).multiply(HALF);

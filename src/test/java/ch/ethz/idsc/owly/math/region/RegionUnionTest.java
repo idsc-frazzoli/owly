@@ -21,7 +21,7 @@ public class RegionUnionTest extends TestCase {
       stateList.add(new StateTime(goal, RealScalar.ZERO));
       regionList.add(new EllipsoidRegion(goal, radius));
     }
-    Region region = new RegionUnion(regionList);
+    Region region = RegionUnion.wrap(regionList);
     for (int i = 0; i < 8; i++) {
       Tensor testState = Tensors.of(RealScalar.of(1 * i), RealScalar.of(1 * i));
       assertTrue(region.isMember(testState));
@@ -55,7 +55,7 @@ public class RegionUnionTest extends TestCase {
       regionList.add(region2);
     }
     {
-      final Region regionUnion = new RegionUnion(regionList);
+      final Region regionUnion = RegionUnion.wrap(regionList);
       assertTrue(regionUnion.isMember(Tensors.vector(1, 1)));
       assertTrue(regionUnion.isMember(Tensors.vector(-1, 1)));
       assertFalse(regionUnion.isMember(Tensors.vector(-1, -1)));

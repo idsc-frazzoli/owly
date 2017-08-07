@@ -42,7 +42,7 @@ public class R2Entity extends AbstractEntity {
     super(new SimpleEpisodeIntegrator( //
         SingleIntegratorStateSpaceModel.INSTANCE, //
         EulerIntegrator.INSTANCE, //
-        new StateTime(Tensors.vector(0, 0), RealScalar.ZERO)));
+        new StateTime(Tensors.vector(5, 10), RealScalar.ZERO)));
   }
 
   /** @return index of sample of trajectory that is closest to current position */

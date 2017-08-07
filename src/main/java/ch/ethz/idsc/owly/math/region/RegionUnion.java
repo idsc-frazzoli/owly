@@ -35,18 +35,12 @@ public class RegionUnion implements Region {
   // ---
   private final Collection<Region> collection;
 
-  public RegionUnion(Collection<Region> collection) { // Constructor made public
+  private RegionUnion(Collection<Region> collection) {
     this.collection = collection;
   }
 
   @Override
   public boolean isMember(Tensor tensor) {
-    /** straight forward implementation: */
-    // boolean isMember = false;
-    // for (Region region : collection)
-    // isMember |= region.isMember(tensor);
-    // return isMember;
-    /** parallel implementation: */
     return collection.stream().parallel().anyMatch(region -> region.isMember(tensor));
   }
 }

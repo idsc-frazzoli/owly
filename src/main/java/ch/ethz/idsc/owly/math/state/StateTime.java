@@ -19,11 +19,12 @@ public final class StateTime implements Serializable {
     this.time = time;
   }
 
-  /** @return the state */
+  /** @return state that was passed to the constructor */
   public Tensor state() {
     return x;
   }
 
+  /** @return time that was passed to the constructor */
   public Scalar time() {
     return time;
   }

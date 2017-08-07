@@ -17,13 +17,13 @@ public class DeltaParameters extends DefaultParameters {
   @Override
   /** @return if Lipschitz == 0: R²/partitionScale */
   protected final Tensor EtaLfZero() {
-    return getPartitionScale().map(Scalar::invert).multiply(Power.of(getResolution(), 2)); //
+    return getPartitionScale().map(Scalar::reciprocal).multiply(Power.of(getResolution(), 2)); //
   }
 
   @Override
   /** @return R²/partitionScale */
   protected final Tensor EtaLfNonZero(Scalar lipschitz) {
-    return getPartitionScale().map(Scalar::invert) //
+    return getPartitionScale().map(Scalar::reciprocal) //
         .multiply(Power.of(getResolution(), RealScalar.ONE.add(lipschitz)));
   }
 }

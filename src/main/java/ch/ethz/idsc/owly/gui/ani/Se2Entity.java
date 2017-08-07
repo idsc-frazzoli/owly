@@ -72,7 +72,7 @@ public class Se2Entity extends AbstractEntity {
     super(new SimpleEpisodeIntegrator( //
         Se2StateSpaceModel.INSTANCE, //
         integrator, //
-        new StateTime(Tensors.vector(0, 0, 0), RealScalar.ZERO))); // initial position
+        new StateTime(Tensors.vector(5, 10, 0), RealScalar.ZERO))); // initial position
     this.integrator = integrator;
     controls = Se2Controls.createControlsForwardAndReverse(RealScalar.ONE, 6); // TODO magic const
     goalRadius_xy = Sqrt.of(RealScalar.of(2)).divide(PARTITIONSCALE.Get(0));
