@@ -9,12 +9,15 @@ import ch.ethz.idsc.owly.gui.OwlyFrame;
 import ch.ethz.idsc.tensor.RationalScalar;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
+import ch.ethz.idsc.tensor.Tensor;
+import ch.ethz.idsc.tensor.Tensors;
 
 enum DeltaGlcConstTimeAnyDemo {
   ;
   public static void main(String[] args) throws Exception {
     RationalScalar resolution = (RationalScalar) RationalScalar.of(11, 1);
-    TrajectoryPlannerContainer trajectoryPlannerContainer = DeltaHelper.createGlcAny(RealScalar.of(-0.25), resolution);
+    Tensor partitionScale = Tensors.vector(6e29, 6e29);
+    TrajectoryPlannerContainer trajectoryPlannerContainer = DeltaHelper.createGlcAny(RealScalar.of(-0.25), resolution, partitionScale);
     OwlyFrame owlyFrame = Gui.start();
     owlyFrame.configCoordinateOffset(33, 416);
     owlyFrame.jFrame.setBounds(100, 100, 620, 475);

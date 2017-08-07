@@ -20,6 +20,7 @@ import ch.ethz.idsc.owly.gui.Gui;
 import ch.ethz.idsc.owly.gui.OwlyFrame;
 import ch.ethz.idsc.owly.math.region.EllipsoidRegion;
 import ch.ethz.idsc.owly.math.region.Region;
+import ch.ethz.idsc.owly.math.region.RegionUnion;
 import ch.ethz.idsc.owly.math.state.StateTime;
 import ch.ethz.idsc.tensor.DoubleScalar;
 import ch.ethz.idsc.tensor.RationalScalar;
@@ -33,7 +34,8 @@ enum DeltaGlcConstTimeHeuristicAnyDemo {
   public static void main(String[] args) throws Exception {
     // -- Quick Planner init
     RationalScalar quickResolution = (RationalScalar) RationalScalar.of(10, 1);
-    TrajectoryPlannerContainer quickTrajectoryPlannerContainer = DeltaHelper.createGlc(RealScalar.of(-0.5), quickResolution);
+    Tensor partitionScale = Tensors.vector(2e26, 2e26);
+    TrajectoryPlannerContainer quickTrajectoryPlannerContainer = DeltaHelper.createGlc(RealScalar.of(-0.5), quickResolution, partitionScale);
     Expand.maxDepth(quickTrajectoryPlannerContainer.getTrajectoryPlanner(), DoubleScalar.POSITIVE_INFINITY.number().intValue());
     OwlyFrame quickOwlyFrame = Gui.start();
     quickOwlyFrame.configCoordinateOffset(33, 416);
@@ -50,15 +52,23 @@ enum DeltaGlcConstTimeHeuristicAnyDemo {
     DebugUtils.heuristicConsistencyCheck(quickTrajectoryPlannerContainer.getTrajectoryPlanner());
     System.out.println("***QUICK PLANNER FINISHED***");
     // -- SLOWPLANNER
+    partitionScale = Tensors.vector(6e29, 6e29);
     RationalScalar resolution = (RationalScalar) RationalScalar.of(14, 1);
-    TrajectoryPlannerContainer slowTrajectoryPlannerContainer = DeltaHelper.createGlcAny(RealScalar.of(-0.5), resolution);
+    TrajectoryPlannerContainer slowTrajectoryPlannerContainer = DeltaHelper.createGlcAny(RealScalar.of(-0.5), resolution, partitionScale);
     // -- GOALMANAGER
     // TODO: needs to be removed from main
     Iterator<StateTime> iterator = quickTrajectory.iterator();
     List<Region> goalRegions = new ArrayList<>();
+    List<Region> goalCheckHelpRegions = new ArrayList<>();
     Tensor radius = Tensors.vector(0.1, 0.1);
-    while (iterator.hasNext())
-      goalRegions.add(new EllipsoidRegion(iterator.next().state(), radius));
+    Tensor maxChangePerIterstep = Tensors.vector(1, 1).multiply(slowTrajectoryPlannerContainer.getParameters().getExpandTime()
+        .multiply(((DeltaStateSpaceModel) slowTrajectoryPlannerContainer.getStateSpaceModel()).getMaxPossibleChange()));
+    Tensor GoalCheckHelpRadius = radius.add(maxChangePerIterstep);
+    while (iterator.hasNext()) {
+      StateTime next = iterator.next();
+      goalRegions.add(new EllipsoidRegion(next.state(), radius));
+      goalCheckHelpRegions.add(new EllipsoidRegion(next.state(), GoalCheckHelpRadius));
+    }
     DeltaTrajectoryGoalManager trajectoryGoalManager = new DeltaTrajectoryGoalManager(goalRegions, quickTrajectory, radius, //
         ((DeltaStateSpaceModel) slowTrajectoryPlannerContainer.getStateSpaceModel()).getMaxPossibleChange());
     ((OptimalAnyTrajectoryPlanner) slowTrajectoryPlannerContainer.getTrajectoryPlanner()).changeToGoal(trajectoryGoalManager);
@@ -90,7 +100,7 @@ enum DeltaGlcConstTimeHeuristicAnyDemo {
       trajectoryGoalManager = new DeltaTrajectoryGoalManager(trajectoryGoalManager.deleteRegionsBefore(furthestState) //
           , quickTrajectory, radius, maxSpeed);
       ((OptimalAnyTrajectoryPlanner) slowTrajectoryPlannerContainer.getTrajectoryPlanner()).changeToGoal(//
-          trajectoryGoalManager);
+          trajectoryGoalManager, RegionUnion.wrap(goalCheckHelpRegions));
       if (trajectoryGoalManager.getGoalRegionList().size() < 2)
         System.err.println("GoalRegion in singular --> FINAL GOAL");
       long tocTemp = System.nanoTime();

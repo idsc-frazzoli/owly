@@ -22,7 +22,7 @@ public class TimeDependentTurningRingRegionTest extends TestCase {
     assertFalse(test.isMember(new StateTime(Tensors.vector(0, -1.5, 0), RealScalar.of(0)))); // outside
     assertFalse(test.isMember(new StateTime(Tensors.vector(0, 1.5, 0), RealScalar.of(0)))); // outside
     assertFalse(test.isMember(new StateTime(Tensors.vector(1, 0, 0), RealScalar.of(0)))); // in gap
-    assertTrue(test.isMember(new StateTime(Tensors.vector(1, 0, 3), RealScalar.of(3)))); // 4s = 120° later
+    assertTrue(test.isMember(new StateTime(Tensors.vector(1, 0, 3), RealScalar.of(3)))); // 3s = 90° later
     // --
     assertTrue(test.isMember(new StateTime(Tensors.vector(0, 1, 0), RealScalar.of(0)))); // North
     assertFalse(test.isMember(new StateTime(Tensors.vector(0, 1, 3), RealScalar.of(3)))); // 3s = 90° later in gap at North
@@ -32,7 +32,7 @@ public class TimeDependentTurningRingRegionTest extends TestCase {
     // --
     assertTrue(test.isMember(new StateTime(Tensors.vector(0, -1, 0), RealScalar.of(0)))); // South
     // TODO ONLY FOR COMPILEREASONS (TEMPORARY)
-    // assertFalse(test.isMember(new StateTime(Tensors.vector(0, -1, 9), RealScalar.of(9))));
+    assertFalse(test.isMember(new StateTime(Tensors.vector(0, -1, 9), RealScalar.of(9))));
     assertTrue(test.isMember(new StateTime(Tensors.vector(1, 0, 9), RealScalar.of(9))));// 9s=270° later in gap
     // --
   }

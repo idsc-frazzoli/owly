@@ -23,18 +23,23 @@ public class TimeDependentTurningRingRegion implements StateTimeRegion {
   private final Scalar upperRingRadius;
   private final Scalar turningSpeed = Se2Utils.DEGREE(30); // 30 °/s
 
-  public TimeDependentTurningRingRegion(Tensor center, Scalar initialGapAngle, Scalar gapLength, Scalar ringThickness, Scalar ringRadius) {
+  /** Constructs a Ring, with a gap in it, which turns at 30°/s CCW
+   * 
+   * @param center
+   * @param initialGapAngle: inital positon where Gap should be
+   * @param gapSizeAngle: size of Gap in rad
+   * @param ringThickness: thickness of the obstacleRing
+   * @param ringRadius: Radius of the Ring (to the middle) */
+  public TimeDependentTurningRingRegion(Tensor center, Scalar initialGapAngle, Scalar gapSizeAngle, Scalar ringThickness, Scalar ringRadius) {
     this.center = center;
     this.initialGapAngle = initialGapAngle;
-    this.gapSizeAngle = gapLength;
+    this.gapSizeAngle = gapSizeAngle;
     this.lowerRingRadius = ringRadius.subtract(ringThickness.divide(RealScalar.of(2)));
     this.upperRingRadius = ringRadius.add(ringThickness.divide(RealScalar.of(2)));
   }
 
   @Override
   public boolean isMember(StateTime stateTime) {
-    System.out.println("");
-    System.err.println("count");
     Scalar time = stateTime.time();
     Tensor state = stateTime.state().extract(0, 2);
     // flatten(-1) right?
@@ -48,20 +53,17 @@ public class TimeDependentTurningRingRegion implements StateTimeRegion {
       Scalar lowerGapAngle = initialGapAngle.subtract(gapSizeAngle.divide(RealScalar.of(2)));
       Tensor vec1 = state.subtract(center);
       Tensor vec2 = Tensors.vector(1, 0);
-      Tensor angle = ArcCos.of((vec1.dot(vec2)).divide(Norm._2.of(vec1)).divide(Norm._2.of(vec2))).subtract(turningSpeed.multiply(time));
-      System.out.println("Angle" + angle);
-      System.out.println("Upper_" + MOD.of(upperGapAngle));
-      System.out.println("lower_" + MOD.of(lowerGapAngle));
-      if (!angle.isScalar())
+      Tensor angleTensor = ArcCos.of((vec1.dot(vec2)).divide(Norm._2.of(vec1)).divide(Norm._2.of(vec2)));
+      if (!angleTensor.isScalar())
         throw new RuntimeException();
-      // TODO JONAS: does not work yet, as arccos gives me value between Pi and -Pi
-      if (Scalars.lessEquals((Scalar) MOD.of(angle), upperGapAngle)//
-          && Scalars.lessEquals(lowerGapAngle, (Scalar) MOD.of(angle))) {
-        System.out.println("In GAP");
-        return false; // in Obstacle by angle
-      } else {
-        return true;
+      Scalar angle = (Scalar) angleTensor;
+      if (Scalars.lessThan(vec1.Get(1), RealScalar.ZERO)) { // if state is in lower half : negative Angle
+        angle = angle.negate();
       }
+      angle = angle.subtract(turningSpeed.multiply(time));
+      if (Scalars.lessEquals(MOD.of(angle), upperGapAngle) && Scalars.lessEquals(lowerGapAngle, MOD.of(angle)))
+        return false; // checks if in GAP
+      return true; // Otherwise in Ring
     }
     return false;
   }
