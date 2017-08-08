@@ -188,7 +188,11 @@ public class OwlyFrame {
     return myBufferedImage;
   }
 
-  public void addDrawable(ImageRegion imageRegion) {
-    owlyComponent.addDrawable(new ImageRegionRender(imageRegion));
+  public void addBackground(ImageRegion imageRegion) {
+    addBackground(new ImageRegionRender(imageRegion));
+  }
+
+  public void addBackground(RenderInterface renderInterface) {
+    owlyComponent.addDrawable(renderInterface);
   }
 }

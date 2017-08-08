@@ -37,6 +37,8 @@ import ch.ethz.idsc.owly.gui.OwlyComponent;
 import ch.ethz.idsc.owly.gui.RenderElements;
 import ch.ethz.idsc.owly.gui.RenderInterface;
 import ch.ethz.idsc.owly.gui.TrajectoryRender;
+import ch.ethz.idsc.owly.gui.misc.ImageRegionRender;
+import ch.ethz.idsc.owly.math.region.ImageRegion;
 import ch.ethz.idsc.owly.math.state.EmptyTrajectoryRegionQuery;
 import ch.ethz.idsc.owly.math.state.StateTime;
 import ch.ethz.idsc.owly.math.state.TrajectoryRegionQuery;
@@ -166,6 +168,10 @@ public class OwlyAnimationFrame {
 
   public void setObstacleQuery(TrajectoryRegionQuery obstacleQuery) {
     this.obstacleQuery = obstacleQuery;
+  }
+
+  public void addBackground(ImageRegion imageRegion) {
+    addBackground(new ImageRegionRender(imageRegion));
   }
 
   public void addBackground(RenderInterface renderInterface) {

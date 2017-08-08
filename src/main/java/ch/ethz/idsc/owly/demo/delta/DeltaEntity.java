@@ -1,5 +1,5 @@
 // code by jph
-package ch.ethz.idsc.owly.demo.rn;
+package ch.ethz.idsc.owly.demo.delta;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
@@ -8,21 +8,20 @@ import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.util.Collection;
 
-import ch.ethz.idsc.owly.demo.util.R2Controls;
 import ch.ethz.idsc.owly.glc.core.StandardTrajectoryPlanner;
 import ch.ethz.idsc.owly.glc.core.TrajectoryPlanner;
 import ch.ethz.idsc.owly.glc.core.TrajectorySample;
 import ch.ethz.idsc.owly.gui.OwlyLayer;
 import ch.ethz.idsc.owly.gui.ani.AbstractEntity;
-import ch.ethz.idsc.owly.math.SingleIntegratorStateSpaceModel;
 import ch.ethz.idsc.owly.math.flow.EulerIntegrator;
 import ch.ethz.idsc.owly.math.flow.Flow;
+import ch.ethz.idsc.owly.math.flow.RungeKutta45Integrator;
+import ch.ethz.idsc.owly.math.state.EpisodeIntegrator;
 import ch.ethz.idsc.owly.math.state.FixedStateIntegrator;
 import ch.ethz.idsc.owly.math.state.SimpleEpisodeIntegrator;
 import ch.ethz.idsc.owly.math.state.StateIntegrator;
 import ch.ethz.idsc.owly.math.state.StateTime;
 import ch.ethz.idsc.owly.math.state.TrajectoryRegionQuery;
-import ch.ethz.idsc.tensor.DoubleScalar;
 import ch.ethz.idsc.tensor.RationalScalar;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
@@ -31,24 +30,30 @@ import ch.ethz.idsc.tensor.Tensors;
 import ch.ethz.idsc.tensor.red.ArgMin;
 import ch.ethz.idsc.tensor.red.Norm;
 
-/** omni-directional movement with constant speed */
-public class R2Entity extends AbstractEntity {
+/** class controls delta using {@link StandardTrajectoryPlanner} */
+public class DeltaEntity extends AbstractEntity {
   private static final Tensor FALLBACK_CONTROL = Tensors.vector(0, 0).unmodifiable();
   /** preserve 1[s] of the former trajectory */
-  private static final Scalar DELAY_HINT = RealScalar.ONE;
-  // ---
-  private final Collection<Flow> controls = R2Controls.createRadial(23); // TODO magic const
+  private static final Scalar DELAY_HINT = RealScalar.of(2);
+  private static final Scalar maxInput = RealScalar.of(.6);
 
-  public R2Entity(Tensor state) {
-    super(new SimpleEpisodeIntegrator( //
-        SingleIntegratorStateSpaceModel.INSTANCE, //
+  public static DeltaEntity createDefault(ImageGradient ipr, Tensor state) {
+    EpisodeIntegrator episodeIntegrator = new SimpleEpisodeIntegrator( //
+        new DeltaStateSpaceModel(ipr, maxInput), //
         EulerIntegrator.INSTANCE, //
-        new StateTime(state, RealScalar.ZERO)));
+        new StateTime(state, RealScalar.ZERO));
+    return new DeltaEntity(episodeIntegrator, ipr, state);
   }
 
-  /** @return index of sample of trajectory that is closest to current position */
+  private final ImageGradient ipr;
+
+  public DeltaEntity(EpisodeIntegrator episodeIntegrator, ImageGradient ipr, Tensor state) {
+    super(episodeIntegrator);
+    this.ipr = ipr;
+  }
+
   @Override
-  public synchronized int indexOfClosestTrajectorySample() {
+  public int indexOfClosestTrajectorySample() {
     final Tensor x = episodeIntegrator.tail().state();
     return ArgMin.of(Tensor.of(trajectory.stream() //
         .map(TrajectorySample::stateTime) //
@@ -68,13 +73,15 @@ public class R2Entity extends AbstractEntity {
 
   @Override
   public TrajectoryPlanner createTrajectoryPlanner(TrajectoryRegionQuery obstacleQuery, Tensor goal) {
-    Tensor partitionScale = Tensors.vector(6, 6);
-    StateIntegrator stateIntegrator = //
-        FixedStateIntegrator.create(EulerIntegrator.INSTANCE, RationalScalar.of(1, 10), 4);
-    RnSimpleCircleHeuristicGoalManager rnGoal = //
-        new RnSimpleCircleHeuristicGoalManager(goal.extract(0, 2), DoubleScalar.of(.2));
+    Tensor eta = Tensors.vector(11, 11);
+    StateIntegrator stateIntegrator = FixedStateIntegrator.create( //
+        RungeKutta45Integrator.INSTANCE, RationalScalar.of(1, 10), 4);
+    Collection<Flow> controls = DeltaControls.createControls( //
+        new DeltaStateSpaceModel(ipr, maxInput), maxInput, 25);
+    DeltaGoalManager deltaGoalManager = new DeltaGoalManager( //
+        goal.extract(0, 2), Tensors.vector(.3, .3));
     return new StandardTrajectoryPlanner( //
-        partitionScale, stateIntegrator, controls, obstacleQuery, rnGoal);
+        eta, stateIntegrator, controls, obstacleQuery, deltaGoalManager);
   }
 
   @Override
