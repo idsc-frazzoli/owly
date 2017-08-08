@@ -1,11 +1,16 @@
 // code by jl
 package ch.ethz.idsc.owly.demo.delta.glc;
 
+import java.util.List;
+
+import ch.ethz.idsc.owly.glc.adapter.StateTimeTrajectories;
 import ch.ethz.idsc.owly.glc.adapter.TrajectoryPlannerContainer;
 import ch.ethz.idsc.owly.glc.core.DebugUtils;
 import ch.ethz.idsc.owly.glc.core.Expand;
+import ch.ethz.idsc.owly.glc.core.GlcNodes;
 import ch.ethz.idsc.owly.gui.Gui;
 import ch.ethz.idsc.owly.gui.OwlyFrame;
+import ch.ethz.idsc.owly.math.state.StateTime;
 import ch.ethz.idsc.tensor.RationalScalar;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Tensor;
@@ -28,5 +33,7 @@ enum DeltaGlcDemo {
       if (trajectoryPlannerContainer.getTrajectoryPlanner().getQueue().isEmpty())
         break;
     }
+    List<StateTime> trajectory = GlcNodes.getPathFromRootTo(trajectoryPlannerContainer.getTrajectoryPlanner().getBest().get());
+    StateTimeTrajectories.print(trajectory);
   }
 }

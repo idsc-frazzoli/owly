@@ -1,6 +1,16 @@
 // code by jph & jl
 package ch.ethz.idsc.owly.demo.rnxt.glc;
 
+import java.util.List;
+
+import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
+import ch.ethz.idsc.owly.glc.adapter.StateTimeTrajectories;
+import ch.ethz.idsc.owly.glc.core.GoalInterface;
+import ch.ethz.idsc.owly.glc.core.NoHeuristic;
+import ch.ethz.idsc.owly.math.flow.Flow;
+import ch.ethz.idsc.owly.math.region.EllipsoidRegion;
+import ch.ethz.idsc.owly.math.state.StateTime;
+import ch.ethz.idsc.owly.math.state.TimeInvariantRegion;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.alg.Array;
@@ -11,7 +21,11 @@ import ch.ethz.idsc.tensor.sca.Sqrt;
 
 /** objective is minimum path length
  * path length is measured in Euclidean distance */
-public class R2xtHeuristicEllipsoidGoalManager extends RnxtEllipsoidGoalManager {
+public class R2xtHeuristicEllipsoidGoalManager extends SimpleTrajectoryRegionQuery implements GoalInterface, NoHeuristic {
+  // protected as used in subclasses
+  protected final Tensor center;
+  protected final Tensor radius;
+
   /** constructor creates a spherical region in R^n x T with given center and radius.
    * distance measure is Euclidean distance, if radius(i) = infinity => cyclinder
    * 
@@ -27,9 +41,17 @@ public class R2xtHeuristicEllipsoidGoalManager extends RnxtEllipsoidGoalManager 
    * @param center vector with length == n
    * @param radius vector with length == n & positive in all entrys */
   public R2xtHeuristicEllipsoidGoalManager(Tensor center, Tensor radius) {
-    super(center, radius);
-    if (center.length() != 3)
-      throw new RuntimeException(); // needs to be R2 x T therefore 3 states
+    super(new TimeInvariantRegion(new EllipsoidRegion(center, radius)));
+    if (center.length() != 3)// needs to be R2 x T therefore 3 states
+      throw new RuntimeException();
+    this.radius = radius;
+    this.center = center;
+  }
+
+  /** shortest Time Cost */
+  @Override
+  public Scalar costIncrement(StateTime from, List<StateTime> trajectory, Flow flow) {
+    return StateTimeTrajectories.timeIncrement(from, trajectory);
   }
 
   /** Ellipsoid with axis: a,b and vector from Center: v = (x,y)

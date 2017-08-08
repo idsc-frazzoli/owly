@@ -2,6 +2,7 @@
 package ch.ethz.idsc.owly.glc.core;
 
 import java.io.Serializable;
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -14,6 +15,12 @@ public class TrajectorySample implements Serializable {
    * @return first entry of a trajectory that does not specify flow */
   public static TrajectorySample head(StateTime stateTime) {
     return new TrajectorySample(stateTime, null);
+  }
+
+  public static void print(List<TrajectorySample> list) {
+    System.out.println("Trajectory (" + list.size() + ")");
+    for (TrajectorySample sample : list)
+      System.out.println(sample.toInfoString());
   }
 
   // ---
