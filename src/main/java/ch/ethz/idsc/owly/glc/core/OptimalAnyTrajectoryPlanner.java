@@ -298,13 +298,13 @@ public class OptimalAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
         .filter(node -> possibleGoalNodesRegion.isMember(node.state()))//
         .collect(Collectors.toList());
     // checking only Nodes, which could reach the Goal
-    System.out.println("Comparing Lists: Tree: " + treeCollection.size() + " possibleGoalNodes: " + possibleGoalNodes.size());
+    System.out.println("Total Nodes in Tree: " + treeCollection.size() + " possibleGoalNodes: " + possibleGoalNodes.size());
     return GoalCheckTree(possibleGoalNodes);
   }
 
   @Override
   protected boolean GoalCheckTree(final Collection<GlcNode> treeCollection) {
-    // Parallel: 15%-50% Speedgain, tested with R2GlcConstTimeHeuristicAnyDemo, b7
+    // Parallel: 15%-50% Speedgain, tested with R2GlcConstTimeHeuristicAnyDemo, 
     // TODO JAN: why does parallel give different result? then non parallel? e.g. R2GlcAnyCircleDemo
     treeCollection.stream().forEach(node -> {
       if (!node.isRoot()) {
