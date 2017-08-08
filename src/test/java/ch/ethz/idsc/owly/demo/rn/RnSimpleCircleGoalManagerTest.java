@@ -48,6 +48,6 @@ public class RnSimpleCircleGoalManagerTest extends TestCase {
 
   public void testNoHeuristic2() {
     RnSimpleCircleHeuristicGoalManager rnGoal = new RnSimpleCircleHeuristicGoalManager(Tensors.vector(5, 0), RealScalar.of(2));
-    assertTrue(rnGoal instanceof NoHeuristic); // FIXME JONAS this should evaluate to FALSE!
+    assertFalse(rnGoal instanceof NoHeuristic); // correct
   }
 }
