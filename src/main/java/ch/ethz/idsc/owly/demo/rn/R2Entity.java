@@ -1,5 +1,5 @@
 // code by jph
-package ch.ethz.idsc.owly.gui.ani;
+package ch.ethz.idsc.owly.demo.rn;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
@@ -8,12 +8,12 @@ import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.util.Collection;
 
-import ch.ethz.idsc.owly.demo.rn.RnSimpleCircleHeuristicGoalManager;
 import ch.ethz.idsc.owly.demo.util.R2Controls;
 import ch.ethz.idsc.owly.glc.core.StandardTrajectoryPlanner;
 import ch.ethz.idsc.owly.glc.core.TrajectoryPlanner;
 import ch.ethz.idsc.owly.glc.core.TrajectorySample;
 import ch.ethz.idsc.owly.gui.OwlyLayer;
+import ch.ethz.idsc.owly.gui.ani.AbstractEntity;
 import ch.ethz.idsc.owly.math.SingleIntegratorStateSpaceModel;
 import ch.ethz.idsc.owly.math.flow.EulerIntegrator;
 import ch.ethz.idsc.owly.math.flow.Flow;
@@ -38,16 +38,16 @@ public class R2Entity extends AbstractEntity {
   private static final Scalar DELAY_HINT = RealScalar.ONE;
 
   // ---
-  public R2Entity() {
+  public R2Entity(Tensor state) {
     super(new SimpleEpisodeIntegrator( //
         SingleIntegratorStateSpaceModel.INSTANCE, //
         EulerIntegrator.INSTANCE, //
-        new StateTime(Tensors.vector(5, 10), RealScalar.ZERO)));
+        new StateTime(state, RealScalar.ZERO)));
   }
 
   /** @return index of sample of trajectory that is closest to current position */
   @Override
-  synchronized int indexOfClosestTrajectorySample() {
+  public synchronized int indexOfClosestTrajectorySample() {
     final Tensor x = episodeIntegrator.tail().state();
     return ArgMin.of(Tensor.of(trajectory.stream() //
         .map(TrajectorySample::stateTime) //
@@ -56,17 +56,17 @@ public class R2Entity extends AbstractEntity {
   }
 
   @Override
-  Tensor fallbackControl() {
+  public Tensor fallbackControl() {
     return FALLBACK_CONTROL;
   }
 
   @Override
-  Scalar delayHint() {
+  public Scalar delayHint() {
     return DELAY_HINT;
   }
 
   @Override
-  TrajectoryPlanner createTrajectoryPlanner(TrajectoryRegionQuery obstacleQuery, Tensor goal) {
+  public TrajectoryPlanner createTrajectoryPlanner(TrajectoryRegionQuery obstacleQuery, Tensor goal) {
     Tensor partitionScale = Tensors.vector(6, 6);
     StateIntegrator stateIntegrator = //
         FixedStateIntegrator.create(EulerIntegrator.INSTANCE, RationalScalar.of(1, 10), 4);

@@ -9,7 +9,9 @@ import ch.ethz.idsc.owly.data.CharImage;
 import ch.ethz.idsc.owly.demo.util.ImageRegions;
 import ch.ethz.idsc.owly.math.region.ImageRegion;
 import ch.ethz.idsc.tensor.Tensors;
+import ch.ethz.idsc.tensor.io.NativeImageFormat;
 
+/** collection of ready-to-use image regions */
 public enum R2ImageRegions {
   ;
   public static ImageRegion outside_0b36() {
@@ -41,6 +43,8 @@ public enum R2ImageRegions {
     CharImage charImage = CharImage.fillWhite(new Dimension(320, 640));
     charImage.setFont(new Font(Font.DIALOG, Font.PLAIN, 600));
     charImage.draw('\u0f5c', new Point(20, 560));
-    return ImageRegions.fromGrayscale(charImage.getBufferedImage(), Tensors.vector(10, 20), false);
+    // native image format gives image transposed
+    return new ImageRegion( //
+        NativeImageFormat.fromGrayscale(charImage.getBufferedImage()), Tensors.vector(20, 10), false);
   }
 }

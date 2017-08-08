@@ -18,6 +18,7 @@ import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensors;
 
+@Deprecated
 public class Rice2Entity implements AnimationInterface, RenderInterface {
   StateSpaceModel ssm = new Rice2StateSpaceModel(RealScalar.of(1.5));
   EpisodeIntegrator episodeIntegrator = new SimpleEpisodeIntegrator( //

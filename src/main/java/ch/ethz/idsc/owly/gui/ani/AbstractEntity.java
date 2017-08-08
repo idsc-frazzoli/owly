@@ -64,21 +64,21 @@ public abstract class AbstractEntity implements RenderInterface, AnimationInterf
 
   /** @param delay
    * @return estimated location of agent after given delay */
-  final Tensor getEstimatedLocationAt(Scalar delay) {
+  public final Tensor getEstimatedLocationAt(Scalar delay) {
     if (Objects.isNull(trajectory))
       return episodeIntegrator.tail().state();
     List<TrajectorySample> relevant = getFutureTrajectoryUntil(delay);
     return relevant.get(relevant.size() - 1).stateTime().state();
   }
 
-  abstract int indexOfClosestTrajectorySample();
+  public abstract int indexOfClosestTrajectorySample();
 
-  abstract Tensor fallbackControl();
+  public abstract Tensor fallbackControl();
 
-  abstract Scalar delayHint();
+  public abstract Scalar delayHint();
 
   /** @param obstacleQuery
    * @param goal for instance {px, py, angle}
    * @return */
-  abstract TrajectoryPlanner createTrajectoryPlanner(TrajectoryRegionQuery obstacleQuery, Tensor goal);
+  public abstract TrajectoryPlanner createTrajectoryPlanner(TrajectoryRegionQuery obstacleQuery, Tensor goal);
 }

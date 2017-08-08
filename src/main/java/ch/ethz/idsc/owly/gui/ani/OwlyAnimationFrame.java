@@ -23,8 +23,8 @@ import javax.swing.JPanel;
 import javax.swing.JToolBar;
 import javax.swing.WindowConstants;
 
+import ch.ethz.idsc.owly.data.GlobalAssert;
 import ch.ethz.idsc.owly.data.TimeKeeper;
-import ch.ethz.idsc.owly.demo.rn.R2ImageRegions;
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
 import ch.ethz.idsc.owly.glc.adapter.Trajectories;
 import ch.ethz.idsc.owly.glc.core.GlcNode;
@@ -37,49 +37,53 @@ import ch.ethz.idsc.owly.gui.OwlyComponent;
 import ch.ethz.idsc.owly.gui.RenderElements;
 import ch.ethz.idsc.owly.gui.RenderInterface;
 import ch.ethz.idsc.owly.gui.TrajectoryRender;
-import ch.ethz.idsc.owly.gui.misc.ImageRegionRender;
-import ch.ethz.idsc.owly.math.region.ImageRegion;
+import ch.ethz.idsc.owly.math.state.EmptyTrajectoryRegionQuery;
 import ch.ethz.idsc.owly.math.state.StateTime;
-import ch.ethz.idsc.owly.math.state.TimeInvariantRegion;
 import ch.ethz.idsc.owly.math.state.TrajectoryRegionQuery;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
+import ch.ethz.idsc.tensor.Tensors;
 
-// TODO class is in draft status! API will change drastically 
+// TODO class is in draft status, API not finalized 
 public class OwlyAnimationFrame {
   public final JFrame jFrame = new JFrame();
   private final OwlyComponent owlyComponent = new OwlyComponent();
   private final JLabel jLabel = new JLabel();
   private final Timer timer = new Timer();
   // ---
-  TrajectoryRender trajectoryRender = new TrajectoryRender(null);
-  ObstacleRender obstacleRender = new ObstacleRender(null);
-  GoalRender goalRender = new GoalRender(null);
-  List<AnimationInterface> animationInterfaces = new LinkedList<>();
-  AnimationInterface controllable = null;
+  private final TrajectoryRender trajectoryRender = new TrajectoryRender(null);
+  private final ObstacleRender obstacleRender = new ObstacleRender(null);
+  private final GoalRender goalRender = new GoalRender(null);
+  private final List<AnimationInterface> animationInterfaces = new LinkedList<>();
+  /** reference to the entity that is controlled by the user */
+  private AnimationInterface controllable = null;
+  private TrajectoryRegionQuery obstacleQuery = EmptyTrajectoryRegionQuery.INSTANCE;
 
   public OwlyAnimationFrame() {
-    JPanel jPanel = new JPanel(new BorderLayout());
-    {
-      JToolBar jToolBar = new JToolBar();
-      jToolBar.setFloatable(false);
+    { // install frame components
+      JPanel jPanel = new JPanel(new BorderLayout());
       {
-        JButton jButton = new JButton("save2png");
-        jButton.setToolTipText("file is created in Pictures/...");
-        jToolBar.add(jButton);
+        JToolBar jToolBar = new JToolBar();
+        jToolBar.setFloatable(false);
+        {
+          JButton jButton = new JButton("save2png");
+          jButton.setToolTipText("file is created in Pictures/...");
+          jToolBar.add(jButton);
+        }
       }
+      jPanel.add(owlyComponent.jComponent, BorderLayout.CENTER);
+      jPanel.add(jLabel, BorderLayout.SOUTH);
+      jFrame.setContentPane(jPanel);
     }
-    jPanel.add(owlyComponent.jComponent, BorderLayout.CENTER);
-    jPanel.add(jLabel, BorderLayout.SOUTH);
-    jFrame.setContentPane(jPanel);
-    jFrame.setBounds(100, 50, 800, 800);
+    jFrame.setBounds(100, 50, 800, 800); // default, can be changed if necessary
     jFrame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-    TimeKeeper timeKeeper = new TimeKeeper();
     owlyComponent.renderElements = new RenderElements();
     owlyComponent.renderElements.list.add(trajectoryRender);
     owlyComponent.renderElements.list.add(obstacleRender);
     owlyComponent.renderElements.list.add(goalRender);
-    TimerTask timerTask = new TimerTask() {
+    final TimerTask timerTask = new TimerTask() { // animation and repaint task
+      final TimeKeeper timeKeeper = new TimeKeeper();
+
       @Override
       public void run() {
         Scalar now = timeKeeper.now();
@@ -94,11 +98,7 @@ public class OwlyAnimationFrame {
         timer.cancel();
       }
     });
-    // Region region = new R2NoiseRegion(.4); // TODO not final design
-    ImageRegion imageRegion = R2ImageRegions.inside_0f5c();
-    TrajectoryRegionQuery obstacleQuery = //
-        new SimpleTrajectoryRegionQuery(new TimeInvariantRegion(imageRegion));
-    owlyComponent.addDrawable(new ImageRegionRender(imageRegion));
+    // ---
     owlyComponent.jComponent.addMouseListener(new MouseAdapter() {
       MotionPlanWorker mpw = null;
 
@@ -122,7 +122,7 @@ public class OwlyAnimationFrame {
     });
   }
 
-  TrajectoryPlannerCallback trajectoryPlannerCallback = new TrajectoryPlannerCallback() {
+  private final TrajectoryPlannerCallback trajectoryPlannerCallback = new TrajectoryPlannerCallback() {
     @Override
     public void expandResult(List<TrajectorySample> head, TrajectoryPlanner trajectoryPlanner) {
       Optional<GlcNode> optional = trajectoryPlanner.getBest();
@@ -159,7 +159,20 @@ public class OwlyAnimationFrame {
     }
   };
 
-  public void add(AnimationInterface animationInterface) {
+  public void set(AnimationInterface animationInterface) {
+    GlobalAssert.that(animationInterfaces.isEmpty());
+    add(animationInterface);
+  }
+
+  public void setObstacleQuery(TrajectoryRegionQuery obstacleQuery) {
+    this.obstacleQuery = obstacleQuery;
+  }
+
+  public void addBackground(RenderInterface renderInterface) {
+    owlyComponent.addDrawable(renderInterface);
+  }
+
+  private void add(AnimationInterface animationInterface) {
     if (Objects.isNull(controllable))
       controllable = animationInterface;
     // ---
@@ -168,5 +181,9 @@ public class OwlyAnimationFrame {
       RenderInterface renderInterface = (RenderInterface) animationInterface;
       owlyComponent.renderElements.list.add(renderInterface);
     }
+  }
+
+  public void configCoordinateOffset(int px, int py) {
+    owlyComponent.setOffset(Tensors.vector(px, py));
   }
 }
