@@ -69,7 +69,6 @@ public enum DeltaHelper {
         Images.displayOrientation(Import.of(Resources.fileFromRepository("/io/delta_uxy.png")).get(Tensor.ALL, Tensor.ALL, 0)), //
         range, gradientAmp); // -.25 .5
     Scalar maxInput = RealScalar.ONE;
-    Scalar maxSpeed = maxInput.add(ipr.maxNorm());
     DeltaStateSpaceModel stateSpaceModel = new DeltaStateSpaceModel(ipr, maxInput);
     Collection<Flow> controls = DeltaControls.createControls( //
         stateSpaceModel, maxInput, resolution.number().intValue());
@@ -83,7 +82,7 @@ public enum DeltaHelper {
         new SimpleTrajectoryRegionQuery(new TimeInvariantRegion( //
             new ImageRegion(obstacleImage, range, true)));
     DeltaGoalManagerExt deltaGoalManager = new DeltaGoalManagerExt( //
-        Tensors.vector(2.9, 2.4), Tensors.vector(.3, .3), maxSpeed);
+        Tensors.vector(2.9, 2.4), Tensors.vector(.3, .3), stateSpaceModel.getMaxPossibleChange());
     // DeltaGoalManager deltaGoalManager = new DeltaGoalManager( //
     // Tensors.vector(2.1, 0.3), Tensors.vector(.3, .3));
     TrajectoryPlanner trajectoryPlanner = new StandardTrajectoryPlanner( //
@@ -103,7 +102,6 @@ public enum DeltaHelper {
         Images.displayOrientation(Import.of(Resources.fileFromRepository("/io/delta_uxy.png")).get(Tensor.ALL, Tensor.ALL, 0)), //
         range, gradientAmp); // -.25 .5
     Scalar maxInput = RealScalar.ONE;
-    Scalar maxSpeed = maxInput.add(ipr.maxNorm());
     DeltaStateSpaceModel stateSpaceModel = new DeltaStateSpaceModel(ipr, maxInput);
     Collection<Flow> controls = DeltaControls.createControls( //
         stateSpaceModel, maxInput, resolution.number().intValue());
@@ -117,7 +115,7 @@ public enum DeltaHelper {
         new SimpleTrajectoryRegionQuery(new TimeInvariantRegion( //
             new ImageRegion(obstacleImage, range, true)));
     DeltaGoalManagerExt deltaGoalManager = new DeltaGoalManagerExt( //
-        Tensors.vector(2.9, 2.4), Tensors.vector(.3, .3), maxSpeed);
+        Tensors.vector(2.9, 2.4), Tensors.vector(.3, .3), stateSpaceModel.getMaxPossibleChange());
     // DeltaGoalManager deltaGoalManager = new DeltaGoalManager( //
     // Tensors.vector(2.1, 0.3), Tensors.vector(.3, .3));
     OptimalAnyTrajectoryPlanner trajectoryPlanner = new OptimalAnyTrajectoryPlanner(parameters.getEta(), stateIntegrator, controls, obstacleQuery,

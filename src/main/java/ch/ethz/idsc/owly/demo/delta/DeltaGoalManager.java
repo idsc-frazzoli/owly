@@ -17,10 +17,9 @@ import ch.ethz.idsc.tensor.Tensor;
 
 /** default goal manager for delta example that does not make use of max norm of flow */
 public class DeltaGoalManager extends SimpleTrajectoryRegionQuery implements GoalInterface, NoHeuristic {
+  // --
   public DeltaGoalManager(Tensor center, Tensor radius) {
     super(new TimeInvariantRegion(new EllipsoidRegion(center, radius)));
-    if (!radius.Get(0).equals(radius.Get(1)))
-      throw new RuntimeException(); // x-y radius have to be equal
   }
 
   @Override

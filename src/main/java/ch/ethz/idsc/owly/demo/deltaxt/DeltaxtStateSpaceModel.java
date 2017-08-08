@@ -1,0 +1,46 @@
+// code by jph & jl
+package ch.ethz.idsc.owly.demo.deltaxt;
+
+import ch.ethz.idsc.owly.demo.delta.ImageGradient;
+import ch.ethz.idsc.owly.math.StateSpaceModel;
+import ch.ethz.idsc.tensor.RealScalar;
+import ch.ethz.idsc.tensor.Scalar;
+import ch.ethz.idsc.tensor.Tensor;
+import ch.ethz.idsc.tensor.Tensors;
+
+public class DeltaxtStateSpaceModel implements StateSpaceModel {
+  private final ImageGradient imageGradient;
+  private final Scalar maxInput;
+
+  public DeltaxtStateSpaceModel(ImageGradient imageGradient, Scalar maxInput) {
+    this.imageGradient = imageGradient;
+    this.maxInput = maxInput;
+  }
+
+  @Override
+  public Tensor f(Tensor x, Tensor u) {
+    int toIndex = x.length() - 1;
+    if (toIndex != 2)
+      throw new RuntimeException();
+    Tensor fxy = imageGradient.rotate(x.extract(0, toIndex));
+    return Tensors.of(fxy.Get(0), fxy.Get(1), RealScalar.ONE).add(u);
+  }
+
+  @Override
+  public Scalar getLipschitz() {
+    // maxNorm is very big--> therefore eta with R^(1+LF) is huge? real lipschitz?
+    Scalar n = RealScalar.of(4); // dimensions of StateSpace + Dimensions of InputSpace
+    // lipschitz constant on vector-valued function from:
+    // https://math.stackexchange.com/questions/1132078/proof-that-a-vector-valued-function-is-lipschitz-continuous-on-a-closed-rectangl
+    return imageGradient.maxNorm().add(maxInput).multiply(n);
+  }
+
+  public Scalar getMaxInput() {
+    return maxInput;
+  }
+
+  public Scalar getMaxPossibleChange() {
+    return maxInput.add(imageGradient.maxNorm());
+    // TODO modify due to time state
+  }
+}

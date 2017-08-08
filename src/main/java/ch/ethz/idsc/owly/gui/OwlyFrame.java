@@ -26,6 +26,7 @@ import javax.swing.event.ChangeListener;
 import ch.ethz.idsc.owly.data.tree.Nodes;
 import ch.ethz.idsc.owly.demo.util.UserHome;
 import ch.ethz.idsc.owly.glc.core.TrajectoryPlanner;
+import ch.ethz.idsc.owly.glc.core.TrajectorySample;
 import ch.ethz.idsc.owly.gui.misc.ImageRegionRender;
 import ch.ethz.idsc.owly.math.region.ImageRegion;
 import ch.ethz.idsc.owly.rrts.core.RrtsNode;
@@ -194,5 +195,12 @@ public class OwlyFrame {
 
   public void addBackground(RenderInterface renderInterface) {
     owlyComponent.addDrawable(renderInterface);
+  }
+
+  public void addTrajectory(List<TrajectorySample> trajectory) {
+    // TODO JAN change trajectory rendered to other color?
+    TrajectoryRender trajectoryRenderer = new TrajectoryRender(null);
+    trajectoryRenderer.setTrajectory(trajectory);
+    owlyComponent.addDrawable(trajectoryRenderer);
   }
 }
