@@ -11,6 +11,7 @@ import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.sca.Round;
 
+// EXPERIMENTAL API not finalized
 public class MotionPlanWorker {
   private TrajectoryPlannerCallback trajectoryPlannerCallback;
   private Thread thread;

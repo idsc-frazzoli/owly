@@ -160,9 +160,10 @@ public class OwlyComponent {
     return LinearSolve.of(model2pixel, toAffinePoint(Tensors.vector(point.x, point.y))).extract(0, 2);
   }
 
-  void setOffset(Tensor vector) {
-    model2pixel.set(vector.get(0), 0, 2);
-    model2pixel.set(vector.get(1), 1, 2);
+  /** @param vector */
+  public void setOffset(Tensor vector) {
+    model2pixel.set(vector.Get(0), 0, 2);
+    model2pixel.set(vector.Get(1), 1, 2);
   }
 
   /** @return {px, py, angle} in model space */
