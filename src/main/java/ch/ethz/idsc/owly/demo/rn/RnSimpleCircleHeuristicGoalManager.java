@@ -9,22 +9,13 @@ import ch.ethz.idsc.tensor.sca.Ramp;
 
 /** objective is minimum path length
  * path length is measured in Euclidean distance */
-public class RnSimpleEllipsoidHeuristicGoalManager extends RnSimpleEllipsoidGoalManager implements GoalInterface {
+public class RnSimpleCircleHeuristicGoalManager extends RnSimpleCircleGoalManager implements GoalInterface {
   /** constructor creates a spherical region in R^n with given center and radius.
    * distance measure is Euclidean distance.
    * 
    * @param center vector with length == n
    * @param radius positive */
-  public RnSimpleEllipsoidHeuristicGoalManager(Tensor center, Scalar radius) {
-    super(center, radius);
-  }
-
-  /** constructor creates a ellipsoid region in R^n with given center and radius.
-   * distance measure is Euclidean distance
-   * 
-   * @param center vector with length == n
-   * @param radius vector with length == n & positive in all entrys */
-  public RnSimpleEllipsoidHeuristicGoalManager(Tensor center, Tensor radius) {
+  public RnSimpleCircleHeuristicGoalManager(Tensor center, Scalar radius) {
     super(center, radius);
   }
 
@@ -32,6 +23,6 @@ public class RnSimpleEllipsoidHeuristicGoalManager extends RnSimpleEllipsoidGoal
   public Scalar minCostToGoal(Tensor x) {
     // implementation is asserted by tests.
     // for modifications create a different class.
-    return Ramp.of(Norm._2.of(x.subtract(center).subtract(radius)));// <- do not change
+    return Ramp.of(Norm._2.of(x.subtract(center)).subtract(radius)); // <- do not change
   }
 }
