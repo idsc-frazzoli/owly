@@ -1,5 +1,5 @@
 // code by jph
-package ch.ethz.idsc.owly.gui.ani;
+package ch.ethz.idsc.owly.demo.se2;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
@@ -11,14 +11,12 @@ import java.util.Collections;
 import java.util.Objects;
 
 import ch.ethz.idsc.owly.data.GlobalAssert;
-import ch.ethz.idsc.owly.demo.se2.Se2Controls;
-import ch.ethz.idsc.owly.demo.se2.Se2StateSpaceModel;
-import ch.ethz.idsc.owly.demo.se2.Se2Wrap;
 import ch.ethz.idsc.owly.demo.twd.TwdMinTimeGoalManager;
 import ch.ethz.idsc.owly.glc.core.StandardTrajectoryPlanner;
 import ch.ethz.idsc.owly.glc.core.TrajectoryPlanner;
 import ch.ethz.idsc.owly.glc.core.TrajectorySample;
 import ch.ethz.idsc.owly.gui.OwlyLayer;
+import ch.ethz.idsc.owly.gui.ani.AbstractEntity;
 import ch.ethz.idsc.owly.math.Se2Utils;
 import ch.ethz.idsc.owly.math.flow.Flow;
 import ch.ethz.idsc.owly.math.flow.Integrator;
@@ -57,22 +55,22 @@ public class Se2Entity extends AbstractEntity {
       throw TensorRuntimeException.of(PARTITIONSCALE);
   }
 
-  public static Se2Entity createDefault() {
-    return new Se2Entity(RungeKutta4Integrator.INSTANCE);
+  public static Se2Entity createDefault(Tensor state) {
+    return new Se2Entity(state, RungeKutta4Integrator.INSTANCE);
   }
 
   // ---
-  final Integrator integrator;
-  final Collection<Flow> controls;
-  final Scalar goalRadius_xy;
-  final Scalar goalRadius_theta;
-  TrajectoryRegionQuery obstacleQuery = null;
+  private final Integrator integrator;
+  private final Collection<Flow> controls;
+  private final Scalar goalRadius_xy;
+  private final Scalar goalRadius_theta;
+  private TrajectoryRegionQuery obstacleQuery = null;
 
-  public Se2Entity(Integrator integrator) {
+  private Se2Entity(Tensor state, Integrator integrator) {
     super(new SimpleEpisodeIntegrator( //
         Se2StateSpaceModel.INSTANCE, //
         integrator, //
-        new StateTime(Tensors.vector(5, 10, 0), RealScalar.ZERO))); // initial position
+        new StateTime(state, RealScalar.ZERO))); // initial position
     this.integrator = integrator;
     controls = Se2Controls.createControlsForwardAndReverse(RealScalar.ONE, 6); // TODO magic const
     goalRadius_xy = Sqrt.of(RealScalar.of(2)).divide(PARTITIONSCALE.Get(0));
@@ -80,7 +78,7 @@ public class Se2Entity extends AbstractEntity {
   }
 
   @Override
-  int indexOfClosestTrajectorySample() {
+  public int indexOfClosestTrajectorySample() {
     final Tensor x = episodeIntegrator.tail().state();
     return ArgMin.of(Tensor.of(trajectory.stream() //
         .map(TrajectorySample::stateTime) //
@@ -89,17 +87,17 @@ public class Se2Entity extends AbstractEntity {
   }
 
   @Override
-  Tensor fallbackControl() {
+  public Tensor fallbackControl() {
     return FALLBACK_CONTROL;
   }
 
   @Override
-  Scalar delayHint() {
+  public Scalar delayHint() {
     return DELAY_HINT;
   }
 
   @Override
-  TrajectoryPlanner createTrajectoryPlanner(TrajectoryRegionQuery obstacleQuery, Tensor goal) {
+  public TrajectoryPlanner createTrajectoryPlanner(TrajectoryRegionQuery obstacleQuery, Tensor goal) {
     GlobalAssert.that(VectorQ.ofLength(goal, 3));
     // obstacleQuery = EmptyTrajectoryRegionQuery.INSTANCE; // TODO <- for testing
     this.obstacleQuery = obstacleQuery;

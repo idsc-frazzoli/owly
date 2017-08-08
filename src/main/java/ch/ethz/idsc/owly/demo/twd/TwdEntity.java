@@ -1,5 +1,5 @@
 // code by jph
-package ch.ethz.idsc.owly.gui.ani;
+package ch.ethz.idsc.owly.demo.twd;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
@@ -12,13 +12,11 @@ import java.util.Objects;
 
 import ch.ethz.idsc.owly.data.GlobalAssert;
 import ch.ethz.idsc.owly.demo.se2.Se2Wrap;
-import ch.ethz.idsc.owly.demo.twd.TwdControls;
-import ch.ethz.idsc.owly.demo.twd.TwdMinCurvatureGoalManager;
-import ch.ethz.idsc.owly.demo.twd.TwdStateSpaceModel;
 import ch.ethz.idsc.owly.glc.core.StandardTrajectoryPlanner;
 import ch.ethz.idsc.owly.glc.core.TrajectoryPlanner;
 import ch.ethz.idsc.owly.glc.core.TrajectorySample;
 import ch.ethz.idsc.owly.gui.OwlyLayer;
+import ch.ethz.idsc.owly.gui.ani.AbstractEntity;
 import ch.ethz.idsc.owly.math.Se2Utils;
 import ch.ethz.idsc.owly.math.flow.Flow;
 import ch.ethz.idsc.owly.math.flow.Integrator;
@@ -52,8 +50,8 @@ public class TwdEntity extends AbstractEntity {
       throw TensorRuntimeException.of(PARTITIONSCALE);
   }
 
-  public static TwdEntity createDefault() {
-    return new TwdEntity(TwdStateSpaceModel.createDefault(), MidpointIntegrator.INSTANCE);
+  public static TwdEntity createDefault(Tensor state) {
+    return new TwdEntity(TwdStateSpaceModel.createDefault(), MidpointIntegrator.INSTANCE, state);
   }
 
   // ---
@@ -63,11 +61,11 @@ public class TwdEntity extends AbstractEntity {
   final Scalar goalRadius_theta;
   TrajectoryRegionQuery obstacleQuery = null;
 
-  public TwdEntity(TwdStateSpaceModel twdStateSpaceModel, Integrator integrator) {
+  public TwdEntity(TwdStateSpaceModel twdStateSpaceModel, Integrator integrator, Tensor state) {
     super(new SimpleEpisodeIntegrator( //
         twdStateSpaceModel, //
         integrator, //
-        new StateTime(Tensors.vector(0, 0, 0), RealScalar.ZERO))); // initial position
+        new StateTime(state, RealScalar.ZERO))); // initial position
     this.integrator = integrator;
     controls = TwdControls.createControls(twdStateSpaceModel, 8);
     goalRadius_xy = Sqrt.of(RealScalar.of(2)).divide(PARTITIONSCALE.Get(0));
@@ -75,7 +73,7 @@ public class TwdEntity extends AbstractEntity {
   }
 
   @Override
-  int indexOfClosestTrajectorySample() {
+  public int indexOfClosestTrajectorySample() {
     final Tensor x = episodeIntegrator.tail().state();
     return ArgMin.of(Tensor.of(trajectory.stream() //
         .map(TrajectorySample::stateTime) //
@@ -84,17 +82,17 @@ public class TwdEntity extends AbstractEntity {
   }
 
   @Override
-  Tensor fallbackControl() {
+  public Tensor fallbackControl() {
     return FALLBACK_CONTROL;
   }
 
   @Override
-  Scalar delayHint() {
+  public Scalar delayHint() {
     return DELAY_HINT;
   }
 
   @Override
-  TrajectoryPlanner createTrajectoryPlanner(TrajectoryRegionQuery obstacleQuery, Tensor goal) {
+  public TrajectoryPlanner createTrajectoryPlanner(TrajectoryRegionQuery obstacleQuery, Tensor goal) {
     GlobalAssert.that(VectorQ.ofLength(goal, 3));
     // obstacleQuery = EmptyTrajectoryRegionQuery.INSTANCE; // <- for testing
     this.obstacleQuery = obstacleQuery;

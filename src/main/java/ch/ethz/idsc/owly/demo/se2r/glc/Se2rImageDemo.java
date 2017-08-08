@@ -53,7 +53,7 @@ enum Se2rImageDemo {
     OwlyFrame owlyFrame = Gui.start();
     owlyFrame.configCoordinateOffset(179, 448);
     owlyFrame.jFrame.setBounds(100, 100, 700, 700);
-    owlyFrame.addDrawable(imageRegion);
+    owlyFrame.addBackground(imageRegion);
     while (!trajectoryPlanner.getBest().isPresent() && owlyFrame.jFrame.isVisible()) {
       Expand.maxSteps(trajectoryPlanner, 1000);
       owlyFrame.setGlc(trajectoryPlanner);
