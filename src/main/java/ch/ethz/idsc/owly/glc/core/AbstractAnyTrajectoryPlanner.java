@@ -1,7 +1,6 @@
 // code by jl
 package ch.ethz.idsc.owly.glc.core;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -19,8 +18,6 @@ import ch.ethz.idsc.owly.math.state.StateIntegrator;
 import ch.ethz.idsc.owly.math.state.StateTime;
 import ch.ethz.idsc.owly.math.state.TimeInvariantRegion;
 import ch.ethz.idsc.owly.math.state.TrajectoryRegionQuery;
-import ch.ethz.idsc.tensor.RealScalar;
-import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
 
 public abstract class AbstractAnyTrajectoryPlanner extends AbstractTrajectoryPlanner implements AnyPlannerInterface {
@@ -135,34 +132,38 @@ public abstract class AbstractAnyTrajectoryPlanner extends AbstractTrajectoryPla
     // --
     // -- GOALCHECK TREE
     treeCollection = Nodes.ofSubtree(root);
-    tic = System.nanoTime();
-    // old check
-    boolean treeFound = GoalCheckTree(treeCollection);
-    Scalar timeDiffOld = RealScalar.of((System.nanoTime() - tic) * 1e-9);
-    Collection<GlcNode> oldBest = new ArrayList<>(best.keySet());
-    setBestNull();
+    boolean goalInTreeFound = false;
     // new check
     tic = System.nanoTime();
-    treeFound = GoalCheckTree(treeCollection, goalCheckHelp);
-    Scalar timeDiffNew = RealScalar.of((System.nanoTime() - tic) * 1e-9);
-    System.err.println("The NEW GoalCheck needed: " //
-        + timeDiffNew.divide(timeDiffOld).multiply(RealScalar.of(100)).number().intValue()//
-        + "% of the time of the OLD");
-    if (!best.isEmpty() || !oldBest.isEmpty()) {
-      System.err.println("OldVersion found: " + oldBest.size() + " GoalNodes: ");
-      for (GlcNode node : oldBest)
-        System.out.println(node.state());
-      System.err.println("NewVersion found: " + best.size() + " GoalNodes");
-      for (GlcNode node : best.keySet())
-        System.out.println(node.state());
-    }
-    if (!(oldBest.containsAll(best.keySet()) && best.keySet().containsAll(oldBest))) {
-      System.err.println("Not the same GoalNodes found in both runs");
-      throw new RuntimeException();
-    }
-    // System.out.println("Checked current tree for goal in "//
-    // + (toc - tic) * 1e-9 + "s");
-    if (treeFound) {
+    goalInTreeFound = GoalCheckTree(treeCollection, goalCheckHelp);
+    // Scalar timeDiffNew = RealScalar.of((System.nanoTime() - tic) * 1e-9);
+    // tic = System.nanoTime();
+    // old check for debugging
+    // {
+    // goalInTreeFound = GoalCheckTree(treeCollection);
+    // Scalar timeDiffOld = RealScalar.of((System.nanoTime() - tic) * 1e-9);
+    // Collection<GlcNode> oldBest = new ArrayList<>(best.keySet());
+    // setBestNull();
+    // System.err.println("The NEW GoalCheck needed: " //
+    // + timeDiffNew.divide(timeDiffOld).multiply(RealScalar.of(100)).number().intValue()//
+    // + "% of the time of the OLD");
+    // if (!best.isEmpty() || !oldBest.isEmpty()) {
+    // System.err.println("OldVersion found: " + oldBest.size() + " GoalNodes: ");
+    // for (GlcNode node : oldBest)
+    // System.out.println(node.state());
+    // System.err.println("NewVersion found: " + best.size() + " GoalNodes");
+    // for (GlcNode node : best.keySet())
+    // System.out.println(node.state());
+    // }
+    // if (!(oldBest.containsAll(best.keySet()) && best.keySet().containsAll(oldBest))) {
+    // System.err.println("Not the same GoalNodes found in both runs");
+    // throw new RuntimeException();
+    // }
+    // }
+    // INFORMATION
+    System.out.println("Checked current tree for goal in "//
+        + (System.nanoTime() - tic) * 1e-9 + "s");
+    if (goalInTreeFound) {
       System.out.println("New Goal was found in current tree --> No new search needed");
       System.out.println("**Goalswitch finished**");
       return true;

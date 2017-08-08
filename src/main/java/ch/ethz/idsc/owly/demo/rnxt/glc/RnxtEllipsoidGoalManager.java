@@ -1,5 +1,5 @@
 // code by jph & jl
-package ch.ethz.idsc.owly.demo.rn;
+package ch.ethz.idsc.owly.demo.rnxt.glc;
 
 import java.util.List;
 
@@ -17,36 +17,44 @@ import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Scalars;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.alg.Array;
-import ch.ethz.idsc.tensor.red.Norm;
 
 /** objective is minimum path length
  * path length is measured in Euclidean distance */
-public class RnSimpleCircleGoalManager extends SimpleTrajectoryRegionQuery implements GoalInterface, NoHeuristic {
+public class RnxtEllipsoidGoalManager extends SimpleTrajectoryRegionQuery implements GoalInterface, NoHeuristic {
   // protected as used in subclasses
   protected final Tensor center;
-  protected final Scalar radius;
+  protected final Tensor radius;
 
-  /** constructor creates a spherical region in R^n with given center and radius.
-   * distance measure is Euclidean distance.
+  /** constructor creates a spherical region in R^n x T with given center and radius.
+   * distance measure is Euclidean distance, if radius(i) = infinity => cyclinder
    * 
    * @param center vector with length == n
    * @param radius positive */
-  public RnSimpleCircleGoalManager(Tensor center, Scalar radius) {
-    super(new TimeInvariantRegion(new EllipsoidRegion(center, Array.of(l -> radius, center.length()))));
-    GlobalAssert.that(Scalars.lessThan(RealScalar.ZERO, radius));
-    this.center = center;
-    this.radius = radius;
+  public RnxtEllipsoidGoalManager(Tensor center, Scalar radius) {
+    this(center, Array.of(l -> radius, center.length()));
   }
 
+  /** constructor creates a ellipsoid region in R^n x T with given center and radius.
+   * distance measure is Euclidean distance, if radius(i) = infinity => cyclinder
+   * 
+   * @param center vector with length == n
+   * @param radius vector with length == n & positive in all entrys */
+  public RnxtEllipsoidGoalManager(Tensor center, Tensor radius) {
+    super(new TimeInvariantRegion(new EllipsoidRegion(center, radius)));
+    for (Tensor radiusTemp : radius)
+      GlobalAssert.that(Scalars.lessThan(RealScalar.ZERO, (Scalar) radiusTemp));
+    this.radius = radius;
+    this.center = center;
+  }
+
+  /** shortest Time Cost */
   @Override
   public Scalar costIncrement(StateTime from, List<StateTime> trajectory, Flow flow) {
-    return Norm._2.of(from.state().subtract(StateTimeTrajectories.getLast(trajectory).state()));
+    return StateTimeTrajectories.timeIncrement(from, trajectory);
   }
 
   @Override
   public Scalar minCostToGoal(Tensor x) {
-    // implementation is asserted by tests.
-    // for modifications create a different class.
     return RealScalar.ZERO;
   }
 }

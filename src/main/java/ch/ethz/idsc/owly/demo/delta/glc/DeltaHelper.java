@@ -58,10 +58,10 @@ public enum DeltaHelper {
     return trajectoryPlanner;
   }
 
-  static TrajectoryPlannerContainer createGlc(Scalar gradientAmp, RationalScalar resolution) throws Exception {
+  static TrajectoryPlannerContainer createGlc(Scalar gradientAmp, RationalScalar resolution, Tensor partitionScale) throws Exception {
     Scalar timeScale = RealScalar.of(5);
     Scalar depthScale = RealScalar.of(10);
-    Tensor partitionScale = Tensors.vector(2e26, 2e26);
+    // Tensor partitionScale = Tensors.vector(2e26, 2e26);
     Scalar dtMax = RationalScalar.of(1, 6);
     int maxIter = 2000;
     Tensor range = Tensors.vector(9, 6.5);
@@ -92,10 +92,10 @@ public enum DeltaHelper {
     return new TrajectoryPlannerContainer(trajectoryPlanner, parameters, stateSpaceModel);
   }
 
-  static TrajectoryPlannerContainer createGlcAny(Scalar gradientAmp, RationalScalar resolution) throws Exception {
+  static TrajectoryPlannerContainer createGlcAny(Scalar gradientAmp, RationalScalar resolution, Tensor partitionScale) throws Exception {
     Scalar timeScale = RealScalar.of(1);
     Scalar depthScale = RealScalar.of(10);
-    Tensor partitionScale = Tensors.vector(6e29, 6e29);
+    // Tensor partitionScale = Tensors.vector(6e29, 6e29);
     Scalar dtMax = RationalScalar.of(1, 6);
     int maxIter = 2000;
     Tensor range = Tensors.vector(9, 6.5);
