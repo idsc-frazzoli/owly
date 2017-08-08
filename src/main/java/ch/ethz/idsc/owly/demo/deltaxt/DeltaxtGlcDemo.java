@@ -78,7 +78,6 @@ enum DeltaxtGlcDemo {
     for (int i = 0; Scalars.lessThan(RealScalar.of(i), dinghyExpandTime.divide(parameters.getExpandTime())); i++) {
       Flow flow = StateSpaceModels.createFlow(stateSpaceModel, Tensors.vector(0, 0, 0));
       List<StateTime> connector = stateIntegrator.trajectory(next, flow);
-      // input is 0 for x and y and 1 for time
       next = StateTimeTrajectories.getLast(connector);
       goalRegions.add(new EllipsoidRegion(next.state(), radius));
       dinghyTrajectory.add(new TrajectorySample(next, flow));
