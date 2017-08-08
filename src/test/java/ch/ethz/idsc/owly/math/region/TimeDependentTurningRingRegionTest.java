@@ -21,7 +21,6 @@ public class TimeDependentTurningRingRegionTest extends TestCase {
     assertFalse(test.isMember(new StateTime(Tensors.vector(0, 0.5, 0), RealScalar.of(0)))); // inside
     assertFalse(test.isMember(new StateTime(Tensors.vector(0, -1.5, 0), RealScalar.of(0)))); // outside
     assertFalse(test.isMember(new StateTime(Tensors.vector(0, 1.5, 0), RealScalar.of(0)))); // outside
-    
     assertFalse(test.isMember(new StateTime(Tensors.vector(1, 0, 0), RealScalar.of(0)))); // in gap
     assertTrue(test.isMember(new StateTime(Tensors.vector(1, 0, 3), RealScalar.of(3)))); // 3s = 90° later
     // --
