@@ -73,11 +73,11 @@ public class DeltaEntity extends AbstractEntity {
 
   @Override
   public TrajectoryPlanner createTrajectoryPlanner(TrajectoryRegionQuery obstacleQuery, Tensor goal) {
-    Tensor eta = Tensors.vector(11, 11);
+    Tensor eta = Tensors.vector(5, 5);
     StateIntegrator stateIntegrator = FixedStateIntegrator.create( //
         RungeKutta45Integrator.INSTANCE, RationalScalar.of(1, 10), 4);
     Collection<Flow> controls = DeltaControls.createControls( //
-        new DeltaStateSpaceModel(ipr, maxInput), maxInput, 25);
+        new DeltaStateSpaceModel(ipr, maxInput), maxInput, 10);
     DeltaGoalManager deltaGoalManager = new DeltaGoalManager( //
         goal.extract(0, 2), Tensors.vector(.3, .3));
     return new StandardTrajectoryPlanner( //
