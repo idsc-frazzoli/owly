@@ -83,6 +83,7 @@ enum DeltaxtGlcDemo {
       dinghyTrajectory.add(new TrajectorySample(next, flow));
     }
     TrajectorySample.print(dinghyTrajectory);
+    // --
     DeltaxtDinghyGoalManager deltaGoalManager2 = new DeltaxtDinghyGoalManager(goalRegions, stateSpaceModel);
     TrajectoryPlanner trajectoryPlanner = new StandardTrajectoryPlanner( //
         parameters.getEta(), stateIntegrator, controls, obstacleQuery, deltaGoalManager2);

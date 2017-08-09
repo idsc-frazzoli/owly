@@ -1,4 +1,4 @@
-// code by jph
+// code by jl
 package ch.ethz.idsc.owly.demo.rn;
 
 import java.util.List;
@@ -8,12 +8,13 @@ import ch.ethz.idsc.owly.glc.adapter.TrajectoryGoalManager;
 import ch.ethz.idsc.owly.math.flow.Flow;
 import ch.ethz.idsc.owly.math.region.Region;
 import ch.ethz.idsc.owly.math.state.StateTime;
+import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.red.Norm;
 import ch.ethz.idsc.tensor.sca.Ramp;
 
-/** objective is minimum path length */
+/** objective is minimum time */
 public class RnTrajectoryGoalManager extends TrajectoryGoalManager {
   private final List<StateTime> heuristicTrajectory;
   private final Scalar radius;
@@ -28,11 +29,12 @@ public class RnTrajectoryGoalManager extends TrajectoryGoalManager {
 
   @Override
   public Scalar costIncrement(StateTime from, List<StateTime> trajectory, Flow flow) {
-    return Norm._2.of(from.state().subtract(StateTimeTrajectories.getLast(trajectory).state()));
+    return StateTimeTrajectories.timeIncrement(from, trajectory);
   }
 
   @Override
   public Scalar minCostToGoal(Tensor x) {
-    return Ramp.of(Norm._2.of(x.subtract(StateTimeTrajectories.getLast(heuristicTrajectory).state())).subtract(radius));
+    return Ramp.of(Norm._2.of(x.subtract(StateTimeTrajectories.getLast(heuristicTrajectory).state())).subtract(radius)//
+        .divide(RealScalar.ONE)); // divide by maximum "speed"
   }
 }

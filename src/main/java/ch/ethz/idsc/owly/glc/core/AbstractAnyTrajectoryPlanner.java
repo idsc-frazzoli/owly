@@ -224,7 +224,8 @@ public abstract class AbstractAnyTrajectoryPlanner extends AbstractTrajectoryPla
     return Optional.empty();
   }
 
-  @Override
+  /** @return furthest Node (lowest cost in higehst listindex), whose incoming trajectory is in GoalRegion,
+   * or Optional.empty() if no such node has been identified yet */
   public final Optional<GlcNode> getFurthestGoalNode(List<Region> goalRegions) {
     ListIterator<Region> iter = goalRegions.listIterator(goalRegions.size());
     DomainQueue regionQueue = new DomainQueue(); // priority queue over merit of GlcNodes
