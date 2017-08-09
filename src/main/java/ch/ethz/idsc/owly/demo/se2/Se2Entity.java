@@ -8,6 +8,7 @@ import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 import java.util.Objects;
 
 import ch.ethz.idsc.owly.data.GlobalAssert;
@@ -78,7 +79,7 @@ public class Se2Entity extends AbstractEntity {
   }
 
   @Override
-  public int indexOfClosestTrajectorySample() {
+  public int indexOfClosestTrajectorySample(List<TrajectorySample> trajectory) {
     final Tensor x = episodeIntegrator.tail().state();
     return ArgMin.of(Tensor.of(trajectory.stream() //
         .map(TrajectorySample::stateTime) //

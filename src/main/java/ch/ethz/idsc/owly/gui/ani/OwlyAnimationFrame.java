@@ -31,6 +31,7 @@ import ch.ethz.idsc.owly.glc.core.GlcNode;
 import ch.ethz.idsc.owly.glc.core.StandardTrajectoryPlanner;
 import ch.ethz.idsc.owly.glc.core.TrajectoryPlanner;
 import ch.ethz.idsc.owly.glc.core.TrajectorySample;
+import ch.ethz.idsc.owly.gui.EtaRender;
 import ch.ethz.idsc.owly.gui.GoalRender;
 import ch.ethz.idsc.owly.gui.ObstacleRender;
 import ch.ethz.idsc.owly.gui.OwlyComponent;
@@ -53,6 +54,7 @@ public class OwlyAnimationFrame {
   private final JLabel jLabel = new JLabel();
   private final Timer timer = new Timer();
   // ---
+  private final EtaRender etaRender = new EtaRender(Tensors.empty());
   private final TrajectoryRender trajectoryRender = new TrajectoryRender(null);
   private final ObstacleRender obstacleRender = new ObstacleRender(null);
   private final GoalRender goalRender = new GoalRender(null);
@@ -67,7 +69,7 @@ public class OwlyAnimationFrame {
       {
         JToolBar jToolBar = new JToolBar();
         jToolBar.setFloatable(false);
-        {
+        { // TODO no toolbar is added
           JButton jButton = new JButton("save2png");
           jButton.setToolTipText("file is created in Pictures/...");
           jToolBar.add(jButton);
@@ -80,6 +82,7 @@ public class OwlyAnimationFrame {
     jFrame.setBounds(100, 50, 800, 800); // default, can be changed if necessary
     jFrame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
     owlyComponent.renderElements = new RenderElements();
+    owlyComponent.renderElements.list.add(etaRender);
     owlyComponent.renderElements.list.add(trajectoryRender);
     owlyComponent.renderElements.list.add(obstacleRender);
     owlyComponent.renderElements.list.add(goalRender);
@@ -127,6 +130,7 @@ public class OwlyAnimationFrame {
   private final TrajectoryPlannerCallback trajectoryPlannerCallback = new TrajectoryPlannerCallback() {
     @Override
     public void expandResult(List<TrajectorySample> head, TrajectoryPlanner trajectoryPlanner) {
+      etaRender.setEta(trajectoryPlanner.getEta());
       Optional<GlcNode> optional = trajectoryPlanner.getBest();
       if (optional.isPresent()) {
         List<TrajectorySample> trajectory = new ArrayList<>();
