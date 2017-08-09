@@ -7,6 +7,7 @@ import java.awt.geom.Ellipse2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.util.Collection;
+import java.util.List;
 
 import ch.ethz.idsc.owly.glc.core.StandardTrajectoryPlanner;
 import ch.ethz.idsc.owly.glc.core.TrajectoryPlanner;
@@ -53,7 +54,7 @@ public class DeltaEntity extends AbstractEntity {
   }
 
   @Override
-  public int indexOfClosestTrajectorySample() {
+  public int indexOfClosestTrajectorySample(List<TrajectorySample> trajectory) {
     final Tensor x = episodeIntegrator.tail().state();
     return ArgMin.of(Tensor.of(trajectory.stream() //
         .map(TrajectorySample::stateTime) //

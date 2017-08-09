@@ -7,6 +7,7 @@ import java.awt.geom.Ellipse2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.util.Collection;
+import java.util.List;
 
 import ch.ethz.idsc.owly.glc.core.StandardTrajectoryPlanner;
 import ch.ethz.idsc.owly.glc.core.TrajectoryPlanner;
@@ -47,7 +48,7 @@ public class R2Entity extends AbstractEntity {
 
   /** @return index of sample of trajectory that is closest to current position */
   @Override
-  public synchronized int indexOfClosestTrajectorySample() {
+  public synchronized int indexOfClosestTrajectorySample(List<TrajectorySample> trajectory) {
     final Tensor x = episodeIntegrator.tail().state();
     return ArgMin.of(Tensor.of(trajectory.stream() //
         .map(TrajectorySample::stateTime) //

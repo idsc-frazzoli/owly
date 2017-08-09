@@ -128,6 +128,7 @@ public class OwlyComponent {
   void render(Graphics2D graphics, Dimension dimension) {
     graphics.setColor(Color.WHITE);
     graphics.fillRect(0, 0, dimension.width, dimension.height);
+    renderBackground.list.forEach(renderInterface -> renderInterface.render(owlyLayer, graphics));
     {
       graphics.setColor(Color.LIGHT_GRAY);
       graphics.draw(new Line2D.Double(toPoint2D(Tensors.vector(-10, 1)), toPoint2D(Tensors.vector(10, 1))));
@@ -138,7 +139,6 @@ public class OwlyComponent {
       graphics.draw(new Line2D.Double(toPoint2D(Tensors.vector(-10, 0)), toPoint2D(Tensors.vector(10, 0))));
       graphics.draw(new Line2D.Double(toPoint2D(Tensors.vector(0, -10)), toPoint2D(Tensors.vector(0, 10))));
     }
-    renderBackground.list.forEach(renderInterface -> renderInterface.render(owlyLayer, graphics));
     if (renderElements != null) {
       renderElements.list.forEach(renderInterface -> renderInterface.render(owlyLayer, graphics));
     }

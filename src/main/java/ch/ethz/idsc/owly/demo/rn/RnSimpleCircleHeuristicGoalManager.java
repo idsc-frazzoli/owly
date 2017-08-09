@@ -22,8 +22,8 @@ import ch.ethz.idsc.tensor.sca.Ramp;
 /** objective is minimum path length
  * path length is measured in Euclidean distance */
 public class RnSimpleCircleHeuristicGoalManager extends SimpleTrajectoryRegionQuery implements GoalInterface {
-  protected final Tensor center;
-  protected final Scalar radius;
+  private final Tensor center;
+  private final Scalar radius;
 
   /** constructor creates a spherical region in R^n with given center and radius.
    * distance measure is Euclidean distance.

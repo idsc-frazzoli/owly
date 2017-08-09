@@ -25,9 +25,7 @@ public class Se2WrapGoalManagerExt implements Region, CostFunction {
   private final CoordinateWrap coordinateWrap;
   private final Se2DefaultGoalManagerExt goalManager;
 
-  /** @param coordinateWrap
-   * @param center consists of x,y,theta
-   * @param radius */
+  /** @param coordinateWrap */
   public Se2WrapGoalManagerExt(CoordinateWrap coordinateWrap, Se2DefaultGoalManagerExt goalManager) {
     this.coordinateWrap = coordinateWrap;
     this.goalManager = goalManager;

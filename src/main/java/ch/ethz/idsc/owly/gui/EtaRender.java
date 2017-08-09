@@ -10,15 +10,17 @@ import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
 import ch.ethz.idsc.tensor.sca.Ceiling;
 
-class EtaRender implements RenderInterface {
-  private final Tensor eta;
+public class EtaRender implements RenderInterface {
+  private Tensor eta;
 
-  EtaRender(Tensor eta) {
-    this.eta = eta;
+  public EtaRender(Tensor eta) {
+    setEta(eta);
   }
 
   @Override
   public void render(OwlyLayer owlyLayer, Graphics2D graphics) {
+    if (eta.length() < 2)
+      return;
     Tensor inv = eta.map(Scalar::reciprocal);
     graphics.setColor(Color.LIGHT_GRAY);
     Tensor ceiling = Ceiling.of(eta);
@@ -34,5 +36,9 @@ class EtaRender implements RenderInterface {
           owlyLayer.toPoint2D(Tensors.vector(dx, 0)), //
           owlyLayer.toPoint2D(Tensors.vector(dx, 1))));
     }
+  }
+
+  public void setEta(Tensor eta) {
+    this.eta = eta;
   }
 }
