@@ -154,7 +154,7 @@ public class OwlyAnimationFrame {
         }
       }
       {
-        TrajectoryRegionQuery trq = stp.getGoalQuery();
+        TrajectoryRegionQuery trq = stp.getGoalInterface();
         if (trq instanceof SimpleTrajectoryRegionQuery) {
           SimpleTrajectoryRegionQuery simpleTrajectoryRegionQuery = (SimpleTrajectoryRegionQuery) trq;
           Collection<StateTime> collection = simpleTrajectoryRegionQuery.getSparseDiscoveredMembers();

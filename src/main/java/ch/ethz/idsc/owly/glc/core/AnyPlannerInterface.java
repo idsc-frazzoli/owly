@@ -44,7 +44,7 @@ public interface AnyPlannerInterface extends ExpandInterface {
   /** @return first State in goal region from furthest Node, or Optional.empty() if no such node has been identified yet */
   Optional<StateTime> getFurthestGoalState(List<Region> goalRegions);
 
-  /** @return furthest Node (lowest cost in higehst listindex), whose incoming trajectory is in GoalRegion,
-   * or Optional.empty() if no such node has been identified yet */
-  Optional<GlcNode> getFurthestGoalNode(List<Region> goalRegions);
+  /** @return the node, to which the trajectory should lead:
+   * The Furthest, the best or the top of the Queue */
+  Optional<GlcNode> getFinalGoalNode();
 }

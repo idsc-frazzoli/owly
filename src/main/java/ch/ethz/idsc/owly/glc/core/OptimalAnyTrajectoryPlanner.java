@@ -95,7 +95,7 @@ public class OptimalAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
                   formerLabel.parent().removeEdgeTo(formerLabel);
                 // adding next to tree and DomainMap
                 insertNodeInTree(nextParent, next);
-                // removing the nextCandidate from bucket of this domain
+                // removing the nextCandidate from bucket of this domain as new is label
                 candidateMap.get(domainKey).remove(nextCandidatePair);
                 // GOAL check
                 if (!getGoalInterface().isDisjoint(connectors.get(next)))
@@ -113,6 +113,7 @@ public class OptimalAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
                 System.err.println("No formerLabel existed, but sth. was replaced");
                 throw new RuntimeException();
               }
+              // removing the nextCandidate from bucket of this domain as new is label
               candidateMap.get(domainKey).remove(nextCandidatePair);
               // GOAL check
               if (!getGoalInterface().isDisjoint(connectors.get(next)))
@@ -223,16 +224,17 @@ public class OptimalAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
   public String infoString() {
     StringBuilder stringBuilder = new StringBuilder(super.infoString() + ", ");
     stringBuilder.append("OptimalAnyPlanner");
-    if (getGoalQuery() instanceof TrajectoryGoalManager)
+    if (getGoalInterface() instanceof TrajectoryGoalManager)
       stringBuilder.append(", with a TrajectoryGoalManger");
     return stringBuilder.toString();
   }
 
   @Override
   void RelabelingDomains() {
-    long tic = System.nanoTime();
     GlcNode root = getRoot();
     List<GlcNode> treeList = new ArrayList<GlcNode>(Nodes.ofSubtree(root));
+    treeList.stream().parallel() //
+        .forEach(glcNode -> glcNode.setMinCostToGoal(getGoalInterface().minCostToGoal(glcNode.state())));
     Collections.sort(treeList, NodeDepthComparator.INSTANCE);
     int deletedNodes = 0;
     int replacedNodes = 0;
@@ -279,13 +281,18 @@ public class OptimalAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
         }
       }
     }
+    long candidateMapBeforeSize = candidateMap.size();
+    long oldtotalCandidates = candidateMap.values().parallelStream().flatMap(Collection::stream).count();
     System.out.println("replaced Nodes: " + replacedNodes + " deleted Nodes: " + deletedNodes + ", during relabel");// stopped iterating over tree
     candidateMap.entrySet().parallelStream().forEach(candidateSet -> candidateSet.getValue()//
         .removeIf(cp -> !Nodes.rootFrom(cp.getOrigin()).equals(root)));
     // Deleting CandidateBuckets, if they are empty
     candidateMap.values().removeIf(bucket -> bucket.isEmpty());
-    long toc = System.nanoTime();
-    System.out.println("Relabel during goalSwitch took: " + (toc - tic) * 1e-9 + "s");
+    long newtotalCandidates = candidateMap.values().parallelStream().flatMap(Collection::stream).count();
+    System.out.println(oldtotalCandidates - newtotalCandidates + " of " + oldtotalCandidates + //
+        " C. removed from CL. with Origin in deleteTree: " + newtotalCandidates);
+    System.out.println("CandidateMap before " + candidateMapBeforeSize + //
+        " and after: " + candidateMap.size());
   }
 
   @Override
@@ -309,7 +316,7 @@ public class OptimalAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
     treeCollection.stream().forEach(node -> {
       if (!node.isRoot()) {
         final List<StateTime> trajectory = getStateIntegrator().trajectory(node.parent().stateTime(), node.flow());
-        if (!getGoalQuery().isDisjoint(trajectory))
+        if (!getGoalInterface().isDisjoint(trajectory))
           offerDestination(node, trajectory);
       }
     });

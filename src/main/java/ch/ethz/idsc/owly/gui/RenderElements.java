@@ -39,7 +39,7 @@ public class RenderElements {
       }
     }
     {
-      TrajectoryRegionQuery trq = trajectoryPlanner.getGoalQuery();
+      TrajectoryRegionQuery trq = trajectoryPlanner.getGoalInterface();
       if (trq instanceof SimpleTrajectoryRegionQuery) {
         SimpleTrajectoryRegionQuery strq = (SimpleTrajectoryRegionQuery) trq;
         list.add(new GoalRender(strq.getSparseDiscoveredMembers()));

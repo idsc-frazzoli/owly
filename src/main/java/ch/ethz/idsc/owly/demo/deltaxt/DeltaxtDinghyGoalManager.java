@@ -21,7 +21,6 @@ public class DeltaxtDinghyGoalManager extends TrajectoryGoalManager implements G
 
   public DeltaxtDinghyGoalManager(List<Region> goalRegions, DeltaxtStateSpaceModel stateSpaceModel) {
     this(goalRegions, RealScalar.ONE, stateSpaceModel);
-    // TODO Auto-generated constructor stub
   }
 
   public DeltaxtDinghyGoalManager(List<Region> goalRegions, Scalar timeCostScalingFactor, DeltaxtStateSpaceModel stateSpaceModel) {
