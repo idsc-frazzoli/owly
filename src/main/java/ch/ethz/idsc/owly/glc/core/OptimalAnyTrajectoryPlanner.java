@@ -224,7 +224,7 @@ public class OptimalAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
   public String infoString() {
     StringBuilder stringBuilder = new StringBuilder(super.infoString() + ", ");
     stringBuilder.append("OptimalAnyPlanner");
-    if (getGoalQuery() instanceof TrajectoryGoalManager)
+    if (getGoalInterface() instanceof TrajectoryGoalManager)
       stringBuilder.append(", with a TrajectoryGoalManger");
     return stringBuilder.toString();
   }
@@ -233,6 +233,8 @@ public class OptimalAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
   void RelabelingDomains() {
     GlcNode root = getRoot();
     List<GlcNode> treeList = new ArrayList<GlcNode>(Nodes.ofSubtree(root));
+    treeList.stream().parallel() //
+        .forEach(glcNode -> glcNode.setMinCostToGoal(getGoalInterface().minCostToGoal(glcNode.state())));
     Collections.sort(treeList, NodeDepthComparator.INSTANCE);
     int deletedNodes = 0;
     int replacedNodes = 0;
@@ -314,7 +316,7 @@ public class OptimalAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
     treeCollection.stream().forEach(node -> {
       if (!node.isRoot()) {
         final List<StateTime> trajectory = getStateIntegrator().trajectory(node.parent().stateTime(), node.flow());
-        if (!getGoalQuery().isDisjoint(trajectory))
+        if (!getGoalInterface().isDisjoint(trajectory))
           offerDestination(node, trajectory);
       }
     });

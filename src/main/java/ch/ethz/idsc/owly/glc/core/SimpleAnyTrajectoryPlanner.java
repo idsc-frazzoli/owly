@@ -126,7 +126,7 @@ public class SimpleAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
   public String infoString() {
     StringBuilder stringBuilder = new StringBuilder(super.infoString() + ", ");
     stringBuilder.append("SimpleAnyPlanner");
-    if (getGoalQuery() instanceof TrajectoryGoalManager)
+    if (getGoalInterface() instanceof TrajectoryGoalManager)
       stringBuilder.append(", with a TrajectoryGoalManger");
     return stringBuilder.toString();
   }
@@ -140,7 +140,7 @@ public class SimpleAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
   @Override
   boolean GoalCheckTree(final Collection<GlcNode> treeCollection, final Region goalCheckTree) {
     treeCollection.parallelStream().forEach(node -> {
-      if (!getGoalQuery().isDisjoint(Arrays.asList(node.stateTime())))
+      if (!getGoalInterface().isDisjoint(Arrays.asList(node.stateTime())))
         offerDestination(node, Arrays.asList(node.stateTime()));
     });
     return getBest().isPresent();

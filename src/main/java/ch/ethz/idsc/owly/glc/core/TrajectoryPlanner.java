@@ -142,7 +142,7 @@ public abstract class TrajectoryPlanner implements ExpandInterface, Serializable
   public abstract TrajectoryRegionQuery getObstacleQuery();
 
   /** @return goal query for the purpose of inspection, i.e. no alteration should be made */
-  public abstract TrajectoryRegionQuery getGoalQuery();
+  public abstract GoalInterface getGoalInterface();
 
   /* package */ final Collection<GlcNode> queue() {
     return queue;

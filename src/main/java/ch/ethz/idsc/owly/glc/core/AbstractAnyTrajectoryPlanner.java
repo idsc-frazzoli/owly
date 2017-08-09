@@ -116,10 +116,10 @@ public abstract class AbstractAnyTrajectoryPlanner extends AbstractTrajectoryPla
     // Updating the merit of the entire tree
     long tic = System.nanoTime();
     // Changing the Merit in Queue for each Node
-    treeCollection.stream().parallel() //
-        .forEach(glcNode -> glcNode.setMinCostToGoal(newGoal.minCostToGoal(glcNode.state())));
     if (!noHeuristic) {
       System.err.println("checking for domainlabel changes due to heuristic change,  Treesize: " + treeCollection.size());
+      treeCollection.stream().parallel() //
+          .forEach(glcNode -> glcNode.setMinCostToGoal(newGoal.minCostToGoal(glcNode.state())));
       RelabelingDomains();
     }
     // RESORTING OF LIST
@@ -217,7 +217,7 @@ public abstract class AbstractAnyTrajectoryPlanner extends AbstractTrajectoryPla
     Optional<GlcNode> key = getFurthestGoalNode(goalRegions);
     if (key.isPresent()) {
       List<StateTime> bestTrajectory = best.get(key.get());
-      int index = getGoalQuery().firstMember(bestTrajectory);
+      int index = getGoalInterface().firstMember(bestTrajectory);
       if (index >= 0)
         return Optional.ofNullable(bestTrajectory.get(index));
     }
@@ -244,8 +244,8 @@ public abstract class AbstractAnyTrajectoryPlanner extends AbstractTrajectoryPla
 
   @Override
   public final Optional<GlcNode> getFinalGoalNode() {
-    if (getGoalQuery() instanceof TrajectoryGoalManager) {
-      List<Region> goalRegions = ((TrajectoryGoalManager) getGoalQuery()).getGoalRegionList();
+    if (getGoalInterface() instanceof TrajectoryGoalManager) {
+      List<Region> goalRegions = ((TrajectoryGoalManager) getGoalInterface()).getGoalRegionList();
       Optional<GlcNode> furthest = getFurthestGoalNode(goalRegions);
       if (furthest.isPresent())
         return furthest;

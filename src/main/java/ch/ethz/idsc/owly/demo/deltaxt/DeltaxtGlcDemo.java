@@ -71,7 +71,9 @@ enum DeltaxtGlcDemo {
     List<Region> goalRegions = new ArrayList<>();
     List<TrajectorySample> dinghyTrajectory = new ArrayList<>();
     Tensor radius = Tensors.vector(0.3, 0.3, 2);
-    StateTime next = new StateTime(Tensors.vector(2, 2.4, 0), RealScalar.ZERO);
+    // Start of dinghy
+    StateTime next = new StateTime(Tensors.vector(1.7, 2.100, 0), RealScalar.ZERO);
+    // StateTime next = new StateTime(Tensors.vector(1.3, 2.100, 0), RealScalar.ZERO);
     goalRegions.add(new EllipsoidRegion(next.state(), radius));
     dinghyTrajectory.add(new TrajectorySample(next, null));
     Scalar dinghyExpandTime = RealScalar.of(25); // [s]
@@ -83,7 +85,7 @@ enum DeltaxtGlcDemo {
       dinghyTrajectory.add(new TrajectorySample(next, flow));
     }
     TrajectorySample.print(dinghyTrajectory);
-    // --
+    // GOALCREATION
     DeltaxtDinghyGoalManager deltaGoalManager2 = new DeltaxtDinghyGoalManager(goalRegions, stateSpaceModel);
     TrajectoryPlanner trajectoryPlanner = new StandardTrajectoryPlanner( //
         parameters.getEta(), stateIntegrator, controls, obstacleQuery, deltaGoalManager2);
@@ -92,8 +94,8 @@ enum DeltaxtGlcDemo {
     OwlyFrame owlyFrame = Gui.start();
     owlyFrame.configCoordinateOffset(33, 416);
     owlyFrame.jFrame.setBounds(100, 100, 620, 475);
+    owlyFrame.addBackground(imageRegion); // TODO JAN, needs to be in this order? background & then trajectory?
     owlyFrame.addTrajectory(dinghyTrajectory);
-    // owlyFrame.addBackground(imageRegion); //TODO JAN throws runtime expection
     while (!trajectoryPlanner.getBest().isPresent() && owlyFrame.jFrame.isVisible()) {
       Expand.maxSteps(trajectoryPlanner, 30, parameters.getDepthLimit());
       owlyFrame.setGlc(trajectoryPlanner);

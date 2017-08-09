@@ -43,16 +43,12 @@ import ch.ethz.idsc.tensor.Tensor;
   }
 
   @Override
-  public final TrajectoryRegionQuery getGoalQuery() {
-    return getGoalInterface();
-  }
-
-  @Override
   /* package */ final GlcNode createRootNode(StateTime stateTime) {
     return GlcNode.of(null, stateTime, RealScalar.ZERO, //
         getGoalInterface().minCostToGoal(stateTime.state()));
   }
 
+  @Override
   public final GoalInterface getGoalInterface() {
     return goalInterface;
   }
