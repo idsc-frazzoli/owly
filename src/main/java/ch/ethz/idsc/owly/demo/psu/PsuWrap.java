@@ -9,7 +9,9 @@ import ch.ethz.idsc.tensor.Tensors;
 import ch.ethz.idsc.tensor.red.Norm;
 import ch.ethz.idsc.tensor.sca.Mod;
 
-public class PsuWrap implements CoordinateWrap {
+public enum PsuWrap implements CoordinateWrap {
+  INSTANCE;
+  // ---
   private static Mod MOD = Mod.function(RealScalar.of(Math.PI * 2));
   private static Mod MOD_DISTANCE = Mod.function(RealScalar.of(Math.PI * 2), RealScalar.of(-Math.PI));
 
@@ -22,6 +24,6 @@ public class PsuWrap implements CoordinateWrap {
   public Scalar distance(Tensor p, Tensor q) {
     Tensor d = p.subtract(q);
     d.set(MOD_DISTANCE, 0);
-    return Norm._2.of(d);
+    return Norm._2.of(d); // mix of units [rad] and [rad/sec] (!)
   }
 }
