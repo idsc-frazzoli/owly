@@ -6,6 +6,7 @@ import java.util.Optional;
 
 import ch.ethz.idsc.owly.math.region.Region;
 import ch.ethz.idsc.owly.math.state.StateTime;
+import ch.ethz.idsc.owly.math.state.TrajectoryRegionQuery;
 import ch.ethz.idsc.tensor.Tensor;
 
 public interface AnyPlannerInterface extends ExpandInterface {
@@ -33,6 +34,11 @@ public interface AnyPlannerInterface extends ExpandInterface {
    * @param newGoal, new Goalmanager
    * @return boolean, true if Goal was already found in oldTree */
   boolean changeToGoal(final GoalInterface newGoal);
+
+  /** Updates the tree with the new Obstacle Information
+   * 
+   * @param newObstacle the new Query for the new Obstacle Information */
+  void ObstacleUpdate(TrajectoryRegionQuery newObstacle);
 
   /** @return the StateTime Trajectory to the best Goal, or if no goal was found NULL */
   List<StateTime> trajectoryToBest();
