@@ -5,6 +5,8 @@ import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.geom.Path2D;
+import java.awt.geom.Point2D;
+import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -15,6 +17,7 @@ import ch.ethz.idsc.owly.glc.core.GlcNode;
 import ch.ethz.idsc.owly.glc.core.TrajectoryPlanner;
 import ch.ethz.idsc.owly.glc.core.TrajectorySample;
 import ch.ethz.idsc.owly.math.flow.Flow;
+import ch.ethz.idsc.owly.math.state.StateTime;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
@@ -30,7 +33,7 @@ public class TrajectoryRender implements RenderInterface {
       Optional<GlcNode> optional = trajectoryPlanner.getFinalGoalNode();
       if (optional.isPresent()) {
         final GlcNode node = optional.get();
-        {// draw detailed trajectory from root to goal/furthestgo
+        { // draw detailed trajectory from root to goal/furthestgo
           setTrajectory(trajectoryPlanner.detailedTrajectoryTo(node));
         }
       }
@@ -66,12 +69,11 @@ public class TrajectoryRender implements RenderInterface {
       }
     }
     { // draw boxes at nodes in path from root to goal
-      graphics.setColor(new Color(255, 0, 0, 128));
-      // TODO reinstate functionality
-      // for (StateTime stateTime : GlcNodes.getPathFromRootTo(node)) {
-      // Point2D point2d = owlyLayer.toPoint2D(stateTime.state());
-      // graphics.draw(new Rectangle2D.Double(point2d.getX() - 1, point2d.getY() - 1, 2, 2));
-      // }
+      graphics.setColor(new Color(255, 0, 0, 96));
+      trajectory.stream().map(TrajectorySample::stateTime).map(StateTime::state).forEach(state -> {
+        Point2D point2d = owlyLayer.toPoint2D(state);
+        graphics.draw(new Rectangle2D.Double(point2d.getX() - 1, point2d.getY() - 1, 2, 2));
+      });
     }
   }
 

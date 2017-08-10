@@ -3,9 +3,7 @@ package ch.ethz.idsc.owly.gui;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
-import java.awt.Shape;
 import java.awt.geom.Point2D;
-import java.awt.geom.Rectangle2D;
 import java.util.Collection;
 import java.util.Objects;
 
@@ -24,10 +22,9 @@ public class ObstacleRender implements RenderInterface {
       return;
     // ---
     graphics.setColor(new Color(0, 0, 0, 128));
-    for (StateTime stateTime : collection) {
+    for (StateTime stateTime : collection) { // TODO JAN this is really slow for large collections
       Point2D point2d = owlyLayer.toPoint2D(stateTime.state());
-      Shape shape = new Rectangle2D.Double(point2d.getX(), point2d.getY(), 2, 2);
-      graphics.draw(shape);
+      graphics.drawRect((int) point2d.getX(), (int) point2d.getY(), 2, 2);
     }
   }
 
