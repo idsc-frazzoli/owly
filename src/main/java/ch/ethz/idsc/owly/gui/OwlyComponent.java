@@ -54,6 +54,7 @@ public class OwlyComponent {
   };
   private RenderElements renderBackground = new RenderElements();
   public RenderElements renderElements; // TODO use setter function
+  private long lastRepaint = System.nanoTime();
 
   public OwlyComponent() {
     reset_model2pixel();
@@ -128,7 +129,14 @@ public class OwlyComponent {
   void render(Graphics2D graphics, Dimension dimension) {
     graphics.setColor(Color.WHITE);
     graphics.fillRect(0, 0, dimension.width, dimension.height);
+    // ---
     renderBackground.list.forEach(renderInterface -> renderInterface.render(owlyLayer, graphics));
+    { // display frame rate
+      long period = System.nanoTime() - lastRepaint;
+      lastRepaint = System.nanoTime();
+      graphics.setColor(Color.GRAY);
+      graphics.drawString(String.format("%4.1f Hz", 1.0e9 / period), 0, 10);
+    }
     {
       graphics.setColor(Color.LIGHT_GRAY);
       graphics.draw(new Line2D.Double(toPoint2D(Tensors.vector(-10, 1)), toPoint2D(Tensors.vector(10, 1))));

@@ -47,7 +47,7 @@ import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
 
-// TODO class is in draft status, API not finalized 
+// EXPERIMENTAL API not finalized 
 public class OwlyAnimationFrame {
   public final JFrame jFrame = new JFrame();
   private final OwlyComponent owlyComponent = new OwlyComponent();
@@ -86,17 +86,27 @@ public class OwlyAnimationFrame {
     owlyComponent.renderElements.list.add(trajectoryRender);
     owlyComponent.renderElements.list.add(obstacleRender);
     owlyComponent.renderElements.list.add(goalRender);
-    final TimerTask timerTask = new TimerTask() { // animation and repaint task
-      final TimeKeeper timeKeeper = new TimeKeeper();
+    { // periodic task for integration
+      final TimerTask timerTask = new TimerTask() { // animation and repaint task
+        TimeKeeper timeKeeper = new TimeKeeper();
 
-      @Override
-      public void run() {
-        Scalar now = timeKeeper.now();
-        animationInterfaces.forEach(ani -> ani.integrate(now));
-        owlyComponent.jComponent.repaint();
-      }
-    };
-    timer.schedule(timerTask, 100, 50);
+        @Override
+        public void run() {
+          Scalar now = timeKeeper.now();
+          animationInterfaces.forEach(ani -> ani.integrate(now));
+        }
+      };
+      timer.schedule(timerTask, 100, 20);
+    }
+    { // periodic task for rendering
+      final TimerTask timerTask = new TimerTask() { // animation and repaint task
+        @Override
+        public void run() {
+          owlyComponent.jComponent.repaint();
+        }
+      };
+      timer.schedule(timerTask, 100, 50);
+    }
     jFrame.addWindowListener(new WindowAdapter() {
       @Override
       public void windowClosing(WindowEvent windowEvent) {

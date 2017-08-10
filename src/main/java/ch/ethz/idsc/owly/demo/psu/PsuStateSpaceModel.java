@@ -17,6 +17,8 @@ import ch.ethz.idsc.tensor.sca.Sin;
 public enum PsuStateSpaceModel implements StateSpaceModel {
   INSTANCE;
   // ---
+  /** @param x == {angle, angular rate}
+   * @param u == {torque} */
   @Override
   public Tensor f(Tensor x, Tensor u) {
     // equation (10)

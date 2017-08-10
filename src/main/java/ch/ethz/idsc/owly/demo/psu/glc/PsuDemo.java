@@ -39,7 +39,7 @@ enum PsuDemo {
     StateIntegrator stateIntegrator = FixedStateIntegrator.create( //
         RungeKutta4Integrator.INSTANCE, RationalScalar.of(1, 4), 5);
     Collection<Flow> controls = PsuControls.createControls(0.2, 6);
-    PsuWrap psuWrap = new PsuWrap();
+    PsuWrap psuWrap = PsuWrap.INSTANCE;
     PsuGoalManager psuGoalManager = new PsuGoalManager(psuWrap, //
         Tensors.vector(Math.PI * 0.7, .5), RealScalar.of(0.3));
     // ---
@@ -57,7 +57,7 @@ enum PsuDemo {
     StateIntegrator stateIntegrator = FixedStateIntegrator.create( //
         RungeKutta45Integrator.INSTANCE, RationalScalar.of(1, 4), 5);
     Collection<Flow> controls = PsuControls.createControls(0.2, 6);
-    PsuWrap psuWrap = new PsuWrap();
+    PsuWrap psuWrap = PsuWrap.INSTANCE;
     PsuGoalManager psuGoalManager = new PsuGoalManager(psuWrap, //
         Tensors.vector(Math.PI, 2), RealScalar.of(0.3));
     // ---
