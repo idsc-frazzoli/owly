@@ -54,7 +54,7 @@ public class DeltaEntity extends AbstractEntity {
   }
 
   @Override
-  public int indexOfClosestTrajectorySample(List<TrajectorySample> trajectory) {
+  public int indexOfPassedTrajectorySample(List<TrajectorySample> trajectory) {
     final Tensor x = episodeIntegrator.tail().state();
     return ArgMin.of(Tensor.of(trajectory.stream() //
         .map(TrajectorySample::stateTime) //

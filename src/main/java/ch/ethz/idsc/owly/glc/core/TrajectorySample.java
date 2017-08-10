@@ -17,6 +17,7 @@ public class TrajectorySample implements Serializable {
     return new TrajectorySample(stateTime, null);
   }
 
+  // TODO JONAS move static function print to class "Trajectories"
   public static void print(List<TrajectorySample> list) {
     System.out.println("Trajectory (" + list.size() + ")");
     for (TrajectorySample sample : list)
@@ -36,8 +37,8 @@ public class TrajectorySample implements Serializable {
     return stateTime;
   }
 
-  /** the first or the last state time in a trajectory
-   * typically does not have a flow associated
+  /** typically the first state time in a trajectory
+   * may not have a flow associated
    * (since there may not be history for the sample)
    * 
    * We return an optional type to make the application layer

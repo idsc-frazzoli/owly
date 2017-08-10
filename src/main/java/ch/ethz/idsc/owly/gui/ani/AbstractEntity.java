@@ -26,7 +26,7 @@ public abstract class AbstractEntity implements RenderInterface, AnimationInterf
     this.episodeIntegrator = episodeIntegrator;
   }
 
-  synchronized void setTrajectory(List<TrajectorySample> trajectory) {
+  public synchronized void setTrajectory(List<TrajectorySample> trajectory) {
     this.trajectory = trajectory;
     trajectory_skip = 0;
   }
@@ -36,10 +36,10 @@ public abstract class AbstractEntity implements RenderInterface, AnimationInterf
     // implementation does not require that current position is perfectly located on trajectory
     Tensor u = fallbackControl(); // default control
     if (Objects.nonNull(trajectory)) {
-      int index = trajectory_skip + indexOfClosestTrajectorySample(trajectory.subList(trajectory_skip, trajectory.size()));
+      int index = trajectory_skip + indexOfPassedTrajectorySample(trajectory.subList(trajectory_skip, trajectory.size()));
       trajectory_skip = index;
       GlobalAssert.that(index != ArgMin.NOINDEX);
-      ++index; // next node has flow control
+      ++index; // <- next node has flow control
       if (index < trajectory.size()) {
         GlobalAssert.that(trajectory.get(index).getFlow().isPresent());
         u = trajectory.get(index).getFlow().get().getU();
@@ -57,7 +57,7 @@ public abstract class AbstractEntity implements RenderInterface, AnimationInterf
   final synchronized List<TrajectorySample> getFutureTrajectoryUntil(Scalar delay) {
     if (Objects.isNull(trajectory)) // agent does not have a trajectory
       return Collections.singletonList(TrajectorySample.head(episodeIntegrator.tail()));
-    int index = trajectory_skip + indexOfClosestTrajectorySample(trajectory.subList(trajectory_skip, trajectory.size()));
+    int index = trajectory_skip + indexOfPassedTrajectorySample(trajectory.subList(trajectory_skip, trajectory.size()));
     // <- no update of trajectory_skip here
     Scalar threshold = trajectory.get(index).stateTime().time().add(delay);
     return trajectory.stream().skip(index) //
@@ -74,7 +74,13 @@ public abstract class AbstractEntity implements RenderInterface, AnimationInterf
     return relevant.get(relevant.size() - 1).stateTime().state();
   }
 
-  public abstract int indexOfClosestTrajectorySample(List<TrajectorySample> trajectory);
+  /** the return index does not refer to node in the trajectory closest to the entity
+   * but rather the index of the node that was already traversed.
+   * this ensures that the entity can query the correct flow that leads to the upcoming node
+   * 
+   * @param trajectory
+   * @return index of node that has been traversed most recently by entity */
+  public abstract int indexOfPassedTrajectorySample(List<TrajectorySample> trajectory);
 
   public abstract Tensor fallbackControl();
 
