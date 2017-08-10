@@ -57,9 +57,9 @@ public class OptimalAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
     }
     // saving the candidates in the corresponding Buckets
     for (Entry<Tensor, CandidatePairQueue> entry : candidatePairQueueMap.map.entrySet()) {
-      if (!candidateMap.containsKey(entry.getKey()))
+      if (!getCandidateMap().containsKey(entry.getKey()))
         candidateMap.put(entry.getKey(), new HashSet<CandidatePair>());
-      candidateMap.get(entry.getKey()).addAll(entry.getValue());
+      getCandidateMap().get(entry.getKey()).addAll(entry.getValue());
     }
     processCandidates(node, connectors, candidatePairQueueMap);
   }
@@ -89,7 +89,7 @@ public class OptimalAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
                   System.err.println("The Candidate in the bucket has children");
                   throw new RuntimeException();
                 }
-                candidateMap.get(domainKey).add(formerCandidate);
+                getCandidateMap().get(domainKey).add(formerCandidate);
                 // formerLabel disconnecting
                 if (formerLabel.parent() != null)
                   formerLabel.parent().removeEdgeTo(formerLabel);
@@ -129,6 +129,7 @@ public class OptimalAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
 
   @Override
   public int switchRootToNode(GlcNode newRoot) {
+    System.out.println("*** ROOTSWITCH ***");
     if (newRoot.isRoot()) {
       System.out.println("node is already root");
       return 0;
@@ -140,7 +141,7 @@ public class OptimalAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
     GlcNode oldRoot = getRoot();
     Collection<GlcNode> oldTreeCollection = Nodes.ofSubtree(oldRoot);
     int oldDomainMapSize = domainMap().size();
-    long oldtotalCandidates = candidateMap.values().stream().flatMap(Collection::stream).count();
+    long oldtotalCandidates = getCandidateMap().values().stream().flatMap(Collection::stream).count();
     int oldQueueSize = queue().size();
     // -- BASIC REROOTING AND DELETING
     // removes the new root from the child list of its parent
@@ -189,7 +190,8 @@ public class OptimalAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
           final GlcNode next = nextCandidatePair.getCandidate();
           final GlcNode nextParent = nextCandidatePair.getOrigin();
           // CandidateOrigin needs to be part of tree
-          if (!nextParent.isRoot()) {
+          // if (!nextParent.isRoot()) { //TODO BUG? shoudl maybe be below?
+          if (!next.isRoot()) {
             // check if Delete was properly conducted
             if (deleteTreeCollection.contains(nextParent)) {
               System.err.println("parent of node will be deleted --> not in QUEUE ");
@@ -216,6 +218,180 @@ public class OptimalAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
     return increasedDepthBy;
   }
 
+  // TODO JONAS Consistency checks
+  @Override
+  public void ObstacleUpdate(TrajectoryRegionQuery newObstacle) {
+    System.out.println("*** OBSTACLE UPDATE ***");
+    long tic = System.nanoTime();
+    setObstacleQuery(newObstacle);
+    setBestNull();
+    GlcNode root = getRoot();
+    // TODO JONAS: if root in collision
+    List<GlcNode> domainMapList = new ArrayList<>(domainMap().values());
+    Collections.sort(domainMapList, NodeDepthComparator.INSTANCE);
+    int deletedNodes = 0;
+    int addedNodes = 0;
+    for (GlcNode label : domainMapList) {
+      List<StateTime> connector = new ArrayList<>();
+      Tensor domainKey = convertToKey(label.state());
+      if (getNode(domainKey) == label) { // check if nothing was changed in previous loopiteration
+        PriorityQueue<CandidatePair> candidateQueue = new PriorityQueue<>();
+        if (candidateMap.containsKey(domainKey)) { // fills candidatequeue
+          Set<CandidatePair> tempCandidateSet = candidateMap.get(domainKey);
+          tempCandidateSet.parallelStream().forEach(cp -> //
+          cp.getCandidate().setMinCostToGoal(getGoalInterface().minCostToGoal(cp.getCandidate().state())));
+          candidateQueue.addAll(tempCandidateSet);
+        }
+        if (!label.isRoot()) {
+          connector = getStateIntegrator().trajectory(label.parent().stateTime(), label.flow());
+          if (getObstacleQuery().isDisjoint(connector)) { // label not in Collision
+            while (!candidateQueue.isEmpty()) {
+              // ******COPY PASTED //TODO JONAS in function
+              CandidatePair nextBest = candidateQueue.element();
+              GlcNode nextBestNode = nextBest.getCandidate();
+              GlcNode nextBestParent = nextBest.getOrigin();
+              if (Scalars.lessThan(nextBestNode.merit(), label.merit())) {
+                if (Nodes.areConnected(nextBestParent, root)) {
+                  // / check if sth better is there
+                  connector = getStateIntegrator().trajectory(nextBestParent.stateTime(), nextBestNode.flow());
+                  if (getObstacleQuery().isDisjoint(connector)) {
+                    final Collection<GlcNode> subDeleteTree = deleteSubtreeOf(label);
+                    if (subDeleteTree.size() > 1) // DEBUG INFO
+                      System.err.println("Pruned Tree of Size: " + subDeleteTree.size());
+                    CandidatePair formerLabelCandidate = new CandidatePair(label.parent(), label);
+                    label.parent().removeEdgeTo(label); // TODO: confirm position or 5 lines below
+                    if (!formerLabelCandidate.getCandidate().isLeaf()) {
+                      System.err.println("The Candidate in the bucket has children");
+                      throw new RuntimeException();
+                    }
+                    getCandidateMap().get(domainKey).add(formerLabelCandidate);
+                    // formerLabel disconnecting
+                    // if (label.parent() != null) //TODO confirm if not needed
+                    // adding next to tree and DomainMap
+                    insertNodeInTree(nextBest.getOrigin(), nextBestNode);
+                    addedNodes++;
+                    // removing the nextCandidate from bucket of this domain as new is label
+                    boolean removed = candidateMap.get(domainKey).remove(nextBest);
+                    if (!removed)
+                      throw new RuntimeException(); // candidate should be in candidatemap
+                    break; // leaves whileloop around candidateQueue
+                  }
+                } else { // CandidateOrigin is not connected to tree anymore --> Remove this Candidate from Map
+                  candidateMap.get(domainKey).remove(nextBest);
+                }
+              } else {
+                break;// no better candidate can be found, therefore delete candidateQueue while loop
+              }
+              final CandidatePair removedCP = candidateQueue.remove();
+              if (removedCP != nextBest)
+                throw new RuntimeException();
+            } // else do nothing
+          } else { // DELETE label, as in collision
+            deletedNodes++;
+            final Collection<GlcNode> subDeleteTree = deleteSubtreeOf(label);
+            if (subDeleteTree.size() > 1) // DEBUG INFO
+              System.err.println("Pruned Tree of Size: " + subDeleteTree.size());
+            CandidatePair formerLabelCandidate = new CandidatePair(label.parent(), label);
+            label.parent().removeEdgeTo(label); // TODO: confirm position or 5 lines below// label in collision
+            if (!formerLabelCandidate.getCandidate().isLeaf()) {
+              System.err.println("The Candidate in the bucket has children");
+              throw new RuntimeException();
+            }
+            while (!candidateQueue.isEmpty()) {
+              System.out.println("Loop2");
+              CandidatePair nextBest = candidateQueue.element();
+              GlcNode nextBestNode = nextBest.getCandidate();
+              GlcNode nextBestParent = nextBest.getOrigin();
+              // ******COPY PASTED
+              if (Nodes.areConnected(nextBestParent, root)) {
+                connector = getStateIntegrator().trajectory(nextBestNode.parent().stateTime(), nextBestNode.flow());
+                if (getObstacleQuery().isDisjoint(connector)) { // better Candidate obstacle check
+                  getCandidateMap().get(domainKey).add(formerLabelCandidate);
+                  // formerLabel disconnecting
+                  // if (label.parent() != null) //TODO confirm if not needed
+                  // adding next to tree and DomainMap
+                  final CandidatePair removedCP = candidateQueue.remove();
+                  if (removedCP != nextBest)
+                    throw new RuntimeException();
+                  insertNodeInTree(nextBest.getOrigin(), nextBestNode);
+                  addedNodes++;
+                  // removing the nextCandidate from bucket of this domain as new is label
+                  boolean removed = candidateMap.get(domainKey).remove(nextBest);
+                  if (!removed)
+                    throw new RuntimeException(); // candidate should be in candidatemap
+                  break; // leaves whileloop around candidateQueue
+                }
+              } else { // CandidateOrigin is not connected to tree anymore --> Remove this Candidate from Map
+                candidateMap.get(domainKey).remove(nextBest);
+              }
+              final CandidatePair removedCP = candidateQueue.remove();
+              if (removedCP != nextBest)
+                throw new RuntimeException();
+            }
+          }
+        }
+      } else {
+        System.out.println("A domain was skipped, as label was deleted before");
+      }
+      // GOAL check
+      if (!connector.isEmpty()) {
+        if (!getGoalInterface().isDisjoint(connector))
+          offerDestination(getNode(domainKey), connector);
+      }
+    }
+    long toc = System.nanoTime();
+    System.out.println("Obstacle check in DomainMap with " + domainMap().size() + //
+        " domains took :" + (toc - tic) * 1e-9 + "s");
+    System.out.println("Nodes added:  " + addedNodes);
+    System.out.println("Nodes deleted:" + deletedNodes);
+    tic = toc;
+    // go through candidateMap without domain map
+    for (Entry<Tensor, Set<CandidatePair>> entry : candidateMap.entrySet()) {
+      if (!domainMap().containsKey(entry.getKey())) {// was not checked in run before
+        PriorityQueue<CandidatePair> candidateQueue = new PriorityQueue<>();
+        entry.getValue().parallelStream().forEach(cp -> //
+        cp.getCandidate().setMinCostToGoal(getGoalInterface().minCostToGoal(cp.getCandidate().state())));
+        candidateQueue.addAll(entry.getValue());
+        while (!candidateQueue.isEmpty()) {
+          CandidatePair nextBest = candidateQueue.element();
+          GlcNode nextBestNode = nextBest.getCandidate();
+          Tensor domainKey = convertToKey(nextBestNode.state());
+          GlcNode nextBestParent = nextBest.getOrigin();
+          if (Nodes.areConnected(nextBestParent, root)) {
+            List<StateTime> connector = getStateIntegrator().trajectory(nextBestParent.stateTime(), nextBestNode.flow());
+            if (getObstacleQuery().isDisjoint(connector)) { // best Candidate obstacle check
+              // adding next to tree and DomainMap
+              final CandidatePair removedCP = candidateQueue.remove();
+              if (removedCP != nextBest)
+                throw new RuntimeException();
+              insertNodeInTree(nextBest.getOrigin(), nextBestNode);
+              addedNodes++;
+              // removing the nextCandidate from bucket of this domain as new is label
+              boolean removed = candidateMap.get(domainKey).remove(nextBest);
+              if (!removed)
+                throw new RuntimeException(); // candidate should be in candidatemap
+              // GOAL check
+              if (!getGoalInterface().isDisjoint(connector))
+                offerDestination(nextBestNode, connector);
+              break; // leaves whileloop around candidateQueue
+            }
+          } else { // CandidateOrigin is not connected to tree anymore --> Remove this Candidate from Map
+            candidateMap.get(domainKey).remove(nextBest);
+          }
+          final CandidatePair removedCP = candidateQueue.remove();
+          if (removedCP != nextBest)
+            throw new RuntimeException();
+        }
+      }
+    }
+    toc = System.nanoTime();
+    System.out.println("Obstacle check in Rest of CandidateMap with " + (candidateMap.size() - domainMap().size())//
+        + " domains took :" + (toc - tic) * 1e-9 + "s");
+    System.out.println("Nodes added:  " + addedNodes);
+    System.out.println("Nodes deleted:" + deletedNodes);
+    System.out.println("**ObstacleUpdate finished**");
+  }
+
   public Map<Tensor, Set<CandidatePair>> getCandidateMap() {
     return Collections.unmodifiableMap(candidateMap);
   }
@@ -230,7 +406,7 @@ public class OptimalAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
   }
 
   @Override
-  void RelabelingDomains() {
+  /* package */ final void RelabelingDomains() {
     GlcNode root = getRoot();
     List<GlcNode> treeList = new ArrayList<GlcNode>(Nodes.ofSubtree(root));
     treeList.stream().parallel() //
@@ -238,14 +414,15 @@ public class OptimalAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
     Collections.sort(treeList, NodeDepthComparator.INSTANCE);
     int deletedNodes = 0;
     int replacedNodes = 0;
-    for (GlcNode current : treeList) {
+    for (GlcNode label : treeList) {
       // iterating through all Nodes in Tree starting at lowest depth
-      Tensor domainKey = convertToKey(current.state());
-      if (getNode(domainKey) != null) { // this node could have been deleted from tree in prev iteration
-        if (!getNode(domainKey).equals(current)) {
-          throw new RuntimeException(); // current should be labeling its own domain
-        }
-        if (candidateMap.containsKey(domainKey)) {
+      Tensor domainKey = convertToKey(label.state());
+      if (getNode(domainKey) == label) { // this node could have been deleted from tree in prev iteration
+        // if (!getNode(domainKey).equals(current)) {
+        // throw new RuntimeException(); // current should be labeling its own domain
+        // TODO JONAS: skip loop instead of runtime exception,
+        // could be relabeled in loopiteration before, therefore no check is needed
+        if (getCandidateMap().containsKey(domainKey)) {
           Set<CandidatePair> tempCandidateSet = candidateMap.get(domainKey);
           tempCandidateSet.parallelStream().forEach(cp -> //
           cp.getCandidate().setMinCostToGoal(getGoalInterface().minCostToGoal(cp.getCandidate().state())));
@@ -253,18 +430,18 @@ public class OptimalAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
           while (!candidateQueue.isEmpty()) {
             final CandidatePair nextCandidatePair = candidateQueue.poll();
             final GlcNode possibleCandidateNode = nextCandidatePair.getCandidate();
-            if (Scalars.lessThan(possibleCandidateNode.merit(), current.merit())) {
+            if (Scalars.lessThan(possibleCandidateNode.merit(), label.merit())) {
               // collision check only if new node is better
               final GlcNode possibleCandidateOrigin = nextCandidatePair.getOrigin();
               if (Nodes.listFromRoot(possibleCandidateOrigin).get(0) == root) {
                 final List<StateTime> connector = //
                     getStateIntegrator().trajectory(possibleCandidateOrigin.stateTime(), possibleCandidateNode.flow());
                 if (getObstacleQuery().isDisjoint(connector)) {
-                  Collection<GlcNode> deleteTree = deleteSubtreeOf(current);
+                  Collection<GlcNode> deleteTree = deleteSubtreeOf(label);
                   deletedNodes = deletedNodes + deleteTree.size() - 1; // -1 as this node was replaced
                   replacedNodes++;
-                  if (current.parent() != null)
-                    current.parent().removeEdgeTo(current);
+                  if (label.parent() != null)
+                    label.parent().removeEdgeTo(label);
                   insertNodeInTree(possibleCandidateOrigin, possibleCandidateNode);
                   candidateMap.get(domainKey).remove(nextCandidatePair);
                   if (!getGoalInterface().isDisjoint(connector))
@@ -273,12 +450,17 @@ public class OptimalAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
                 }
               } else { // CandidateOrigin is not connected to tree anymore --> Remove this Candidate from Map
                 candidateMap.get(convertToKey(possibleCandidateNode.state())).remove(nextCandidatePair);
+                final CandidatePair removedCP = candidateQueue.remove();
+                if (removedCP != possibleCandidateNode)
+                  throw new RuntimeException(); // removed candidate should be nextBest from before
               }
             } else {
               break; // if no better Candidates are found leave while of Candidates loop -> Speedgain
             }
           }
         }
+      } else {
+        System.out.println("A domain was skipped, as label was deleted before");
       }
     }
     long candidateMapBeforeSize = candidateMap.size();
@@ -296,7 +478,8 @@ public class OptimalAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
   }
 
   @Override
-  protected boolean GoalCheckTree(final Collection<GlcNode> treeCollection, final Region possibleGoalNodesRegion) {
+  protected final boolean GoalCheckTree(final Region possibleGoalNodesRegion) {
+    final Collection<GlcNode> treeCollection = Nodes.ofSubtree(getRoot());
     // Smart way: uses 15% -> 30% of the time of normal implemenation
     // Smart way: uses 30% -> 40% of the time of paralel implementation
     // , tested with R2GlcAnyCircleDemo
@@ -309,8 +492,7 @@ public class OptimalAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
     return GoalCheckTree(possibleGoalNodes);
   }
 
-  @Override
-  protected boolean GoalCheckTree(final Collection<GlcNode> treeCollection) {
+  private final boolean GoalCheckTree(Collection<GlcNode> treeCollection) {
     // Parallel: 15%-50% Speedgain, tested with R2GlcConstTimeHeuristicAnyDemo,
     // TODO JAN: why does parallel give different result? then non parallel? e.g. R2GlcAnyCircleDemo
     treeCollection.stream().forEach(node -> {
@@ -321,5 +503,11 @@ public class OptimalAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
       }
     });
     return getBest().isPresent();
+  }
+
+  @Override
+  public final boolean GoalCheckTree() {
+    final Collection<GlcNode> treeCollection = Nodes.ofSubtree(getRoot());
+    return GoalCheckTree(treeCollection);
   }
 }

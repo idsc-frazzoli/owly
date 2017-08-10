@@ -60,11 +60,6 @@ public abstract class AbstractAnyTrajectoryPlanner extends AbstractTrajectoryPla
     return increaseDepthBy;
   }
 
-  /** Includes all the functionality of the RootSwitch
-   * (deleting of the useless nodes and relabling of modified Domains)
-   * @param newRoot Node to Switch
-   * @return The value,by which the depth limit needs to be increased as of the RootSwitch */
-  // public abstract int switchRootToNode(GlcNode newRoot);
   protected final void insertNodeInTree(GlcNode parent, GlcNode node) {
     parent.insertEdgeTo(node);
     final Tensor domainKey = convertToKey(node.state());
@@ -102,40 +97,42 @@ public abstract class AbstractAnyTrajectoryPlanner extends AbstractTrajectoryPla
   @Override
   public final boolean changeToGoal(final GoalInterface newGoal) {
     return changeToGoal(newGoal, new InvertedRegion(EmptyRegion.INSTANCE));
-    // creates always true Region
+    // creates always true Region, as a helper =>no change
   }
 
   @Override
   public final boolean changeToGoal(final GoalInterface newGoal, Region goalCheckHelp) {
-    boolean noHeuristic = ((getGoalInterface() instanceof NoHeuristic) && (newGoal instanceof NoHeuristic));
-    setGoalInterface(newGoal);
-    GlcNode root = getRoot();
-    Collection<GlcNode> treeCollection = Nodes.ofSubtree(root);
-    setBestNull();
-    // -- TREE
-    // Updating the merit of the entire tree
-    long tic = System.nanoTime();
-    // Changing the Merit in Queue for each Node
-    if (!noHeuristic) {
-      System.err.println("checking for domainlabel changes due to heuristic change,  Treesize: " + treeCollection.size());
-      treeCollection.stream().parallel() //
-          .forEach(glcNode -> glcNode.setMinCostToGoal(newGoal.minCostToGoal(glcNode.state())));
-      RelabelingDomains();
+    System.out.println("*** GOALSWITCH ***");
+    {
+      boolean noHeuristic = ((getGoalInterface() instanceof NoHeuristic) && (newGoal instanceof NoHeuristic));
+      setGoalInterface(newGoal);
+      long tic = System.nanoTime();
+      GlcNode root = getRoot();
+      Collection<GlcNode> treeCollection = Nodes.ofSubtree(root);
+      setBestNull();
+      // -- TREE
+      // Updating the merit of the entire tree
+      if (!noHeuristic) {
+        System.err.println("checking for domainlabel changes due to heuristic change,  Treesize: " + treeCollection.size());
+        treeCollection.stream().parallel() //
+            .forEach(glcNode -> glcNode.setMinCostToGoal(newGoal.minCostToGoal(glcNode.state())));
+        RelabelingDomains();
+      }
+      // RESORTING OF LIST
+      List<GlcNode> list = new LinkedList<>(queue());
+      queue().clear();
+      queue().addAll(list);
+      long toc = System.nanoTime();
+      System.out.println("Updated Merit of Tree with " + treeCollection.size() + " nodes in: " //
+          + ((toc - tic) * 1e-9) + "s");
     }
-    // RESORTING OF LIST
-    List<GlcNode> list = new LinkedList<>(queue());
-    queue().clear();
-    queue().addAll(list);
-    long toc = System.nanoTime();
-    System.out.println("Updated Merit of Tree with " + treeCollection.size() + " nodes in: " //
-        + ((toc - tic) * 1e-9) + "s");
     // --
     // -- GOALCHECK TREE
-    treeCollection = Nodes.ofSubtree(root);
     boolean goalInTreeFound = false;
     // new check
-    tic = System.nanoTime();
-    goalInTreeFound = GoalCheckTree(treeCollection, goalCheckHelp);
+    long tic = System.nanoTime();
+    goalInTreeFound = GoalCheckTree(goalCheckHelp);
+    // DEBUGING
     // Scalar timeDiffNew = RealScalar.of((System.nanoTime() - tic) * 1e-9);
     // tic = System.nanoTime();
     // old check for debugging
@@ -177,13 +174,13 @@ public abstract class AbstractAnyTrajectoryPlanner extends AbstractTrajectoryPla
   abstract void RelabelingDomains();
 
   /** Checks the tree in the collection if some Nodes are in the Goal
-   * 
-   * @param treeCollection of Nodes, which should be checked if they are in the goal, needs to be List for parallel
    * @param goalCheckHelp a Region, which includes ALL Nodes, which could have a leaving trajectory in the Goal
    * @return true if a Node in the Goal was found in this Collection */
-  abstract boolean GoalCheckTree(final Collection<GlcNode> treeCollection, final Region goalCheckHelp);
+  abstract boolean GoalCheckTree(final Region goalCheckHelp);
 
-  abstract boolean GoalCheckTree(final Collection<GlcNode> treeCollection);
+  abstract boolean GoalCheckTree();
+
+  abstract public void ObstacleUpdate(TrajectoryRegionQuery newObstacle);
 
   /** Finds the rootNode, by following the parents
    * from a random root Node in the tree/DomainMap

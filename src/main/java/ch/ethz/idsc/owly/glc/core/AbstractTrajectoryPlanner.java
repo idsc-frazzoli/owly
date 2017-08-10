@@ -14,7 +14,7 @@ import ch.ethz.idsc.tensor.Tensor;
  * {@link StandardTrajectoryPlanner} and {@link AbstractAnyTrajectoryPlanner} */
 /* package */ abstract class AbstractTrajectoryPlanner extends TrajectoryPlanner {
   private final StateIntegrator stateIntegrator;
-  private final TrajectoryRegionQuery obstacleQuery;
+  private /* not final */ TrajectoryRegionQuery obstacleQuery;
   private /* not final */ GoalInterface goalInterface;
 
   protected AbstractTrajectoryPlanner( //
@@ -55,5 +55,9 @@ import ch.ethz.idsc.tensor.Tensor;
 
   protected final void setGoalInterface(GoalInterface goalInterface) {
     this.goalInterface = goalInterface;
+  }
+
+  protected final void setObstacleQuery(TrajectoryRegionQuery obstacleQuery) {
+    this.obstacleQuery = obstacleQuery;
   }
 }
