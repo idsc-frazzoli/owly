@@ -42,7 +42,7 @@ public class PsuEntity extends AbstractEntity {
   }
 
   @Override
-  public synchronized int indexOfClosestTrajectorySample(List<TrajectorySample> trajectory) {
+  public synchronized int indexOfPassedTrajectorySample(List<TrajectorySample> trajectory) {
     final Tensor x = episodeIntegrator.tail().state();
     return ArgMin.of(Tensor.of(trajectory.stream() //
         .map(TrajectorySample::stateTime) //

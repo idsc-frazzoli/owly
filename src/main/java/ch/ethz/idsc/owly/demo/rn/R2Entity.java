@@ -39,6 +39,7 @@ public class R2Entity extends AbstractEntity {
   // ---
   private final Collection<Flow> controls = R2Controls.createRadial(36); // TODO magic const
 
+  /** @param state initial position of entity */
   public R2Entity(Tensor state) {
     super(new SimpleEpisodeIntegrator( //
         SingleIntegratorStateSpaceModel.INSTANCE, //
@@ -48,7 +49,7 @@ public class R2Entity extends AbstractEntity {
 
   /** @return index of sample of trajectory that is closest to current position */
   @Override
-  public synchronized int indexOfClosestTrajectorySample(List<TrajectorySample> trajectory) {
+  public synchronized int indexOfPassedTrajectorySample(List<TrajectorySample> trajectory) {
     final Tensor x = episodeIntegrator.tail().state();
     return ArgMin.of(Tensor.of(trajectory.stream() //
         .map(TrajectorySample::stateTime) //
