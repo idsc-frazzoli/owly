@@ -8,14 +8,12 @@ import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.List;
 import java.util.Objects;
 
 import ch.ethz.idsc.owly.data.GlobalAssert;
 import ch.ethz.idsc.owly.demo.twd.TwdMinTimeGoalManager;
 import ch.ethz.idsc.owly.glc.core.StandardTrajectoryPlanner;
 import ch.ethz.idsc.owly.glc.core.TrajectoryPlanner;
-import ch.ethz.idsc.owly.glc.core.TrajectorySample;
 import ch.ethz.idsc.owly.gui.OwlyLayer;
 import ch.ethz.idsc.owly.gui.ani.AbstractEntity;
 import ch.ethz.idsc.owly.math.Se2Utils;
@@ -35,7 +33,6 @@ import ch.ethz.idsc.tensor.TensorRuntimeException;
 import ch.ethz.idsc.tensor.Tensors;
 import ch.ethz.idsc.tensor.alg.Array;
 import ch.ethz.idsc.tensor.alg.VectorQ;
-import ch.ethz.idsc.tensor.red.ArgMin;
 import ch.ethz.idsc.tensor.sca.Sqrt;
 
 public class Se2Entity extends AbstractEntity {
@@ -79,12 +76,8 @@ public class Se2Entity extends AbstractEntity {
   }
 
   @Override
-  public int indexOfPassedTrajectorySample(List<TrajectorySample> trajectory) {
-    final Tensor x = episodeIntegrator.tail().state();
-    return ArgMin.of(Tensor.of(trajectory.stream() //
-        .map(TrajectorySample::stateTime) //
-        .map(StateTime::state) //
-        .map(state -> SE2WRAP.distance(state, x))));
+  public Scalar distance(Tensor x, Tensor y) {
+    return SE2WRAP.distance(x, y);
   }
 
   @Override
@@ -100,7 +93,6 @@ public class Se2Entity extends AbstractEntity {
   @Override
   public TrajectoryPlanner createTrajectoryPlanner(TrajectoryRegionQuery obstacleQuery, Tensor goal) {
     GlobalAssert.that(VectorQ.ofLength(goal, 3));
-    // obstacleQuery = EmptyTrajectoryRegionQuery.INSTANCE; // TODO <- for testing
     this.obstacleQuery = obstacleQuery;
     StateIntegrator stateIntegrator = //
         FixedStateIntegrator.create(integrator, RationalScalar.of(1, 10), 4); // TODO magic const

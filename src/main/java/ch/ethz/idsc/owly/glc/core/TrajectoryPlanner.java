@@ -104,9 +104,12 @@ public abstract class TrajectoryPlanner implements ExpandInterface, Serializable
    * 
    * {@link AbstractAnyTrajectoryPlanner} overrides this method
    * 
+   * access to method is 'synchronized' to make modification of
+   * data structure thread safe.
+   * 
    * @param node
    * @param connector */
-  /* package */ void offerDestination(GlcNode node, List<StateTime> connector) {
+  protected synchronized void offerDestination(GlcNode node, List<StateTime> connector) {
     best.put(node, connector);
     while (1 < best.size()) // `if` should be sufficient, but `while` to be sure
       best.remove(best.lastKey());
@@ -117,7 +120,7 @@ public abstract class TrajectoryPlanner implements ExpandInterface, Serializable
     return Optional.ofNullable(best.isEmpty() ? null : best.firstKey());
   }
 
-  /* package */ final void setBestNull() {
+  protected final void setBestNull() {
     best.clear();
   }
 

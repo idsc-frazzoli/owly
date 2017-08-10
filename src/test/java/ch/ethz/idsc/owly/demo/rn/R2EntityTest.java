@@ -40,7 +40,7 @@ public class R2EntityTest extends TestCase {
       AbstractEntity abstractEntity = new R2Entity(Tensors.vector(0.7, 0));
       abstractEntity.setTrajectory(trajectory);
       int index = abstractEntity.indexOfPassedTrajectorySample(trajectory);
-      System.out.println(index); // TODO JAN should return 0
+      assertEquals(index, 1);
     }
     {
       AbstractEntity abstractEntity = new R2Entity(Tensors.vector(1.3, 0));
@@ -52,10 +52,10 @@ public class R2EntityTest extends TestCase {
       AbstractEntity abstractEntity = new R2Entity(Tensors.vector(1.7, 0));
       abstractEntity.setTrajectory(trajectory);
       int index = abstractEntity.indexOfPassedTrajectorySample(trajectory);
-      System.out.println(index); // TODO JAN should return 1
+      assertEquals(index, 2);
     }
     {
-      AbstractEntity abstractEntity = new R2Entity(Tensors.vector(2.0, 0));
+      AbstractEntity abstractEntity = new R2Entity(Tensors.vector(1.9, 0));
       abstractEntity.setTrajectory(trajectory);
       int index = abstractEntity.indexOfPassedTrajectorySample(trajectory);
       assertEquals(index, 2);

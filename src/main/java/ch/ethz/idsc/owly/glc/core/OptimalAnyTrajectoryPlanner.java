@@ -259,7 +259,7 @@ public class OptimalAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
                     if (subDeleteTree.size() > 1) // DEBUG INFO
                       System.err.println("Pruned Tree of Size: " + subDeleteTree.size());
                     CandidatePair formerLabelCandidate = new CandidatePair(label.parent(), label);
-                    label.parent().removeEdgeTo(label); // TODO: confirm position or 5 lines below
+                    label.parent().removeEdgeTo(label); // TODO confirm position or 5 lines below
                     if (!formerLabelCandidate.getCandidate().isLeaf()) {
                       System.err.println("The Candidate in the bucket has children");
                       throw new RuntimeException();
@@ -292,7 +292,7 @@ public class OptimalAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
             if (subDeleteTree.size() > 1) // DEBUG INFO
               System.err.println("Pruned Tree of Size: " + subDeleteTree.size());
             CandidatePair formerLabelCandidate = new CandidatePair(label.parent(), label);
-            label.parent().removeEdgeTo(label); // TODO: confirm position or 5 lines below// label in collision
+            label.parent().removeEdgeTo(label); // TODO confirm position or 5 lines below// label in collision
             if (!formerLabelCandidate.getCandidate().isLeaf()) {
               System.err.println("The Candidate in the bucket has children");
               throw new RuntimeException();
@@ -489,7 +489,8 @@ public class OptimalAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
 
   private final boolean GoalCheckTree(Collection<GlcNode> treeCollection) {
     // Parallel: 15%-50% Speedgain, tested with R2GlcConstTimeHeuristicAnyDemo,
-    // TODO JAN: why does parallel give different result? then non parallel? e.g. R2GlcAnyCircleDemo
+    // TODO why does parallel give different result? then non parallel? e.g. R2GlcAnyCircleDemo
+    // TODO JONAS try again, i added 'synchronized' to offerDestination
     treeCollection.stream().forEach(node -> {
       if (!node.isRoot()) {
         final List<StateTime> trajectory = getStateIntegrator().trajectory(node.parent().stateTime(), node.flow());

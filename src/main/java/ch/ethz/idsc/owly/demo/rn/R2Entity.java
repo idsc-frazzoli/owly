@@ -7,11 +7,9 @@ import java.awt.geom.Ellipse2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.util.Collection;
-import java.util.List;
 
 import ch.ethz.idsc.owly.glc.core.StandardTrajectoryPlanner;
 import ch.ethz.idsc.owly.glc.core.TrajectoryPlanner;
-import ch.ethz.idsc.owly.glc.core.TrajectorySample;
 import ch.ethz.idsc.owly.gui.OwlyLayer;
 import ch.ethz.idsc.owly.gui.ani.AbstractEntity;
 import ch.ethz.idsc.owly.math.SingleIntegratorStateSpaceModel;
@@ -28,7 +26,6 @@ import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
-import ch.ethz.idsc.tensor.red.ArgMin;
 import ch.ethz.idsc.tensor.red.Norm;
 
 /** omni-directional movement with constant speed */
@@ -47,14 +44,9 @@ public class R2Entity extends AbstractEntity {
         new StateTime(state, RealScalar.ZERO)));
   }
 
-  /** @return index of sample of trajectory that is closest to current position */
   @Override
-  public synchronized int indexOfPassedTrajectorySample(List<TrajectorySample> trajectory) {
-    final Tensor x = episodeIntegrator.tail().state();
-    return ArgMin.of(Tensor.of(trajectory.stream() //
-        .map(TrajectorySample::stateTime) //
-        .map(StateTime::state) //
-        .map(state -> Norm._2SQUARED.of(state.subtract(x)))));
+  public Scalar distance(Tensor x, Tensor y) {
+    return Norm._2SQUARED.of(x.subtract(y));
   }
 
   @Override

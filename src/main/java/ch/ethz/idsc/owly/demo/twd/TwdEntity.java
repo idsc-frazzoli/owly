@@ -8,14 +8,12 @@ import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.List;
 import java.util.Objects;
 
 import ch.ethz.idsc.owly.data.GlobalAssert;
 import ch.ethz.idsc.owly.demo.se2.Se2Wrap;
 import ch.ethz.idsc.owly.glc.core.StandardTrajectoryPlanner;
 import ch.ethz.idsc.owly.glc.core.TrajectoryPlanner;
-import ch.ethz.idsc.owly.glc.core.TrajectorySample;
 import ch.ethz.idsc.owly.gui.OwlyLayer;
 import ch.ethz.idsc.owly.gui.ani.AbstractEntity;
 import ch.ethz.idsc.owly.math.Se2Utils;
@@ -34,7 +32,6 @@ import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.TensorRuntimeException;
 import ch.ethz.idsc.tensor.Tensors;
 import ch.ethz.idsc.tensor.alg.VectorQ;
-import ch.ethz.idsc.tensor.red.ArgMin;
 import ch.ethz.idsc.tensor.sca.Sqrt;
 
 public class TwdEntity extends AbstractEntity {
@@ -74,12 +71,8 @@ public class TwdEntity extends AbstractEntity {
   }
 
   @Override
-  public int indexOfPassedTrajectorySample(List<TrajectorySample> trajectory) {
-    final Tensor x = episodeIntegrator.tail().state();
-    return ArgMin.of(Tensor.of(trajectory.stream() //
-        .map(TrajectorySample::stateTime) //
-        .map(StateTime::state) //
-        .map(state -> SE2WRAP.distance(state, x))));
+  public Scalar distance(Tensor x, Tensor y) {
+    return SE2WRAP.distance(x, y);
   }
 
   @Override

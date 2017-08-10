@@ -7,11 +7,9 @@ import java.awt.geom.Ellipse2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.util.Collection;
-import java.util.List;
 
 import ch.ethz.idsc.owly.glc.core.StandardTrajectoryPlanner;
 import ch.ethz.idsc.owly.glc.core.TrajectoryPlanner;
-import ch.ethz.idsc.owly.glc.core.TrajectorySample;
 import ch.ethz.idsc.owly.gui.OwlyLayer;
 import ch.ethz.idsc.owly.gui.ani.AbstractEntity;
 import ch.ethz.idsc.owly.math.flow.Flow;
@@ -27,7 +25,6 @@ import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
-import ch.ethz.idsc.tensor.red.ArgMin;
 
 public class PsuEntity extends AbstractEntity {
   private static final Tensor FALLBACK_CONTROL = Tensors.vector(0).unmodifiable();
@@ -42,12 +39,8 @@ public class PsuEntity extends AbstractEntity {
   }
 
   @Override
-  public synchronized int indexOfPassedTrajectorySample(List<TrajectorySample> trajectory) {
-    final Tensor x = episodeIntegrator.tail().state();
-    return ArgMin.of(Tensor.of(trajectory.stream() //
-        .map(TrajectorySample::stateTime) //
-        .map(StateTime::state) //
-        .map(state -> PsuWrap.INSTANCE.distance(state, x))));
+  public Scalar distance(Tensor x, Tensor y) {
+    return PsuWrap.INSTANCE.distance(x, y);
   }
 
   @Override

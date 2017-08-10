@@ -31,7 +31,7 @@ public abstract class AbstractAnyTrajectoryPlanner extends AbstractTrajectoryPla
   }
 
   @Override
-  final void offerDestination(GlcNode node, List<StateTime> connector) {
+  protected synchronized final void offerDestination(GlcNode node, List<StateTime> connector) {
     best.put(node, connector); // always put new GoalNodes in Map
   }
 

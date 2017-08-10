@@ -25,7 +25,7 @@ public class TwdMinCurvatureGoalManager extends TwdAbstractGoalManager {
   @Override // Cost Function
   public Scalar costIncrement(StateTime from, List<StateTime> trajectory, Flow flow) {
     StateTime end = trajectory.get(trajectory.size() - 1);
-    // TODO: Magic const
+    // TODO Magic const
     // J(x,u) = (1+(delta(theta)/delta(position))²) * Ts
     return (RealScalar.ONE.add(Power.of(end.state().Get(2).subtract(from.state().Get(2)), 2) //
         .divide(TwdStateSpaceModel.errorPosition(from.state(), end.state()))))//
