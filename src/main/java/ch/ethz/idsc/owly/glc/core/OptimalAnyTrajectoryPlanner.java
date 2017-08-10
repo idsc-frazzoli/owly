@@ -298,13 +298,12 @@ public class OptimalAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
               throw new RuntimeException();
             }
             while (!candidateQueue.isEmpty()) {
-              System.out.println("Loop2");
               CandidatePair nextBest = candidateQueue.element();
               GlcNode nextBestNode = nextBest.getCandidate();
               GlcNode nextBestParent = nextBest.getOrigin();
               // ******COPY PASTED
               if (Nodes.areConnected(nextBestParent, root)) {
-                connector = getStateIntegrator().trajectory(nextBestNode.parent().stateTime(), nextBestNode.flow());
+                connector = getStateIntegrator().trajectory(nextBestParent.stateTime(), nextBestNode.flow());
                 if (getObstacleQuery().isDisjoint(connector)) { // better Candidate obstacle check
                   getCandidateMap().get(domainKey).add(formerLabelCandidate);
                   // formerLabel disconnecting
@@ -330,11 +329,9 @@ public class OptimalAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
             }
           }
         }
-      } else {
-        System.out.println("A domain was skipped, as label was deleted before");
       }
       // GOAL check
-      if (!connector.isEmpty()) {
+      if (!connector.isEmpty() && getNode(domainKey) != null) {
         if (!getGoalInterface().isDisjoint(connector))
           offerDestination(getNode(domainKey), connector);
       }
@@ -459,8 +456,6 @@ public class OptimalAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
             }
           }
         }
-      } else {
-        System.out.println("A domain was skipped, as label was deleted before");
       }
     }
     long candidateMapBeforeSize = candidateMap.size();
