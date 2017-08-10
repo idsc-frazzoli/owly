@@ -4,7 +4,6 @@ package ch.ethz.idsc.owly.gui;
 import java.awt.geom.Path2D;
 import java.awt.geom.Point2D;
 import java.util.List;
-import java.util.function.Function;
 
 import ch.ethz.idsc.owly.math.Se2Utils;
 import ch.ethz.idsc.owly.math.state.StateTime;
@@ -14,23 +13,22 @@ import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
 import ch.ethz.idsc.tensor.alg.Array;
 
-public final class OwlyLayer {
+public abstract class OwlyLayer {
   private static final double WHEEL_ANGLE = Math.PI / 10;
   // ---
-  private final Function<Tensor, Point2D> toPoint2D_function;
   private Tensor mouseLocation = Array.zeros(2);
   private int mouseWheel = 0;
 
-  OwlyLayer(Function<Tensor, Point2D> function) {
-    this.toPoint2D_function = function;
-  }
+  public abstract Point2D toPoint2D_function(Tensor tensor);
+
+  public abstract Tensor model2pixel();
 
   /** only the first 2 entries of x are taken into account
    * 
    * @param x = {px, py, ...}
    * @return */
   public Point2D toPoint2D(Tensor x) {
-    return toPoint2D_function.apply(x);
+    return toPoint2D_function(x);
   }
 
   public Path2D toVector(Tensor x, Tensor dx) {

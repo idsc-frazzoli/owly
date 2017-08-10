@@ -10,6 +10,8 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Objects;
 
+import javax.swing.JLabel;
+
 import ch.ethz.idsc.owly.data.GlobalAssert;
 import ch.ethz.idsc.owly.demo.twd.TwdMinTimeGoalManager;
 import ch.ethz.idsc.owly.glc.core.StandardTrajectoryPlanner;
@@ -36,6 +38,8 @@ import ch.ethz.idsc.tensor.alg.VectorQ;
 import ch.ethz.idsc.tensor.sca.Sqrt;
 
 public class Se2Entity extends AbstractEntity {
+  @SuppressWarnings("unused")
+  private static final JLabel JLABEL = new JLabel();
   private static final Tensor FALLBACK_CONTROL = Array.zeros(2).unmodifiable(); // {angle=0, vel=0}
   private static final Scalar DELAY_HINT = RealScalar.ONE;
   private static final Tensor SHAPE = Tensors.matrixDouble( //
@@ -46,7 +50,7 @@ public class Se2Entity extends AbstractEntity {
           { -.1, +.07, 1 } //
       }).unmodifiable();
   private static final Se2Wrap SE2WRAP = new Se2Wrap(Tensors.vector(1, 1, 2));
-  private static final Tensor PARTITIONSCALE = Tensors.vector(4, 4, 50 / Math.PI); // 50/pi == 15.9155
+  private static final Tensor PARTITIONSCALE = Tensors.vector(5, 5, 50 / Math.PI); // 50/pi == 15.9155
   // ---
   static {
     if (!PARTITIONSCALE.get(0).equals(PARTITIONSCALE.get(1)))
@@ -63,6 +67,7 @@ public class Se2Entity extends AbstractEntity {
   private final Scalar goalRadius_xy;
   private final Scalar goalRadius_theta;
   private TrajectoryRegionQuery obstacleQuery = null;
+  // private BufferedImage bufferedImage = null;
 
   private Se2Entity(Tensor state, Integrator integrator) {
     super(new SimpleEpisodeIntegrator( //
@@ -73,6 +78,11 @@ public class Se2Entity extends AbstractEntity {
     controls = Se2Controls.createControlsForwardAndReverse(RealScalar.ONE, 6); // TODO magic const
     goalRadius_xy = Sqrt.of(RealScalar.of(2)).divide(PARTITIONSCALE.Get(0));
     goalRadius_theta = Sqrt.of(RealScalar.of(2)).divide(PARTITIONSCALE.Get(2));
+    // try {
+    // bufferedImage = ImageIO.read(UserHome.Pictures("car_green.png"));
+    // } catch (Exception exception) {
+    // exception.printStackTrace();
+    // }
   }
 
   @Override
@@ -129,5 +139,23 @@ public class Se2Entity extends AbstractEntity {
       Path2D path2d = owlyLayer.toPath2D(Tensor.of(SHAPE.flatten(0).map(matrix::dot)));
       graphics.fill(path2d);
     }
+    // {
+    // Tensor model2pixel = owlyLayer.model2pixel();
+    // Tensor translate = IdentityMatrix.of(3);
+    // translate.set(RealScalar.of(-30), 0, 2); // pixel of rear axle
+    // translate.set(RealScalar.of(-32), 1, 2); // image width/2
+    // Tensor image = DiagonalMatrix.of(.005, .005, 1);
+    // Tensor m = model2pixel.dot(owlyLayer.getMouseSe2Matrix()).dot(image).dot(translate);
+    // AffineTransform at = new AffineTransform( //
+    // m.Get(0, 0).number().doubleValue(), //
+    // m.Get(1, 0).number().doubleValue(), //
+    // m.Get(0, 1).number().doubleValue(), //
+    // m.Get(1, 1).number().doubleValue(), //
+    // m.Get(0, 2).number().doubleValue(), //
+    // m.Get(1, 2).number().doubleValue());
+    // GraphicsUtil.setQualityHigh(graphics);
+    // graphics.drawImage(bufferedImage, at, JLABEL);
+    // GraphicsUtil.setQualityDefault(graphics);
+    // }
   }
 }

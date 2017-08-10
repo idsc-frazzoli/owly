@@ -44,7 +44,17 @@ public class OwlyComponent {
   /***************************************************/
   // 3x3 affine matrix that maps model to pixel coordinates
   private Tensor model2pixel;
-  private final OwlyLayer owlyLayer = new OwlyLayer(this::toPoint2D);
+  private final OwlyLayer owlyLayer = new OwlyLayer() {
+    @Override
+    public Point2D toPoint2D_function(Tensor tensor) {
+      return model2Point2D(tensor);
+    }
+
+    @Override
+    public Tensor model2pixel() {
+      return model2pixel.unmodifiable();
+    }
+  };
   /** public access to final JComponent: attach mouse listeners, get/set properties, ... */
   public final JComponent jComponent = new JComponent() {
     @Override
@@ -139,20 +149,20 @@ public class OwlyComponent {
     }
     {
       graphics.setColor(Color.LIGHT_GRAY);
-      graphics.draw(new Line2D.Double(toPoint2D(Tensors.vector(-10, 1)), toPoint2D(Tensors.vector(10, 1))));
-      graphics.draw(new Line2D.Double(toPoint2D(Tensors.vector(1, -10)), toPoint2D(Tensors.vector(1, 10))));
+      graphics.draw(new Line2D.Double(model2Point2D(Tensors.vector(-10, 1)), model2Point2D(Tensors.vector(10, 1))));
+      graphics.draw(new Line2D.Double(model2Point2D(Tensors.vector(1, -10)), model2Point2D(Tensors.vector(1, 10))));
     }
     {
       graphics.setColor(Color.GRAY);
-      graphics.draw(new Line2D.Double(toPoint2D(Tensors.vector(-10, 0)), toPoint2D(Tensors.vector(10, 0))));
-      graphics.draw(new Line2D.Double(toPoint2D(Tensors.vector(0, -10)), toPoint2D(Tensors.vector(0, 10))));
+      graphics.draw(new Line2D.Double(model2Point2D(Tensors.vector(-10, 0)), model2Point2D(Tensors.vector(10, 0))));
+      graphics.draw(new Line2D.Double(model2Point2D(Tensors.vector(0, -10)), model2Point2D(Tensors.vector(0, 10))));
     }
     if (renderElements != null) {
       renderElements.list.forEach(renderInterface -> renderInterface.render(owlyLayer, graphics));
     }
   }
 
-  public Point2D toPoint2D(Tensor x) {
+  /* package */ Point2D model2Point2D(Tensor x) {
     Tensor point = model2pixel.dot(toAffinePoint(x));
     return new Point2D.Double( //
         point.Get(0).number().doubleValue(), //
