@@ -10,6 +10,7 @@ import java.util.Collection;
 import java.util.DoubleSummaryStatistics;
 
 import ch.ethz.idsc.owly.data.tree.StateCostNode;
+import ch.ethz.idsc.owly.math.Hue;
 import ch.ethz.idsc.tensor.Scalar;
 
 /** renders the edges between nodes
@@ -36,13 +37,13 @@ class TreeRender implements RenderInterface {
     for (StateCostNode node : collection) {
       double val = node.costFromRoot().number().doubleValue();
       final double interp = (val - min) / (max - min);
-      graphics.setColor(new Hue(interp, 1, 1, 1).rgba);
+      graphics.setColor(Hue.of(interp, 1, 1, 1));
       final Point2D p1 = owlyLayer.toPoint2D(node.state());
       graphics.fill(new Rectangle2D.Double(p1.getX(), p1.getY(), NODE_WIDTH, NODE_WIDTH));
       StateCostNode parent = node.parent();
       if (parent != null) {
         Point2D p2 = owlyLayer.toPoint2D(parent.state());
-        graphics.setColor(new Hue(interp, 1, 1, .2).rgba);
+        graphics.setColor(Hue.of(interp, 1, 1, .2));
         Shape shape = new Line2D.Double(p1.getX(), p1.getY(), p2.getX(), p2.getY());
         graphics.draw(shape);
       }
