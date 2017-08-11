@@ -1,7 +1,7 @@
 // code by jl
-package ch.ethz.idsc.owly.math.region;
+package ch.ethz.idsc.owly.demo.rnxt.glc;
 
-import ch.ethz.idsc.owly.math.Se2Utils;
+import ch.ethz.idsc.owly.math.RotationUtils;
 import ch.ethz.idsc.owly.math.state.StateTime;
 import ch.ethz.idsc.owly.math.state.StateTimeRegion;
 import ch.ethz.idsc.tensor.RealScalar;
@@ -23,12 +23,12 @@ public class TimeDependentTurningRingRegion implements StateTimeRegion {
   private final Scalar gapSizeAngle;
   private final Scalar lowerRingRadius;
   private final Scalar upperRingRadius;
-  private final Scalar turningSpeed = Se2Utils.DEGREE(30); // 30 °/s
+  private final Scalar turningSpeed = RotationUtils.DEGREE(30); // 30 °/s
 
   /** Constructs a Ring, with a gap in it, which turns at 30°/s CCW
    * 
    * @param center
-   * @param initialGapAngle: inital positon where Gap should be
+   * @param initialGapAngle: initial position where Gap should be
    * @param gapSizeAngle: size of Gap in rad
    * @param ringThickness: thickness of the obstacleRing
    * @param ringRadius: Radius of the Ring (to the middle) */
@@ -65,7 +65,7 @@ public class TimeDependentTurningRingRegion implements StateTimeRegion {
       }
       angle = angle.subtract(turningSpeed.multiply(time));
       if (Scalars.lessEquals(MOD.of(angle), upperGapAngle) && Scalars.lessEquals(lowerGapAngle, MOD.of(angle)))
-        return false; // checks if in GAP
+        return false; // checks if in Gap
       return true; // Otherwise in Ring
     }
     return false;

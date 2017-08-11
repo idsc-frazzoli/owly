@@ -17,7 +17,7 @@ public interface AnyPlannerInterface extends ExpandInterface {
   int switchRootToState(Tensor state);
 
   /** Includes all the functionality of the RootSwitch
-   * (deleting of the useless nodes and relabling of modified Domains)
+   * (deleting of the useless nodes and relabeling of modified Domains)
    * @param newRoot Node to Switch
    * @return The value,by which the depth limit needs to be increased as of the RootSwitch */
   int switchRootToNode(GlcNode newRoot);
@@ -47,8 +47,9 @@ public interface AnyPlannerInterface extends ExpandInterface {
    * @return TrajectorySample Trajectory to the best Goal or if no goal was found NULL */
   List<TrajectorySample> detailedTrajectoryToBest();
 
-  /** @return first State in goal region from furthest Node, or Optional.empty() if no such node has been identified yet */
-  Optional<StateTime> getFurthestGoalState(List<Region> goalRegions);
+  /** @return Returns the StateTime, which is the furthest in the GoalRegion,
+   * Furthest is determined by the merit of the Node at the end of its trajectory */
+  Optional<StateTime> getFurthestGoalState();
 
   /** @return the node, to which the trajectory should lead:
    * The Furthest, the best or the top of the Queue */

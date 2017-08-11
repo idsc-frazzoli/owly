@@ -15,6 +15,7 @@ import java.util.TreeMap;
 
 import ch.ethz.idsc.owly.data.GlobalAssert;
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
+import ch.ethz.idsc.owly.glc.adapter.TrajectoryGoalManager;
 import ch.ethz.idsc.owly.math.TensorUnaryOperator;
 import ch.ethz.idsc.owly.math.state.StateTime;
 import ch.ethz.idsc.owly.math.state.TrajectoryRegionQuery;
@@ -184,11 +185,20 @@ public abstract class TrajectoryPlanner implements ExpandInterface, Serializable
     return stringBuilder.toString();
   }
 
-  // TODO assuming that no TrajectoryGoalManager is used in standardplanner.
-  // Does this make sense?
   /** @return the node, to which the trajectory should lead:
    * The Furthest, the best or the top of the Queue */
   public Optional<GlcNode> getFinalGoalNode() {
+    if ((getGoalInterface() instanceof TrajectoryGoalManager)) {
+      Optional<GlcNode> furthest = getFurthestGoalNode();
+      if (furthest.isPresent())
+        return furthest;
+    }
     return getBestOrElsePeek();
   }
+
+  // TODO assuming that no TrajectoryGoalManager is used in standardplanner.
+  // Does this make sense?
+  /** @return Returns the Node, which belongs to the furthest StateTime in the GoalRegion,
+   * Furthest is determined by the merit of the Node at the end of its trajectory */
+  protected abstract Optional<GlcNode> getFurthestGoalNode();
 }

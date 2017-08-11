@@ -12,6 +12,7 @@ import ch.ethz.idsc.owly.demo.util.Resources;
 import ch.ethz.idsc.owly.glc.adapter.Parameters;
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
 import ch.ethz.idsc.owly.glc.adapter.StateTimeTrajectories;
+import ch.ethz.idsc.owly.glc.adapter.Trajectories;
 import ch.ethz.idsc.owly.glc.core.DebugUtils;
 import ch.ethz.idsc.owly.glc.core.Expand;
 import ch.ethz.idsc.owly.glc.core.StandardTrajectoryPlanner;
@@ -84,7 +85,7 @@ enum DeltaxtGlcDemo {
       goalRegions.add(new EllipsoidRegion(next.state(), radius));
       dinghyTrajectory.add(new TrajectorySample(next, flow));
     }
-    TrajectorySample.print(dinghyTrajectory);
+    Trajectories.print(dinghyTrajectory);
     // GOALCREATION
     DeltaxtDinghyGoalManager deltaGoalManager2 = new DeltaxtDinghyGoalManager(goalRegions, stateSpaceModel);
     TrajectoryPlanner trajectoryPlanner = new StandardTrajectoryPlanner( //
@@ -94,7 +95,7 @@ enum DeltaxtGlcDemo {
     OwlyFrame owlyFrame = Gui.start();
     owlyFrame.configCoordinateOffset(33, 416);
     owlyFrame.jFrame.setBounds(100, 100, 620, 475);
-    owlyFrame.addBackground(imageRegion); // TODO JAN, needs to be in this order? background & then trajectory?
+    owlyFrame.addBackground(imageRegion); // TODO JAN: BUG: if addTrajectory before background --> runtimeerror
     owlyFrame.addTrajectory(dinghyTrajectory);
     while (!trajectoryPlanner.getBest().isPresent() && owlyFrame.jFrame.isVisible()) {
       Expand.maxSteps(trajectoryPlanner, 30, parameters.getDepthLimit());

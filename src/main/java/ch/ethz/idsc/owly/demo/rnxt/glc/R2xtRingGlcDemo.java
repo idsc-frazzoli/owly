@@ -15,10 +15,9 @@ import ch.ethz.idsc.owly.glc.core.GlcNodes;
 import ch.ethz.idsc.owly.glc.core.StandardTrajectoryPlanner;
 import ch.ethz.idsc.owly.glc.core.TrajectoryPlanner;
 import ch.ethz.idsc.owly.gui.Gui;
-import ch.ethz.idsc.owly.math.Se2Utils;
+import ch.ethz.idsc.owly.math.RotationUtils;
 import ch.ethz.idsc.owly.math.flow.EulerIntegrator;
 import ch.ethz.idsc.owly.math.flow.Flow;
-import ch.ethz.idsc.owly.math.region.TimeDependentTurningRingRegion;
 import ch.ethz.idsc.owly.math.state.FixedStateIntegrator;
 import ch.ethz.idsc.owly.math.state.StateIntegrator;
 import ch.ethz.idsc.owly.math.state.StateTime;
@@ -52,12 +51,11 @@ enum R2xtRingGlcDemo {
     // RnxtEllipsoidGoalManager rnGoal = new RnxtEllipsoidGoalManager(//
     // goal, Tensors.of(RealScalar.of(0.2), RealScalar.of(0.2), DoubleScalar.POSITIVE_INFINITY));
     // GoalRegion at x:5, y= 5 and all time
-    // TODO SE2Utils make General
     TrajectoryRegionQuery obstacleQuery = //
         new SimpleTrajectoryRegionQuery(new TimeDependentTurningRingRegion( //
             Tensors.vector(0, 0), //
-            Se2Utils.DEGREE(90), //
-            Se2Utils.DEGREE(40), //
+            RotationUtils.DEGREE(90), //
+            RotationUtils.DEGREE(40), //
             RealScalar.of(0.5), //
             RealScalar.of(3)));
     // ---

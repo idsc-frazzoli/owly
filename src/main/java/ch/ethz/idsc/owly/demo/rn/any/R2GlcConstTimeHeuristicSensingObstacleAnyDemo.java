@@ -1,7 +1,6 @@
 // code by jl
 package ch.ethz.idsc.owly.demo.rn.any;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
@@ -9,7 +8,7 @@ import java.util.Optional;
 import ch.ethz.idsc.owly.demo.rn.R2Controls;
 import ch.ethz.idsc.owly.demo.rn.R2NoiseRegion;
 import ch.ethz.idsc.owly.demo.rn.R2Parameters;
-import ch.ethz.idsc.owly.demo.rn.RnTrajectoryGoalManager;
+import ch.ethz.idsc.owly.demo.rn.RnSimpleCircleHeuristicGoalManager;
 import ch.ethz.idsc.owly.glc.adapter.Parameters;
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
 import ch.ethz.idsc.owly.glc.adapter.StateTimeTrajectories;
@@ -24,7 +23,7 @@ import ch.ethz.idsc.owly.gui.Gui;
 import ch.ethz.idsc.owly.gui.OwlyFrame;
 import ch.ethz.idsc.owly.math.flow.EulerIntegrator;
 import ch.ethz.idsc.owly.math.flow.Flow;
-import ch.ethz.idsc.owly.math.region.EllipsoidRegion;
+import ch.ethz.idsc.owly.math.region.EuclideanDistanceDiscoverRegion;
 import ch.ethz.idsc.owly.math.region.Region;
 import ch.ethz.idsc.owly.math.state.FixedStateIntegrator;
 import ch.ethz.idsc.owly.math.state.StateIntegrator;
@@ -36,9 +35,8 @@ import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
-import ch.ethz.idsc.tensor.sca.Sin;
 
-enum R2GlcConstTimeHeuristicObstacleChangeAnyDemo {
+enum R2GlcConstTimeHeuristicSensingObstacleAnyDemo {
   ;
   public static void main(String[] args) throws Exception {
     RationalScalar resolution = (RationalScalar) RealScalar.of(10);
@@ -57,25 +55,15 @@ enum R2GlcConstTimeHeuristicObstacleChangeAnyDemo {
     System.out.println("DomainSize: 1/Eta: " + parameters.getEta().map(n -> RealScalar.ONE.divide(n)));
     Collection<Flow> controls = R2Controls.createRadial(parameters.getResolutionInt());
     // Creating Goals
-    List<StateTime> precomputedTrajectory = new ArrayList<>();
-    List<Region> goalRegions = new ArrayList<>();
-    Tensor radius = Tensors.vector(0.2, 0.2);
-    System.out.println("Goalstates: ");
-    for (int i = 0; i < 8; i++) {
-      Tensor goal = Tensors.of(RealScalar.of(1.3 * i), Sin.of(RealScalar.of(2 * Math.PI * i / 10)).multiply(RealScalar.of(i * 0.8)));
-      System.out.println(goal);
-      precomputedTrajectory.add(new StateTime(goal, RealScalar.ZERO));
-      goalRegions.add(new EllipsoidRegion(goal, radius));
-    }
-    RnTrajectoryGoalManager rnGoal = new RnTrajectoryGoalManager(goalRegions, precomputedTrajectory, radius);
-    Region region = new R2NoiseRegion(.5);
+    Tensor startState = Tensors.vector(-3, 0);
+    RnSimpleCircleHeuristicGoalManager rnGoal = new RnSimpleCircleHeuristicGoalManager(Tensors.vector(10, -4), RealScalar.of(0.3));
+    Region region = new R2NoiseRegion(0.1);
     TrajectoryRegionQuery obstacleQuery = //
-        new SimpleTrajectoryRegionQuery(new TimeInvariantRegion( //
-            region));
+        new SimpleTrajectoryRegionQuery(new TimeInvariantRegion(//
+            new EuclideanDistanceDiscoverRegion(region, startState, RealScalar.of(4))));
     // TODO change back to AnyPlannerInterface
     AnyPlannerInterface trajectoryPlanner = new OptimalAnyTrajectoryPlanner( //
         parameters.getEta(), stateIntegrator, controls, obstacleQuery, rnGoal);
-    Tensor startState = Tensors.vector(-3, 0);
     trajectoryPlanner.switchRootToState(startState);
     Expand.constTime(trajectoryPlanner, runTime, parameters.getDepthLimit());
     // --
@@ -87,32 +75,26 @@ enum R2GlcConstTimeHeuristicObstacleChangeAnyDemo {
     owlyFrame.jFrame.setBounds(0, 0, 800, 800);
     owlyFrame.setGlc((TrajectoryPlanner) trajectoryPlanner);
     // -- Anytime loop
-    boolean finalGoalFound = false;
     for (int i = 0; i < 10; i++) {
       // while (!finalGoalFound) {
       Thread.sleep(1);
       long tic = System.nanoTime();
-      long ticTemp = System.nanoTime();
-      long tocTemp = 0;
       // -- ROOTCHANGE
-      // finalGoalNode = trajectoryPlanner.getFinalGoalNode();
-      // if (finalGoalNode.isPresent())
-      // trajectory = GlcNodes.getPathFromRootTo(finalGoalNode.get());
-      // System.out.println("trajectorys size: " + trajectory.size());
-      // if (trajectory.size() > 5) {
-      // //
-      // StateTime newRootState = trajectory.get(trajectory.size() > 3 ? 3 : 0);
-      // int increment = trajectoryPlanner.switchRootToState(newRootState.state());
-      // parameters.increaseDepthLimit(increment);
-      // }
-      // long tocTemp = System.nanoTime();
-      // System.out.println("Rootchange took: " + (tocTemp - ticTemp) * 1e-9 + "s");
+      finalGoalNode = trajectoryPlanner.getFinalGoalNode();
+      if (finalGoalNode.isPresent())
+        trajectory = GlcNodes.getPathFromRootTo(finalGoalNode.get());
+      System.out.println("trajectorys size: " + trajectory.size());
+      if (trajectory.size() > 5) {
+        //
+        StateTime newRootState = trajectory.get(trajectory.size() > 3 ? 3 : 0);
+        int increment = trajectoryPlanner.switchRootToState(newRootState.state());
+        parameters.increaseDepthLimit(increment);
+      }
       // -- OBSTACLE CHANGE
       TrajectoryRegionQuery newObstacleQuery = //
-          new SimpleTrajectoryRegionQuery(new TimeInvariantRegion( //
-              new R2NoiseRegion(0.5 - i * 0.06)));
+          new SimpleTrajectoryRegionQuery(new TimeInvariantRegion(//
+              new EuclideanDistanceDiscoverRegion(region, trajectory.get(0).state(), RealScalar.of(4))));
       trajectoryPlanner.ObstacleUpdate(newObstacleQuery);
-      owlyFrame.setGlc((TrajectoryPlanner) trajectoryPlanner);
       // // -- GOALCHANGE
       // ticTemp = tic;
       // Optional<StateTime> furthestState = trajectoryPlanner.getFurthestGoalState(rnGoal.getGoalRegionList());
@@ -132,13 +114,10 @@ enum R2GlcConstTimeHeuristicObstacleChangeAnyDemo {
       // tocTemp = System.nanoTime();
       // System.out.println("Goalchange took: " + (tocTemp - ticTemp) * 1e-9 + "s");
       // -- EXPANDING
-      ticTemp = System.nanoTime();
       int expandIter = Expand.constTime(trajectoryPlanner, runTime, parameters.getDepthLimit());
       owlyFrame.setGlc((TrajectoryPlanner) trajectoryPlanner);
       // check if furthest Goal is already in last Region in List
       trajectory = GlcNodes.getPathFromRootTo(finalGoalNode.get());
-      tocTemp = System.nanoTime();
-      System.out.println("Expanding took: " + (tocTemp - ticTemp) * 1e-9 + "s");
       // --
       long toc = System.nanoTime();
       System.out.println((toc - tic) * 1e-9 + " Seconds needed to replan");

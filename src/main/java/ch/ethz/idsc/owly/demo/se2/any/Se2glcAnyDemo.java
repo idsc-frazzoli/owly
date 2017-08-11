@@ -16,7 +16,7 @@ import ch.ethz.idsc.owly.glc.core.Expand;
 import ch.ethz.idsc.owly.glc.core.OptimalAnyTrajectoryPlanner;
 import ch.ethz.idsc.owly.glc.core.TrajectoryPlanner;
 import ch.ethz.idsc.owly.gui.Gui;
-import ch.ethz.idsc.owly.math.Se2Utils;
+import ch.ethz.idsc.owly.math.RotationUtils;
 import ch.ethz.idsc.owly.math.StateSpaceModel;
 import ch.ethz.idsc.owly.math.flow.Flow;
 import ch.ethz.idsc.owly.math.region.HyperplaneRegion;
@@ -52,10 +52,10 @@ class Se2glcAnyDemo {
     System.out.println("1/Domainsize=" + parameters.getEta());
     parameters.printResolution();
     // Se2Controls uses Se2StateSpaceModel
-    Collection<Flow> controls = Se2Controls.createControls(Se2Utils.DEGREE(45), parameters.getResolutionInt());
+    Collection<Flow> controls = Se2Controls.createControls(RotationUtils.DEGREE(45), parameters.getResolutionInt());
     Se2DefaultGoalManager se2GoalManager = new Se2DefaultGoalManager( //
         Tensors.vector(0, 1), RealScalar.of(Math.PI), //
-        DoubleScalar.of(.1), Se2Utils.DEGREE(10));
+        DoubleScalar.of(.1), RotationUtils.DEGREE(10));
     TrajectoryRegionQuery obstacleQuery = //
         new SimpleTrajectoryRegionQuery(new TimeInvariantRegion( //
             RegionUnion.of( //
@@ -78,7 +78,7 @@ class Se2glcAnyDemo {
     // --
     Se2DefaultGoalManager se2GoalManager2 = new Se2DefaultGoalManager( //
         Tensors.vector(-3, 1), RealScalar.of(Math.PI), //
-        DoubleScalar.of(0.1), Se2Utils.DEGREE(10));
+        DoubleScalar.of(0.1), RotationUtils.DEGREE(10));
     StateTime newRootState = null;
     if (trajectory != null) {
       newRootState = trajectory.get(trajectory.size() > 3 ? 3 : 0);
