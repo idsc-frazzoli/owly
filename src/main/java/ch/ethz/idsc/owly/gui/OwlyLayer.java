@@ -5,7 +5,7 @@ import java.awt.geom.Path2D;
 import java.awt.geom.Point2D;
 import java.util.List;
 
-import ch.ethz.idsc.owly.math.Se2Utils;
+import ch.ethz.idsc.owly.math.RotationUtils;
 import ch.ethz.idsc.owly.math.state.StateTime;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
@@ -93,6 +93,6 @@ public abstract class OwlyLayer {
 
   /** @return affine matrix that combines mouse location and mouse wheel rotation */
   public Tensor getMouseSe2Matrix() {
-    return Se2Utils.toSE2Matrix(getMouseSe2State());
+    return RotationUtils.toSE2Matrix(getMouseSe2State());
   }
 }

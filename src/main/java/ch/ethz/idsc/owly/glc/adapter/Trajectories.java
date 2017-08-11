@@ -26,4 +26,10 @@ public enum Trajectories {
     trajectory.addAll(tail.subList(1, tail.size()));
     return Collections.unmodifiableList(trajectory);
   }
+
+  public static void print(List<TrajectorySample> list) {
+    System.out.println("Trajectory (" + list.size() + ")");
+    for (TrajectorySample sample : list)
+      System.out.println(sample.toInfoString());
+  }
 }

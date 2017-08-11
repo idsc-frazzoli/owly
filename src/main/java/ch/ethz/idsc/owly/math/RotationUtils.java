@@ -14,7 +14,7 @@ import ch.ethz.idsc.tensor.sca.Arg;
 import ch.ethz.idsc.tensor.sca.Cos;
 import ch.ethz.idsc.tensor.sca.Sin;
 
-public enum Se2Utils {
+public enum RotationUtils {
   ;
   /** @param degree
    * @return radians */

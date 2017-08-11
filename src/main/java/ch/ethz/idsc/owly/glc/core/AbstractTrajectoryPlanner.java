@@ -2,6 +2,7 @@
 package ch.ethz.idsc.owly.glc.core;
 
 import java.util.List;
+import java.util.Optional;
 
 import ch.ethz.idsc.owly.data.tree.Nodes;
 import ch.ethz.idsc.owly.math.state.StateIntegrator;
@@ -59,5 +60,10 @@ import ch.ethz.idsc.tensor.Tensor;
 
   protected final void setObstacleQuery(TrajectoryRegionQuery obstacleQuery) {
     this.obstacleQuery = obstacleQuery;
+  }
+
+  @Override
+  protected Optional<GlcNode> getFurthestGoalNode() {
+    return Optional.empty();
   }
 }

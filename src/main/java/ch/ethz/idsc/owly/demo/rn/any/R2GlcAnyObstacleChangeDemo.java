@@ -12,7 +12,6 @@ import ch.ethz.idsc.owly.glc.adapter.Parameters;
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
 import ch.ethz.idsc.owly.glc.adapter.StateTimeTrajectories;
 import ch.ethz.idsc.owly.glc.core.AnyPlannerInterface;
-import ch.ethz.idsc.owly.glc.core.DebugUtils;
 import ch.ethz.idsc.owly.glc.core.Expand;
 import ch.ethz.idsc.owly.glc.core.OptimalAnyTrajectoryPlanner;
 import ch.ethz.idsc.owly.glc.core.TrajectoryPlanner;
@@ -87,7 +86,5 @@ enum R2GlcAnyObstacleChangeDemo {
     owlyFrame.setGlc((TrajectoryPlanner) trajectoryPlanner);
     Expand.constTime(trajectoryPlanner, RealScalar.of(1.5), parameters.getDepthLimit());
     owlyFrame.setGlc((TrajectoryPlanner) trajectoryPlanner);
-    DebugUtils.nodeAmountCompare((TrajectoryPlanner) trajectoryPlanner);
-    DebugUtils.heuristicConsistencyCheck((TrajectoryPlanner) trajectoryPlanner);
   }
 }

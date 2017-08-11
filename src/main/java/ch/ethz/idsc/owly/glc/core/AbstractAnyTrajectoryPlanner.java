@@ -1,6 +1,7 @@
 // code by jl
 package ch.ethz.idsc.owly.glc.core;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -18,6 +19,8 @@ import ch.ethz.idsc.owly.math.state.StateIntegrator;
 import ch.ethz.idsc.owly.math.state.StateTime;
 import ch.ethz.idsc.owly.math.state.TimeInvariantRegion;
 import ch.ethz.idsc.owly.math.state.TrajectoryRegionQuery;
+import ch.ethz.idsc.tensor.RealScalar;
+import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
 
 public abstract class AbstractAnyTrajectoryPlanner extends AbstractTrajectoryPlanner implements AnyPlannerInterface {
@@ -110,53 +113,46 @@ public abstract class AbstractAnyTrajectoryPlanner extends AbstractTrajectoryPla
       GlcNode root = getRoot();
       Collection<GlcNode> treeCollection = Nodes.ofSubtree(root);
       setBestNull();
-      // -- TREE
-      // Updating the merit of the entire tree
+      // -- RESORTING OF TREE
       if (!noHeuristic) {
-        System.err.println("checking for domainlabel changes due to heuristic change,  Treesize: " + treeCollection.size());
-        treeCollection.stream().parallel() //
-            .forEach(glcNode -> glcNode.setMinCostToGoal(newGoal.minCostToGoal(glcNode.state())));
         RelabelingDomains();
+        List<GlcNode> list = new LinkedList<>(queue());
+        queue().clear();
+        queue().addAll(list);
       }
-      // RESORTING OF LIST
-      List<GlcNode> list = new LinkedList<>(queue());
-      queue().clear();
-      queue().addAll(list);
       long toc = System.nanoTime();
-      System.out.println("Updated Merit of Tree with " + treeCollection.size() + " nodes in: " //
+      System.out.println("Relabeled Tree with " + treeCollection.size() + " nodes in: " //
           + ((toc - tic) * 1e-9) + "s");
     }
     // --
     // -- GOALCHECK TREE
     boolean goalInTreeFound = false;
-    // new check
     long tic = System.nanoTime();
+    // old check for debugging
+    goalInTreeFound = GoalCheckTree();
+    Scalar timeDiffOld = RealScalar.of((System.nanoTime() - tic) * 1e-9);
+    Collection<GlcNode> oldBest = new ArrayList<>(best.keySet());
+    setBestNull();
+    tic = System.nanoTime();
     goalInTreeFound = GoalCheckTree(goalCheckHelp);
     // DEBUGING
-    // Scalar timeDiffNew = RealScalar.of((System.nanoTime() - tic) * 1e-9);
-    // tic = System.nanoTime();
-    // old check for debugging
-    // {
-    // goalInTreeFound = GoalCheckTree(treeCollection);
-    // Scalar timeDiffOld = RealScalar.of((System.nanoTime() - tic) * 1e-9);
-    // Collection<GlcNode> oldBest = new ArrayList<>(best.keySet());
-    // setBestNull();
-    // System.err.println("The NEW GoalCheck needed: " //
-    // + timeDiffNew.divide(timeDiffOld).multiply(RealScalar.of(100)).number().intValue()//
-    // + "% of the time of the OLD");
-    // if (!best.isEmpty() || !oldBest.isEmpty()) {
-    // System.err.println("OldVersion found: " + oldBest.size() + " GoalNodes: ");
-    // for (GlcNode node : oldBest)
-    // System.out.println(node.state());
-    // System.err.println("NewVersion found: " + best.size() + " GoalNodes");
-    // for (GlcNode node : best.keySet())
-    // System.out.println(node.state());
-    // }
-    // if (!(oldBest.containsAll(best.keySet()) && best.keySet().containsAll(oldBest))) {
-    // System.err.println("Not the same GoalNodes found in both runs");
-    // throw new RuntimeException();
-    // }
-    // }
+    Scalar timeDiffNew = RealScalar.of((System.nanoTime() - tic) * 1e-9);
+    tic = System.nanoTime();
+    System.err.println("The NEW GoalCheck needed: " //
+        + timeDiffNew.divide(timeDiffOld).multiply(RealScalar.of(100)).number().intValue()//
+        + "% of the time of the OLD");
+    if (!best.isEmpty() || !oldBest.isEmpty()) {
+      System.err.println("OldVersion found: " + oldBest.size() + " GoalNodes: ");
+      for (GlcNode node : oldBest)
+        System.out.println(node.state());
+      System.err.println("NewVersion found: " + best.size() + " GoalNodes");
+      for (GlcNode node : best.keySet())
+        System.out.println(node.state());
+    }
+    if (!(oldBest.containsAll(best.keySet()) && best.keySet().containsAll(oldBest))) {
+      System.err.println("Not the same GoalNodes found in both runs");
+      throw new RuntimeException();
+    }
     // INFORMATION
     System.out.println("Checked current tree for goal in "//
         + (System.nanoTime() - tic) * 1e-9 + "s");
@@ -180,6 +176,7 @@ public abstract class AbstractAnyTrajectoryPlanner extends AbstractTrajectoryPla
 
   abstract boolean GoalCheckTree();
 
+  @Override
   abstract public void ObstacleUpdate(TrajectoryRegionQuery newObstacle);
 
   /** Finds the rootNode, by following the parents
@@ -210,8 +207,8 @@ public abstract class AbstractAnyTrajectoryPlanner extends AbstractTrajectoryPla
   }
 
   @Override
-  public final Optional<StateTime> getFurthestGoalState(List<Region> goalRegions) {
-    Optional<GlcNode> key = getFurthestGoalNode(goalRegions);
+  public final Optional<StateTime> getFurthestGoalState() {
+    Optional<GlcNode> key = getFurthestGoalNode();
     if (key.isPresent()) {
       List<StateTime> bestTrajectory = best.get(key.get());
       int index = getGoalInterface().firstMember(bestTrajectory);
@@ -221,9 +218,13 @@ public abstract class AbstractAnyTrajectoryPlanner extends AbstractTrajectoryPla
     return Optional.empty();
   }
 
-  /** @return furthest Node (lowest cost in higehst listindex), whose incoming trajectory is in GoalRegion,
+  /** @return furthest Node (lowest cost in highest list index), whose incoming trajectory is in GoalRegion,
    * or Optional.empty() if no such node has been identified yet */
-  public final Optional<GlcNode> getFurthestGoalNode(List<Region> goalRegions) {
+  @Override
+  protected final Optional<GlcNode> getFurthestGoalNode() {
+    if (!(getGoalInterface() instanceof TrajectoryGoalManager))
+      throw new RuntimeException(); // can only run on for TrajectoryGoalManager
+    List<Region> goalRegions = ((TrajectoryGoalManager) getGoalInterface()).getGoalRegionList();
     ListIterator<Region> iter = goalRegions.listIterator(goalRegions.size());
     DomainQueue regionQueue = new DomainQueue(); // priority queue over merit of GlcNodes
     while (iter.hasPrevious()) { // goes through all regions from last to first
@@ -237,16 +238,5 @@ public abstract class AbstractAnyTrajectoryPlanner extends AbstractTrajectoryPla
         break; // leave while loop when Nodes where found in latest Goalregion
     }
     return Optional.ofNullable(regionQueue.peek());
-  }
-
-  @Override
-  public final Optional<GlcNode> getFinalGoalNode() {
-    if (getGoalInterface() instanceof TrajectoryGoalManager) {
-      List<Region> goalRegions = ((TrajectoryGoalManager) getGoalInterface()).getGoalRegionList();
-      Optional<GlcNode> furthest = getFurthestGoalNode(goalRegions);
-      if (furthest.isPresent())
-        return furthest;
-    }
-    return getBestOrElsePeek();
   }
 }
