@@ -422,7 +422,7 @@ public class OptimalAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
           cp.getCandidate().setMinCostToGoal(getGoalInterface().minCostToGoal(cp.getCandidate().state())));
           PriorityQueue<CandidatePair> candidateQueue = new PriorityQueue<>(tempCandidateSet);
           while (!candidateQueue.isEmpty()) {
-            final CandidatePair nextCandidatePair = candidateQueue.poll();
+            final CandidatePair nextCandidatePair = candidateQueue.element();
             final GlcNode possibleCandidateNode = nextCandidatePair.getCandidate();
             if (Scalars.lessThan(possibleCandidateNode.merit(), label.merit())) {
               // collision check only if new node is better
@@ -443,7 +443,6 @@ public class OptimalAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
                   getCandidateMap().get(domainKey).add(formerLabelCandidate);
                   deletedNodes = deletedNodes + deleteTree.size() - 1; // -1 as this node was replaced
                   replacedNodes++;
-                  label.parent().removeEdgeTo(label);
                   insertNodeInTree(possibleCandidateOrigin, possibleCandidateNode);
                   candidateMap.get(domainKey).remove(nextCandidatePair);
                   if (!getGoalInterface().isDisjoint(connector))
@@ -452,13 +451,13 @@ public class OptimalAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
                 }
               } else { // CandidateOrigin is not connected to tree anymore --> Remove this Candidate from Map
                 candidateMap.get(convertToKey(possibleCandidateNode.state())).remove(nextCandidatePair);
-                final CandidatePair removedCP = candidateQueue.remove();
-                if (removedCP != possibleCandidateNode)
-                  throw new RuntimeException(); // removed candidate should be nextBest from before
               }
             } else {
               break; // if no better Candidates are found leave while of Candidates loop -> Speedgain
             }
+            final CandidatePair removedCP = candidateQueue.remove();
+            if (removedCP != nextCandidatePair)
+              throw new RuntimeException(); // removed candidate should be nextBest from before
           }
         }
       }
@@ -476,6 +475,7 @@ public class OptimalAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
         " C. removed from CL. with Origin in deleteTree: " + newtotalCandidates);
     System.out.println("CandidateMap before " + candidateMapBeforeSize + //
         " and after: " + candidateMap.size());
+    DebugUtils.nodeAmountCompare(this);
   }
 
   @Override
