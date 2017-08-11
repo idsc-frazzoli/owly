@@ -1,4 +1,4 @@
-// code by jph
+// code by jl
 package ch.ethz.idsc.owly.math.region;
 
 import ch.ethz.idsc.owly.math.Se2Utils;
@@ -8,7 +8,9 @@ import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Scalars;
 import ch.ethz.idsc.tensor.Tensor;
+import ch.ethz.idsc.tensor.TensorRuntimeException;
 import ch.ethz.idsc.tensor.Tensors;
+import ch.ethz.idsc.tensor.alg.Last;
 import ch.ethz.idsc.tensor.red.Norm;
 import ch.ethz.idsc.tensor.sca.ArcCos;
 import ch.ethz.idsc.tensor.sca.Mod;
@@ -32,6 +34,8 @@ public class TimeDependentTurningRingRegion implements StateTimeRegion {
    * @param ringRadius: Radius of the Ring (to the middle) */
   public TimeDependentTurningRingRegion(Tensor center, Scalar initialGapAngle, Scalar gapSizeAngle, Scalar ringThickness, Scalar ringRadius) {
     this.center = center;
+    if (center.length() != 2)
+      throw TensorRuntimeException.of(center);
     this.initialGapAngle = initialGapAngle;
     this.gapSizeAngle = gapSizeAngle;
     this.lowerRingRadius = ringRadius.subtract(ringThickness.divide(RealScalar.of(2)));
@@ -40,13 +44,12 @@ public class TimeDependentTurningRingRegion implements StateTimeRegion {
 
   @Override
   public boolean isMember(StateTime stateTime) {
+    // consistency check
+    if (!Last.of(stateTime.state()).equals(stateTime.time()))
+      throw TensorRuntimeException.of(stateTime.state(), stateTime.time());
+    // ---
     Scalar time = stateTime.time();
-    Tensor state = stateTime.state().extract(0, 2);
-    // flatten(-1) right?
-    if (!stateTime.state().flatten(0).filter(s -> s.equals(time)).findAny().isPresent())
-      throw new RuntimeException(); // None of the States represents the Time
-    if (state.length() != 2)
-      throw new RuntimeException();
+    Tensor state = stateTime.state().extract(0, 2); // <- asserts that state.length() == 2
     Scalar radius = Norm._2.of(state.subtract(center));
     if (Scalars.lessEquals(lowerRingRadius, radius) && Scalars.lessEquals(radius, upperRingRadius)) { // in Obstacle radial
       Scalar upperGapAngle = initialGapAngle.add(gapSizeAngle.divide(RealScalar.of(2)));

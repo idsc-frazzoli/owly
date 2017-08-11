@@ -83,7 +83,7 @@ public enum DebugUtils {
     for (int i = 1; i < trajectory.size() - 1; i++) {
       GlcNode current = trajectory.get(i);
       GlcNode parent = current.parent();
-      // TODO: write tests that fail the "trajectory property"
+      // TODO write tests that fail the "trajectory property"
       if (Scalars.lessEquals(current.costFromRoot(), parent.costFromRoot())) {
         System.err.println("At time " + current.stateTime().time() + " cost from root decreased from " + //
             parent.costFromRoot() + " to " + current.costFromRoot());

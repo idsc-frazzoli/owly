@@ -56,7 +56,7 @@ enum DeltaGlcConstTimeHeuristicAnyDemo {
     RationalScalar resolution = (RationalScalar) RationalScalar.of(14, 1);
     TrajectoryPlannerContainer slowTrajectoryPlannerContainer = DeltaHelper.createGlcAny(RealScalar.of(-0.5), resolution, partitionScale);
     // -- GOALMANAGER
-    // TODO: needs to be removed from main
+    // TODO needs to be removed from main
     Iterator<StateTime> iterator = quickTrajectory.iterator();
     List<Region> goalRegions = new ArrayList<>();
     List<Region> goalCheckHelpRegions = new ArrayList<>();
@@ -110,7 +110,7 @@ enum DeltaGlcConstTimeHeuristicAnyDemo {
           finalGoalFound = true;
         }
       }
-      // TODO: Smart new heuristiccenter:
+      // TODO Smart new heuristiccenter:
       // Heuristic Center at next GoalRegion, if found expanding around it
       Scalar maxSpeed = ((DeltaStateSpaceModel) slowTrajectoryPlannerContainer.getStateSpaceModel()).getMaxPossibleChange();
       trajectoryGoalManager = new DeltaTrajectoryGoalManager(trajectoryGoalManager.deleteRegionsBefore(furthestState) //

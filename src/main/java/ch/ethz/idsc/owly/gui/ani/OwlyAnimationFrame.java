@@ -151,7 +151,7 @@ public class OwlyAnimationFrame {
           abstractEntity.setTrajectory(trajectory);
         }
         trajectoryRender.setTrajectory(trajectory);
-        TrajectorySample.print(trajectory);
+        // TrajectorySample.print(trajectory);
       } else {
         System.err.println("NO TRAJECTORY BETWEEN ROOT TO GOAL");
       }

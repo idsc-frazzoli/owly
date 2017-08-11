@@ -1,4 +1,4 @@
-// code by jph
+// code by jl
 package ch.ethz.idsc.owly.math.region;
 
 import ch.ethz.idsc.owly.math.Se2Utils;
@@ -36,5 +36,21 @@ public class TimeDependentTurningRingRegionTest extends TestCase {
     assertFalse(test.isMember(new StateTime(Tensors.vector(0, -1, 9), RealScalar.of(9))));
     assertTrue(test.isMember(new StateTime(Tensors.vector(1, 0, 9), RealScalar.of(9))));// 9s=270° later in gap
     // --
+  }
+
+  public void testFail() {
+    Tensor center = Tensors.vector(0, 0);
+    Scalar initialGapAngle = Se2Utils.DEGREE(0);
+    Scalar gapLength = Se2Utils.DEGREE(40);
+    Scalar ringThickness = RealScalar.of(0.4);
+    Scalar ringRadius = RealScalar.ONE;
+    TimeDependentTurningRingRegion test = new TimeDependentTurningRingRegion(center, initialGapAngle, gapLength, ringThickness, ringRadius);
+    try {
+      // throws exception, since time info is not consistent
+      test.isMember(new StateTime(Tensors.vector(0.5, 1, 0), RealScalar.of(1)));
+      assertTrue(false);
+    } catch (Exception exception) {
+      // ---
+    }
   }
 }

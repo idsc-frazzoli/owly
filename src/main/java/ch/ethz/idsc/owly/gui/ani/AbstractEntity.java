@@ -11,6 +11,7 @@ import ch.ethz.idsc.owly.glc.core.TrajectoryPlanner;
 import ch.ethz.idsc.owly.glc.core.TrajectorySample;
 import ch.ethz.idsc.owly.gui.RenderInterface;
 import ch.ethz.idsc.owly.math.state.EpisodeIntegrator;
+import ch.ethz.idsc.owly.math.state.StateTime;
 import ch.ethz.idsc.owly.math.state.TrajectoryRegionQuery;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Scalars;
@@ -80,7 +81,22 @@ public abstract class AbstractEntity implements RenderInterface, AnimationInterf
    * 
    * @param trajectory
    * @return index of node that has been traversed most recently by entity */
-  public abstract int indexOfPassedTrajectorySample(List<TrajectorySample> trajectory);
+  public final int indexOfPassedTrajectorySample(List<TrajectorySample> trajectory) {
+    final Tensor x = episodeIntegrator.tail().state();
+    Tensor dist = Tensor.of(trajectory.stream() //
+        .map(TrajectorySample::stateTime) //
+        .map(StateTime::state) //
+        .map(state -> distance(state, x)));
+    int argmin = ArgMin.of(dist);
+    // the below 'correction' does not help in tracking
+    // instead one could try blending flows depending on distance
+    // if (0 < argmin && argmin < dist.length() - 1)
+    // if (Scalars.lessThan(dist.Get(argmin - 1), dist.Get(argmin + 1)))
+    // --argmin;
+    return argmin;
+  }
+
+  public abstract Scalar distance(Tensor x, Tensor y);
 
   public abstract Tensor fallbackControl();
 
