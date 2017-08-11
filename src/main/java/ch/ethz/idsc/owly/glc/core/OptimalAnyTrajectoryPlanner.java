@@ -134,6 +134,7 @@ public class OptimalAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
       System.out.println("node is already root");
       return 0;
     }
+    long tic = System.nanoTime();
     // needed for change of depthlimit
     int increasedDepthBy = newRoot.reCalculateDepth();
     // -- DEBUGING Values
@@ -212,12 +213,13 @@ public class OptimalAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
       }
     }
     System.out.println(addedNodesToQueue + " Nodes added to Domain = " + domainMap().size());
-    System.out.println("**Rootswitch finished**");
+    System.out.println("** Rootswitch finished in " + (System.nanoTime() - tic) * 1e-9 + "s **");
     return increasedDepthBy;
   }
 
   @Override
   public void ObstacleUpdate(TrajectoryRegionQuery newObstacle) {
+    long tictotal = System.nanoTime();
     System.out.println("*** OBSTACLE UPDATE ***");
     long tic = System.nanoTime();
     setObstacleQuery(newObstacle);
@@ -381,8 +383,7 @@ public class OptimalAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
         + " domains took :" + (toc - tic) * 1e-9 + "s");
     System.out.println("Nodes added:  " + addedNodes);
     System.out.println("Nodes deleted:" + deletedNodes);
-    System.out.println("**ObstacleUpdate finished**");
-    // Consistency checks
+    System.out.println("** ObstacleUpdate finished in " + (System.nanoTime() - tictotal) * 1e-9 + "s **");// Consistency checks
     DebugUtils.nodeAmountCompare(this);
     DebugUtils.connectivityCheck(domainMap().values());
     DebugUtils.heuristicConsistencyCheck(this);

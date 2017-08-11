@@ -77,7 +77,7 @@ public enum Expand {
    * @param expandInterface
    * @param depthLimit */
   public static int maxDepth(ExpandInterface expandInterface, int depthLimit) {
-    System.out.println("Expanding");
+    System.out.println("*** EXPANDING ***");
     int expandCount = 0;
     while (true) {
       expandCount++;
@@ -102,6 +102,7 @@ public enum Expand {
    * @param expandInterface
    * @param timeLimit TimeLimit of expandfunction in [s] */
   public static int maxTime(ExpandInterface expandInterface, Scalar timeLimit) {
+    System.out.println("*** EXPANDING ***");
     long tic = System.nanoTime();
     timeLimit = timeLimit.multiply(RealScalar.of(1e9));
     int expandCount = 0;
@@ -131,7 +132,7 @@ public enum Expand {
    * @param expandInterface
    * @param time Time of expandfunction in [s] */
   public static int constTime(ExpandInterface expandInterface, Scalar time, int depthLimit) {
-    System.out.println("Expanding");
+    System.out.println("*** EXPANDING ***");
     long tic = System.nanoTime();
     time = time.multiply(RealScalar.of(1e9));
     int expandCount = 0;

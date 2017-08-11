@@ -1,7 +1,6 @@
 // code by jl
 package ch.ethz.idsc.owly.glc.core;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -106,6 +105,7 @@ public abstract class AbstractAnyTrajectoryPlanner extends AbstractTrajectoryPla
   @Override
   public final boolean changeToGoal(final GoalInterface newGoal, Region goalCheckHelp) {
     System.out.println("*** GOALSWITCH ***");
+    long tictotal = System.nanoTime();
     {
       boolean noHeuristic = ((getGoalInterface() instanceof NoHeuristic) && (newGoal instanceof NoHeuristic));
       setGoalInterface(newGoal);
@@ -124,44 +124,46 @@ public abstract class AbstractAnyTrajectoryPlanner extends AbstractTrajectoryPla
       System.out.println("Relabeled Tree with " + treeCollection.size() + " nodes in: " //
           + ((toc - tic) * 1e-9) + "s");
     }
-    // --
-    // -- GOALCHECK TREE
-    boolean goalInTreeFound = false;
-    long tic = System.nanoTime();
-    // old check for debugging
-    goalInTreeFound = GoalCheckTree();
-    Scalar timeDiffOld = RealScalar.of((System.nanoTime() - tic) * 1e-9);
-    Collection<GlcNode> oldBest = new ArrayList<>(best.keySet());
-    setBestNull();
-    tic = System.nanoTime();
-    goalInTreeFound = GoalCheckTree(goalCheckHelp);
-    // DEBUGING
-    Scalar timeDiffNew = RealScalar.of((System.nanoTime() - tic) * 1e-9);
-    tic = System.nanoTime();
-    System.err.println("The NEW GoalCheck needed: " //
-        + timeDiffNew.divide(timeDiffOld).multiply(RealScalar.of(100)).number().intValue()//
-        + "% of the time of the OLD");
-    if (!best.isEmpty() || !oldBest.isEmpty()) {
-      System.err.println("OldVersion found: " + oldBest.size() + " GoalNodes: ");
-      for (GlcNode node : oldBest)
-        System.out.println(node.state());
-      System.err.println("NewVersion found: " + best.size() + " GoalNodes");
-      for (GlcNode node : best.keySet())
-        System.out.println(node.state());
+    {
+      // --
+      // -- GOALCHECK TREE
+      boolean goalInTreeFound = false;
+      long tic = System.nanoTime();
+      // old check for debugging
+      // goalInTreeFound = GoalCheckTree();
+      Scalar timeDiffOld = RealScalar.of((System.nanoTime() - tic) * 1e-9);
+      // Collection<GlcNode> oldBest = new ArrayList<>(best.keySet());
+      // setBestNull();
+      tic = System.nanoTime();
+      goalInTreeFound = GoalCheckTree(goalCheckHelp);
+      // DEBUGING
+      // Scalar timeDiffNew = RealScalar.of((System.nanoTime() - tic) * 1e-9);
+      // tic = System.nanoTime();
+      // System.err.println("The NEW GoalCheck needed: " //
+      // + timeDiffNew.divide(timeDiffOld).multiply(RealScalar.of(100)).number().intValue()//
+      // + "% of the time of the OLD");
+      // if (!best.isEmpty() || !oldBest.isEmpty()) {
+      // System.err.println("OldVersion found: " + oldBest.size() + " GoalNodes: ");
+      // for (GlcNode node : oldBest)
+      // System.out.println(node.state());
+      // System.err.println("NewVersion found: " + best.size() + " GoalNodes");
+      // for (GlcNode node : best.keySet())
+      // System.out.println(node.state());
+      // }
+      // if (!(oldBest.containsAll(best.keySet()) && best.keySet().containsAll(oldBest))) {
+      // System.err.println("Not the same GoalNodes found in both runs");
+      // throw new RuntimeException();
+      // }
+      // INFORMATION
+      System.out.println("Checked current tree for goal in "//
+          + (System.nanoTime() - tic) * 1e-9 + "s");
+      if (goalInTreeFound) {
+        System.out.println("New Goal was found in current tree --> No new search needed");
+        System.out.println("*** Goalswitch finished in " + (System.nanoTime() - tictotal) * 1e-9 + "s ***");
+        return true;
+      }
     }
-    if (!(oldBest.containsAll(best.keySet()) && best.keySet().containsAll(oldBest))) {
-      System.err.println("Not the same GoalNodes found in both runs");
-      throw new RuntimeException();
-    }
-    // INFORMATION
-    System.out.println("Checked current tree for goal in "//
-        + (System.nanoTime() - tic) * 1e-9 + "s");
-    if (goalInTreeFound) {
-      System.out.println("New Goal was found in current tree --> No new search needed");
-      System.out.println("**Goalswitch finished**");
-      return true;
-    }
-    System.out.println("**Goalswitch finished**");
+    System.out.println("*** Goalswitch finished in " + (System.nanoTime() - tictotal) * 1e-9 + "s ***");
     return false;
   }
 
