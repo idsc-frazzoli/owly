@@ -4,6 +4,7 @@ package ch.ethz.idsc.owly.demo.delta;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import ch.ethz.idsc.owly.math.StateSpaceModel;
 import ch.ethz.idsc.owly.math.StateSpaceModels;
 import ch.ethz.idsc.owly.math.flow.Flow;
 import ch.ethz.idsc.tensor.DoubleScalar;
@@ -17,11 +18,11 @@ import ch.ethz.idsc.tensor.sca.Sin;
 
 public enum DeltaControls {
   ;
-  public static Collection<Flow> createControls(DeltaStateSpaceModel dssm, Scalar amp, int num) {
+  public static Collection<Flow> createControls(StateSpaceModel stateSpaceModel, Scalar amp, int num) {
     Collection<Flow> collection = new ArrayList<>();
     for (Tensor angle : Range.of(0, num).multiply(DoubleScalar.of(2 * Math.PI / num))) {
       Tensor u = Chop._10.of(Tensors.of(Cos.of(angle), Sin.of(angle)).multiply(amp));
-      collection.add(StateSpaceModels.createFlow(dssm, u));
+      collection.add(StateSpaceModels.createFlow(stateSpaceModel, u));
     }
     return collection;
   }

@@ -7,8 +7,10 @@ import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
+import ch.ethz.idsc.tensor.alg.Join;
 
 public class DeltaxtStateSpaceModel implements StateSpaceModel {
+  private static final Tensor AFFINE_ONE = Tensors.vector(1);
   private final ImageGradient imageGradient;
   private final Scalar maxInput;
 
@@ -23,7 +25,7 @@ public class DeltaxtStateSpaceModel implements StateSpaceModel {
     if (toIndex != 2)
       throw new RuntimeException();
     Tensor fxy = imageGradient.rotate(x.extract(0, toIndex));
-    return Tensors.of(fxy.Get(0), fxy.Get(1), RealScalar.ONE).add(u);
+    return Join.of(fxy.add(u), AFFINE_ONE);
   }
 
   @Override

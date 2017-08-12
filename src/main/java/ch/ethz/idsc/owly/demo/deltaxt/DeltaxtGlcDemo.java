@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import ch.ethz.idsc.owly.demo.delta.DeltaControls;
 import ch.ethz.idsc.owly.demo.delta.DeltaParameters;
 import ch.ethz.idsc.owly.demo.delta.ImageGradient;
 import ch.ethz.idsc.owly.demo.util.Images;
@@ -55,7 +56,7 @@ enum DeltaxtGlcDemo {
         range, RealScalar.of(-0.1)); // -.25 .5
     Scalar maxInput = RealScalar.ONE;
     DeltaxtStateSpaceModel stateSpaceModel = new DeltaxtStateSpaceModel(ipr, maxInput);
-    Collection<Flow> controls = DeltaxtControls.createControls( //
+    Collection<Flow> controls = DeltaControls.createControls( //
         stateSpaceModel, maxInput, resolution.number().intValue());
     Parameters parameters = new DeltaParameters(resolution, timeScale, depthScale, //
         partitionScale, dtMax, maxIter, stateSpaceModel.getLipschitz());
@@ -79,7 +80,7 @@ enum DeltaxtGlcDemo {
     dinghyTrajectory.add(new TrajectorySample(next, null));
     Scalar dinghyExpandTime = RealScalar.of(25); // [s]
     for (int i = 0; Scalars.lessThan(RealScalar.of(i), dinghyExpandTime.divide(parameters.getExpandTime())); i++) {
-      Flow flow = StateSpaceModels.createFlow(stateSpaceModel, Tensors.vector(0, 0, 0));
+      Flow flow = StateSpaceModels.createFlow(stateSpaceModel, Tensors.vector(0, 0));
       List<StateTime> connector = stateIntegrator.trajectory(next, flow);
       next = StateTimeTrajectories.getLast(connector);
       goalRegions.add(new EllipsoidRegion(next.state(), radius));
