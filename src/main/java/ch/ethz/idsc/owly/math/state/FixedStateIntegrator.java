@@ -27,6 +27,7 @@ public class FixedStateIntegrator implements StateIntegrator {
     return new FixedStateIntegrator(integrator, timeStep, trajectorySize);
   }
 
+  // ---
   private final Integrator integrator;
   private final Scalar timeStep;
   private final int trajectorySize;

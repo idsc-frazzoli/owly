@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
+import ch.ethz.idsc.owly.demo.rn.EuclideanDistanceDiscoverRegion;
 import ch.ethz.idsc.owly.demo.rn.R2Controls;
 import ch.ethz.idsc.owly.demo.rn.R2NoiseRegion;
 import ch.ethz.idsc.owly.demo.rn.R2Parameters;
@@ -23,7 +24,6 @@ import ch.ethz.idsc.owly.gui.Gui;
 import ch.ethz.idsc.owly.gui.OwlyFrame;
 import ch.ethz.idsc.owly.math.flow.EulerIntegrator;
 import ch.ethz.idsc.owly.math.flow.Flow;
-import ch.ethz.idsc.owly.math.region.EuclideanDistanceDiscoverRegion;
 import ch.ethz.idsc.owly.math.region.Region;
 import ch.ethz.idsc.owly.math.state.FixedStateIntegrator;
 import ch.ethz.idsc.owly.math.state.StateIntegrator;
@@ -60,7 +60,7 @@ enum R2GlcConstTimeHeuristicSensingObstacleAnyDemo {
     Region region = new R2NoiseRegion(0.1);
     TrajectoryRegionQuery obstacleQuery = //
         new SimpleTrajectoryRegionQuery(new TimeInvariantRegion(//
-            new EuclideanDistanceDiscoverRegion(region, startState, RealScalar.of(4))));
+            EuclideanDistanceDiscoverRegion.of(region, startState, RealScalar.of(4))));
     // TODO change back to AnyPlannerInterface
     AnyPlannerInterface trajectoryPlanner = new OptimalAnyTrajectoryPlanner( //
         parameters.getEta(), stateIntegrator, controls, obstacleQuery, rnGoal);
@@ -93,7 +93,7 @@ enum R2GlcConstTimeHeuristicSensingObstacleAnyDemo {
       // -- OBSTACLE CHANGE
       TrajectoryRegionQuery newObstacleQuery = //
           new SimpleTrajectoryRegionQuery(new TimeInvariantRegion(//
-              new EuclideanDistanceDiscoverRegion(region, trajectory.get(0).state(), RealScalar.of(4))));
+              EuclideanDistanceDiscoverRegion.of(region, trajectory.get(0).state(), RealScalar.of(4))));
       trajectoryPlanner.ObstacleUpdate(newObstacleQuery);
       // // -- GOALCHANGE
       // ticTemp = tic;

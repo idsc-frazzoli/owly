@@ -9,14 +9,13 @@ import ch.ethz.idsc.owly.glc.adapter.StateTimeTrajectories;
 import ch.ethz.idsc.owly.glc.core.GoalInterface;
 import ch.ethz.idsc.owly.glc.core.NoHeuristic;
 import ch.ethz.idsc.owly.math.flow.Flow;
-import ch.ethz.idsc.owly.math.region.EllipsoidRegion;
+import ch.ethz.idsc.owly.math.region.SphericalRegion;
 import ch.ethz.idsc.owly.math.state.StateTime;
 import ch.ethz.idsc.owly.math.state.TimeInvariantRegion;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Scalars;
 import ch.ethz.idsc.tensor.Tensor;
-import ch.ethz.idsc.tensor.alg.Array;
 import ch.ethz.idsc.tensor.red.Norm;
 
 /** objective is minimum path length
@@ -28,7 +27,7 @@ public class RnSimpleCircleGoalManager extends SimpleTrajectoryRegionQuery imple
    * @param center vector with length == n
    * @param radius positive */
   public RnSimpleCircleGoalManager(Tensor center, Scalar radius) {
-    super(new TimeInvariantRegion(new EllipsoidRegion(center, Array.of(l -> radius, center.length()))));
+    super(new TimeInvariantRegion(new SphericalRegion(center, radius)));
     GlobalAssert.that(Scalars.lessThan(RealScalar.ZERO, radius));
   }
 

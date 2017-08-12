@@ -11,7 +11,7 @@ import ch.ethz.idsc.tensor.Tensor;
  * and obstacle:
  * <ul>
  * <li>positive when outside the obstacle,
- * <li>zero when touching the obstacle, and
+ * <li>zero when in contact with the obstacle, and
  * <li>negative when in collision
  * </ul> */
 public abstract class ImplicitFunctionRegion implements Region, ImplicitFunction {
