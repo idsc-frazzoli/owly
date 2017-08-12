@@ -16,7 +16,7 @@ import ch.ethz.idsc.owly.glc.core.StandardTrajectoryPlanner;
 import ch.ethz.idsc.owly.glc.core.TrajectoryPlanner;
 import ch.ethz.idsc.owly.gui.OwlyLayer;
 import ch.ethz.idsc.owly.gui.ani.AbstractEntity;
-import ch.ethz.idsc.owly.math.RotationUtils;
+import ch.ethz.idsc.owly.math.Se2Utils;
 import ch.ethz.idsc.owly.math.flow.Flow;
 import ch.ethz.idsc.owly.math.flow.Integrator;
 import ch.ethz.idsc.owly.math.flow.MidpointIntegrator;
@@ -111,7 +111,7 @@ public class TwdEntity extends AbstractEntity {
         if (!obstacleQuery.isDisjoint(Collections.singletonList(stateTime)))
           color = new Color(255, 64, 64, 128);
       graphics.setColor(color);
-      Tensor matrix = RotationUtils.toSE2Matrix(stateTime.state());
+      Tensor matrix = Se2Utils.toSE2Matrix(stateTime.state());
       Path2D path2d = owlyLayer.toPath2D(Tensor.of(SHAPE.flatten(0).map(matrix::dot)));
       graphics.fill(path2d);
     }

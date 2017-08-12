@@ -12,9 +12,9 @@ public class EuclideanDistanceDiscoverRegion implements Region {
   final Scalar distance;
   final Tensor origin;
 
-  public EuclideanDistanceDiscoverRegion(Region region, Tensor Origin, Scalar distance) {
+  public EuclideanDistanceDiscoverRegion(Region region, Tensor origin, Scalar distance) {
     this.region = region;
-    origin = Origin;
+    this.origin = origin;
     this.distance = distance;
   }
 
