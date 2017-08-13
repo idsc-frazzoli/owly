@@ -1,4 +1,4 @@
-// code by jph & jl
+// code by jph
 package ch.ethz.idsc.owly.math.region;
 
 import java.nio.ByteBuffer;
@@ -7,40 +7,40 @@ import java.util.Collection;
 
 import ch.ethz.idsc.tensor.Tensor;
 
-/** RegionUnion is a region that defines membership
- * to be member in either of a collection of {@link Region}s
+/** RegionIntersection is a region that defines membership
+ * to be member in all of a collection of {@link Region}s
  * 
  * <p>inspired by
- * <a href="https://reference.wolfram.com/language/ref/RegionUnion.html">RegionUnion</a> */
-public class RegionUnion implements Region {
+ * <a href="https://reference.wolfram.com/language/ref/RegionIntersection.html">RegionIntersection</a> */
+public class RegionIntersection implements Region {
   /** combines a collection of {@link Region}s into one Region.
-   * Membership is defined as membership in any of the regions in the collection.
+   * Membership is defined as membership in all of the regions in the collection.
    * The input collection is not copied but used by reference.
    * Modification to outside collection have effect on this region.
    * 
    * The function name is inspired by {@link ByteBuffer#wrap(byte[])}.
    * 
    * @param collection collection of Regions
-   * @return the combined Regions */
+   * @return the intersection of the given regions */
   public static Region wrap(Collection<Region> collection) {
-    return new RegionUnion(collection);
+    return new RegionIntersection(collection);
   }
 
-  /** @param regions to union
-   * @return the union of the given regions */
+  /** @param regions to be combined
+   * @return the intersection of the given regions */
   public static Region of(Region... regions) {
-    return new RegionUnion(Arrays.asList(regions));
+    return new RegionIntersection(Arrays.asList(regions));
   }
 
   // ---
   private final Collection<Region> collection;
 
-  private RegionUnion(Collection<Region> collection) {
+  private RegionIntersection(Collection<Region> collection) {
     this.collection = collection;
   }
 
   @Override
   public boolean isMember(Tensor tensor) {
-    return collection.stream().parallel().anyMatch(region -> region.isMember(tensor));
+    return collection.stream().allMatch(region -> region.isMember(tensor));
   }
 }

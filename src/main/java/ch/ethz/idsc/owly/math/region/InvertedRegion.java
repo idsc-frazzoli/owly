@@ -4,7 +4,7 @@ package ch.ethz.idsc.owly.math.region;
 import ch.ethz.idsc.tensor.Tensor;
 
 public class InvertedRegion implements Region {
-  final Region region;
+  private final Region region;
 
   public InvertedRegion(Region region) {
     this.region = region;

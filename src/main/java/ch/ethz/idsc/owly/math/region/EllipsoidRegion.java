@@ -8,7 +8,12 @@ import ch.ethz.idsc.tensor.TensorRuntimeException;
 import ch.ethz.idsc.tensor.red.Norm;
 import ch.ethz.idsc.tensor.sca.Ramp;
 
-/** evaluate does not correspond to Euclidean distance */
+/** EllipsoidRegion implements an axis aligned elliptic region in the vector space R^n.
+ * 
+ * The region also finds applications for other spaces, such as R^n x R^m
+ * where axis depended scaling is desired. One use case is the Lotka-Volterra model.
+ * 
+ * Notice: evaluate(...) does not correspond to Euclidean distance */
 public class EllipsoidRegion extends ImplicitFunctionRegion {
   private final Tensor center;
   private final Tensor invert;
