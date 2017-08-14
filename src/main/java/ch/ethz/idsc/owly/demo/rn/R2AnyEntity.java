@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.Optional;
 
+import ch.ethz.idsc.owly.glc.adapter.Parameters;
 import ch.ethz.idsc.owly.glc.core.Expand;
 import ch.ethz.idsc.owly.glc.core.GlcNode;
 import ch.ethz.idsc.owly.glc.core.GoalInterface;
@@ -42,8 +43,16 @@ public class R2AnyEntity extends AbstractEntity {
   private static final Tensor FALLBACK_CONTROL = Tensors.vector(0, 0).unmodifiable();
   /** preserve 1[s] of the former trajectory */
   private static final Scalar DELAY_HINT = RealScalar.ONE;
+  Parameters parameters = new R2Parameters( //
+      (RationalScalar) RealScalar.of(15), // resolution
+      RealScalar.of(2), // TimeScale
+      RealScalar.of(100), // DepthScale
+      Tensors.vector(30, 30), // PartitionScale
+      RationalScalar.of(1, 6), // dtMax
+      2000, // maxIter
+      RealScalar.ONE); // lipschitz);
   // ---
-  private final Collection<Flow> controls = R2Controls.createRadial(36); // TODO magic const
+  private final Collection<Flow> controls = R2Controls.createRadial(parameters.getResolutionInt()); // TODO magic const
 
   /** @param state initial position of entity */
   public R2AnyEntity(Tensor state) {
@@ -75,13 +84,12 @@ public class R2AnyEntity extends AbstractEntity {
 
   @Override
   public TrajectoryPlanner createTrajectoryPlanner(TrajectoryRegionQuery obstacleQuery, Tensor goal) {
-    Tensor partitionScale = Tensors.vector(8, 8);
     StateIntegrator stateIntegrator = //
-        FixedStateIntegrator.create(EulerIntegrator.INSTANCE, RationalScalar.of(1, 12), 4);
+        FixedStateIntegrator.create(EulerIntegrator.INSTANCE, parameters.getdtMax(), parameters.getTrajectorySize());
     RnSimpleCircleGoalManager rnGoal = //
         new RnSimpleCircleGoalManager(goal.extract(0, 2), DoubleScalar.of(.2));
     return new OptimalAnyTrajectoryPlanner( //
-        partitionScale, stateIntegrator, controls, obstacleQuery, rnGoal);
+        parameters.getEta(), stateIntegrator, controls, obstacleQuery, rnGoal);
   }
 
   @Override
@@ -105,44 +113,57 @@ public class R2AnyEntity extends AbstractEntity {
   List<TrajectorySample> head;
   GlcNode newRoot;
   Tensor goal;
-  boolean switchRootRequest = false;
+  boolean switchGoalRequest = false;
 
   public void switchToGoal( //
-      TrajectoryPlannerCallback trajectoryPlannerCallback, List<TrajectorySample> head, GlcNode newRoot, Tensor goal) { // TODO call in thread
+      TrajectoryPlannerCallback trajectoryPlannerCallback, List<TrajectorySample> head, Tensor goal) { // TODO call in thread
+    switchGoalRequest = true;
+    this.trajectoryPlannerCallback = trajectoryPlannerCallback;
+    this.head = head;
+    // this.newRoot = newRoot;
+    this.goal = goal;
     try {
-      while (switchRootRequest) {
+      while (switchGoalRequest) {
         Thread.sleep(500);
         System.out.println("block");
       }
     } catch (Exception exception) {
       exception.printStackTrace();
     }
-    this.trajectoryPlannerCallback = trajectoryPlannerCallback;
-    this.head = head;
-    this.newRoot = newRoot;
-    this.goal = goal;
-    switchRootRequest = true;
   }
 
   public OptimalAnyTrajectoryPlanner tp;
 
   public void startLife(TrajectoryRegionQuery trq, Tensor root) {
-    tp = (OptimalAnyTrajectoryPlanner) createTrajectoryPlanner(trq, root);
-    head = this.getFutureTrajectoryUntil(delayHint());
+    tp = (OptimalAnyTrajectoryPlanner) createTrajectoryPlanner(trq, Tensors.vector(2, 3));
+    tp.switchRootToState(root); // setting start
+    head = this.getFutureTrajectoryUntil(delayHint()); // TODO change to Node thing
     thread = new Thread(() -> {
       while (true) {
-        if (switchRootRequest) {
-          GlcNode newRoot = getEstimatedNodeAt(DELAY_HINT);
-          tp.switchRootToNode(newRoot); // point on trajectory with delay from now
+        System.out.println("switchgoal? : " + switchGoalRequest);
+        if (switchGoalRequest) {
+          GlcNode newRoot = getLastNodeOf(head);
+          int depthLimitIncrease = tp.switchRootToNode(newRoot);
+          head = cutTrajectoryAtNode(head, newRoot);
+          System.out.println("New root Time: " + newRoot.stateTime().time());
+          parameters.increaseDepthLimit(depthLimitIncrease);// point on trajectory with delay from now
           GoalInterface rnGoal = //
               new RnSimpleCircleGoalManager(goal.extract(0, 2), DoubleScalar.of(.2));
           boolean result = tp.changeToGoal(rnGoal); // <- may take a while
-          tp.getBest();
-          // Expand.constTime(tp, RealScalar.of(.2), 10000);
-          switchRootRequest = false;
-        } else
-          Expand.constTime(tp, RealScalar.of(0.2), 10000);
-        trajectoryPlannerCallback.expandResult(head, tp);
+          switchGoalRequest = false;
+          // TODO Wrong
+          if (trajectoryPlannerCallback != null) {
+            System.out.println("Debug1");
+            // if (tp.getBest().isPresent())
+            trajectoryPlannerCallback.expandResult(head, tp);
+          }
+        } else {
+          head = this.getFutureTrajectoryUntil(delayHint());
+          GlcNode newRoot = getLastNodeOf(head);
+          int depthLimitIncrease = tp.switchRootToNode(newRoot);
+          head = cutTrajectoryAtNode(head, newRoot);
+          int iters = Expand.constTime(tp, RealScalar.of(3), parameters.getDepthLimit());
+        }
         try {
           Thread.sleep(10);
         } catch (Exception exception) {
@@ -153,16 +174,24 @@ public class R2AnyEntity extends AbstractEntity {
     thread.start();
   }
 
-  public final GlcNode getEstimatedNodeAt(Scalar delay) {
-    List<TrajectorySample> trajectoryUntil = getFutureTrajectoryUntil(delay);
-    ListIterator<TrajectorySample> iterator = trajectoryUntil.listIterator(trajectoryUntil.size() - 1);
-    while (iterator.hasPrevious()) { // looks for last past GlcNode
+  // TODO: compress functionality of the next two functions in 1
+  private final GlcNode getLastNodeOf(List<TrajectorySample> trajectoryUntil) {
+    ListIterator<TrajectorySample> iterator = trajectoryUntil.listIterator(trajectoryUntil.size()); // start at the back
+    while (iterator.hasPrevious()) {
+      System.out.println("Debug2");// looks for last past GlcNode
       StateTime temp = iterator.previous().stateTime();
+      System.out.println(" temp: " + temp.toInfoString());
       Optional<GlcNode> optional = tp.existsInTree(temp);
       if (optional.isPresent())
         return optional.get();
     }
     // TODO JONAS: change to next passed GlcNode?
     throw new RuntimeException(); // no StateTime in trajectory corresponds to Node in Tree?
+  }
+
+  private final List<TrajectorySample> cutTrajectoryAtNode(List<TrajectorySample> trajectory, GlcNode node) {
+    int toIndex = trajectory.lastIndexOf(new TrajectorySample(node.stateTime(), node.flow()));
+    System.out.println("ToIndex = " + toIndex);
+    return trajectory.subList(0, toIndex + 1);
   }
 }

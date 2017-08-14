@@ -5,6 +5,7 @@ import ch.ethz.idsc.owly.demo.rn.R2AnyEntity;
 import ch.ethz.idsc.owly.demo.rn.R2NoiseRegion;
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
 import ch.ethz.idsc.owly.gui.ani.OwlyAnimationFrame;
+import ch.ethz.idsc.owly.math.region.EmptyRegion;
 import ch.ethz.idsc.owly.math.region.Region;
 import ch.ethz.idsc.owly.math.state.TimeInvariantRegion;
 import ch.ethz.idsc.owly.math.state.TrajectoryRegionQuery;
@@ -18,6 +19,7 @@ enum R2GlcAnyAnimationDemo {
     Tensor root = Tensors.vector(0.2, 0.2);
     R2AnyEntity r2AnyEntity = new R2AnyEntity(root);
     Region region = new R2NoiseRegion(.2);
+    region = EmptyRegion.INSTANCE;
     TrajectoryRegionQuery trq = new SimpleTrajectoryRegionQuery(new TimeInvariantRegion(region));
     r2AnyEntity.startLife(trq, root);
     owlyAnimationFrame.set(r2AnyEntity);

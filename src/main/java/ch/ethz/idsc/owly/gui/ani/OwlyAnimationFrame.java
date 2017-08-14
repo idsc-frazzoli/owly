@@ -140,8 +140,7 @@ public class OwlyAnimationFrame {
             }
             case ANY: {
               R2AnyEntity r2AnyEntity = (R2AnyEntity) abstractEntity;
-              GlcNode newRoot = null;
-              r2AnyEntity.switchToGoal(trajectoryPlannerCallback, head, newRoot, goal);
+              r2AnyEntity.switchToGoal(trajectoryPlannerCallback, head, goal);
               break;
             }
             default:
