@@ -96,6 +96,10 @@ public abstract class AbstractEntity implements RenderInterface, AnimationInterf
     return argmin;
   }
 
+  public PlannerType getPlannerType() {
+    return PlannerType.STANDARD;
+  }
+
   public abstract Scalar distance(Tensor x, Tensor y);
 
   public abstract Tensor fallbackControl();

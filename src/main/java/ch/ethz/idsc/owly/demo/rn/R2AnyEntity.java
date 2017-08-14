@@ -1,4 +1,4 @@
-// code by jph
+// code by jl and jph
 package ch.ethz.idsc.owly.demo.rn;
 
 import java.awt.Color;
@@ -7,12 +7,18 @@ import java.awt.geom.Ellipse2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.util.Collection;
+import java.util.List;
 
+import ch.ethz.idsc.owly.glc.core.Expand;
+import ch.ethz.idsc.owly.glc.core.GlcNode;
 import ch.ethz.idsc.owly.glc.core.GoalInterface;
-import ch.ethz.idsc.owly.glc.core.StandardTrajectoryPlanner;
+import ch.ethz.idsc.owly.glc.core.OptimalAnyTrajectoryPlanner;
 import ch.ethz.idsc.owly.glc.core.TrajectoryPlanner;
+import ch.ethz.idsc.owly.glc.core.TrajectorySample;
 import ch.ethz.idsc.owly.gui.OwlyLayer;
 import ch.ethz.idsc.owly.gui.ani.AbstractEntity;
+import ch.ethz.idsc.owly.gui.ani.PlannerType;
+import ch.ethz.idsc.owly.gui.ani.TrajectoryPlannerCallback;
 import ch.ethz.idsc.owly.math.SingleIntegratorStateSpaceModel;
 import ch.ethz.idsc.owly.math.flow.EulerIntegrator;
 import ch.ethz.idsc.owly.math.flow.Flow;
@@ -30,7 +36,7 @@ import ch.ethz.idsc.tensor.Tensors;
 import ch.ethz.idsc.tensor.red.Norm;
 
 /** omni-directional movement with constant speed */
-public class R2Entity extends AbstractEntity {
+public class R2AnyEntity extends AbstractEntity {
   private static final Tensor FALLBACK_CONTROL = Tensors.vector(0, 0).unmodifiable();
   /** preserve 1[s] of the former trajectory */
   private static final Scalar DELAY_HINT = RealScalar.ONE;
@@ -38,11 +44,16 @@ public class R2Entity extends AbstractEntity {
   private final Collection<Flow> controls = R2Controls.createRadial(36); // TODO magic const
 
   /** @param state initial position of entity */
-  public R2Entity(Tensor state) {
+  public R2AnyEntity(Tensor state) {
     super(new SimpleEpisodeIntegrator( //
         SingleIntegratorStateSpaceModel.INSTANCE, //
         EulerIntegrator.INSTANCE, //
         new StateTime(state, RealScalar.ZERO)));
+  }
+
+  @Override
+  public PlannerType getPlannerType() {
+    return PlannerType.ANY;
   }
 
   @Override
@@ -65,9 +76,9 @@ public class R2Entity extends AbstractEntity {
     Tensor partitionScale = Tensors.vector(8, 8);
     StateIntegrator stateIntegrator = //
         FixedStateIntegrator.create(EulerIntegrator.INSTANCE, RationalScalar.of(1, 12), 4);
-    GoalInterface rnGoal = //
-        new RnSimpleCircleHeuristicGoalManager(goal.extract(0, 2), DoubleScalar.of(.2));
-    return new StandardTrajectoryPlanner( //
+    RnSimpleCircleGoalManager rnGoal = //
+        new RnSimpleCircleGoalManager(goal.extract(0, 2), DoubleScalar.of(.2));
+    return new OptimalAnyTrajectoryPlanner( //
         partitionScale, stateIntegrator, controls, obstacleQuery, rnGoal);
   }
 
@@ -85,5 +96,58 @@ public class R2Entity extends AbstractEntity {
       graphics.setColor(new Color(255, 128, 128 - 64, 128 + 64));
       graphics.fill(new Rectangle2D.Double(point.getX() - 2, point.getY() - 2, 5, 5));
     }
+  }
+
+  Thread thread;
+  TrajectoryPlannerCallback trajectoryPlannerCallback;
+  List<TrajectorySample> head;
+  GlcNode newRoot;
+  Tensor goal;
+  boolean switchRootRequest = false;
+
+  public void switchToGoal( //
+      TrajectoryPlannerCallback trajectoryPlannerCallback, List<TrajectorySample> head, GlcNode newRoot, Tensor goal) { // TODO call in thread
+    try {
+      while (switchRootRequest) {
+        Thread.sleep(500);
+        System.out.println("block");
+      }
+    } catch (Exception exception) {
+      exception.printStackTrace();
+    }
+    this.trajectoryPlannerCallback = trajectoryPlannerCallback;
+    this.head = head;
+    this.newRoot = newRoot;
+    this.goal = goal;
+    switchRootRequest = true;
+  }
+
+  public OptimalAnyTrajectoryPlanner tp;
+
+  public void startLife(TrajectoryRegionQuery trq, Tensor root) {
+    tp = (OptimalAnyTrajectoryPlanner) createTrajectoryPlanner(trq, root);
+    thread = new Thread(() -> {
+      while (true) {
+        if (!switchRootRequest)
+          Expand.constTime(tp, RealScalar.of(.2), 10000);
+        else {
+          // blocking call
+          tp.switchRootToNode(newRoot); // point on trajectory with delay from now
+          GoalInterface rnGoal = //
+              new RnSimpleCircleGoalManager(goal.extract(0, 2), DoubleScalar.of(.2));
+          boolean result = tp.changeToGoal(rnGoal); // <- may take a while
+          tp.getBest();
+          // Expand.constTime(tp, RealScalar.of(.2), 10000);
+          trajectoryPlannerCallback.expandResult(head, tp);
+          switchRootRequest = false;
+        }
+        try {
+          Thread.sleep(10);
+        } catch (Exception exception) {
+          exception.printStackTrace();
+        }
+      }
+    });
+    thread.start();
   }
 }
