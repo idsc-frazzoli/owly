@@ -10,7 +10,7 @@ import ch.ethz.idsc.owly.glc.core.TrajectorySample;
  * 
  */
 // API not finalized
-interface TrajectoryPlannerCallback {
+public interface TrajectoryPlannerCallback {
   /** @param head
    * @param trajectoryPlanner */
   void expandResult(List<TrajectorySample> head, TrajectoryPlanner trajectoryPlanner);

@@ -25,6 +25,7 @@ import javax.swing.WindowConstants;
 
 import ch.ethz.idsc.owly.data.GlobalAssert;
 import ch.ethz.idsc.owly.data.TimeKeeper;
+import ch.ethz.idsc.owly.demo.rn.R2AnyEntity;
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
 import ch.ethz.idsc.owly.glc.adapter.Trajectories;
 import ch.ethz.idsc.owly.glc.core.GlcNode;
@@ -126,11 +127,26 @@ public class OwlyAnimationFrame {
           }
           if (controllable instanceof AbstractEntity) {
             AbstractEntity abstractEntity = (AbstractEntity) controllable;
-            Tensor goal = owlyComponent.getMouseGoal();
-            TrajectoryPlanner trajectoryPlanner = //
-                abstractEntity.createTrajectoryPlanner(obstacleQuery, goal);
-            mpw = new MotionPlanWorker(trajectoryPlannerCallback);
-            mpw.start(abstractEntity.getFutureTrajectoryUntil(abstractEntity.delayHint()), trajectoryPlanner);
+            final Tensor goal = owlyComponent.getMouseGoal();
+            final List<TrajectorySample> head = //
+                abstractEntity.getFutureTrajectoryUntil(abstractEntity.delayHint());
+            switch (abstractEntity.getPlannerType()) {
+            case STANDARD: {
+              TrajectoryPlanner trajectoryPlanner = //
+                  abstractEntity.createTrajectoryPlanner(obstacleQuery, goal);
+              mpw = new MotionPlanWorker(trajectoryPlannerCallback);
+              mpw.start(head, trajectoryPlanner);
+              break;
+            }
+            case ANY: {
+              R2AnyEntity r2AnyEntity = (R2AnyEntity) abstractEntity;
+              GlcNode newRoot = null;
+              r2AnyEntity.switchToGoal(trajectoryPlannerCallback, head, newRoot, goal);
+              break;
+            }
+            default:
+              break;
+            }
           }
         }
       }
