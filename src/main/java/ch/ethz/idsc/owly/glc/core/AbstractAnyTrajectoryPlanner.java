@@ -131,7 +131,7 @@ public abstract class AbstractAnyTrajectoryPlanner extends AbstractTrajectoryPla
       long tic = System.nanoTime();
       // old check for debugging
       // goalInTreeFound = GoalCheckTree();
-      Scalar timeDiffOld = RealScalar.of((System.nanoTime() - tic) * 1e-9);
+      // Scalar timeDiffOld = RealScalar.of((System.nanoTime() - tic) * 1e-9);
       // Collection<GlcNode> oldBest = new ArrayList<>(best.keySet());
       // setBestNull();
       tic = System.nanoTime();
