@@ -55,7 +55,7 @@ public abstract class AbstractEntity implements RenderInterface, AnimationInterf
   /** @param delay
    * @return trajectory until delay[s] in the future of entity,
    * or current position if entity does not have a trajectory */
-  final synchronized List<TrajectorySample> getFutureTrajectoryUntil(Scalar delay) {
+  public final synchronized List<TrajectorySample> getFutureTrajectoryUntil(Scalar delay) {
     if (Objects.isNull(trajectory)) // agent does not have a trajectory
       return Collections.singletonList(TrajectorySample.head(episodeIntegrator.tail()));
     int index = trajectory_skip + indexOfPassedTrajectorySample(trajectory.subList(trajectory_skip, trajectory.size()));

@@ -8,6 +8,8 @@ import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.util.Collection;
 import java.util.List;
+import java.util.ListIterator;
+import java.util.Optional;
 
 import ch.ethz.idsc.owly.glc.core.Expand;
 import ch.ethz.idsc.owly.glc.core.GlcNode;
@@ -126,21 +128,21 @@ public class R2AnyEntity extends AbstractEntity {
 
   public void startLife(TrajectoryRegionQuery trq, Tensor root) {
     tp = (OptimalAnyTrajectoryPlanner) createTrajectoryPlanner(trq, root);
+    head = this.getFutureTrajectoryUntil(delayHint());
     thread = new Thread(() -> {
       while (true) {
-        if (!switchRootRequest)
-          Expand.constTime(tp, RealScalar.of(.2), 10000);
-        else {
-          // blocking call
+        if (switchRootRequest) {
+          GlcNode newRoot = getEstimatedNodeAt(DELAY_HINT);
           tp.switchRootToNode(newRoot); // point on trajectory with delay from now
           GoalInterface rnGoal = //
               new RnSimpleCircleGoalManager(goal.extract(0, 2), DoubleScalar.of(.2));
           boolean result = tp.changeToGoal(rnGoal); // <- may take a while
           tp.getBest();
           // Expand.constTime(tp, RealScalar.of(.2), 10000);
-          trajectoryPlannerCallback.expandResult(head, tp);
           switchRootRequest = false;
-        }
+        } else
+          Expand.constTime(tp, RealScalar.of(0.2), 10000);
+        trajectoryPlannerCallback.expandResult(head, tp);
         try {
           Thread.sleep(10);
         } catch (Exception exception) {
@@ -149,5 +151,18 @@ public class R2AnyEntity extends AbstractEntity {
       }
     });
     thread.start();
+  }
+
+  public final GlcNode getEstimatedNodeAt(Scalar delay) {
+    List<TrajectorySample> trajectoryUntil = getFutureTrajectoryUntil(delay);
+    ListIterator<TrajectorySample> iterator = trajectoryUntil.listIterator(trajectoryUntil.size() - 1);
+    while (iterator.hasPrevious()) { // looks for last past GlcNode
+      StateTime temp = iterator.previous().stateTime();
+      Optional<GlcNode> optional = tp.existsInTree(temp);
+      if (optional.isPresent())
+        return optional.get();
+    }
+    // TODO JONAS: change to next passed GlcNode?
+    throw new RuntimeException(); // no StateTime in trajectory corresponds to Node in Tree?
   }
 }

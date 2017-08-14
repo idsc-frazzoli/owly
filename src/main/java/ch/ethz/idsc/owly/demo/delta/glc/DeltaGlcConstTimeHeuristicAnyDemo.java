@@ -83,19 +83,19 @@ enum DeltaGlcConstTimeHeuristicAnyDemo {
       Optional<GlcNode> finalGoalNode = null;
       // --
       // -- ROOTCHANGE
-       long ticTemp = System.nanoTime();
-       finalGoalNode = slowTrajectoryPlannerContainer.getTrajectoryPlanner().getFinalGoalNode();
-       if (finalGoalNode.isPresent())
-       trajectory = GlcNodes.getPathFromRootTo(finalGoalNode.get());
-       System.out.println("trajectorys size: " + trajectory.size());
-       if (trajectory.size() > 5) {
-       //
-       StateTime newRootState = trajectory.get(trajectory.size() > 7 ? 2 : 0);
-       int increment = ((OptimalAnyTrajectoryPlanner) slowTrajectoryPlannerContainer.getTrajectoryPlanner()).switchRootToState(newRootState.state());
-       slowTrajectoryPlannerContainer.getParameters().increaseDepthLimit(increment);
-       }
-       long tocTemp = System.nanoTime();
-       System.out.println("Rootchange took: " + (tocTemp - ticTemp) * 1e-9 + "s");
+      long ticTemp = System.nanoTime();
+      finalGoalNode = slowTrajectoryPlannerContainer.getTrajectoryPlanner().getFinalGoalNode();
+      if (finalGoalNode.isPresent())
+        trajectory = GlcNodes.getPathFromRootTo(finalGoalNode.get());
+      System.out.println("trajectorys size: " + trajectory.size());
+      if (trajectory.size() > 5) {
+        //
+        StateTime newRootState = trajectory.get(trajectory.size() > 7 ? 2 : 0);
+        int increment = ((OptimalAnyTrajectoryPlanner) slowTrajectoryPlannerContainer.getTrajectoryPlanner()).switchRootToState(newRootState.state());
+        slowTrajectoryPlannerContainer.getParameters().increaseDepthLimit(increment);
+      }
+      long tocTemp = System.nanoTime();
+      System.out.println("Rootchange took: " + (tocTemp - ticTemp) * 1e-9 + "s");
       // -- GOALCHANGE
       // Goalchange here is not needed, as getFurthest Goal deasl with it,
       long tic = System.nanoTime();
