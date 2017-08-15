@@ -29,7 +29,6 @@ import ch.ethz.idsc.owly.demo.rn.R2AnyEntity;
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
 import ch.ethz.idsc.owly.glc.adapter.Trajectories;
 import ch.ethz.idsc.owly.glc.core.GlcNode;
-import ch.ethz.idsc.owly.glc.core.StandardTrajectoryPlanner;
 import ch.ethz.idsc.owly.glc.core.TrajectoryPlanner;
 import ch.ethz.idsc.owly.glc.core.TrajectorySample;
 import ch.ethz.idsc.owly.gui.EtaRender;
@@ -155,6 +154,7 @@ public class OwlyAnimationFrame {
   public final TrajectoryPlannerCallback trajectoryPlannerCallback = new TrajectoryPlannerCallback() {
     @Override
     public void expandResult(List<TrajectorySample> head, TrajectoryPlanner trajectoryPlanner) {
+      etaRender.setEta(trajectoryPlanner.getEta());
       Optional<GlcNode> optional = trajectoryPlanner.getBest();
       if (optional.isPresent()) {
         List<TrajectorySample> trajectory = new ArrayList<>();
@@ -165,14 +165,11 @@ public class OwlyAnimationFrame {
           abstractEntity.setTrajectory(trajectory);
         }
         trajectoryRender.setTrajectory(trajectory);
-        // TrajectorySample.print(trajectory);
       } else {
         System.err.println("NO TRAJECTORY BETWEEN ROOT TO GOAL");
       }
-      // TODO JAN: why this cast?
-      StandardTrajectoryPlanner stp = (StandardTrajectoryPlanner) trajectoryPlanner;
       {
-        TrajectoryRegionQuery trq = stp.getObstacleQuery();
+        TrajectoryRegionQuery trq = trajectoryPlanner.getObstacleQuery();
         if (trq instanceof SimpleTrajectoryRegionQuery) {
           SimpleTrajectoryRegionQuery simpleTrajectoryRegionQuery = (SimpleTrajectoryRegionQuery) trq;
           Collection<StateTime> collection = simpleTrajectoryRegionQuery.getSparseDiscoveredMembers();
@@ -180,7 +177,7 @@ public class OwlyAnimationFrame {
         }
       }
       {
-        TrajectoryRegionQuery trq = stp.getGoalInterface();
+        TrajectoryRegionQuery trq = trajectoryPlanner.getGoalInterface();
         if (trq instanceof SimpleTrajectoryRegionQuery) {
           SimpleTrajectoryRegionQuery simpleTrajectoryRegionQuery = (SimpleTrajectoryRegionQuery) trq;
           Collection<StateTime> collection = simpleTrajectoryRegionQuery.getSparseDiscoveredMembers();
@@ -225,9 +222,8 @@ public class OwlyAnimationFrame {
       }
       // TODO in separate function
       etaRender.setEta(trajectoryPlanner.getEta());
-      TrajectoryPlanner stp = trajectoryPlanner;
       {
-        TrajectoryRegionQuery trq = stp.getObstacleQuery();
+        TrajectoryRegionQuery trq = trajectoryPlanner.getObstacleQuery();
         if (trq instanceof SimpleTrajectoryRegionQuery) {
           SimpleTrajectoryRegionQuery simpleTrajectoryRegionQuery = (SimpleTrajectoryRegionQuery) trq;
           Collection<StateTime> collection = simpleTrajectoryRegionQuery.getSparseDiscoveredMembers();
@@ -235,7 +231,7 @@ public class OwlyAnimationFrame {
         }
       }
       {
-        TrajectoryRegionQuery trq = stp.getGoalInterface();
+        TrajectoryRegionQuery trq = trajectoryPlanner.getGoalInterface();
         if (trq instanceof SimpleTrajectoryRegionQuery) {
           SimpleTrajectoryRegionQuery simpleTrajectoryRegionQuery = (SimpleTrajectoryRegionQuery) trq;
           Collection<StateTime> collection = simpleTrajectoryRegionQuery.getSparseDiscoveredMembers();

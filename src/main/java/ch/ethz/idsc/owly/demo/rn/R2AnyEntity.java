@@ -170,7 +170,7 @@ public class R2AnyEntity extends AbstractEntity {
   }
 
   @Override
-  protected List<TrajectorySample> setTrajectoryNull(List<TrajectorySample> trajectory) {
+  protected List<TrajectorySample> resetAction(List<TrajectorySample> trajectory) {
     return trajectory;
   }
 

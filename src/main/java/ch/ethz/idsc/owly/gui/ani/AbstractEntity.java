@@ -32,7 +32,7 @@ public abstract class AbstractEntity implements RenderInterface, AnimationInterf
     trajectory_skip = 0;
   }
 
-  protected List<TrajectorySample> setTrajectoryNull(List<TrajectorySample> trajectory) {
+  protected List<TrajectorySample> resetAction(List<TrajectorySample> trajectory) {
     System.err.println("out of trajectory");
     return null;
   }
@@ -50,7 +50,7 @@ public abstract class AbstractEntity implements RenderInterface, AnimationInterf
         GlobalAssert.that(trajectory.get(index).getFlow().isPresent());
         u = trajectory.get(index).getFlow().get().getU();
       } else {
-        trajectory = setTrajectoryNull(trajectory);
+        trajectory = resetAction(trajectory);
       }
     }
     episodeIntegrator.move(u, now);
