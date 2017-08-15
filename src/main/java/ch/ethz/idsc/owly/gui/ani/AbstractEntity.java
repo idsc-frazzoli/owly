@@ -32,6 +32,11 @@ public abstract class AbstractEntity implements RenderInterface, AnimationInterf
     trajectory_skip = 0;
   }
 
+  protected List<TrajectorySample> setTrajectoryNull(List<TrajectorySample> trajectory) {
+    System.err.println("out of trajectory");
+    return null;
+  }
+
   @Override
   public final synchronized void integrate(Scalar now) {
     // implementation does not require that current position is perfectly located on trajectory
@@ -45,8 +50,7 @@ public abstract class AbstractEntity implements RenderInterface, AnimationInterf
         GlobalAssert.that(trajectory.get(index).getFlow().isPresent());
         u = trajectory.get(index).getFlow().get().getU();
       } else {
-        System.err.println("out of trajectory");
-        trajectory = null;
+        trajectory = setTrajectoryNull(trajectory);
       }
     }
     episodeIntegrator.move(u, now);

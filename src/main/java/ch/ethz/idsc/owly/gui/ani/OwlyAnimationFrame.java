@@ -152,10 +152,9 @@ public class OwlyAnimationFrame {
     });
   }
 
-  private final TrajectoryPlannerCallback trajectoryPlannerCallback = new TrajectoryPlannerCallback() {
+  public final TrajectoryPlannerCallback trajectoryPlannerCallback = new TrajectoryPlannerCallback() {
     @Override
     public void expandResult(List<TrajectorySample> head, TrajectoryPlanner trajectoryPlanner) {
-      etaRender.setEta(trajectoryPlanner.getEta());
       Optional<GlcNode> optional = trajectoryPlanner.getBest();
       if (optional.isPresent()) {
         List<TrajectorySample> trajectory = new ArrayList<>();
@@ -170,7 +169,63 @@ public class OwlyAnimationFrame {
       } else {
         System.err.println("NO TRAJECTORY BETWEEN ROOT TO GOAL");
       }
+      // TODO JAN: why this cast?
       StandardTrajectoryPlanner stp = (StandardTrajectoryPlanner) trajectoryPlanner;
+      {
+        TrajectoryRegionQuery trq = stp.getObstacleQuery();
+        if (trq instanceof SimpleTrajectoryRegionQuery) {
+          SimpleTrajectoryRegionQuery simpleTrajectoryRegionQuery = (SimpleTrajectoryRegionQuery) trq;
+          Collection<StateTime> collection = simpleTrajectoryRegionQuery.getSparseDiscoveredMembers();
+          obstacleRender.setCollection(new HashSet<>(collection));
+        }
+      }
+      {
+        TrajectoryRegionQuery trq = stp.getGoalInterface();
+        if (trq instanceof SimpleTrajectoryRegionQuery) {
+          SimpleTrajectoryRegionQuery simpleTrajectoryRegionQuery = (SimpleTrajectoryRegionQuery) trq;
+          Collection<StateTime> collection = simpleTrajectoryRegionQuery.getSparseDiscoveredMembers();
+          goalRender.setCollection(new HashSet<>(collection));
+        }
+      }
+      owlyComponent.jComponent.repaint();
+    }
+
+    @Override
+    public void expandAnyResult(List<TrajectorySample> head, TrajectoryPlanner trajectoryPlanner) {
+      Optional<GlcNode> optional = trajectoryPlanner.getBest();
+      if (optional.isPresent()) {
+        List<TrajectorySample> trajectory = new ArrayList<>();
+        if (controllable instanceof AbstractEntity) {
+          AbstractEntity abstractEntity = (AbstractEntity) controllable;
+          List<TrajectorySample> tail = new ArrayList<>();
+          List<TrajectorySample> tailTemp = trajectoryPlanner.detailedTrajectoryTo(optional.get());
+          // Scalar timeDiff = head.get(head.size() - 1).stateTime().time()//
+          // .subtract(tailTemp.get(0).stateTime().time());
+          // timeDiff = RealScalar.ZERO;
+          // if (Scalars.lessThan(timeDiff, RealScalar.ZERO))
+          // throw new RuntimeException();
+          // List<TrajectorySample> tail = new ArrayList<>();
+          // for (TrajectorySample entry : tailTemp) {
+          // Scalar time = entry.stateTime().time().add(timeDiff);
+          // if (!entry.getFlow().isPresent())
+          // tail.add(new TrajectorySample(new StateTime(entry.stateTime().state(), time), null));
+          // else
+          // tail.add(new TrajectorySample(new StateTime(entry.stateTime().state(), time), entry.getFlow().get()));
+          // }
+          tail = tailTemp;
+          if (!(trajectoryPlanner.existsInTree(tail.get(tail.size() - 1).stateTime()).isPresent()))
+            throw new RuntimeException();
+          trajectory = Trajectories.glue(head, tail);
+          abstractEntity.setTrajectory(trajectory);
+        }
+        trajectoryRender.setTrajectory(trajectory);
+        Trajectories.print(trajectory);
+      } else {
+        System.err.println("NO TRAJECTORY BETWEEN ROOT TO GOAL");
+      }
+      // TODO in separate function
+      etaRender.setEta(trajectoryPlanner.getEta());
+      TrajectoryPlanner stp = trajectoryPlanner;
       {
         TrajectoryRegionQuery trq = stp.getObstacleQuery();
         if (trq instanceof SimpleTrajectoryRegionQuery) {

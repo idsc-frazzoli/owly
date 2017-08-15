@@ -45,4 +45,18 @@ public class TrajectorySample implements Serializable {
     String ustring = Objects.isNull(flow) ? "null" : flow.getU().toString();
     return stateTime.toInfoString() + "  u=" + ustring;
   }
+
+  @Override // from Object
+  public int hashCode() {
+    return Objects.hash(stateTime, flow);
+  }
+
+  @Override // from Object
+  public boolean equals(Object object) {
+    if (object instanceof TrajectorySample) {
+      TrajectorySample trajectorySample = (TrajectorySample) object;
+      return stateTime().equals(stateTime.state()) && flow.equals(stateTime.time());
+    }
+    return false;
+  }
 }

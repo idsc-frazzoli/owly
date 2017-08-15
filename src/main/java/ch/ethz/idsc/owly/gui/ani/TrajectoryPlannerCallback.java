@@ -14,4 +14,6 @@ public interface TrajectoryPlannerCallback {
   /** @param head
    * @param trajectoryPlanner */
   void expandResult(List<TrajectorySample> head, TrajectoryPlanner trajectoryPlanner);
+
+  void expandAnyResult(List<TrajectorySample> head, TrajectoryPlanner trajectoryPlanner);
 }

@@ -200,7 +200,7 @@ public abstract class TrajectoryPlanner implements ExpandInterface, Serializable
    * @return the Optional Node if it exist, if not empty */
   public final Optional<GlcNode> existsInTree(StateTime stateTime) {
     GlcNode label = domainMap().get(convertToKey(stateTime.state()));
-    if (label.stateTime().equals(stateTime))
+    if (label.stateTime().state().equals(stateTime.state()))
       return Optional.ofNullable(label);
     return Optional.empty();
   }
