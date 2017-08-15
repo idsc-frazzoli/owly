@@ -20,7 +20,6 @@ enum R2GlcAnyAnimationDemo {
     // TODO not final solution
     r2AnyEntity.trajectoryPlannerCallback = owlyAnimationFrame.trajectoryPlannerCallback;
     Region region = new R2NoiseRegion(.2);
-    // region = EmptyRegion.INSTANCE;
     TrajectoryRegionQuery trq = new SimpleTrajectoryRegionQuery(new TimeInvariantRegion(region));
     r2AnyEntity.startLife(trq, root);
     owlyAnimationFrame.set(r2AnyEntity);

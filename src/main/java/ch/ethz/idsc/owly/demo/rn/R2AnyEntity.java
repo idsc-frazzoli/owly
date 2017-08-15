@@ -86,8 +86,8 @@ public class R2AnyEntity extends AbstractEntity {
   public TrajectoryPlanner createTrajectoryPlanner(TrajectoryRegionQuery obstacleQuery, Tensor goal) {
     StateIntegrator stateIntegrator = //
         FixedStateIntegrator.create(EulerIntegrator.INSTANCE, parameters.getdtMax(), parameters.getTrajectorySize());
-    RnSimpleCircleGoalManager rnGoal = //
-        new RnSimpleCircleGoalManager(goal.extract(0, 2), DoubleScalar.of(.2));
+    GoalInterface rnGoal = //
+        new RnSimpleCircleHeuristicGoalManager(goal.extract(0, 2), DoubleScalar.of(.2));
     return new OptimalAnyTrajectoryPlanner( //
         parameters.getEta(), stateIntegrator, controls, obstacleQuery, rnGoal);
   }
@@ -151,7 +151,7 @@ public class R2AnyEntity extends AbstractEntity {
           // Goalswitch
           System.out.println("SwitchGoal Requested");
           GoalInterface rnGoal = //
-              new RnSimpleCircleGoalManager(goal.extract(0, 2), DoubleScalar.of(.2));
+              new RnSimpleCircleHeuristicGoalManager(goal.extract(0, 2), DoubleScalar.of(.2));
           boolean result = tp.changeToGoal(rnGoal); // <- may take a while
           switchGoalRequest = false;
         } else {
