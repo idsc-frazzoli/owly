@@ -18,8 +18,6 @@ import ch.ethz.idsc.owly.math.state.StateIntegrator;
 import ch.ethz.idsc.owly.math.state.StateTime;
 import ch.ethz.idsc.owly.math.state.TimeInvariantRegion;
 import ch.ethz.idsc.owly.math.state.TrajectoryRegionQuery;
-import ch.ethz.idsc.tensor.RealScalar;
-import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
 
 public abstract class AbstractAnyTrajectoryPlanner extends AbstractTrajectoryPlanner implements AnyPlannerInterface {
@@ -131,7 +129,7 @@ public abstract class AbstractAnyTrajectoryPlanner extends AbstractTrajectoryPla
       long tic = System.nanoTime();
       // old check for debugging
       // goalInTreeFound = GoalCheckTree();
-      Scalar timeDiffOld = RealScalar.of((System.nanoTime() - tic) * 1e-9);
+      // Scalar timeDiffOld = RealScalar.of((System.nanoTime() - tic) * 1e-9);
       // Collection<GlcNode> oldBest = new ArrayList<>(best.keySet());
       // setBestNull();
       tic = System.nanoTime();

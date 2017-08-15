@@ -120,7 +120,7 @@ enum R2GlcAnyCircleDemo {
       if (!owlyFrame.jFrame.isVisible())
         break;
     }
-    int repeatLast = 6;
+    // int repeatLast = 6;
     // while (0 < repeatLast--)
     // gsw.append(owlyFrame.offscreen());
     // gsw.close();

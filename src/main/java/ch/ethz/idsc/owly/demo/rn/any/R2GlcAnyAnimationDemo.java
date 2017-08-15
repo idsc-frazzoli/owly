@@ -17,6 +17,8 @@ enum R2GlcAnyAnimationDemo {
     OwlyAnimationFrame owlyAnimationFrame = new OwlyAnimationFrame();
     Tensor root = Tensors.vector(0.2, 0.2);
     R2AnyEntity r2AnyEntity = new R2AnyEntity(root);
+    // TODO not final solution
+    r2AnyEntity.trajectoryPlannerCallback = owlyAnimationFrame.trajectoryPlannerCallback;
     Region region = new R2NoiseRegion(.2);
     TrajectoryRegionQuery trq = new SimpleTrajectoryRegionQuery(new TimeInvariantRegion(region));
     r2AnyEntity.startLife(trq, root);

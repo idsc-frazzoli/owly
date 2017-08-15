@@ -45,4 +45,21 @@ public class TrajectorySample implements Serializable {
     String ustring = Objects.isNull(flow) ? "null" : flow.getU().toString();
     return stateTime.toInfoString() + "  u=" + ustring;
   }
+
+  @Override // from Object
+  public int hashCode() {
+    return Objects.hash(stateTime, flow);
+  }
+
+  @Override // from Object
+  public boolean equals(Object object) {
+    if (object instanceof TrajectorySample) {
+      // FIXME JONAS this is a bug
+      // TODO JONAS document why these functions are necessary...
+      // since they are not implemented correctly, they may not be necessary...?
+      TrajectorySample trajectorySample = (TrajectorySample) object;
+      return stateTime().equals(stateTime.state()) && flow.equals(stateTime.time());
+    }
+    return false;
+  }
 }

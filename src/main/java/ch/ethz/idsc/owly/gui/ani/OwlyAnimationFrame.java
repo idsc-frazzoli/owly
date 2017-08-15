@@ -29,7 +29,6 @@ import ch.ethz.idsc.owly.demo.rn.R2AnyEntity;
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
 import ch.ethz.idsc.owly.glc.adapter.Trajectories;
 import ch.ethz.idsc.owly.glc.core.GlcNode;
-import ch.ethz.idsc.owly.glc.core.StandardTrajectoryPlanner;
 import ch.ethz.idsc.owly.glc.core.TrajectoryPlanner;
 import ch.ethz.idsc.owly.glc.core.TrajectorySample;
 import ch.ethz.idsc.owly.gui.EtaRender;
@@ -140,8 +139,7 @@ public class OwlyAnimationFrame {
             }
             case ANY: {
               R2AnyEntity r2AnyEntity = (R2AnyEntity) abstractEntity;
-              GlcNode newRoot = null;
-              r2AnyEntity.switchToGoal(trajectoryPlannerCallback, head, newRoot, goal);
+              r2AnyEntity.switchToGoal(trajectoryPlannerCallback, head, goal);
               break;
             }
             default:
@@ -153,7 +151,7 @@ public class OwlyAnimationFrame {
     });
   }
 
-  private final TrajectoryPlannerCallback trajectoryPlannerCallback = new TrajectoryPlannerCallback() {
+  public final TrajectoryPlannerCallback trajectoryPlannerCallback = new TrajectoryPlannerCallback() {
     @Override
     public void expandResult(List<TrajectorySample> head, TrajectoryPlanner trajectoryPlanner) {
       etaRender.setEta(trajectoryPlanner.getEta());
@@ -167,13 +165,11 @@ public class OwlyAnimationFrame {
           abstractEntity.setTrajectory(trajectory);
         }
         trajectoryRender.setTrajectory(trajectory);
-        // TrajectorySample.print(trajectory);
       } else {
         System.err.println("NO TRAJECTORY BETWEEN ROOT TO GOAL");
       }
-      StandardTrajectoryPlanner stp = (StandardTrajectoryPlanner) trajectoryPlanner;
       {
-        TrajectoryRegionQuery trq = stp.getObstacleQuery();
+        TrajectoryRegionQuery trq = trajectoryPlanner.getObstacleQuery();
         if (trq instanceof SimpleTrajectoryRegionQuery) {
           SimpleTrajectoryRegionQuery simpleTrajectoryRegionQuery = (SimpleTrajectoryRegionQuery) trq;
           Collection<StateTime> collection = simpleTrajectoryRegionQuery.getSparseDiscoveredMembers();
@@ -181,7 +177,61 @@ public class OwlyAnimationFrame {
         }
       }
       {
-        TrajectoryRegionQuery trq = stp.getGoalInterface();
+        TrajectoryRegionQuery trq = trajectoryPlanner.getGoalInterface();
+        if (trq instanceof SimpleTrajectoryRegionQuery) {
+          SimpleTrajectoryRegionQuery simpleTrajectoryRegionQuery = (SimpleTrajectoryRegionQuery) trq;
+          Collection<StateTime> collection = simpleTrajectoryRegionQuery.getSparseDiscoveredMembers();
+          goalRender.setCollection(new HashSet<>(collection));
+        }
+      }
+      owlyComponent.jComponent.repaint();
+    }
+
+    @Override
+    public void expandAnyResult(List<TrajectorySample> head, TrajectoryPlanner trajectoryPlanner) {
+      Optional<GlcNode> optional = trajectoryPlanner.getBest();
+      if (optional.isPresent()) {
+        List<TrajectorySample> trajectory = new ArrayList<>();
+        if (controllable instanceof AbstractEntity) {
+          AbstractEntity abstractEntity = (AbstractEntity) controllable;
+          List<TrajectorySample> tail = new ArrayList<>();
+          List<TrajectorySample> tailTemp = trajectoryPlanner.detailedTrajectoryTo(optional.get());
+          // Scalar timeDiff = head.get(head.size() - 1).stateTime().time()//
+          // .subtract(tailTemp.get(0).stateTime().time());
+          // timeDiff = RealScalar.ZERO;
+          // if (Scalars.lessThan(timeDiff, RealScalar.ZERO))
+          // throw new RuntimeException();
+          // List<TrajectorySample> tail = new ArrayList<>();
+          // for (TrajectorySample entry : tailTemp) {
+          // Scalar time = entry.stateTime().time().add(timeDiff);
+          // if (!entry.getFlow().isPresent())
+          // tail.add(new TrajectorySample(new StateTime(entry.stateTime().state(), time), null));
+          // else
+          // tail.add(new TrajectorySample(new StateTime(entry.stateTime().state(), time), entry.getFlow().get()));
+          // }
+          tail = tailTemp;
+          if (!(trajectoryPlanner.existsInTree(tail.get(tail.size() - 1).stateTime()).isPresent()))
+            throw new RuntimeException();
+          trajectory = Trajectories.glue(head, tail);
+          abstractEntity.setTrajectory(trajectory);
+        }
+        trajectoryRender.setTrajectory(trajectory);
+        // Trajectories.print(trajectory);
+      } else {
+        System.err.println("NO TRAJECTORY BETWEEN ROOT TO GOAL");
+      }
+      // TODO in separate function
+      etaRender.setEta(trajectoryPlanner.getEta());
+      {
+        TrajectoryRegionQuery trq = trajectoryPlanner.getObstacleQuery();
+        if (trq instanceof SimpleTrajectoryRegionQuery) {
+          SimpleTrajectoryRegionQuery simpleTrajectoryRegionQuery = (SimpleTrajectoryRegionQuery) trq;
+          Collection<StateTime> collection = simpleTrajectoryRegionQuery.getSparseDiscoveredMembers();
+          obstacleRender.setCollection(new HashSet<>(collection));
+        }
+      }
+      {
+        TrajectoryRegionQuery trq = trajectoryPlanner.getGoalInterface();
         if (trq instanceof SimpleTrajectoryRegionQuery) {
           SimpleTrajectoryRegionQuery simpleTrajectoryRegionQuery = (SimpleTrajectoryRegionQuery) trq;
           Collection<StateTime> collection = simpleTrajectoryRegionQuery.getSparseDiscoveredMembers();

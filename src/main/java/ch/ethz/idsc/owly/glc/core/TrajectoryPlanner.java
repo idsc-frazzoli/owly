@@ -196,6 +196,16 @@ public abstract class TrajectoryPlanner implements ExpandInterface, Serializable
     return getBestOrElsePeek();
   }
 
+  /** @param stateTime to be checked if corresponds to an existing Node in tree
+   * @return the Optional Node if it exist, if not empty */
+  public final Optional<GlcNode> existsInTree(StateTime stateTime) {
+    // TODO JONAS default implementation here: throw Exception - in AnyPlanner override to implementation below
+    GlcNode label = domainMap().get(convertToKey(stateTime.state()));
+    if (label.stateTime().state().equals(stateTime.state()))
+      return Optional.ofNullable(label);
+    return Optional.empty();
+  }
+
   // TODO assuming that no TrajectoryGoalManager is used in standardplanner.
   // Does this make sense?
   /** @return Returns the Node, which belongs to the furthest StateTime in the GoalRegion,

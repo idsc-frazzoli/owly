@@ -32,6 +32,11 @@ public abstract class AbstractEntity implements RenderInterface, AnimationInterf
     trajectory_skip = 0;
   }
 
+  protected List<TrajectorySample> resetAction(List<TrajectorySample> trajectory) {
+    System.err.println("out of trajectory");
+    return null;
+  }
+
   @Override
   public final synchronized void integrate(Scalar now) {
     // implementation does not require that current position is perfectly located on trajectory
@@ -45,8 +50,7 @@ public abstract class AbstractEntity implements RenderInterface, AnimationInterf
         GlobalAssert.that(trajectory.get(index).getFlow().isPresent());
         u = trajectory.get(index).getFlow().get().getU();
       } else {
-        System.err.println("out of trajectory");
-        trajectory = null;
+        trajectory = resetAction(trajectory);
       }
     }
     episodeIntegrator.move(u, now);
@@ -55,7 +59,7 @@ public abstract class AbstractEntity implements RenderInterface, AnimationInterf
   /** @param delay
    * @return trajectory until delay[s] in the future of entity,
    * or current position if entity does not have a trajectory */
-  final synchronized List<TrajectorySample> getFutureTrajectoryUntil(Scalar delay) {
+  public final synchronized List<TrajectorySample> getFutureTrajectoryUntil(Scalar delay) {
     if (Objects.isNull(trajectory)) // agent does not have a trajectory
       return Collections.singletonList(TrajectorySample.head(episodeIntegrator.tail()));
     int index = trajectory_skip + indexOfPassedTrajectorySample(trajectory.subList(trajectory_skip, trajectory.size()));
