@@ -2,6 +2,7 @@
 package ch.ethz.idsc.owly.demo.lv;
 
 import ch.ethz.idsc.owly.math.StateSpaceModel;
+import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
@@ -10,6 +11,12 @@ import ch.ethz.idsc.tensor.Tensors;
  * 
  * https://en.wikipedia.org/wiki/Lotka%E2%80%93Volterra_equations */
 public class LvStateSpaceModel implements StateSpaceModel {
+  /** see documentation of public constructor */
+  public static StateSpaceModel of(Number f0, Number f1) {
+    return new LvStateSpaceModel(RealScalar.of(f0), RealScalar.of(f1));
+  }
+  // ---
+
   private final Scalar f0;
   private final Scalar f1;
 

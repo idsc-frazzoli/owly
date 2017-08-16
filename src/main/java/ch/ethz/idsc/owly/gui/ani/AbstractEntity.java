@@ -19,7 +19,7 @@ import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.red.ArgMin;
 
 public abstract class AbstractEntity implements RenderInterface, AnimationInterface {
-  protected final EpisodeIntegrator episodeIntegrator;
+  private final EpisodeIntegrator episodeIntegrator;
   private List<TrajectorySample> trajectory = null;
   private int trajectory_skip = 0;
 
@@ -98,6 +98,10 @@ public abstract class AbstractEntity implements RenderInterface, AnimationInterf
     // if (Scalars.lessThan(dist.Get(argmin - 1), dist.Get(argmin + 1)))
     // --argmin;
     return argmin;
+  }
+
+  public final StateTime getStateTimeNow() {
+    return episodeIntegrator.tail();
   }
 
   public PlannerType getPlannerType() {

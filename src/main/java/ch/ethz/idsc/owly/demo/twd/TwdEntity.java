@@ -105,7 +105,7 @@ public class TwdEntity extends AbstractEntity {
   @Override
   public void render(OwlyLayer owlyLayer, Graphics2D graphics) {
     { // indicate current position
-      StateTime stateTime = episodeIntegrator.tail();
+      StateTime stateTime = getStateTimeNow();
       Color color = new Color(64, 64, 64, 128);
       if (Objects.nonNull(obstacleQuery))
         if (!obstacleQuery.isDisjoint(Collections.singletonList(stateTime)))
