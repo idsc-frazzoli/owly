@@ -1,6 +1,8 @@
 // code by jph
 package ch.ethz.idsc.owly.rrts.adapter;
 
+import java.util.Objects;
+
 import ch.ethz.idsc.owly.rrts.core.RrtsNode;
 import ch.ethz.idsc.owly.rrts.core.Transition;
 import ch.ethz.idsc.owly.rrts.core.TransitionCostFunction;
@@ -18,7 +20,7 @@ public enum RrtsNodes {
       TransitionCostFunction transitionCostFunction) {
     boolean status = true;
     RrtsNode parent = node.parent();
-    if (parent != null) {
+    if (Objects.nonNull(parent)) {
       Scalar tran = node.costFromRoot().subtract(parent.costFromRoot());
       Transition transition = transitionSpace.connect(parent.state(), node.state());
       Scalar tc = transitionCostFunction.cost(transition);

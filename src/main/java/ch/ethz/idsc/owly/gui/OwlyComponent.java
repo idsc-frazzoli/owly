@@ -13,6 +13,7 @@ import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
 import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
+import java.util.Objects;
 
 import javax.swing.JComponent;
 import javax.swing.event.MouseInputAdapter;
@@ -100,7 +101,7 @@ public class OwlyComponent {
 
         @Override
         public void mouseDragged(MouseEvent mouseEvent) {
-          if (down != null) {
+          if (Objects.nonNull(down)) {
             Point now = mouseEvent.getPoint();
             int dx = now.x - down.x;
             int dy = now.y - down.y;
@@ -157,7 +158,7 @@ public class OwlyComponent {
       graphics.draw(new Line2D.Double(model2Point2D(Tensors.vector(-10, 0)), model2Point2D(Tensors.vector(10, 0))));
       graphics.draw(new Line2D.Double(model2Point2D(Tensors.vector(0, -10)), model2Point2D(Tensors.vector(0, 10))));
     }
-    if (renderElements != null) {
+    if (Objects.nonNull(renderElements)) {
       renderElements.list.forEach(renderInterface -> renderInterface.render(owlyLayer, graphics));
     }
   }

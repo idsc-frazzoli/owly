@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
 
 import ch.ethz.idsc.owly.data.GlobalAssert;
 import ch.ethz.idsc.owly.math.flow.Flow;
@@ -42,7 +43,7 @@ public class StandardTrajectoryPlanner extends AbstractTrajectoryPlanner {
     for (GlcNode next : connectors.keySet()) { // <- order of keys is non-deterministic
       final Tensor domainKey = convertToKey(next.state());
       final GlcNode former = getNode(domainKey);
-      if (former != null) {
+      if (Objects.nonNull(former)) {
         // is already some node present from previous exploration ?
         if (Scalars.lessThan(next.merit(), former.merit())) // new node is potentially better than previous one
           domainQueueMap.insert(domainKey, next);
@@ -60,7 +61,7 @@ public class StandardTrajectoryPlanner extends AbstractTrajectoryPlanner {
       while (!domainQueue.isEmpty()) {
         final GlcNode next = domainQueue.element();
         final GlcNode formerLabel = getNode(domainKey);
-        if (formerLabel != null) {
+        if (Objects.nonNull(formerLabel)) {
           if (Scalars.lessThan(next.merit(), formerLabel.merit())) {
             if (getObstacleQuery().isDisjoint(connectors.get(next))) { // no collision
               /** removal from queue is unsure; needs to be checked with theory. */

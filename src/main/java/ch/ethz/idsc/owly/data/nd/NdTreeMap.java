@@ -4,6 +4,7 @@ package ch.ethz.idsc.owly.data.nd;
 
 import java.io.Serializable;
 import java.util.LinkedList;
+import java.util.Objects;
 import java.util.Queue;
 
 import ch.ethz.idsc.tensor.RationalScalar;
@@ -39,7 +40,7 @@ public class NdTreeMap<V> implements Serializable {
   private NdEntry<V> add(NdEntry<V> point) {
     resetBounds();
     NdEntry<V> removed = root.add(point);
-    if (removed == null) {
+    if (Objects.isNull(removed)) {
       ++size;
     } else {
       ++numRemoved;
@@ -88,12 +89,12 @@ public class NdTreeMap<V> implements Serializable {
         Scalar median = median(dimension);
         if (Scalars.lessThan(location.Get(dimension), median)) {
           uBounds.set(median, dimension);
-          if (lChild == null)
+          if (Objects.isNull(lChild))
             lChild = new Node(depth - 1);
           return lChild.add(point);
         }
         lBounds.set(median, dimension);
-        if (rChild == null)
+        if (Objects.isNull(rChild))
           rChild = new Node(depth - 1);
         return rChild.add(point);
       }
@@ -109,11 +110,11 @@ public class NdTreeMap<V> implements Serializable {
       Scalar median = median(dimension);
       for (NdEntry<V> p : queue)
         if (Scalars.lessThan(p.location.Get(dimension), median)) {
-          if (lChild == null)
+          if (Objects.isNull(lChild))
             lChild = new Node(depth - 1);
           lChild.queue.add(p);
         } else {
-          if (rChild == null)
+          if (Objects.isNull(rChild))
             rChild = new Node(depth - 1);
           rChild.queue.add(p);
         }
@@ -138,7 +139,7 @@ public class NdTreeMap<V> implements Serializable {
     private void addChildToCluster(NdCluster<V> cluster, Scalar median, boolean left) {
       int dimension = depth % lBounds.length();
       if (left) {
-        if (lChild == null)
+        if (Objects.isNull(lChild))
           return;
         // ---
         Scalar copy = uBounds.Get(dimension);
@@ -147,7 +148,7 @@ public class NdTreeMap<V> implements Serializable {
           lChild.addToCluster(cluster);
         uBounds.set(copy, dimension);
       } else {
-        if (rChild == null)
+        if (Objects.isNull(rChild))
           return;
         // ---
         Scalar copy = lBounds.Get(dimension);
