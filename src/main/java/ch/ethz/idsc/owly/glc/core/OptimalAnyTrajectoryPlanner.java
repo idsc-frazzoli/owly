@@ -16,6 +16,8 @@ import java.util.stream.Collectors;
 import ch.ethz.idsc.owly.data.tree.Nodes;
 import ch.ethz.idsc.owly.glc.adapter.TrajectoryGoalManager;
 import ch.ethz.idsc.owly.math.flow.Flow;
+import ch.ethz.idsc.owly.math.region.EmptyRegion;
+import ch.ethz.idsc.owly.math.region.InvertedRegion;
 import ch.ethz.idsc.owly.math.region.Region;
 import ch.ethz.idsc.owly.math.state.StateIntegrator;
 import ch.ethz.idsc.owly.math.state.StateTime;
@@ -220,6 +222,14 @@ public class OptimalAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
 
   @Override
   public void ObstacleUpdate(TrajectoryRegionQuery newObstacle) {
+    ObstacleUpdate(newObstacle, new InvertedRegion(EmptyRegion.INSTANCE));
+  }
+
+  @Override
+  public void ObstacleUpdate(TrajectoryRegionQuery newObstacle, Region possibleNewObstacleRegion) {
+    if (newObstacle == this.getObstacleQuery() || newObstacle == null) {
+      return;
+    }
     long tictotal = System.nanoTime();
     System.out.println("*** OBSTACLE UPDATE ***");
     long tic = System.nanoTime();
@@ -228,6 +238,9 @@ public class OptimalAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
     GlcNode root = getRoot();
     // TODO JONAS: What to do if root in collision
     List<GlcNode> domainMapList = new ArrayList<>(domainMap().values());
+    int test = domainMapList.size();
+    domainMapList.removeIf(node -> !(possibleNewObstacleRegion.isMember(node.state())));
+    System.out.println("Only checking " + domainMapList.size() + " instead of " + test + " domains");
     Collections.sort(domainMapList, NodeDepthComparator.INSTANCE); // iterating from low Depth to high depht
     int deletedNodes = 0;
     int addedNodes = 0;
@@ -338,7 +351,7 @@ public class OptimalAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
     tic = toc;
     // go through candidateMap without domain map
     for (Entry<Tensor, Set<CandidatePair>> entry : candidateMap.entrySet()) {
-      if (!domainMap().containsKey(entry.getKey())) {// was not checked in run before
+      if (!domainMap().containsKey(entry.getKey()) && possibleNewObstacleRegion.isMember(entry.getKey())) {// was not checked in run before
         PriorityQueue<CandidatePair> candidateQueue = new PriorityQueue<>();
         entry.getValue().parallelStream().forEach(cp -> //
         cp.getCandidate().setMinCostToGoal(getGoalInterface().minCostToGoal(cp.getCandidate().state())));

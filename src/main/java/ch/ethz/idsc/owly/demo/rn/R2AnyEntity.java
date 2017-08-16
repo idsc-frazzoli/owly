@@ -3,11 +3,14 @@ package ch.ethz.idsc.owly.demo.rn;
 
 import java.util.Collection;
 
+import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
 import ch.ethz.idsc.owly.glc.core.GoalInterface;
 import ch.ethz.idsc.owly.gui.ani.PlannerType;
 import ch.ethz.idsc.owly.math.flow.Flow;
 import ch.ethz.idsc.owly.math.region.EllipsoidRegion;
 import ch.ethz.idsc.owly.math.region.Region;
+import ch.ethz.idsc.owly.math.state.TimeInvariantRegion;
+import ch.ethz.idsc.owly.math.state.TrajectoryRegionQuery;
 import ch.ethz.idsc.tensor.RationalScalar;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
@@ -61,5 +64,16 @@ public class R2AnyEntity extends AbstractAnyEntity {
     // (GoalRadius + maximalDistance/step) * Securityfactor
     Scalar goalSearchHelperRadius = (goalRadius.add(RealScalar.ONE)).multiply(RealScalar.of(1.5));
     return new EllipsoidRegion(r2Goal, Tensors.of(goalSearchHelperRadius, goalSearchHelperRadius));
+  }
+
+  @Override
+  protected TrajectoryRegionQuery updateObstacle(Region environmentRegion, Tensor currentState) {
+    return new SimpleTrajectoryRegionQuery(new TimeInvariantRegion(//
+        EuclideanDistanceDiscoverRegion.of(environmentRegion, currentState, RealScalar.of(4))));
+  }
+
+  @Override
+  protected TrajectoryRegionQuery initializeObstacle(Region region, Tensor currentState) {
+    return updateObstacle(region, currentState);
   }
 }

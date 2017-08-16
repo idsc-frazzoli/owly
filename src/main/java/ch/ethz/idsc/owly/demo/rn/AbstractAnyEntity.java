@@ -12,6 +12,7 @@ import java.util.ListIterator;
 import java.util.Optional;
 
 import ch.ethz.idsc.owly.glc.adapter.Parameters;
+import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
 import ch.ethz.idsc.owly.glc.core.Expand;
 import ch.ethz.idsc.owly.glc.core.GlcNode;
 import ch.ethz.idsc.owly.glc.core.GoalInterface;
@@ -32,6 +33,7 @@ import ch.ethz.idsc.owly.math.state.FixedStateIntegrator;
 import ch.ethz.idsc.owly.math.state.SimpleEpisodeIntegrator;
 import ch.ethz.idsc.owly.math.state.StateIntegrator;
 import ch.ethz.idsc.owly.math.state.StateTime;
+import ch.ethz.idsc.owly.math.state.TimeInvariantRegion;
 import ch.ethz.idsc.owly.math.state.TrajectoryRegionQuery;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
@@ -40,7 +42,7 @@ import ch.ethz.idsc.tensor.Tensor;
 /** omni-directional movement with constant speed */
 public abstract class AbstractAnyEntity extends AbstractEntity {
   /** preserve 1[s] of the former trajectory */
-  private static final Scalar DELAY_HINT = RealScalar.of(2);
+  private static final Scalar DELAY_HINT = RealScalar.of(1);
   private static final Scalar EXPAND_TIME = RealScalar.of(0.5);
   protected final Parameters parameters;
   protected final Collection<Flow> controls;
@@ -86,6 +88,15 @@ public abstract class AbstractAnyEntity extends AbstractEntity {
     return new InvertedRegion(EmptyRegion.INSTANCE);
   }
 
+  /** Creates a new ObstacleQuery
+   * 
+   * @param region the Region of the environment
+   * @param currentState the current state of the Entity
+   * @return The new TRQ, which is the new Obstacle */
+  protected TrajectoryRegionQuery updateObstacle(Region region, Tensor currentState) {
+    return null;
+  }
+
   @Override
   public void render(OwlyLayer owlyLayer, Graphics2D graphics) {
     { // indicate current position
@@ -123,36 +134,40 @@ public abstract class AbstractAnyEntity extends AbstractEntity {
     }
   }
 
-  public OptimalAnyTrajectoryPlanner tp;
+  public OptimalAnyTrajectoryPlanner trajectoryPlanner;
 
-  public void startLife(TrajectoryRegionQuery trq, Tensor root) {
-    tp = (OptimalAnyTrajectoryPlanner) createTrajectoryPlanner(trq, root); // Tensors.vector(3, 4));
-    tp.switchRootToState(root); // setting start
+  public void startLife(Region environmentRegion, Tensor root) {
+    TrajectoryRegionQuery trq = initializeObstacle(environmentRegion, root);
+    trajectoryPlanner = (OptimalAnyTrajectoryPlanner) createTrajectoryPlanner(trq, root); // Tensors.vector(3, 4));
+    trajectoryPlanner.switchRootToState(root); // setting start
     thread = new Thread(() -> {
       while (true) {
         System.err.println("New iteration");
-        head = this.getFutureTrajectoryUntil(delayHint());
+        head = this.getFutureTrajectoryUntil(delayHint()); // Point on trajectory with delay from now
         // Rootswitch
         int index = getIndexOfLastNodeOf(head);
-        Optional<GlcNode> optional = tp.existsInTree(head.get(index).stateTime());
+        Optional<GlcNode> optional = trajectoryPlanner.existsInTree(head.get(index).stateTime());
         if (!optional.isPresent())
           throw new RuntimeException();
         GlcNode newRoot = optional.get(); // getting last GlcNode in Head as root
         head = head.subList(0, index + 1); // cutting head to this Node
-        int depthLimitIncrease = tp.switchRootToNode(newRoot);
-        parameters.increaseDepthLimit(depthLimitIncrease);// point on trajectory with delay from now
+        int depthLimitIncrease = trajectoryPlanner.switchRootToNode(newRoot);
+        parameters.increaseDepthLimit(depthLimitIncrease);
+        // ObstacleUpdate
+        TrajectoryRegionQuery newObstacle = updateObstacle(environmentRegion, head.get(0).stateTime().state());
+        trajectoryPlanner.ObstacleUpdate(newObstacle);
         if (switchGoalRequest) {
           // Goalswitch
           System.out.println("SwitchGoal Requested");
           GoalInterface goalInterface = createGoal(goal);
           Region goalCheckHelp = createGoalCheckHelp(goal);
-          boolean result = tp.changeToGoal(goalInterface, goalCheckHelp); // <- may take a while
+          boolean result = trajectoryPlanner.changeToGoal(goalInterface, goalCheckHelp); // <- may take a while
           switchGoalRequest = false;
         } else {
-          int iters = Expand.constTime(tp, EXPAND_TIME, parameters.getDepthLimit());
+          int iters = Expand.constTime(trajectoryPlanner, EXPAND_TIME, parameters.getDepthLimit());
         }
         if (trajectoryPlannerCallback != null)
-          trajectoryPlannerCallback.expandResult(head, tp);
+          trajectoryPlannerCallback.expandResult(head, trajectoryPlanner);
         try {
           Thread.sleep(10);
         } catch (Exception exception) {
@@ -161,6 +176,15 @@ public abstract class AbstractAnyEntity extends AbstractEntity {
       }
     });
     thread.start();
+  }
+
+  /** creates the first Obstacle of the planner at initialization
+   * 
+   * @param region
+   * @param currentState
+   * @return ObstacleQuery */
+  protected TrajectoryRegionQuery initializeObstacle(Region region, Tensor currentState) {
+    return new SimpleTrajectoryRegionQuery(new TimeInvariantRegion(region));
   }
 
   @Override
@@ -172,7 +196,7 @@ public abstract class AbstractAnyEntity extends AbstractEntity {
     ListIterator<TrajectorySample> iterator = trajectory.listIterator(trajectory.size()); // start at the back
     int index = trajectory.size() - 1;
     while (index >= 0) {
-      Optional<GlcNode> optional = tp.existsInTree(trajectory.get(index).stateTime());
+      Optional<GlcNode> optional = trajectoryPlanner.existsInTree(trajectory.get(index).stateTime());
       if (optional.isPresent())
         return index;
       index--; // going to previous statetime in traj
