@@ -6,7 +6,8 @@ import java.util.Collection;
 import ch.ethz.idsc.owly.glc.core.GoalInterface;
 import ch.ethz.idsc.owly.gui.ani.PlannerType;
 import ch.ethz.idsc.owly.math.flow.Flow;
-import ch.ethz.idsc.tensor.DoubleScalar;
+import ch.ethz.idsc.owly.math.region.EllipsoidRegion;
+import ch.ethz.idsc.owly.math.region.Region;
 import ch.ethz.idsc.tensor.RationalScalar;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
@@ -19,6 +20,7 @@ public class R2AnyEntity extends AbstractAnyEntity {
   private static final Tensor FALLBACK_CONTROL = Tensors.vector(0, 0).unmodifiable();
   // ---
   protected final Collection<Flow> controls = R2Controls.createRadial(parameters.getResolutionInt());
+  private final Scalar goalRadius = RealScalar.of(0.2);
 
   /** @param state initial position of entity */
   public R2AnyEntity(Tensor state) {
@@ -35,7 +37,7 @@ public class R2AnyEntity extends AbstractAnyEntity {
 
   @Override
   public PlannerType getPlannerType() {
-    return PlannerType.R2ANY;
+    return PlannerType.ANY;
   }
 
   @Override
@@ -50,6 +52,14 @@ public class R2AnyEntity extends AbstractAnyEntity {
 
   @Override
   protected final GoalInterface createGoal(Tensor goal) {
-    return new RnSimpleCircleHeuristicGoalManager(goal.extract(0, 2), DoubleScalar.of(.2));
+    return new RnSimpleCircleHeuristicGoalManager(goal.extract(0, 2), goalRadius);
+  }
+
+  @Override
+  protected Region createGoalCheckHelp(Tensor goal) {
+    Tensor r2Goal = goal.extract(0, 2);
+    // (GoalRadius + maximalDistance/step) * Securityfactor
+    Scalar goalSearchHelperRadius = (goalRadius.add(RealScalar.ONE)).multiply(RealScalar.of(1.5));
+    return new EllipsoidRegion(r2Goal, Tensors.of(goalSearchHelperRadius, goalSearchHelperRadius));
   }
 }

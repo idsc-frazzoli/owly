@@ -25,6 +25,9 @@ import ch.ethz.idsc.owly.gui.ani.TrajectoryPlannerCallback;
 import ch.ethz.idsc.owly.math.SingleIntegratorStateSpaceModel;
 import ch.ethz.idsc.owly.math.flow.EulerIntegrator;
 import ch.ethz.idsc.owly.math.flow.Flow;
+import ch.ethz.idsc.owly.math.region.EmptyRegion;
+import ch.ethz.idsc.owly.math.region.InvertedRegion;
+import ch.ethz.idsc.owly.math.region.Region;
 import ch.ethz.idsc.owly.math.state.FixedStateIntegrator;
 import ch.ethz.idsc.owly.math.state.SimpleEpisodeIntegrator;
 import ch.ethz.idsc.owly.math.state.StateIntegrator;
@@ -74,6 +77,14 @@ public abstract class AbstractAnyEntity extends AbstractEntity {
   /** @param goal Goal locations in the StateSpace
    * @return the goalInterface for the right Entity */
   protected abstract GoalInterface createGoal(Tensor goal);
+
+  /** Creates the GoalCheckHelperRegion
+   * 
+   * @param goal Tensor with center location of Goal
+   * @return A Rwegion, which includes ALL GLcNodes, which could be followed by a trajectory, leading to the Goal */
+  protected Region createGoalCheckHelp(Tensor goal) {
+    return new InvertedRegion(EmptyRegion.INSTANCE);
+  }
 
   @Override
   public void render(OwlyLayer owlyLayer, Graphics2D graphics) {
@@ -134,13 +145,14 @@ public abstract class AbstractAnyEntity extends AbstractEntity {
           // Goalswitch
           System.out.println("SwitchGoal Requested");
           GoalInterface goalInterface = createGoal(goal);
-          boolean result = tp.changeToGoal(goalInterface); // <- may take a while
+          Region goalCheckHelp = createGoalCheckHelp(goal);
+          boolean result = tp.changeToGoal(goalInterface, goalCheckHelp); // <- may take a while
           switchGoalRequest = false;
         } else {
           int iters = Expand.constTime(tp, EXPAND_TIME, parameters.getDepthLimit());
         }
         if (trajectoryPlannerCallback != null)
-          trajectoryPlannerCallback.expandAnyResult(head, tp);
+          trajectoryPlannerCallback.expandResult(head, tp);
         try {
           Thread.sleep(10);
         } catch (Exception exception) {
