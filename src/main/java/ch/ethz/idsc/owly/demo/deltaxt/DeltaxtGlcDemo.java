@@ -96,7 +96,9 @@ enum DeltaxtGlcDemo {
     OwlyFrame owlyFrame = Gui.start();
     owlyFrame.configCoordinateOffset(33, 416);
     owlyFrame.jFrame.setBounds(100, 100, 620, 475);
-    owlyFrame.addBackground(imageRegion); // TODO JAN: BUG: if addTrajectory before background --> runtimeerror
+    // TODO JONAS "if addTrajectory before background --> runtimeerror"
+    // ... also bei mir crasht es nicht, aber das image ueberzeichnet dann die trajectorie wegen der falschen reihenfolge
+    owlyFrame.addBackground(imageRegion);
     owlyFrame.addTrajectory(dinghyTrajectory);
     while (!trajectoryPlanner.getBest().isPresent() && owlyFrame.jFrame.isVisible()) {
       Expand.maxSteps(trajectoryPlanner, 30, parameters.getDepthLimit());

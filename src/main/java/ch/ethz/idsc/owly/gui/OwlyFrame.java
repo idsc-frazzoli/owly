@@ -198,7 +198,6 @@ public class OwlyFrame {
   }
 
   public void addTrajectory(List<TrajectorySample> trajectory) {
-    // TODO JAN change trajectory rendered to other color?
     TrajectoryRender trajectoryRenderer = new TrajectoryRender(null);
     trajectoryRenderer.setTrajectory(trajectory);
     owlyComponent.addDrawable(trajectoryRenderer);

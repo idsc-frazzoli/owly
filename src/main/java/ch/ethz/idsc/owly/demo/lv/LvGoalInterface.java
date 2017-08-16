@@ -3,6 +3,7 @@ package ch.ethz.idsc.owly.demo.lv;
 
 import java.util.List;
 
+import ch.ethz.idsc.owly.data.GlobalAssert;
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
 import ch.ethz.idsc.owly.glc.adapter.StateTimeTrajectories;
 import ch.ethz.idsc.owly.glc.core.GoalInterface;
@@ -17,6 +18,7 @@ import ch.ethz.idsc.tensor.Tensor;
 public class LvGoalInterface extends SimpleTrajectoryRegionQuery implements GoalInterface {
   public LvGoalInterface(Tensor center, Tensor radius) {
     super(new TimeInvariantRegion(new EllipsoidRegion(center, radius)));
+    GlobalAssert.that(center.length() == 2);
   }
 
   @Override

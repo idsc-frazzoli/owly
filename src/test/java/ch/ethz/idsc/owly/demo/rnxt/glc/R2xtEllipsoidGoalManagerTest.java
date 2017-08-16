@@ -11,23 +11,22 @@ import ch.ethz.idsc.tensor.Tensors;
 import junit.framework.TestCase;
 
 public class R2xtEllipsoidGoalManagerTest extends TestCase {
+  public void testMinCostToGoal0() {
+    R2xtHeuristicEllipsoidGoalManager rnxtGoal = new R2xtHeuristicEllipsoidGoalManager(//
+        Tensors.vector(5, 0, -99)//
+        , Tensors.vector(2, 3, Double.POSITIVE_INFINITY));
+    assertEquals(rnxtGoal.minCostToGoal(Tensors.vector(2, 0, 0)), RealScalar.ONE);
+    assertEquals(rnxtGoal.minCostToGoal(Tensors.vector(3, 0, 3)), RealScalar.ZERO);
+    assertEquals(rnxtGoal.minCostToGoal(Tensors.vector(4, 0, 5)), RealScalar.ZERO);
+  }
+
   public void testMinCostToGoal1() {
-    {
-      R2xtHeuristicEllipsoidGoalManager rnxtGoal = new R2xtHeuristicEllipsoidGoalManager(//
-          Tensors.of(RealScalar.of(5), RealScalar.ZERO, DoubleScalar.POSITIVE_INFINITY)//
-          , Tensors.vector(2, 3));
-      assertEquals(rnxtGoal.minCostToGoal(Tensors.vector(2, 0, 0)), RealScalar.ONE);
-      assertEquals(rnxtGoal.minCostToGoal(Tensors.vector(3, 0, 3)), RealScalar.ZERO);
-      assertEquals(rnxtGoal.minCostToGoal(Tensors.vector(4, 0, 5)), RealScalar.ZERO);
-    }
-    {
-      R2xtHeuristicEllipsoidGoalManager rnxtGoal = new R2xtHeuristicEllipsoidGoalManager(//
-          Tensors.of(RealScalar.ZERO, RealScalar.of(5), DoubleScalar.POSITIVE_INFINITY)//
-          , Tensors.vector(2, 3));
-      assertEquals(rnxtGoal.minCostToGoal(Tensors.vector(0, 1, 0)), RealScalar.ONE);
-      assertEquals(rnxtGoal.minCostToGoal(Tensors.vector(0, 2, 3)), RealScalar.ZERO);
-      assertEquals(rnxtGoal.minCostToGoal(Tensors.vector(0, 3, 0)), RealScalar.ZERO);
-    }
+    R2xtHeuristicEllipsoidGoalManager rnxtGoal = new R2xtHeuristicEllipsoidGoalManager(//
+        Tensors.vector(0, 5, -99)//
+        , Tensors.vector(2, 3, Double.POSITIVE_INFINITY));
+    assertEquals(rnxtGoal.minCostToGoal(Tensors.vector(0, 1, 0)), RealScalar.ONE);
+    assertEquals(rnxtGoal.minCostToGoal(Tensors.vector(0, 2, 3)), RealScalar.ZERO);
+    assertEquals(rnxtGoal.minCostToGoal(Tensors.vector(0, 3, 0)), RealScalar.ZERO);
   }
 
   public void testMinCostToGoal2() {
@@ -37,6 +36,8 @@ public class R2xtEllipsoidGoalManagerTest extends TestCase {
     assertEquals(rnGoal.minCostToGoal(Tensors.vector(2, 0)), RealScalar.ZERO);
     assertEquals(rnGoal.minCostToGoal(Tensors.vector(3, 0)), RealScalar.ZERO);
     assertEquals(rnGoal.minCostToGoal(Tensors.vector(4, 0)), RealScalar.ZERO);
+    // TODO JONAS test for non-zero minCostToGoal results
+    // FIXME JONAS the minCostToGoal is most likely not correct: center_t=inf, radius<inf ! should give other values
   }
 
   public void testCostIncrement1() {

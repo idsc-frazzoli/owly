@@ -22,7 +22,8 @@ public class ObstacleRender implements RenderInterface {
       return;
     // ---
     graphics.setColor(new Color(0, 0, 0, 128));
-    for (StateTime stateTime : collection) { // TODO JAN this is really slow for large collections
+    // TODO JAN this is really slow for large collections
+    for (StateTime stateTime : collection) {
       Point2D point2d = owlyLayer.toPoint2D(stateTime.state());
       graphics.drawRect((int) point2d.getX(), (int) point2d.getY(), 2, 2);
     }

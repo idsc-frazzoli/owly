@@ -26,6 +26,7 @@ public class TrajectoryRender implements RenderInterface {
   public static Scalar U_SCALE = RealScalar.of(.33);
   // ---
   private List<TrajectorySample> trajectory = new ArrayList<>();
+  private Color trajectoryColor = new Color(0, 192, 0, 192);
 
   public TrajectoryRender(TrajectoryPlanner trajectoryPlanner) {
     // TODO design not elegant!
@@ -63,7 +64,7 @@ public class TrajectoryRender implements RenderInterface {
         graphics.setColor(new Color(255, 255, 255, 128));
         graphics.draw(path2d);
         graphics.setStroke(new BasicStroke(2.0f));
-        graphics.setColor(new Color(0, 192, 0, 192));
+        graphics.setColor(trajectoryColor);
         graphics.draw(path2d);
         graphics.setStroke(new BasicStroke());
       }
@@ -80,4 +81,5 @@ public class TrajectoryRender implements RenderInterface {
   public void setTrajectory(List<TrajectorySample> trajectory) {
     this.trajectory = trajectory;
   }
+  // TODO JOANS make function to set trajectoryColor (keep green as default)
 }

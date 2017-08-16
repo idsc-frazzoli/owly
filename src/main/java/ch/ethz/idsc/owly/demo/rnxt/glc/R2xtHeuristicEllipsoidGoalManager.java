@@ -21,10 +21,11 @@ import ch.ethz.idsc.tensor.sca.Sqrt;
 
 /** objective is minimum path length
  * path length is measured in Euclidean distance */
+// TODO can implementation be generic: RnxT ?
 public class R2xtHeuristicEllipsoidGoalManager extends SimpleTrajectoryRegionQuery implements GoalInterface, NoHeuristic {
-  // protected as used in subclasses
-  protected final Tensor center;
-  protected final Tensor radius;
+  // protected when used in subclasses
+  private final Tensor center;
+  private final Tensor radius;
 
   /** constructor creates a spherical region in R^n x T with given center and radius.
    * distance measure is Euclidean distance, if radius(i) = infinity => cyclinder
@@ -44,6 +45,8 @@ public class R2xtHeuristicEllipsoidGoalManager extends SimpleTrajectoryRegionQue
     super(new TimeInvariantRegion(new EllipsoidRegion(center, radius)));
     if (center.length() != 3)// needs to be R2 x T therefore 3 states
       throw new RuntimeException();
+    // TODO 3rd component of center/radius is never used -> misleading
+    // ... if this is the final design then drop last entry before passing to constructor
     this.radius = radius;
     this.center = center;
   }
@@ -68,8 +71,12 @@ public class R2xtHeuristicEllipsoidGoalManager extends SimpleTrajectoryRegionQue
     Tensor r2Center = center.extract(0, toIndex);
     Tensor r2Vector = r2State.subtract(r2Center);
     Tensor r2Radius = radius.extract(0, toIndex);
-    Scalar root = Sqrt.of(Power.of(r2Radius.Get(0).multiply(r2Vector.Get(1)), 2)//
-        .add(Power.of(r2Radius.Get(1).multiply(r2Vector.Get(0)), 2)));
+    // TODO JONAS state origin of formulas for verification purpose
+    // TODO JONAS use Hypot.BIFUNCTION.apply(a, b) instead of sqrt(a^2+b^2)
+    Scalar root = Sqrt.of( //
+        Power.of(r2Radius.Get(0).multiply(r2Vector.Get(1)), 2).add( //
+            Power.of(r2Radius.Get(1).multiply(r2Vector.Get(0)), 2)));
+    // ---
     Scalar specificRadius = radius.Get(0).multiply(radius.Get(1)).multiply(Norm._2.of(r2State.subtract(r2Center))).divide(root);
     return Ramp.of(Norm._2.of(r2State.subtract(r2Center)).subtract(specificRadius)); // <- do not change
   }

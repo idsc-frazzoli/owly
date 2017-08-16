@@ -95,7 +95,7 @@ public class R2AnyEntity extends AbstractEntity {
   @Override
   public void render(OwlyLayer owlyLayer, Graphics2D graphics) {
     { // indicate current position
-      Tensor state = episodeIntegrator.tail().state();
+      Tensor state = getStateTimeNow().state();
       Point2D point = owlyLayer.toPoint2D(state);
       graphics.setColor(new Color(64, 128, 64, 192));
       graphics.fill(new Ellipse2D.Double(point.getX() - 2, point.getY() - 2, 7, 7));

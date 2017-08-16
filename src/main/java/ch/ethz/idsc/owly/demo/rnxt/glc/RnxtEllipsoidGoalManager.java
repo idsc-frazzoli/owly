@@ -21,12 +21,13 @@ import ch.ethz.idsc.tensor.alg.Array;
 /** objective is minimum path length
  * path length is measured in Euclidean distance */
 public class RnxtEllipsoidGoalManager extends SimpleTrajectoryRegionQuery implements GoalInterface, NoHeuristic {
-  // protected as used in subclasses
-  protected final Tensor center;
-  protected final Tensor radius;
+  // protected when used in subclasses
+  // TODO JONAS these are not used anywhere in the formulas
+  private final Tensor center;
+  private final Tensor radius;
 
   /** constructor creates a spherical region in R^n x T with given center and radius.
-   * distance measure is Euclidean distance, if radius(i) = infinity => cyclinder
+   * distance measure is Euclidean distance, if radius(i) = infinity => cylinder
    * 
    * @param center vector with length == n
    * @param radius positive */
@@ -35,10 +36,10 @@ public class RnxtEllipsoidGoalManager extends SimpleTrajectoryRegionQuery implem
   }
 
   /** constructor creates a ellipsoid region in R^n x T with given center and radius.
-   * distance measure is Euclidean distance, if radius(i) = infinity => cyclinder
+   * distance measure is Euclidean distance, if radius(i) = infinity => cylinder
    * 
    * @param center vector with length == n
-   * @param radius vector with length == n & positive in all entrys */
+   * @param radius vector with length == n & positive in all entries */
   public RnxtEllipsoidGoalManager(Tensor center, Tensor radius) {
     super(new TimeInvariantRegion(new EllipsoidRegion(center, radius)));
     for (Tensor radiusTemp : radius)
