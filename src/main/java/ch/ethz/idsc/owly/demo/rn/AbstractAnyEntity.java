@@ -42,7 +42,7 @@ import ch.ethz.idsc.tensor.Tensor;
 /** omni-directional movement with constant speed */
 public abstract class AbstractAnyEntity extends AbstractEntity {
   /** preserve 1[s] of the former trajectory */
-  private static final Scalar DELAY_HINT = RealScalar.of(1);
+  private static final Scalar DELAY_HINT = RealScalar.of(1.5);
   private static final Scalar EXPAND_TIME = RealScalar.of(0.5);
   protected final Parameters parameters;
   protected final Collection<Flow> controls;
