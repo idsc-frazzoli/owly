@@ -13,26 +13,25 @@ import ch.ethz.idsc.owly.math.state.StateTime;
 import ch.ethz.idsc.owly.math.state.TimeInvariantRegion;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
+import ch.ethz.idsc.tensor.TensorRuntimeException;
 import ch.ethz.idsc.tensor.alg.Array;
+import ch.ethz.idsc.tensor.red.Hypot;
 import ch.ethz.idsc.tensor.red.Norm;
-import ch.ethz.idsc.tensor.sca.Power;
 import ch.ethz.idsc.tensor.sca.Ramp;
-import ch.ethz.idsc.tensor.sca.Sqrt;
 
-/** objective is minimum path length
- * path length is measured in Euclidean distance */
-// TODO can implementation be generic: RnxT ?
-public class R2xtHeuristicEllipsoidGoalManager extends SimpleTrajectoryRegionQuery implements GoalInterface, NoHeuristic {
-  // protected when used in subclasses
-  private final Tensor center;
-  private final Tensor radius;
+/** objective is minimum time
+ * path length is measured in Euclidean distance
+ * Heuristic is minimum Time along Euclidean distance */
+public class RnxtHeuristicEllipsoidGoalManager extends SimpleTrajectoryRegionQuery implements GoalInterface, NoHeuristic {
+  private final Tensor rnCenter;
+  private final Tensor rnRadius;
 
   /** constructor creates a spherical region in R^n x T with given center and radius.
    * distance measure is Euclidean distance, if radius(i) = infinity => cyclinder
    * 
    * @param center vector with length == n
    * @param radius positive */
-  public R2xtHeuristicEllipsoidGoalManager(Tensor center, Scalar radius) {
+  public RnxtHeuristicEllipsoidGoalManager(Tensor center, Scalar radius) {
     this(center, Array.of(l -> radius, center.length()));
   }
 
@@ -41,14 +40,13 @@ public class R2xtHeuristicEllipsoidGoalManager extends SimpleTrajectoryRegionQue
    * 
    * @param center vector with length == n
    * @param radius vector with length == n & positive in all entrys */
-  public R2xtHeuristicEllipsoidGoalManager(Tensor center, Tensor radius) {
+  public RnxtHeuristicEllipsoidGoalManager(Tensor center, Tensor radius) {
     super(new TimeInvariantRegion(new EllipsoidRegion(center, radius)));
-    if (center.length() != 3)// needs to be R2 x T therefore 3 states
-      throw new RuntimeException();
-    // TODO 3rd component of center/radius is never used -> misleading
-    // ... if this is the final design then drop last entry before passing to constructor
-    this.radius = radius;
-    this.center = center;
+    if (!center.Get(center.length() - 1).equals(Ramp.of(center.Get(center.length() - 1)))) // assert that time in center is non-negative
+      throw TensorRuntimeException.of(radius);
+    int toIndex = center.length() - 1;
+    this.rnRadius = radius.extract(0, toIndex);
+    this.rnCenter = center.extract(0, toIndex);
   }
 
   /** shortest Time Cost */
@@ -58,6 +56,7 @@ public class R2xtHeuristicEllipsoidGoalManager extends SimpleTrajectoryRegionQue
   }
 
   /** Ellipsoid with axis: a,b and vector from Center: v = (x,y)
+   * from: https://math.stackexchange.com/questions/432902/how-to-get-the-radius-of-an-ellipse-at-a-specific-angle-by-knowing-its-semi-majo
    * specific radius at intersection:
    * r :
    * 
@@ -67,17 +66,11 @@ public class R2xtHeuristicEllipsoidGoalManager extends SimpleTrajectoryRegionQue
   @Override
   public Scalar minCostToGoal(Tensor x) {
     int toIndex = x.length() - 1;
-    Tensor r2State = x.extract(0, toIndex);
-    Tensor r2Center = center.extract(0, toIndex);
-    Tensor r2Vector = r2State.subtract(r2Center);
-    Tensor r2Radius = radius.extract(0, toIndex);
-    // TODO JONAS state origin of formulas for verification purpose
-    // TODO JONAS use Hypot.BIFUNCTION.apply(a, b) instead of sqrt(a^2+b^2)
-    Scalar root = Sqrt.of( //
-        Power.of(r2Radius.Get(0).multiply(r2Vector.Get(1)), 2).add( //
-            Power.of(r2Radius.Get(1).multiply(r2Vector.Get(0)), 2)));
+    Tensor rnState = x.extract(0, toIndex);
+    Tensor rnVector = rnState.subtract(rnCenter);
+    Scalar root = Hypot.BIFUNCTION.apply(rnRadius.Get(0).multiply(rnVector.Get(1)), rnRadius.Get(1).multiply(rnVector.Get(0)));
     // ---
-    Scalar specificRadius = radius.Get(0).multiply(radius.Get(1)).multiply(Norm._2.of(r2State.subtract(r2Center))).divide(root);
-    return Ramp.of(Norm._2.of(r2State.subtract(r2Center)).subtract(specificRadius)); // <- do not change
+    Scalar specificRadius = rnRadius.Get(0).multiply(rnRadius.Get(1)).multiply(Norm._2.of(rnState.subtract(rnCenter))).divide(root);
+    return Ramp.of(Norm._2.of(rnState.subtract(rnCenter)).subtract(specificRadius)); // <- do not change
   }
 }

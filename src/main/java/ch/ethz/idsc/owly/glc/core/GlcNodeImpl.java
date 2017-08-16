@@ -19,8 +19,8 @@ import ch.ethz.idsc.tensor.Tensor;
  * {@link GlcNodeImpl#addChild(GlcNodeImpl)} */
 /* package */ class GlcNodeImpl extends AbstractNode<GlcNode> implements GlcNode {
   private final Map<Flow, GlcNode> children = new HashMap<>();
-  /** flow is null for root node */
-  private final Flow flow;
+  /** flow is null for root node */ // not final, as changed for rootnode
+  private Flow flow;
   private final StateTime stateTime;
   private Scalar costFromRoot;
   private Scalar merit;
@@ -98,5 +98,12 @@ import ch.ethz.idsc.tensor.Tensor;
   public int reCalculateDepth() {
     depth = Nodes.listToRoot(this).size() - 1;
     return depth; // as RootNode has depth 0 (NOT 1)
+  }
+
+  @Override
+  public boolean makeRoot() {
+    this.parent().removeEdgeTo(this);
+    this.flow = null;
+    return this.isRoot();
   }
 }

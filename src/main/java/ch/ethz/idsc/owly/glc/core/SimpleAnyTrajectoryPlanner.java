@@ -10,6 +10,8 @@ import java.util.Map.Entry;
 import ch.ethz.idsc.owly.data.tree.Nodes;
 import ch.ethz.idsc.owly.glc.adapter.TrajectoryGoalManager;
 import ch.ethz.idsc.owly.math.flow.Flow;
+import ch.ethz.idsc.owly.math.region.EmptyRegion;
+import ch.ethz.idsc.owly.math.region.InvertedRegion;
 import ch.ethz.idsc.owly.math.region.Region;
 import ch.ethz.idsc.owly.math.state.StateIntegrator;
 import ch.ethz.idsc.owly.math.state.StateTime;
@@ -154,7 +156,11 @@ public class SimpleAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
 
   @Override
   public void ObstacleUpdate(TrajectoryRegionQuery newObstacle) {
-    throw new RuntimeException();
-    // TODO implement
+    ObstacleUpdate(newObstacle, new InvertedRegion(EmptyRegion.INSTANCE));
+  }
+
+  @Override
+  public void ObstacleUpdate(TrajectoryRegionQuery newObstacle, Region possibleNewObstacleRegion) {
+    throw new RuntimeException(); // TODO implement
   }
 }

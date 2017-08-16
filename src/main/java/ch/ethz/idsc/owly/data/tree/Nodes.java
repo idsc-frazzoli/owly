@@ -16,7 +16,7 @@ public enum Nodes {
   @SuppressWarnings("unchecked")
   public static <T extends Node> T rootFrom(T node) {
     T root = node;
-    while (root.parent() != null)
+    while (Objects.nonNull(root.parent()))
       root = (T) root.parent();
     return root;
   }
@@ -28,7 +28,7 @@ public enum Nodes {
     if (Objects.isNull(node))
       throw new RuntimeException();
     List<T> list = new ArrayList<>();
-    while (node != null) {
+    while (Objects.nonNull(node)) {
       list.add(node);
       node = (T) node.parent();
     }
@@ -62,7 +62,7 @@ public enum Nodes {
   public static <T extends Node> T disjoinAt(T node) {
     @SuppressWarnings("unchecked")
     T parent = (T) node.parent();
-    if (parent != null)
+    if (Objects.nonNull(parent))
       parent.removeEdgeTo(node);
     return parent;
   }

@@ -8,6 +8,7 @@ import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.util.Collection;
 import java.util.DoubleSummaryStatistics;
+import java.util.Objects;
 
 import ch.ethz.idsc.owly.data.tree.StateCostNode;
 import ch.ethz.idsc.owly.math.Hue;
@@ -41,7 +42,7 @@ class TreeRender implements RenderInterface {
       final Point2D p1 = owlyLayer.toPoint2D(node.state());
       graphics.fill(new Rectangle2D.Double(p1.getX(), p1.getY(), NODE_WIDTH, NODE_WIDTH));
       StateCostNode parent = node.parent();
-      if (parent != null) {
+      if (Objects.nonNull(parent)) {
         Point2D p2 = owlyLayer.toPoint2D(parent.state());
         graphics.setColor(Hue.of(interp, 1, 1, .2));
         Shape shape = new Line2D.Double(p1.getX(), p1.getY(), p2.getX(), p2.getY());

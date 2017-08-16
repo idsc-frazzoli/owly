@@ -81,5 +81,8 @@ public class TrajectoryRender implements RenderInterface {
   public void setTrajectory(List<TrajectorySample> trajectory) {
     this.trajectory = trajectory;
   }
-  // TODO JOANS make function to set trajectoryColor (keep green as default)
+
+  public void setColor(Color newTrajectoryColor) {
+    trajectoryColor = newTrajectoryColor;
+  }
 }

@@ -40,6 +40,12 @@ public interface AnyPlannerInterface extends ExpandInterface {
    * @param newObstacle the new Query for the new Obstacle Information */
   void ObstacleUpdate(TrajectoryRegionQuery newObstacle);
 
+  /** Updates the tree with the new Obstacle Information
+   * 
+   * @param newObstacle the new Query for the new Obstacle Information
+   * @param possibleNewObstacleRegion Region, in which ALL Nodes are, which could have a trajectory where sth. changed */
+  void ObstacleUpdate(TrajectoryRegionQuery newObstacle, Region possibleNewObstacleRegion);
+
   /** @return the StateTime Trajectory to the best Goal, or if no goal was found NULL */
   List<StateTime> trajectoryToBest();
 

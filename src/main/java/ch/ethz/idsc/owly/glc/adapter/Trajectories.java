@@ -22,9 +22,7 @@ public enum Trajectories {
     // System.out.println("last of head: " + tsh.toInfoString());
     // System.out.println(" 1st of tail: " + tst.toInfoString());
     GlobalAssert.that(tsh.stateTime().equals(tst.stateTime()));
-    // FIXME JAN/JONAS the following check is mandatory (at least if head is non-empty...)
-    // any sample on the trajectory needs a flow for control
-    // GlobalAssert.that(!tst.getFlow().isPresent());
+    GlobalAssert.that(!tst.getFlow().isPresent());
     trajectory.addAll(tail.subList(1, tail.size()));
     return Collections.unmodifiableList(trajectory);
   }
