@@ -19,8 +19,8 @@ public enum Trajectories {
     trajectory.addAll(head);
     TrajectorySample tsh = head.get(head.size() - 1);
     TrajectorySample tst = tail.get(0);
-    System.out.println("last of head: " + tsh.toInfoString());
-    System.out.println(" 1st of tail: " + tst.toInfoString());
+    // System.out.println("last of head: " + tsh.toInfoString());
+    // System.out.println(" 1st of tail: " + tst.toInfoString());
     GlobalAssert.that(tsh.stateTime().equals(tst.stateTime()));
     GlobalAssert.that(!tst.getFlow().isPresent());
     trajectory.addAll(tail.subList(1, tail.size()));

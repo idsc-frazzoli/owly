@@ -147,8 +147,8 @@ public class OptimalAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
     // -- BASIC REROOTING AND DELETING
     // removes the new root from the child list of its parent
     // Disconnecting newRoot from Old Tree and collecting DeleteTree
-    boolean test = newRoot.makeRoot();
-    if (!test)
+    boolean isRoot = newRoot.makeRoot();
+    if (!isRoot)
       throw new RuntimeException(); // new Root is not root
     Collection<GlcNode> deleteTreeCollection = deleteSubtreeOf(oldRoot);
     // -- DEBUGING
