@@ -45,7 +45,7 @@ enum R2xtRingGlcDemo {
         parameters.getTrajectorySize());
     Collection<Flow> controls = R2xtControls.createRadial(parameters.getResolutionInt());
     Tensor goal = Tensors.vector(5, 5, 0);
-    R2xtHeuristicEllipsoidGoalManager rnGoal = new R2xtHeuristicEllipsoidGoalManager(//
+    RnxtHeuristicEllipsoidGoalManager rnGoal = new RnxtHeuristicEllipsoidGoalManager(//
         goal, Tensors.of(RealScalar.of(0.2), RealScalar.of(0.2), DoubleScalar.POSITIVE_INFINITY));
     // HeuristicGoalManager expands only 10% of nodes
     // RnxtEllipsoidGoalManager rnGoal = new RnxtEllipsoidGoalManager(//

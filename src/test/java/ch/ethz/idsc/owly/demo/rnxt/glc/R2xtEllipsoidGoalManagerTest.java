@@ -12,8 +12,8 @@ import junit.framework.TestCase;
 
 public class R2xtEllipsoidGoalManagerTest extends TestCase {
   public void testMinCostToGoal0() {
-    R2xtHeuristicEllipsoidGoalManager rnxtGoal = new R2xtHeuristicEllipsoidGoalManager(//
-        Tensors.vector(5, 0, -99)//
+    RnxtHeuristicEllipsoidGoalManager rnxtGoal = new RnxtHeuristicEllipsoidGoalManager(//
+        Tensors.vector(5, 0, 100)//
         , Tensors.vector(2, 3, Double.POSITIVE_INFINITY));
     assertEquals(rnxtGoal.minCostToGoal(Tensors.vector(2, 0, 0)), RealScalar.ONE);
     assertEquals(rnxtGoal.minCostToGoal(Tensors.vector(3, 0, 3)), RealScalar.ZERO);
@@ -21,27 +21,38 @@ public class R2xtEllipsoidGoalManagerTest extends TestCase {
   }
 
   public void testMinCostToGoal1() {
-    R2xtHeuristicEllipsoidGoalManager rnxtGoal = new R2xtHeuristicEllipsoidGoalManager(//
-        Tensors.vector(0, 5, -99)//
-        , Tensors.vector(2, 3, Double.POSITIVE_INFINITY));
-    assertEquals(rnxtGoal.minCostToGoal(Tensors.vector(0, 1, 0)), RealScalar.ONE);
-    assertEquals(rnxtGoal.minCostToGoal(Tensors.vector(0, 2, 3)), RealScalar.ZERO);
-    assertEquals(rnxtGoal.minCostToGoal(Tensors.vector(0, 3, 0)), RealScalar.ZERO);
+    {
+      RnxtHeuristicEllipsoidGoalManager rnxtGoal = new RnxtHeuristicEllipsoidGoalManager(//
+          Tensors.vector(0, 5, 100)//
+          , Tensors.vector(2, 3, Double.POSITIVE_INFINITY));
+      assertEquals(rnxtGoal.minCostToGoal(Tensors.vector(0, 1, 0)), RealScalar.ONE);
+      assertEquals(rnxtGoal.minCostToGoal(Tensors.vector(0, 2, 3)), RealScalar.ZERO);
+      assertEquals(rnxtGoal.minCostToGoal(Tensors.vector(0, 3, 0)), RealScalar.ZERO);
+    }
+    {
+      RnxtHeuristicEllipsoidGoalManager rnxtGoal = new RnxtHeuristicEllipsoidGoalManager(//
+          Tensors.vector(0, 5, 100)//
+          , Tensors.vector(2, 3, 2));
+      assertEquals(rnxtGoal.minCostToGoal(Tensors.vector(0, 1, 0)), RealScalar.ONE);
+      assertEquals(rnxtGoal.minCostToGoal(Tensors.vector(0, 2, 3)), RealScalar.ZERO);
+      assertEquals(rnxtGoal.minCostToGoal(Tensors.vector(0, 3, 0)), RealScalar.ZERO);
+      // GoalManager underestimates the time to get to the goal, if goal is only available after x seconds,
+      // time of euclidean path with MaxSpeed is still underestimating
+    }
   }
 
   public void testMinCostToGoal2() {
+    // GoalManager without Heuristic: Therefore minCostToGoal always ZERO
     RnxtEllipsoidGoalManager rnGoal = new RnxtEllipsoidGoalManager(//
         Tensors.of(RealScalar.of(5), RealScalar.ZERO, DoubleScalar.POSITIVE_INFINITY)//
         , RealScalar.of(2));
     assertEquals(rnGoal.minCostToGoal(Tensors.vector(2, 0)), RealScalar.ZERO);
     assertEquals(rnGoal.minCostToGoal(Tensors.vector(3, 0)), RealScalar.ZERO);
     assertEquals(rnGoal.minCostToGoal(Tensors.vector(4, 0)), RealScalar.ZERO);
-    // TODO JONAS test for non-zero minCostToGoal results
-    // FIXME JONAS the minCostToGoal is most likely not correct: center_t=inf, radius<inf ! should give other values
   }
 
   public void testCostIncrement1() {
-    R2xtHeuristicEllipsoidGoalManager rnxtGoal = new R2xtHeuristicEllipsoidGoalManager(//
+    RnxtHeuristicEllipsoidGoalManager rnxtGoal = new RnxtHeuristicEllipsoidGoalManager(//
         Tensors.of(RealScalar.of(5), RealScalar.ZERO, DoubleScalar.POSITIVE_INFINITY)//
         , RealScalar.of(2));
     Scalar incr = rnxtGoal.costIncrement( //

@@ -1,6 +1,7 @@
 // code by jl
 package ch.ethz.idsc.owly.demo.deltaxt;
 
+import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -96,10 +97,8 @@ enum DeltaxtGlcDemo {
     OwlyFrame owlyFrame = Gui.start();
     owlyFrame.configCoordinateOffset(33, 416);
     owlyFrame.jFrame.setBounds(100, 100, 620, 475);
-    // TODO JONAS "if addTrajectory before background --> runtimeerror"
-    // ... also bei mir crasht es nicht, aber das image ueberzeichnet dann die trajectorie wegen der falschen reihenfolge
     owlyFrame.addBackground(imageRegion);
-    owlyFrame.addTrajectory(dinghyTrajectory);
+    owlyFrame.addTrajectory(dinghyTrajectory, new Color(224, 168, 0, 224)); // add goalTrajectory Goalcolor
     while (!trajectoryPlanner.getBest().isPresent() && owlyFrame.jFrame.isVisible()) {
       Expand.maxSteps(trajectoryPlanner, 30, parameters.getDepthLimit());
       owlyFrame.setGlc(trajectoryPlanner);

@@ -2,6 +2,7 @@
 package ch.ethz.idsc.owly.gui;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -199,6 +200,13 @@ public class OwlyFrame {
 
   public void addTrajectory(List<TrajectorySample> trajectory) {
     TrajectoryRender trajectoryRenderer = new TrajectoryRender(null);
+    trajectoryRenderer.setTrajectory(trajectory);
+    owlyComponent.addDrawable(trajectoryRenderer);
+  }
+
+  public void addTrajectory(List<TrajectorySample> trajectory, Color color) {
+    TrajectoryRender trajectoryRenderer = new TrajectoryRender(null);
+    trajectoryRenderer.setColor(color);
     trajectoryRenderer.setTrajectory(trajectory);
     owlyComponent.addDrawable(trajectoryRenderer);
   }

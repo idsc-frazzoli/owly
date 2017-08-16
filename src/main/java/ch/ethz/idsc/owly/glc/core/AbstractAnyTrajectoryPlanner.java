@@ -207,6 +207,14 @@ public abstract class AbstractAnyTrajectoryPlanner extends AbstractTrajectoryPla
   }
 
   @Override
+  public final Optional<GlcNode> existsInTree(StateTime stateTime) {
+    GlcNode label = domainMap().get(convertToKey(stateTime.state()));
+    if (label.stateTime().state().equals(stateTime.state()))
+      return Optional.ofNullable(label);
+    return Optional.empty();
+  }
+
+  @Override
   public final Optional<StateTime> getFurthestGoalState() {
     Optional<GlcNode> key = getFurthestGoalNode();
     if (key.isPresent()) {

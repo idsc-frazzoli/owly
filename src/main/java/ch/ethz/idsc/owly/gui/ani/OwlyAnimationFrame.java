@@ -137,7 +137,7 @@ public class OwlyAnimationFrame {
               mpw.start(head, trajectoryPlanner);
               break;
             }
-            case ANY: {
+            case R2ANY: {
               R2AnyEntity r2AnyEntity = (R2AnyEntity) abstractEntity;
               r2AnyEntity.switchToGoal(trajectoryPlannerCallback, head, goal);
               break;
