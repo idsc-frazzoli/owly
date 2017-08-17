@@ -44,6 +44,11 @@ class TnGoalManager implements Region, CostFunction {
   }
 
   @Override
+  public boolean hasHeuristic() {
+    return true;
+  }
+
+  @Override
   public boolean isMember(Tensor tensor) {
     return Scalars.isZero(minCostToGoal(tensor));
   }

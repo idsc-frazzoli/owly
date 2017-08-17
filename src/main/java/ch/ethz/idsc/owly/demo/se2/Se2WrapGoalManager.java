@@ -46,6 +46,11 @@ public class Se2WrapGoalManager implements Region, CostFunction {
   }
 
   @Override
+  public boolean hasHeuristic() {
+    return true;
+  }
+
+  @Override
   public boolean isMember(Tensor x) {
     return Scalars.isZero(minCostToGoal(x));
   }

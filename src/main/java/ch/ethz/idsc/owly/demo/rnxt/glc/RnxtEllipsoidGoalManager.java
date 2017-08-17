@@ -6,7 +6,6 @@ import java.util.List;
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
 import ch.ethz.idsc.owly.glc.adapter.StateTimeTrajectories;
 import ch.ethz.idsc.owly.glc.core.GoalInterface;
-import ch.ethz.idsc.owly.glc.core.NoHeuristic;
 import ch.ethz.idsc.owly.math.flow.Flow;
 import ch.ethz.idsc.owly.math.region.EllipsoidRegion;
 import ch.ethz.idsc.owly.math.state.StateTime;
@@ -20,7 +19,7 @@ import ch.ethz.idsc.tensor.sca.Ramp;
 
 /** objective is minimum path length
  * path length is measured in Euclidean distance */
-public class RnxtEllipsoidGoalManager extends SimpleTrajectoryRegionQuery implements GoalInterface, NoHeuristic {
+public class RnxtEllipsoidGoalManager extends SimpleTrajectoryRegionQuery implements GoalInterface {
   // protected when used in subclasses
   /** constructor creates a spherical region in R^n x T with given center and radius.
    * distance measure is Euclidean distance, if radius(i) = infinity => cylinder
@@ -51,5 +50,10 @@ public class RnxtEllipsoidGoalManager extends SimpleTrajectoryRegionQuery implem
   @Override
   public Scalar minCostToGoal(Tensor x) {
     return RealScalar.ZERO;
+  }
+
+  @Override
+  public boolean hasHeuristic() {
+    return false;
   }
 }

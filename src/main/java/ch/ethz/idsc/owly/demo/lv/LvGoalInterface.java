@@ -30,4 +30,9 @@ public class LvGoalInterface extends SimpleTrajectoryRegionQuery implements Goal
   public Scalar minCostToGoal(Tensor x) {
     return RealScalar.ZERO;
   }
+
+  @Override
+  public boolean hasHeuristic() {
+    return false;
+  }
 }

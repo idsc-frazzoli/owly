@@ -19,18 +19,12 @@ import ch.ethz.idsc.tensor.Scalars;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.alg.Array;
 
-/** objective is minimum path length */
+/** cost is a varying distance metric */
 class RnnGoalManager extends SimpleTrajectoryRegionQuery implements GoalInterface {
-  @SuppressWarnings("unused")
-  private final Tensor center;
-  @SuppressWarnings("unused")
-  private final Scalar radius;
   private final ContinuousNoise continuousNoise;
 
   public RnnGoalManager(Tensor center, Scalar radius) {
     super(new TimeInvariantRegion(new EllipsoidRegion(center, Array.of(l -> radius, center.length()))));
-    this.center = center;
-    this.radius = radius;
     GlobalAssert.that(center.length() == 2);
     continuousNoise = ContinuousNoiseUtils.wrap2D(SimplexContinuousNoise.FUNCTION);
   }
@@ -47,5 +41,10 @@ class RnnGoalManager extends SimpleTrajectoryRegionQuery implements GoalInterfac
   @Override
   public Scalar minCostToGoal(Tensor x) {
     return RealScalar.ZERO;
+  }
+
+  @Override
+  public boolean hasHeuristic() {
+    return false;
   }
 }

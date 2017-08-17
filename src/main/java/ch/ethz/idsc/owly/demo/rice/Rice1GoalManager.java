@@ -37,4 +37,9 @@ public class Rice1GoalManager extends SimpleTrajectoryRegionQuery implements Goa
     Scalar mindist = Ramp.of(Norm._2.of(pc.subtract(pd)).subtract(radius.get(0)));
     return mindist; // .divide(1 [m/s]), since max velocity == 1 => division is obsolete
   }
+
+  @Override
+  public boolean hasHeuristic() {
+    return true;
+  }
 }

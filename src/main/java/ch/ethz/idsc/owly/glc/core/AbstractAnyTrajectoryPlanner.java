@@ -105,7 +105,8 @@ public abstract class AbstractAnyTrajectoryPlanner extends AbstractTrajectoryPla
     System.out.println("*** GOALSWITCH ***");
     long tictotal = System.nanoTime();
     {
-      boolean noHeuristic = ((getGoalInterface() instanceof NoHeuristic) && (newGoal instanceof NoHeuristic));
+      // boolean noHeuristic = ((getGoalInterface() instanceof NoHeuristic) && (newGoal instanceof NoHeuristic));
+      boolean noHeuristic = !getGoalInterface().hasHeuristic() && !newGoal.hasHeuristic();
       setGoalInterface(newGoal);
       long tic = System.nanoTime();
       GlcNode root = getRoot();

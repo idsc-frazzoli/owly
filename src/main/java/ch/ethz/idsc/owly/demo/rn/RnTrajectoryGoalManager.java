@@ -37,4 +37,9 @@ public class RnTrajectoryGoalManager extends TrajectoryGoalManager {
     return Ramp.of(Norm._2.of(x.subtract(StateTimeTrajectories.getLast(heuristicTrajectory).state())).subtract(radius)//
         .divide(RealScalar.ONE)); // divide by maximum "speed"
   }
+
+  @Override
+  public boolean hasHeuristic() {
+    return true;
+  }
 }

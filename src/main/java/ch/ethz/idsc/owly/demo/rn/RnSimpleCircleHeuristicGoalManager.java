@@ -7,7 +7,6 @@ import ch.ethz.idsc.owly.data.GlobalAssert;
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
 import ch.ethz.idsc.owly.glc.adapter.StateTimeTrajectories;
 import ch.ethz.idsc.owly.glc.core.GoalInterface;
-import ch.ethz.idsc.owly.glc.core.Heuristic;
 import ch.ethz.idsc.owly.math.flow.Flow;
 import ch.ethz.idsc.owly.math.region.SphericalRegion;
 import ch.ethz.idsc.owly.math.state.StateTime;
@@ -21,7 +20,7 @@ import ch.ethz.idsc.tensor.sca.Ramp;
 
 /** objective is minimum path length
  * path length is measured in Euclidean distance */
-public class RnSimpleCircleHeuristicGoalManager extends SimpleTrajectoryRegionQuery implements GoalInterface, Heuristic {
+public class RnSimpleCircleHeuristicGoalManager extends SimpleTrajectoryRegionQuery implements GoalInterface {
   private final Tensor center;
   private final Scalar radius;
 
@@ -44,8 +43,11 @@ public class RnSimpleCircleHeuristicGoalManager extends SimpleTrajectoryRegionQu
 
   @Override
   public Scalar minCostToGoal(Tensor x) {
-    // implementation is asserted by tests.
-    // for modifications create a different class.
-    return Ramp.of(Norm._2.of(x.subtract(center)).subtract(radius)); // <- do not change
+    return Ramp.of(Norm._2.of(x.subtract(center)).subtract(radius));
+  }
+
+  @Override
+  public boolean hasHeuristic() {
+    return true;
   }
 }
