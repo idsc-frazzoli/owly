@@ -41,7 +41,7 @@ enum R2PointsDemo {
     // });
     TrajectoryRegionQuery obstacleQuery = // new EmptyRegionQuery();
         new SimpleTrajectoryRegionQuery(new TimeInvariantRegion( //
-            RnPointclouds.createRandomRegion(10, Tensors.vector(4, 4), Tensors.vector(2, 2), RealScalar.of(0.6))));
+            RnPointclouds.createRandomRegion(10, Tensors.vector(0, 0), Tensors.vector(4, 4), RealScalar.of(0.6))));
     // ---
     TrajectoryPlanner trajectoryPlanner = new StandardTrajectoryPlanner( //
         partitionScale, stateIntegrator, controls, obstacleQuery, rnGoal);
