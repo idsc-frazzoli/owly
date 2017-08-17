@@ -1,5 +1,5 @@
 // code by jl and jph
-package ch.ethz.idsc.owly.demo.rn;
+package ch.ethz.idsc.owly.gui.ani;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
@@ -13,6 +13,7 @@ import java.util.Optional;
 
 import ch.ethz.idsc.owly.glc.adapter.Parameters;
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
+import ch.ethz.idsc.owly.glc.adapter.Trajectories;
 import ch.ethz.idsc.owly.glc.core.Expand;
 import ch.ethz.idsc.owly.glc.core.GlcNode;
 import ch.ethz.idsc.owly.glc.core.GoalInterface;
@@ -20,9 +21,6 @@ import ch.ethz.idsc.owly.glc.core.OptimalAnyTrajectoryPlanner;
 import ch.ethz.idsc.owly.glc.core.TrajectoryPlanner;
 import ch.ethz.idsc.owly.glc.core.TrajectorySample;
 import ch.ethz.idsc.owly.gui.OwlyLayer;
-import ch.ethz.idsc.owly.gui.ani.AbstractEntity;
-import ch.ethz.idsc.owly.gui.ani.PlannerType;
-import ch.ethz.idsc.owly.gui.ani.TrajectoryPlannerCallback;
 import ch.ethz.idsc.owly.math.SingleIntegratorStateSpaceModel;
 import ch.ethz.idsc.owly.math.flow.EulerIntegrator;
 import ch.ethz.idsc.owly.math.flow.Flow;
@@ -42,7 +40,7 @@ import ch.ethz.idsc.tensor.Tensor;
 /** omni-directional movement with constant speed */
 public abstract class AbstractAnyEntity extends AbstractEntity {
   /** preserve 1[s] of the former trajectory */
-  private static final Scalar DELAY_HINT = RealScalar.of(1.5);
+  private static final Scalar DELAY_HINT = RealScalar.of(1);
   private static final Scalar EXPAND_TIME = RealScalar.of(0.5);
   protected final Parameters parameters;
   protected final Collection<Flow> controls;
@@ -142,7 +140,7 @@ public abstract class AbstractAnyEntity extends AbstractEntity {
     trajectoryPlanner.switchRootToState(root); // setting start
     thread = new Thread(() -> {
       while (true) {
-        System.err.println("New iteration");
+        long tic = System.nanoTime();
         head = this.getFutureTrajectoryUntil(delayHint()); // Point on trajectory with delay from now
         // Rootswitch
         int index = getIndexOfLastNodeOf(head);
@@ -173,6 +171,7 @@ public abstract class AbstractAnyEntity extends AbstractEntity {
         } catch (Exception exception) {
           exception.printStackTrace();
         }
+        System.err.println("Last iteration took: " + (System.nanoTime()-tic)*1e-9 + "s");
       }
     });
     thread.start();
@@ -203,6 +202,7 @@ public abstract class AbstractAnyEntity extends AbstractEntity {
     }
     // TODO JONAS: change to next passed GlcNode?
     // TODO BUG JONAS: during movement no trajectory to new Goal
+    Trajectories.print(trajectory);
     throw new RuntimeException(); // no StateTime in trajectory corresponds to Node in Tree?
   }
 }

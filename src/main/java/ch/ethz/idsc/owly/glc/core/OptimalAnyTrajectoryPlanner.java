@@ -83,8 +83,6 @@ public class OptimalAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
               if (getObstacleQuery().isDisjoint(connectors.get(next))) {// better node not collision
                 // TODO Needs to be checked with theory, removal from queue is unsure.
                 final Collection<GlcNode> subDeleteTree = deleteSubtreeOf(formerLabel);
-                if (subDeleteTree.size() > 1)
-                  System.err.println("Pruned Tree of Size: " + subDeleteTree.size());
                 // adding the formerLabel as formerCandidate to bucket
                 CandidatePair formerCandidate = new CandidatePair(formerLabel.parent(), formerLabel);
                 if (!formerCandidate.getCandidate().isLeaf()) {
@@ -268,8 +266,6 @@ public class OptimalAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
                   connector = getStateIntegrator().trajectory(nextBestParent.stateTime(), nextBestNode.flow());
                   if (getObstacleQuery().isDisjoint(connector)) {
                     final Collection<GlcNode> subDeleteTree = deleteSubtreeOf(label);
-                    if (subDeleteTree.size() > 1) // DEBUG INFO
-                      System.err.println("Pruned Tree of Size: " + subDeleteTree.size());
                     CandidatePair formerLabelCandidate = new CandidatePair(label.parent(), label);
                     label.parent().removeEdgeTo(label);
                     if (!formerLabelCandidate.getCandidate().isLeaf()) {
@@ -299,8 +295,6 @@ public class OptimalAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
           } else { // DELETE label, as IN collision
             deletedNodes++;
             final Collection<GlcNode> subDeleteTree = deleteSubtreeOf(label);
-            if (subDeleteTree.size() > 1) // DEBUG INFO
-              System.err.println("Pruned Tree of Size: " + subDeleteTree.size());
             CandidatePair formerLabelCandidate = new CandidatePair(label.parent(), label);
             label.parent().removeEdgeTo(label);
             if (!formerLabelCandidate.getCandidate().isLeaf()) {
@@ -443,8 +437,6 @@ public class OptimalAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
                     getStateIntegrator().trajectory(possibleCandidateOrigin.stateTime(), possibleCandidateNode.flow());
                 if (getObstacleQuery().isDisjoint(connector)) {
                   Collection<GlcNode> deleteTree = deleteSubtreeOf(label);
-                  if (deleteTree.size() > 1) // DEBUG INFO
-                    System.err.println("Pruned Tree of Size: " + deleteTree.size());
                   CandidatePair formerLabelCandidate = new CandidatePair(label.parent(), label);
                   label.parent().removeEdgeTo(label);
                   if (!formerLabelCandidate.getCandidate().isLeaf()) {

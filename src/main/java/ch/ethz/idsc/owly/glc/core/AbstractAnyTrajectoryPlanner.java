@@ -156,7 +156,7 @@ public abstract class AbstractAnyTrajectoryPlanner extends AbstractTrajectoryPla
       System.out.println("Checked current tree for goal in "//
           + (System.nanoTime() - tic) * 1e-9 + "s");
       if (goalInTreeFound) {
-        System.out.println("New Goal was found in current tree --> No new search needed");
+        System.err.println("FOUND GOAL IN TREE");
         System.out.println("*** Goalswitch finished in " + (System.nanoTime() - tictotal) * 1e-9 + "s ***");
         return true;
       }
