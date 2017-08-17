@@ -497,11 +497,12 @@ public class OptimalAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
     return GoalCheckTree(possibleGoalNodes);
   }
 
+  // TODO JONAS rename first letter of function
   private final boolean GoalCheckTree(Collection<GlcNode> treeCollection) {
     // Parallel: 15%-50% Speedgain, tested with R2GlcConstTimeHeuristicAnyDemo,
     // TODO why does parallel give different result? then non parallel? e.g. R2GlcAnyCircleDemo
     //
-    // TODO JAN: No difference with synchronized, same bug, even with exactly the same List
+    // TODO JONAS is this still happening, please talk to JAN: No difference with synchronized, same bug, even with exactly the same List
     treeCollection.stream().forEach(node -> {
       if (!node.isRoot()) {
         final List<StateTime> trajectory = getStateIntegrator().trajectory(node.parent().stateTime(), node.flow());

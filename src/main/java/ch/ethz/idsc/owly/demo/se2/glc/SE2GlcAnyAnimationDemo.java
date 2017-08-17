@@ -21,7 +21,6 @@ enum SE2GlcAnyAnimationDemo {
     // Region obstacleRegion = new R2NoiseRegion(0.8);
     SE2AnyEntity.startLife(imageRegion, root); // (trq, root);
     owlyAnimationFrame.set(SE2AnyEntity);
-    // owlyAnimationFrame.setObstacleQuery(trq); //TODO JAN: Why external connection needed?
     owlyAnimationFrame.configCoordinateOffset(50, 700);
     owlyAnimationFrame.addBackground(imageRegion);
     owlyAnimationFrame.jFrame.setBounds(100, 50, 1200, 800);
