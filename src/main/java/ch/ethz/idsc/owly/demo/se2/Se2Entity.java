@@ -13,7 +13,6 @@ import java.util.Objects;
 import javax.swing.JLabel;
 
 import ch.ethz.idsc.owly.data.GlobalAssert;
-import ch.ethz.idsc.owly.demo.twd.TwdMinTimeGoalManager;
 import ch.ethz.idsc.owly.glc.core.StandardTrajectoryPlanner;
 import ch.ethz.idsc.owly.glc.core.TrajectoryPlanner;
 import ch.ethz.idsc.owly.gui.OwlyLayer;
@@ -66,6 +65,7 @@ public class Se2Entity extends AbstractEntity {
   private final Collection<Flow> controls;
   private final Scalar goalRadius_xy;
   private final Scalar goalRadius_theta;
+  private final Tensor goalRadius;
   private TrajectoryRegionQuery obstacleQuery = null;
   // private BufferedImage bufferedImage = null;
 
@@ -78,6 +78,7 @@ public class Se2Entity extends AbstractEntity {
     controls = Se2Controls.createControlsForwardAndReverse(RealScalar.ONE, 6); // TODO magic const
     goalRadius_xy = Sqrt.of(RealScalar.of(2)).divide(PARTITIONSCALE.Get(0));
     goalRadius_theta = Sqrt.of(RealScalar.of(2)).divide(PARTITIONSCALE.Get(2));
+    goalRadius = Tensors.of(goalRadius_xy, goalRadius_xy, goalRadius_theta);
     // try {
     // bufferedImage = ImageIO.read(UserHome.Pictures("car_green.png"));
     // } catch (Exception exception) {
@@ -106,10 +107,11 @@ public class Se2Entity extends AbstractEntity {
     this.obstacleQuery = obstacleQuery;
     StateIntegrator stateIntegrator = //
         FixedStateIntegrator.create(integrator, RationalScalar.of(1, 10), 4); // TODO magic const
-    TwdMinTimeGoalManager twdMinTimeGoalManager = //
-        new TwdMinTimeGoalManager(goal, goalRadius_xy, goalRadius_theta);
+    Se2MinDistGoalManager se2MinDistGoalManager = new Se2MinDistGoalManager(goal, goalRadius);
+    // TwdMinTimeGoalManager twdMinTimeGoalManager = // //FIXME BUG? shoudl be Se2
+    // new TwdMinTimeGoalManager(goal, goalRadius_xy, goalRadius_theta);
     TrajectoryPlanner trajectoryPlanner = new StandardTrajectoryPlanner( //
-        PARTITIONSCALE, stateIntegrator, controls, obstacleQuery, twdMinTimeGoalManager.getGoalInterface());
+        PARTITIONSCALE, stateIntegrator, controls, obstacleQuery, se2MinDistGoalManager.getGoalInterface());
     trajectoryPlanner.represent = SE2WRAP::represent;
     return trajectoryPlanner;
   }

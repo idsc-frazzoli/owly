@@ -5,10 +5,14 @@ import java.util.Collection;
 
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
 import ch.ethz.idsc.owly.glc.core.GoalInterface;
+import ch.ethz.idsc.owly.gui.ani.AbstractAnyEntity;
 import ch.ethz.idsc.owly.gui.ani.PlannerType;
+import ch.ethz.idsc.owly.math.flow.EulerIntegrator;
 import ch.ethz.idsc.owly.math.flow.Flow;
 import ch.ethz.idsc.owly.math.region.EllipsoidRegion;
 import ch.ethz.idsc.owly.math.region.Region;
+import ch.ethz.idsc.owly.math.state.FixedStateIntegrator;
+import ch.ethz.idsc.owly.math.state.StateIntegrator;
 import ch.ethz.idsc.owly.math.state.TimeInvariantRegion;
 import ch.ethz.idsc.owly.math.state.TrajectoryRegionQuery;
 import ch.ethz.idsc.tensor.RationalScalar;
@@ -75,5 +79,10 @@ public class R2AnyEntity extends AbstractAnyEntity {
   @Override
   protected TrajectoryRegionQuery initializeObstacle(Region region, Tensor currentState) {
     return updateObstacle(region, currentState);
+  }
+
+  @Override
+  protected StateIntegrator createIntegrator() {
+    return FixedStateIntegrator.create(EulerIntegrator.INSTANCE, parameters.getdtMax(), parameters.getTrajectorySize());
   }
 }

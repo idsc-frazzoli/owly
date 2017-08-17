@@ -88,7 +88,7 @@ public class OwlyAnimationFrame {
     owlyComponent.renderElements.list.add(trajectoryRender);
     owlyComponent.renderElements.list.add(obstacleRender);
     owlyComponent.renderElements.list.add(goalRender);
-//    owlyComponent.renderElements.list.add(treeRender);
+    // owlyComponent.renderElements.list.add(treeRender);
     { // periodic task for integration
       final TimerTask timerTask = new TimerTask() { // animation and repaint task
         TimeKeeper timeKeeper = new TimeKeeper();
@@ -189,12 +189,9 @@ public class OwlyAnimationFrame {
           goalRender.setCollection(new HashSet<>(collection));
         }
       }
-      
       {
         treeRender.setCollection(trajectoryPlanner.getDomainMap().values());
       }
-      
-      
       owlyComponent.jComponent.repaint();
     }
   };

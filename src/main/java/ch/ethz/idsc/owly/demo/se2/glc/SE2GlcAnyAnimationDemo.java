@@ -4,6 +4,8 @@ package ch.ethz.idsc.owly.demo.se2.glc;
 import ch.ethz.idsc.owly.demo.rn.R2NoiseRegion;
 import ch.ethz.idsc.owly.demo.se2.any.SE2AnyEntity;
 import ch.ethz.idsc.owly.gui.ani.OwlyAnimationFrame;
+import ch.ethz.idsc.owly.math.region.EmptyRegion;
+import ch.ethz.idsc.owly.math.region.InvertedRegion;
 import ch.ethz.idsc.owly.math.region.Region;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
@@ -16,7 +18,8 @@ enum SE2GlcAnyAnimationDemo {
     SE2AnyEntity SE2AnyEntity = new SE2AnyEntity(root);
     // TODO not final solution
     SE2AnyEntity.trajectoryPlannerCallback = owlyAnimationFrame.trajectoryPlannerCallback;
-    Region obstacleRegion = new R2NoiseRegion(0.05);
+    Region obstacleRegion = new InvertedRegion(EmptyRegion.INSTANCE);
+//    Region obstacleRegion = new R2NoiseRegion(0.05);
     // TrajectoryRegionQuery trq = new SimpleTrajectoryRegionQuery(obstacleRegion);
     SE2AnyEntity.startLife(obstacleRegion, root); // (trq, root);
     owlyAnimationFrame.set(SE2AnyEntity);

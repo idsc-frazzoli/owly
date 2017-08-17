@@ -27,7 +27,6 @@ import ch.ethz.idsc.owly.math.flow.Flow;
 import ch.ethz.idsc.owly.math.region.EmptyRegion;
 import ch.ethz.idsc.owly.math.region.InvertedRegion;
 import ch.ethz.idsc.owly.math.region.Region;
-import ch.ethz.idsc.owly.math.state.FixedStateIntegrator;
 import ch.ethz.idsc.owly.math.state.SimpleEpisodeIntegrator;
 import ch.ethz.idsc.owly.math.state.StateIntegrator;
 import ch.ethz.idsc.owly.math.state.StateTime;
@@ -40,7 +39,7 @@ import ch.ethz.idsc.tensor.Tensor;
 /** omni-directional movement with constant speed */
 public abstract class AbstractAnyEntity extends AbstractEntity {
   /** preserve 1[s] of the former trajectory */
-  private static final Scalar DELAY_HINT = RealScalar.of(1);
+  protected static final Scalar DELAY_HINT = RealScalar.of(1);
   private static final Scalar EXPAND_TIME = RealScalar.of(0.5);
   protected final Parameters parameters;
   protected final Collection<Flow> controls;
@@ -67,12 +66,16 @@ public abstract class AbstractAnyEntity extends AbstractEntity {
 
   @Override
   public TrajectoryPlanner createTrajectoryPlanner(TrajectoryRegionQuery obstacleQuery, Tensor goal) {
-    StateIntegrator stateIntegrator = //
-        FixedStateIntegrator.create(EulerIntegrator.INSTANCE, parameters.getdtMax(), parameters.getTrajectorySize());
+    StateIntegrator stateIntegrator = createIntegrator();
+    // StateIntegrator stateIntegrator = //
+    // FixedStateIntegrator.create(EulerIntegrator.INSTANCE, parameters.getdtMax(), parameters.getTrajectorySize());
     GoalInterface goalInterface = createGoal(goal);
     return new OptimalAnyTrajectoryPlanner( //
         parameters.getEta(), stateIntegrator, controls, obstacleQuery, goalInterface);
   }
+
+  /** @return the wanted Integrator for this Entity */
+  protected abstract StateIntegrator createIntegrator();
 
   /** @param goal Goal locations in the StateSpace
    * @return the goalInterface for the right Entity */
@@ -95,6 +98,10 @@ public abstract class AbstractAnyEntity extends AbstractEntity {
     return null;
   }
 
+  /** Default implementaion of 2 dots following trajectory
+   * 
+   * @param owlyLayer
+   * @param graphics */
   @Override
   public void render(OwlyLayer owlyLayer, Graphics2D graphics) {
     { // indicate current position
@@ -171,7 +178,7 @@ public abstract class AbstractAnyEntity extends AbstractEntity {
         } catch (Exception exception) {
           exception.printStackTrace();
         }
-        System.err.println("Last iteration took: " + (System.nanoTime()-tic)*1e-9 + "s");
+        System.err.println("Last iteration took: " + (System.nanoTime() - tic) * 1e-9 + "s");
       }
     });
     thread.start();
