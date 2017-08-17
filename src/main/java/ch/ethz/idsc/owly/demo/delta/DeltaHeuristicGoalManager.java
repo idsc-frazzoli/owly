@@ -6,6 +6,7 @@ import java.util.List;
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
 import ch.ethz.idsc.owly.glc.adapter.StateTimeTrajectories;
 import ch.ethz.idsc.owly.glc.core.GoalInterface;
+import ch.ethz.idsc.owly.glc.core.Heuristic;
 import ch.ethz.idsc.owly.math.flow.Flow;
 import ch.ethz.idsc.owly.math.region.EllipsoidRegion;
 import ch.ethz.idsc.owly.math.region.Region;
@@ -17,18 +18,18 @@ import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.red.Norm;
 import ch.ethz.idsc.tensor.sca.Ramp;
 
-public class DeltaGoalManagerExt extends SimpleTrajectoryRegionQuery implements GoalInterface {
+public class DeltaHeuristicGoalManager extends SimpleTrajectoryRegionQuery implements GoalInterface, Heuristic {
   private final Tensor center;
   protected final Scalar radius;
   protected final Scalar maxSpeed;
   private final Scalar timeCostScalingFactor;
 
   // Constructor with Default value in CostScaling
-  public DeltaGoalManagerExt(Tensor center, Tensor radius, Scalar maxSpeed) {
+  public DeltaHeuristicGoalManager(Tensor center, Tensor radius, Scalar maxSpeed) {
     this(center, radius, maxSpeed, RealScalar.ONE);
   }
 
-  public DeltaGoalManagerExt(Tensor center, Tensor radius, Scalar maxSpeed, Scalar timeCostScalingFactor) {
+  public DeltaHeuristicGoalManager(Tensor center, Tensor radius, Scalar maxSpeed, Scalar timeCostScalingFactor) {
     super(new TimeInvariantRegion(new EllipsoidRegion(center, radius)));
     this.center = center;
     this.maxSpeed = maxSpeed;
@@ -39,11 +40,11 @@ public class DeltaGoalManagerExt extends SimpleTrajectoryRegionQuery implements 
   }
 
   // --
-  public DeltaGoalManagerExt(Region region, Tensor center, Tensor radius, Scalar maxSpeed) {
+  public DeltaHeuristicGoalManager(Region region, Tensor center, Tensor radius, Scalar maxSpeed) {
     this(region, center, radius, maxSpeed, RealScalar.ONE);
   }
 
-  public DeltaGoalManagerExt(Region region, Tensor center, Tensor radius, Scalar maxSpeed, Scalar timeCostScalingFactor) {
+  public DeltaHeuristicGoalManager(Region region, Tensor center, Tensor radius, Scalar maxSpeed, Scalar timeCostScalingFactor) {
     super(new TimeInvariantRegion(region));
     this.center = center;
     this.maxSpeed = maxSpeed;

@@ -135,12 +135,12 @@ public class SimpleAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
 
   @Override
   /** Nothing needs to be done, as Optimality is not kept */
-  void RelabelingDomains() {
+  void relabelingDomains() {
   }
 
   /** Only checking the Nodes of the tree, not the trajectory */
   @Override
-  boolean GoalCheckTree(final Region goalCheckTree) {
+  boolean goalCheckTree(final Region goalCheckTree) {
     final Collection<GlcNode> treeCollection = Nodes.ofSubtree(getRoot());
     treeCollection.parallelStream().forEach(node -> {
       if (!getGoalInterface().isDisjoint(Arrays.asList(node.stateTime())))
@@ -150,17 +150,17 @@ public class SimpleAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
   }
 
   @Override
-  boolean GoalCheckTree() {
-    return GoalCheckTree(null);
+  boolean goalCheckTree() {
+    return goalCheckTree(null);
   }
 
   @Override
-  public void ObstacleUpdate(TrajectoryRegionQuery newObstacle) {
-    ObstacleUpdate(newObstacle, new InvertedRegion(EmptyRegion.INSTANCE));
+  public void obstacleUpdate(TrajectoryRegionQuery newObstacle) {
+    obstacleUpdate(newObstacle, new InvertedRegion(EmptyRegion.INSTANCE));
   }
 
   @Override
-  public void ObstacleUpdate(TrajectoryRegionQuery newObstacle, Region possibleNewObstacleRegion) {
+  public void obstacleUpdate(TrajectoryRegionQuery newObstacle, Region possibleNewObstacleRegion) {
     throw new RuntimeException(); // TODO implement
   }
 }

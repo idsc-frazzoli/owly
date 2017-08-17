@@ -219,12 +219,12 @@ public class OptimalAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
   }
 
   @Override
-  public void ObstacleUpdate(TrajectoryRegionQuery newObstacle) {
-    ObstacleUpdate(newObstacle, new InvertedRegion(EmptyRegion.INSTANCE));
+  public void obstacleUpdate(TrajectoryRegionQuery newObstacle) {
+    obstacleUpdate(newObstacle, new InvertedRegion(EmptyRegion.INSTANCE));
   }
 
   @Override
-  public void ObstacleUpdate(TrajectoryRegionQuery newObstacle, Region possibleNewObstacleRegion) {
+  public void obstacleUpdate(TrajectoryRegionQuery newObstacle, Region possibleNewObstacleRegion) {
     if (newObstacle == this.getObstacleQuery() || newObstacle == null) {
       return;
     }
@@ -407,7 +407,7 @@ public class OptimalAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
   }
 
   @Override
-  /* package */ final void RelabelingDomains() {
+  /* package */ final void relabelingDomains() {
     GlcNode root = getRoot();
     List<GlcNode> treeList = new ArrayList<GlcNode>(Nodes.ofSubtree(root));
     System.err.println("checking for domainlabel changes due to heuristic change,  Treesize: " + treeList.size());
@@ -482,7 +482,7 @@ public class OptimalAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
   }
 
   @Override
-  protected final boolean GoalCheckTree(final Region possibleGoalNodesRegion) {
+  protected final boolean goalCheckTree(final Region possibleGoalNodesRegion) {
     final Collection<GlcNode> treeCollection = Nodes.ofSubtree(getRoot());
     // Smart way: uses 15% -> 30% of the time of normal implementation
     // Smart way: uses 30% -> 40% of the time of parallel implementation
@@ -513,7 +513,7 @@ public class OptimalAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
   }
 
   @Override
-  public final boolean GoalCheckTree() {
+  public final boolean goalCheckTree() {
     final Collection<GlcNode> treeCollection = Nodes.ofSubtree(getRoot());
     return GoalCheckTree(treeCollection);
   }

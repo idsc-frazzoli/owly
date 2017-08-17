@@ -28,7 +28,7 @@ import ch.ethz.idsc.owly.data.TimeKeeper;
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
 import ch.ethz.idsc.owly.glc.adapter.Trajectories;
 import ch.ethz.idsc.owly.glc.core.GlcNode;
-import ch.ethz.idsc.owly.glc.core.NoHeuristic;
+import ch.ethz.idsc.owly.glc.core.Heuristic;
 import ch.ethz.idsc.owly.glc.core.TrajectoryPlanner;
 import ch.ethz.idsc.owly.glc.core.TrajectorySample;
 import ch.ethz.idsc.owly.gui.EtaRender;
@@ -88,9 +88,9 @@ public class OwlyAnimationFrame {
     owlyComponent.renderElements.list.add(trajectoryRender);
     owlyComponent.renderElements.list.add(obstacleRender);
     owlyComponent.renderElements.list.add(goalRender);
-    // owlyComponent.renderElements.list.add(treeRender);
+    owlyComponent.renderElements.list.add(treeRender);
     { // periodic task for integration
-      final TimerTask timerTask = new TimerTask() { // animation and repaint task
+      final TimerTask timerTask = new TimerTask() {
         TimeKeeper timeKeeper = new TimeKeeper();
 
         @Override
@@ -102,7 +102,7 @@ public class OwlyAnimationFrame {
       timer.schedule(timerTask, 100, 20);
     }
     { // periodic task for rendering
-      final TimerTask timerTask = new TimerTask() { // animation and repaint task
+      final TimerTask timerTask = new TimerTask() {
         @Override
         public void run() {
           owlyComponent.jComponent.repaint();
@@ -158,9 +158,9 @@ public class OwlyAnimationFrame {
     @Override
     public void expandResult(List<TrajectorySample> head, TrajectoryPlanner trajectoryPlanner) {
       etaRender.setEta(trajectoryPlanner.getEta());
-      Optional<GlcNode> optional = trajectoryPlanner.getFinalGoalNode();
-      if (trajectoryPlanner.getGoalInterface() instanceof NoHeuristic) // movement till goalfound would be random walk
-        optional = trajectoryPlanner.getBest();
+      Optional<GlcNode> optional = trajectoryPlanner.getBest();
+      if (trajectoryPlanner.getGoalInterface() instanceof Heuristic) // movement till goalfound would be random walk
+        optional = trajectoryPlanner.getFinalGoalNode();
       if (optional.isPresent()) {
         List<TrajectorySample> trajectory = new ArrayList<>();
         if (controllable instanceof AbstractEntity) {
@@ -190,7 +190,7 @@ public class OwlyAnimationFrame {
         }
       }
       {
-        treeRender.setCollection(trajectoryPlanner.getDomainMap().values());
+        treeRender.setCollection(new ArrayList<>(trajectoryPlanner.getDomainMap().values()));
       }
       owlyComponent.jComponent.repaint();
     }

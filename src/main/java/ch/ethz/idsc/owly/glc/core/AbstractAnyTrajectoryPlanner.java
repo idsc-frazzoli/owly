@@ -113,7 +113,7 @@ public abstract class AbstractAnyTrajectoryPlanner extends AbstractTrajectoryPla
       setBestNull();
       // -- RESORTING OF TREE
       if (!noHeuristic) {
-        RelabelingDomains();
+        relabelingDomains();
         List<GlcNode> list = new LinkedList<>(queue());
         queue().clear();
         queue().addAll(list);
@@ -133,7 +133,7 @@ public abstract class AbstractAnyTrajectoryPlanner extends AbstractTrajectoryPla
       // Collection<GlcNode> oldBest = new ArrayList<>(best.keySet());
       // setBestNull();
       tic = System.nanoTime();
-      goalInTreeFound = GoalCheckTree(goalCheckHelp);
+      goalInTreeFound = goalCheckTree(goalCheckHelp);
       // DEBUGING
       // Scalar timeDiffNew = RealScalar.of((System.nanoTime() - tic) * 1e-9);
       // tic = System.nanoTime();
@@ -167,17 +167,17 @@ public abstract class AbstractAnyTrajectoryPlanner extends AbstractTrajectoryPla
 
   /** Checks if relabeling is needed for all domains with their Candidates and relabels those.
    * Trees which are suboptimal are deleted */
-  abstract void RelabelingDomains();
+  abstract void relabelingDomains();
 
   /** Checks the tree in the collection if some Nodes are in the Goal
    * @param goalCheckHelp a Region, which includes ALL Nodes, which could have a leaving trajectory in the Goal
    * @return true if a Node in the Goal was found in this Collection */
-  abstract boolean GoalCheckTree(final Region goalCheckHelp);
+  abstract boolean goalCheckTree(final Region goalCheckHelp);
 
-  abstract boolean GoalCheckTree();
+  abstract boolean goalCheckTree();
 
   @Override
-  abstract public void ObstacleUpdate(TrajectoryRegionQuery newObstacle);
+  abstract public void obstacleUpdate(TrajectoryRegionQuery newObstacle);
 
   /** Finds the rootNode, by following the parents
    * from a random root Node in the tree/DomainMap

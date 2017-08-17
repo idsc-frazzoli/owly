@@ -8,7 +8,6 @@ import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.util.Collection;
 
-import ch.ethz.idsc.owly.demo.rn.R2Controls;
 import ch.ethz.idsc.owly.demo.se2.Se2Controls;
 import ch.ethz.idsc.owly.demo.se2.Se2MinDistGoalManager;
 import ch.ethz.idsc.owly.demo.se2.Se2StateSpaceModel;
@@ -18,10 +17,12 @@ import ch.ethz.idsc.owly.glc.core.GoalInterface;
 import ch.ethz.idsc.owly.gui.OwlyLayer;
 import ch.ethz.idsc.owly.gui.ani.AbstractAnyEntity;
 import ch.ethz.idsc.owly.gui.ani.PlannerType;
+import ch.ethz.idsc.owly.math.RotationUtils;
 import ch.ethz.idsc.owly.math.Se2Utils;
 import ch.ethz.idsc.owly.math.flow.Flow;
-import ch.ethz.idsc.owly.math.flow.RungeKutta45Integrator;
+import ch.ethz.idsc.owly.math.flow.RungeKutta4Integrator;
 import ch.ethz.idsc.owly.math.state.FixedStateIntegrator;
+import ch.ethz.idsc.owly.math.state.SimpleEpisodeIntegrator;
 import ch.ethz.idsc.owly.math.state.StateIntegrator;
 import ch.ethz.idsc.owly.math.state.StateTime;
 import ch.ethz.idsc.tensor.RationalScalar;
@@ -49,16 +50,26 @@ public class SE2AnyEntity extends AbstractAnyEntity {
   private final Tensor goalRadius;
 
   /** @param state initial position of entity */
-  public SE2AnyEntity(Tensor state) {
-    super(state, new Se2Parameters( //
-        (RationalScalar) RealScalar.of(10), // resolution
-        RealScalar.of(2), // TimeScale
-        RealScalar.of(100), // DepthScale
-        Tensors.vector(5, 5, 50 / Math.PI), // PartitionScale
-        RationalScalar.of(1, 6), // dtMax
-        2000, // maxIter
-        Se2StateSpaceModel.INSTANCE.getLipschitz()), // Lipschitz
-        R2Controls.createRadial(10)); // ;parameters.getResolutionInt())); //TODO: JAN possible to use parameters.?
+  public SE2AnyEntity(Tensor state, int resolution) {
+    super(state, //
+        // --
+        new Se2Parameters( //
+            (RationalScalar) RealScalar.of(resolution), // resolution
+            RealScalar.of(2), // TimeScale
+            RealScalar.of(100), // DepthScale
+            Tensors.vector(5, 5, 50 / Math.PI), // PartitionScale 50/pi == 15.9155
+            RationalScalar.of(1, 6), // dtMax
+            2000, // maxIter
+            Se2StateSpaceModel.INSTANCE.getLipschitz()), // Lipschitz
+        // --
+        Se2Controls.createControlsForwardAndReverse(RotationUtils.DEGREE(60), resolution), //
+        // --
+        new SimpleEpisodeIntegrator( //
+            Se2StateSpaceModel.INSTANCE, //
+            RungeKutta4Integrator.INSTANCE, //
+            new StateTime(state, RealScalar.ZERO)),
+        //
+        RealScalar.of(1.5), RealScalar.of(1)); //
     final Scalar goalRadius_xy = Sqrt.of(RealScalar.of(2)).divide(parameters.getEta().Get(0));
     final Scalar goalRadius_theta = Sqrt.of(RealScalar.of(2)).divide(parameters.getEta().Get(2));
     goalRadius = Tensors.of(goalRadius_xy, goalRadius_xy, goalRadius_theta);
@@ -90,7 +101,7 @@ public class SE2AnyEntity extends AbstractAnyEntity {
       graphics.fill(path2d);
     }
     { // indicate position delay[s] into the future
-      Tensor state = getEstimatedLocationAt(DELAY_HINT);
+      Tensor state = getEstimatedLocationAt(delayHint());
       Point2D point = owlyLayer.toPoint2D(state);
       graphics.setColor(new Color(255, 128, 64, 192));
       graphics.fill(new Rectangle2D.Double(point.getX() - 2, point.getY() - 2, 5, 5));
@@ -110,6 +121,6 @@ public class SE2AnyEntity extends AbstractAnyEntity {
 
   @Override
   protected StateIntegrator createIntegrator() {
-    return FixedStateIntegrator.create(RungeKutta45Integrator.INSTANCE, parameters.getdtMax(), parameters.getTrajectorySize());
+    return FixedStateIntegrator.create(RungeKutta4Integrator.INSTANCE, parameters.getdtMax(), parameters.getTrajectorySize());
   }
 }

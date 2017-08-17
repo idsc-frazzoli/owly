@@ -5,7 +5,7 @@ import java.util.Collection;
 
 import ch.ethz.idsc.owly.demo.delta.DeltaControls;
 import ch.ethz.idsc.owly.demo.delta.DeltaGoalManager;
-import ch.ethz.idsc.owly.demo.delta.DeltaGoalManagerExt;
+import ch.ethz.idsc.owly.demo.delta.DeltaHeuristicGoalManager;
 import ch.ethz.idsc.owly.demo.delta.DeltaParameters;
 import ch.ethz.idsc.owly.demo.delta.DeltaStateSpaceModel;
 import ch.ethz.idsc.owly.demo.delta.ImageGradient;
@@ -81,7 +81,7 @@ public enum DeltaHelper {
     TrajectoryRegionQuery obstacleQuery = //
         new SimpleTrajectoryRegionQuery(new TimeInvariantRegion( //
             new ImageRegion(obstacleImage, range, true)));
-    DeltaGoalManagerExt deltaGoalManager = new DeltaGoalManagerExt( //
+    DeltaHeuristicGoalManager deltaGoalManager = new DeltaHeuristicGoalManager( //
         Tensors.vector(2.9, 2.4), Tensors.vector(.3, .3), stateSpaceModel.getMaxPossibleChange());
     // DeltaGoalManager deltaGoalManager = new DeltaGoalManager( //
     // Tensors.vector(2.1, 0.3), Tensors.vector(.3, .3));
@@ -114,7 +114,7 @@ public enum DeltaHelper {
     TrajectoryRegionQuery obstacleQuery = //
         new SimpleTrajectoryRegionQuery(new TimeInvariantRegion( //
             new ImageRegion(obstacleImage, range, true)));
-    DeltaGoalManagerExt deltaGoalManager = new DeltaGoalManagerExt( //
+    DeltaHeuristicGoalManager deltaGoalManager = new DeltaHeuristicGoalManager( //
         Tensors.vector(2.9, 2.4), Tensors.vector(.3, .3), stateSpaceModel.getMaxPossibleChange());
     // DeltaGoalManager deltaGoalManager = new DeltaGoalManager( //
     // Tensors.vector(2.1, 0.3), Tensors.vector(.3, .3));
