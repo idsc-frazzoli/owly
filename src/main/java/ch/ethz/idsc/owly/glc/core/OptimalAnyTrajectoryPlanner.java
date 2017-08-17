@@ -83,8 +83,6 @@ public class OptimalAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
               if (getObstacleQuery().isDisjoint(connectors.get(next))) {// better node not collision
                 // TODO Needs to be checked with theory, removal from queue is unsure.
                 final Collection<GlcNode> subDeleteTree = deleteSubtreeOf(formerLabel);
-                if (subDeleteTree.size() > 1)
-                  System.err.println("Pruned Tree of Size: " + subDeleteTree.size());
                 // adding the formerLabel as formerCandidate to bucket
                 CandidatePair formerCandidate = new CandidatePair(formerLabel.parent(), formerLabel);
                 if (!formerCandidate.getCandidate().isLeaf()) {
@@ -221,12 +219,12 @@ public class OptimalAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
   }
 
   @Override
-  public void ObstacleUpdate(TrajectoryRegionQuery newObstacle) {
-    ObstacleUpdate(newObstacle, new InvertedRegion(EmptyRegion.INSTANCE));
+  public void obstacleUpdate(TrajectoryRegionQuery newObstacle) {
+    obstacleUpdate(newObstacle, new InvertedRegion(EmptyRegion.INSTANCE));
   }
 
   @Override
-  public void ObstacleUpdate(TrajectoryRegionQuery newObstacle, Region possibleNewObstacleRegion) {
+  public void obstacleUpdate(TrajectoryRegionQuery newObstacle, Region possibleNewObstacleRegion) {
     if (newObstacle == this.getObstacleQuery() || newObstacle == null) {
       return;
     }
@@ -268,8 +266,6 @@ public class OptimalAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
                   connector = getStateIntegrator().trajectory(nextBestParent.stateTime(), nextBestNode.flow());
                   if (getObstacleQuery().isDisjoint(connector)) {
                     final Collection<GlcNode> subDeleteTree = deleteSubtreeOf(label);
-                    if (subDeleteTree.size() > 1) // DEBUG INFO
-                      System.err.println("Pruned Tree of Size: " + subDeleteTree.size());
                     CandidatePair formerLabelCandidate = new CandidatePair(label.parent(), label);
                     label.parent().removeEdgeTo(label);
                     if (!formerLabelCandidate.getCandidate().isLeaf()) {
@@ -299,8 +295,6 @@ public class OptimalAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
           } else { // DELETE label, as IN collision
             deletedNodes++;
             final Collection<GlcNode> subDeleteTree = deleteSubtreeOf(label);
-            if (subDeleteTree.size() > 1) // DEBUG INFO
-              System.err.println("Pruned Tree of Size: " + subDeleteTree.size());
             CandidatePair formerLabelCandidate = new CandidatePair(label.parent(), label);
             label.parent().removeEdgeTo(label);
             if (!formerLabelCandidate.getCandidate().isLeaf()) {
@@ -413,7 +407,7 @@ public class OptimalAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
   }
 
   @Override
-  /* package */ final void RelabelingDomains() {
+  /* package */ final void relabelingDomains() {
     GlcNode root = getRoot();
     List<GlcNode> treeList = new ArrayList<GlcNode>(Nodes.ofSubtree(root));
     System.err.println("checking for domainlabel changes due to heuristic change,  Treesize: " + treeList.size());
@@ -443,8 +437,6 @@ public class OptimalAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
                     getStateIntegrator().trajectory(possibleCandidateOrigin.stateTime(), possibleCandidateNode.flow());
                 if (getObstacleQuery().isDisjoint(connector)) {
                   Collection<GlcNode> deleteTree = deleteSubtreeOf(label);
-                  if (deleteTree.size() > 1) // DEBUG INFO
-                    System.err.println("Pruned Tree of Size: " + deleteTree.size());
                   CandidatePair formerLabelCandidate = new CandidatePair(label.parent(), label);
                   label.parent().removeEdgeTo(label);
                   if (!formerLabelCandidate.getCandidate().isLeaf()) {
@@ -490,7 +482,7 @@ public class OptimalAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
   }
 
   @Override
-  protected final boolean GoalCheckTree(final Region possibleGoalNodesRegion) {
+  protected final boolean goalCheckTree(final Region possibleGoalNodesRegion) {
     final Collection<GlcNode> treeCollection = Nodes.ofSubtree(getRoot());
     // Smart way: uses 15% -> 30% of the time of normal implementation
     // Smart way: uses 30% -> 40% of the time of parallel implementation
@@ -521,7 +513,7 @@ public class OptimalAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
   }
 
   @Override
-  public final boolean GoalCheckTree() {
+  public final boolean goalCheckTree() {
     final Collection<GlcNode> treeCollection = Nodes.ofSubtree(getRoot());
     return GoalCheckTree(treeCollection);
   }

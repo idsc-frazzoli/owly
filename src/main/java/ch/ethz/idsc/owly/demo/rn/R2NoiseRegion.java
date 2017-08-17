@@ -23,6 +23,7 @@ public class R2NoiseRegion implements Region {
 
   @Override
   public boolean isMember(Tensor tensor) {
+    tensor = tensor.extract(0, 2);
     return threshold < continuousNoise.apply(tensor).number().doubleValue();
   }
 }

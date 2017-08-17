@@ -25,10 +25,10 @@ import javax.swing.WindowConstants;
 
 import ch.ethz.idsc.owly.data.GlobalAssert;
 import ch.ethz.idsc.owly.data.TimeKeeper;
-import ch.ethz.idsc.owly.demo.rn.AbstractAnyEntity;
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
 import ch.ethz.idsc.owly.glc.adapter.Trajectories;
 import ch.ethz.idsc.owly.glc.core.GlcNode;
+import ch.ethz.idsc.owly.glc.core.Heuristic;
 import ch.ethz.idsc.owly.glc.core.TrajectoryPlanner;
 import ch.ethz.idsc.owly.glc.core.TrajectorySample;
 import ch.ethz.idsc.owly.gui.EtaRender;
@@ -38,6 +38,7 @@ import ch.ethz.idsc.owly.gui.OwlyComponent;
 import ch.ethz.idsc.owly.gui.RenderElements;
 import ch.ethz.idsc.owly.gui.RenderInterface;
 import ch.ethz.idsc.owly.gui.TrajectoryRender;
+import ch.ethz.idsc.owly.gui.TreeRender;
 import ch.ethz.idsc.owly.gui.misc.ImageRegionRender;
 import ch.ethz.idsc.owly.math.region.ImageRegion;
 import ch.ethz.idsc.owly.math.state.EmptyTrajectoryRegionQuery;
@@ -58,6 +59,7 @@ public class OwlyAnimationFrame {
   private final TrajectoryRender trajectoryRender = new TrajectoryRender(null);
   private final ObstacleRender obstacleRender = new ObstacleRender(null);
   private final GoalRender goalRender = new GoalRender(null);
+  private final TreeRender treeRender = new TreeRender(null);
   private final List<AnimationInterface> animationInterfaces = new LinkedList<>();
   /** reference to the entity that is controlled by the user */
   private AnimationInterface controllable = null;
@@ -86,8 +88,9 @@ public class OwlyAnimationFrame {
     owlyComponent.renderElements.list.add(trajectoryRender);
     owlyComponent.renderElements.list.add(obstacleRender);
     owlyComponent.renderElements.list.add(goalRender);
+    owlyComponent.renderElements.list.add(treeRender);
     { // periodic task for integration
-      final TimerTask timerTask = new TimerTask() { // animation and repaint task
+      final TimerTask timerTask = new TimerTask() {
         TimeKeeper timeKeeper = new TimeKeeper();
 
         @Override
@@ -99,7 +102,7 @@ public class OwlyAnimationFrame {
       timer.schedule(timerTask, 100, 20);
     }
     { // periodic task for rendering
-      final TimerTask timerTask = new TimerTask() { // animation and repaint task
+      final TimerTask timerTask = new TimerTask() {
         @Override
         public void run() {
           owlyComponent.jComponent.repaint();
@@ -156,6 +159,8 @@ public class OwlyAnimationFrame {
     public void expandResult(List<TrajectorySample> head, TrajectoryPlanner trajectoryPlanner) {
       etaRender.setEta(trajectoryPlanner.getEta());
       Optional<GlcNode> optional = trajectoryPlanner.getBest();
+      if (trajectoryPlanner.getGoalInterface() instanceof Heuristic) // movement till goalfound would be random walk
+        optional = trajectoryPlanner.getFinalGoalNode();
       if (optional.isPresent()) {
         List<TrajectorySample> trajectory = new ArrayList<>();
         if (controllable instanceof AbstractEntity) {
@@ -183,6 +188,9 @@ public class OwlyAnimationFrame {
           Collection<StateTime> collection = simpleTrajectoryRegionQuery.getSparseDiscoveredMembers();
           goalRender.setCollection(new HashSet<>(collection));
         }
+      }
+      {
+        treeRender.setCollection(new ArrayList<>(trajectoryPlanner.getDomainMap().values()));
       }
       owlyComponent.jComponent.repaint();
     }

@@ -17,16 +17,18 @@ import ch.ethz.idsc.tensor.Scalar;
 /** renders the edges between nodes
  * 
  * the edges are drawn as straight lines with the color of the cost to root */
-class TreeRender implements RenderInterface {
+public class TreeRender implements RenderInterface {
   private static final int NODE_WIDTH = 2;
-  private final Collection<? extends StateCostNode> collection;
+  private Collection<? extends StateCostNode> collection;
 
-  TreeRender(Collection<? extends StateCostNode> collection) {
+  public TreeRender(Collection<? extends StateCostNode> collection) {
     this.collection = collection;
   }
 
   @Override
   public void render(OwlyLayer owlyLayer, Graphics2D graphics) {
+    if (Objects.isNull(collection))
+      return;
     DoubleSummaryStatistics dss = collection.stream() //
         .map(StateCostNode::costFromRoot) //
         .map(Scalar::number) //
@@ -49,5 +51,9 @@ class TreeRender implements RenderInterface {
         graphics.draw(shape);
       }
     }
+  }
+
+  public void setCollection(Collection<? extends StateCostNode> collection) {
+    this.collection = collection;
   }
 }

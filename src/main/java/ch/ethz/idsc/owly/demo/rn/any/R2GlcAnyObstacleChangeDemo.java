@@ -82,7 +82,7 @@ enum R2GlcAnyObstacleChangeDemo {
                 // RnPointclouds.createRandomRegion(30, Tensors.vector(12, 12), Tensors.vector(0, 0), RealScalar.of(0.6)), //
                 new R2NoiseRegion(.2)//
             )));
-    trajectoryPlanner.ObstacleUpdate(obstacleQuery2);
+    trajectoryPlanner.obstacleUpdate(obstacleQuery2);
     owlyFrame.setGlc((TrajectoryPlanner) trajectoryPlanner);
     Expand.constTime(trajectoryPlanner, RealScalar.of(1.5), parameters.getDepthLimit());
     owlyFrame.setGlc((TrajectoryPlanner) trajectoryPlanner);

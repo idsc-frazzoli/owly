@@ -95,7 +95,7 @@ enum R2GlcConstTimeHeuristicSensingObstacleAnyDemo {
       TrajectoryRegionQuery newObstacleQuery = //
           new SimpleTrajectoryRegionQuery(new TimeInvariantRegion(//
               EuclideanDistanceDiscoverRegion.of(environmentRegion, trajectory.get(0).state(), RealScalar.of(4))));
-      trajectoryPlanner.ObstacleUpdate(newObstacleQuery, new SphericalRegion(trajectory.get(0).state(), RealScalar.of(4).add(RealScalar.ONE)));
+      trajectoryPlanner.obstacleUpdate(newObstacleQuery, new SphericalRegion(trajectory.get(0).state(), RealScalar.of(4).add(RealScalar.ONE)));
       // // -- GOALCHANGE
       // ticTemp = tic;
       // Optional<StateTime> furthestState = trajectoryPlanner.getFurthestGoalState(rnGoal.getGoalRegionList());

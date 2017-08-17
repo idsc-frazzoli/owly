@@ -7,7 +7,7 @@ import junit.framework.TestCase;
 
 public class DeltaGoalManagerExtTest extends TestCase {
   public void testSimple() {
-    DeltaGoalManagerExt deltaGoal = new DeltaGoalManagerExt(//
+    DeltaHeuristicGoalManager deltaGoal = new DeltaHeuristicGoalManager(//
         Tensors.vector(0, 0), Tensors.vector(1, 1), RealScalar.ONE);
     assertEquals(deltaGoal.minCostToGoal(Tensors.vector(2, 0)), RealScalar.ONE);
     assertEquals(deltaGoal.minCostToGoal(Tensors.vector(1, 0)), RealScalar.ZERO);

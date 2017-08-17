@@ -13,7 +13,7 @@ enum R2GlcAnyAnimationDemo {
   public static void main(String[] args) {
     OwlyAnimationFrame owlyAnimationFrame = new OwlyAnimationFrame();
     Tensor root = Tensors.vector(0.2, 0.2);
-    R2AnyEntity r2AnyEntity = new R2AnyEntity(root);
+    R2AnyEntity r2AnyEntity = new R2AnyEntity(root, 15);
     // TODO not final solution
     r2AnyEntity.trajectoryPlannerCallback = owlyAnimationFrame.trajectoryPlannerCallback;
     Region obstacleRegion = new R2NoiseRegion(0.1);
