@@ -4,6 +4,7 @@ package ch.ethz.idsc.owly.glc.adapter;
 import java.util.List;
 
 import ch.ethz.idsc.owly.glc.core.GoalInterface;
+import ch.ethz.idsc.owly.glc.core.Heuristic;
 import ch.ethz.idsc.owly.math.flow.Flow;
 import ch.ethz.idsc.owly.math.state.CostFunction;
 import ch.ethz.idsc.owly.math.state.StateTime;
@@ -11,7 +12,7 @@ import ch.ethz.idsc.owly.math.state.TrajectoryRegionQuery;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
 
-public class GoalAdapter implements GoalInterface {
+public class GoalAdapter implements GoalInterface, Heuristic {
   final CostFunction costFunction;
   final TrajectoryRegionQuery trajectoryRegionQuery;
 
