@@ -100,6 +100,10 @@ import ch.ethz.idsc.tensor.Tensor;
     return depth; // as RootNode has depth 0 (NOT 1)
   }
 
+  // FIXME JONAS also allow function to be called on node that is already root
+  // now there will be an exception!
+  // write tests for the 2 cases
+  // btw, imho function does not need to return value
   @Override
   public boolean makeRoot() {
     this.parent().removeEdgeTo(this);
