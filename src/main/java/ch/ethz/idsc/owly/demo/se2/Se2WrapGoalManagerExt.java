@@ -23,10 +23,10 @@ import ch.ethz.idsc.tensor.sca.Ramp;
  * {@link Se2WrapGoalManagerExt} works with {@link Se2Wrap} as well as with {@link TnIdentityWrap} */
 public class Se2WrapGoalManagerExt implements Region, CostFunction {
   private final CoordinateWrap coordinateWrap;
-  private final Se2DefaultGoalManagerExt goalManager;
+  private final Se2DefaultGoalManager goalManager;
 
   /** @param coordinateWrap */
-  public Se2WrapGoalManagerExt(CoordinateWrap coordinateWrap, Se2DefaultGoalManagerExt goalManager) {
+  public Se2WrapGoalManagerExt(CoordinateWrap coordinateWrap, Se2DefaultGoalManager goalManager) {
     this.coordinateWrap = coordinateWrap;
     this.goalManager = goalManager;
   }
@@ -39,11 +39,6 @@ public class Se2WrapGoalManagerExt implements Region, CostFunction {
   @Override
   public Scalar minCostToGoal(Tensor x) {
     return Ramp.of(coordinateWrap.distance(x, goalManager.center).subtract(goalManager.radiusVector.Get(1)));
-  }
-
-  @Override
-  public boolean hasHeuristic() {
-    return true;
   }
 
   @Override

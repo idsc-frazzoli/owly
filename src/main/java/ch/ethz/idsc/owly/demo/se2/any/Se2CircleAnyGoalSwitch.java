@@ -4,7 +4,7 @@ package ch.ethz.idsc.owly.demo.se2.any;
 import java.util.ArrayList;
 import java.util.List;
 
-import ch.ethz.idsc.owly.demo.se2.Se2DefaultGoalManagerExt;
+import ch.ethz.idsc.owly.demo.se2.Se2DefaultGoalManager;
 import ch.ethz.idsc.owly.demo.se2.Se2MinCurvatureGoalManager;
 import ch.ethz.idsc.owly.glc.adapter.Parameters;
 import ch.ethz.idsc.owly.glc.core.AbstractAnyTrajectoryPlanner;
@@ -42,7 +42,7 @@ enum Se2CircleAnyGoalSwitch {
     if (parameters != null) { // changeGoal can be conducted quicker, due to GoalHint
       Tensor maxChange = Tensors.of(RealScalar.ONE, RealScalar.ONE, RotationUtils.DEGREE(45));
       Tensor possibleGoalReachabilityRegionRadius = radiusVector.add(maxChange);
-      Se2DefaultGoalManagerExt possibleGoalReachabilityRegion = new Se2DefaultGoalManagerExt(goal, possibleGoalReachabilityRegionRadius);
+      Se2DefaultGoalManager possibleGoalReachabilityRegion = new Se2DefaultGoalManager(goal, possibleGoalReachabilityRegionRadius);
       return trajectoryPlanner.changeToGoal(se2GoalManager.getGoalInterface(), possibleGoalReachabilityRegion);
     } else {
       return trajectoryPlanner.changeToGoal(se2GoalManager.getGoalInterface());

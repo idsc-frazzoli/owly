@@ -5,7 +5,7 @@ import java.util.Collection;
 import java.util.List;
 
 import ch.ethz.idsc.owly.demo.se2.Se2Controls;
-import ch.ethz.idsc.owly.demo.se2.Se2DefaultGoalManagerExt;
+import ch.ethz.idsc.owly.demo.se2.Se2DefaultGoalManager;
 import ch.ethz.idsc.owly.demo.se2.Se2StateSpaceModel;
 import ch.ethz.idsc.owly.demo.se2.glc.Se2Parameters;
 import ch.ethz.idsc.owly.glc.adapter.Parameters;
@@ -54,7 +54,7 @@ class Se2IterateSimpleGlcAnyStreetDemo {
     parameters.printResolution();
     // Se2Controls uses Se2StateSpaceModel
     Collection<Flow> controls = Se2Controls.createControls(RotationUtils.DEGREE(45), parameters.getResolutionInt());
-    Se2DefaultGoalManagerExt se2GoalManager = new Se2DefaultGoalManagerExt(//
+    Se2DefaultGoalManager se2GoalManager = new Se2DefaultGoalManager(//
         Tensors.vector(-7, 0, 0), radiusVector);
     TrajectoryRegionQuery obstacleQuery = //
         new SimpleTrajectoryRegionQuery(new TimeInvariantRegion( //
@@ -81,7 +81,7 @@ class Se2IterateSimpleGlcAnyStreetDemo {
       tic = System.nanoTime();
       int index = iter % 4;
       // sawtooth trajectory for goals
-      Se2DefaultGoalManagerExt se2GoalManager2 = new Se2DefaultGoalManagerExt(//
+      Se2DefaultGoalManager se2GoalManager2 = new Se2DefaultGoalManager(//
           Tensors.vector(-7 + iter, index, 0), radiusVector);
       List<StateTime> trajectory = trajectoryPlanner.trajectoryToBest();
       if (trajectory != null) {

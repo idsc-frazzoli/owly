@@ -15,7 +15,7 @@ import ch.ethz.idsc.tensor.sca.Ramp;
 /** Nonholonomic Wheeled Robot
  * 
  * bapaden phd thesis: (5.5.13) */
-public class Se2MinDistGoalManager extends Se2DefaultGoalManagerExt {
+public class Se2MinDistGoalManager extends Se2DefaultGoalManager {
   public Se2MinDistGoalManager(Tensor goal, Tensor radiusVector) {
     super(goal, radiusVector);
   }

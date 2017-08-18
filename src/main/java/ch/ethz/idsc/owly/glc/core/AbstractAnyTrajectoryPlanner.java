@@ -9,6 +9,7 @@ import java.util.ListIterator;
 import java.util.Optional;
 
 import ch.ethz.idsc.owly.data.tree.Nodes;
+import ch.ethz.idsc.owly.glc.adapter.HeuristicQ;
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
 import ch.ethz.idsc.owly.glc.adapter.TrajectoryGoalManager;
 import ch.ethz.idsc.owly.math.region.EmptyRegion;
@@ -77,11 +78,13 @@ public abstract class AbstractAnyTrajectoryPlanner extends AbstractTrajectoryPla
     // -- GOAL: goalNode deleted?
     best.keySet().removeAll(deleteTreeCollection);
     // -- QUEUE: Deleting Nodes from Queue
+    // removal from queue might lead to non convergence to optimal Solution, when R is increased
     queue().removeAll(deleteTreeCollection);
     // -- DOMAINMAP: Removing Nodes (DeleteTree) from DomainMap
     domainMap().values().removeAll(deleteTreeCollection);
     // -- EDGE: Removing Edges between Nodes in DeleteTree
     // TODO edge removal of all nodes needed?
+    // better for garbage collector, otherwise child<->parent pair might keep itself in existence
     // Minimum needed:
     // baseRoot.parent().removeEdgeTo(baseRoot);
     // oldRoot has no parent, therefore is skipped
@@ -106,7 +109,8 @@ public abstract class AbstractAnyTrajectoryPlanner extends AbstractTrajectoryPla
     long tictotal = System.nanoTime();
     {
       // boolean noHeuristic = ((getGoalInterface() instanceof NoHeuristic) && (newGoal instanceof NoHeuristic));
-      boolean noHeuristic = !getGoalInterface().hasHeuristic() && !newGoal.hasHeuristic();
+      // boolean noHeuristic = !getGoalInterface().hasHeuristic() && !newGoal.hasHeuristic();
+      boolean noHeuristic = !HeuristicQ.of(getGoalInterface()) && !HeuristicQ.of(newGoal);
       setGoalInterface(newGoal);
       long tic = System.nanoTime();
       GlcNode root = getRoot();
@@ -129,7 +133,7 @@ public abstract class AbstractAnyTrajectoryPlanner extends AbstractTrajectoryPla
       boolean goalInTreeFound = false;
       long tic = System.nanoTime();
       // old check for debugging
-      // goalInTreeFound = GoalCheckTree();
+      // goalInTreeFound = goalCheckTree();
       // Scalar timeDiffOld = RealScalar.of((System.nanoTime() - tic) * 1e-9);
       // Collection<GlcNode> oldBest = new ArrayList<>(best.keySet());
       // setBestNull();

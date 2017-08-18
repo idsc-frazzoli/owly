@@ -11,7 +11,6 @@ import ch.ethz.idsc.owly.math.region.EllipsoidRegion;
 import ch.ethz.idsc.owly.math.region.Region;
 import ch.ethz.idsc.owly.math.state.StateTime;
 import ch.ethz.idsc.owly.math.state.TimeInvariantRegion;
-import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.red.Norm;
@@ -23,36 +22,23 @@ public class DeltaxtGoalManagerExt extends SimpleTrajectoryRegionQuery implement
   private final Tensor center;
   private final Tensor radius;
   private final Scalar maxSpeed;
-  private final Scalar timeCostScalingFactor; // TODO JONAS not used
 
-  // Constructor with Default value in CostScaling
   public DeltaxtGoalManagerExt(Tensor center, Tensor radius, Scalar maxSpeed) {
-    this(center, radius, maxSpeed, RealScalar.ONE);
-  }
-
-  public DeltaxtGoalManagerExt(Tensor center, Tensor radius, Scalar maxSpeed, Scalar timeCostScalingFactor) {
     super(new TimeInvariantRegion(new EllipsoidRegion(center, radius)));
     this.center = center;
     this.maxSpeed = maxSpeed;
     if (!radius.Get(0).equals(radius.Get(1)))
       throw new RuntimeException(); // x-y radius have to be equal
     this.radius = radius;
-    this.timeCostScalingFactor = timeCostScalingFactor;
   }
 
-  // --
   public DeltaxtGoalManagerExt(Region region, Tensor center, Tensor radius, Scalar maxSpeed) {
-    this(region, center, radius, maxSpeed, RealScalar.ONE);
-  }
-
-  public DeltaxtGoalManagerExt(Region region, Tensor center, Tensor radius, Scalar maxSpeed, Scalar timeCostScalingFactor) {
     super(new TimeInvariantRegion(region));
     this.center = center;
     this.maxSpeed = maxSpeed;
     if (!radius.Get(0).equals(radius.Get(1)))
       throw new RuntimeException(); // x-y radius have to be equal
     this.radius = radius.Get(0);
-    this.timeCostScalingFactor = timeCostScalingFactor;
   }
   // --
 
@@ -83,10 +69,5 @@ public class DeltaxtGoalManagerExt extends SimpleTrajectoryRegionQuery implement
         .add(Power.of(r2Radius.Get(1).multiply(r2Vector.Get(0)), 2)));
     Scalar specificRadius = radius.Get(0).multiply(radius.Get(1)).multiply(Norm._2.of(r2x.subtract(r2Center))).divide(root);
     return Ramp.of(Norm._2.of(r2x.subtract(r2Center)).subtract(specificRadius).divide(maxSpeed)); // <- do not change
-  }
-
-  @Override
-  public boolean hasHeuristic() {
-    return true;
   }
 }

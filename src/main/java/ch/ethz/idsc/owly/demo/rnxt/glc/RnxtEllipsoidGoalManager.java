@@ -51,9 +51,4 @@ public class RnxtEllipsoidGoalManager extends SimpleTrajectoryRegionQuery implem
   public Scalar minCostToGoal(Tensor x) {
     return RealScalar.ZERO;
   }
-
-  @Override
-  public boolean hasHeuristic() {
-    return false;
-  }
 }

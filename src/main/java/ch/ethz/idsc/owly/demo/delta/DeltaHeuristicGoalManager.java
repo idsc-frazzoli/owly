@@ -69,9 +69,4 @@ public class DeltaHeuristicGoalManager extends SimpleTrajectoryRegionQuery imple
     // return RealScalar.ZERO;
     return Ramp.of(Norm._2.of(x.subtract(center)).subtract(radius).divide(maxSpeed));
   }
-
-  @Override
-  public boolean hasHeuristic() {
-    return true;
-  }
 }

@@ -30,9 +30,4 @@ class IpGoalManager extends SimpleTrajectoryRegionQuery implements GoalInterface
   public Scalar minCostToGoal(Tensor x) {
     return RealScalar.ZERO;
   }
-
-  @Override
-  public boolean hasHeuristic() {
-    return false;
-  }
 }

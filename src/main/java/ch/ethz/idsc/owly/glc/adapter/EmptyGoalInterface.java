@@ -30,11 +30,6 @@ public enum EmptyGoalInterface implements GoalInterface {
   }
 
   @Override
-  public boolean hasHeuristic() {
-    return false;
-  }
-
-  @Override
   public int firstMember(List<StateTime> trajectory) {
     return TrajectoryRegionQuery.NOMATCH;
   }

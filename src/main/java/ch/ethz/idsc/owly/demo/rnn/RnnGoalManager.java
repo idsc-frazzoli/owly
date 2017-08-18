@@ -42,9 +42,4 @@ class RnnGoalManager extends SimpleTrajectoryRegionQuery implements GoalInterfac
   public Scalar minCostToGoal(Tensor x) {
     return RealScalar.ZERO;
   }
-
-  @Override
-  public boolean hasHeuristic() {
-    return false;
-  }
 }

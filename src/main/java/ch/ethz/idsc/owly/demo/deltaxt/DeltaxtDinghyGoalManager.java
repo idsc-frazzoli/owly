@@ -15,9 +15,6 @@ import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.red.Norm;
 
 public class DeltaxtDinghyGoalManager extends TrajectoryGoalManager implements GoalInterface {
-  // TODO JONAS 2 variables not used:
-  private final Scalar maxSpeed;
-  private final DeltaxtStateSpaceModel stateSpaceModel;
   private final Scalar timeCostScalingFactor;
 
   public DeltaxtDinghyGoalManager(List<Region> goalRegions, DeltaxtStateSpaceModel stateSpaceModel) {
@@ -26,8 +23,6 @@ public class DeltaxtDinghyGoalManager extends TrajectoryGoalManager implements G
 
   public DeltaxtDinghyGoalManager(List<Region> goalRegions, Scalar timeCostScalingFactor, DeltaxtStateSpaceModel stateSpaceModel) {
     super(goalRegions);
-    this.stateSpaceModel = stateSpaceModel;
-    this.maxSpeed = stateSpaceModel.getMaxPossibleChange();
     this.timeCostScalingFactor = timeCostScalingFactor;
   }
 
@@ -41,22 +36,10 @@ public class DeltaxtDinghyGoalManager extends TrajectoryGoalManager implements G
     return sum.multiply(StateTimeTrajectories.timeIncrement(from, trajectory));
   }
 
-  /** Ellipsoid with axis: a,b and vector from Center: v = (x,y)
-   * specific radius at intersection:
-   * r :
-   * 
-   * a*b * ||v||
-   * ---------------
-   * sqrt(a²y² + b²x²) */
   @Override
   public Scalar minCostToGoal(Tensor x) {
     // B. Paden: A Generalized Label Correcting Method for Optimal Kinodynamic Motion Planning
     // p. 79 Eq: 6.4.14
     return RealScalar.ZERO;
-  }
-
-  @Override
-  public boolean hasHeuristic() {
-    return false;
   }
 }

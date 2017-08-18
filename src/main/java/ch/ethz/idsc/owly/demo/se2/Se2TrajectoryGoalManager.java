@@ -1,5 +1,5 @@
 // code by jl
-package ch.ethz.idsc.owly.demo.rn;
+package ch.ethz.idsc.owly.demo.se2;
 
 import java.util.List;
 
@@ -15,11 +15,11 @@ import ch.ethz.idsc.tensor.red.Norm;
 import ch.ethz.idsc.tensor.sca.Ramp;
 
 /** objective is minimum time */
-public class RnTrajectoryGoalManager extends TrajectoryGoalManager {
+public class Se2TrajectoryGoalManager extends TrajectoryGoalManager {
   private final List<StateTime> heuristicTrajectory;
   private final Scalar radius;
 
-  public RnTrajectoryGoalManager(List<Region> goalRegions, List<StateTime> heuristicTrajectory, Tensor radius) {
+  public Se2TrajectoryGoalManager(List<Region> goalRegions, List<StateTime> heuristicTrajectory, Tensor radius) {
     super(goalRegions);
     this.heuristicTrajectory = heuristicTrajectory;
     if (!radius.Get(0).equals(radius.Get(1)))
@@ -34,7 +34,8 @@ public class RnTrajectoryGoalManager extends TrajectoryGoalManager {
 
   @Override
   public Scalar minCostToGoal(Tensor x) {
-    return Ramp.of(Norm._2.of(x.subtract(StateTimeTrajectories.getLast(heuristicTrajectory).state())).subtract(radius)//
+    x = x.extract(0, 2);
+    return Ramp.of(Norm._2.of(x.subtract(StateTimeTrajectories.getLast(heuristicTrajectory).state().extract(0, 2))).subtract(radius)//
         .divide(RealScalar.ONE)); // divide by maximum "speed"
   }
 }

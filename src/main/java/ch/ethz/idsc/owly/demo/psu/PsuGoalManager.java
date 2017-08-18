@@ -40,11 +40,6 @@ public class PsuGoalManager implements Region, CostFunction {
   }
 
   @Override
-  public boolean hasHeuristic() {
-    return false;
-  }
-
-  @Override
   public boolean isMember(Tensor x) {
     return Scalars.lessThan(coordinateWrap.distance(x, center).subtract(radius), RealScalar.ZERO);
   }

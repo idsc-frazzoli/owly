@@ -56,7 +56,6 @@ enum DeltaGlcConstTimeHeuristicAnyDemo {
     RationalScalar resolution = (RationalScalar) RationalScalar.of(14, 1);
     TrajectoryPlannerContainer slowTrajectoryPlannerContainer = DeltaHelper.createGlcAny(RealScalar.of(-0.5), resolution, partitionScale);
     // -- GOALMANAGER
-    // TODO needs to be removed from main
     Iterator<StateTime> iterator = quickTrajectory.iterator();
     List<Region> goalRegions = new ArrayList<>();
     List<Region> goalCheckHelpRegions = new ArrayList<>();

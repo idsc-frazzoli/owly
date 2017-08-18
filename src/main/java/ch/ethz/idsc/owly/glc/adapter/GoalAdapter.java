@@ -31,11 +31,6 @@ public class GoalAdapter implements GoalInterface {
   }
 
   @Override
-  public boolean hasHeuristic() {
-    return costFunction.hasHeuristic();
-  }
-
-  @Override
   public int firstMember(List<StateTime> trajectory) {
     return trajectoryRegionQuery.firstMember(trajectory);
   }

@@ -48,7 +48,9 @@ public class R2AnyEntity extends AbstractAnyEntity {
         RationalScalar.of(1, 6), // dtMax
         2000, // maxIter
         RealScalar.ONE), // Lipschitz
+        // --
         R2Controls.createRadial(resolution), //
+        // --
         new SimpleEpisodeIntegrator( //
             SingleIntegratorStateSpaceModel.INSTANCE, //
             EulerIntegrator.INSTANCE, //
