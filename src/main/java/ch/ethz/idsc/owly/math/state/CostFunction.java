@@ -19,8 +19,11 @@ public interface CostFunction extends Serializable {
   /** if a lower bound of the cost to goal is unknown,
    * the function should return {@link RealScalar#ZERO}.
    * 
-   * it is imperative that the function does not return a
-   * greater number than is absolutely necessary to reach the goal
+   * <p>it is imperative that the function does not return a greater number than
+   * is absolutely necessary to reach the goal.
+   * 
+   * <p>if instance encodes a non-trivial heuristic, i.e. a return value not
+   * always equals to zero, the function should throw an exception if x == null
    * 
    * @param x
    * @return lower bound of cost to goal */

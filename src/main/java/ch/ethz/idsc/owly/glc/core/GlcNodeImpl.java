@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 import ch.ethz.idsc.owly.data.tree.AbstractNode;
 import ch.ethz.idsc.owly.data.tree.Nodes;
@@ -100,12 +101,14 @@ import ch.ethz.idsc.tensor.Tensor;
     return depth; // as RootNode has depth 0 (NOT 1)
   }
 
-  @Override
+  @Override // from GlcNode
   public void makeRoot() {
-    if (isRoot())
-      return;
-    this.parent().removeEdgeTo(this);
-    this.flow = null;
-    return;
+    if (isRoot()) {
+      if (Objects.nonNull(flow))
+        throw new RuntimeException();
+    } else {
+      parent().removeEdgeTo(this);
+      flow = null;
+    }
   }
 }

@@ -36,9 +36,9 @@ public interface GlcNode extends StateCostNode {
 
   int depth();
 
-  // function is only called by motion planners.
-  // data structures that rely on the sorting by merit
-  // may become invalid once the merit is set to a new value
+  /** function is only called by motion planners.
+   * data structures that rely on the sorting by merit
+   * may become invalid once the merit is set to a new value */
   void setMinCostToGoal(Scalar minCostToGoal);
 
   int reCalculateDepth();

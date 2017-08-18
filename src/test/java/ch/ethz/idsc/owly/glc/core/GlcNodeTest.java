@@ -1,4 +1,4 @@
-// code by jph
+// code by jph and jl
 package ch.ethz.idsc.owly.glc.core;
 
 import java.util.ArrayList;

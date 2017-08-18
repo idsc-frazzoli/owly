@@ -167,7 +167,7 @@ public abstract class AbstractAnyEntity extends AbstractEntity {
   /** Wrap function, needs to be overwritten for StateSpaces with angles
    * @return */
   protected CoordinateWrap getWrap() {
-    return new IdentityWrap();
+    return IdentityWrap.INSTANCE;
   }
 
   /** creates the first Obstacle of the planner at initialization
