@@ -70,9 +70,4 @@ public class DeltaxtGoalManagerExt extends SimpleTrajectoryRegionQuery implement
     Scalar specificRadius = radius.Get(0).multiply(radius.Get(1)).multiply(Norm._2.of(r2x.subtract(r2Center))).divide(root);
     return Ramp.of(Norm._2.of(r2x.subtract(r2Center)).subtract(specificRadius).divide(maxSpeed)); // <- do not change
   }
-
-  @Override
-  public boolean hasHeuristic() {
-    return true;
-  }
 }

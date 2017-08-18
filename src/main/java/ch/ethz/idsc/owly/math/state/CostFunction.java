@@ -25,8 +25,4 @@ public interface CostFunction extends Serializable {
    * @param x
    * @return lower bound of cost to goal */
   Scalar minCostToGoal(Tensor x);
-
-  /** @return whether function {@link #minCostToGoal(Tensor)} may ever
-   * give something different from RealScalar.ZERO */
-  boolean hasHeuristic();
 }

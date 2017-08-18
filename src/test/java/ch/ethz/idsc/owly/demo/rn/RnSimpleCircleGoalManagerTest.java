@@ -43,13 +43,11 @@ public class RnSimpleCircleGoalManagerTest extends TestCase {
 
   public void testNoHeuristic1() {
     RnSimpleCircleGoalManager rnGoal = new RnSimpleCircleGoalManager(Tensors.vector(5, 0), RealScalar.of(2));
-    assertFalse(rnGoal.hasHeuristic()); // correct
     assertFalse(HeuristicInspection.hasHeuristic(rnGoal));
   }
 
   public void testNoHeuristic2() {
     RnSimpleCircleHeuristicGoalManager rnGoal = new RnSimpleCircleHeuristicGoalManager(Tensors.vector(5, 0), RealScalar.of(2));
-    assertTrue(rnGoal.hasHeuristic()); // correct
     assertTrue(HeuristicInspection.hasHeuristic(rnGoal));
   }
 }

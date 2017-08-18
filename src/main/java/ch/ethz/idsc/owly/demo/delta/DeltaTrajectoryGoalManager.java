@@ -57,9 +57,4 @@ public class DeltaTrajectoryGoalManager extends TrajectoryGoalManager {
     return Ramp.of(Norm._2.of(x.subtract(StateTimeTrajectories.getLast(heuristicTrajectory).state())) //
         .subtract(radius).divide(maxSpeed));
   }
-
-  @Override
-  public boolean hasHeuristic() {
-    return true;
-  }
 }

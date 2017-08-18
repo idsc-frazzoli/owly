@@ -42,9 +42,4 @@ public class DeltaxtDinghyGoalManager extends TrajectoryGoalManager implements G
     // p. 79 Eq: 6.4.14
     return RealScalar.ZERO;
   }
-
-  @Override
-  public boolean hasHeuristic() {
-    return false;
-  }
 }

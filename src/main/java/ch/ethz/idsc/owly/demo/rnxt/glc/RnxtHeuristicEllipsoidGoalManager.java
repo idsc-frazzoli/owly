@@ -72,9 +72,4 @@ public class RnxtHeuristicEllipsoidGoalManager extends SimpleTrajectoryRegionQue
     Scalar specificRadius = rnRadius.Get(0).multiply(rnRadius.Get(1)).multiply(Norm._2.of(rnState.subtract(rnCenter))).divide(root);
     return Ramp.of(Norm._2.of(rnState.subtract(rnCenter)).subtract(specificRadius)); // <- do not change
   }
-
-  @Override
-  public boolean hasHeuristic() {
-    return true;
-  }
 }

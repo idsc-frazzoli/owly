@@ -37,9 +37,4 @@ public class TwdMinCurvatureGoalManager extends TwdAbstractGoalManager {
   public Scalar minCostToGoal(Tensor x) {
     return Ramp.of(TwdStateSpaceModel.errorPosition(x, center).subtract(tolerance_xy));
   }
-
-  @Override
-  public boolean hasHeuristic() {
-    return true;
-  }
 }

@@ -29,9 +29,4 @@ public class DeltaGoalManager extends SimpleTrajectoryRegionQuery implements Goa
   public Scalar minCostToGoal(Tensor x) {
     return RealScalar.ZERO; // no heuristic, for simplicity
   }
-
-  @Override
-  public boolean hasHeuristic() {
-    return false;
-  }
 }
