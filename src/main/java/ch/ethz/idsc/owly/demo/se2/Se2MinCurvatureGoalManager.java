@@ -17,7 +17,7 @@ import ch.ethz.idsc.tensor.sca.Floor;
 import ch.ethz.idsc.tensor.sca.Power;
 import ch.ethz.idsc.tensor.sca.Ramp;
 
-public class Se2MinCurvatureGoalManager extends Se2DefaultGoalManagerExt {
+public class Se2MinCurvatureGoalManager extends Se2DefaultGoalManager {
   public Se2MinCurvatureGoalManager(Tensor center, Tensor radiusVector) {
     super(center, radiusVector);
   }

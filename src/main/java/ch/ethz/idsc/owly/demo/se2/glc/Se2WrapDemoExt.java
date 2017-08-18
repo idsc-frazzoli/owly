@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Optional;
 
 import ch.ethz.idsc.owly.demo.se2.Se2Controls;
-import ch.ethz.idsc.owly.demo.se2.Se2DefaultGoalManagerExt;
+import ch.ethz.idsc.owly.demo.se2.Se2DefaultGoalManager;
 import ch.ethz.idsc.owly.demo.se2.Se2IdentityWrap;
 import ch.ethz.idsc.owly.demo.se2.Se2Wrap;
 import ch.ethz.idsc.owly.demo.se2.Se2WrapGoalManagerExt;
@@ -46,7 +46,7 @@ enum Se2WrapDemoExt {
     CoordinateWrap coordinateWrap;
     coordinateWrap = new Se2Wrap(Tensors.vector(1, 1, 1));
     coordinateWrap = identity;
-    Se2DefaultGoalManagerExt se2DefaultGoalManager = new Se2DefaultGoalManagerExt(//
+    Se2DefaultGoalManager se2DefaultGoalManager = new Se2DefaultGoalManager(//
         Tensors.vector(-.5, 0, 0), radiusVector);
     Se2WrapGoalManagerExt se2WrapGoalManager = new Se2WrapGoalManagerExt( //
         coordinateWrap, se2DefaultGoalManager);

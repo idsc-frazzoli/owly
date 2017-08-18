@@ -3,7 +3,6 @@ package ch.ethz.idsc.owly.gui.ani;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.ListIterator;
 import java.util.Optional;
 
 import ch.ethz.idsc.owly.glc.adapter.Parameters;
@@ -173,7 +172,6 @@ public abstract class AbstractAnyEntity extends AbstractEntity {
   }
 
   private final int getIndexOfLastNodeOf(List<TrajectorySample> trajectory) {
-    ListIterator<TrajectorySample> iterator = trajectory.listIterator(trajectory.size()); // start at the back
     int index = trajectory.size() - 1;
     while (index >= 0) {
       Optional<GlcNode> optional = trajectoryPlanner.existsInTree(trajectory.get(index).stateTime());

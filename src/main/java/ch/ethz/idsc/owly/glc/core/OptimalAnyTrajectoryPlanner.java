@@ -147,9 +147,7 @@ public class OptimalAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
     // -- BASIC REROOTING AND DELETING
     // removes the new root from the child list of its parent
     // Disconnecting newRoot from Old Tree and collecting DeleteTree
-    boolean isRoot = newRoot.makeRoot();
-    if (!isRoot)
-      throw new RuntimeException(); // new Root is not root
+    newRoot.makeRoot();
     Collection<GlcNode> deleteTreeCollection = deleteSubtreeOf(oldRoot);
     // -- DEBUGING
     System.out.println("Removed " + (oldQueueSize - queue().size()) + " out of " + oldQueueSize + //
@@ -494,15 +492,15 @@ public class OptimalAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
     // checking only Nodes, which could reach the Goal
     System.out.println("Total Nodes in Tree: " + treeCollection.size() + " possibleGoalNodes: " + possibleGoalNodes.size());
     // --
-    return GoalCheckTree(possibleGoalNodes);
+    return goalCheckTree(possibleGoalNodes);
   }
 
-  // TODO JONAS rename first letter of function
-  private final boolean GoalCheckTree(Collection<GlcNode> treeCollection) {
+  private final boolean goalCheckTree(Collection<GlcNode> treeCollection) {
     // Parallel: 15%-50% Speedgain, tested with R2GlcConstTimeHeuristicAnyDemo,
     // TODO why does parallel give different result? then non parallel? e.g. R2GlcAnyCircleDemo
     //
-    // TODO JONAS is this still happening, please talk to JAN: No difference with synchronized, same bug, even with exactly the same List
+    // TODO JONAS is this still happening, please talk to JAN:
+    // No difference with synchronized, same bug, even with exactly the same List
     treeCollection.stream().forEach(node -> {
       if (!node.isRoot()) {
         final List<StateTime> trajectory = getStateIntegrator().trajectory(node.parent().stateTime(), node.flow());
@@ -516,6 +514,6 @@ public class OptimalAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
   @Override
   public final boolean goalCheckTree() {
     final Collection<GlcNode> treeCollection = Nodes.ofSubtree(getRoot());
-    return GoalCheckTree(treeCollection);
+    return goalCheckTree(treeCollection);
   }
 }

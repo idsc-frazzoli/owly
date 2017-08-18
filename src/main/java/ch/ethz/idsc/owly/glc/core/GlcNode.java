@@ -43,7 +43,6 @@ public interface GlcNode extends StateCostNode {
 
   int reCalculateDepth();
 
-  /** makes this Node root, by cutting connections to its parents
-   * @return if this root is root now */
-  boolean makeRoot();
+  /** makes this Node root, by cutting connections to its parents */
+  void makeRoot();
 }

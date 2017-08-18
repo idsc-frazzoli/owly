@@ -24,7 +24,6 @@ import ch.ethz.idsc.owly.math.state.StateIntegrator;
 import ch.ethz.idsc.owly.math.state.StateTime;
 import ch.ethz.idsc.owly.math.state.TimeInvariantRegion;
 import ch.ethz.idsc.owly.math.state.TrajectoryRegionQuery;
-import ch.ethz.idsc.tensor.DoubleScalar;
 import ch.ethz.idsc.tensor.RationalScalar;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Tensor;
@@ -38,9 +37,9 @@ enum Se2Demo {
     StateIntegrator stateIntegrator = FixedStateIntegrator.createDefault(RationalScalar.of(1, 6), 5);
     System.out.println("scale=" + eta);
     Collection<Flow> controls = Se2Controls.createControls(RotationUtils.DEGREE(45), 10);
-    Se2DefaultGoalManager se2GoalManager = new Se2DefaultGoalManager( //
-        Tensors.vector(2, 0), RealScalar.of(Math.PI * 0), //
-        DoubleScalar.of(.1), RotationUtils.DEGREE(10));
+    Se2DefaultGoalManager se2GoalManager = new Se2DefaultGoalManager(//
+        Tensors.vector(2, 0, Math.PI * 0), //
+        Tensors.vector(0.1, 0.1, 10 / 180 * Math.PI));
     TrajectoryRegionQuery obstacleQuery = //
         new SimpleTrajectoryRegionQuery(new TimeInvariantRegion( //
             RegionUnion.of( //

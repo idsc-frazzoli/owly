@@ -25,6 +25,7 @@ import javax.swing.WindowConstants;
 
 import ch.ethz.idsc.owly.data.GlobalAssert;
 import ch.ethz.idsc.owly.data.TimeKeeper;
+import ch.ethz.idsc.owly.glc.adapter.HeuristicInspection;
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
 import ch.ethz.idsc.owly.glc.adapter.Trajectories;
 import ch.ethz.idsc.owly.glc.core.GlcNode;
@@ -160,7 +161,8 @@ public class OwlyAnimationFrame {
       etaRender.setEta(trajectoryPlanner.getEta());
       Optional<GlcNode> optional = trajectoryPlanner.getBest();
       // if (trajectoryPlanner.getGoalInterface() instanceof Heuristic) // movement till goalfound would be random walk
-      if (trajectoryPlanner.getGoalInterface().hasHeuristic()) // movement till goalfound would be random walk
+      // if (trajectoryPlanner.getGoalInterface().hasHeuristic()) // movement till goalfound would be random walk
+      if (HeuristicInspection.hasHeuristic(trajectoryPlanner.getGoalInterface()))
         optional = trajectoryPlanner.getFinalGoalNode();
       if (optional.isPresent()) {
         List<TrajectorySample> trajectory = new ArrayList<>();

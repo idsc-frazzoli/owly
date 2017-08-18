@@ -9,6 +9,7 @@ import java.util.ListIterator;
 import java.util.Optional;
 
 import ch.ethz.idsc.owly.data.tree.Nodes;
+import ch.ethz.idsc.owly.glc.adapter.HeuristicInspection;
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
 import ch.ethz.idsc.owly.glc.adapter.TrajectoryGoalManager;
 import ch.ethz.idsc.owly.math.region.EmptyRegion;
@@ -106,7 +107,8 @@ public abstract class AbstractAnyTrajectoryPlanner extends AbstractTrajectoryPla
     long tictotal = System.nanoTime();
     {
       // boolean noHeuristic = ((getGoalInterface() instanceof NoHeuristic) && (newGoal instanceof NoHeuristic));
-      boolean noHeuristic = !getGoalInterface().hasHeuristic() && !newGoal.hasHeuristic();
+      // boolean noHeuristic = !getGoalInterface().hasHeuristic() && !newGoal.hasHeuristic();
+      boolean noHeuristic = !HeuristicInspection.hasHeuristic(getGoalInterface()) && !HeuristicInspection.hasHeuristic(newGoal);
       setGoalInterface(newGoal);
       long tic = System.nanoTime();
       GlcNode root = getRoot();
@@ -129,7 +131,7 @@ public abstract class AbstractAnyTrajectoryPlanner extends AbstractTrajectoryPla
       boolean goalInTreeFound = false;
       long tic = System.nanoTime();
       // old check for debugging
-      // goalInTreeFound = GoalCheckTree();
+      // goalInTreeFound = goalCheckTree();
       // Scalar timeDiffOld = RealScalar.of((System.nanoTime() - tic) * 1e-9);
       // Collection<GlcNode> oldBest = new ArrayList<>(best.keySet());
       // setBestNull();
