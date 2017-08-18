@@ -9,7 +9,7 @@ import java.util.ListIterator;
 import java.util.Optional;
 
 import ch.ethz.idsc.owly.data.tree.Nodes;
-import ch.ethz.idsc.owly.glc.adapter.HeuristicInspection;
+import ch.ethz.idsc.owly.glc.adapter.HeuristicQ;
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
 import ch.ethz.idsc.owly.glc.adapter.TrajectoryGoalManager;
 import ch.ethz.idsc.owly.math.region.EmptyRegion;
@@ -108,7 +108,7 @@ public abstract class AbstractAnyTrajectoryPlanner extends AbstractTrajectoryPla
     {
       // boolean noHeuristic = ((getGoalInterface() instanceof NoHeuristic) && (newGoal instanceof NoHeuristic));
       // boolean noHeuristic = !getGoalInterface().hasHeuristic() && !newGoal.hasHeuristic();
-      boolean noHeuristic = !HeuristicInspection.hasHeuristic(getGoalInterface()) && !HeuristicInspection.hasHeuristic(newGoal);
+      boolean noHeuristic = !HeuristicQ.of(getGoalInterface()) && !HeuristicQ.of(newGoal);
       setGoalInterface(newGoal);
       long tic = System.nanoTime();
       GlcNode root = getRoot();

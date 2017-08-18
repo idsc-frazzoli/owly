@@ -1,7 +1,7 @@
 // code by jph
 package ch.ethz.idsc.owly.demo.twd;
 
-import ch.ethz.idsc.owly.glc.adapter.HeuristicInspection;
+import ch.ethz.idsc.owly.glc.adapter.HeuristicQ;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Scalars;
@@ -12,7 +12,7 @@ public class TwdMinTimeGoalManagerTest extends TestCase {
   public void testSimple() {
     TwdMinTimeGoalManager manager = //
         new TwdMinTimeGoalManager(Tensors.vector(10, 0, Math.PI), RealScalar.ONE, RealScalar.ONE);
-    assertTrue(HeuristicInspection.hasHeuristic(manager.getGoalInterface()));
+    assertTrue(HeuristicQ.of(manager.getGoalInterface()));
     Scalar cost = manager.minCostToGoal(Tensors.vector(0, 0, 0));
     assertTrue(Scalars.lessEquals(RealScalar.of(9), cost));
     assertTrue(manager.isMember(Tensors.vector(10, 0, Math.PI + 0.9)));

@@ -2,17 +2,18 @@
 package ch.ethz.idsc.owly.glc.adapter;
 
 import ch.ethz.idsc.owly.glc.core.GoalInterface;
+import ch.ethz.idsc.owly.math.state.CostFunction;
 
 /** class contains static utility function that operate on instances of the {@link GoalInterface}
  * to test for the existence of Heuristics */
-public enum HeuristicInspection {
+public enum HeuristicQ {
   ;
   // TODO JAN: check with try and catch if correclty used
   /** Tests for the existence of a Heuristic
    * 
    * @param goalInterface the goalInterface to be tested
    * @return true if Heuristic exists, false if is does not exist */
-  public static boolean hasHeuristic(GoalInterface goalInterface) {
+  public static boolean of(CostFunction goalInterface) {
     try {
       goalInterface.minCostToGoal(null); // If this throws no exception x was not used and the result is a constant. --> no heuristic
     } catch (Exception e) {

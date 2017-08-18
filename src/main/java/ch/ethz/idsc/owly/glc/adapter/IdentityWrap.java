@@ -1,14 +1,12 @@
 // code by jph
-package ch.ethz.idsc.owly.demo.se2;
+package ch.ethz.idsc.owly.glc.adapter;
 
 import ch.ethz.idsc.owly.math.CoordinateWrap;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.red.Norm;
 
-//TODO JAN: the same as IdentityWrap, still needed
-public class Se2IdentityWrap implements CoordinateWrap {
-  // TODO still needs weights to unify x-y ["meters"] with angle [radians]
+public class IdentityWrap implements CoordinateWrap {
   @Override
   public Tensor represent(Tensor x) {
     return x;

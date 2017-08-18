@@ -6,25 +6,43 @@ import java.awt.Graphics2D;
 import java.awt.geom.Path2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
+import java.util.Optional;
 
+import ch.ethz.idsc.owly.demo.rn.R2Controls;
+import ch.ethz.idsc.owly.demo.rn.RnSimpleCircleHeuristicGoalManager;
 import ch.ethz.idsc.owly.demo.se2.Se2Controls;
-import ch.ethz.idsc.owly.demo.se2.Se2MinDistGoalManager;
 import ch.ethz.idsc.owly.demo.se2.Se2StateSpaceModel;
+import ch.ethz.idsc.owly.demo.se2.Se2TrajectoryGoalManager;
 import ch.ethz.idsc.owly.demo.se2.Se2Wrap;
 import ch.ethz.idsc.owly.demo.se2.glc.Se2Parameters;
+import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
+import ch.ethz.idsc.owly.glc.core.Expand;
+import ch.ethz.idsc.owly.glc.core.GlcNode;
+import ch.ethz.idsc.owly.glc.core.GlcNodes;
 import ch.ethz.idsc.owly.glc.core.GoalInterface;
+import ch.ethz.idsc.owly.glc.core.StandardTrajectoryPlanner;
+import ch.ethz.idsc.owly.glc.core.TrajectoryPlanner;
 import ch.ethz.idsc.owly.gui.OwlyLayer;
 import ch.ethz.idsc.owly.gui.ani.AbstractAnyEntity;
 import ch.ethz.idsc.owly.gui.ani.PlannerType;
+import ch.ethz.idsc.owly.math.CoordinateWrap;
 import ch.ethz.idsc.owly.math.RotationUtils;
 import ch.ethz.idsc.owly.math.Se2Utils;
+import ch.ethz.idsc.owly.math.flow.EulerIntegrator;
 import ch.ethz.idsc.owly.math.flow.Flow;
-import ch.ethz.idsc.owly.math.flow.RungeKutta4Integrator;
+import ch.ethz.idsc.owly.math.flow.RungeKutta45Integrator;
+import ch.ethz.idsc.owly.math.region.EllipsoidRegion;
+import ch.ethz.idsc.owly.math.region.Region;
 import ch.ethz.idsc.owly.math.state.FixedStateIntegrator;
 import ch.ethz.idsc.owly.math.state.SimpleEpisodeIntegrator;
 import ch.ethz.idsc.owly.math.state.StateIntegrator;
 import ch.ethz.idsc.owly.math.state.StateTime;
+import ch.ethz.idsc.owly.math.state.TimeInvariantRegion;
+import ch.ethz.idsc.owly.math.state.TrajectoryRegionQuery;
+import ch.ethz.idsc.tensor.DoubleScalar;
 import ch.ethz.idsc.tensor.RationalScalar;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
@@ -46,8 +64,10 @@ public class SE2AnyEntity extends AbstractAnyEntity {
       }).unmodifiable();
   private static final Se2Wrap SE2WRAP = new Se2Wrap(Tensors.vector(1, 1, 2));
   // ---
-  protected final Collection<Flow> controls = Se2Controls.createControlsForwardAndReverse(RealScalar.ONE, parameters.getResolutionInt());
   private final Tensor goalRadius;
+  private static final Scalar DELAY_HINT = RealScalar.of(2);
+  private static final Scalar EXPAND_TIME = RealScalar.of(1.75);
+  private TrajectoryRegionQuery obstacleQuery;
 
   /** @param state initial position of entity */
   public SE2AnyEntity(Tensor state, int resolution) {
@@ -66,10 +86,10 @@ public class SE2AnyEntity extends AbstractAnyEntity {
         // --
         new SimpleEpisodeIntegrator( //
             Se2StateSpaceModel.INSTANCE, //
-            RungeKutta4Integrator.INSTANCE, //
+            RungeKutta45Integrator.INSTANCE, //
             new StateTime(state, RealScalar.ZERO)),
         //
-        RealScalar.of(1.5), RealScalar.of(1)); //
+        DELAY_HINT, EXPAND_TIME); //
     final Scalar goalRadius_xy = Sqrt.of(RealScalar.of(2)).divide(parameters.getEta().Get(0));
     final Scalar goalRadius_theta = Sqrt.of(RealScalar.of(2)).divide(parameters.getEta().Get(2));
     goalRadius = Tensors.of(goalRadius_xy, goalRadius_xy, goalRadius_theta);
@@ -116,11 +136,53 @@ public class SE2AnyEntity extends AbstractAnyEntity {
 
   @Override
   protected final GoalInterface createGoal(Tensor goal) {
-    return new Se2MinDistGoalManager(goal, goalRadius).getGoalInterface();
+    return createGoalFromR2(goal);
+    // return new Se2MinDistGoalManager(goal, goalRadius).getGoalInterface();
+  }
+
+  protected final GoalInterface createGoalFromR2(Tensor goal) {
+    Tensor currentState = getEstimatedLocationAt(DELAY_HINT).extract(0, 2);
+    Tensor R2goal = goal.extract(0, 2);
+    long tic = System.nanoTime();
+    // ---
+    Tensor eta = Tensors.vector(8, 8);
+    StateIntegrator stateIntegrator = FixedStateIntegrator.create(EulerIntegrator.INSTANCE, RationalScalar.of(1, 5), 5);
+    Collection<Flow> controls = R2Controls.createRadial(10);
+    RnSimpleCircleHeuristicGoalManager rnGoal = new RnSimpleCircleHeuristicGoalManager(R2goal, goalRadius.Get(0));
+    // ---
+    TrajectoryPlanner trajectoryPlanner = new StandardTrajectoryPlanner( //
+        eta, stateIntegrator, controls, obstacleQuery, rnGoal);
+    trajectoryPlanner.insertRoot(currentState);
+    int iters = Expand.maxTime(trajectoryPlanner, RealScalar.of(1));
+    Optional<GlcNode> optional = trajectoryPlanner.getFinalGoalNode();
+    List<StateTime> trajectory = GlcNodes.getPathFromRootTo(optional.get());
+    List<Region> goalRegionsList = new ArrayList<>();
+    Tensor goalRadiusR2 = goalRadius.extract(0, 2).append(DoubleScalar.POSITIVE_INFINITY);
+    for (StateTime entry : trajectory) {
+      Tensor goalTemp = Tensors.of(entry.state().Get(0), entry.state().Get(1), RealScalar.ZERO);
+      if (trajectory.indexOf(entry) == (trajectory.size() - 1)) // if last entry of trajectory
+        goalRegionsList.add(new EllipsoidRegion(goal, goalRadius));
+      else
+        goalRegionsList.add(new EllipsoidRegion(goalTemp, goalRadiusR2));
+    }
+    long toc = System.nanoTime();
+    System.err.println("TrajectoryGoalcreation took: " + (toc - tic) * 1e-9 + "s");
+    return new Se2TrajectoryGoalManager(goalRegionsList, trajectory, goalRadiusR2);
+  }
+
+  @Override
+  protected TrajectoryRegionQuery initializeObstacle(Region region, Tensor currentState) {
+    obstacleQuery = new SimpleTrajectoryRegionQuery(new TimeInvariantRegion(region));
+    return obstacleQuery;
   }
 
   @Override
   protected StateIntegrator createIntegrator() {
-    return FixedStateIntegrator.create(RungeKutta4Integrator.INSTANCE, parameters.getdtMax(), parameters.getTrajectorySize());
+    return FixedStateIntegrator.create(RungeKutta45Integrator.INSTANCE, parameters.getdtMax(), parameters.getTrajectorySize());
+  }
+
+  @Override
+  protected CoordinateWrap getWrap() {
+    return SE2WRAP;
   }
 }

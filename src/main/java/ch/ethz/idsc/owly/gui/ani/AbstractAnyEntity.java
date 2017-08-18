@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
+import ch.ethz.idsc.owly.glc.adapter.IdentityWrap;
 import ch.ethz.idsc.owly.glc.adapter.Parameters;
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
 import ch.ethz.idsc.owly.glc.adapter.Trajectories;
@@ -14,6 +15,7 @@ import ch.ethz.idsc.owly.glc.core.GoalInterface;
 import ch.ethz.idsc.owly.glc.core.OptimalAnyTrajectoryPlanner;
 import ch.ethz.idsc.owly.glc.core.TrajectoryPlanner;
 import ch.ethz.idsc.owly.glc.core.TrajectorySample;
+import ch.ethz.idsc.owly.math.CoordinateWrap;
 import ch.ethz.idsc.owly.math.flow.Flow;
 import ch.ethz.idsc.owly.math.region.EmptyRegion;
 import ch.ethz.idsc.owly.math.region.InvertedRegion;
@@ -34,6 +36,11 @@ public abstract class AbstractAnyEntity extends AbstractEntity {
   protected final Parameters parameters;
   protected final Collection<Flow> controls;
 
+  /** Constructor with default values for delayHint and expandTime
+   * @param state
+   * @param parameters
+   * @param controls
+   * @param episodeIntegrator */
   public AbstractAnyEntity(Tensor state, Parameters parameters, Collection<Flow> controls, EpisodeIntegrator episodeIntegrator) {
     this(state, parameters, controls, episodeIntegrator, RealScalar.ONE, RealScalar.of(0.5));
   }
@@ -60,8 +67,6 @@ public abstract class AbstractAnyEntity extends AbstractEntity {
   @Override
   public TrajectoryPlanner createTrajectoryPlanner(TrajectoryRegionQuery obstacleQuery, Tensor goal) {
     StateIntegrator stateIntegrator = createIntegrator();
-    // StateIntegrator stateIntegrator = //
-    // FixedStateIntegrator.create(EulerIntegrator.INSTANCE, parameters.getdtMax(), parameters.getTrajectorySize());
     GoalInterface goalInterface = createGoal(goal);
     return new OptimalAnyTrajectoryPlanner( //
         parameters.getEta(), stateIntegrator, controls, obstacleQuery, goalInterface);
@@ -93,7 +98,7 @@ public abstract class AbstractAnyEntity extends AbstractEntity {
 
   Thread thread;
   public TrajectoryPlannerCallback trajectoryPlannerCallback;
-  List<TrajectorySample> head;
+  private List<TrajectorySample> head;
   GlcNode newRoot;
   Tensor goal;
   boolean switchGoalRequest = false;
@@ -114,21 +119,23 @@ public abstract class AbstractAnyEntity extends AbstractEntity {
 
   public OptimalAnyTrajectoryPlanner trajectoryPlanner;
 
+  // TODO SE2wrap remove to somewhere else
   public void startLife(Region environmentRegion, Tensor root) {
     TrajectoryRegionQuery trq = initializeObstacle(environmentRegion, root);
     trajectoryPlanner = (OptimalAnyTrajectoryPlanner) createTrajectoryPlanner(trq, root);
+    trajectoryPlanner.represent = getWrap()::represent;
     trajectoryPlanner.switchRootToState(root); // setting start
     thread = new Thread(() -> {
       while (true) {
         long tic = System.nanoTime();
-        head = this.getFutureTrajectoryUntil(delayHint()); // Point on trajectory with delay from now
+        head = (this.getFutureTrajectoryUntil(delayHint())); // Point on trajectory with delay from now
         // Rootswitch
         int index = getIndexOfLastNodeOf(head);
         Optional<GlcNode> optional = trajectoryPlanner.existsInTree(head.get(index).stateTime());
         if (!optional.isPresent())
           throw new RuntimeException();
         GlcNode newRoot = optional.get(); // getting last GlcNode in Head as root
-        head = head.subList(0, index + 1); // cutting head to this Node
+        head = (head.subList(0, index + 1)); // cutting head to this Node
         int depthLimitIncrease = trajectoryPlanner.switchRootToNode(newRoot);
         parameters.increaseDepthLimit(depthLimitIncrease);
         // ObstacleUpdate
@@ -155,6 +162,12 @@ public abstract class AbstractAnyEntity extends AbstractEntity {
       }
     });
     thread.start();
+  }
+
+  /** Wrap function, needs to be overwritten for StateSpaces with angles
+   * @return */
+  protected CoordinateWrap getWrap() {
+    return new IdentityWrap();
   }
 
   /** creates the first Obstacle of the planner at initialization

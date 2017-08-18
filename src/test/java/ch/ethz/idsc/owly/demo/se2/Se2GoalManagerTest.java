@@ -1,7 +1,7 @@
 // code by jl
 package ch.ethz.idsc.owly.demo.se2;
 
-import ch.ethz.idsc.owly.glc.adapter.HeuristicInspection;
+import ch.ethz.idsc.owly.glc.adapter.HeuristicQ;
 import ch.ethz.idsc.owly.math.CoordinateWrap;
 import ch.ethz.idsc.tensor.DoubleScalar;
 import ch.ethz.idsc.tensor.RealScalar;
@@ -15,7 +15,7 @@ public class Se2GoalManagerTest extends TestCase {
     Se2DefaultGoalManager se2DefaultGoalManager = new Se2DefaultGoalManager(//
         Tensors.vector(0, 0, Math.PI), //
         Tensors.vector(0.1, 0.1, 0.1 * Math.PI));
-    assertFalse(HeuristicInspection.hasHeuristic(se2DefaultGoalManager.getGoalInterface()));
+    assertFalse(HeuristicQ.of(se2DefaultGoalManager.getGoalInterface()));
     assertEquals(se2DefaultGoalManager.minCostToGoal(Tensors.vector(0, 0, 1.1 * Math.PI)), RealScalar.ZERO);
     assertEquals(se2DefaultGoalManager.minCostToGoal(Tensors.vector(2, 0, 2 * Math.PI)), RealScalar.ZERO);
     assertEquals(se2DefaultGoalManager.minCostToGoal(Tensors.vector(0, 2, -2 * Math.PI)), RealScalar.ZERO);
@@ -33,7 +33,7 @@ public class Se2GoalManagerTest extends TestCase {
     Tensor radiusVector = Tensors.of(DoubleScalar.of(0.1), DoubleScalar.of(0.1), RealScalar.of(Math.PI * 0.1));
     Se2MinDistGoalManager se2MinDistGoalManager = new Se2MinDistGoalManager(//
         Tensors.vector(0, 0, Math.PI), radiusVector);
-    assertTrue(HeuristicInspection.hasHeuristic(se2MinDistGoalManager.getGoalInterface()));
+    assertTrue(HeuristicQ.of(se2MinDistGoalManager.getGoalInterface()));
     assertEquals(se2MinDistGoalManager.minCostToGoal(Tensors.vector(0, 0, 1.1 * Math.PI)), RealScalar.ZERO);
     assertEquals(se2MinDistGoalManager.minCostToGoal(Tensors.vector(0.05, 0.05, 3 * Math.PI)), RealScalar.ZERO);
     assertEquals(se2MinDistGoalManager.minCostToGoal(Tensors.vector(1.1, 0, 1.1 * Math.PI)), RealScalar.ONE);
@@ -53,7 +53,7 @@ public class Se2GoalManagerTest extends TestCase {
     Tensor radiusVector = Tensors.of(DoubleScalar.of(0.1), DoubleScalar.of(0.1), RealScalar.of(Math.PI * 0.1));
     Se2MinCurvatureGoalManager se2MinCurvatureGoalManager = new Se2MinCurvatureGoalManager(//
         Tensors.vector(0, 0, Math.PI), radiusVector);
-    assertTrue(HeuristicInspection.hasHeuristic(se2MinCurvatureGoalManager.getGoalInterface()));
+    assertTrue(HeuristicQ.of(se2MinCurvatureGoalManager.getGoalInterface()));
     assertEquals(se2MinCurvatureGoalManager.minCostToGoal(Tensors.vector(0, 0, 1.09 * Math.PI)), RealScalar.ZERO);
     assertEquals(se2MinCurvatureGoalManager.minCostToGoal(Tensors.vector(0.05, 0.05, 3 * Math.PI)), RealScalar.ZERO);
     assertEquals(se2MinCurvatureGoalManager.minCostToGoal(Tensors.vector(1.1, 0, 1.1 * Math.PI)), RealScalar.ONE);
@@ -79,7 +79,7 @@ public class Se2GoalManagerTest extends TestCase {
         Tensors.vector(0, 0, Math.PI), radiusVector);
     CoordinateWrap se2Wrap = new Se2Wrap(Tensors.vector(1, 1, 1));
     Se2WrapGoalManagerExt se2WrapGoalManagerExt = new Se2WrapGoalManagerExt(se2Wrap, se2MinDistGoalManager);
-    assertTrue(HeuristicInspection.hasHeuristic(se2WrapGoalManagerExt.getGoalInterface()));
+    assertTrue(HeuristicQ.of(se2WrapGoalManagerExt.getGoalInterface()));
     assertEquals(se2WrapGoalManagerExt.minCostToGoal(Tensors.vector(0.0, 0.0, 1.0 * Math.PI)), RealScalar.ZERO);
     assertEquals(se2WrapGoalManagerExt.minCostToGoal(Tensors.vector(0.01, 0.01, 1.01 * Math.PI)), RealScalar.ZERO);
     assertEquals(se2WrapGoalManagerExt.minCostToGoal(Tensors.vector(0.05, 0.05, 3 * Math.PI)), RealScalar.ZERO);

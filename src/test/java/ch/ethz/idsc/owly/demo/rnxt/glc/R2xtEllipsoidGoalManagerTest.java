@@ -3,7 +3,7 @@ package ch.ethz.idsc.owly.demo.rnxt.glc;
 
 import java.util.Collections;
 
-import ch.ethz.idsc.owly.glc.adapter.HeuristicInspection;
+import ch.ethz.idsc.owly.glc.adapter.HeuristicQ;
 import ch.ethz.idsc.owly.math.state.StateTime;
 import ch.ethz.idsc.tensor.DoubleScalar;
 import ch.ethz.idsc.tensor.RealScalar;
@@ -16,7 +16,7 @@ public class R2xtEllipsoidGoalManagerTest extends TestCase {
     RnxtHeuristicEllipsoidGoalManager rnxtGoal = new RnxtHeuristicEllipsoidGoalManager(//
         Tensors.vector(5, 0, 100)//
         , Tensors.vector(2, 3, Double.POSITIVE_INFINITY));
-    assertTrue(HeuristicInspection.hasHeuristic(rnxtGoal));
+    assertTrue(HeuristicQ.of(rnxtGoal));
     assertEquals(rnxtGoal.minCostToGoal(Tensors.vector(2, 0, 0)), RealScalar.ONE);
     assertEquals(rnxtGoal.minCostToGoal(Tensors.vector(3, 0, 3)), RealScalar.ZERO);
     assertEquals(rnxtGoal.minCostToGoal(Tensors.vector(4, 0, 5)), RealScalar.ZERO);
@@ -48,7 +48,7 @@ public class R2xtEllipsoidGoalManagerTest extends TestCase {
     RnxtEllipsoidGoalManager rnGoal = new RnxtEllipsoidGoalManager(//
         Tensors.of(RealScalar.of(5), RealScalar.ZERO, DoubleScalar.POSITIVE_INFINITY)//
         , RealScalar.of(2));
-    assertFalse(HeuristicInspection.hasHeuristic(rnGoal));
+    assertFalse(HeuristicQ.of(rnGoal));
     assertEquals(rnGoal.minCostToGoal(Tensors.vector(2, 0)), RealScalar.ZERO);
     assertEquals(rnGoal.minCostToGoal(Tensors.vector(3, 0)), RealScalar.ZERO);
     assertEquals(rnGoal.minCostToGoal(Tensors.vector(4, 0)), RealScalar.ZERO);
