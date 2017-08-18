@@ -78,11 +78,13 @@ public abstract class AbstractAnyTrajectoryPlanner extends AbstractTrajectoryPla
     // -- GOAL: goalNode deleted?
     best.keySet().removeAll(deleteTreeCollection);
     // -- QUEUE: Deleting Nodes from Queue
+    // removal from queue might lead to non convergence to optimal Solution, when R is increased
     queue().removeAll(deleteTreeCollection);
     // -- DOMAINMAP: Removing Nodes (DeleteTree) from DomainMap
     domainMap().values().removeAll(deleteTreeCollection);
     // -- EDGE: Removing Edges between Nodes in DeleteTree
     // TODO edge removal of all nodes needed?
+    // better for garbage collector, otherwise child<->parent pair might keep itself in existence
     // Minimum needed:
     // baseRoot.parent().removeEdgeTo(baseRoot);
     // oldRoot has no parent, therefore is skipped

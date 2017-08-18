@@ -192,8 +192,6 @@ public abstract class AbstractAnyEntity extends AbstractEntity {
         return index;
       index--; // going to previous statetime in traj
     }
-    // TODO JONAS: change to next passed GlcNode?
-    // TODO BUG JONAS: during movement no trajectory to new Goal
     Trajectories.print(trajectory);
     throw new RuntimeException(); // no StateTime in trajectory corresponds to Node in Tree?
   }

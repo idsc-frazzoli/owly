@@ -81,7 +81,6 @@ public class OptimalAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
             if (Scalars.lessThan(next.merit(), formerLabel.merit())) {
               // collision check only if new node is better
               if (getObstacleQuery().isDisjoint(connectors.get(next))) {// better node not collision
-                // TODO Needs to be checked with theory, removal from queue is unsure.
                 final Collection<GlcNode> subDeleteTree = deleteSubtreeOf(formerLabel);
                 // adding the formerLabel as formerCandidate to bucket
                 CandidatePair formerCandidate = new CandidatePair(formerLabel.parent(), formerLabel);
@@ -309,7 +308,6 @@ public class OptimalAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
                 if (getObstacleQuery().isDisjoint(connector)) { // better Candidate obstacle check
                   getCandidateMap().get(domainKey).add(formerLabelCandidate);
                   // formerLabel disconnecting
-                  // if (label.parent() != null) //TODO confirm if not needed
                   // adding next to tree and DomainMap
                   insertNodeInTree(nextBest.getOrigin(), nextBestNode);
                   addedNodes++;
@@ -497,9 +495,8 @@ public class OptimalAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
 
   private final boolean goalCheckTree(Collection<GlcNode> treeCollection) {
     // Parallel: 15%-50% Speedgain, tested with R2GlcConstTimeHeuristicAnyDemo,
-    // TODO why does parallel give different result? then non parallel? e.g. R2GlcAnyCircleDemo
-    //
-    // TODO JONAS is this still happening, please talk to JAN:
+    // TODO JONAS/ JAN why does parallel give different result? then non parallel? e.g. R2GlcAnyCircleDemo
+    // JONAS still happening at current state
     // No difference with synchronized, same bug, even with exactly the same List
     treeCollection.stream().forEach(node -> {
       if (!node.isRoot()) {

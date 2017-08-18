@@ -14,7 +14,6 @@ enum SE2GlcAnyAnimationDemo {
     OwlyAnimationFrame owlyAnimationFrame = new OwlyAnimationFrame();
     Tensor root = Tensors.vector(2.5, 0.75, 0);
     SE2AnyEntity SE2AnyEntity = new SE2AnyEntity(root, 12);
-    // TODO not final solution
     SE2AnyEntity.trajectoryPlannerCallback = owlyAnimationFrame.trajectoryPlannerCallback;
     // Region obstacleRegion = new InvertedRegion(EmptyRegion.INSTANCE);
     ImageRegion obstacleRegion = ImageRegions.loadFromRepository("/io/track0_100.png", Tensors.vector(10, 10), false);
