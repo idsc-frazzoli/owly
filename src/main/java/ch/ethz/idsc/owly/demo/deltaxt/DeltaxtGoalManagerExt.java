@@ -21,9 +21,9 @@ import ch.ethz.idsc.tensor.sca.Sqrt;
 
 public class DeltaxtGoalManagerExt extends SimpleTrajectoryRegionQuery implements GoalInterface {
   private final Tensor center;
-  protected final Tensor radius;
-  protected final Scalar maxSpeed;
-  private final Scalar timeCostScalingFactor;
+  private final Tensor radius;
+  private final Scalar maxSpeed;
+  private final Scalar timeCostScalingFactor; // TODO JONAS not used
 
   // Constructor with Default value in CostScaling
   public DeltaxtGoalManagerExt(Tensor center, Tensor radius, Scalar maxSpeed) {
@@ -83,5 +83,10 @@ public class DeltaxtGoalManagerExt extends SimpleTrajectoryRegionQuery implement
         .add(Power.of(r2Radius.Get(1).multiply(r2Vector.Get(0)), 2)));
     Scalar specificRadius = radius.Get(0).multiply(radius.Get(1)).multiply(Norm._2.of(r2x.subtract(r2Center))).divide(root);
     return Ramp.of(Norm._2.of(r2x.subtract(r2Center)).subtract(specificRadius).divide(maxSpeed)); // <- do not change
+  }
+
+  @Override
+  public boolean hasHeuristic() {
+    return true;
   }
 }

@@ -3,7 +3,6 @@ package ch.ethz.idsc.owly.demo.rn;
 
 import java.util.Collections;
 
-import ch.ethz.idsc.owly.glc.core.NoHeuristic;
 import ch.ethz.idsc.owly.math.state.StateTime;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
@@ -43,11 +42,11 @@ public class RnSimpleCircleGoalManagerTest extends TestCase {
 
   public void testNoHeuristic1() {
     RnSimpleCircleGoalManager rnGoal = new RnSimpleCircleGoalManager(Tensors.vector(5, 0), RealScalar.of(2));
-    assertTrue(rnGoal instanceof NoHeuristic); // correct
+    assertFalse(rnGoal.hasHeuristic()); // correct
   }
 
   public void testNoHeuristic2() {
     RnSimpleCircleHeuristicGoalManager rnGoal = new RnSimpleCircleHeuristicGoalManager(Tensors.vector(5, 0), RealScalar.of(2));
-    assertFalse(rnGoal instanceof NoHeuristic); // correct
+    assertTrue(rnGoal.hasHeuristic()); // correct
   }
 }

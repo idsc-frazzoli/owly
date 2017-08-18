@@ -17,8 +17,8 @@ import ch.ethz.idsc.tensor.sca.Ramp;
 
 public class DeltaTrajectoryGoalManager extends TrajectoryGoalManager {
   private final List<StateTime> heuristicTrajectory;
-  protected final Scalar radius;
-  protected final Scalar maxSpeed;
+  private final Scalar radius;
+  private final Scalar maxSpeed;
   private final Scalar timeCostScalingFactor;
 
   public DeltaTrajectoryGoalManager(List<Region> goalRegions, List<StateTime> heuristicTrajectory, Tensor radius, Scalar maxSpeed,
@@ -56,5 +56,10 @@ public class DeltaTrajectoryGoalManager extends TrajectoryGoalManager {
     // return RealScalar.ZERO;
     return Ramp.of(Norm._2.of(x.subtract(StateTimeTrajectories.getLast(heuristicTrajectory).state())) //
         .subtract(radius).divide(maxSpeed));
+  }
+
+  @Override
+  public boolean hasHeuristic() {
+    return true;
   }
 }

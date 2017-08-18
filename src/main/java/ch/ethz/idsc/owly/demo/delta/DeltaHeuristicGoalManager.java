@@ -6,7 +6,6 @@ import java.util.List;
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
 import ch.ethz.idsc.owly.glc.adapter.StateTimeTrajectories;
 import ch.ethz.idsc.owly.glc.core.GoalInterface;
-import ch.ethz.idsc.owly.glc.core.Heuristic;
 import ch.ethz.idsc.owly.math.flow.Flow;
 import ch.ethz.idsc.owly.math.region.EllipsoidRegion;
 import ch.ethz.idsc.owly.math.region.Region;
@@ -18,10 +17,10 @@ import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.red.Norm;
 import ch.ethz.idsc.tensor.sca.Ramp;
 
-public class DeltaHeuristicGoalManager extends SimpleTrajectoryRegionQuery implements GoalInterface, Heuristic {
+public class DeltaHeuristicGoalManager extends SimpleTrajectoryRegionQuery implements GoalInterface {
   private final Tensor center;
-  protected final Scalar radius;
-  protected final Scalar maxSpeed;
+  private final Scalar radius;
+  private final Scalar maxSpeed;
   private final Scalar timeCostScalingFactor;
 
   // Constructor with Default value in CostScaling
@@ -69,5 +68,10 @@ public class DeltaHeuristicGoalManager extends SimpleTrajectoryRegionQuery imple
     // Heuristic needs to be underestimating: (Euclideandistance-radius) / (MaxControl+Max(|Vectorfield|)
     // return RealScalar.ZERO;
     return Ramp.of(Norm._2.of(x.subtract(center)).subtract(radius).divide(maxSpeed));
+  }
+
+  @Override
+  public boolean hasHeuristic() {
+    return true;
   }
 }

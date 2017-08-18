@@ -53,6 +53,11 @@ public class Se2rGoalManager implements Region, CostFunction {
   }
 
   @Override
+  public boolean hasHeuristic() {
+    return true;
+  }
+
+  @Override
   public boolean isMember(Tensor tensor) {
     Tensor cur_xy = tensor.extract(0, 2);
     Scalar cur_angle = tensor.Get(2);

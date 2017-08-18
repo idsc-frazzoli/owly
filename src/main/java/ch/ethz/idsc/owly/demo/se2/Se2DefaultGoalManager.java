@@ -23,12 +23,12 @@ import ch.ethz.idsc.tensor.sca.Mod;
  * 
  * bapaden phd thesis: (6.4.10) */
 public class Se2DefaultGoalManager implements Region, CostFunction {
-  static final Mod PRINCIPAL = Mod.function(RealScalar.of(2 * Math.PI), RealScalar.of(-Math.PI));
+  private static final Mod PRINCIPAL = Mod.function(RealScalar.of(2 * Math.PI), RealScalar.of(-Math.PI));
   // ---
-  final Tensor xy;
-  final Scalar angle;
-  final Scalar radius;
-  final Scalar angle_delta;
+  private final Tensor xy;
+  private final Scalar angle;
+  private final Scalar radius;
+  private final Scalar angle_delta;
 
   public Se2DefaultGoalManager(Tensor xy, Scalar angle, Scalar radius, Scalar angle_delta) {
     this.xy = xy;
@@ -46,6 +46,11 @@ public class Se2DefaultGoalManager implements Region, CostFunction {
   @Override // Heuristic function
   public Scalar minCostToGoal(Tensor x) {
     return RealScalar.ZERO;
+  }
+
+  @Override
+  public boolean hasHeuristic() {
+    return false;
   }
 
   @Override

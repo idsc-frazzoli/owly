@@ -22,11 +22,14 @@ import ch.ethz.idsc.tensor.sca.Mod;
 /** Se2 goal region is not elliptic, therefore we implement {@link Region}
  * 
  * bapaden phd thesis: (6.4.10) */
+// TODO JONAS remove class Se2DefaultGoalManagerExt (however, it's used in Se2WrapGoalManagerExt
+// ... but could use Se2DefaultGoalManager instead!?
+// since there is non-trivial math here, i think we should have non-trivial tests
 public class Se2DefaultGoalManagerExt implements Region, CostFunction {
   static final Mod PRINCIPAL = Mod.function(RealScalar.of(2 * Math.PI), RealScalar.of(-Math.PI));
   // ---
   final Tensor center;
-  final Tensor radiusVector;
+  final Tensor radiusVector; // TODO outside access to this member should not happen
 
   public Se2DefaultGoalManagerExt(Tensor center, Tensor radiusVector) {
     this.center = center;
@@ -42,6 +45,11 @@ public class Se2DefaultGoalManagerExt implements Region, CostFunction {
   @Override // Heuristic function
   public Scalar minCostToGoal(Tensor x) {
     return RealScalar.ZERO;
+  }
+
+  @Override
+  public boolean hasHeuristic() {
+    return false;
   }
 
   @Override

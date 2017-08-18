@@ -1,4 +1,4 @@
-// code by jph & jl
+// code by jph and jl
 package ch.ethz.idsc.owly.demo.rnxt.glc;
 
 import java.util.List;
@@ -6,7 +6,6 @@ import java.util.List;
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
 import ch.ethz.idsc.owly.glc.adapter.StateTimeTrajectories;
 import ch.ethz.idsc.owly.glc.core.GoalInterface;
-import ch.ethz.idsc.owly.glc.core.NoHeuristic;
 import ch.ethz.idsc.owly.math.flow.Flow;
 import ch.ethz.idsc.owly.math.region.EllipsoidRegion;
 import ch.ethz.idsc.owly.math.state.StateTime;
@@ -22,7 +21,7 @@ import ch.ethz.idsc.tensor.sca.Ramp;
 /** objective is minimum time
  * path length is measured in Euclidean distance
  * Heuristic is minimum Time along Euclidean distance */
-public class RnxtHeuristicEllipsoidGoalManager extends SimpleTrajectoryRegionQuery implements GoalInterface, NoHeuristic {
+public class RnxtHeuristicEllipsoidGoalManager extends SimpleTrajectoryRegionQuery implements GoalInterface {
   private final Tensor rnCenter;
   private final Tensor rnRadius;
 
@@ -72,5 +71,10 @@ public class RnxtHeuristicEllipsoidGoalManager extends SimpleTrajectoryRegionQue
     // ---
     Scalar specificRadius = rnRadius.Get(0).multiply(rnRadius.Get(1)).multiply(Norm._2.of(rnState.subtract(rnCenter))).divide(root);
     return Ramp.of(Norm._2.of(rnState.subtract(rnCenter)).subtract(specificRadius)); // <- do not change
+  }
+
+  @Override
+  public boolean hasHeuristic() {
+    return true;
   }
 }

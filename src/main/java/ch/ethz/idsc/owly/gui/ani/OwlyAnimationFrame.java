@@ -28,7 +28,6 @@ import ch.ethz.idsc.owly.data.TimeKeeper;
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
 import ch.ethz.idsc.owly.glc.adapter.Trajectories;
 import ch.ethz.idsc.owly.glc.core.GlcNode;
-import ch.ethz.idsc.owly.glc.core.Heuristic;
 import ch.ethz.idsc.owly.glc.core.TrajectoryPlanner;
 import ch.ethz.idsc.owly.glc.core.TrajectorySample;
 import ch.ethz.idsc.owly.gui.EtaRender;
@@ -41,7 +40,6 @@ import ch.ethz.idsc.owly.gui.TrajectoryRender;
 import ch.ethz.idsc.owly.gui.TreeRender;
 import ch.ethz.idsc.owly.gui.misc.ImageRegionRender;
 import ch.ethz.idsc.owly.math.region.ImageRegion;
-import ch.ethz.idsc.owly.math.state.EmptyTrajectoryRegionQuery;
 import ch.ethz.idsc.owly.math.state.StateTime;
 import ch.ethz.idsc.owly.math.state.TrajectoryRegionQuery;
 import ch.ethz.idsc.tensor.Scalar;
@@ -63,7 +61,9 @@ public class OwlyAnimationFrame {
   private final List<AnimationInterface> animationInterfaces = new LinkedList<>();
   /** reference to the entity that is controlled by the user */
   private AnimationInterface controllable = null;
-  private TrajectoryRegionQuery obstacleQuery = EmptyTrajectoryRegionQuery.INSTANCE;
+  /** the obstacle query is set in {@link #setObstacleQuery(TrajectoryRegionQuery)}
+   * it is intentionally set to null here lest the application forget */
+  private TrajectoryRegionQuery obstacleQuery = null;
 
   public OwlyAnimationFrame() {
     { // install frame components
@@ -159,7 +159,8 @@ public class OwlyAnimationFrame {
     public void expandResult(List<TrajectorySample> head, TrajectoryPlanner trajectoryPlanner) {
       etaRender.setEta(trajectoryPlanner.getEta());
       Optional<GlcNode> optional = trajectoryPlanner.getBest();
-      if (trajectoryPlanner.getGoalInterface() instanceof Heuristic) // movement till goalfound would be random walk
+      // if (trajectoryPlanner.getGoalInterface() instanceof Heuristic) // movement till goalfound would be random walk
+      if (trajectoryPlanner.getGoalInterface().hasHeuristic()) // movement till goalfound would be random walk
         optional = trajectoryPlanner.getFinalGoalNode();
       if (optional.isPresent()) {
         List<TrajectorySample> trajectory = new ArrayList<>();
@@ -201,6 +202,10 @@ public class OwlyAnimationFrame {
     add(animationInterface);
   }
 
+  /** modifies the obstacle region in between mouse-clicks
+   * (so far only relevant for the standard planner)
+   * 
+   * @param obstacleQuery */
   public void setObstacleQuery(TrajectoryRegionQuery obstacleQuery) {
     this.obstacleQuery = obstacleQuery;
   }

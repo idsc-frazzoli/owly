@@ -42,6 +42,11 @@ public class Se2WrapGoalManagerExt implements Region, CostFunction {
   }
 
   @Override
+  public boolean hasHeuristic() {
+    return true;
+  }
+
+  @Override
   public boolean isMember(Tensor x) {
     return Scalars.isZero(Ramp.of(coordinateWrap.distance(x, goalManager.center)//
         .subtract(coordinateWrap.distance(Tensors.vector(0, 0, 0), goalManager.radiusVector))));

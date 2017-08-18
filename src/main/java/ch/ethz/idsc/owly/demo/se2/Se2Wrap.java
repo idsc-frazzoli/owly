@@ -12,6 +12,7 @@ import ch.ethz.idsc.tensor.sca.Mod;
 
 /** identifies (x,y,theta) === (x,y,theta + 2 pi n) for all n */
 public class Se2Wrap implements CoordinateWrap {
+  // TODO JAN simplify with t033
   private static Mod MOD = Mod.function(RealScalar.of(Math.PI * 2));
   private static Mod MOD_DISTANCE = Mod.function(RealScalar.of(Math.PI * 2), RealScalar.of(-Math.PI));
   // ---

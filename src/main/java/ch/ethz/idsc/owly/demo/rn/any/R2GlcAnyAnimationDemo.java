@@ -20,7 +20,6 @@ enum R2GlcAnyAnimationDemo {
     // TrajectoryRegionQuery trq = new SimpleTrajectoryRegionQuery(obstacleRegion);
     r2AnyEntity.startLife(obstacleRegion, root); // (trq, root);
     owlyAnimationFrame.set(r2AnyEntity);
-    // owlyAnimationFrame.setObstacleQuery(trq); //TODO JAN: Why external connection needed?
     owlyAnimationFrame.jFrame.setVisible(true);
   }
 }

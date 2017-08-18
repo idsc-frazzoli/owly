@@ -1,4 +1,4 @@
-// code by jph & jl
+// code by jph and jl
 package ch.ethz.idsc.owly.demo.rn;
 
 import java.util.List;
@@ -7,7 +7,6 @@ import ch.ethz.idsc.owly.data.GlobalAssert;
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
 import ch.ethz.idsc.owly.glc.adapter.StateTimeTrajectories;
 import ch.ethz.idsc.owly.glc.core.GoalInterface;
-import ch.ethz.idsc.owly.glc.core.NoHeuristic;
 import ch.ethz.idsc.owly.math.flow.Flow;
 import ch.ethz.idsc.owly.math.region.SphericalRegion;
 import ch.ethz.idsc.owly.math.state.StateTime;
@@ -20,7 +19,7 @@ import ch.ethz.idsc.tensor.red.Norm;
 
 /** objective is minimum path length
  * path length is measured in Euclidean distance */
-public class RnSimpleCircleGoalManager extends SimpleTrajectoryRegionQuery implements GoalInterface, NoHeuristic {
+public class RnSimpleCircleGoalManager extends SimpleTrajectoryRegionQuery implements GoalInterface {
   /** constructor creates a spherical region in R^n with given center and radius.
    * distance measure is Euclidean distance.
    * 
@@ -38,8 +37,11 @@ public class RnSimpleCircleGoalManager extends SimpleTrajectoryRegionQuery imple
 
   @Override
   public Scalar minCostToGoal(Tensor x) {
-    // implementation is asserted by tests.
-    // for modifications create a different class.
     return RealScalar.ZERO;
+  }
+
+  @Override
+  public boolean hasHeuristic() {
+    return false;
   }
 }
