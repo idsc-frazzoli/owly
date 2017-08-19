@@ -83,12 +83,12 @@ public class R2AnyEntity extends AbstractAnyEntity {
   }
 
   @Override
-  public Scalar distance(Tensor x, Tensor y) {
+  protected Scalar distance(Tensor x, Tensor y) {
     return Norm._2SQUARED.of(x.subtract(y));
   }
 
   @Override
-  public Tensor fallbackControl() {
+  protected Tensor fallbackControl() {
     return FALLBACK_CONTROL;
   }
 

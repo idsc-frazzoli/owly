@@ -104,13 +104,11 @@ public abstract class AbstractEntity implements RenderInterface, AnimationInterf
     return episodeIntegrator.tail();
   }
 
-  public PlannerType getPlannerType() {
-    return PlannerType.STANDARD;
-  }
+  public abstract PlannerType getPlannerType();
 
-  public abstract Scalar distance(Tensor x, Tensor y);
+  protected abstract Scalar distance(Tensor x, Tensor y);
 
-  public abstract Tensor fallbackControl();
+  protected abstract Tensor fallbackControl();
 
   public abstract Scalar delayHint();
 

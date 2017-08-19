@@ -58,7 +58,7 @@ public class OwlyAnimationFrame {
   private final TrajectoryRender trajectoryRender = new TrajectoryRender(null);
   private final ObstacleRender obstacleRender = new ObstacleRender(null);
   private final GoalRender goalRender = new GoalRender(null);
-  private final TreeRender treeRender = new TreeRender(null);
+  public TreeRender treeRender = new TreeRender(null); // public is bad design but wait until API is refactored
   private final List<AnimationInterface> animationInterfaces = new LinkedList<>();
   /** reference to the entity that is controlled by the user */
   private AnimationInterface controllable = null;
@@ -192,9 +192,8 @@ public class OwlyAnimationFrame {
           goalRender.setCollection(new HashSet<>(collection));
         }
       }
-      {
+      if (Objects.nonNull(treeRender))
         treeRender.setCollection(new ArrayList<>(trajectoryPlanner.getDomainMap().values()));
-      }
       owlyComponent.jComponent.repaint();
     }
   };

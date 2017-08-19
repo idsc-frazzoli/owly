@@ -18,6 +18,7 @@ enum Se2AnimationDemo {
     owlyAnimationFrame.setObstacleQuery(new SimpleTrajectoryRegionQuery(new TimeInvariantRegion(imageRegion)));
     owlyAnimationFrame.addBackground(imageRegion);
     owlyAnimationFrame.configCoordinateOffset(50, 700);
+    owlyAnimationFrame.treeRender = null;
     owlyAnimationFrame.jFrame.setBounds(100, 50, 1200, 800);
     owlyAnimationFrame.jFrame.setVisible(true);
   }

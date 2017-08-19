@@ -12,6 +12,7 @@ import ch.ethz.idsc.owly.glc.core.StandardTrajectoryPlanner;
 import ch.ethz.idsc.owly.glc.core.TrajectoryPlanner;
 import ch.ethz.idsc.owly.gui.OwlyLayer;
 import ch.ethz.idsc.owly.gui.ani.AbstractEntity;
+import ch.ethz.idsc.owly.gui.ani.PlannerType;
 import ch.ethz.idsc.owly.math.flow.Flow;
 import ch.ethz.idsc.owly.math.flow.RungeKutta4Integrator;
 import ch.ethz.idsc.owly.math.state.EmptyTrajectoryRegionQuery;
@@ -39,18 +40,23 @@ public class PsuEntity extends AbstractEntity {
   }
 
   @Override
-  public Scalar distance(Tensor x, Tensor y) {
+  protected Scalar distance(Tensor x, Tensor y) {
     return PsuWrap.INSTANCE.distance(x, y);
   }
 
   @Override
-  public Tensor fallbackControl() {
+  protected Tensor fallbackControl() {
     return FALLBACK_CONTROL;
   }
 
   @Override
   public Scalar delayHint() {
     return DELAY_HINT;
+  }
+
+  @Override
+  public PlannerType getPlannerType() {
+    return PlannerType.STANDARD;
   }
 
   @Override
