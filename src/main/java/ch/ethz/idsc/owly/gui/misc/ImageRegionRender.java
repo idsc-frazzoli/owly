@@ -8,7 +8,6 @@ import java.awt.image.ImageObserver;
 
 import javax.swing.JLabel;
 
-import ch.ethz.idsc.owly.demo.util.Images;
 import ch.ethz.idsc.owly.gui.OwlyLayer;
 import ch.ethz.idsc.owly.gui.RenderInterface;
 import ch.ethz.idsc.owly.math.region.ImageRegion;
@@ -29,7 +28,6 @@ public class ImageRegionRender implements RenderInterface {
 
   public ImageRegionRender(ImageRegion imageRegion) {
     Tensor image = imageRegion.image();
-    image = Images.displayOrientation(image);
     bufferedImage = ImageFormat.of(image.map(ImageRegionRender::color));
     this.range = imageRegion.range();
   }
@@ -37,9 +35,7 @@ public class ImageRegionRender implements RenderInterface {
   private static Scalar color(Scalar scalar) {
     if (Scalars.isZero(scalar))
       return TFF;
-    // if (scalar.equals(TFF))
     return OBS;
-    // throw TensorRuntimeException.of(scalar);
   }
 
   @Override

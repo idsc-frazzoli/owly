@@ -4,6 +4,7 @@ package ch.ethz.idsc.owly.demo.delta;
 import java.io.Serializable;
 import java.util.List;
 
+import ch.ethz.idsc.owly.data.GlobalAssert;
 import ch.ethz.idsc.owly.math.Cross2D;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
@@ -11,6 +12,8 @@ import ch.ethz.idsc.tensor.Tensors;
 import ch.ethz.idsc.tensor.alg.Array;
 import ch.ethz.idsc.tensor.alg.Differences;
 import ch.ethz.idsc.tensor.alg.Dimensions;
+import ch.ethz.idsc.tensor.alg.MatrixQ;
+import ch.ethz.idsc.tensor.alg.Reverse;
 import ch.ethz.idsc.tensor.alg.TensorMap;
 import ch.ethz.idsc.tensor.alg.Transpose;
 import ch.ethz.idsc.tensor.opt.Interpolation;
@@ -21,6 +24,10 @@ import ch.ethz.idsc.tensor.sca.N;
 
 /** rotated gradient of potential function */
 public class ImageGradient implements Serializable {
+  private static Tensor _displayOrientation(Tensor tensor) {
+    return Transpose.of(Reverse.of(tensor)); // flip y's, then swap x-y
+  }
+
   private static final Tensor ZEROS = N.of(Array.zeros(2));
   // ---
   private final Tensor scale;
@@ -30,7 +37,9 @@ public class ImageGradient implements Serializable {
   /** @param image with rank 2. For instance, Dimensions.of(image) == [179, 128]
    * @param range with length() == 2
    * @param amp factor */
-  public ImageGradient(Tensor image, Tensor range, Scalar amp) {
+  public ImageGradient(Tensor _image, Tensor range, Scalar amp) {
+    Tensor image = _displayOrientation(_image);
+    GlobalAssert.that(MatrixQ.of(image));
     List<Integer> dims = Dimensions.of(image);
     scale = Tensors.vector(dims).pmul(range.map(Scalar::reciprocal));
     Tensor diffx = Differences.of(image);
@@ -53,7 +62,7 @@ public class ImageGradient implements Serializable {
     } catch (Exception exception) {
       // ---
     }
-    return ZEROS;
+    return ZEROS.copy();
   }
 
   /** @return max(||gradient||) */

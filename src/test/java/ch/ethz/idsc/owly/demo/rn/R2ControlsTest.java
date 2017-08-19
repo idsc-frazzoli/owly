@@ -1,9 +1,8 @@
 // code by jph
-package ch.ethz.idsc.owly.demo.util;
+package ch.ethz.idsc.owly.demo.rn;
 
 import java.util.Collection;
 
-import ch.ethz.idsc.owly.demo.rn.R2Controls;
 import ch.ethz.idsc.owly.math.flow.Flow;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.alg.Dimensions;

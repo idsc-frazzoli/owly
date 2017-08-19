@@ -22,6 +22,7 @@ public class ImageRegion implements Region {
   private final Tensor range;
   private final Tensor scale;
   private final boolean outside;
+  private final int max_y;
 
   /** @param image has to be a matrix
    * @param range effective size of image in coordinate space
@@ -31,8 +32,9 @@ public class ImageRegion implements Region {
     GlobalAssert.that(VectorQ.ofLength(range, 2));
     this.image = image;
     dimensions = Dimensions.of(image);
+    max_y = dimensions.get(0) - 1;
     this.range = range;
-    scale = Tensors.vector(dimensions).pmul(range.map(Scalar::reciprocal));
+    scale = Tensors.vector(dimensions.get(1), dimensions.get(0)).pmul(range.map(Scalar::reciprocal));
     this.outside = outside;
   }
 
@@ -42,9 +44,11 @@ public class ImageRegion implements Region {
       tensor = tensor.extract(0, 2);
     Tensor pixel = Floor.of(tensor.pmul(scale));
     int pix = pixel.Get(0).number().intValue();
-    int piy = pixel.Get(1).number().intValue();
-    if (0 <= pix && pix < dimensions.get(0) && 0 <= piy && piy < dimensions.get(1))
-      return Scalars.nonZero(image.Get(pix, piy));
+    if (0 <= pix && pix < dimensions.get(1)) {
+      int piy = max_y - pixel.Get(1).number().intValue();
+      if (0 <= piy && piy < dimensions.get(0))
+        return Scalars.nonZero(image.Get(piy, pix));
+    }
     return outside;
   }
 

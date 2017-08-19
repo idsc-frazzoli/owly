@@ -1,16 +1,16 @@
-//code by jl
+// code by jl
 package ch.ethz.idsc.owly.glc.adapter;
 
 import ch.ethz.idsc.owly.math.state.CostFunction;
 
 /** class contains static utility function that operate on instances of the {@link CostFunction}
- * to test for the existence of Heuristics */
+ * to test for the implementation of a heuristic */
 public enum HeuristicQ {
   ;
-  /** tests for the existence of a Heuristic
+  /** tests for the implementation of a heuristic
    * 
    * @param costFunction to inspect
-   * @return true if Heuristic exists and is non-trivial, false if is does not exist */
+   * @return true if a non-trivial heuristic is implemented, false if not */
   public static boolean of(CostFunction costFunction) {
     try {
       // if this throws no exception, x was not used and the result is a constant => no heuristic
