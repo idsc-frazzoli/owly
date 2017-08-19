@@ -2,7 +2,6 @@
 package ch.ethz.idsc.owly.demo.psu;
 
 import ch.ethz.idsc.owly.math.CoordinateWrap;
-import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
@@ -12,8 +11,8 @@ import ch.ethz.idsc.tensor.sca.Mod;
 public enum PsuWrap implements CoordinateWrap {
   INSTANCE;
   // ---
-  private static Mod MOD = Mod.function(RealScalar.of(Math.PI * 2));
-  private static Mod MOD_DISTANCE = Mod.function(RealScalar.of(Math.PI * 2), RealScalar.of(-Math.PI));
+  private static Mod MOD = Mod.function(Math.PI * 2);
+  private static Mod MOD_DISTANCE = Mod.function(Math.PI * 2, -Math.PI);
 
   @Override
   public Tensor represent(Tensor x) {

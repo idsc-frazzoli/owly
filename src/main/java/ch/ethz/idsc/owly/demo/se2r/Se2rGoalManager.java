@@ -22,7 +22,7 @@ import ch.ethz.idsc.tensor.sca.Mod;
 
 /** Se2 goal region is not elliptic, therefore we implement {@link Region} */
 public class Se2rGoalManager implements Region, CostFunction {
-  static final Mod PRINCIPAL = Mod.function(RealScalar.of(2 * Math.PI), RealScalar.of(-Math.PI));
+  static final Mod PRINCIPAL = Mod.function(2 * Math.PI, -Math.PI);
   // ---
   final Tensor xy;
   final Scalar angle;

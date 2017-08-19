@@ -23,7 +23,7 @@ import ch.ethz.idsc.tensor.sca.Mod;
  * 
  * bapaden phd thesis: (6.4.10) */
 public class Se2DefaultGoalManager implements Region, CostFunction {
-  static final Mod PRINCIPAL = Mod.function(RealScalar.of(2 * Math.PI), RealScalar.of(-Math.PI));
+  static final Mod PRINCIPAL = Mod.function(2 * Math.PI, -Math.PI);
   // ---
   final Tensor center;
   final Tensor radiusVector; // TODO outside access to this member should not happen

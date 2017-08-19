@@ -29,6 +29,6 @@ public enum ImageRegions {
 
   public static ImageRegion fromGrayscale(BufferedImage bufferedImage, Tensor range, boolean strict) {
     return new ImageRegion( //
-        Images.displayOrientation(ImageFormat.fromGrayscale(bufferedImage)), range, strict);
+        Images.displayOrientation(ImageFormat.from(bufferedImage)), range, strict);
   }
 }
