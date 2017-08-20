@@ -63,8 +63,8 @@ enum R2GlcAnyDemo {
     for (int iter = 0; iter < 20; iter++) {
       long tic = System.nanoTime();
       goal = goal.add(Tensors.vector(1, 1));
-      goal.set(Mod.function(RealScalar.of(5)), 0);
-      goal.set(Mod.function(RealScalar.of(5)), 1);
+      goal.set(Mod.function(5), 0);
+      goal.set(Mod.function(5), 1);
       RnSimpleCircleHeuristicGoalManager rnGoal2 = new RnSimpleCircleHeuristicGoalManager(goal, DoubleScalar.of(.25));
       List<StateTime> trajectory = trajectoryPlanner.trajectoryToBest();
       if (trajectory != null) {

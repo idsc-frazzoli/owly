@@ -9,8 +9,6 @@ import java.util.List;
 import ch.ethz.idsc.owly.demo.delta.DeltaControls;
 import ch.ethz.idsc.owly.demo.delta.DeltaParameters;
 import ch.ethz.idsc.owly.demo.delta.ImageGradient;
-import ch.ethz.idsc.owly.demo.util.Images;
-import ch.ethz.idsc.owly.demo.util.Resources;
 import ch.ethz.idsc.owly.glc.adapter.Parameters;
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
 import ch.ethz.idsc.owly.glc.adapter.StateTimeTrajectories;
@@ -39,7 +37,7 @@ import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Scalars;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
-import ch.ethz.idsc.tensor.io.Import;
+import ch.ethz.idsc.tensor.io.ResourceData;
 
 enum DeltaxtGlcDemo {
   ;
@@ -52,9 +50,7 @@ enum DeltaxtGlcDemo {
     Scalar dtMax = RationalScalar.of(1, 6);
     int maxIter = 200000;
     Tensor range = Tensors.vector(9, 6.5);
-    ImageGradient ipr = new ImageGradient( //
-        Images.displayOrientation(Import.of(Resources.fileFromRepository("/io/delta_uxy.png")).get(Tensor.ALL, Tensor.ALL, 0)), //
-        range, RealScalar.of(-0.1)); // -.25 .5
+    ImageGradient ipr = new ImageGradient(ResourceData.of("/io/delta_uxy.png"), range, RealScalar.of(-0.1)); // -.25 .5
     Scalar maxInput = RealScalar.ONE;
     DeltaxtStateSpaceModel stateSpaceModel = new DeltaxtStateSpaceModel(ipr, maxInput);
     Collection<Flow> controls = DeltaControls.createControls( //
@@ -64,8 +60,7 @@ enum DeltaxtGlcDemo {
     System.out.println("1/DomainSize: " + parameters.getEta());
     StateIntegrator stateIntegrator = FixedStateIntegrator.create( //
         RungeKutta45Integrator.INSTANCE, parameters.getdtMax(), parameters.getTrajectorySize());
-    Tensor obstacleImage = Images.displayOrientation(//
-        Import.of(Resources.fileFromRepository("/io/delta_free.png")).get(Tensor.ALL, Tensor.ALL, 0)); //
+    Tensor obstacleImage = ResourceData.of("/io/delta_free.png"); //
     ImageRegion imageRegion = new ImageRegion(obstacleImage, range, true);
     TrajectoryRegionQuery obstacleQuery = //
         new SimpleTrajectoryRegionQuery(new RxtTimeInvariantRegion( //

@@ -101,12 +101,12 @@ public class SE2AnyEntity extends AbstractAnyEntity {
   }
 
   @Override
-  public Scalar distance(Tensor x, Tensor y) {
+  protected Scalar distance(Tensor x, Tensor y) {
     return SE2WRAP.distance(x, y);
   }
 
   @Override
-  public Tensor fallbackControl() {
+  protected Tensor fallbackControl() {
     return FALLBACK_CONTROL;
   }
 

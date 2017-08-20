@@ -4,6 +4,7 @@ package ch.ethz.idsc.owly.demo.se2;
 import java.util.List;
 
 import ch.ethz.idsc.owly.glc.adapter.GoalAdapter;
+import ch.ethz.idsc.owly.glc.adapter.IdentityWrap;
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
 import ch.ethz.idsc.owly.glc.core.GoalInterface;
 import ch.ethz.idsc.owly.math.CoordinateWrap;
@@ -20,7 +21,7 @@ import ch.ethz.idsc.tensor.sca.Ramp;
 
 /** minimizes driving time (=distance, since unit speed)
  * 
- * {@link Se2WrapGoalManagerExt} works with {@link Se2Wrap} as well as with {@link TnIdentityWrap} */
+ * {@link Se2WrapGoalManagerExt} works with {@link Se2Wrap} as well as with {@link IdentityWrap} */
 public class Se2WrapGoalManagerExt implements Region, CostFunction {
   private final CoordinateWrap coordinateWrap;
   private final Se2DefaultGoalManager goalManager;
@@ -38,13 +39,14 @@ public class Se2WrapGoalManagerExt implements Region, CostFunction {
 
   @Override
   public Scalar minCostToGoal(Tensor x) {
-    return Ramp.of(coordinateWrap.distance(x, goalManager.center).subtract(goalManager.radiusVector.Get(1)));
+    return Ramp.of(coordinateWrap.distance(x, goalManager.center).subtract(goalManager.radiusSpace()));
   }
 
   @Override
   public boolean isMember(Tensor x) {
-    return Scalars.isZero(Ramp.of(coordinateWrap.distance(x, goalManager.center)//
-        .subtract(coordinateWrap.distance(Tensors.vector(0, 0, 0), goalManager.radiusVector))));
+    return Scalars.isZero(Ramp.of( //
+        coordinateWrap.distance(x, goalManager.center).subtract( //
+            coordinateWrap.distance(Tensors.vector(0, 0, 0), goalManager.radiusVector))));
   }
 
   public GoalInterface getGoalInterface() {

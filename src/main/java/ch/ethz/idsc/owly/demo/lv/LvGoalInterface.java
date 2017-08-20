@@ -16,6 +16,7 @@ import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
 
 public class LvGoalInterface extends SimpleTrajectoryRegionQuery implements GoalInterface {
+  // TODO euclidean distance used in ellipsoid should be replaced by logarithmic distance
   public LvGoalInterface(Tensor center, Tensor radius) {
     super(new TimeInvariantRegion(new EllipsoidRegion(center, radius)));
     GlobalAssert.that(center.length() == 2);

@@ -22,7 +22,7 @@ import ch.ethz.idsc.tensor.sca.Sin;
  * max (wl) = max (wr) = 1
  * Theory from: http://planning.cs.uiuc.edu/node659.html */
 public class TwdStateSpaceModel implements StateSpaceModel {
-  private static final Mod PRINCIPAL = Mod.function(RealScalar.of(2 * Math.PI), RealScalar.of(-Math.PI));
+  private static final Mod PRINCIPAL = Mod.function(2 * Math.PI, -Math.PI);
 
   /** the default twd state space model works well with the standardized controls
    * {@link TwdControls#createControls(StateSpaceModel, int)}

@@ -93,9 +93,9 @@ public class TsiotrasModel extends DefaultCarModel {
   @SuppressWarnings("unused")
   @Override
   public CarControl createControl(Tensor u) {
-    if (!Clip.ABSOLUTE_ONE.of(u.Get(0)).equals(u.Get(0)))
+    if (!Clip.absoluteOne().of(u.Get(0)).equals(u.Get(0)))
       throw TensorRuntimeException.of(u.Get(0));
-    if (!Clip.UNIT.of(u.Get(3)).equals(u.Get(3)))
+    if (!Clip.unit().of(u.Get(3)).equals(u.Get(3)))
       throw TensorRuntimeException.of(u.Get(3));
     // ---
     Scalar delta = u.Get(0).multiply(maxDelta).multiply(carSteering.factor);

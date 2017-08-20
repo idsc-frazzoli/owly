@@ -36,14 +36,12 @@ import ch.ethz.idsc.tensor.sca.Ramp;
 
 enum R2Demo {
   ;
-  public static TrajectoryPlanner simpleEmpty() {
+  static TrajectoryPlanner simpleEmpty() {
     return simple(EmptyTrajectoryRegionQuery.INSTANCE);
   }
 
-  public static TrajectoryPlanner simpleR2Bubbles() {
-    return simple( //
-        new SimpleTrajectoryRegionQuery( //
-            new TimeInvariantRegion(new R2Bubbles())));
+  static TrajectoryPlanner simpleR2Bubbles() {
+    return simple(new SimpleTrajectoryRegionQuery(new TimeInvariantRegion(new R2Bubbles())));
   }
 
   private static TrajectoryPlanner simple(TrajectoryRegionQuery obstacleQuery) {
@@ -72,24 +70,17 @@ enum R2Demo {
     return trajectoryPlanner;
   }
 
+  private static void demo(TrajectoryPlanner trajectoryPlanner) {
+    Optional<GlcNode> optional = trajectoryPlanner.getBest();
+    if (optional.isPresent()) {
+      List<StateTime> trajectory = GlcNodes.getPathFromRootTo(optional.get());
+      StateTimeTrajectories.print(trajectory);
+    }
+    Gui.glc(trajectoryPlanner);
+  }
+
   public static void main(String[] args) {
-    {
-      TrajectoryPlanner trajectoryPlanner = simpleEmpty();
-      Optional<GlcNode> optional = trajectoryPlanner.getBest();
-      if (optional.isPresent()) {
-        List<StateTime> trajectory = GlcNodes.getPathFromRootTo(optional.get());
-        StateTimeTrajectories.print(trajectory);
-      }
-      Gui.glc(trajectoryPlanner);
-    }
-    {
-      TrajectoryPlanner trajectoryPlanner = simpleR2Bubbles();
-      Optional<GlcNode> optional = trajectoryPlanner.getBest();
-      if (optional.isPresent()) {
-        List<StateTime> trajectory = GlcNodes.getPathFromRootTo(optional.get());
-        StateTimeTrajectories.print(trajectory);
-      }
-      Gui.glc(trajectoryPlanner);
-    }
+    demo(simpleEmpty());
+    demo(simpleR2Bubbles());
   }
 }

@@ -33,7 +33,7 @@ public class Se2MinDistGoalManager extends Se2DefaultGoalManager {
   public Scalar minCostToGoal(Tensor x) {
     Tensor cur_xy = x.extract(0, 2);
     // Euclidean distance
-    Scalar dxy = Norm._2.of(cur_xy.subtract(center.extract(0, 2))).subtract(radiusVector.Get(1));
+    Scalar dxy = Norm._2.of(cur_xy.subtract(center.extract(0, 2))).subtract(radiusSpace());
     return Ramp.of(dxy);
   }
 }

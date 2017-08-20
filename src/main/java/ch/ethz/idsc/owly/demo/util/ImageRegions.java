@@ -1,34 +1,29 @@
 // code by jph
 package ch.ethz.idsc.owly.demo.util;
 
-import java.awt.image.BufferedImage;
 import java.io.File;
-import java.io.IOException;
-import java.util.zip.DataFormatException;
 
 import ch.ethz.idsc.owly.math.region.ImageRegion;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.alg.TensorRank;
-import ch.ethz.idsc.tensor.io.ImageFormat;
 import ch.ethz.idsc.tensor.io.Import;
+import ch.ethz.idsc.tensor.io.ResourceData;
 
 public enum ImageRegions {
   ;
-  // for files in repo
-  public static ImageRegion loadFromRepository(String string, Tensor range, boolean strict) throws ClassNotFoundException, DataFormatException, IOException {
-    return loadFromLocalFile(new File("".getClass().getResource(string).getPath()), range, strict);
-  }
-
-  // for files on local machine
-  public static ImageRegion loadFromLocalFile(File file, Tensor range, boolean strict) throws ClassNotFoundException, DataFormatException, IOException {
-    Tensor image = Import.of(file);
-    if (TensorRank.of(image) == 3)
-      image = image.get(Tensor.ALL, Tensor.ALL, 0);
+  private static ImageRegion _universal(Tensor image, Tensor range, boolean strict) {
+    if (TensorRank.of(image) == 3) // the rank of images with a color palette is 3
+      image = image.get(Tensor.ALL, Tensor.ALL, 0); // take RED channel for region member test
     return new ImageRegion(image, range, strict);
   }
 
-  public static ImageRegion fromGrayscale(BufferedImage bufferedImage, Tensor range, boolean strict) {
-    return new ImageRegion( //
-        Images.displayOrientation(ImageFormat.fromGrayscale(bufferedImage)), range, strict);
+  // for files in repo
+  public static ImageRegion loadFromRepository(String string, Tensor range, boolean strict) throws Exception {
+    return _universal(ResourceData.of(string), range, strict);
+  }
+
+  // for files on local machine
+  public static ImageRegion loadFromLocalFile(File file, Tensor range, boolean strict) throws Exception {
+    return _universal(Import.of(file), range, strict);
   }
 }

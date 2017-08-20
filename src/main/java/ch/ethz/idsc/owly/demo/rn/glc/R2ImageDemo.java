@@ -1,11 +1,9 @@
 // code by jph
 package ch.ethz.idsc.owly.demo.rn.glc;
 
-import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
-import java.util.zip.DataFormatException;
 
 import ch.ethz.idsc.owly.demo.rn.R2Controls;
 import ch.ethz.idsc.owly.demo.rn.RnSimpleCircleHeuristicGoalManager;
@@ -34,7 +32,7 @@ import ch.ethz.idsc.tensor.Tensors;
 
 enum R2ImageDemo {
   ;
-  public static void main(String[] args) throws ClassNotFoundException, DataFormatException, IOException {
+  public static void main(String[] args) throws Exception {
     Tensor partitionScale = Tensors.vector(6, 6);
     ImageRegion imageRegion = ImageRegions.loadFromRepository("/io/track0_100.png", Tensors.vector(10, 10), false);
     StateIntegrator stateIntegrator = FixedStateIntegrator.create(EulerIntegrator.INSTANCE, RationalScalar.of(1, 8), 4);

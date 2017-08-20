@@ -25,7 +25,7 @@ import ch.ethz.idsc.owly.math.state.TrajectoryRegionQuery;
 import ch.ethz.idsc.tensor.Scalars;
 import ch.ethz.idsc.tensor.Tensor;
 
-/** An anytime, Resolution asymptotically optimal and probabilitistic complete MotionPlanning Algorithm,
+/** An anytime, Resolution asymptotically optimal and probabilistic complete MotionPlanning Algorithm,
  * after: [B. Paden] A Generalized Label Correcting Method for Optimal Kinodynamic Motion Planning
  * Assumptions: -All states of all obstacles are known at all times
  * -No new Obstacles are discovered */
@@ -493,7 +493,7 @@ public class OptimalAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
     return goalCheckTree(possibleGoalNodes);
   }
 
-  private final boolean goalCheckTree(Collection<GlcNode> treeCollection) {
+  private boolean goalCheckTree(Collection<GlcNode> treeCollection) {
     // Parallel: 15%-50% Speedgain, tested with R2GlcConstTimeHeuristicAnyDemo,
     // TODO JONAS/ JAN why does parallel give different result? then non parallel? e.g. R2GlcAnyCircleDemo
     // JONAS still happening at current state
