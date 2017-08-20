@@ -32,22 +32,21 @@ import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
 
-/** (x,y,theta) */
+/** Notice:
+ * 
+ * CLASS Se2WrapDemo IS USED IN TESTS
+ * MODIFICATION MAY INVALIDATE THE TESTS
+ * 
+ * (x,y,theta) */
 enum Se2WrapDemo {
   ;
-  public static void main(String[] args) {
+  static final Tensor GOAL = Tensors.vector(-.5, 0, 0);
+
+  static TrajectoryPlanner createPlanner(CoordinateWrap coordinateWrap) {
     Tensor eta = Tensors.vector(3, 3, 50 / Math.PI);
     StateIntegrator stateIntegrator = FixedStateIntegrator.createDefault(RationalScalar.of(1, 6), 5);
-    System.out.println("scale=" + eta);
     Collection<Flow> controls = Se2Controls.createControls(RotationUtils.DEGREE(45), 6);
-    @SuppressWarnings("unused")
-    final CoordinateWrap identity = IdentityWrap.INSTANCE;
-    CoordinateWrap coordinateWrap;
-    coordinateWrap = new Se2Wrap(Tensors.vector(1, 1, 1));
-    // coordinateWrap = identity;
-    Se2WrapGoalManager se2GoalManager = new Se2WrapGoalManager( //
-        coordinateWrap, //
-        Tensors.vector(-.5, 0, 0), RealScalar.of(.25));
+    Se2WrapGoalManager se2GoalManager = new Se2WrapGoalManager(coordinateWrap, GOAL, RealScalar.of(.25));
     TrajectoryRegionQuery obstacleQuery = //
         new SimpleTrajectoryRegionQuery(new TimeInvariantRegion(RegionUnion.of( //
             new PolygonRegion(Tensors.matrixDouble(new double[][] { //
@@ -68,6 +67,11 @@ enum Se2WrapDemo {
     trajectoryPlanner.represent = coordinateWrap::represent;
     // ---
     trajectoryPlanner.insertRoot(Tensors.vector(.1, 0, 0));
+    return trajectoryPlanner;
+  }
+
+  private static void demo(CoordinateWrap coordinateWrap) {
+    TrajectoryPlanner trajectoryPlanner = createPlanner(coordinateWrap);
     int iters = Expand.maxSteps(trajectoryPlanner, 4000);
     System.out.println(iters);
     Optional<GlcNode> optional = trajectoryPlanner.getBest();
@@ -76,5 +80,10 @@ enum Se2WrapDemo {
       StateTimeTrajectories.print(trajectory);
     }
     Gui.glc(trajectoryPlanner);
+  }
+
+  public static void main(String[] args) {
+    demo(new Se2Wrap(Tensors.vector(1, 1, 1)));
+    demo(IdentityWrap.INSTANCE);
   }
 }

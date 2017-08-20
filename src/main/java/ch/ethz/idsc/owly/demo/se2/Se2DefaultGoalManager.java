@@ -3,6 +3,7 @@ package ch.ethz.idsc.owly.demo.se2;
 
 import java.util.List;
 
+import ch.ethz.idsc.owly.data.GlobalAssert;
 import ch.ethz.idsc.owly.glc.adapter.GoalAdapter;
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
 import ch.ethz.idsc.owly.glc.adapter.StateTimeTrajectories;
@@ -25,32 +26,41 @@ import ch.ethz.idsc.tensor.sca.Mod;
 public class Se2DefaultGoalManager implements Region, CostFunction {
   static final Mod PRINCIPAL = Mod.function(2 * Math.PI, -Math.PI);
   // ---
-  final Tensor center;
-  final Tensor radiusVector; // TODO outside access to this member should not happen
+  protected final Tensor center;
+  protected final Tensor radiusVector;
 
   public Se2DefaultGoalManager(Tensor center, Tensor radiusVector) {
-    this.center = center;
-    this.radiusVector = radiusVector;
+    GlobalAssert.that(radiusVector.get(0).equals(radiusVector.get(1)));
+    this.center = center.unmodifiable();
+    this.radiusVector = radiusVector.unmodifiable();
   }
 
-  @Override // Cost Function
+  protected Scalar radiusSpace() {
+    return radiusVector.Get(0);
+  }
+
+  protected Scalar radiusAngle() {
+    return radiusVector.Get(2);
+  }
+
+  @Override // from CostFunction
   public Scalar costIncrement(StateTime from, List<StateTime> trajectory, Flow flow) {
     // integrate(1,t)
     return StateTimeTrajectories.timeIncrement(from, trajectory);
   }
 
-  @Override // Heuristic function
+  @Override // from CostFunction
   public Scalar minCostToGoal(Tensor x) {
     return RealScalar.ZERO;
   }
 
-  @Override
+  @Override // from Region
   public boolean isMember(Tensor tensor) {
     Tensor cur_xy = tensor.extract(0, 2);
     Scalar cur_angle = tensor.Get(2);
     boolean status = true;
-    status &= Scalars.lessEquals(Norm._2.of(cur_xy.subtract(center.extract(0, 2))), radiusVector.Get(1));
-    status &= Scalars.lessEquals(PRINCIPAL.apply(cur_angle.subtract(center.Get(2))).abs(), radiusVector.Get(2));
+    status &= Scalars.lessEquals(Norm._2.of(cur_xy.subtract(center.extract(0, 2))), radiusSpace());
+    status &= Scalars.lessEquals(PRINCIPAL.apply(cur_angle.subtract(center.Get(2))).abs(), radiusAngle());
     return status;
   }
 
