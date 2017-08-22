@@ -11,12 +11,25 @@ import ch.ethz.idsc.tensor.Tensors;
 
 enum Se2AnimationDemo {
   ;
-  public static void main(String[] args) {
-    OwlyAnimationFrame owlyAnimationFrame = new OwlyAnimationFrame();
+  @SuppressWarnings("unused")
+  private static void _launch1(OwlyAnimationFrame owlyAnimationFrame) {
     owlyAnimationFrame.set(Se2Entity.createDefault(Tensors.vector(10, 5, 1)));
     ImageRegion imageRegion = R2ImageRegions.inside_0f5c();
     owlyAnimationFrame.setObstacleQuery(new SimpleTrajectoryRegionQuery(new TimeInvariantRegion(imageRegion)));
     owlyAnimationFrame.addBackground(imageRegion);
+  }
+
+  @SuppressWarnings("unused")
+  private static void _launch2(OwlyAnimationFrame owlyAnimationFrame) {
+    owlyAnimationFrame.set(Se2Entity.createDefault(Tensors.vector(6, 6, 1)));
+    ImageRegion imageRegion = R2ImageRegions.inside_gtob();
+    owlyAnimationFrame.setObstacleQuery(new SimpleTrajectoryRegionQuery(new TimeInvariantRegion(imageRegion)));
+    owlyAnimationFrame.addBackground(imageRegion);
+  }
+
+  public static void main(String[] args) {
+    OwlyAnimationFrame owlyAnimationFrame = new OwlyAnimationFrame();
+    _launch2(owlyAnimationFrame);
     owlyAnimationFrame.configCoordinateOffset(50, 700);
     owlyAnimationFrame.treeRender = null;
     owlyAnimationFrame.jFrame.setBounds(100, 50, 1200, 800);

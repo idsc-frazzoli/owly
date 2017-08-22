@@ -4,7 +4,7 @@
 
 	<groupId>ch.ethz.idsc</groupId>
 	<artifactId>owly</artifactId>
-	<version>0.0.2</version>
+	<version>0.0.3</version>
 	<packaging>jar</packaging>
 
 	<name>owly</name>
@@ -19,8 +19,8 @@
 		<dependency>
 			<groupId>ch.ethz.idsc</groupId>
 			<artifactId>tensor</artifactId>
+			<version>0.3.3</version>
 		</dependency>
-
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
@@ -118,14 +118,4 @@
 		</plugins>
 
 	</build>
-
-	<dependencyManagement>
-		<dependencies>
-			<dependency>
-				<groupId>ch.ethz.idsc</groupId>
-				<artifactId>tensor</artifactId>
-				<version>0.3.3</version>
-			</dependency>
-		</dependencies>
-	</dependencyManagement>
 </project>
