@@ -7,11 +7,6 @@ import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Point;
 import java.awt.image.BufferedImage;
-import java.io.IOException;
-
-import javax.imageio.ImageIO;
-
-import ch.ethz.idsc.owly.demo.util.UserHome;
 
 /** creates an image with unicode characters drawn inside */
 public class CharImage {
@@ -43,20 +38,7 @@ public class CharImage {
     graphics.drawString("" + chr, point.x, point.y);
   }
 
-  public BufferedImage getBufferedImage() {
+  public BufferedImage bufferedImage() {
     return bufferedImage;
-  }
-
-  // demo
-  public static void main(String[] args) throws IOException {
-    CharImage charImage = CharImage.fillWhite(new Dimension(320, 640));
-    charImage.setFont(new Font(Font.DIALOG, Font.PLAIN, 600));
-    charImage.draw('\u0f5c', new Point(20, 560));
-    // charImage.draw('\u2182', new Point(-10, 305));
-    // charImage.draw('\u265b', new Point(-20, 300));
-    // charImage.draw('\u0b36', new Point(0, 240));
-    // charImage.draw('\u0b14', new Point(100, 240));
-    BufferedImage bufferedImage = charImage.getBufferedImage();
-    ImageIO.write(bufferedImage, "png", UserHome.Pictures("letter.png"));
   }
 }
