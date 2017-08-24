@@ -11,16 +11,14 @@ import ch.ethz.idsc.tensor.Tensors;
 
 enum Se2AnimationDemo {
   ;
-  @SuppressWarnings("unused")
-  private static void _launch1(OwlyAnimationFrame owlyAnimationFrame) {
+  static void _launch1(OwlyAnimationFrame owlyAnimationFrame) {
     owlyAnimationFrame.set(Se2Entity.createDefault(Tensors.vector(10, 5, 1)));
     ImageRegion imageRegion = R2ImageRegions.inside_0f5c();
     owlyAnimationFrame.setObstacleQuery(new SimpleTrajectoryRegionQuery(new TimeInvariantRegion(imageRegion)));
     owlyAnimationFrame.addBackground(imageRegion);
   }
 
-  @SuppressWarnings("unused")
-  private static void _launch2(OwlyAnimationFrame owlyAnimationFrame) {
+  static void _launch2(OwlyAnimationFrame owlyAnimationFrame) {
     owlyAnimationFrame.set(Se2Entity.createDefault(Tensors.vector(6, 6, 1)));
     ImageRegion imageRegion = R2ImageRegions.inside_gtob();
     owlyAnimationFrame.setObstacleQuery(new SimpleTrajectoryRegionQuery(new TimeInvariantRegion(imageRegion)));

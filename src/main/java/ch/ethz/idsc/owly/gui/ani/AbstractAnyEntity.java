@@ -146,10 +146,12 @@ public abstract class AbstractAnyEntity extends AbstractEntity {
           System.out.println("SwitchGoal Requested");
           GoalInterface goalInterface = createGoal(goal);
           Region goalCheckHelp = createGoalCheckHelp(goal);
-          boolean result = trajectoryPlanner.changeToGoal(goalInterface, goalCheckHelp); // <- may take a while
+          // boolean result =
+          trajectoryPlanner.changeToGoal(goalInterface, goalCheckHelp); // <- may take a while
           switchGoalRequest = false;
         } else {
-          int iters = Expand.constTime(trajectoryPlanner, expandTime, parameters.getDepthLimit());
+          // int iters =
+          Expand.constTime(trajectoryPlanner, expandTime, parameters.getDepthLimit());
         }
         if (trajectoryPlannerCallback != null)
           trajectoryPlannerCallback.expandResult(head, trajectoryPlanner);

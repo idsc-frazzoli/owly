@@ -81,7 +81,8 @@ public class OptimalAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
             if (Scalars.lessThan(next.merit(), formerLabel.merit())) {
               // collision check only if new node is better
               if (getObstacleQuery().isDisjoint(connectors.get(next))) {// better node not collision
-                final Collection<GlcNode> subDeleteTree = deleteSubtreeOf(formerLabel);
+                // final Collection<GlcNode> subDeleteTree =
+                deleteSubtreeOf(formerLabel);
                 // adding the formerLabel as formerCandidate to bucket
                 CandidatePair formerCandidate = new CandidatePair(formerLabel.parent(), formerLabel);
                 if (!formerCandidate.getCandidate().isLeaf()) {
@@ -262,7 +263,8 @@ public class OptimalAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
                   // / check if sth better is there
                   connector = getStateIntegrator().trajectory(nextBestParent.stateTime(), nextBestNode.flow());
                   if (getObstacleQuery().isDisjoint(connector)) {
-                    final Collection<GlcNode> subDeleteTree = deleteSubtreeOf(label);
+                    // final Collection<GlcNode> subDeleteTree =
+                    deleteSubtreeOf(label);
                     CandidatePair formerLabelCandidate = new CandidatePair(label.parent(), label);
                     label.parent().removeEdgeTo(label);
                     if (!formerLabelCandidate.getCandidate().isLeaf()) {
@@ -291,7 +293,8 @@ public class OptimalAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
             } // if CandidateQueue is empty finish with this domain
           } else { // DELETE label, as IN collision
             deletedNodes++;
-            final Collection<GlcNode> subDeleteTree = deleteSubtreeOf(label);
+            // final Collection<GlcNode> subDeleteTree =
+            deleteSubtreeOf(label);
             CandidatePair formerLabelCandidate = new CandidatePair(label.parent(), label);
             label.parent().removeEdgeTo(label);
             if (!formerLabelCandidate.getCandidate().isLeaf()) {
