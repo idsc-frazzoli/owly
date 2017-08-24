@@ -10,22 +10,28 @@ import ch.ethz.idsc.tensor.Tensors;
 import ch.ethz.idsc.tensor.sca.Ceiling;
 import ch.ethz.idsc.tensor.sca.Log;
 
+// TODO Jonas take care of unused fields, maybe by now we can remove them for clarity
 public abstract class Parameters {
   // Initial condition
+  @SuppressWarnings("unused")
   private Tensors x0;
   // Discretization resolution
   private final Scalar resolution;
   // State space dimension
+  @SuppressWarnings("unused")
   private int stateDim;
   // Input space dimension
+  @SuppressWarnings("unused")
   private int controlDim;
   // Maximum iterations
   private final int maxIter;
   // Change time coordinate to be appropriate
+  @SuppressWarnings("unused")
   private final Scalar timeScale;
   // Initial partition size
   private final Tensor partitionScale;
   // Adjust initial depth limit
+  @SuppressWarnings("unused")
   private final Scalar depthScale;
   // integration step
   private final Scalar dtMax;
