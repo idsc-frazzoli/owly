@@ -8,8 +8,8 @@ import ch.ethz.idsc.owly.data.tree.NodeCostComparator;
 
 public class RrtsPlanner implements ExploreInterface {
   private final Rrts rrts;
-  private final SamplerInterface spaceSampler;
-  private final SamplerInterface goalSampler;
+  private final RandomSampleInterface spaceSampler;
+  private final RandomSampleInterface goalSampler;
   // private final Collection<RrtsNode> collection = new LinkedList<>();
   private final PriorityQueue<RrtsNode> queue = new PriorityQueue<>(NodeCostComparator.INSTANCE);
 
@@ -17,7 +17,7 @@ public class RrtsPlanner implements ExploreInterface {
    * @param obstacleQuery
    * @param spaceSampler
    * @param goalSampler generates samples in goal region */
-  public RrtsPlanner(Rrts rrts, SamplerInterface spaceSampler, SamplerInterface goalSampler) {
+  public RrtsPlanner(Rrts rrts, RandomSampleInterface spaceSampler, RandomSampleInterface goalSampler) {
     this.rrts = rrts;
     this.spaceSampler = spaceSampler;
     this.goalSampler = goalSampler;

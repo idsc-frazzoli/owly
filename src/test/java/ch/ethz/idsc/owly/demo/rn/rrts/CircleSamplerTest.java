@@ -11,7 +11,7 @@ import junit.framework.TestCase;
 
 public class CircleSamplerTest extends TestCase {
   public void testSimple() {
-    CircleSampler circleSampler = new CircleSampler(Tensors.vector(0, 0), RealScalar.ONE);
+    CircleRandomSample circleSampler = new CircleRandomSample(Tensors.vector(0, 0), RealScalar.ONE);
     for (int c = 0; c < 100; ++c) {
       Tensor loc = circleSampler.nextSample();
       Scalar rad = Norm._2.of(loc);

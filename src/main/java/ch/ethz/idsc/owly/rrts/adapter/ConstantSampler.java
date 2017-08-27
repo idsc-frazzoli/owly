@@ -1,10 +1,10 @@
 // code by jph
 package ch.ethz.idsc.owly.rrts.adapter;
 
-import ch.ethz.idsc.owly.rrts.core.SamplerInterface;
+import ch.ethz.idsc.owly.rrts.core.RandomSampleInterface;
 import ch.ethz.idsc.tensor.Tensor;
 
-public class ConstantSampler implements SamplerInterface {
+public class ConstantSampler implements RandomSampleInterface {
   private final Tensor tensor;
 
   public ConstantSampler(Tensor sample) {

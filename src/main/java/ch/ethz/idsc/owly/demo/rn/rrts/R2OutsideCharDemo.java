@@ -36,7 +36,7 @@ enum R2OutsideCharDemo {
     owlyFrame.configCoordinateOffset(60, 477);
     owlyFrame.jFrame.setBounds(100, 100, 550, 550);
     owlyFrame.addBackground(imageRegion);
-    RnUniformSampler rnUniformSampler = new RnUniformSampler(Tensors.vector(0, 0), imageRegion.range());
+    RnUniformRandomSample rnUniformSampler = new RnUniformRandomSample(Tensors.vector(0, 0), imageRegion.range());
     int frame = 0;
     while (frame++ < 20 && owlyFrame.jFrame.isVisible()) {
       for (int c = 0; c < 50; ++c)

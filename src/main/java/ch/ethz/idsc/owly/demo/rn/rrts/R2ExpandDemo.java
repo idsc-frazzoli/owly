@@ -29,7 +29,7 @@ enum R2ExpandDemo {
     // ---
     Rrts rrts = new DefaultRrts(rnss, nc, trq, LengthCostFunction.IDENTITY);
     RrtsNode root = rrts.insertAsNode(Tensors.vector(0, 0), 5).get();
-    RnUniformSampler rnUniformSampler = new RnUniformSampler(min, max);
+    RnUniformRandomSample rnUniformSampler = new RnUniformRandomSample(min, max);
     AnimationWriter gsw = AnimationWriter.of(UserHome.Pictures("r2rrts.gif"), 250);
     OwlyFrame owlyFrame = Gui.start();
     owlyFrame.configCoordinateOffset(42, 456);

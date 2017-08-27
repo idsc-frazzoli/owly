@@ -27,7 +27,7 @@ enum R2NoiseDemo {
     // ---
     Rrts rrts = new DefaultRrts(rnts, nc, trq, LengthCostFunction.IDENTITY);
     RrtsNode root = rrts.insertAsNode(Tensors.vector(0, 0), 5).get();
-    CircleSampler circleSampler = new CircleSampler(Tensors.vector(2, 0), RealScalar.of(3));
+    CircleRandomSample circleSampler = new CircleRandomSample(Tensors.vector(2, 0), RealScalar.of(3));
     for (int c = 0; c < 1000; ++c)
       rrts.insertAsNode(circleSampler.nextSample(), 15);
     System.out.println("rewireCount=" + rrts.rewireCount());
