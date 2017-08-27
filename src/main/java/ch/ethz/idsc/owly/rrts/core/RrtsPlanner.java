@@ -13,7 +13,6 @@ public class RrtsPlanner implements ExpandInterface<RrtsNode> {
   private final Rrts rrts;
   private final RandomSampleInterface spaceSampler;
   private final RandomSampleInterface goalSampler;
-  // private final Collection<RrtsNode> collection = new LinkedList<>();
   private final PriorityQueue<RrtsNode> queue = new PriorityQueue<>(NodeCostComparator.INSTANCE);
 
   /** @param rrts with root already inserted
@@ -35,13 +34,19 @@ public class RrtsPlanner implements ExpandInterface<RrtsNode> {
   public void expand(RrtsNode node) {
     final int k_nearest = 12; // TODO magic const
     rrts.insertAsNode(spaceSampler.nextSample(), k_nearest);
-    Optional<RrtsNode> optional = rrts.insertAsNode(goalSampler.nextSample(), k_nearest);
-    if (optional.isPresent())
-      queue.add(optional.get());
+    if (queue.isEmpty()) { // TODO logic not final
+      Optional<RrtsNode> optional = rrts.insertAsNode(goalSampler.nextSample(), k_nearest);
+      if (optional.isPresent())
+        queue.add(optional.get());
+    }
   }
 
   @Override
   public Optional<RrtsNode> getBest() {
-    return Optional.ofNullable(queue.peek());
+    return Optional.ofNullable(queue.peek()); // TODO use other criterion: distance from goal center ...?
+  }
+
+  public TransitionRegionQuery getObstacleQuery() {
+    return ((DefaultRrts) rrts).getObstacleQuery();
   }
 }

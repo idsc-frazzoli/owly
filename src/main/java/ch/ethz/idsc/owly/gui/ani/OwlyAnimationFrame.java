@@ -25,6 +25,7 @@ import javax.swing.WindowConstants;
 
 import ch.ethz.idsc.owly.data.GlobalAssert;
 import ch.ethz.idsc.owly.data.TimeKeeper;
+import ch.ethz.idsc.owly.data.tree.Nodes;
 import ch.ethz.idsc.owly.glc.adapter.HeuristicQ;
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
 import ch.ethz.idsc.owly.glc.adapter.Trajectories;
@@ -43,6 +44,10 @@ import ch.ethz.idsc.owly.gui.misc.ImageRegionRender;
 import ch.ethz.idsc.owly.math.region.ImageRegion;
 import ch.ethz.idsc.owly.math.state.StateTime;
 import ch.ethz.idsc.owly.math.state.TrajectoryRegionQuery;
+import ch.ethz.idsc.owly.rrts.adapter.SampledTransitionRegionQuery;
+import ch.ethz.idsc.owly.rrts.core.RrtsNode;
+import ch.ethz.idsc.owly.rrts.core.RrtsPlanner;
+import ch.ethz.idsc.owly.rrts.core.TransitionRegionQuery;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
@@ -146,8 +151,13 @@ public class OwlyAnimationFrame {
               abstractAnyEntity.switchToGoal(trajectoryPlannerCallback, head, goal);
               break;
             }
-            default:
+            case RRTS: {
+              AbstractRrtsEntity abstractRrtsEntity = (AbstractRrtsEntity) abstractEntity;
+              abstractRrtsEntity.startPlanner(trajectoryPlannerCallback, head, goal);
               break;
+            }
+            default:
+              throw new RuntimeException();
             }
           }
         }
@@ -195,6 +205,30 @@ public class OwlyAnimationFrame {
       if (Objects.nonNull(treeRender))
         treeRender.setCollection(new ArrayList<>(trajectoryPlanner.getDomainMap().values()));
       owlyComponent.jComponent.repaint();
+    }
+
+    @Override
+    public void expandResult(List<TrajectorySample> head, RrtsPlanner rrtsPlanner, List<TrajectorySample> tail) {
+      // TODO JAN code redundant to above... refactor
+      List<TrajectorySample> trajectory = new ArrayList<>();
+      if (controllable instanceof AbstractEntity) {
+        AbstractEntity abstractEntity = (AbstractEntity) controllable;
+        trajectory = Trajectories.glue(head, tail);
+        abstractEntity.setTrajectory(trajectory);
+      }
+      trajectoryRender.setTrajectory(trajectory);
+      {
+        TransitionRegionQuery transitionRegionQuery = rrtsPlanner.getObstacleQuery();
+        if (transitionRegionQuery instanceof SampledTransitionRegionQuery) {
+          SampledTransitionRegionQuery strq = (SampledTransitionRegionQuery) transitionRegionQuery;
+          obstacleRender.setCollection(new HashSet<>(strq.getDiscoveredMembers()));
+        }
+      }
+      if (Objects.nonNull(treeRender) && rrtsPlanner.getBest().isPresent()) {
+        RrtsNode root = Nodes.rootFrom(rrtsPlanner.getBest().get());
+        Collection<RrtsNode> collection = Nodes.ofSubtree(root);
+        treeRender.setCollection(collection);
+      }
     }
   };
 

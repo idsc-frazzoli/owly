@@ -96,4 +96,8 @@ public class DefaultRrts implements Rrts {
   private boolean isCollisionFree(Transition transition) {
     return obstacleQuery.isDisjoint(transition);
   }
+
+  /* package */ TransitionRegionQuery getObstacleQuery() {
+    return obstacleQuery;
+  }
 }

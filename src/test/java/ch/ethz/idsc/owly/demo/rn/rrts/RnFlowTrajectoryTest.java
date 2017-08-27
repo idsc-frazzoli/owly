@@ -33,6 +33,7 @@ public class RnFlowTrajectoryTest extends TestCase {
     // ---
     List<RrtsNode> sequence = Arrays.asList(root, n1);
     Scalar t0 = RealScalar.ZERO;
+    @SuppressWarnings("unused")
     List<TrajectorySample> traj = RnFlowTrajectory.createTrajectory(rnts, sequence, t0, RealScalar.of(.2));
     // Trajectories.print(traj);
   }
@@ -51,6 +52,7 @@ public class RnFlowTrajectoryTest extends TestCase {
     List<RrtsNode> sequence = Nodes.listFromRoot(n2);
     assertEquals(sequence, Arrays.asList(root, n1, n2));
     Scalar t0 = RealScalar.ZERO;
+    @SuppressWarnings("unused")
     List<TrajectorySample> traj = RnFlowTrajectory.createTrajectory(rnts, sequence, t0, RealScalar.of(.2));
     // Trajectories.print(traj);
   }

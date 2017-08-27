@@ -7,6 +7,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
+import ch.ethz.idsc.owly.glc.core.OptimalAnyTrajectoryPlanner;
+
 /** utility functions */
 public enum Nodes {
   ;
@@ -53,6 +55,10 @@ public enum Nodes {
     node.children().stream().forEach(child -> ofSubtree((T) child, collection));
   }
 
+  /** applications may sort the collection, for instance {@link OptimalAnyTrajectoryPlanner}
+   * 
+   * @param node
+   * @return */
   public static <T extends Node> Collection<T> ofSubtree(T node) {
     Collection<T> collection = new ArrayList<>();
     ofSubtree(node, collection);

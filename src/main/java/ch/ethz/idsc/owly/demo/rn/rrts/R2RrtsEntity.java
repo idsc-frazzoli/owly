@@ -1,51 +1,48 @@
 // code by jph
-package ch.ethz.idsc.owly.demo.rn.glc;
+package ch.ethz.idsc.owly.demo.rn.rrts;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
-import java.util.Collection;
+import java.util.List;
 
-import ch.ethz.idsc.owly.demo.rn.R2Controls;
-import ch.ethz.idsc.owly.demo.rn.RnSimpleCircleHeuristicGoalManager;
-import ch.ethz.idsc.owly.glc.core.GoalInterface;
-import ch.ethz.idsc.owly.glc.core.StandardTrajectoryPlanner;
 import ch.ethz.idsc.owly.glc.core.TrajectoryPlanner;
+import ch.ethz.idsc.owly.glc.core.TrajectorySample;
 import ch.ethz.idsc.owly.gui.OwlyLayer;
-import ch.ethz.idsc.owly.gui.ani.AbstractEntity;
+import ch.ethz.idsc.owly.gui.ani.AbstractRrtsEntity;
 import ch.ethz.idsc.owly.gui.ani.PlannerType;
+import ch.ethz.idsc.owly.gui.ani.TrajectoryPlannerCallback;
 import ch.ethz.idsc.owly.math.SingleIntegratorStateSpaceModel;
 import ch.ethz.idsc.owly.math.flow.EulerIntegrator;
-import ch.ethz.idsc.owly.math.flow.Flow;
-import ch.ethz.idsc.owly.math.state.FixedStateIntegrator;
 import ch.ethz.idsc.owly.math.state.SimpleEpisodeIntegrator;
-import ch.ethz.idsc.owly.math.state.StateIntegrator;
 import ch.ethz.idsc.owly.math.state.StateTime;
 import ch.ethz.idsc.owly.math.state.TrajectoryRegionQuery;
-import ch.ethz.idsc.tensor.DoubleScalar;
-import ch.ethz.idsc.tensor.RationalScalar;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
 import ch.ethz.idsc.tensor.red.Norm;
 
-/** omni-directional movement with constant speed */
-/* package */ class R2Entity extends AbstractEntity {
+// TODO JAN the redundancy in R2****Entity shows that re-factoring is needed!
+public class R2RrtsEntity extends AbstractRrtsEntity {
   private static final Tensor FALLBACK_CONTROL = Tensors.vector(0, 0).unmodifiable();
   /** preserve 1[s] of the former trajectory */
   private static final Scalar DELAY_HINT = RealScalar.ONE;
-  // ---
-  private final Collection<Flow> controls = R2Controls.createRadial(36); // TODO magic const
 
+  // ---
   /** @param state initial position of entity */
-  public R2Entity(Tensor state) {
+  public R2RrtsEntity(Tensor state) {
     super(new SimpleEpisodeIntegrator( //
         SingleIntegratorStateSpaceModel.INSTANCE, //
         EulerIntegrator.INSTANCE, //
         new StateTime(state, RealScalar.ZERO)));
+  }
+
+  @Override
+  public PlannerType getPlannerType() {
+    return PlannerType.RRTS;
   }
 
   @Override
@@ -64,19 +61,8 @@ import ch.ethz.idsc.tensor.red.Norm;
   }
 
   @Override
-  public PlannerType getPlannerType() {
-    return PlannerType.STANDARD;
-  }
-
-  @Override
   public TrajectoryPlanner createTrajectoryPlanner(TrajectoryRegionQuery obstacleQuery, Tensor goal) {
-    Tensor partitionScale = Tensors.vector(8, 8);
-    StateIntegrator stateIntegrator = //
-        FixedStateIntegrator.create(EulerIntegrator.INSTANCE, RationalScalar.of(1, 12), 4);
-    GoalInterface rnGoal = //
-        new RnSimpleCircleHeuristicGoalManager(goal.extract(0, 2), DoubleScalar.of(.2));
-    return new StandardTrajectoryPlanner( //
-        partitionScale, stateIntegrator, controls, obstacleQuery, rnGoal);
+    throw new RuntimeException(); // TODO API not finalized
   }
 
   @Override
@@ -92,6 +78,18 @@ import ch.ethz.idsc.tensor.red.Norm;
       Point2D point = owlyLayer.toPoint2D(state);
       graphics.setColor(new Color(255, 128, 128 - 64, 128 + 64));
       graphics.fill(new Rectangle2D.Double(point.getX() - 2, point.getY() - 2, 5, 5));
+    }
+  }
+
+  @Override
+  public void startPlanner( //
+      TrajectoryPlannerCallback trajectoryPlannerCallback, List<TrajectorySample> head, Tensor goal) {
+    StateTime tail = head.get(head.size() - 1).stateTime();
+    NoiseCircleHelper nch = new NoiseCircleHelper(tail, goal.extract(0, 2));
+    nch.plan(300);
+    if (nch.trajectory != null) {
+      System.out.println("found!");
+      trajectoryPlannerCallback.expandResult(head, nch.rrtsPlanner, nch.trajectory);
     }
   }
 }

@@ -83,7 +83,10 @@ public enum Expand {
     return expandCount;
   }
 
-  /** total number of expands are bounded by expandLimit
+  /** fixed number of invocations of expand(...)
+   * however, earlier abort may be possible for instance to due lack of nodes to expand from
+   * 
+   * function used by GLC as well as RRTS planner
    * 
    * @param expandInterface
    * @param expandLimit
