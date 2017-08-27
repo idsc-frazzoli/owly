@@ -15,7 +15,7 @@ import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
 import ch.ethz.idsc.owly.glc.adapter.StateTimeTrajectories;
 import ch.ethz.idsc.owly.glc.core.AnyPlannerInterface;
 import ch.ethz.idsc.owly.glc.core.DebugUtils;
-import ch.ethz.idsc.owly.glc.core.Expand;
+import ch.ethz.idsc.owly.glc.core.GlcExpand;
 import ch.ethz.idsc.owly.glc.core.GlcNode;
 import ch.ethz.idsc.owly.glc.core.GlcNodes;
 import ch.ethz.idsc.owly.glc.core.OptimalAnyTrajectoryPlanner;
@@ -77,7 +77,7 @@ enum R2GlcConstTimeHeuristicAnyDemo {
         parameters.getEta(), stateIntegrator, controls, obstacleQuery, rnGoal);
     Tensor startState = Tensors.vector(-3, 0);
     trajectoryPlanner.switchRootToState(startState);
-    Expand.constTime(trajectoryPlanner, runTime, parameters.getDepthLimit());
+    GlcExpand.constTime(trajectoryPlanner, runTime, parameters.getDepthLimit());
     // --
     Optional<GlcNode> finalGoalNode = trajectoryPlanner.getFinalGoalNode();
     List<StateTime> trajectory = GlcNodes.getPathFromRootTo(finalGoalNode.get());
@@ -125,7 +125,7 @@ enum R2GlcConstTimeHeuristicAnyDemo {
       System.out.println("Goalchange took: " + (tocTemp - ticTemp) * 1e-9 + "s");
       // -- EXPANDING
       ticTemp = System.nanoTime();
-      int expandIter = Expand.constTime(trajectoryPlanner, runTime, parameters.getDepthLimit());
+      int expandIter = GlcExpand.constTime(trajectoryPlanner, runTime, parameters.getDepthLimit());
       furthestState = trajectoryPlanner.getFurthestGoalState();
       // check if furthest Goal is already in last Region in List
       trajectory = GlcNodes.getPathFromRootTo(finalGoalNode.get());

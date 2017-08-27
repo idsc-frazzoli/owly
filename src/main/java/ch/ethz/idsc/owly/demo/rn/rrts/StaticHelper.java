@@ -1,6 +1,7 @@
 // code by jph
 package ch.ethz.idsc.owly.demo.rn.rrts;
 
+import ch.ethz.idsc.owly.demo.rn.R2NoiseRegion;
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
 import ch.ethz.idsc.owly.math.region.PolygonRegion;
 import ch.ethz.idsc.owly.math.state.TimeInvariantRegion;
@@ -22,5 +23,10 @@ import ch.ethz.idsc.tensor.Tensors;
                 { 1, 3 }, //
                 { 3, 3 } //
             })))), RealScalar.of(.1));
+  }
+
+  public static TransitionRegionQuery noise1() {
+    return new SampledTransitionRegionQuery(new SimpleTrajectoryRegionQuery( //
+        new TimeInvariantRegion(new R2NoiseRegion(.4))), RealScalar.of(.1));
   }
 }

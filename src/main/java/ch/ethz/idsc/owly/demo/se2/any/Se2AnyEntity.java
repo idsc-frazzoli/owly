@@ -52,7 +52,7 @@ import ch.ethz.idsc.tensor.alg.Array;
 import ch.ethz.idsc.tensor.sca.Sqrt;
 
 /** omni-directional movement with constant speed */
-public class SE2AnyEntity extends AbstractAnyEntity {
+public class Se2AnyEntity extends AbstractAnyEntity {
   // private static final JLabel JLABEL = new JLabel();
   private static final Tensor FALLBACK_CONTROL = Array.zeros(2).unmodifiable(); // {angle=0, vel=0}
   private static final Tensor SHAPE = Tensors.matrixDouble( //
@@ -70,7 +70,7 @@ public class SE2AnyEntity extends AbstractAnyEntity {
   private TrajectoryRegionQuery obstacleQuery;
 
   /** @param state initial position of entity */
-  public SE2AnyEntity(Tensor state, int resolution) {
+  public Se2AnyEntity(Tensor state, int resolution) {
     super(state, //
         // --
         new Se2Parameters( //
@@ -154,7 +154,7 @@ public class SE2AnyEntity extends AbstractAnyEntity {
         eta, stateIntegrator, controls, obstacleQuery, rnGoal);
     trajectoryPlanner.insertRoot(currentState);
     // int iters =
-    Expand.maxTime(trajectoryPlanner, RealScalar.of(1));
+    Expand.maxTime(trajectoryPlanner, RealScalar.of(1)); // 1 [s]
     Optional<GlcNode> optional = trajectoryPlanner.getFinalGoalNode();
     List<StateTime> trajectory = GlcNodes.getPathFromRootTo(optional.get());
     List<Region> goalRegionsList = new ArrayList<>();

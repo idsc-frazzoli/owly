@@ -11,7 +11,7 @@ import ch.ethz.idsc.owly.demo.delta.DeltaTrajectoryGoalManager;
 import ch.ethz.idsc.owly.glc.adapter.StateTimeTrajectories;
 import ch.ethz.idsc.owly.glc.adapter.TrajectoryPlannerContainer;
 import ch.ethz.idsc.owly.glc.core.DebugUtils;
-import ch.ethz.idsc.owly.glc.core.Expand;
+import ch.ethz.idsc.owly.glc.core.GlcExpand;
 import ch.ethz.idsc.owly.glc.core.GlcNode;
 import ch.ethz.idsc.owly.glc.core.GlcNodes;
 import ch.ethz.idsc.owly.glc.core.OptimalAnyTrajectoryPlanner;
@@ -36,7 +36,7 @@ enum DeltaGlcConstTimeHeuristicAnyDemo {
     RationalScalar quickResolution = (RationalScalar) RationalScalar.of(10, 1);
     Tensor partitionScale = Tensors.vector(2e26, 2e26);
     TrajectoryPlannerContainer quickTrajectoryPlannerContainer = DeltaHelper.createGlc(RealScalar.of(-0.5), quickResolution, partitionScale);
-    Expand.maxDepth(quickTrajectoryPlannerContainer.getTrajectoryPlanner(), DoubleScalar.POSITIVE_INFINITY.number().intValue());
+    GlcExpand.maxDepth(quickTrajectoryPlannerContainer.getTrajectoryPlanner(), DoubleScalar.POSITIVE_INFINITY.number().intValue());
     OwlyFrame quickOwlyFrame = Gui.start();
     quickOwlyFrame.configCoordinateOffset(33, 416);
     quickOwlyFrame.jFrame.setBounds(100, 100, 620, 475);
@@ -82,6 +82,7 @@ enum DeltaGlcConstTimeHeuristicAnyDemo {
       Optional<GlcNode> finalGoalNode = null;
       // --
       // -- ROOTCHANGE
+      // TODO JONAS use Stopwatch
       long ticTemp = System.nanoTime();
       finalGoalNode = slowTrajectoryPlannerContainer.getTrajectoryPlanner().getFinalGoalNode();
       if (finalGoalNode.isPresent())
@@ -120,7 +121,7 @@ enum DeltaGlcConstTimeHeuristicAnyDemo {
       // --
       // -- EXPANDING
       ticTemp = System.nanoTime();
-      int expandIter = Expand.constTime(slowTrajectoryPlannerContainer.getTrajectoryPlanner(), //
+      int expandIter = GlcExpand.constTime(slowTrajectoryPlannerContainer.getTrajectoryPlanner(), //
           planningTime, slowTrajectoryPlannerContainer.getParameters().getDepthLimit());
       furthestState = ((OptimalAnyTrajectoryPlanner) slowTrajectoryPlannerContainer.getTrajectoryPlanner()).getFurthestGoalState();
       finalGoalNode = slowTrajectoryPlannerContainer.getTrajectoryPlanner().getFinalGoalNode();

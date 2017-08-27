@@ -26,7 +26,7 @@ public class RnTransition extends AbstractTransition {
 
   @Override
   public List<StateTime> sampled(Scalar t0, Scalar ofs, Scalar dt) {
-    if (Scalars.lessEquals(dt, ofs))
+    if (Scalars.lessThan(dt, ofs))
       throw new RuntimeException();
     final Scalar length = length();
     if (Scalars.isZero(length))

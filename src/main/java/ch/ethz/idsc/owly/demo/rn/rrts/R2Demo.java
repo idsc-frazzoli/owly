@@ -5,9 +5,9 @@ import ch.ethz.idsc.owly.demo.rn.RnNodeCollection;
 import ch.ethz.idsc.owly.demo.rn.RnTransitionSpace;
 import ch.ethz.idsc.owly.gui.Gui;
 import ch.ethz.idsc.owly.gui.OwlyFrame;
-import ch.ethz.idsc.owly.rrts.adapter.DefaultRrts;
 import ch.ethz.idsc.owly.rrts.adapter.LengthCostFunction;
 import ch.ethz.idsc.owly.rrts.adapter.RrtsNodes;
+import ch.ethz.idsc.owly.rrts.core.DefaultRrts;
 import ch.ethz.idsc.owly.rrts.core.Rrts;
 import ch.ethz.idsc.owly.rrts.core.RrtsNode;
 import ch.ethz.idsc.owly.rrts.core.RrtsNodeCollection;
@@ -21,17 +21,17 @@ enum R2Demo {
     int wid = 7;
     Tensor min = Tensors.vector(0, 0);
     Tensor max = Tensors.vector(wid, wid);
-    RnTransitionSpace rnss = new RnTransitionSpace();
+    RnTransitionSpace rnts = new RnTransitionSpace();
     RrtsNodeCollection nc = new RnNodeCollection(min, max);
     TransitionRegionQuery trq = StaticHelper.polygon1();
     // ---
-    Rrts rrts = new DefaultRrts(rnss, nc, trq, LengthCostFunction.IDENTITY);
-    RrtsNode root = rrts.insertAsNode(Tensors.vector(0, 0), 5);
-    RnUniformSampler rnUniformSampler = new RnUniformSampler(min, max);
+    Rrts rrts = new DefaultRrts(rnts, nc, trq, LengthCostFunction.IDENTITY);
+    RrtsNode root = rrts.insertAsNode(Tensors.vector(0, 0), 5).get();
+    RnUniformRandomSample rnUniformSampler = new RnUniformRandomSample(min, max);
     for (int c = 0; c < 1000; ++c)
-      rrts.insertAsNode(rnUniformSampler.next(), 15);
+      rrts.insertAsNode(rnUniformSampler.nextSample(), 15);
     System.out.println("rewireCount=" + rrts.rewireCount());
-    RrtsNodes.costConsistency(root, rnss, LengthCostFunction.IDENTITY);
+    RrtsNodes.costConsistency(root, rnts, LengthCostFunction.IDENTITY);
     OwlyFrame owlyFrame = Gui.start();
     owlyFrame.configCoordinateOffset(42, 456);
     owlyFrame.jFrame.setBounds(100, 100, 500, 500);

@@ -12,7 +12,7 @@ import ch.ethz.idsc.owly.demo.rn.RnSimpleCircleGoalManager;
 import ch.ethz.idsc.owly.glc.adapter.Parameters;
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
 import ch.ethz.idsc.owly.glc.core.AnyPlannerInterface;
-import ch.ethz.idsc.owly.glc.core.Expand;
+import ch.ethz.idsc.owly.glc.core.GlcExpand;
 import ch.ethz.idsc.owly.glc.core.OptimalAnyTrajectoryPlanner;
 import ch.ethz.idsc.owly.glc.core.StandardTrajectoryPlanner;
 import ch.ethz.idsc.owly.glc.core.TrajectoryPlanner;
@@ -74,7 +74,7 @@ enum R2GlcAnyCircleCompareDemo {
     AnyPlannerInterface anyTrajectoryPlanner = new OptimalAnyTrajectoryPlanner( //
         parameters.getEta(), stateIntegrator, controls, obstacleQuery, rnGoal);
     anyTrajectoryPlanner.switchRootToState(Tensors.vector(0, 1).multiply(circleRadius));
-    Expand.maxDepth(anyTrajectoryPlanner, parameters.getDepthLimit());
+    GlcExpand.maxDepth(anyTrajectoryPlanner, parameters.getDepthLimit());
     List<StateTime> trajectory = anyTrajectoryPlanner.trajectoryToBest();
     // StateTimeTrajectories.print(trajectory);
     // AnimationWriter gsw = AnimationWriter.of(UserHome.Pictures("R2_Circle_Gif.gif"), 250);
@@ -86,7 +86,7 @@ enum R2GlcAnyCircleCompareDemo {
     StandardTrajectoryPlanner standardTrajectoryPlanner = new StandardTrajectoryPlanner( //
         parameters.getEta(), stateIntegrator, controls, obstacleQuery, rnGoal);
     standardTrajectoryPlanner.insertRoot(new StateTime(Tensors.vector(0, 1).multiply(circleRadius), RealScalar.ZERO));
-    Expand.maxDepth(standardTrajectoryPlanner, parameters.getDepthLimit());
+    GlcExpand.maxDepth(standardTrajectoryPlanner, parameters.getDepthLimit());
     // StateTimeTrajectories.print(trajectory);
     // AnimationWriter gsw = AnimationWriter.of(UserHome.Pictures("R2_Circle_Gif.gif"), 250);
     OwlyFrame owlyStandardFrame = Gui.start();
@@ -122,7 +122,7 @@ enum R2GlcAnyCircleCompareDemo {
       Region goalSearchHelper = new EllipsoidRegion(goal, Array.of(l -> goalSearchHelperRadius, goal.length()));
       anyTrajectoryPlanner.changeToGoal(rnGoal2, goalSearchHelper);
       // -- EXPANDING
-      int itersAny = Expand.maxDepth(anyTrajectoryPlanner, parameters.getDepthLimit());
+      int itersAny = GlcExpand.maxDepth(anyTrajectoryPlanner, parameters.getDepthLimit());
       trajectory = anyTrajectoryPlanner.trajectoryToBest();
       long tocAny = System.nanoTime();
       owlyAnyFrame.setGlc((TrajectoryPlanner) anyTrajectoryPlanner);
@@ -135,7 +135,7 @@ enum R2GlcAnyCircleCompareDemo {
         standardTrajectoryPlanner = new StandardTrajectoryPlanner( //
             parameters.getEta(), stateIntegrator, controls, obstacleQuery, rnGoal2);
         standardTrajectoryPlanner.insertRoot(newRootState.state());
-        int itersStandard = Expand.maxDepth(standardTrajectoryPlanner, parameters.getDepthLimit());
+        int itersStandard = GlcExpand.maxDepth(standardTrajectoryPlanner, parameters.getDepthLimit());
         long tocStandard = System.nanoTime();
         owlyStandardFrame.setGlc((TrajectoryPlanner) standardTrajectoryPlanner);
         System.out.println("****COMPARING TIME:  ****");

@@ -9,7 +9,7 @@ import ch.ethz.idsc.owly.math.state.StateTime;
 import ch.ethz.idsc.owly.math.state.TrajectoryRegionQuery;
 import ch.ethz.idsc.tensor.Tensor;
 
-public interface AnyPlannerInterface extends ExpandInterface {
+public interface AnyPlannerInterface extends ExpandInterface<GlcNode> {
   /** Includes all the functionality of the RootSwitch
    * (deleting of the useless nodes and relabeling of modified Domains)
    * @param state the new Rootstate

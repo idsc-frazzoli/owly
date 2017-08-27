@@ -2,7 +2,7 @@
 package ch.ethz.idsc.owly.demo.delta.glc;
 
 import ch.ethz.idsc.owly.glc.adapter.TrajectoryPlannerContainer;
-import ch.ethz.idsc.owly.glc.core.Expand;
+import ch.ethz.idsc.owly.glc.core.GlcExpand;
 import ch.ethz.idsc.owly.glc.core.TrajectoryPlanner;
 import ch.ethz.idsc.owly.gui.Gui;
 import ch.ethz.idsc.owly.gui.OwlyFrame;
@@ -23,7 +23,7 @@ enum DeltaGlcConstTimeDemo {
     owlyFrame.jFrame.setBounds(100, 100, 620, 475);
     Scalar planningTime = RealScalar.of(1);
     while (!trajectoryPlannerContainer.getTrajectoryPlanner().getBest().isPresent() && owlyFrame.jFrame.isVisible()) {
-      int expandIter = Expand.constTime(trajectoryPlannerContainer.getTrajectoryPlanner(), planningTime, //
+      int expandIter = GlcExpand.constTime(trajectoryPlannerContainer.getTrajectoryPlanner(), planningTime, //
           trajectoryPlannerContainer.getParameters().getDepthLimit());
       owlyFrame.setGlc((TrajectoryPlanner) trajectoryPlannerContainer.getTrajectoryPlanner());
       if (expandIter < 1)

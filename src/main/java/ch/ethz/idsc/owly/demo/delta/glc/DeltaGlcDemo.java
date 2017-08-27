@@ -6,7 +6,7 @@ import java.util.List;
 import ch.ethz.idsc.owly.glc.adapter.StateTimeTrajectories;
 import ch.ethz.idsc.owly.glc.adapter.TrajectoryPlannerContainer;
 import ch.ethz.idsc.owly.glc.core.DebugUtils;
-import ch.ethz.idsc.owly.glc.core.Expand;
+import ch.ethz.idsc.owly.glc.core.GlcExpand;
 import ch.ethz.idsc.owly.glc.core.GlcNodes;
 import ch.ethz.idsc.owly.gui.Gui;
 import ch.ethz.idsc.owly.gui.OwlyFrame;
@@ -26,7 +26,7 @@ enum DeltaGlcDemo {
     owlyFrame.configCoordinateOffset(33, 416);
     owlyFrame.jFrame.setBounds(100, 100, 620, 475);
     while (!trajectoryPlannerContainer.getTrajectoryPlanner().getBest().isPresent() && owlyFrame.jFrame.isVisible()) {
-      Expand.maxSteps(trajectoryPlannerContainer.getTrajectoryPlanner(), 30, trajectoryPlannerContainer.getParameters().getDepthLimit());
+      GlcExpand.maxSteps(trajectoryPlannerContainer.getTrajectoryPlanner(), 30, trajectoryPlannerContainer.getParameters().getDepthLimit());
       owlyFrame.setGlc(trajectoryPlannerContainer.getTrajectoryPlanner());
       Thread.sleep(1);
       DebugUtils.heuristicConsistencyCheck(trajectoryPlannerContainer.getTrajectoryPlanner());

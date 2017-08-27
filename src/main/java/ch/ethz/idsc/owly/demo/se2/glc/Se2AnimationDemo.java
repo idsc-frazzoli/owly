@@ -2,7 +2,6 @@
 package ch.ethz.idsc.owly.demo.se2.glc;
 
 import ch.ethz.idsc.owly.demo.rn.R2ImageRegions;
-import ch.ethz.idsc.owly.demo.se2.Se2Entity;
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
 import ch.ethz.idsc.owly.gui.ani.OwlyAnimationFrame;
 import ch.ethz.idsc.owly.math.region.ImageRegion;

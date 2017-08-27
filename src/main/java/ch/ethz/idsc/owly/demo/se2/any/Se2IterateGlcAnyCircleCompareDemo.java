@@ -13,7 +13,7 @@ import ch.ethz.idsc.owly.glc.adapter.Parameters;
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
 import ch.ethz.idsc.owly.glc.core.AnyPlannerInterface;
 import ch.ethz.idsc.owly.glc.core.DebugUtils;
-import ch.ethz.idsc.owly.glc.core.Expand;
+import ch.ethz.idsc.owly.glc.core.GlcExpand;
 import ch.ethz.idsc.owly.glc.core.OptimalAnyTrajectoryPlanner;
 import ch.ethz.idsc.owly.glc.core.StandardTrajectoryPlanner;
 import ch.ethz.idsc.owly.glc.core.TrajectoryPlanner;
@@ -80,7 +80,7 @@ class Se2IterateGlcAnyCircleCompareDemo {
     AnyPlannerInterface anyTrajectoryPlanner = new OptimalAnyTrajectoryPlanner( //
         parameters.getEta(), stateIntegrator, controls, obstacleQuery, se2GoalManager.getGoalInterface());
     anyTrajectoryPlanner.switchRootToState(Tensors.vector(0, 3, 0));
-    int iters = Expand.maxDepth(anyTrajectoryPlanner, parameters.getDepthLimit());
+    int iters = GlcExpand.maxDepth(anyTrajectoryPlanner, parameters.getDepthLimit());
     System.out.println("After " + iters + " iterations");
     Scalar toc = RealScalar.of(System.nanoTime());
     // }
@@ -95,7 +95,7 @@ class Se2IterateGlcAnyCircleCompareDemo {
       StandardTrajectoryPlanner defaultTrajectoryPlanner = new StandardTrajectoryPlanner( //
           parameters.getEta(), stateIntegrator, controls, obstacleQuery, se2GoalManager.getGoalInterface());
       defaultTrajectoryPlanner.insertRoot(Tensors.vector(0, 3, 0));
-      iters = Expand.maxDepth(defaultTrajectoryPlanner, parameters.getDepthLimit());
+      iters = GlcExpand.maxDepth(defaultTrajectoryPlanner, parameters.getDepthLimit());
       DebugUtils.nodeAmountCompare(defaultTrajectoryPlanner);
       System.out.println("After " + iters + " iterations");
       toc = RealScalar.of(System.nanoTime());
@@ -126,7 +126,7 @@ class Se2IterateGlcAnyCircleCompareDemo {
         goalFound = anyTrajectoryPlanner.changeToGoal(se2GoalManager2.getGoalInterface());
         // --
         if (!goalFound)
-          expandIter = Expand.maxDepth(anyTrajectoryPlanner, parameters.getDepthLimit());
+          expandIter = GlcExpand.maxDepth(anyTrajectoryPlanner, parameters.getDepthLimit());
         System.out.println("After " + expandIter + " iterations");
         owlyFrameAny.setGlc((TrajectoryPlanner) anyTrajectoryPlanner);
         // ---
@@ -139,7 +139,7 @@ class Se2IterateGlcAnyCircleCompareDemo {
         StandardTrajectoryPlanner defaultTrajectoryPlanner = new StandardTrajectoryPlanner( //
             parameters.getEta(), stateIntegrator, controls, obstacleQuery, se2GoalManager2.getGoalInterface());
         defaultTrajectoryPlanner.insertRoot(newRootState.state());
-        iters = Expand.maxDepth(defaultTrajectoryPlanner, parameters.getDepthLimit());
+        iters = GlcExpand.maxDepth(defaultTrajectoryPlanner, parameters.getDepthLimit());
         System.out.println("After " + iters + " iterations");
         toc = RealScalar.of(System.nanoTime());
         System.out.println(toc.subtract(tic).multiply(RealScalar.of(1e-9)) + " Seconds needed to plan");

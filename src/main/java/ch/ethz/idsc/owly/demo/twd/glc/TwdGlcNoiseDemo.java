@@ -12,7 +12,7 @@ import ch.ethz.idsc.owly.demo.twd.TwdStateSpaceModel;
 import ch.ethz.idsc.owly.glc.adapter.Parameters;
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
 import ch.ethz.idsc.owly.glc.adapter.StateTimeTrajectories;
-import ch.ethz.idsc.owly.glc.core.Expand;
+import ch.ethz.idsc.owly.glc.core.GlcExpand;
 import ch.ethz.idsc.owly.glc.core.GlcNode;
 import ch.ethz.idsc.owly.glc.core.GlcNodes;
 import ch.ethz.idsc.owly.glc.core.StandardTrajectoryPlanner;
@@ -75,7 +75,7 @@ enum TwdGlcNoiseDemo {
     owlyFrame.setGlc(trajectoryPlanner);
     // Planning
     while (!trajectoryPlanner.getBest().isPresent() && owlyFrame.jFrame.isVisible()) {
-      Expand.maxSteps(trajectoryPlanner, 100, parameters.getDepthLimit());
+      GlcExpand.maxSteps(trajectoryPlanner, 100, parameters.getDepthLimit());
       owlyFrame.setGlc(trajectoryPlanner);
     }
     Optional<GlcNode> optional = trajectoryPlanner.getBest();

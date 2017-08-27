@@ -1,61 +1,60 @@
 // code by jph
-package ch.ethz.idsc.owly.rrts.adapter;
+package ch.ethz.idsc.owly.rrts.core;
 
 import java.util.Objects;
+import java.util.Optional;
 
-import ch.ethz.idsc.owly.rrts.core.Rrts;
-import ch.ethz.idsc.owly.rrts.core.RrtsNode;
-import ch.ethz.idsc.owly.rrts.core.RrtsNodeCollection;
-import ch.ethz.idsc.owly.rrts.core.Transition;
-import ch.ethz.idsc.owly.rrts.core.TransitionCostFunction;
-import ch.ethz.idsc.owly.rrts.core.TransitionRegionQuery;
-import ch.ethz.idsc.owly.rrts.core.TransitionSpace;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Scalars;
 import ch.ethz.idsc.tensor.Tensor;
 
-/** "Sampling-based algorithms for optimal motion planning"
- * by Sertac Karaman and Emilio Frazzoli */
+/** class implements the capability to build an rrts tree.
+ * 
+ * "Sampling-based algorithms for optimal motion planning"
+ * by Sertac Karaman and Emilio Frazzoli
+ * 
+ * <p>the class does not require the concept of a sampler, or goal region.
+ * @see RrtsPlanner */
 public class DefaultRrts implements Rrts {
   private final TransitionSpace transitionSpace;
   private final RrtsNodeCollection nodeCollection;
-  private final TransitionRegionQuery transitionRegionQuery;
+  private final TransitionRegionQuery obstacleQuery;
   private final TransitionCostFunction transitionCostFunction;
   private int rewireCount = 0;
 
   public DefaultRrts(TransitionSpace transitionSpace, //
       RrtsNodeCollection rrtsNodeCollection, //
-      TransitionRegionQuery transitionRegionQuery, //
+      TransitionRegionQuery obstacleQuery, //
       TransitionCostFunction transitionCostFunction) {
     this.transitionSpace = transitionSpace;
     this.nodeCollection = rrtsNodeCollection;
-    this.transitionRegionQuery = transitionRegionQuery;
+    this.obstacleQuery = obstacleQuery;
     this.transitionCostFunction = transitionCostFunction;
   }
 
   @Override
-  public RrtsNode insertAsNode(Tensor state, int k_nearest) {
-    // TODO check if state is in collision
+  public Optional<RrtsNode> insertAsNode(Tensor state, int k_nearest) {
+    // TODO check if state is in collision, not easy since collision check works on `transition`s
     int size = nodeCollection.size();
     if (size == 0) {
       RrtsNode rrtsNode = RrtsNode.createRoot(state, RealScalar.ZERO);
       nodeCollection.insert(rrtsNode);
-      return rrtsNode;
+      return Optional.of(rrtsNode);
     }
     if (isInsertPlausible(state)) {
       k_nearest = Math.min(Math.max(1, k_nearest), size);
       RrtsNode rrtsNode = connectAlongMinimumCost(state, k_nearest);
       rewireAround(rrtsNode, k_nearest);
       nodeCollection.insert(rrtsNode);
-      return rrtsNode;
+      return Optional.of(rrtsNode);
     }
-    return null;
+    return Optional.empty();
   }
 
   private boolean isInsertPlausible(Tensor state) {
     Tensor nearest = nodeCollection.nearTo(state, 1).iterator().next().state();
-    return transitionRegionQuery.isDisjoint(transitionSpace.connect(nearest, state));
+    return isCollisionFree(transitionSpace.connect(nearest, state));
   }
 
   private RrtsNode connectAlongMinimumCost(Tensor state, int k_nearest) {
@@ -66,7 +65,7 @@ public class DefaultRrts implements Rrts {
       Scalar cost = transitionCostFunction.cost(transition);
       Scalar compare = node.costFromRoot().add(cost);
       if (Objects.isNull(costFromRoot) || Scalars.lessThan(compare, costFromRoot))
-        if (transitionRegionQuery.isDisjoint(transition)) {
+        if (isCollisionFree(transition)) {
           parent = node;
           costFromRoot = compare;
         }
@@ -80,7 +79,7 @@ public class DefaultRrts implements Rrts {
       Transition transition = transitionSpace.connect(parent.state(), node.state());
       Scalar costFromParent = transitionCostFunction.cost(transition);
       if (Scalars.lessThan(parent.costFromRoot().add(costFromParent), node.costFromRoot())) {
-        if (transitionRegionQuery.isDisjoint(transition)) {
+        if (isCollisionFree(transition)) {
           parent.rewireTo(node, costFromParent);
           ++rewireCount;
         }
@@ -91,5 +90,14 @@ public class DefaultRrts implements Rrts {
   @Override
   public int rewireCount() {
     return rewireCount;
+  }
+
+  // private helper function
+  private boolean isCollisionFree(Transition transition) {
+    return obstacleQuery.isDisjoint(transition);
+  }
+
+  /* package */ TransitionRegionQuery getObstacleQuery() {
+    return obstacleQuery;
   }
 }

@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
+import ch.ethz.idsc.owly.data.GlobalAssert;
 import ch.ethz.idsc.owly.demo.rn.R2Controls;
 import ch.ethz.idsc.owly.demo.rn.RnSimpleCircleHeuristicGoalManager;
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
@@ -47,7 +48,7 @@ enum R2SphereDemo {
         partitionScale, stateIntegrator, controls, obstacleQuery, rnGoal);
     trajectoryPlanner.insertRoot(Tensors.vector(0, 0));
     int iters = Expand.steps(trajectoryPlanner, 200);
-    System.out.println(iters);
+    GlobalAssert.that(iters == 200);
     Optional<GlcNode> optional = trajectoryPlanner.getBest();
     if (optional.isPresent()) {
       List<StateTime> trajectory = GlcNodes.getPathFromRootTo(optional.get());

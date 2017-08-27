@@ -1,7 +1,6 @@
 // code by jph
 package ch.ethz.idsc.owly.demo.psu.glc;
 
-import ch.ethz.idsc.owly.demo.psu.PsuEntity;
 import ch.ethz.idsc.owly.gui.ani.OwlyAnimationFrame;
 import ch.ethz.idsc.owly.math.state.EmptyTrajectoryRegionQuery;
 

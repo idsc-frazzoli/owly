@@ -5,11 +5,12 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
+import ch.ethz.idsc.owly.data.Stopwatch;
 import ch.ethz.idsc.owly.glc.adapter.IdentityWrap;
 import ch.ethz.idsc.owly.glc.adapter.Parameters;
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
 import ch.ethz.idsc.owly.glc.adapter.Trajectories;
-import ch.ethz.idsc.owly.glc.core.Expand;
+import ch.ethz.idsc.owly.glc.core.GlcExpand;
 import ch.ethz.idsc.owly.glc.core.GlcNode;
 import ch.ethz.idsc.owly.glc.core.GoalInterface;
 import ch.ethz.idsc.owly.glc.core.OptimalAnyTrajectoryPlanner;
@@ -30,7 +31,7 @@ import ch.ethz.idsc.tensor.Tensor;
 
 /** omni-directional movement with constant speed */
 public abstract class AbstractAnyEntity extends AbstractEntity {
-  /** preserve 1[s] of the former trajectory */
+  /** preserve delayHint[s] of the former trajectory */
   protected final Scalar delayHint;
   private final Scalar expandTime;
   protected final Parameters parameters;
@@ -127,7 +128,7 @@ public abstract class AbstractAnyEntity extends AbstractEntity {
     trajectoryPlanner.switchRootToState(root); // setting start
     thread = new Thread(() -> {
       while (true) {
-        long tic = System.nanoTime();
+        Stopwatch stopwatch = Stopwatch.started();
         head = (this.getFutureTrajectoryUntil(delayHint())); // Point on trajectory with delay from now
         // Rootswitch
         int index = getIndexOfLastNodeOf(head);
@@ -151,7 +152,7 @@ public abstract class AbstractAnyEntity extends AbstractEntity {
           switchGoalRequest = false;
         } else {
           // int iters =
-          Expand.constTime(trajectoryPlanner, expandTime, parameters.getDepthLimit());
+          GlcExpand.constTime(trajectoryPlanner, expandTime, parameters.getDepthLimit());
         }
         if (trajectoryPlannerCallback != null)
           trajectoryPlannerCallback.expandResult(head, trajectoryPlanner);
@@ -160,7 +161,7 @@ public abstract class AbstractAnyEntity extends AbstractEntity {
         } catch (Exception exception) {
           exception.printStackTrace();
         }
-        System.err.println("Last iteration took: " + (System.nanoTime() - tic) * 1e-9 + "s");
+        System.err.println("Last iteration took: " + stopwatch.display_seconds() + "s");
       }
     });
     thread.start();

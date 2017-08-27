@@ -1,13 +1,21 @@
 // code by jph
 package ch.ethz.idsc.owly.rrts.core;
 
+import java.util.Optional;
+
 import ch.ethz.idsc.tensor.Tensor;
 
+/** Rapidly exploring random trees
+ * 
+ * Implementation based on
+ * Sertac Karaman and Emilio Frazzoli, 2011:
+ * Sampling-based algorithms for optimal motion planning
+ * Algorithm 6, p.855 */
 public interface Rrts {
   /** @param state
    * @param k_nearest
    * @return */
-  RrtsNode insertAsNode(Tensor state, int k_nearest);
+  Optional<RrtsNode> insertAsNode(Tensor state, int k_nearest);
 
   /** @param rrtsNode
    * @param k_nearest */

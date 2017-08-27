@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
+import ch.ethz.idsc.owly.data.Stopwatch;
 import ch.ethz.idsc.owly.demo.rn.R2Controls;
 import ch.ethz.idsc.owly.demo.rn.RnSimpleCircleHeuristicGoalManager;
 import ch.ethz.idsc.owly.demo.util.ImageRegions;
@@ -45,10 +46,9 @@ enum R2ImageDemo {
     TrajectoryPlanner trajectoryPlanner = new StandardTrajectoryPlanner( //
         partitionScale, stateIntegrator, controls, obstacleQuery, rnGoal);
     trajectoryPlanner.insertRoot(Tensors.vector(0, 0));
-    long tic = System.nanoTime();
+    Stopwatch stopwatch = Stopwatch.started();
     int iters = Expand.maxSteps(trajectoryPlanner, 10000);
-    long toc = System.nanoTime();
-    System.out.println(iters + " " + ((toc - tic) * 1e-9));
+    System.out.println(iters + " " + stopwatch.display_seconds());
     Optional<GlcNode> optional = trajectoryPlanner.getBest();
     if (optional.isPresent()) {
       List<StateTime> trajectory = GlcNodes.getPathFromRootTo(optional.get());

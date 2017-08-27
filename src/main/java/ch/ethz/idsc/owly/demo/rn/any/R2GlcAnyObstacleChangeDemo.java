@@ -12,7 +12,7 @@ import ch.ethz.idsc.owly.glc.adapter.Parameters;
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
 import ch.ethz.idsc.owly.glc.adapter.StateTimeTrajectories;
 import ch.ethz.idsc.owly.glc.core.AnyPlannerInterface;
-import ch.ethz.idsc.owly.glc.core.Expand;
+import ch.ethz.idsc.owly.glc.core.GlcExpand;
 import ch.ethz.idsc.owly.glc.core.OptimalAnyTrajectoryPlanner;
 import ch.ethz.idsc.owly.glc.core.TrajectoryPlanner;
 import ch.ethz.idsc.owly.gui.Gui;
@@ -67,7 +67,7 @@ enum R2GlcAnyObstacleChangeDemo {
     AnyPlannerInterface trajectoryPlanner = new OptimalAnyTrajectoryPlanner( //
         parameters.getEta(), stateIntegrator, controls, obstacleQuery1, rnGoal);
     trajectoryPlanner.switchRootToState(Tensors.vector(0, 6));
-    Expand.maxDepth(trajectoryPlanner, parameters.getDepthLimit());
+    GlcExpand.maxDepth(trajectoryPlanner, parameters.getDepthLimit());
     List<StateTime> trajectory = trajectoryPlanner.trajectoryToBest();
     StateTimeTrajectories.print(trajectory);
     OwlyFrame owlyFrame = Gui.start();
@@ -84,7 +84,7 @@ enum R2GlcAnyObstacleChangeDemo {
             )));
     trajectoryPlanner.obstacleUpdate(obstacleQuery2);
     owlyFrame.setGlc((TrajectoryPlanner) trajectoryPlanner);
-    Expand.constTime(trajectoryPlanner, RealScalar.of(1.5), parameters.getDepthLimit());
+    GlcExpand.constTime(trajectoryPlanner, RealScalar.of(1.5), parameters.getDepthLimit());
     owlyFrame.setGlc((TrajectoryPlanner) trajectoryPlanner);
   }
 }
