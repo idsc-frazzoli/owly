@@ -24,7 +24,7 @@ import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.sca.Floor;
 
 /** base class for generalized label correction implementation */
-public abstract class TrajectoryPlanner implements ExpandInterface, Serializable {
+public abstract class TrajectoryPlanner implements ExpandInterface<GlcNode>, Serializable {
   private final Tensor eta;
   // ---
   private final Queue<GlcNode> queue = new PriorityQueue<>(NodeMeritComparator.INSTANCE);

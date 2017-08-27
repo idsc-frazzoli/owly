@@ -5,6 +5,7 @@ import java.util.Optional;
 import java.util.function.Supplier;
 
 import ch.ethz.idsc.owly.data.Stopwatch;
+import ch.ethz.idsc.owly.data.tree.StateCostNode;
 import ch.ethz.idsc.tensor.Scalar;
 
 /** class contains static functions that operate on instances of {@link ExpandInterface}
@@ -20,7 +21,7 @@ public enum Expand {
   /** @param expandInterface
    * @param expandLimit
    * @return number times function {@link ExpandInterface#expand(GlcNode)} was invoked */
-  public static int maxSteps(ExpandInterface expandInterface, int expandLimit) {
+  public static int maxSteps(ExpandInterface<?> expandInterface, int expandLimit) {
     return maxSteps(expandInterface, expandLimit, () -> true);
   }
 
@@ -30,10 +31,10 @@ public enum Expand {
    * @param expandLimit
    * @param isContinued
    * @return number times function {@link ExpandInterface#expand(GlcNode)} was invoked */
-  public static int maxSteps(ExpandInterface expandInterface, int expandLimit, Supplier<Boolean> isContinued) {
+  public static <T extends StateCostNode> int maxSteps(ExpandInterface<T> expandInterface, int expandLimit, Supplier<Boolean> isContinued) {
     int expandCount = 0;
     while (expandCount < expandLimit) {
-      Optional<GlcNode> next = expandInterface.pollNext();
+      Optional<T> next = expandInterface.pollNext();
       if (!next.isPresent()) { // queue is empty
         System.out.println("*** Queue is empty -- No Goal was found ***");
         break;
@@ -110,13 +111,13 @@ public enum Expand {
    * @param expandInterface
    * @param timeLimit of expandfunction in [s]
    * @return number times function {@link ExpandInterface#expand(GlcNode)} was invoked */
-  public static int maxTime(ExpandInterface expandInterface, Scalar timeLimit) {
+  public static <T extends StateCostNode> int maxTime(ExpandInterface<T> expandInterface, Scalar timeLimit) {
     System.out.println("*** EXPANDING ***");
     Stopwatch stopwatch = Stopwatch.started();
     final double time = timeLimit.number().doubleValue();
     int expandCount = 0;
     while (true) {
-      Optional<GlcNode> next = expandInterface.pollNext();
+      Optional<T> next = expandInterface.pollNext();
       if (!next.isPresent()) {
         System.err.println("**** Queue is empty -- No Goal was found"); // queue is empty
         break;
@@ -171,10 +172,10 @@ public enum Expand {
    * @param expandInterface
    * @param expandLimit
    * @return number times function {@link ExpandInterface#expand(GlcNode)} was invoked */
-  public static int steps(ExpandInterface expandInterface, int expandLimit) {
+  public static <T extends StateCostNode> int steps(ExpandInterface<T> expandInterface, int expandLimit) {
     int expandCount = 0;
     while (expandCount < expandLimit) {
-      Optional<GlcNode> next = expandInterface.pollNext();
+      Optional<T> next = expandInterface.pollNext();
       if (!next.isPresent()) { // queue is empty
         System.out.println("*** Queue is empty -- No Goal was found ***");
         break;

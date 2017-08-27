@@ -1,7 +1,6 @@
 // code by jl and jph
 package ch.ethz.idsc.owly.demo.rn.any;
 
-import ch.ethz.idsc.owly.demo.rn.R2AnyEntity;
 import ch.ethz.idsc.owly.demo.rn.R2NoiseRegion;
 import ch.ethz.idsc.owly.gui.ani.OwlyAnimationFrame;
 import ch.ethz.idsc.owly.math.region.Region;

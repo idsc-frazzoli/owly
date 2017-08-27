@@ -1,7 +1,6 @@
 // code by jph
 package ch.ethz.idsc.owly.demo.rn.glc;
 
-import ch.ethz.idsc.owly.demo.rn.R2Entity;
 import ch.ethz.idsc.owly.demo.rn.R2NoiseRegion;
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
 import ch.ethz.idsc.owly.gui.ani.OwlyAnimationFrame;

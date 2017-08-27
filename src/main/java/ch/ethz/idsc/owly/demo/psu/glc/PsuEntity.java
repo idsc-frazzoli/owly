@@ -1,5 +1,5 @@
 // code by jph
-package ch.ethz.idsc.owly.demo.psu;
+package ch.ethz.idsc.owly.demo.psu.glc;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
@@ -8,6 +8,10 @@ import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.util.Collection;
 
+import ch.ethz.idsc.owly.demo.psu.PsuControls;
+import ch.ethz.idsc.owly.demo.psu.PsuGoalManager;
+import ch.ethz.idsc.owly.demo.psu.PsuStateSpaceModel;
+import ch.ethz.idsc.owly.demo.psu.PsuWrap;
 import ch.ethz.idsc.owly.glc.core.StandardTrajectoryPlanner;
 import ch.ethz.idsc.owly.glc.core.TrajectoryPlanner;
 import ch.ethz.idsc.owly.gui.OwlyLayer;

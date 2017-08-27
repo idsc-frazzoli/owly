@@ -1,7 +1,6 @@
 // code by jph
 package ch.ethz.idsc.owly.demo.twd.glc;
 
-import ch.ethz.idsc.owly.demo.twd.TwdEntity;
 import ch.ethz.idsc.owly.gui.ani.OwlyAnimationFrame;
 import ch.ethz.idsc.tensor.Tensors;
 

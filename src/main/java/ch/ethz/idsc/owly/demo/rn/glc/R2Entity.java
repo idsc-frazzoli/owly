@@ -1,5 +1,5 @@
 // code by jph
-package ch.ethz.idsc.owly.demo.rn;
+package ch.ethz.idsc.owly.demo.rn.glc;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
@@ -8,6 +8,8 @@ import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.util.Collection;
 
+import ch.ethz.idsc.owly.demo.rn.R2Controls;
+import ch.ethz.idsc.owly.demo.rn.RnSimpleCircleHeuristicGoalManager;
 import ch.ethz.idsc.owly.glc.core.GoalInterface;
 import ch.ethz.idsc.owly.glc.core.StandardTrajectoryPlanner;
 import ch.ethz.idsc.owly.glc.core.TrajectoryPlanner;

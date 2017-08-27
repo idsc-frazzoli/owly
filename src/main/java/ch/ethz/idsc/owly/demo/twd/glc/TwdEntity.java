@@ -1,5 +1,5 @@
 // code by jph
-package ch.ethz.idsc.owly.demo.twd;
+package ch.ethz.idsc.owly.demo.twd.glc;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
@@ -12,6 +12,9 @@ import java.util.Objects;
 
 import ch.ethz.idsc.owly.data.GlobalAssert;
 import ch.ethz.idsc.owly.demo.se2.Se2Wrap;
+import ch.ethz.idsc.owly.demo.twd.TwdControls;
+import ch.ethz.idsc.owly.demo.twd.TwdMinCurvatureGoalManager;
+import ch.ethz.idsc.owly.demo.twd.TwdStateSpaceModel;
 import ch.ethz.idsc.owly.glc.core.StandardTrajectoryPlanner;
 import ch.ethz.idsc.owly.glc.core.TrajectoryPlanner;
 import ch.ethz.idsc.owly.gui.OwlyLayer;

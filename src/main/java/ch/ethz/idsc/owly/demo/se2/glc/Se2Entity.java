@@ -1,5 +1,5 @@
 // code by jph
-package ch.ethz.idsc.owly.demo.se2;
+package ch.ethz.idsc.owly.demo.se2.glc;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
@@ -13,6 +13,10 @@ import java.util.Objects;
 import javax.swing.JLabel;
 
 import ch.ethz.idsc.owly.data.GlobalAssert;
+import ch.ethz.idsc.owly.demo.se2.Se2Controls;
+import ch.ethz.idsc.owly.demo.se2.Se2MinDistGoalManager;
+import ch.ethz.idsc.owly.demo.se2.Se2StateSpaceModel;
+import ch.ethz.idsc.owly.demo.se2.Se2Wrap;
 import ch.ethz.idsc.owly.glc.core.StandardTrajectoryPlanner;
 import ch.ethz.idsc.owly.glc.core.TrajectoryPlanner;
 import ch.ethz.idsc.owly.gui.OwlyLayer;

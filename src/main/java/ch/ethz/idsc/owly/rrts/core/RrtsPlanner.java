@@ -5,8 +5,11 @@ import java.util.Optional;
 import java.util.PriorityQueue;
 
 import ch.ethz.idsc.owly.data.tree.NodeCostComparator;
+import ch.ethz.idsc.owly.glc.core.ExpandInterface;
 
-public class RrtsPlanner implements ExploreInterface {
+public class RrtsPlanner implements ExpandInterface<RrtsNode> {
+  private static final RrtsNode DUMMY = new RrtsNodeImpl(null, null);
+  // ---
   private final Rrts rrts;
   private final RandomSampleInterface spaceSampler;
   private final RandomSampleInterface goalSampler;
@@ -24,13 +27,17 @@ public class RrtsPlanner implements ExploreInterface {
   }
 
   @Override
-  public Optional<RrtsNode> next() {
+  public Optional<RrtsNode> pollNext() {
+    return Optional.of(DUMMY);
+  }
+
+  @Override
+  public void expand(RrtsNode node) {
     final int k_nearest = 12; // TODO magic const
     rrts.insertAsNode(spaceSampler.nextSample(), k_nearest);
     Optional<RrtsNode> optional = rrts.insertAsNode(goalSampler.nextSample(), k_nearest);
     if (optional.isPresent())
       queue.add(optional.get());
-    return optional;
   }
 
   @Override
