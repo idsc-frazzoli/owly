@@ -5,9 +5,10 @@ import java.util.Comparator;
 
 import ch.ethz.idsc.tensor.Scalars;
 
-/** compare two nodes based on {@link StateCostNode#costFromRoot()} */
+/** compare two nodes based on {@link StateCostNode#costFromRoot()}
+ * used in rrts */
 public enum NodeCostComparator implements Comparator<StateCostNode> {
-  INSTANCE; // not used yet
+  INSTANCE;
   // ---
   @Override
   public int compare(StateCostNode o1, StateCostNode o2) {
