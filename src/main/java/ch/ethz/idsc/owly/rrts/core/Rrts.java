@@ -3,6 +3,12 @@ package ch.ethz.idsc.owly.rrts.core;
 
 import ch.ethz.idsc.tensor.Tensor;
 
+/** Rapidly exploring random trees
+ * 
+ * Implementation based on
+ * Sertac Karaman and Emilio Frazzoli, 2011:
+ * Sampling-based algorithms for optimal motion planning
+ * Algorithm 6, p.855 */
 public interface Rrts {
   /** @param state
    * @param k_nearest

@@ -4,11 +4,17 @@ package ch.ethz.idsc.owly.glc.core;
 import java.util.Optional;
 import java.util.function.Supplier;
 
-import ch.ethz.idsc.tensor.RealScalar;
+import ch.ethz.idsc.owly.data.Stopwatch;
 import ch.ethz.idsc.tensor.Scalar;
-import ch.ethz.idsc.tensor.Scalars;
 
-/** class contains static functions that operate on instances of {@link ExpandInterface} */
+/** class contains static functions that operate on instances of {@link ExpandInterface}
+ * 
+ * The expansion of the following planners can be controlled using the functions:
+ * <ul>
+ * <li>{@link StandardTrajectoryPlanner},
+ * <li>{@link SimpleAnyTrajectoryPlanner},
+ * <li>{@link OptimalAnyTrajectoryPlanner}
+ * </ul> */
 public enum Expand {
   ;
   /** @param expandInterface
@@ -99,30 +105,30 @@ public enum Expand {
     return expandCount;
   }
 
-  /** expands until the time of the running algorithm exceeds the maxTime
-   * or a goal was found
+  /** expands until the time of the running algorithm exceeds the maxTime or a goal was found
+   * 
    * @param expandInterface
-   * @param timeLimit TimeLimit of expandfunction in [s]
+   * @param timeLimit of expandfunction in [s]
    * @return number times function {@link ExpandInterface#expand(GlcNode)} was invoked */
   public static int maxTime(ExpandInterface expandInterface, Scalar timeLimit) {
     System.out.println("*** EXPANDING ***");
-    long tic = System.nanoTime();
-    timeLimit = timeLimit.multiply(RealScalar.of(1e9));
+    Stopwatch stopwatch = Stopwatch.started();
+    final double time = timeLimit.number().doubleValue();
     int expandCount = 0;
     while (true) {
       Optional<GlcNode> next = expandInterface.pollNext();
       if (!next.isPresent()) {
-        System.err.println("**** Queue is empty -- No Goal was found");// queue is empty
+        System.err.println("**** Queue is empty -- No Goal was found"); // queue is empty
         break;
       }
       expandInterface.expand(next.get());
       ++expandCount;
-      long toc = System.nanoTime();
       if (expandInterface.getBest().isPresent()) { // found node in goal region
-        System.out.println("after " + (toc - tic) * 1e-9 + "s");
+        stopwatch.stop();
+        System.out.println("after " + stopwatch.display_seconds() + "s");
         break;
       }
-      if (Scalars.lessThan(timeLimit, RealScalar.of(toc - tic))) {
+      if (time < stopwatch.display_seconds()) {
         System.out.println("*** TimeLimit reached -- No Goal was found ***");
         break;
       }
@@ -135,10 +141,10 @@ public enum Expand {
    * @param expandInterface
    * @param time Time of expandfunction in [s]
    * @return number times function {@link ExpandInterface#expand(GlcNode)} was invoked */
-  public static int constTime(ExpandInterface expandInterface, Scalar time, int depthLimit) {
+  public static int constTime(ExpandInterface expandInterface, Scalar _time, int depthLimit) {
     System.out.println("*** EXPANDING ***");
-    long tic = System.nanoTime();
-    time = time.multiply(RealScalar.of(1e9));
+    Stopwatch stopwatch = Stopwatch.started();
+    final double time = _time.number().doubleValue();
     int expandCount = 0;
     while (true) {
       Optional<GlcNode> next = expandInterface.pollNext();
@@ -148,9 +154,8 @@ public enum Expand {
       }
       expandInterface.expand(next.get());
       ++expandCount;
-      long toc = System.nanoTime();
-      if (Scalars.lessThan(time, RealScalar.of(toc - tic))) {
-        System.out.println("***Planned for " + time.multiply(RealScalar.of(1e-9)) + "s ***");
+      if (time < stopwatch.display_seconds()) {
+        System.out.println("***Planned for " + _time + "s ***");
         break;
       }
       if (depthLimit < next.get().depth()) {

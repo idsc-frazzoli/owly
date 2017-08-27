@@ -82,6 +82,7 @@ enum DeltaGlcConstTimeHeuristicAnyDemo {
       Optional<GlcNode> finalGoalNode = null;
       // --
       // -- ROOTCHANGE
+      // TODO JONAS use Stopwatch
       long ticTemp = System.nanoTime();
       finalGoalNode = slowTrajectoryPlannerContainer.getTrajectoryPlanner().getFinalGoalNode();
       if (finalGoalNode.isPresent())

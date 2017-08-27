@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
+import ch.ethz.idsc.owly.data.Stopwatch;
 import ch.ethz.idsc.owly.demo.rice.Rice2Controls;
 import ch.ethz.idsc.owly.demo.rice.Rice2GoalManager;
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
@@ -53,12 +54,11 @@ enum RiceD2Demo {
         eta, stateIntegrator, controls, obstacleQuery, rice2Goal);
     // ---
     trajectoryPlanner.insertRoot(Tensors.vector(0.1, 0.1, 0, 0));
-    long tic = System.nanoTime();
+    Stopwatch stopwatch = Stopwatch.started();
     int iters = Expand.maxSteps(trajectoryPlanner, 1000);
-    long toc = System.nanoTime();
     // 550 1.6898229210000002 without parallel integration of trajectories
     // 555 1.149214356 with parallel integration of trajectories
-    System.out.println(iters + " " + ((toc - tic) * 1e-9));
+    System.out.println(iters + " " + stopwatch.display_seconds());
     Optional<GlcNode> optional = trajectoryPlanner.getBest();
     if (optional.isPresent()) {
       List<StateTime> trajectory = GlcNodes.getPathFromRootTo(optional.get());

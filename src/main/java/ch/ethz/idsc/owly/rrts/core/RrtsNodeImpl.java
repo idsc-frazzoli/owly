@@ -6,6 +6,10 @@ import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Scalars;
 import ch.ethz.idsc.tensor.Tensor;
 
+/** Implementation based on
+ * Sertac Karaman and Emilio Frazzoli, 2011:
+ * Sampling-based algorithms for optimal motion planning
+ * Algorithm 6, p.855 */
 /* package */ class RrtsNodeImpl extends SetNode<RrtsNode> implements RrtsNode {
   private final Tensor state;
   private Scalar costFromRoot;

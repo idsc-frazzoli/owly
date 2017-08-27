@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
+import ch.ethz.idsc.owly.data.Stopwatch;
 import ch.ethz.idsc.owly.glc.adapter.IdentityWrap;
 import ch.ethz.idsc.owly.glc.adapter.Parameters;
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
@@ -127,7 +128,7 @@ public abstract class AbstractAnyEntity extends AbstractEntity {
     trajectoryPlanner.switchRootToState(root); // setting start
     thread = new Thread(() -> {
       while (true) {
-        long tic = System.nanoTime();
+        Stopwatch stopwatch = Stopwatch.started();
         head = (this.getFutureTrajectoryUntil(delayHint())); // Point on trajectory with delay from now
         // Rootswitch
         int index = getIndexOfLastNodeOf(head);
@@ -160,7 +161,7 @@ public abstract class AbstractAnyEntity extends AbstractEntity {
         } catch (Exception exception) {
           exception.printStackTrace();
         }
-        System.err.println("Last iteration took: " + (System.nanoTime() - tic) * 1e-9 + "s");
+        System.err.println("Last iteration took: " + stopwatch.display_seconds() + "s");
       }
     });
     thread.start();

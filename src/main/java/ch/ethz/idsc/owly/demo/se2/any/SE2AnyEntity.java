@@ -154,7 +154,7 @@ public class SE2AnyEntity extends AbstractAnyEntity {
         eta, stateIntegrator, controls, obstacleQuery, rnGoal);
     trajectoryPlanner.insertRoot(currentState);
     // int iters =
-    Expand.maxTime(trajectoryPlanner, RealScalar.of(1));
+    Expand.maxTime(trajectoryPlanner, RealScalar.of(1)); // 1 [s]
     Optional<GlcNode> optional = trajectoryPlanner.getFinalGoalNode();
     List<StateTime> trajectory = GlcNodes.getPathFromRootTo(optional.get());
     List<Region> goalRegionsList = new ArrayList<>();

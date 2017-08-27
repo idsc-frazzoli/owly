@@ -92,4 +92,7 @@ R^2
 
 ## References
 
-The repository has over `120` unit tests.
+The library is used in the projects:
+* `owly3d`
+
+The repository has over `130` unit tests.
