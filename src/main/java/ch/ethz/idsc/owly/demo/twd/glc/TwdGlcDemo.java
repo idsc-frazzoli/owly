@@ -8,7 +8,7 @@ import ch.ethz.idsc.owly.demo.twd.TwdMinCurvatureGoalManager;
 import ch.ethz.idsc.owly.demo.twd.TwdStateSpaceModel;
 import ch.ethz.idsc.owly.glc.adapter.Parameters;
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
-import ch.ethz.idsc.owly.glc.core.Expand;
+import ch.ethz.idsc.owly.glc.core.GlcExpand;
 import ch.ethz.idsc.owly.glc.core.StandardTrajectoryPlanner;
 import ch.ethz.idsc.owly.glc.core.TrajectoryPlanner;
 import ch.ethz.idsc.owly.gui.Gui;
@@ -70,7 +70,7 @@ enum TwdGlcDemo {
     owlyFrame.configCoordinateOffset(33, 416);
     owlyFrame.jFrame.setBounds(100, 100, 620, 475);
     while (!trajectoryPlanner.getBest().isPresent() && owlyFrame.jFrame.isVisible()) {
-      Expand.maxSteps(trajectoryPlanner, 30, parameters.getDepthLimit());
+      GlcExpand.maxSteps(trajectoryPlanner, 30, parameters.getDepthLimit());
       owlyFrame.setGlc(trajectoryPlanner);
       Thread.sleep(1);
     }

@@ -11,7 +11,7 @@ import ch.ethz.idsc.owly.demo.se2.Se2StateSpaceModel;
 import ch.ethz.idsc.owly.glc.adapter.Parameters;
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
 import ch.ethz.idsc.owly.glc.adapter.StateTimeTrajectories;
-import ch.ethz.idsc.owly.glc.core.Expand;
+import ch.ethz.idsc.owly.glc.core.GlcExpand;
 import ch.ethz.idsc.owly.glc.core.GlcNode;
 import ch.ethz.idsc.owly.glc.core.GlcNodes;
 import ch.ethz.idsc.owly.glc.core.StandardTrajectoryPlanner;
@@ -66,7 +66,7 @@ enum Se2GlcDemo {
     TrajectoryPlanner trajectoryPlanner = new StandardTrajectoryPlanner( //
         parameters.getEta(), stateIntegrator, controls, obstacleQuery, se2GoalManager.getGoalInterface());
     trajectoryPlanner.insertRoot(Tensors.vector(1, 0, -0.5 * Math.PI));
-    int iters = Expand.maxDepth(trajectoryPlanner, parameters.getDepthLimit());
+    int iters = GlcExpand.maxDepth(trajectoryPlanner, parameters.getDepthLimit());
     // int iters = Expand.maxTime(trajectoryPlanner, RealScalar.of(3));
     System.out.println("After " + iters + " iterations");
     Optional<GlcNode> optional = trajectoryPlanner.getBest();

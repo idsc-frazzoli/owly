@@ -14,7 +14,7 @@ import ch.ethz.idsc.owly.glc.adapter.StateTimeTrajectories;
 import ch.ethz.idsc.owly.glc.core.AbstractAnyTrajectoryPlanner;
 import ch.ethz.idsc.owly.glc.core.AnyPlannerInterface;
 import ch.ethz.idsc.owly.glc.core.DebugUtils;
-import ch.ethz.idsc.owly.glc.core.Expand;
+import ch.ethz.idsc.owly.glc.core.GlcExpand;
 import ch.ethz.idsc.owly.glc.core.OptimalAnyTrajectoryPlanner;
 import ch.ethz.idsc.owly.glc.core.TrajectoryPlanner;
 import ch.ethz.idsc.owly.gui.Gui;
@@ -78,7 +78,7 @@ class Se2IterateGlcAnyCircleDemo {
         parameters.getEta(), stateIntegrator, controls, obstacleQuery, se2GoalManager.getGoalInterface());
     // ---
     trajectoryPlanner.switchRootToState(Tensors.vector(0, 3, 0));
-    int iters = Expand.maxDepth(trajectoryPlanner, parameters.getDepthLimit());
+    int iters = GlcExpand.maxDepth(trajectoryPlanner, parameters.getDepthLimit());
     System.out.println("After " + iters + " iterations");
     Scalar toc = RealScalar.of(System.nanoTime());
     System.out.println(toc.subtract(tic).multiply(RealScalar.of(1e-9)) + " Seconds needed to plan");
@@ -109,7 +109,7 @@ class Se2IterateGlcAnyCircleDemo {
       Thread.sleep(delay.number().intValue() / 2);
       // --
       if (!goalFound)
-        expandIter = Expand.maxDepth(trajectoryPlanner, parameters.getDepthLimit());
+        expandIter = GlcExpand.maxDepth(trajectoryPlanner, parameters.getDepthLimit());
       // ---
       toc = RealScalar.of(System.nanoTime());
       StateTimeTrajectories.print(trajectory);

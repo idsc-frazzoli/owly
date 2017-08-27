@@ -11,7 +11,7 @@ import ch.ethz.idsc.owly.glc.adapter.Parameters;
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
 import ch.ethz.idsc.owly.glc.adapter.StateTimeTrajectories;
 import ch.ethz.idsc.owly.glc.core.AnyPlannerInterface;
-import ch.ethz.idsc.owly.glc.core.Expand;
+import ch.ethz.idsc.owly.glc.core.GlcExpand;
 import ch.ethz.idsc.owly.glc.core.OptimalAnyTrajectoryPlanner;
 import ch.ethz.idsc.owly.glc.core.TrajectoryPlanner;
 import ch.ethz.idsc.owly.gui.Gui;
@@ -57,7 +57,7 @@ enum R2GlcAnyDemo {
     AnyPlannerInterface trajectoryPlanner = new OptimalAnyTrajectoryPlanner( //
         parameters.getEta(), stateIntegrator, controls, obstacleQuery, rnGoal);
     trajectoryPlanner.switchRootToState(Tensors.vector(0, 0));
-    Expand.maxDepth(trajectoryPlanner, parameters.getDepthLimit());
+    GlcExpand.maxDepth(trajectoryPlanner, parameters.getDepthLimit());
     OwlyFrame owlyFrame = Gui.start();
     Tensor goal = Tensors.vector(6, 6);
     for (int iter = 0; iter < 20; iter++) {
@@ -77,7 +77,7 @@ enum R2GlcAnyDemo {
       }
       System.out.println("Switching to Goal:" + goal);
       trajectoryPlanner.changeToGoal(rnGoal2);
-      int iters2 = Expand.maxDepth(trajectoryPlanner, parameters.getDepthLimit());
+      int iters2 = GlcExpand.maxDepth(trajectoryPlanner, parameters.getDepthLimit());
       // ---
       long toc = System.nanoTime();
       StateTimeTrajectories.print(trajectory);

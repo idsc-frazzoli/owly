@@ -12,7 +12,7 @@ import ch.ethz.idsc.owly.glc.adapter.Parameters;
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
 import ch.ethz.idsc.owly.glc.adapter.StateTimeTrajectories;
 import ch.ethz.idsc.owly.glc.core.AnyPlannerInterface;
-import ch.ethz.idsc.owly.glc.core.Expand;
+import ch.ethz.idsc.owly.glc.core.GlcExpand;
 import ch.ethz.idsc.owly.glc.core.OptimalAnyTrajectoryPlanner;
 import ch.ethz.idsc.owly.glc.core.TrajectoryPlanner;
 import ch.ethz.idsc.owly.gui.Gui;
@@ -67,7 +67,7 @@ class Se2glcAnyDemo {
         parameters.getEta(), stateIntegrator, controls, obstacleQuery, se2GoalManager.getGoalInterface());
     // ---
     trajectoryPlanner.switchRootToState(Tensors.vector(0, 0, 0));
-    int iters = Expand.maxDepth(trajectoryPlanner, parameters.getDepthLimit());
+    int iters = GlcExpand.maxDepth(trajectoryPlanner, parameters.getDepthLimit());
     System.out.println("After " + iters + " iterations");
     List<StateTime> trajectory = trajectoryPlanner.trajectoryToBest();
     long toc = System.nanoTime();
@@ -88,7 +88,7 @@ class Se2glcAnyDemo {
     // ---
     trajectoryPlanner.switchRootToState(newRootState.state());
     trajectoryPlanner.changeToGoal(se2GoalManager2.getGoalInterface());
-    int iters2 = Expand.maxDepth(trajectoryPlanner, parameters.getDepthLimit());
+    int iters2 = GlcExpand.maxDepth(trajectoryPlanner, parameters.getDepthLimit());
     // ---
     toc = System.nanoTime();
     System.out.println((toc - tic) * 1e-9 + " Seconds needed to replan");

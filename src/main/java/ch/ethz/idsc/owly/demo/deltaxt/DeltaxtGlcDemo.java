@@ -14,7 +14,7 @@ import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
 import ch.ethz.idsc.owly.glc.adapter.StateTimeTrajectories;
 import ch.ethz.idsc.owly.glc.adapter.Trajectories;
 import ch.ethz.idsc.owly.glc.core.DebugUtils;
-import ch.ethz.idsc.owly.glc.core.Expand;
+import ch.ethz.idsc.owly.glc.core.GlcExpand;
 import ch.ethz.idsc.owly.glc.core.StandardTrajectoryPlanner;
 import ch.ethz.idsc.owly.glc.core.TrajectoryPlanner;
 import ch.ethz.idsc.owly.glc.core.TrajectorySample;
@@ -95,7 +95,7 @@ enum DeltaxtGlcDemo {
     owlyFrame.addBackground(imageRegion);
     owlyFrame.addTrajectory(dinghyTrajectory, new Color(224, 168, 0, 224)); // add goalTrajectory Goalcolor
     while (!trajectoryPlanner.getBest().isPresent() && owlyFrame.jFrame.isVisible()) {
-      Expand.maxSteps(trajectoryPlanner, 30, parameters.getDepthLimit());
+      GlcExpand.maxSteps(trajectoryPlanner, 30, parameters.getDepthLimit());
       owlyFrame.setGlc(trajectoryPlanner);
       Thread.sleep(1);
       DebugUtils.heuristicConsistencyCheck(trajectoryPlanner);

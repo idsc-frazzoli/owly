@@ -10,7 +10,7 @@ import ch.ethz.idsc.owly.glc.adapter.IdentityWrap;
 import ch.ethz.idsc.owly.glc.adapter.Parameters;
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
 import ch.ethz.idsc.owly.glc.adapter.Trajectories;
-import ch.ethz.idsc.owly.glc.core.Expand;
+import ch.ethz.idsc.owly.glc.core.GlcExpand;
 import ch.ethz.idsc.owly.glc.core.GlcNode;
 import ch.ethz.idsc.owly.glc.core.GoalInterface;
 import ch.ethz.idsc.owly.glc.core.OptimalAnyTrajectoryPlanner;
@@ -152,7 +152,7 @@ public abstract class AbstractAnyEntity extends AbstractEntity {
           switchGoalRequest = false;
         } else {
           // int iters =
-          Expand.constTime(trajectoryPlanner, expandTime, parameters.getDepthLimit());
+          GlcExpand.constTime(trajectoryPlanner, expandTime, parameters.getDepthLimit());
         }
         if (trajectoryPlannerCallback != null)
           trajectoryPlannerCallback.expandResult(head, trajectoryPlanner);

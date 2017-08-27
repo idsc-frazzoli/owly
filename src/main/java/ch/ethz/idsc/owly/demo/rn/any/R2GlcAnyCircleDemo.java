@@ -12,7 +12,7 @@ import ch.ethz.idsc.owly.demo.rn.RnSimpleCircleGoalManager;
 import ch.ethz.idsc.owly.glc.adapter.Parameters;
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
 import ch.ethz.idsc.owly.glc.core.AnyPlannerInterface;
-import ch.ethz.idsc.owly.glc.core.Expand;
+import ch.ethz.idsc.owly.glc.core.GlcExpand;
 import ch.ethz.idsc.owly.glc.core.GoalInterface;
 import ch.ethz.idsc.owly.glc.core.OptimalAnyTrajectoryPlanner;
 import ch.ethz.idsc.owly.glc.core.TrajectoryPlanner;
@@ -74,7 +74,7 @@ enum R2GlcAnyCircleDemo {
     AnyPlannerInterface trajectoryPlanner = new OptimalAnyTrajectoryPlanner( //
         parameters.getEta(), stateIntegrator, controls, obstacleQuery, rnGoal);
     trajectoryPlanner.switchRootToState(Tensors.vector(0, 1).multiply(circleRadius));
-    Expand.maxDepth(trajectoryPlanner, parameters.getDepthLimit());
+    GlcExpand.maxDepth(trajectoryPlanner, parameters.getDepthLimit());
     List<StateTime> trajectory = trajectoryPlanner.trajectoryToBest();
     // StateTimeTrajectories.print(trajectory);
     // AnimationWriter gsw = AnimationWriter.of(UserHome.Pictures("R2_Circle_Gif.gif"), 250);
@@ -107,7 +107,7 @@ enum R2GlcAnyCircleDemo {
       Region goalSearchHelper = new EllipsoidRegion(goal, Array.of(l -> goalSearchHelperRadius, goal.length()));
       trajectoryPlanner.changeToGoal(rnGoal2, goalSearchHelper);
       // -- EXPANDING
-      int iters2 = Expand.maxDepth(trajectoryPlanner, parameters.getDepthLimit());
+      int iters2 = GlcExpand.maxDepth(trajectoryPlanner, parameters.getDepthLimit());
       trajectory = trajectoryPlanner.trajectoryToBest();
       owlyFrame.setGlc((TrajectoryPlanner) trajectoryPlanner);
       // StateTimeTrajectories.print(trajectory);
