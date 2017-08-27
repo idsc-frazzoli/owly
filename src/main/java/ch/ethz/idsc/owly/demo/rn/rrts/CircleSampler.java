@@ -2,6 +2,7 @@
 package ch.ethz.idsc.owly.demo.rn.rrts;
 
 import ch.ethz.idsc.owly.data.GlobalAssert;
+import ch.ethz.idsc.owly.rrts.core.SamplerInterface;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
@@ -14,7 +15,7 @@ import ch.ethz.idsc.tensor.sca.Cos;
 import ch.ethz.idsc.tensor.sca.Power;
 import ch.ethz.idsc.tensor.sca.Sin;
 
-public class CircleSampler {
+public class CircleSampler implements SamplerInterface {
   private static final Distribution POLAR = UniformDistribution.of(0, Math.PI * 2);
   private final Tensor center;
   private final Scalar radius;
@@ -26,7 +27,8 @@ public class CircleSampler {
   }
 
   // TODO this formula is only an approximation of a uniform distribution
-  public Tensor next() {
+  @Override
+  public Tensor nextSample() {
     Scalar uniform = RandomVariate.of(UniformDistribution.unit());
     Scalar residue = RealScalar.ONE.subtract(Power.of(uniform, 2));
     Scalar alpha = RandomVariate.of(POLAR);

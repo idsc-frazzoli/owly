@@ -9,10 +9,10 @@ import ch.ethz.idsc.owly.gui.Gui;
 import ch.ethz.idsc.owly.gui.OwlyFrame;
 import ch.ethz.idsc.owly.math.region.ImageRegion;
 import ch.ethz.idsc.owly.math.state.TimeInvariantRegion;
-import ch.ethz.idsc.owly.rrts.adapter.DefaultRrts;
 import ch.ethz.idsc.owly.rrts.adapter.LengthCostFunction;
 import ch.ethz.idsc.owly.rrts.adapter.RrtsNodes;
 import ch.ethz.idsc.owly.rrts.adapter.SampledTransitionRegionQuery;
+import ch.ethz.idsc.owly.rrts.core.DefaultRrts;
 import ch.ethz.idsc.owly.rrts.core.Rrts;
 import ch.ethz.idsc.owly.rrts.core.RrtsNode;
 import ch.ethz.idsc.owly.rrts.core.RrtsNodeCollection;
@@ -31,7 +31,7 @@ enum R2OutsideCharDemo {
             new TimeInvariantRegion(imageRegion)), RealScalar.of(.1));
     // ---
     Rrts rrts = new DefaultRrts(rnss, nc, trq, LengthCostFunction.IDENTITY);
-    RrtsNode root = rrts.insertAsNode(Tensors.vector(0, 0), 5);
+    RrtsNode root = rrts.insertAsNode(Tensors.vector(0, 0), 5).get();
     OwlyFrame owlyFrame = Gui.start();
     owlyFrame.configCoordinateOffset(60, 477);
     owlyFrame.jFrame.setBounds(100, 100, 550, 550);
@@ -40,7 +40,7 @@ enum R2OutsideCharDemo {
     int frame = 0;
     while (frame++ < 20 && owlyFrame.jFrame.isVisible()) {
       for (int c = 0; c < 50; ++c)
-        rrts.insertAsNode(rnUniformSampler.next(), 15);
+        rrts.insertAsNode(rnUniformSampler.nextSample(), 15);
       owlyFrame.setRrts(root, trq);
       Thread.sleep(10);
     }

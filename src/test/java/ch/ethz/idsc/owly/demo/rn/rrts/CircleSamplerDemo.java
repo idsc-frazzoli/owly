@@ -14,7 +14,7 @@ enum CircleSamplerDemo {
         new CircleSampler(Tensors.vector(1, 1), RealScalar.of(2));
     Tensor matrix = Tensors.empty();
     for (int count = 0; count < 10000; ++count) {
-      Tensor vec = circleSampler.next();
+      Tensor vec = circleSampler.nextSample();
       matrix.append(vec);
     }
     Put.of(UserHome.file("samples.txt"), matrix);

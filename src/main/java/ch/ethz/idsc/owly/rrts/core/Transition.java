@@ -18,7 +18,7 @@ public interface Transition {
   Scalar length();
 
   /** @param t0 time at start()
-   * @param ofs is non-negative and stricly less than dt
+   * @param ofs is non-negative and strictly less than dt
    * @param dt
    * @return */
   List<StateTime> sampled(Scalar t0, Scalar ofs, Scalar dt);

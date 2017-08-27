@@ -149,7 +149,7 @@ public enum Expand {
     while (true) {
       Optional<GlcNode> next = expandInterface.pollNext();
       if (!next.isPresent()) {
-        System.err.println("**** Queue is empty ****");// queue is empty
+        System.err.println("**** Queue is empty ****"); // queue is empty
         break;
       }
       expandInterface.expand(next.get());

@@ -37,7 +37,8 @@ public class Stopwatch {
   private Stopwatch() {
   }
 
-  /** start stopwatch */
+  /** start stopwatch
+   * @throws Exception if stopwatch is already started */
   public void start() {
     if (!isStopped())
       throw new RuntimeException();
