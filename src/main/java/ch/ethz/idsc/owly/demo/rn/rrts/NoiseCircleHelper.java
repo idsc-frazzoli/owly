@@ -34,7 +34,7 @@ class NoiseCircleHelper {
   RrtsPlanner rrtsPlanner;
   RnTransitionSpace rnts;
 
-  public NoiseCircleHelper(StateTime tail, Tensor goal) {
+  public NoiseCircleHelper(TransitionRegionQuery obstacleQuery, StateTime tail, Tensor goal) {
     this.tail = tail;
     Tensor orig = tail.state();
     final Tensor diff = goal.subtract(orig);
@@ -44,7 +44,8 @@ class NoiseCircleHelper {
     Tensor max = center.map(s -> s.add(radius));
     rnts = new RnTransitionSpace();
     RrtsNodeCollection nc = new RnNodeCollection(min, max);
-    obstacleQuery = StaticHelper.noise1();
+    // obstacleQuery = StaticHelper.noise1();
+    this.obstacleQuery = obstacleQuery;
     // ---
     // int iters =
     Rrts rrts = new DefaultRrts(rnts, nc, obstacleQuery, LengthCostFunction.IDENTITY);
@@ -65,7 +66,7 @@ class NoiseCircleHelper {
       RrtsNode best = rrtsPlanner.getBest().get();
       List<RrtsNode> sequence = Nodes.listFromRoot(best);
       // TODO magic const
-      trajectory = RnFlowTrajectory.createTrajectory(rnts, sequence, tail.time(), RealScalar.of(.2));
+      trajectory = RnFlowTrajectory.createTrajectory(rnts, sequence, tail.time(), RealScalar.of(.1));
     }
   }
 }

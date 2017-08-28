@@ -7,7 +7,7 @@ import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
 import ch.ethz.idsc.tensor.io.Put;
 
-enum CircleSamplerDemo {
+enum CircleRandomSampleDemo {
   ;
   public static void main(String[] args) throws Exception {
     CircleRandomSample circleSampler = //
