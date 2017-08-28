@@ -19,6 +19,7 @@ import ch.ethz.idsc.owly.math.flow.EulerIntegrator;
 import ch.ethz.idsc.owly.math.state.SimpleEpisodeIntegrator;
 import ch.ethz.idsc.owly.math.state.StateTime;
 import ch.ethz.idsc.owly.math.state.TrajectoryRegionQuery;
+import ch.ethz.idsc.owly.rrts.core.TransitionRegionQuery;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
@@ -30,6 +31,8 @@ public class R2RrtsEntity extends AbstractRrtsEntity {
   private static final Tensor FALLBACK_CONTROL = Tensors.vector(0, 0).unmodifiable();
   /** preserve 1[s] of the former trajectory */
   private static final Scalar DELAY_HINT = RealScalar.ONE;
+  // ---
+  TransitionRegionQuery obstacleQuery; // TODO design not final
 
   // ---
   /** @param state initial position of entity */
@@ -85,8 +88,8 @@ public class R2RrtsEntity extends AbstractRrtsEntity {
   public void startPlanner( //
       TrajectoryPlannerCallback trajectoryPlannerCallback, List<TrajectorySample> head, Tensor goal) {
     StateTime tail = head.get(head.size() - 1).stateTime();
-    NoiseCircleHelper nch = new NoiseCircleHelper(tail, goal.extract(0, 2));
-    nch.plan(300);
+    NoiseCircleHelper nch = new NoiseCircleHelper(obstacleQuery, tail, goal.extract(0, 2));
+    nch.plan(350);
     if (nch.trajectory != null) {
       System.out.println("found!");
       trajectoryPlannerCallback.expandResult(head, nch.rrtsPlanner, nch.trajectory);

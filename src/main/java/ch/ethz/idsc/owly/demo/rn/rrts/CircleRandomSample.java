@@ -1,9 +1,9 @@
 // code by jph
+// formula adapted from users "sigfpe" and "finnw" on stack-overflow
 package ch.ethz.idsc.owly.demo.rn.rrts;
 
 import ch.ethz.idsc.owly.data.GlobalAssert;
 import ch.ethz.idsc.owly.rrts.core.RandomSampleInterface;
-import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
@@ -12,11 +12,13 @@ import ch.ethz.idsc.tensor.pdf.Distribution;
 import ch.ethz.idsc.tensor.pdf.RandomVariate;
 import ch.ethz.idsc.tensor.pdf.UniformDistribution;
 import ch.ethz.idsc.tensor.sca.Cos;
-import ch.ethz.idsc.tensor.sca.Power;
 import ch.ethz.idsc.tensor.sca.Sin;
+import ch.ethz.idsc.tensor.sca.Sqrt;
 
+/** produces bi-variate random samples uniformly draw from a circle with
+ * given center and radius */
 public class CircleRandomSample implements RandomSampleInterface {
-  private static final Distribution POLAR = UniformDistribution.of(0, Math.PI * 2);
+  private static final Distribution THETA = UniformDistribution.of(0, Math.PI * 2);
   private final Tensor center;
   private final Scalar radius;
 
@@ -26,13 +28,11 @@ public class CircleRandomSample implements RandomSampleInterface {
     this.radius = radius;
   }
 
-  // TODO this formula is only an approximation of a uniform distribution
   @Override
   public Tensor nextSample() {
-    Scalar uniform = RandomVariate.of(UniformDistribution.unit());
-    Scalar residue = RealScalar.ONE.subtract(Power.of(uniform, 2));
-    Scalar alpha = RandomVariate.of(POLAR);
-    return center.add(Tensors.of(Cos.FUNCTION.apply(alpha), Sin.FUNCTION.apply(alpha)) //
+    Scalar theta = RandomVariate.of(THETA);
+    Scalar residue = Sqrt.of(RandomVariate.of(UniformDistribution.unit()));
+    return center.add(Tensors.of(Cos.FUNCTION.apply(theta), Sin.FUNCTION.apply(theta)) //
         .multiply(radius.multiply(residue)));
   }
 }
