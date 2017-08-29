@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
+import ch.ethz.idsc.owly.data.GlobalAssert;
 import ch.ethz.idsc.owly.data.tree.AbstractNode;
 import ch.ethz.idsc.owly.data.tree.Nodes;
 import ch.ethz.idsc.owly.math.flow.Flow;
@@ -20,7 +21,8 @@ import ch.ethz.idsc.tensor.Tensor;
  * {@link GlcNodeImpl#addChild(GlcNodeImpl)} */
 /* package */ class GlcNodeImpl extends AbstractNode<GlcNode> implements GlcNode {
   private final Map<Flow, GlcNode> children = new HashMap<>();
-  /** flow is null for root node */ // not final, as changed for rootnode
+  /** flow is null for root node
+   * not final, as changed when central node are made root */
   private Flow flow;
   private final StateTime stateTime;
   private Scalar costFromRoot;
@@ -66,6 +68,8 @@ import ch.ethz.idsc.tensor.Tensor;
   protected final boolean protected_removeChild(GlcNode child) {
     boolean removed = children.containsKey(child.flow());
     children.remove(child.flow());
+    // TODO JONAS / JAN why does this fail in R2GlcAnyAnimationDemo
+    // ((GlcNodeImpl) child).flow = null;
     return removed;
   }
 
@@ -103,12 +107,14 @@ import ch.ethz.idsc.tensor.Tensor;
 
   @Override // from GlcNode
   public void makeRoot() {
+    // System.err.println("HERE MAKE ROOT");
     if (isRoot()) {
       if (Objects.nonNull(flow))
         throw new RuntimeException();
     } else {
       parent().removeEdgeTo(this);
-      flow = null;
+      flow = null; // TODO this should be handled in removeEdgeTo
+      GlobalAssert.that(flow == null);
     }
   }
 }

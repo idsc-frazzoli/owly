@@ -34,6 +34,7 @@ public interface GlcNode extends StateCostNode {
   /** @return cost from root plus min cost to goal */
   Scalar merit();
 
+  // TODO JONAS comment function depth()
   int depth();
 
   /** function is only called by motion planners.
@@ -41,6 +42,7 @@ public interface GlcNode extends StateCostNode {
    * may become invalid once the merit is set to a new value */
   void setMinCostToGoal(Scalar minCostToGoal);
 
+  // TODO JONAS comment function reCalculateDepth()
   int reCalculateDepth();
 
   /** makes this Node root, by cutting connections to its parents */
