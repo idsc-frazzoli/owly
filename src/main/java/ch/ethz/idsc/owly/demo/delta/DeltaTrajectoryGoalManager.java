@@ -3,6 +3,7 @@ package ch.ethz.idsc.owly.demo.delta;
 
 import java.util.List;
 
+import ch.ethz.idsc.owly.data.Lists;
 import ch.ethz.idsc.owly.glc.adapter.StateTimeTrajectories;
 import ch.ethz.idsc.owly.glc.adapter.TrajectoryGoalManager;
 import ch.ethz.idsc.owly.math.flow.Flow;
@@ -54,7 +55,7 @@ public class DeltaTrajectoryGoalManager extends TrajectoryGoalManager {
     // p. 79 Eq: 6.4.14
     // Heuristic needs to be underestimating: (Euclideandistance-radius) / (MaxControl+Max(|Vectorfield|)
     // return RealScalar.ZERO;
-    return Ramp.of(Norm._2.of(x.subtract(StateTimeTrajectories.getLast(heuristicTrajectory).state())) //
+    return Ramp.of(Norm._2.of(x.subtract(Lists.getLast(heuristicTrajectory).state())) //
         .subtract(radius).divide(maxSpeed));
   }
 }

@@ -3,6 +3,7 @@ package ch.ethz.idsc.owly.demo.rn;
 
 import java.util.List;
 
+import ch.ethz.idsc.owly.data.Lists;
 import ch.ethz.idsc.owly.glc.adapter.StateTimeTrajectories;
 import ch.ethz.idsc.owly.glc.adapter.TrajectoryGoalManager;
 import ch.ethz.idsc.owly.math.flow.Flow;
@@ -34,7 +35,7 @@ public class RnTrajectoryGoalManager extends TrajectoryGoalManager {
 
   @Override
   public Scalar minCostToGoal(Tensor x) {
-    return Ramp.of(Norm._2.of(x.subtract(StateTimeTrajectories.getLast(heuristicTrajectory).state())).subtract(radius)//
+    return Ramp.of(Norm._2.of(x.subtract(Lists.getLast(heuristicTrajectory).state())).subtract(radius)//
         .divide(RealScalar.ONE)); // divide by maximum "speed"
   }
 }

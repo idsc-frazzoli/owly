@@ -7,7 +7,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Stream;
 
-import ch.ethz.idsc.owly.glc.adapter.StateTimeTrajectories;
+import ch.ethz.idsc.owly.data.Lists;
 import ch.ethz.idsc.owly.math.flow.Flow;
 import ch.ethz.idsc.owly.math.state.CostFunction;
 import ch.ethz.idsc.owly.math.state.StateIntegrator;
@@ -15,9 +15,20 @@ import ch.ethz.idsc.owly.math.state.StateTime;
 
 /* package */ enum SharedUtils {
   ;
-  // integrate flow for each control
+  /** integrate flow for each control
+   * 
+   * @param node from which to expand
+   * @param controls
+   * @param stateIntegrator
+   * @param costFunction
+   * @param parallel
+   * @return */
   public static Map<GlcNode, List<StateTime>> integrate( //
-      GlcNode node, Collection<Flow> controls, StateIntegrator stateIntegrator, CostFunction costFunction, boolean parallel) {
+      GlcNode node, //
+      Collection<Flow> controls, //
+      StateIntegrator stateIntegrator, //
+      CostFunction costFunction, //
+      boolean parallel) {
     Map<GlcNode, List<StateTime>> map = new ConcurrentHashMap<>(); // <- for use of parallel()
     Stream<Flow> stream = controls.stream();
     if (parallel) // parallel results in speedup of ~25% (rice2demo)
@@ -25,7 +36,7 @@ import ch.ethz.idsc.owly.math.state.StateTime;
     // TODO integrate parallel OR deterministic in linkedHashMap
     stream.forEach(flow -> {
       final List<StateTime> trajectory = stateIntegrator.trajectory(node.stateTime(), flow);
-      final StateTime last = StateTimeTrajectories.getLast(trajectory);
+      final StateTime last = Lists.getLast(trajectory);
       final GlcNode next = GlcNode.of(flow, last, //
           node.costFromRoot().add(costFunction.costIncrement(node.stateTime(), trajectory, flow)), //
           costFunction.minCostToGoal(last.state()) //

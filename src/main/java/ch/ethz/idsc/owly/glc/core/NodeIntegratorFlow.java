@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import ch.ethz.idsc.owly.glc.adapter.StateTimeTrajectories;
+import ch.ethz.idsc.owly.data.Lists;
 import ch.ethz.idsc.owly.math.flow.Flow;
 import ch.ethz.idsc.owly.math.state.CostFunction;
 import ch.ethz.idsc.owly.math.state.StateIntegrator;
@@ -22,12 +22,14 @@ import ch.ethz.idsc.owly.math.state.StateTime;
   private final StateIntegrator stateIntegrator;
   private final Collection<Flow> controls;
 
+  /** @param stateIntegrator
+   * @param controls */
   public NodeIntegratorFlow(StateIntegrator stateIntegrator, Collection<Flow> controls) {
     this.stateIntegrator = stateIntegrator;
     this.controls = controls;
   }
 
-  /** @param node
+  /** @param node from which to expand
    * @param costFunction
    * @return */
   public Map<GlcNode, List<StateTime>> parallel(GlcNode node, CostFunction costFunction) {
@@ -36,7 +38,7 @@ import ch.ethz.idsc.owly.math.state.StateTime;
     // TODO howto stream.collect to map
     controls.stream().parallel().forEach(flow -> {
       final List<StateTime> trajectory = stateIntegrator.trajectory(node.stateTime(), flow);
-      final StateTime last = StateTimeTrajectories.getLast(trajectory);
+      final StateTime last = Lists.getLast(trajectory);
       final GlcNode next = GlcNode.of(flow, last, //
           node.costFromRoot().add(costFunction.costIncrement(node.stateTime(), trajectory, flow)), //
           costFunction.minCostToGoal(last.state()) //

@@ -4,8 +4,8 @@ package ch.ethz.idsc.owly.demo.rn;
 import java.util.List;
 
 import ch.ethz.idsc.owly.data.GlobalAssert;
+import ch.ethz.idsc.owly.data.Lists;
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
-import ch.ethz.idsc.owly.glc.adapter.StateTimeTrajectories;
 import ch.ethz.idsc.owly.glc.core.GoalInterface;
 import ch.ethz.idsc.owly.math.flow.Flow;
 import ch.ethz.idsc.owly.math.region.SphericalRegion;
@@ -38,7 +38,7 @@ public class RnSimpleCircleHeuristicGoalManager extends SimpleTrajectoryRegionQu
 
   @Override
   public Scalar costIncrement(StateTime from, List<StateTime> trajectory, Flow flow) {
-    return Norm._2.of(from.state().subtract(StateTimeTrajectories.getLast(trajectory).state()));
+    return Norm._2.of(from.state().subtract(Lists.getLast(trajectory).state()));
   }
 
   @Override

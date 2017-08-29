@@ -29,6 +29,8 @@ public class Se2DefaultGoalManager implements Region, CostFunction {
   protected final Tensor center;
   protected final Tensor radiusVector;
 
+  /** @param center
+   * @param radiusVector with 3 entries the first 2 of which have to be identical */
   public Se2DefaultGoalManager(Tensor center, Tensor radiusVector) {
     GlobalAssert.that(radiusVector.get(0).equals(radiusVector.get(1)));
     this.center = center.unmodifiable();

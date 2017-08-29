@@ -3,9 +3,9 @@ package ch.ethz.idsc.owly.demo.tn;
 
 import java.util.List;
 
+import ch.ethz.idsc.owly.data.Lists;
 import ch.ethz.idsc.owly.glc.adapter.GoalAdapter;
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
-import ch.ethz.idsc.owly.glc.adapter.StateTimeTrajectories;
 import ch.ethz.idsc.owly.glc.core.GoalInterface;
 import ch.ethz.idsc.owly.math.CoordinateWrap;
 import ch.ethz.idsc.owly.math.flow.Flow;
@@ -35,7 +35,7 @@ class TnGoalManager implements Region, CostFunction {
 
   @Override
   public Scalar costIncrement(StateTime from, List<StateTime> trajectory, Flow flow) {
-    return Norm._2.of(from.state().subtract(StateTimeTrajectories.getLast(trajectory).state()));
+    return Norm._2.of(from.state().subtract(Lists.getLast(trajectory).state()));
   }
 
   @Override
