@@ -3,11 +3,10 @@ package ch.ethz.idsc.owly.math;
 
 import java.io.Serializable;
 
-import ch.ethz.idsc.owly.glc.core.TrajectoryPlanner;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
 
-/** functionality used in {@link TrajectoryPlanner} to map state coordinates to
+/** functionality used in {@code TrajectoryPlanner} to map state coordinates to
  * the coordinates that imply domain keys */
 public interface CoordinateWrap extends Serializable {
   /** @param x

@@ -3,6 +3,7 @@ package ch.ethz.idsc.owly.glc.adapter;
 
 import java.util.List;
 
+import ch.ethz.idsc.owly.glc.core.GlcNode;
 import ch.ethz.idsc.owly.glc.core.GoalInterface;
 import ch.ethz.idsc.owly.math.flow.Flow;
 import ch.ethz.idsc.owly.math.state.StateTime;
@@ -20,7 +21,8 @@ public enum EmptyGoalInterface implements GoalInterface {
   INSTANCE;
   // ---
   @Override
-  public Scalar costIncrement(StateTime from, List<StateTime> trajectory, Flow flow) {
+  public Scalar costIncrement(GlcNode node, List<StateTime> trajectory, Flow flow) {
+    StateTime from = node.stateTime();
     return StateTimeTrajectories.timeIncrement(from, trajectory);
   }
 

@@ -3,8 +3,10 @@ package ch.ethz.idsc.owly.demo.se2;
 
 import java.util.List;
 
+import ch.ethz.idsc.owly.data.Lists;
 import ch.ethz.idsc.owly.glc.adapter.StateTimeTrajectories;
 import ch.ethz.idsc.owly.glc.adapter.TrajectoryGoalManager;
+import ch.ethz.idsc.owly.glc.core.GlcNode;
 import ch.ethz.idsc.owly.math.flow.Flow;
 import ch.ethz.idsc.owly.math.region.Region;
 import ch.ethz.idsc.owly.math.state.StateTime;
@@ -28,14 +30,15 @@ public class Se2TrajectoryGoalManager extends TrajectoryGoalManager {
   }
 
   @Override
-  public Scalar costIncrement(StateTime from, List<StateTime> trajectory, Flow flow) {
+  public Scalar costIncrement(GlcNode node, List<StateTime> trajectory, Flow flow) {
+    StateTime from = node.stateTime();
     return StateTimeTrajectories.timeIncrement(from, trajectory);
   }
 
   @Override
   public Scalar minCostToGoal(Tensor x) {
     x = x.extract(0, 2);
-    return Ramp.of(Norm._2.of(x.subtract(StateTimeTrajectories.getLast(heuristicTrajectory).state().extract(0, 2))).subtract(radius)//
+    return Ramp.of(Norm._2.of(x.subtract(Lists.getLast(heuristicTrajectory).state().extract(0, 2))).subtract(radius)//
         .divide(RealScalar.ONE)); // divide by maximum "speed"
   }
 }

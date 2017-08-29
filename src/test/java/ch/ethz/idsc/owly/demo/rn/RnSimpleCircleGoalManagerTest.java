@@ -4,6 +4,8 @@ package ch.ethz.idsc.owly.demo.rn;
 import java.util.Collections;
 
 import ch.ethz.idsc.owly.glc.adapter.HeuristicQ;
+import ch.ethz.idsc.owly.glc.core.GlcNode;
+import ch.ethz.idsc.owly.glc.core.GlcNodes;
 import ch.ethz.idsc.owly.math.state.StateTime;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
@@ -26,18 +28,18 @@ public class RnSimpleCircleGoalManagerTest extends TestCase {
   }
 
   public void testCostIncrement1() {
+    GlcNode root = GlcNodes.createRoot(new StateTime(Tensors.vector(2, 2), RealScalar.ZERO), x -> RealScalar.ZERO);
     RnSimpleCircleHeuristicGoalManager rnGoal = new RnSimpleCircleHeuristicGoalManager(Tensors.vector(5, 0), RealScalar.of(2));
     Scalar incr = rnGoal.costIncrement( //
-        new StateTime(Tensors.vector(2, 2), RealScalar.ZERO), //
-        Collections.singletonList(new StateTime(Tensors.vector(10, 2), RealScalar.ZERO)), null);
+        root, Collections.singletonList(new StateTime(Tensors.vector(10, 2), RealScalar.ZERO)), null);
     assertEquals(incr, RealScalar.of(8));
   }
 
   public void testCostIncrement2() {
+    GlcNode root = GlcNodes.createRoot(new StateTime(Tensors.vector(2, 2), RealScalar.ZERO), x -> RealScalar.ZERO);
     RnSimpleCircleGoalManager rnGoal = new RnSimpleCircleGoalManager(Tensors.vector(5, 0), RealScalar.of(2));
     Scalar incr = rnGoal.costIncrement( //
-        new StateTime(Tensors.vector(2, 2), RealScalar.ZERO), //
-        Collections.singletonList(new StateTime(Tensors.vector(10, 2), RealScalar.ZERO)), null);
+        root, Collections.singletonList(new StateTime(Tensors.vector(10, 2), RealScalar.ZERO)), null);
     assertEquals(incr, RealScalar.of(8));
   }
 

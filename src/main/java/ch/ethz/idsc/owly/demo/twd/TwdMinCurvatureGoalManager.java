@@ -4,6 +4,7 @@ package ch.ethz.idsc.owly.demo.twd;
 import java.util.List;
 
 import ch.ethz.idsc.owly.glc.adapter.StateTimeTrajectories;
+import ch.ethz.idsc.owly.glc.core.GlcNode;
 import ch.ethz.idsc.owly.math.flow.Flow;
 import ch.ethz.idsc.owly.math.region.Region;
 import ch.ethz.idsc.owly.math.state.StateTime;
@@ -23,7 +24,8 @@ public class TwdMinCurvatureGoalManager extends TwdAbstractGoalManager {
 
   /** Curvature is changed angle over distance covered. */
   @Override // Cost Function
-  public Scalar costIncrement(StateTime from, List<StateTime> trajectory, Flow flow) {
+  public Scalar costIncrement(GlcNode node, List<StateTime> trajectory, Flow flow) {
+    StateTime from = node.stateTime();
     StateTime end = trajectory.get(trajectory.size() - 1);
     // TODO Magic const
     // J(x,u) = (1+(delta(theta)/delta(position))²) * Ts

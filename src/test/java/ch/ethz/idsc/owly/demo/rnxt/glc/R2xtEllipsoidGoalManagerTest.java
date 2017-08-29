@@ -4,6 +4,8 @@ package ch.ethz.idsc.owly.demo.rnxt.glc;
 import java.util.Collections;
 
 import ch.ethz.idsc.owly.glc.adapter.HeuristicQ;
+import ch.ethz.idsc.owly.glc.core.GlcNode;
+import ch.ethz.idsc.owly.glc.core.GlcNodes;
 import ch.ethz.idsc.owly.math.state.StateTime;
 import ch.ethz.idsc.tensor.DoubleScalar;
 import ch.ethz.idsc.tensor.RealScalar;
@@ -55,22 +57,22 @@ public class R2xtEllipsoidGoalManagerTest extends TestCase {
   }
 
   public void testCostIncrement1() {
+    GlcNode root = GlcNodes.createRoot(new StateTime(Tensors.vector(2, 2, 0), RealScalar.ZERO), x -> RealScalar.ZERO);
     RnxtHeuristicEllipsoidGoalManager rnxtGoal = new RnxtHeuristicEllipsoidGoalManager(//
         Tensors.of(RealScalar.of(5), RealScalar.ZERO, DoubleScalar.POSITIVE_INFINITY)//
         , RealScalar.of(2));
     Scalar incr = rnxtGoal.costIncrement( //
-        new StateTime(Tensors.vector(2, 2, 0), RealScalar.ZERO), //
-        Collections.singletonList(new StateTime(Tensors.vector(10, 2, 8), RealScalar.of(8))), null);
+        root, Collections.singletonList(new StateTime(Tensors.vector(10, 2, 8), RealScalar.of(8))), null);
     assertEquals(incr, RealScalar.of(8));
   }
 
   public void testCostIncrement2() {
+    GlcNode root = GlcNodes.createRoot(new StateTime(Tensors.vector(2, 2, 0), RealScalar.ZERO), x -> RealScalar.ZERO);
     RnxtEllipsoidGoalManager rnGoal = new RnxtEllipsoidGoalManager(//
         Tensors.of(RealScalar.of(5), RealScalar.ZERO, DoubleScalar.POSITIVE_INFINITY)//
         , RealScalar.of(2));
     Scalar incr = rnGoal.costIncrement( //
-        new StateTime(Tensors.vector(2, 2, 0), RealScalar.ZERO), //
-        Collections.singletonList(new StateTime(Tensors.vector(10, 2, 8), RealScalar.of(8))), null);
+        root, Collections.singletonList(new StateTime(Tensors.vector(10, 2, 8), RealScalar.of(8))), null);
     assertEquals(incr, RealScalar.of(8));
   }
 }

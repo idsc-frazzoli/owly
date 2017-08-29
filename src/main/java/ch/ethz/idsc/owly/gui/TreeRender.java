@@ -11,8 +11,8 @@ import java.util.DoubleSummaryStatistics;
 import java.util.Objects;
 
 import ch.ethz.idsc.owly.data.tree.StateCostNode;
-import ch.ethz.idsc.owly.math.Hue;
 import ch.ethz.idsc.tensor.Scalar;
+import ch.ethz.idsc.tensor.img.Hue;
 
 /** renders the edges between nodes
  * 

@@ -7,10 +7,11 @@ import ch.ethz.idsc.owly.data.GlobalAssert;
 import ch.ethz.idsc.owly.glc.adapter.GoalAdapter;
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
 import ch.ethz.idsc.owly.glc.adapter.StateTimeTrajectories;
+import ch.ethz.idsc.owly.glc.core.CostFunction;
+import ch.ethz.idsc.owly.glc.core.GlcNode;
 import ch.ethz.idsc.owly.glc.core.GoalInterface;
 import ch.ethz.idsc.owly.math.flow.Flow;
 import ch.ethz.idsc.owly.math.region.Region;
-import ch.ethz.idsc.owly.math.state.CostFunction;
 import ch.ethz.idsc.owly.math.state.StateTime;
 import ch.ethz.idsc.owly.math.state.TimeInvariantRegion;
 import ch.ethz.idsc.tensor.RealScalar;
@@ -29,6 +30,8 @@ public class Se2DefaultGoalManager implements Region, CostFunction {
   protected final Tensor center;
   protected final Tensor radiusVector;
 
+  /** @param center
+   * @param radiusVector with 3 entries the first 2 of which have to be identical */
   public Se2DefaultGoalManager(Tensor center, Tensor radiusVector) {
     GlobalAssert.that(radiusVector.get(0).equals(radiusVector.get(1)));
     this.center = center.unmodifiable();
@@ -44,7 +47,8 @@ public class Se2DefaultGoalManager implements Region, CostFunction {
   }
 
   @Override // from CostFunction
-  public Scalar costIncrement(StateTime from, List<StateTime> trajectory, Flow flow) {
+  public Scalar costIncrement(GlcNode node, List<StateTime> trajectory, Flow flow) {
+    StateTime from = node.stateTime();
     // integrate(1,t)
     return StateTimeTrajectories.timeIncrement(from, trajectory);
   }

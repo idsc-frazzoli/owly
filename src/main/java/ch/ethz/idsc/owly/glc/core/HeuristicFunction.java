@@ -1,21 +1,13 @@
 // code by bapaden and jph
-package ch.ethz.idsc.owly.math.state;
+package ch.ethz.idsc.owly.glc.core;
 
 import java.io.Serializable;
-import java.util.List;
 
-import ch.ethz.idsc.owly.math.flow.Flow;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
 
-public interface CostFunction extends Serializable {
-  /** @param from
-   * @param trajectory
-   * @param flow
-   * @return cost of trajectory along flow */
-  Scalar costIncrement(StateTime from, List<StateTime> trajectory, Flow flow);
-
+public interface HeuristicFunction extends Serializable {
   /** if a lower bound of the cost to goal is unknown,
    * the function should return {@link RealScalar#ZERO}.
    * 

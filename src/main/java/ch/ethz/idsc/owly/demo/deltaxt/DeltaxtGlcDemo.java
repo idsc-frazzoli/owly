@@ -6,12 +6,12 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import ch.ethz.idsc.owly.data.Lists;
 import ch.ethz.idsc.owly.demo.delta.DeltaControls;
 import ch.ethz.idsc.owly.demo.delta.DeltaParameters;
 import ch.ethz.idsc.owly.demo.delta.ImageGradient;
 import ch.ethz.idsc.owly.glc.adapter.Parameters;
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
-import ch.ethz.idsc.owly.glc.adapter.StateTimeTrajectories;
 import ch.ethz.idsc.owly.glc.adapter.Trajectories;
 import ch.ethz.idsc.owly.glc.core.DebugUtils;
 import ch.ethz.idsc.owly.glc.core.GlcExpand;
@@ -78,7 +78,7 @@ enum DeltaxtGlcDemo {
     for (int i = 0; Scalars.lessThan(RealScalar.of(i), dinghyExpandTime.divide(parameters.getExpandTime())); i++) {
       Flow flow = StateSpaceModels.createFlow(stateSpaceModel, Tensors.vector(0, 0));
       List<StateTime> connector = stateIntegrator.trajectory(next, flow);
-      next = StateTimeTrajectories.getLast(connector);
+      next = Lists.getLast(connector);
       goalRegions.add(new EllipsoidRegion(next.state(), radius));
       dinghyTrajectory.add(new TrajectorySample(next, flow));
     }
