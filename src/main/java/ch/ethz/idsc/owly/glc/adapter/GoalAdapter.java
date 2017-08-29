@@ -3,9 +3,10 @@ package ch.ethz.idsc.owly.glc.adapter;
 
 import java.util.List;
 
+import ch.ethz.idsc.owly.glc.core.CostFunction;
+import ch.ethz.idsc.owly.glc.core.GlcNode;
 import ch.ethz.idsc.owly.glc.core.GoalInterface;
 import ch.ethz.idsc.owly.math.flow.Flow;
-import ch.ethz.idsc.owly.math.state.CostFunction;
 import ch.ethz.idsc.owly.math.state.StateTime;
 import ch.ethz.idsc.owly.math.state.TrajectoryRegionQuery;
 import ch.ethz.idsc.tensor.Scalar;
@@ -23,8 +24,8 @@ public class GoalAdapter implements GoalInterface {
   }
 
   @Override // from CostFunction
-  public Scalar costIncrement(StateTime from, List<StateTime> trajectory, Flow flow) {
-    return costFunction.costIncrement(from, trajectory, flow);
+  public Scalar costIncrement(GlcNode node, List<StateTime> trajectory, Flow flow) {
+    return costFunction.costIncrement(node, trajectory, flow);
   }
 
   @Override // from CostFunction

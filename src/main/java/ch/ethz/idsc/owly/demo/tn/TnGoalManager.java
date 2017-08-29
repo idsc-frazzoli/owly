@@ -6,11 +6,12 @@ import java.util.List;
 import ch.ethz.idsc.owly.data.Lists;
 import ch.ethz.idsc.owly.glc.adapter.GoalAdapter;
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
+import ch.ethz.idsc.owly.glc.core.CostFunction;
+import ch.ethz.idsc.owly.glc.core.GlcNode;
 import ch.ethz.idsc.owly.glc.core.GoalInterface;
 import ch.ethz.idsc.owly.math.CoordinateWrap;
 import ch.ethz.idsc.owly.math.flow.Flow;
 import ch.ethz.idsc.owly.math.region.Region;
-import ch.ethz.idsc.owly.math.state.CostFunction;
 import ch.ethz.idsc.owly.math.state.StateTime;
 import ch.ethz.idsc.owly.math.state.TimeInvariantRegion;
 import ch.ethz.idsc.tensor.Scalar;
@@ -34,7 +35,8 @@ class TnGoalManager implements Region, CostFunction {
   }
 
   @Override
-  public Scalar costIncrement(StateTime from, List<StateTime> trajectory, Flow flow) {
+  public Scalar costIncrement(GlcNode node, List<StateTime> trajectory, Flow flow) {
+    StateTime from = node.stateTime();
     return Norm._2.of(from.state().subtract(Lists.getLast(trajectory).state()));
   }
 

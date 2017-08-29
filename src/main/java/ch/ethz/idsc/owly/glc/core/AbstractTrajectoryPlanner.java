@@ -6,9 +6,7 @@ import java.util.Optional;
 
 import ch.ethz.idsc.owly.data.tree.Nodes;
 import ch.ethz.idsc.owly.math.state.StateIntegrator;
-import ch.ethz.idsc.owly.math.state.StateTime;
 import ch.ethz.idsc.owly.math.state.TrajectoryRegionQuery;
-import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Tensor;
 
 /** planner is shared between
@@ -41,12 +39,6 @@ import ch.ethz.idsc.tensor.Tensor;
   @Override
   public final TrajectoryRegionQuery getObstacleQuery() {
     return obstacleQuery;
-  }
-
-  @Override
-  /* package */ final GlcNode createRootNode(StateTime stateTime) {
-    return GlcNode.of(null, stateTime, RealScalar.ZERO, //
-        getGoalInterface().minCostToGoal(stateTime.state()));
   }
 
   @Override

@@ -4,6 +4,7 @@ package ch.ethz.idsc.owly.demo.se2;
 import java.util.List;
 
 import ch.ethz.idsc.owly.glc.adapter.StateTimeTrajectories;
+import ch.ethz.idsc.owly.glc.core.GlcNode;
 import ch.ethz.idsc.owly.math.flow.Flow;
 import ch.ethz.idsc.owly.math.state.StateTime;
 import ch.ethz.idsc.tensor.RealScalar;
@@ -21,7 +22,8 @@ public class Se2MinDistGoalManager extends Se2DefaultGoalManager {
   }
 
   @Override // Cost function
-  public Scalar costIncrement(StateTime from, List<StateTime> trajectory, Flow flow) {
+  public Scalar costIncrement(GlcNode node, List<StateTime> trajectory, Flow flow) {
+    StateTime from = node.stateTime();
     // Cost increases with time and input length
     // TODO currently all Se2models only change angle, no amplitude changes
     // integrate(||u||²+1,t)

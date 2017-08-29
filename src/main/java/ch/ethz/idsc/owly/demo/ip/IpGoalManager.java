@@ -5,6 +5,7 @@ import java.util.List;
 
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
 import ch.ethz.idsc.owly.glc.adapter.StateTimeTrajectories;
+import ch.ethz.idsc.owly.glc.core.GlcNode;
 import ch.ethz.idsc.owly.glc.core.GoalInterface;
 import ch.ethz.idsc.owly.math.flow.Flow;
 import ch.ethz.idsc.owly.math.region.BoundedBoxRegion;
@@ -22,7 +23,8 @@ class IpGoalManager extends SimpleTrajectoryRegionQuery implements GoalInterface
   }
 
   @Override
-  public Scalar costIncrement(StateTime from, List<StateTime> trajectory, Flow flow) {
+  public Scalar costIncrement(GlcNode node, List<StateTime> trajectory, Flow flow) {
+    StateTime from = node.stateTime();
     return StateTimeTrajectories.timeIncrement(from, trajectory);
   }
 

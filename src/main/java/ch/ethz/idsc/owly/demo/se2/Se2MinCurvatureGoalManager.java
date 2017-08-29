@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import ch.ethz.idsc.owly.glc.adapter.StateTimeTrajectories;
+import ch.ethz.idsc.owly.glc.core.GlcNode;
 import ch.ethz.idsc.owly.math.SignedCurvature2D;
 import ch.ethz.idsc.owly.math.flow.Flow;
 import ch.ethz.idsc.owly.math.state.StateTime;
@@ -24,7 +25,8 @@ public class Se2MinCurvatureGoalManager extends Se2DefaultGoalManager {
 
   @Override
   /** Cost Function */
-  public Scalar costIncrement(StateTime from, List<StateTime> trajectory, Flow flow) {
+  public Scalar costIncrement(GlcNode node, List<StateTime> trajectory, Flow flow) {
+    StateTime from = node.stateTime();
     int endIndex = trajectory.size() - 1;
     if (endIndex < 3) // can not calculated curvature with 2 points
       throw new RuntimeException();

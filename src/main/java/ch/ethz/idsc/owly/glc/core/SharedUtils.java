@@ -9,7 +9,6 @@ import java.util.stream.Stream;
 
 import ch.ethz.idsc.owly.data.Lists;
 import ch.ethz.idsc.owly.math.flow.Flow;
-import ch.ethz.idsc.owly.math.state.CostFunction;
 import ch.ethz.idsc.owly.math.state.StateIntegrator;
 import ch.ethz.idsc.owly.math.state.StateTime;
 
@@ -38,7 +37,7 @@ import ch.ethz.idsc.owly.math.state.StateTime;
       final List<StateTime> trajectory = stateIntegrator.trajectory(node.stateTime(), flow);
       final StateTime last = Lists.getLast(trajectory);
       final GlcNode next = GlcNode.of(flow, last, //
-          node.costFromRoot().add(costFunction.costIncrement(node.stateTime(), trajectory, flow)), //
+          node.costFromRoot().add(costFunction.costIncrement(node, trajectory, flow)), //
           costFunction.minCostToGoal(last.state()) //
       );
       map.put(next, trajectory);

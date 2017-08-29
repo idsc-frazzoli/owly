@@ -5,6 +5,7 @@ import java.util.List;
 
 import ch.ethz.idsc.owly.data.GlobalAssert;
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
+import ch.ethz.idsc.owly.glc.core.GlcNode;
 import ch.ethz.idsc.owly.glc.core.GoalInterface;
 import ch.ethz.idsc.owly.math.flow.Flow;
 import ch.ethz.idsc.owly.math.noise.ContinuousNoise;
@@ -30,7 +31,7 @@ class RnnGoalManager extends SimpleTrajectoryRegionQuery implements GoalInterfac
   }
 
   @Override
-  public Scalar costIncrement(StateTime from, List<StateTime> trajectory, Flow flow) {
+  public Scalar costIncrement(GlcNode node, List<StateTime> trajectory, Flow flow) {
     Scalar sum = trajectory.stream().map(StateTime::state).map(continuousNoise).reduce(Scalar::add).get();
     sum = sum.add(RealScalar.of(trajectory.size()));
     if (Scalars.lessThan(sum, RealScalar.ZERO))

@@ -57,12 +57,10 @@ public abstract class TrajectoryPlanner implements ExpandInterface<GlcNode>, Ser
     return eta.pmul(represent.apply(x)).map(Floor.FUNCTION);
   }
 
-  abstract GlcNode createRootNode(StateTime stateTime);
-
   /** @param stateTime */
   public final void insertRoot(StateTime stateTime) {
     GlobalAssert.that(queue.isEmpty() && domainMap.isEmpty()); // root insertion requires empty planner
-    boolean replaced = insert(convertToKey(stateTime.state()), createRootNode(stateTime));
+    boolean replaced = insert(convertToKey(stateTime.state()), GlcNodes.createRoot(stateTime, getGoalInterface()));
     GlobalAssert.that(!replaced); // root insertion should not replace any other node
   }
 

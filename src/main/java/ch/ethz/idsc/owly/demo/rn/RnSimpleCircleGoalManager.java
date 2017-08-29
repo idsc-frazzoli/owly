@@ -6,6 +6,7 @@ import java.util.List;
 import ch.ethz.idsc.owly.data.GlobalAssert;
 import ch.ethz.idsc.owly.data.Lists;
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
+import ch.ethz.idsc.owly.glc.core.GlcNode;
 import ch.ethz.idsc.owly.glc.core.GoalInterface;
 import ch.ethz.idsc.owly.math.flow.Flow;
 import ch.ethz.idsc.owly.math.region.SphericalRegion;
@@ -31,7 +32,8 @@ public class RnSimpleCircleGoalManager extends SimpleTrajectoryRegionQuery imple
   }
 
   @Override
-  public Scalar costIncrement(StateTime from, List<StateTime> trajectory, Flow flow) {
+  public Scalar costIncrement(GlcNode node, List<StateTime> trajectory, Flow flow) {
+    StateTime from = node.stateTime();
     return Norm._2.of(from.state().subtract(Lists.getLast(trajectory).state()));
   }
 
