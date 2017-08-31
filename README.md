@@ -99,7 +99,7 @@ Modify the `pom` file of your project to specify `repository` and `dependency` o
     <repositories>
       <repository>
         <id>owly-mvn-repo</id>
-        <url>https://raw.github.com/idsc-frazzoli/retina/mvn-repo/</url>
+        <url>https://raw.github.com/idsc-frazzoli/owly/mvn-repo/</url>
         <snapshots>
           <enabled>true</enabled>
           <updatePolicy>always</updatePolicy>
