@@ -6,7 +6,8 @@ import java.util.List;
 import java.util.Optional;
 
 import ch.ethz.idsc.owly.demo.se2.Se2Controls;
-import ch.ethz.idsc.owly.demo.se2r.Se2rGoalManager;
+import ch.ethz.idsc.owly.demo.se2.Se2AbstractGoalManager;
+import ch.ethz.idsc.owly.demo.se2.Se2MinTimeGoalManager;
 import ch.ethz.idsc.owly.demo.util.ImageRegions;
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
 import ch.ethz.idsc.owly.glc.adapter.StateTimeTrajectories;
@@ -27,7 +28,6 @@ import ch.ethz.idsc.owly.math.state.StateTime;
 import ch.ethz.idsc.owly.math.state.TimeInvariantRegion;
 import ch.ethz.idsc.owly.math.state.TrajectoryRegionQuery;
 import ch.ethz.idsc.tensor.RationalScalar;
-import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
 
@@ -40,9 +40,9 @@ enum Se2rImageDemo {
     StateIntegrator stateIntegrator = FixedStateIntegrator.create( //
         RungeKutta45Integrator.INSTANCE, RationalScalar.of(1, 6), 5);
     Collection<Flow> controls = Se2Controls.createControlsForwardAndReverse(RotationUtils.DEGREE(45), 6);
-    Se2rGoalManager se2GoalManager = new Se2rGoalManager( //
-        Tensors.vector(5.3, 4.4), RealScalar.of(0), //
-        RealScalar.of(.1), RotationUtils.DEGREE(10));
+    Se2AbstractGoalManager se2GoalManager = new Se2MinTimeGoalManager( //
+        Tensors.vector(5.3, 4.4, 0), //
+        Tensors.vector(.1, .1, .17), controls);
     TrajectoryRegionQuery obstacleQuery = //
         new SimpleTrajectoryRegionQuery(new TimeInvariantRegion(imageRegion));
     // ---

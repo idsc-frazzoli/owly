@@ -122,7 +122,7 @@ public class NdTreeMap<V> implements Serializable {
     private boolean internal() {
       return Objects.isNull(queue);
     }
-    
+
     private int dimension() {
       return depth % lBounds.length();
     }

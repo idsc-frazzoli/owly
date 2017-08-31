@@ -20,7 +20,7 @@ import ch.ethz.idsc.tensor.sca.Ramp;
 /**
  * 
  */
-public final class Se2MinCurvatureGoalManager extends Se2GoalRegion {
+public final class Se2MinCurvatureGoalManager extends Se2AbstractGoalManager {
   public Se2MinCurvatureGoalManager(Tensor center, Tensor radiusVector) {
     super(center, radiusVector);
   }
@@ -47,6 +47,7 @@ public final class Se2MinCurvatureGoalManager extends Se2GoalRegion {
 
   @Override // from HeuristicFunction
   public Scalar minCostToGoal(Tensor tensor) {
+    // TODO JONAS how come the d_angle can be used here but not in Se2MinDistCurvGoalManager ?
     return Ramp.of(Max.of( //
         d_xy(tensor).subtract(radiusSpace()), //
         d_angle(tensor).subtract(radiusAngle())));

@@ -6,6 +6,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
+import ch.ethz.idsc.owly.math.RotationUtils;
 import ch.ethz.idsc.owly.math.StateSpaceModels;
 import ch.ethz.idsc.owly.math.flow.Flow;
 import ch.ethz.idsc.tensor.RealScalar;
@@ -13,6 +14,7 @@ import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
 import ch.ethz.idsc.tensor.alg.Subdivide;
+import ch.ethz.idsc.tensor.red.Max;
 
 public enum Se2Controls {
   ;
@@ -42,5 +44,23 @@ public enum Se2Controls {
       list.add(create(angle.Get(), RealScalar.ONE.negate()));
     }
     return list;
+  }
+
+  /** @param controls
+   * @return m/s */
+  public static Scalar maxSpeed(Collection<Flow> controls) {
+    return controls.stream().map(Flow::getU).map(t -> t.Get(1).abs()).reduce(Max::of).get();
+  }
+
+  /** @param controls
+   * @return rad/s */
+  public static Scalar maxTurning(Collection<Flow> controls) {
+    return controls.stream().map(Flow::getU).map(t -> t.Get(0).abs()).reduce(Max::of).get();
+  }
+
+  public static void main(String[] args) {
+    Collection<Flow> controls = Se2Controls.createControls(RotationUtils.DEGREE(45), 6);
+    System.out.println(maxSpeed(controls));
+    System.out.println(maxTurning(controls));
   }
 }

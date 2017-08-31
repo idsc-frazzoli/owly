@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Optional;
 
 import ch.ethz.idsc.owly.demo.se2.Se2Controls;
-import ch.ethz.idsc.owly.demo.se2.Se2NoHeuristicGoalManager;
+import ch.ethz.idsc.owly.demo.se2.Se2MinTimeGoalManager;
 import ch.ethz.idsc.owly.demo.se2.Se2Wrap;
 import ch.ethz.idsc.owly.demo.se2.Se2WrapGoalManagerExt;
 import ch.ethz.idsc.owly.glc.adapter.IdentityWrap;
@@ -46,8 +46,8 @@ enum Se2WrapDemoExt {
     CoordinateWrap coordinateWrap;
     coordinateWrap = new Se2Wrap(Tensors.vector(1, 1, 1));
     coordinateWrap = identity;
-    Se2NoHeuristicGoalManager se2DefaultGoalManager = new Se2NoHeuristicGoalManager(//
-        Tensors.vector(-.5, 0, 0), radiusVector);
+    Se2MinTimeGoalManager se2DefaultGoalManager = new Se2MinTimeGoalManager( //
+        Tensors.vector(-.5, 0, 0), radiusVector, controls);
     Se2WrapGoalManagerExt se2WrapGoalManager = new Se2WrapGoalManagerExt( //
         coordinateWrap, se2DefaultGoalManager);
     TrajectoryRegionQuery obstacleQuery = //

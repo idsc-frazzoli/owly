@@ -25,10 +25,10 @@ import ch.ethz.idsc.tensor.sca.Ramp;
  * {@link Se2WrapGoalManagerExt} works with {@link Se2Wrap} as well as with {@link IdentityWrap} */
 public class Se2WrapGoalManagerExt implements Region, CostFunction {
   private final CoordinateWrap coordinateWrap;
-  private final Se2GoalRegion goalManager;
+  private final Se2AbstractGoalManager goalManager;
 
   /** @param coordinateWrap */
-  public Se2WrapGoalManagerExt(CoordinateWrap coordinateWrap, Se2GoalRegion goalManager) {
+  public Se2WrapGoalManagerExt(CoordinateWrap coordinateWrap, Se2AbstractGoalManager goalManager) {
     this.coordinateWrap = coordinateWrap;
     this.goalManager = goalManager;
   }

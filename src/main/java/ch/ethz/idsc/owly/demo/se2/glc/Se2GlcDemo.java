@@ -1,4 +1,4 @@
-// code by jph
+// code by jl
 package ch.ethz.idsc.owly.demo.se2.glc;
 
 import java.util.Collection;
@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Optional;
 
 import ch.ethz.idsc.owly.demo.se2.Se2Controls;
-import ch.ethz.idsc.owly.demo.se2.Se2NoHeuristicGoalManager;
+import ch.ethz.idsc.owly.demo.se2.Se2MinTimeGoalManager;
 import ch.ethz.idsc.owly.demo.se2.Se2StateSpaceModel;
 import ch.ethz.idsc.owly.glc.adapter.Parameters;
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
@@ -54,9 +54,10 @@ enum Se2GlcDemo {
     parameters.printResolution();
     // Se2Controls uses Se2StateSpaceModel
     Collection<Flow> controls = Se2Controls.createControls(RotationUtils.DEGREE(45), parameters.getResolutionInt());
-    Se2NoHeuristicGoalManager se2GoalManager = new Se2NoHeuristicGoalManager(//
+    Se2MinTimeGoalManager se2GoalManager = new Se2MinTimeGoalManager(// jan changed this to min-time
         Tensors.vector(0, 1, Math.PI), //
-        Tensors.vector(0.1, 0.1, 10 / 180 * Math.PI));
+        Tensors.vector(0.1, 0.1, 10 / 180 * Math.PI), //
+        controls);
     TrajectoryRegionQuery obstacleQuery = //
         new SimpleTrajectoryRegionQuery(new TimeInvariantRegion( //
             RegionUnion.of( //

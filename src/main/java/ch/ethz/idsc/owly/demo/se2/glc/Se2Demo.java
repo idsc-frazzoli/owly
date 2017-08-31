@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Optional;
 
 import ch.ethz.idsc.owly.demo.se2.Se2Controls;
-import ch.ethz.idsc.owly.demo.se2.Se2NoHeuristicGoalManager;
+import ch.ethz.idsc.owly.demo.se2.Se2MinTimeGoalManager;
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
 import ch.ethz.idsc.owly.glc.adapter.StateTimeTrajectories;
 import ch.ethz.idsc.owly.glc.core.Expand;
@@ -32,14 +32,16 @@ import ch.ethz.idsc.tensor.Tensors;
 /** (x,y,theta) */
 enum Se2Demo {
   ;
+  // FIXME JAN this demo fails!
   public static void main(String[] args) {
     Tensor eta = Tensors.vector(3, 3, 50 / Math.PI);
     StateIntegrator stateIntegrator = FixedStateIntegrator.createDefault(RationalScalar.of(1, 6), 5);
     System.out.println("scale=" + eta);
-    Collection<Flow> controls = Se2Controls.createControls(RotationUtils.DEGREE(45), 10);
-    Se2NoHeuristicGoalManager se2GoalManager = new Se2NoHeuristicGoalManager(//
-        Tensors.vector(2, 0, Math.PI * 0), //
-        Tensors.vector(0.1, 0.1, 10 / 180 * Math.PI));
+    Collection<Flow> controls = Se2Controls.createControls(RotationUtils.DEGREE(35), 10);
+    Se2MinTimeGoalManager se2GoalManager = new Se2MinTimeGoalManager(//
+        Tensors.vector(2, 1, Math.PI * -1), //
+        Tensors.vector(0.1, 0.1, 10 / 180 * Math.PI), //
+        controls);
     TrajectoryRegionQuery obstacleQuery = //
         new SimpleTrajectoryRegionQuery(new TimeInvariantRegion( //
             RegionUnion.of( //
