@@ -16,6 +16,6 @@ public enum IdentityWrap implements CoordinateWrap {
 
   @Override
   public Scalar distance(Tensor p, Tensor q) {
-    return Norm.INFINITY.of(p.subtract(q));
+    return Norm.INFINITY.ofVector(p.subtract(q));
   }
 }

@@ -41,6 +41,6 @@ public class Se2Wrap implements CoordinateWrap {
     Tensor d = p.subtract(q);
     d.set(MOD_DISTANCE, 2);
     // TODO inf norm may be more canonic?
-    return Norm._2.of(d.pmul(scale));
+    return Norm._2.ofVector(d.pmul(scale));
   }
 }

@@ -14,6 +14,7 @@ import ch.ethz.idsc.tensor.alg.Flatten;
 import ch.ethz.idsc.tensor.pdf.RandomVariate;
 import ch.ethz.idsc.tensor.pdf.UniformDistribution;
 import ch.ethz.idsc.tensor.red.Tally;
+import ch.ethz.idsc.tensor.red.Total;
 import junit.framework.TestCase;
 
 public class NdTreeMapTest extends TestCase {
@@ -55,11 +56,11 @@ public class NdTreeMapTest extends TestCase {
     final int n = 10;
     NdTreeMap<String> ndTreeMap = //
         new NdTreeMap<>(Tensors.vector(0, 0), Tensors.vector(1, 1), n, 26);
-    for (int c = 0; c < 400; ++c) {
-      Tensor location = RandomVariate.of(UniformDistribution.unit(), 2);
-      ndTreeMap.add(location, "s" + c);
-    }
-    NavigableMap<Tensor, Long> map = Tally.sorted(Flatten.of(ndTreeMap.binSize()));
+    for (int c = 0; c < 400; ++c)
+      ndTreeMap.add(RandomVariate.of(UniformDistribution.unit(), 2), "s" + c);
+    Tensor flatten = Flatten.of(ndTreeMap.binSize());
+    assertEquals(Total.of(flatten), RealScalar.of(400));
+    NavigableMap<Tensor, Long> map = Tally.sorted(flatten);
     Tensor last = map.lastKey();
     assertEquals(last, RealScalar.of(n));
   }

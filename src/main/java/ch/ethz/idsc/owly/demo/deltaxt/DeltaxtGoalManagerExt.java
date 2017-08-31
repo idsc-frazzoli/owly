@@ -69,7 +69,7 @@ public class DeltaxtGoalManagerExt extends SimpleTrajectoryRegionQuery implement
     Tensor r2Radius = radius.extract(0, toIndex);
     Scalar root = Sqrt.of(Power.of(r2Radius.Get(0).multiply(r2Vector.Get(1)), 2)//
         .add(Power.of(r2Radius.Get(1).multiply(r2Vector.Get(0)), 2)));
-    Scalar specificRadius = radius.Get(0).multiply(radius.Get(1)).multiply(Norm._2.of(r2x.subtract(r2Center))).divide(root);
-    return Ramp.of(Norm._2.of(r2x.subtract(r2Center)).subtract(specificRadius).divide(maxSpeed)); // <- do not change
+    Scalar specificRadius = radius.Get(0).multiply(radius.Get(1)).multiply(Norm._2.ofVector(r2x.subtract(r2Center))).divide(root);
+    return Ramp.of(Norm._2.ofVector(r2x.subtract(r2Center)).subtract(specificRadius).divide(maxSpeed)); // <- do not change
   }
 }

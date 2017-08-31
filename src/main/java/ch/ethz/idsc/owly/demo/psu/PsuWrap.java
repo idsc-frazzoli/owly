@@ -23,6 +23,6 @@ public enum PsuWrap implements CoordinateWrap {
   public Scalar distance(Tensor p, Tensor q) {
     Tensor d = p.subtract(q);
     d.set(MOD_DISTANCE, 0);
-    return Norm._2.of(d); // mix of units [rad] and [rad/sec] (!)
+    return Norm._2.ofVector(d); // mix of units [rad] and [rad/sec] (!)
   }
 }

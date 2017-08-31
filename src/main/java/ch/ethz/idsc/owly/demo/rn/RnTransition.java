@@ -21,7 +21,7 @@ public class RnTransition extends AbstractTransition {
 
   @Override
   public Scalar length() {
-    return Norm._2.of(start().subtract(end()));
+    return Norm._2.ofVector(start().subtract(end()));
   }
 
   @Override

@@ -63,7 +63,7 @@ public class Se2DefaultGoalManager implements Region, CostFunction {
     Tensor cur_xy = tensor.extract(0, 2);
     Scalar cur_angle = tensor.Get(2);
     boolean status = true;
-    status &= Scalars.lessEquals(Norm._2.of(cur_xy.subtract(center.extract(0, 2))), radiusSpace());
+    status &= Scalars.lessEquals(Norm._2.ofVector(cur_xy.subtract(center.extract(0, 2))), radiusSpace());
     status &= Scalars.lessEquals(PRINCIPAL.apply(cur_angle.subtract(center.Get(2))).abs(), radiusAngle());
     return status;
   }

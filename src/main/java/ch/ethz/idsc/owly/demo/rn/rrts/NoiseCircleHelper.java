@@ -38,7 +38,7 @@ class NoiseCircleHelper {
     this.tail = tail;
     Tensor orig = tail.state();
     final Tensor diff = goal.subtract(orig);
-    Scalar radius = Norm._2.of(diff).multiply(RealScalar.of(.5)).add(RealScalar.ONE);
+    Scalar radius = Norm._2.ofVector(diff).multiply(RealScalar.of(.5)).add(RealScalar.ONE);
     final Tensor center = Mean.of(Tensors.of(orig, goal));
     Tensor min = center.map(s -> s.subtract(radius));
     Tensor max = center.map(s -> s.add(radius));

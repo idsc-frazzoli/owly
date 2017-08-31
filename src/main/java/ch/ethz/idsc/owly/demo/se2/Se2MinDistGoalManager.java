@@ -11,6 +11,7 @@ import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.red.Norm;
+import ch.ethz.idsc.tensor.red.Norm2Squared;
 import ch.ethz.idsc.tensor.sca.Ramp;
 
 /** Nonholonomic Wheeled Robot
@@ -27,7 +28,7 @@ public class Se2MinDistGoalManager extends Se2DefaultGoalManager {
     // Cost increases with time and input length
     // TODO currently all Se2models only change angle, no amplitude changes
     // integrate(||u||²+1,t)
-    return RealScalar.ONE.add(Norm._2SQUARED.of(flow.getU()))//
+    return RealScalar.ONE.add(Norm2Squared.ofVector(flow.getU()))//
         .multiply(StateTimeTrajectories.timeIncrement(from, trajectory));
   }
 
@@ -35,7 +36,7 @@ public class Se2MinDistGoalManager extends Se2DefaultGoalManager {
   public Scalar minCostToGoal(Tensor x) {
     Tensor cur_xy = x.extract(0, 2);
     // Euclidean distance
-    Scalar dxy = Norm._2.of(cur_xy.subtract(center.extract(0, 2))).subtract(radiusSpace());
+    Scalar dxy = Norm._2.ofVector(cur_xy.subtract(center.extract(0, 2))).subtract(radiusSpace());
     return Ramp.of(dxy);
   }
 }

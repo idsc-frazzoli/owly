@@ -67,12 +67,9 @@ public class NdTreeMap<V> implements Serializable {
 
   private void add(NdEntry<V> ndEntry) {
     resetBounds();
-    NdEntry<V> removed = root.add(ndEntry);
-    if (Objects.isNull(removed))
-      ++size;
-    else
-      // by modification of the Node class the entry removal is eliminated and does not occur anymore
-      throw new RuntimeException();
+    root.add(ndEntry);
+    // by modification of the Node class the entry removal is eliminated and does not occur anymore
+    ++size;
   }
 
   public NdCluster<V> buildCluster(Tensor center, int size, NdDistanceInterface distancer) {
@@ -130,7 +127,7 @@ public class NdTreeMap<V> implements Serializable {
       return lBounds.Get(index).add(uBounds.Get(index)).multiply(HALF);
     }
 
-    private NdEntry<V> add(final NdEntry<V> ndEntry) {
+    private void add(final NdEntry<V> ndEntry) {
       if (internal()) {
         Tensor location = ndEntry.location;
         int dimension = depth % location.length();
@@ -139,39 +136,38 @@ public class NdTreeMap<V> implements Serializable {
           uBounds.set(median, dimension);
           if (Objects.isNull(lChild))
             lChild = new Node(depth - 1);
-          return lChild.add(ndEntry);
+          lChild.add(ndEntry);
+          return;
         }
         lBounds.set(median, dimension);
         if (Objects.isNull(rChild))
           rChild = new Node(depth - 1);
-        return rChild.add(ndEntry);
-      }
-      if (queue.size() < maxDensity) {
+        rChild.add(ndEntry);
+      } else //
+      if (queue.size() < maxDensity)
         queue.add(ndEntry);
-        return null;
-      }
-      if (depth == 1) {
+      else //
+      if (depth == 1)
         queue.add(ndEntry);
-        // the original code removes a node from the queue:
-        // return queue.poll();
-        // this is undesired behavior. we don't wish to remove entries.
-        // so instead, at the lowest depth we simply grow the queue indefinitely.
-        return null;
+      // the original code removed a node from the queue: return queue.poll();
+      // in our opinion this behavior is undesired.
+      // at the lowest depth we grow the queue indefinitely, instead.
+      else {
+        int dimension = depth % lBounds.length();
+        Scalar median = median(dimension);
+        for (NdEntry<V> entry : queue)
+          if (Scalars.lessThan(entry.location.Get(dimension), median)) {
+            if (Objects.isNull(lChild))
+              lChild = new Node(depth - 1);
+            lChild.queue.add(entry);
+          } else {
+            if (Objects.isNull(rChild))
+              rChild = new Node(depth - 1);
+            rChild.queue.add(entry);
+          }
+        queue = null;
+        add(ndEntry);
       }
-      int dimension = depth % lBounds.length();
-      Scalar median = median(dimension);
-      for (NdEntry<V> entry : queue)
-        if (Scalars.lessThan(entry.location.Get(dimension), median)) {
-          if (Objects.isNull(lChild))
-            lChild = new Node(depth - 1);
-          lChild.queue.add(entry);
-        } else {
-          if (Objects.isNull(rChild))
-            rChild = new Node(depth - 1);
-          rChild.queue.add(entry);
-        }
-      queue = null;
-      return add(ndEntry);
     }
 
     private void addToCluster(NdCluster<V> cluster) {

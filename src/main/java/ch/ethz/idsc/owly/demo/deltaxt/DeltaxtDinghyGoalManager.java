@@ -33,7 +33,7 @@ public class DeltaxtDinghyGoalManager extends TrajectoryGoalManager implements G
     // Costfunction: t
     // return StateTimeTrajectories.timeIncrement(from, trajectory);
     // alternative:
-    Scalar sum = Norm._2.of(flow.getU()).add(timeCostScalingFactor);
+    Scalar sum = Norm._2.ofVector(flow.getU()).add(timeCostScalingFactor);
     // Costfunction: integrate (u^2 +1, t)
     return sum.multiply(StateTimeTrajectories.timeIncrement(from, trajectory));
   }

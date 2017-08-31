@@ -6,7 +6,7 @@ import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Scalars;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.TensorRuntimeException;
-import ch.ethz.idsc.tensor.red.Norm;
+import ch.ethz.idsc.tensor.red.Norm2Squared;
 
 /** EllipsoidRegion implements an axis aligned elliptic region in the vector space R^n.
  * 
@@ -40,6 +40,6 @@ public class EllipsoidRegion extends ImplicitFunctionRegion {
 
   @Override
   public Scalar evaluate(Tensor tensor) {
-    return Norm._2SQUARED.of(tensor.subtract(center).pmul(invert)).subtract(RealScalar.ONE);
+    return Norm2Squared.ofVector(tensor.subtract(center).pmul(invert)).subtract(RealScalar.ONE);
   }
 }

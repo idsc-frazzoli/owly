@@ -40,11 +40,11 @@ public class RnSimpleCircleHeuristicGoalManager extends SimpleTrajectoryRegionQu
   @Override
   public Scalar costIncrement(GlcNode node, List<StateTime> trajectory, Flow flow) {
     StateTime from = node.stateTime();
-    return Norm._2.of(from.state().subtract(Lists.getLast(trajectory).state()));
+    return Norm._2.ofVector(from.state().subtract(Lists.getLast(trajectory).state()));
   }
 
   @Override
   public Scalar minCostToGoal(Tensor x) {
-    return Ramp.of(Norm._2.of(x.subtract(center)).subtract(radius));
+    return Ramp.of(Norm._2.ofVector(x.subtract(center)).subtract(radius));
   }
 }

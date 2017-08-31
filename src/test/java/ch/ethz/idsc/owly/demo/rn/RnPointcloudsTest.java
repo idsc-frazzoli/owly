@@ -22,6 +22,6 @@ public class RnPointcloudsTest extends TestCase {
   public void testSimple3D() {
     Tensor offset = Tensors.vector(2, 2, 3);
     Tensor rand = RnPointclouds.randomPoints(100, offset, Tensors.vector(1, 1, 1));
-    Scalars.compare(Norm._2.of(Mean.of(rand).subtract(offset)), RealScalar.of(.1));
+    Scalars.compare(Norm._2.ofVector(Mean.of(rand).subtract(offset)), RealScalar.of(.1));
   }
 }

@@ -48,7 +48,7 @@ public class Se2MinCurvatureGoalManager extends Se2DefaultGoalManager {
   public Scalar minCostToGoal(Tensor x) {
     Tensor cur_xy = x.extract(0, 2);
     Scalar cur_angle = x.Get(2);
-    Scalar dxy = Norm._2.of(cur_xy.subtract(center.extract(0, 2))).subtract(radiusSpace());
+    Scalar dxy = Norm._2.ofVector(cur_xy.subtract(center.extract(0, 2))).subtract(radiusSpace());
     Scalar dangle = PRINCIPAL.apply(cur_angle.subtract(center.Get(2))).abs().subtract(radiusAngle());
     return Ramp.of(Max.of(dxy, dangle));
   }

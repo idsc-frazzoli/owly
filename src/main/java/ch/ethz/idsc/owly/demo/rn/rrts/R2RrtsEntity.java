@@ -24,7 +24,7 @@ import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
-import ch.ethz.idsc.tensor.red.Norm;
+import ch.ethz.idsc.tensor.red.Norm2Squared;
 
 // TODO JAN the redundancy in R2****Entity shows that re-factoring is needed!
 public class R2RrtsEntity extends AbstractRrtsEntity {
@@ -50,7 +50,7 @@ public class R2RrtsEntity extends AbstractRrtsEntity {
 
   @Override
   protected Scalar distance(Tensor x, Tensor y) {
-    return Norm._2SQUARED.of(x.subtract(y));
+    return Norm2Squared.ofVector(x.subtract(y));
   }
 
   @Override

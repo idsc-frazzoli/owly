@@ -23,7 +23,7 @@ public class TwdControlsTest extends TestCase {
     Tensor us = Tensors.empty();
     for (Flow flow : list) {
       Tensor u = flow.getU();
-      Scalar norm = Norm.INFINITY.of(u);
+      Scalar norm = Norm.INFINITY.ofVector(u);
       assertEquals(norm, RealScalar.ONE);
       us.append(u);
     }

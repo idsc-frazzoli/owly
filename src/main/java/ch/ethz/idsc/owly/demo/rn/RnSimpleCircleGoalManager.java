@@ -34,7 +34,7 @@ public class RnSimpleCircleGoalManager extends SimpleTrajectoryRegionQuery imple
   @Override
   public Scalar costIncrement(GlcNode node, List<StateTime> trajectory, Flow flow) {
     StateTime from = node.stateTime();
-    return Norm._2.of(from.state().subtract(Lists.getLast(trajectory).state()));
+    return Norm._2.ofVector(from.state().subtract(Lists.getLast(trajectory).state()));
   }
 
   @Override
