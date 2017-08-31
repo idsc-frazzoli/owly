@@ -4,6 +4,8 @@
 
 The repository contains Java 8 implementations of motion planners and their variants.
 
+Version `0.0.4`
+
 List of algorithms:
 
 * GLC
@@ -89,6 +91,29 @@ R^2
 ![r2ani](https://cloud.githubusercontent.com/assets/4012178/26282173/06dccee8-3e0c-11e7-930f-fedab34fe396.gif)
 
 ![r2](https://cloud.githubusercontent.com/assets/4012178/26045794/16bd0a54-394c-11e7-9d11-19558bc3be88.png)
+
+## Include in your project
+
+Modify the `pom` file of your project to specify `repository` and `dependency` of the tensor library:
+
+    <repositories>
+      <repository>
+        <id>owly-mvn-repo</id>
+        <url>https://raw.github.com/idsc-frazzoli/retina/mvn-repo/</url>
+        <snapshots>
+          <enabled>true</enabled>
+          <updatePolicy>always</updatePolicy>
+        </snapshots>
+      </repository>
+    </repositories>
+    
+    <dependencies>
+      <dependency>
+        <groupId>ch.ethz.idsc</groupId>
+        <artifactId>owly</artifactId>
+        <version>0.0.4</version>
+      </dependency>
+    </dependencies>
 
 ## References
 
