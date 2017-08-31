@@ -10,15 +10,14 @@ import ch.ethz.idsc.owly.math.state.StateTime;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
-import ch.ethz.idsc.tensor.red.Norm;
 import ch.ethz.idsc.tensor.red.Norm2Squared;
 import ch.ethz.idsc.tensor.sca.Ramp;
 
 /** Nonholonomic Wheeled Robot
  * 
  * bapaden phd thesis: (5.5.13) */
-public class Se2MinDistGoalManager extends Se2DefaultGoalManager {
-  public Se2MinDistGoalManager(Tensor goal, Tensor radiusVector) {
+public final class Se2MinDistCurvGoalManager extends Se2GoalRegion {
+  public Se2MinDistCurvGoalManager(Tensor goal, Tensor radiusVector) {
     super(goal, radiusVector);
   }
 
@@ -33,10 +32,7 @@ public class Se2MinDistGoalManager extends Se2DefaultGoalManager {
   }
 
   @Override // Heuristic function
-  public Scalar minCostToGoal(Tensor x) {
-    Tensor cur_xy = x.extract(0, 2);
-    // Euclidean distance
-    Scalar dxy = Norm._2.ofVector(cur_xy.subtract(center.extract(0, 2))).subtract(radiusSpace());
-    return Ramp.of(dxy);
+  public Scalar minCostToGoal(Tensor tensor) {
+    return Ramp.of(d_xy(tensor).subtract(radiusSpace())); // Euclidean distance
   }
 }

@@ -14,7 +14,7 @@ import javax.swing.JLabel;
 
 import ch.ethz.idsc.owly.data.GlobalAssert;
 import ch.ethz.idsc.owly.demo.se2.Se2Controls;
-import ch.ethz.idsc.owly.demo.se2.Se2MinDistGoalManager;
+import ch.ethz.idsc.owly.demo.se2.Se2MinDistCurvGoalManager;
 import ch.ethz.idsc.owly.demo.se2.Se2StateSpaceModel;
 import ch.ethz.idsc.owly.demo.se2.Se2Wrap;
 import ch.ethz.idsc.owly.glc.core.GoalInterface;
@@ -80,7 +80,7 @@ public class Se2Entity extends AbstractEntity {
         integrator, //
         new StateTime(state, RealScalar.ZERO))); // initial position
     this.integrator = integrator;
-    controls = Se2Controls.createControlsForwardAndReverse(RotationUtils.DEGREE(30), 6); // TODO magic const
+    controls = Se2Controls.createControlsForwardAndReverse(RotationUtils.DEGREE(45), 6); // TODO magic const
     final Scalar goalRadius_xy = Sqrt.of(RealScalar.of(2)).divide(PARTITIONSCALE.Get(0));
     final Scalar goalRadius_theta = Sqrt.of(RealScalar.of(2)).divide(PARTITIONSCALE.Get(2));
     goalRadius = Tensors.of(goalRadius_xy, goalRadius_xy, goalRadius_theta);
@@ -117,7 +117,7 @@ public class Se2Entity extends AbstractEntity {
     this.obstacleQuery = obstacleQuery;
     StateIntegrator stateIntegrator = //
         FixedStateIntegrator.create(integrator, RationalScalar.of(1, 10), 4); // TODO magic const
-    Se2MinDistGoalManager se2MinDistGoalManager = new Se2MinDistGoalManager(goal, goalRadius);
+    Se2MinDistCurvGoalManager se2MinDistGoalManager = new Se2MinDistCurvGoalManager(goal, goalRadius);
     GoalInterface goalInterface = se2MinDistGoalManager.getGoalInterface();
     TrajectoryPlanner trajectoryPlanner = new StandardTrajectoryPlanner( //
         PARTITIONSCALE, stateIntegrator, controls, obstacleQuery, goalInterface);

@@ -17,7 +17,7 @@ public interface HeuristicFunction extends Serializable {
    * <p>if instance encodes a non-trivial heuristic, i.e. a return value not
    * always equals to zero, the function should throw an exception if x == null
    * 
-   * @param x
+   * @param tensor encodes state from which min cost to goal is evaluated
    * @return lower bound of cost to goal */
-  Scalar minCostToGoal(Tensor x);
+  Scalar minCostToGoal(Tensor tensor);
 }

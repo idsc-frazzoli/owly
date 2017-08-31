@@ -122,6 +122,10 @@ public class NdTreeMap<V> implements Serializable {
     private boolean internal() {
       return Objects.isNull(queue);
     }
+    
+    private int dimension() {
+      return depth % lBounds.length();
+    }
 
     private Scalar median(int index) {
       return lBounds.Get(index).add(uBounds.Get(index)).multiply(HALF);
@@ -130,7 +134,7 @@ public class NdTreeMap<V> implements Serializable {
     private void add(final NdEntry<V> ndEntry) {
       if (internal()) {
         Tensor location = ndEntry.location;
-        int dimension = depth % location.length();
+        int dimension = dimension();
         Scalar median = median(dimension);
         if (Scalars.lessThan(location.Get(dimension), median)) {
           uBounds.set(median, dimension);
@@ -153,7 +157,7 @@ public class NdTreeMap<V> implements Serializable {
       // in our opinion this behavior is undesired.
       // at the lowest depth we grow the queue indefinitely, instead.
       else {
-        int dimension = depth % lBounds.length();
+        int dimension = dimension();
         Scalar median = median(dimension);
         for (NdEntry<V> entry : queue)
           if (Scalars.lessThan(entry.location.Get(dimension), median)) {
@@ -172,7 +176,7 @@ public class NdTreeMap<V> implements Serializable {
 
     private void addToCluster(NdCluster<V> cluster) {
       if (internal()) {
-        final int dimension = depth % lBounds.length();
+        final int dimension = dimension();
         Scalar median = median(dimension);
         boolean lFirst = Scalars.lessThan(cluster.center.Get(dimension), median);
         addChildToCluster(cluster, median, lFirst);
@@ -184,7 +188,7 @@ public class NdTreeMap<V> implements Serializable {
     }
 
     private void addChildToCluster(NdCluster<V> cluster, Scalar median, boolean left) {
-      int dimension = depth % lBounds.length();
+      final int dimension = dimension();
       if (left) {
         if (Objects.isNull(lChild))
           return;

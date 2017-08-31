@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Optional;
 
 import ch.ethz.idsc.owly.demo.se2.Se2Controls;
-import ch.ethz.idsc.owly.demo.se2.Se2DefaultGoalManager;
+import ch.ethz.idsc.owly.demo.se2.Se2NoHeuristicGoalManager;
 import ch.ethz.idsc.owly.demo.se2.Se2StateSpaceModel;
 import ch.ethz.idsc.owly.demo.se2.glc.Se2Parameters;
 import ch.ethz.idsc.owly.glc.adapter.Parameters;
@@ -55,7 +55,7 @@ class Se2IterateGlcAnyStreetDemo {
     System.out.println("1/Domainsize=" + parameters.getEta());
     parameters.printResolution();
     Collection<Flow> controls = Se2Controls.createControls(RotationUtils.DEGREE(45), 6);
-    Se2DefaultGoalManager se2GoalManager = new Se2DefaultGoalManager(Tensors.vector(-7, 0, 0), radiusVector);
+    Se2NoHeuristicGoalManager se2GoalManager = new Se2NoHeuristicGoalManager(Tensors.vector(-7, 0, 0), radiusVector);
     TrajectoryRegionQuery obstacleQuery = //
         new SimpleTrajectoryRegionQuery(new TimeInvariantRegion( //
             RegionUnion.of( //
@@ -79,7 +79,7 @@ class Se2IterateGlcAnyStreetDemo {
     for (int iter = 0; iter < 300; iter++) {
       Thread.sleep(500);
       tic = System.nanoTime();
-      Se2DefaultGoalManager se2GoalManager2 = new Se2DefaultGoalManager(Tensors.vector(-7 + iter, 0, 0), radiusVector);
+      Se2NoHeuristicGoalManager se2GoalManager2 = new Se2NoHeuristicGoalManager(Tensors.vector(-7 + iter, 0, 0), radiusVector);
       List<StateTime> trajectory = null;
       {
         Optional<GlcNode> optional = trajectoryPlanner.getBestOrElsePeek();

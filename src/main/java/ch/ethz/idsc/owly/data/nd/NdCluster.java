@@ -2,6 +2,7 @@
 // adapted by jph and clruch
 package ch.ethz.idsc.owly.data.nd;
 
+import java.io.Serializable;
 import java.util.Iterator;
 import java.util.PriorityQueue;
 import java.util.Queue;
@@ -12,20 +13,20 @@ import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
 import ch.ethz.idsc.tensor.sca.Clip;
 
-public class NdCluster<V> implements Iterable<NdEntry<V>> {
+public class NdCluster<V> implements Iterable<NdEntry<V>>, Serializable {
   final Tensor center;
   private final int size;
   private final NdDistanceInterface distancer;
   // PriorityQueue uses canonic ordering of points: distance from center
   private final Queue<NdEntry<V>> points = new PriorityQueue<NdEntry<V>>();
 
-  NdCluster(Tensor center, int size, NdDistanceInterface distancer) {
+  /* package */ NdCluster(Tensor center, int size, NdDistanceInterface distancer) {
     this.center = center;
     this.size = size;
     this.distancer = distancer;
   }
 
-  void consider(NdEntry<V> point) {
+  /* package */ void consider(NdEntry<V> point) {
     point.setDistanceToCenter(distancer, center);
     if (points.size() < size) {
       points.add(point);
@@ -37,13 +38,7 @@ public class NdCluster<V> implements Iterable<NdEntry<V>> {
     }
   }
 
-  @Deprecated
-  void trimTo(int size) {
-    while (points.size() > size)
-      points.poll();
-  }
-
-  boolean isViable(Tensor lBounds, Tensor uBounds) {
+  /* package */ boolean isViable(Tensor lBounds, Tensor uBounds) {
     if (points.size() < size)
       return true;
     // ---

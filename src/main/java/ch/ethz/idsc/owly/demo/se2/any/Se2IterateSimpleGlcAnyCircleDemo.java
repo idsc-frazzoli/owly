@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Optional;
 
 import ch.ethz.idsc.owly.demo.se2.Se2Controls;
-import ch.ethz.idsc.owly.demo.se2.Se2DefaultGoalManager;
+import ch.ethz.idsc.owly.demo.se2.Se2NoHeuristicGoalManager;
 import ch.ethz.idsc.owly.demo.se2.Se2StateSpaceModel;
 import ch.ethz.idsc.owly.demo.se2.glc.Se2Parameters;
 import ch.ethz.idsc.owly.glc.adapter.Parameters;
@@ -64,7 +64,7 @@ class Se2IterateSimpleGlcAnyCircleDemo {
     parameters.printResolution();
     // Se2Controls uses Se2StateSpaceModel
     Collection<Flow> controls = Se2Controls.createControls(RotationUtils.DEGREE(45), parameters.getResolutionInt());
-    Se2DefaultGoalManager se2GoalManager = new Se2DefaultGoalManager(goal, radiusVector);
+    Se2NoHeuristicGoalManager se2GoalManager = new Se2NoHeuristicGoalManager(goal, radiusVector);
     TrajectoryRegionQuery obstacleQuery = //
         new SimpleTrajectoryRegionQuery(new TimeInvariantRegion( //
             RegionUnion.of( //

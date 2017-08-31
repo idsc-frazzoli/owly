@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Optional;
 
 import ch.ethz.idsc.owly.demo.se2.Se2Controls;
-import ch.ethz.idsc.owly.demo.se2.Se2DefaultGoalManager;
+import ch.ethz.idsc.owly.demo.se2.Se2NoHeuristicGoalManager;
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
 import ch.ethz.idsc.owly.glc.adapter.StateTimeTrajectories;
 import ch.ethz.idsc.owly.glc.core.Expand;
@@ -37,7 +37,7 @@ enum Se2Demo {
     StateIntegrator stateIntegrator = FixedStateIntegrator.createDefault(RationalScalar.of(1, 6), 5);
     System.out.println("scale=" + eta);
     Collection<Flow> controls = Se2Controls.createControls(RotationUtils.DEGREE(45), 10);
-    Se2DefaultGoalManager se2GoalManager = new Se2DefaultGoalManager(//
+    Se2NoHeuristicGoalManager se2GoalManager = new Se2NoHeuristicGoalManager(//
         Tensors.vector(2, 0, Math.PI * 0), //
         Tensors.vector(0.1, 0.1, 10 / 180 * Math.PI));
     TrajectoryRegionQuery obstacleQuery = //

@@ -26,22 +26,22 @@ public class NdEntry<V> implements Comparable<NdEntry<V>>, Serializable {
     return Scalars.lessThan(distancer.apply(testPoint, center), distanceToCenter);
   }
 
-  @Override
+  @Override // from Comparable
   public int compareTo(NdEntry<V> other) {
     return Scalars.compare(other.distanceToCenter, distanceToCenter);
   }
 
-  @Override
+  @Override // from Object
   public int hashCode() {
     return location.hashCode() ^ value.hashCode();
   }
 
-  @Override
+  @Override // from Object
   public boolean equals(Object object) {
     if (object instanceof NdEntry) {
       @SuppressWarnings("unchecked")
-      NdEntry<V> other = (NdEntry<V>) object;
-      return location.equals(other.location) && value.equals(other.value);
+      NdEntry<V> ndEntry = (NdEntry<V>) object;
+      return location.equals(ndEntry.location) && value.equals(ndEntry.value);
     }
     return false;
   }
