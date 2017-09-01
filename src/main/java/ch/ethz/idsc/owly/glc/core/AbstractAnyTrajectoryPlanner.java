@@ -19,6 +19,7 @@ import ch.ethz.idsc.owly.math.state.StateIntegrator;
 import ch.ethz.idsc.owly.math.state.StateTime;
 import ch.ethz.idsc.owly.math.state.TimeInvariantRegion;
 import ch.ethz.idsc.owly.math.state.TrajectoryRegionQuery;
+import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
 
 public abstract class AbstractAnyTrajectoryPlanner extends AbstractTrajectoryPlanner implements AnyPlannerInterface {
@@ -114,10 +115,13 @@ public abstract class AbstractAnyTrajectoryPlanner extends AbstractTrajectoryPla
       setGoalInterface(newGoal);
       long tic = System.nanoTime();
       GlcNode root = getRoot();
-      Collection<GlcNode> treeCollection = Nodes.ofSubtree(root);
+      // Collection<GlcNode> treeCollection = Nodes.ofSubtree(root);
+      Collection<GlcNode> treeCollection = domainMap().values();
       setBestNull();
       // -- RESORTING OF TREE
       if (!noHeuristic) {
+        // treeCollection.stream().parallel() //
+        // .forEach(glcNode -> glcNode.setMinCostToGoal(getGoalInterface().minCostToGoal(glcNode.state())));
         relabelingDomains();
         List<GlcNode> list = new LinkedList<>(queue());
         queue().clear();
@@ -253,5 +257,12 @@ public abstract class AbstractAnyTrajectoryPlanner extends AbstractTrajectoryPla
         break; // leave while loop when Nodes where found in latest Goalregion
     }
     return Optional.ofNullable(regionQueue.peek());
+  }
+
+  public final Scalar getGoalCost() {
+    GlcNode root = getRoot();
+    if (getBest().isPresent())
+      return getBest().get().costFromRoot().subtract(root.costFromRoot());
+    return null;
   }
 }

@@ -230,7 +230,6 @@ public class OptimalAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
     System.out.println("*** OBSTACLE UPDATE ***");
     long tic = System.nanoTime();
     setObstacleQuery(newObstacle);
-    setBestNull();
     GlcNode root = getRoot();
     // TODO JONAS: What to do if root in collision
     List<GlcNode> domainMapList = new ArrayList<>(domainMap().values());
@@ -408,7 +407,7 @@ public class OptimalAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
   @Override
   /* package */ final void relabelingDomains() {
     GlcNode root = getRoot();
-    List<GlcNode> treeList = new ArrayList<GlcNode>(Nodes.ofSubtree(root));
+    List<GlcNode> treeList = new ArrayList<GlcNode>(domainMap().values());
     System.err.println("checking for domainlabel changes due to heuristic change,  Treesize: " + treeList.size());
     treeList.stream().parallel() //
         .forEach(glcNode -> glcNode.setMinCostToGoal(getGoalInterface().minCostToGoal(glcNode.state())));
