@@ -34,7 +34,7 @@ public class RnNodeCollection implements RrtsNodeCollection {
   @Override
   public Collection<RrtsNode> nearTo(Tensor end, int k_nearest) {
     NdCluster<RrtsNode> cluster = ndTreeMap.buildCluster(end, k_nearest, NdDistanceInterface.EUCLIDEAN_SQUARED);
-    return cluster.stream().map(p -> p.value).collect(Collectors.toList());
+    return cluster.stream().map(p -> p.value()).collect(Collectors.toList());
   }
 
   @Override

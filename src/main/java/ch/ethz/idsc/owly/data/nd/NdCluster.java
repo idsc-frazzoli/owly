@@ -16,13 +16,13 @@ import ch.ethz.idsc.tensor.sca.Clip;
 
 // TODO create NdClusterBuilder!
 public class NdCluster<V> implements Iterable<NdEntry<V>>, Serializable {
-  Tensor center;
+  final Tensor center;
   private final int size;
   private NdDistanceInterface distancer;
-  // PriorityQueue uses canonic ordering of points: distance from center
   private final Queue<NdEntry<V>> points;
 
-  NdCluster(Stream<NdEntry<V>> stream) {
+  NdCluster(Tensor center, Stream<NdEntry<V>> stream) {
+    this.center = center;
     points = new LinkedList<>();
     stream.forEach(points::add);
     size = points.size();
@@ -35,15 +35,14 @@ public class NdCluster<V> implements Iterable<NdEntry<V>>, Serializable {
     points = new PriorityQueue<NdEntry<V>>(NdEntryComparators.DECREASING);
   }
 
-  /* package */ void consider(NdEntry<V> point) {
-    point.setDistanceToCenter(distancer, center);
+  /* package */ void consider(NdPair<V> pair) {
+    NdEntry<V> point = new NdEntry<>(pair, distancer.apply(center, pair.location));
     if (points.size() < size)
       points.add(point);
-    else {
-      if (Scalars.lessThan(point.distanceToCenter, points.peek().distanceToCenter)) {
-        points.poll();
-        points.add(point);
-      }
+    else //
+    if (Scalars.lessThan(point.distanceToCenter, points.peek().distanceToCenter)) {
+      points.poll();
+      points.add(point);
     }
   }
 

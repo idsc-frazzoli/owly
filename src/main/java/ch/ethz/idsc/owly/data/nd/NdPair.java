@@ -5,9 +5,9 @@ import java.io.Serializable;
 
 import ch.ethz.idsc.tensor.Tensor;
 
-public class NdPair<V> implements Serializable {
-  public final Tensor location; // <- key
-  public final V value;
+class NdPair<V> implements Serializable {
+  final Tensor location; // <- key
+  private final V value;
 
   /* package */ NdPair(Tensor location, V value) {
     this.location = location.unmodifiable();

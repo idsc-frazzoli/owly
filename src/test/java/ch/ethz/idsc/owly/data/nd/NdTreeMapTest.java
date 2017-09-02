@@ -29,17 +29,17 @@ public class NdTreeMapTest extends TestCase {
     NdDistanceInterface distancer = NdDistanceInterface.EUCLIDEAN;
     {
       NdCluster<String> cluster = ndTreeMap.buildCluster(Tensors.vector(0, 0), 1, distancer);
-      assertTrue(cluster.iterator().next().value.equals("d5"));
+      assertTrue(cluster.iterator().next().value().equals("d5"));
     }
     {
       NdCluster<String> cluster = ndTreeMap.buildCluster(Tensors.vector(5, 5), 1, distancer);
-      assertTrue(cluster.iterator().next().value.equals("d6"));
+      assertTrue(cluster.iterator().next().value().equals("d6"));
     }
     {
       NdCluster<String> cluster = ndTreeMap.buildCluster(Tensors.vector(1.1, 0.9), 2, distancer);
       List<String> list = Arrays.asList("d1", "d4");
       for (NdEntry<String> point : cluster)
-        assertTrue(list.contains(point.value));
+        assertTrue(list.contains(point.value()));
     }
   }
 

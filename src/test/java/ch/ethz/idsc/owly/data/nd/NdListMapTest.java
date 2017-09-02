@@ -32,14 +32,17 @@ public class NdListMapTest extends TestCase {
 
   private static Scalar addDistances(NdCluster<String> cluster, Tensor center, NdDistanceInterface d) {
     Scalar sum = RealScalar.ZERO;
-    for (NdEntry<String> entry : cluster)
-      sum = sum.add(d.apply(center, entry.location));
+    for (NdEntry<String> entry : cluster) {
+      Scalar dist = d.apply(center, entry.location());
+      assertEquals(entry.distanceToCenter, dist);
+      sum = sum.add(dist);
+    }
     return sum;
   }
 
   private static void _checkCenter(Tensor center, int n) {
     NdListMap<String> m1 = new NdListMap<>();
-    NdTreeMap<String> m2 = new NdTreeMap<>(Tensors.vector(-2, -1), Tensors.vector(2, 10), 4, 4);
+    NdTreeMap<String> m2 = new NdTreeMap<>(Tensors.vector(-2, -1), Tensors.vector(2, 10), 3, 10);
     int index = 0;
     Distribution b = BernoulliDistribution.of(RealScalar.of(.25));
     Distribution ux = UniformDistribution.of(-2, 2);

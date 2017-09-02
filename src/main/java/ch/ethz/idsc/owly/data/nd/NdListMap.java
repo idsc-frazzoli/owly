@@ -25,6 +25,6 @@ public class NdListMap<V> implements NdMap<V> {
     List<NdEntry<V>> entries = list.stream() //
         .map(pair -> new NdEntry<>(pair, distancer.apply(pair.location, center))) //
         .collect(Collectors.toList());
-    return new NdCluster<>(entries.stream().sorted(NdEntryComparators.INCREASING).limit(size));
+    return new NdCluster<>(center, entries.stream().sorted(NdEntryComparators.INCREASING).limit(size));
   }
 }
