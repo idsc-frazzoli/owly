@@ -47,7 +47,7 @@ public class Se2Entity extends AbstractEntity {
   @SuppressWarnings("unused")
   private static final JLabel JLABEL = new JLabel();
   private static final Tensor FALLBACK_CONTROL = Array.zeros(2).unmodifiable(); // {angle=0, vel=0}
-  private static final Scalar DELAY_HINT = RealScalar.ONE;
+  private static final Scalar DELAY_HINT = RealScalar.of(1.5);
   private static final Tensor SHAPE = Tensors.matrixDouble( //
       new double[][] { //
           { .2, +.07, 1 }, //
@@ -71,7 +71,7 @@ public class Se2Entity extends AbstractEntity {
   private final Integrator integrator;
   private final Collection<Flow> controls;
   private final Tensor goalRadius;
-  private TrajectoryRegionQuery obstacleQuery = null;
+  public TrajectoryRegionQuery obstacleQuery = null;
   // private BufferedImage bufferedImage = null;
 
   private Se2Entity(Tensor state, Integrator integrator) {
@@ -125,14 +125,19 @@ public class Se2Entity extends AbstractEntity {
     return trajectoryPlanner;
   }
 
+  private boolean obstacleQuery_isDisjoint(StateTime stateTime) {
+    if (Objects.nonNull(obstacleQuery))
+      return obstacleQuery.isDisjoint(Collections.singletonList(stateTime));
+    return true;
+  }
+
   @Override
   public void render(OwlyLayer owlyLayer, Graphics2D graphics) {
     { // indicate current position
-      StateTime stateTime = getStateTimeNow();
+      final StateTime stateTime = getStateTimeNow();
       Color color = new Color(64, 64, 64, 128);
-      if (Objects.nonNull(obstacleQuery))
-        if (!obstacleQuery.isDisjoint(Collections.singletonList(stateTime)))
-          color = new Color(255, 64, 64, 128);
+      if (!obstacleQuery_isDisjoint(stateTime))
+        color = new Color(255, 64, 64, 128);
       graphics.setColor(color);
       Tensor matrix = Se2Utils.toSE2Matrix(stateTime.state());
       Path2D path2d = owlyLayer.toPath2D(Tensor.of(SHAPE.flatten(0).map(matrix::dot)));
@@ -145,7 +150,11 @@ public class Se2Entity extends AbstractEntity {
       graphics.fill(new Rectangle2D.Double(point.getX() - 2, point.getY() - 2, 5, 5));
     }
     {
-      graphics.setColor(new Color(0, 128, 255, 192));
+      Color color = new Color(0, 128, 255, 192);
+      StateTime stateTime = new StateTime(owlyLayer.getMouseSe2State(), RealScalar.ZERO);
+      if (!obstacleQuery_isDisjoint(stateTime))
+        color = new Color(255, 96, 96, 128);
+      graphics.setColor(color);
       Tensor matrix = owlyLayer.getMouseSe2Matrix();
       Path2D path2d = owlyLayer.toPath2D(Tensor.of(SHAPE.flatten(0).map(matrix::dot)));
       graphics.fill(path2d);

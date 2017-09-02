@@ -1,7 +1,6 @@
 // code by jl
-package ch.ethz.idsc.owly.demo.se2.glc;
+package ch.ethz.idsc.owly.demo.se2.any;
 
-import ch.ethz.idsc.owly.demo.se2.any.Se2AnyEntity;
 import ch.ethz.idsc.owly.demo.util.ImageRegions;
 import ch.ethz.idsc.owly.gui.ani.OwlyAnimationFrame;
 import ch.ethz.idsc.owly.math.region.ImageRegion;

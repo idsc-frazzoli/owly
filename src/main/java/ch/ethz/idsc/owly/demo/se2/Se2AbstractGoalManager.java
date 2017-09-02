@@ -1,6 +1,7 @@
 // code by jph
 package ch.ethz.idsc.owly.demo.se2;
 
+import ch.ethz.idsc.owly.data.DontModify;
 import ch.ethz.idsc.owly.data.GlobalAssert;
 import ch.ethz.idsc.owly.glc.adapter.GoalAdapter;
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
@@ -11,22 +12,27 @@ import ch.ethz.idsc.owly.math.state.TimeInvariantRegion;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Scalars;
 import ch.ethz.idsc.tensor.Tensor;
+import ch.ethz.idsc.tensor.alg.VectorQ;
 import ch.ethz.idsc.tensor.red.Norm;
 import ch.ethz.idsc.tensor.sca.Mod;
 
-/** suggested base class for se2 goal managers
+/** suggested base class for se2 goal managers.
+ * all implemented methods in this layer are final.
  * 
  * class defines circle region for (x,y) component and periodic intervals in angular component */
+@DontModify
 public abstract class Se2AbstractGoalManager implements Region, CostFunction {
   static final Mod PRINCIPAL = Mod.function(2 * Math.PI, -Math.PI);
   // ---
   protected final Tensor center;
   protected final Tensor radiusVector;
 
-  /** @param center
+  /** @param center of region with coordinates (x, y, theta)
    * @param radiusVector with 3 entries the first 2 of which have to be identical */
   public Se2AbstractGoalManager(Tensor center, Tensor radiusVector) {
     GlobalAssert.that(radiusVector.get(0).equals(radiusVector.get(1)));
+    GlobalAssert.that(VectorQ.ofLength(center, 3));
+    GlobalAssert.that(VectorQ.ofLength(radiusVector, 3));
     this.center = center.unmodifiable();
     this.radiusVector = radiusVector.unmodifiable();
   }

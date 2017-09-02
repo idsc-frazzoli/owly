@@ -4,6 +4,7 @@ package ch.ethz.idsc.owly.demo.se2;
 import java.util.Collection;
 import java.util.List;
 
+import ch.ethz.idsc.owly.data.DontModify;
 import ch.ethz.idsc.owly.glc.adapter.StateTimeTrajectories;
 import ch.ethz.idsc.owly.glc.core.GlcNode;
 import ch.ethz.idsc.owly.math.flow.Flow;
@@ -17,6 +18,7 @@ import ch.ethz.idsc.tensor.sca.Ramp;
  * 
  * The cost does not account for curvature. */
 // DO NOT MODIFY THIS CLASS SINCE THE FUNCTIONALITY IS USED IN MANY DEMOS
+@DontModify
 public final class Se2MinTimeGoalManager extends Se2AbstractGoalManager {
   private final Scalar maxSpeed;
   private final Scalar maxTurning;
