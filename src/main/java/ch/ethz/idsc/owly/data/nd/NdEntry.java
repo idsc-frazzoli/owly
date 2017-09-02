@@ -11,10 +11,10 @@ import ch.ethz.idsc.tensor.Tensor;
 public class NdEntry<V> implements Comparable<NdEntry<V>>, Serializable {
   public final Tensor location; // <- key
   public final V value;
-  public Scalar distanceToCenter;
+  public Scalar distanceToCenter; // bad style!!!
 
   /* package */ NdEntry(Tensor location, V value) {
-    this.location = location;
+    this.location = location.unmodifiable();
     this.value = value;
   }
 
@@ -26,23 +26,12 @@ public class NdEntry<V> implements Comparable<NdEntry<V>>, Serializable {
     return Scalars.lessThan(distancer.apply(testPoint, center), distanceToCenter);
   }
 
+  public V value() {
+    return value;
+  }
+
   @Override // from Comparable
   public int compareTo(NdEntry<V> other) {
     return Scalars.compare(other.distanceToCenter, distanceToCenter);
-  }
-
-  @Override // from Object
-  public int hashCode() {
-    return location.hashCode() ^ value.hashCode();
-  }
-
-  @Override // from Object
-  public boolean equals(Object object) {
-    if (object instanceof NdEntry) {
-      @SuppressWarnings("unchecked")
-      NdEntry<V> ndEntry = (NdEntry<V>) object;
-      return location.equals(ndEntry.location) && value.equals(ndEntry.value);
-    }
-    return false;
   }
 }

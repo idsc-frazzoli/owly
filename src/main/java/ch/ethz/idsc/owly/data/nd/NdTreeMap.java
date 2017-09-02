@@ -19,7 +19,7 @@ import ch.ethz.idsc.tensor.TensorRuntimeException;
 import ch.ethz.idsc.tensor.Tensors;
 import ch.ethz.idsc.tensor.alg.VectorQ;
 
-public class NdTreeMap<V> implements Serializable {
+public class NdTreeMap<V> implements NdMap<V> {
   private static final Scalar HALF = RationalScalar.of(1, 2);
   // ---
   private final Node root;
@@ -59,6 +59,7 @@ public class NdTreeMap<V> implements Serializable {
 
   /** @param location vector with same length as lbounds and ubounds
    * @param value */
+  @Override
   public void add(Tensor location, V value) {
     if (!VectorQ.ofLength(location, global_lBounds.length()))
       throw TensorRuntimeException.of(location);
@@ -72,6 +73,7 @@ public class NdTreeMap<V> implements Serializable {
     ++size;
   }
 
+  @Override
   public NdCluster<V> buildCluster(Tensor center, int size, NdDistanceInterface distancer) {
     resetBounds();
     NdCluster<V> cluster = new NdCluster<V>(center, size, distancer);
@@ -79,6 +81,7 @@ public class NdTreeMap<V> implements Serializable {
     return cluster;
   }
 
+  @Override
   public int size() {
     return size;
   }
