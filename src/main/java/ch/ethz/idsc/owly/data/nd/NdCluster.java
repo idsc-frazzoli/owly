@@ -32,7 +32,7 @@ public class NdCluster<V> implements Iterable<NdEntry<V>>, Serializable {
     this.center = center;
     this.size = size;
     this.distancer = distancer;
-    points = new PriorityQueue<NdEntry<V>>();
+    points = new PriorityQueue<NdEntry<V>>(NdEntryComparators.DECREASING);
   }
 
   /* package */ void consider(NdEntry<V> point) {

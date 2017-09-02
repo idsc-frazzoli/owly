@@ -1,5 +1,4 @@
-// code by Eric Simonton
-// adapted by jph
+// code by jph
 package ch.ethz.idsc.owly.data.nd;
 
 import java.util.Arrays;

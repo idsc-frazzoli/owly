@@ -3,16 +3,16 @@ package ch.ethz.idsc.owly.data.nd;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
-import ch.ethz.idsc.tensor.Scalars;
 import ch.ethz.idsc.tensor.Tensor;
 
 public class NdListMap<V> implements NdMap<V> {
-  List<NdEntry<V>> list = new ArrayList<>();
+  List<NdPair<V>> list = new ArrayList<>();
 
   @Override
   public void add(Tensor location, V value) {
-    list.add(new NdEntry<>(location, value));
+    list.add(new NdPair<>(location, value));
   }
 
   @Override
@@ -22,9 +22,9 @@ public class NdListMap<V> implements NdMap<V> {
 
   @Override
   public NdCluster<V> buildCluster(Tensor center, int size, NdDistanceInterface distancer) {
-    return new NdCluster<>(list.stream().sorted((e1, e2) -> Scalars.compare( //
-        distancer.apply(e1.location, center), //
-        distancer.apply(e2.location, center))) //
-        .limit(size));
+    List<NdEntry<V>> entries = list.stream() //
+        .map(pair -> new NdEntry<>(pair, distancer.apply(pair.location, center))) //
+        .collect(Collectors.toList());
+    return new NdCluster<>(entries.stream().sorted(NdEntryComparators.INCREASING).limit(size));
   }
 }

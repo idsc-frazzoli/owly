@@ -63,11 +63,11 @@ public class NdListMapTest extends TestCase {
     assertTrue(c1.size() <= n);
     Scalar s1 = addDistances(c1, center, NdDistanceInterface.EUCLIDEAN);
     Scalar s2 = addDistances(c2, center, NdDistanceInterface.EUCLIDEAN);
-    if (!Chop._12.close(s1, s2)) {
+    if (!Chop._11.close(s1, s2)) {
       System.out.println(s1);
       System.out.println(s2);
     }
-    assertTrue(Chop._12.close(s1, s2));
+    assertTrue(Chop._11.close(s1, s2));
   }
 
   public void testOne() {

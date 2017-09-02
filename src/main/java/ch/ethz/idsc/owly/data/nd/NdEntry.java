@@ -8,10 +8,16 @@ import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Scalars;
 import ch.ethz.idsc.tensor.Tensor;
 
-public class NdEntry<V> implements Comparable<NdEntry<V>>, Serializable {
+public class NdEntry<V> implements Serializable {
   public final Tensor location; // <- key
   public final V value;
   public Scalar distanceToCenter; // bad style!!!
+
+  NdEntry(NdPair<V> ndPair, Scalar distance) {
+    location = ndPair.location;
+    value = ndPair.value;
+    distanceToCenter = distance;
+  }
 
   /* package */ NdEntry(Tensor location, V value) {
     this.location = location.unmodifiable();
@@ -28,10 +34,5 @@ public class NdEntry<V> implements Comparable<NdEntry<V>>, Serializable {
 
   public V value() {
     return value;
-  }
-
-  @Override // from Comparable
-  public int compareTo(NdEntry<V> other) {
-    return Scalars.compare(other.distanceToCenter, distanceToCenter);
   }
 }
