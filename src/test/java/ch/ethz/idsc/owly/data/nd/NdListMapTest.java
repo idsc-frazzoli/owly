@@ -24,17 +24,18 @@ public class NdListMapTest extends TestCase {
     m1.add(Tensors.vector(1, 5), "p4");
     m1.add(Tensors.vector(0, 0), "p1");
     m1.add(Tensors.vector(1, 1), "p3");
-    NdCluster<String> cl = m1.buildCluster(Tensors.vector(0, 0), 10, NdDistanceInterface.EUCLIDEAN);
+    Tensor center = Tensors.vector(0, 0);
+    NdCluster<String> cl = m1.buildCluster(NdCenterInterface.euclidean(center), 10);
     // for (cl.iterator()
     List<String> res = cl.stream().map(NdEntry::value).collect(Collectors.toList());
     assertEquals(res, Arrays.asList("p1", "p2", "p3", "p4"));
   }
 
-  private static Scalar addDistances(NdCluster<String> cluster, Tensor center, NdDistanceInterface d) {
+  private static Scalar addDistances(NdCluster<String> cluster, Tensor center, NdCenterInterface d) {
     Scalar sum = RealScalar.ZERO;
     for (NdEntry<String> entry : cluster) {
-      Scalar dist = d.apply(center, entry.location());
-      assertEquals(entry.distanceToCenter, dist);
+      Scalar dist = d.ofVector(entry.location());
+      assertEquals(entry.distance, dist);
       sum = sum.add(dist);
     }
     return sum;
@@ -60,17 +61,19 @@ public class NdListMapTest extends TestCase {
     }
     // System.out.println(m1.size());
     assertEquals(m1.size(), m2.size());
-    NdCluster<String> c1 = m1.buildCluster(center, n, NdDistanceInterface.EUCLIDEAN);
-    NdCluster<String> c2 = m2.buildCluster(center, n, NdDistanceInterface.EUCLIDEAN);
+    NdCenterInterface dinf = NdCenterInterface.euclidean(center);
+    NdCluster<String> c1 = m1.buildCluster(dinf, n);
+    NdCluster<String> c2 = m2.buildCluster(dinf, n);
     assertEquals(c1.size(), c2.size());
     assertTrue(c1.size() <= n);
-    Scalar s1 = addDistances(c1, center, NdDistanceInterface.EUCLIDEAN);
-    Scalar s2 = addDistances(c2, center, NdDistanceInterface.EUCLIDEAN);
+    Scalar s1 = addDistances(c1, center, dinf);
+    Scalar s2 = addDistances(c2, center, dinf);
     if (!Chop._11.close(s1, s2)) {
       System.out.println(s1);
       System.out.println(s2);
     }
     assertTrue(Chop._11.close(s1, s2));
+    // System.out.println("considered " + c2.considered() + " / " + m2.size());
   }
 
   public void testOne() {

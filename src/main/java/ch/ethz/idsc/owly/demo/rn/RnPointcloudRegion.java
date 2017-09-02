@@ -1,8 +1,8 @@
 // code by jph
 package ch.ethz.idsc.owly.demo.rn;
 
+import ch.ethz.idsc.owly.data.nd.NdCenterInterface;
 import ch.ethz.idsc.owly.data.nd.NdCluster;
-import ch.ethz.idsc.owly.data.nd.NdDistanceInterface;
 import ch.ethz.idsc.owly.data.nd.NdTreeMap;
 import ch.ethz.idsc.owly.math.region.EmptyRegion;
 import ch.ethz.idsc.owly.math.region.Region;
@@ -43,8 +43,9 @@ public class RnPointcloudRegion implements Region {
 
   @Override
   public boolean isMember(Tensor tensor) {
-    NdCluster<String> ndCluster = ndTreeMap.buildCluster(tensor, 1, NdDistanceInterface.EUCLIDEAN);
-    Scalar distance = ndCluster.iterator().next().distanceToCenter;
+    NdCenterInterface distanceInterface = NdCenterInterface.euclidean(tensor);
+    NdCluster<String> ndCluster = ndTreeMap.buildCluster(distanceInterface, 1);
+    Scalar distance = ndCluster.iterator().next().distance;
     return Scalars.lessEquals(distance, radius);
   }
 }

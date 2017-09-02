@@ -5,27 +5,22 @@ package ch.ethz.idsc.owly.data.nd;
 import java.io.Serializable;
 
 import ch.ethz.idsc.tensor.Scalar;
-import ch.ethz.idsc.tensor.Scalars;
 import ch.ethz.idsc.tensor.Tensor;
 
 public class NdEntry<V> implements Serializable {
-  private final NdPair<V> pair;
-  public final Scalar distanceToCenter;
+  private final NdPair<V> ndPair;
+  public final Scalar distance;
 
-  NdEntry(NdPair<V> ndPair, Scalar distance) {
-    pair = ndPair;
-    distanceToCenter = distance;
-  }
-
-  /* package */ boolean isFartherThan(Tensor testPoint, Tensor center, NdDistanceInterface distancer) {
-    return Scalars.lessThan(distancer.apply(testPoint, center), distanceToCenter);
+  /* package */ NdEntry(NdPair<V> ndPair, Scalar distance) {
+    this.ndPair = ndPair;
+    this.distance = distance;
   }
 
   public Tensor location() {
-    return pair.location;
+    return ndPair.location;
   }
 
   public V value() {
-    return pair.value();
+    return ndPair.value();
   }
 }

@@ -74,9 +74,9 @@ public class NdTreeMap<V> implements NdMap<V> {
   }
 
   @Override
-  public NdCluster<V> buildCluster(Tensor center, int size, NdDistanceInterface distancer) {
+  public NdCluster<V> buildCluster(NdCenterInterface distancer, int limit) {
     resetBounds();
-    NdCluster<V> cluster = new NdCluster<V>(center, size, distancer);
+    NdCluster<V> cluster = new NdCluster<V>(distancer, limit);
     root.addToCluster(cluster);
     return cluster;
   }

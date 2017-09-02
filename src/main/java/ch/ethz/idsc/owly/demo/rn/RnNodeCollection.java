@@ -4,8 +4,8 @@ package ch.ethz.idsc.owly.demo.rn;
 import java.util.Collection;
 import java.util.stream.Collectors;
 
+import ch.ethz.idsc.owly.data.nd.NdCenterInterface;
 import ch.ethz.idsc.owly.data.nd.NdCluster;
-import ch.ethz.idsc.owly.data.nd.NdDistanceInterface;
 import ch.ethz.idsc.owly.data.nd.NdTreeMap;
 import ch.ethz.idsc.owly.rrts.core.RrtsNode;
 import ch.ethz.idsc.owly.rrts.core.RrtsNodeCollection;
@@ -33,7 +33,8 @@ public class RnNodeCollection implements RrtsNodeCollection {
 
   @Override
   public Collection<RrtsNode> nearTo(Tensor end, int k_nearest) {
-    NdCluster<RrtsNode> cluster = ndTreeMap.buildCluster(end, k_nearest, NdDistanceInterface.EUCLIDEAN_SQUARED);
+    NdCenterInterface distanceInterface = NdCenterInterface.euclidean(end);
+    NdCluster<RrtsNode> cluster = ndTreeMap.buildCluster(distanceInterface, k_nearest);
     return cluster.stream().map(p -> p.value()).collect(Collectors.toList());
   }
 

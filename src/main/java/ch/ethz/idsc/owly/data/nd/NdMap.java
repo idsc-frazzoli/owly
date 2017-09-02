@@ -5,7 +5,8 @@ import java.io.Serializable;
 
 import ch.ethz.idsc.tensor.Tensor;
 
-/** multiple values can be associated to the same key
+/** NdMap contains (coordinate, value)-pairs.
+ * multiple values can be associated to the same coordinate.
  * 
  * @param <V> */
 public interface NdMap<V> extends Serializable {
@@ -16,5 +17,8 @@ public interface NdMap<V> extends Serializable {
   /** @return number of entries stored in map */
   int size();
 
-  NdCluster<V> buildCluster(Tensor center, int size, NdDistanceInterface distancer);
+  /** @param distancer
+   * @param limit
+   * @return */
+  NdCluster<V> buildCluster(NdCenterInterface distancer, int limit);
 }

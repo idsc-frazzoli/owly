@@ -3,6 +3,8 @@
 package ch.ethz.idsc.owly.data.nd;
 
 import java.io.Serializable;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.PriorityQueue;
@@ -14,57 +16,72 @@ import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
 import ch.ethz.idsc.tensor.sca.Clip;
 
-// TODO create NdClusterBuilder!
 public class NdCluster<V> implements Iterable<NdEntry<V>>, Serializable {
-  final Tensor center;
-  private final int size;
-  private NdDistanceInterface distancer;
-  private final Queue<NdEntry<V>> points;
+  private final NdCenterInterface ndCenter;
+  /* package */ final Tensor center;
+  private final int limit;
+  private final Queue<NdEntry<V>> queue;
+  private int considered = 0;
 
-  NdCluster(Tensor center, Stream<NdEntry<V>> stream) {
-    this.center = center;
-    points = new LinkedList<>();
-    stream.forEach(points::add);
-    size = points.size();
+  /* package */ NdCluster(Collection<NdPair<V>> collection, NdCenterInterface ndCenter, int limit) {
+    this.ndCenter = ndCenter;
+    this.center = ndCenter.center();
+    this.limit = limit;
+    queue = new LinkedList<>();
+    collection.stream() //
+        .map(pair -> new NdEntry<>(pair, ndCenter.ofVector(pair.location))) //
+        .sorted(NdEntryComparators.INCREASING) //
+        .limit(limit) //
+        .forEach(queue::add);
   }
 
-  /* package */ NdCluster(Tensor center, int size, NdDistanceInterface distancer) {
-    this.center = center;
-    this.size = size;
-    this.distancer = distancer;
-    points = new PriorityQueue<NdEntry<V>>(NdEntryComparators.DECREASING);
+  /* package */ NdCluster(NdCenterInterface ndCenter, int limit) {
+    this.ndCenter = ndCenter;
+    this.center = ndCenter.center();
+    this.limit = limit;
+    queue = new PriorityQueue<NdEntry<V>>(NdEntryComparators.DECREASING);
   }
 
   /* package */ void consider(NdPair<V> pair) {
-    NdEntry<V> point = new NdEntry<>(pair, distancer.apply(center, pair.location));
-    if (points.size() < size)
-      points.add(point);
+    ++considered;
+    NdEntry<V> point = new NdEntry<>(pair, ndCenter.ofVector(pair.location));
+    if (queue.size() < limit)
+      queue.add(point);
     else //
-    if (Scalars.lessThan(point.distanceToCenter, points.peek().distanceToCenter)) {
-      points.poll();
-      points.add(point);
+    if (Scalars.lessThan(point.distance, queue.peek().distance)) {
+      queue.poll();
+      queue.add(point);
     }
   }
 
   /* package */ boolean isViable(Tensor lBounds, Tensor uBounds) {
-    if (points.size() < size)
+    if (queue.size() < limit)
       return true;
     // ---
     Tensor test = Tensors.vector( //
         i -> Clip.function(lBounds.Get(i), uBounds.Get(i)).apply(center.Get(i)), center.length());
-    return points.peek().isFartherThan(test, center, distancer);
+    return Scalars.lessThan(ndCenter.ofVector(test), queue.peek().distance);
+  }
+
+  /** @return number of points visited in order to build the cluster */
+  public int considered() {
+    return considered;
   }
 
   @Override
   public Iterator<NdEntry<V>> iterator() {
-    return points.iterator();
+    return queue.iterator();
   }
 
   public Stream<NdEntry<V>> stream() {
-    return points.stream();
+    return queue.stream();
+  }
+
+  public Collection<NdEntry<V>> collection() {
+    return Collections.unmodifiableCollection(queue);
   }
 
   public int size() {
-    return points.size();
+    return queue.size();
   }
 }
