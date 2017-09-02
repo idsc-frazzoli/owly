@@ -50,7 +50,7 @@ public abstract class AbstractAnyTrajectoryPlanner extends AbstractTrajectoryPla
       increaseDepthBy = switchRootToNode(newRoot);
     } else {
       System.err.println("***RESET***");
-      System.out.println("This domain  is not labelled yet:");
+      System.out.println("This domain is not labelled yet:");
       System.out.println(state);
       if (!domainMap().isEmpty()) {
         this.deleteSubtreeOf(getRoot());

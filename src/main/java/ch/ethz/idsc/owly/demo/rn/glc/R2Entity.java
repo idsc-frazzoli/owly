@@ -36,7 +36,7 @@ import ch.ethz.idsc.tensor.red.Norm2Squared;
 /* package */ class R2Entity extends AbstractEntity {
   private static final Tensor FALLBACK_CONTROL = Tensors.vector(0, 0).unmodifiable();
   /** preserve 1[s] of the former trajectory */
-  private static final Scalar DELAY_HINT = RealScalar.ONE;
+  private static final Scalar DELAY_HINT = RealScalar.of(.5);
   // ---
   private final Collection<Flow> controls = R2Controls.createRadial(36); // TODO magic const
 

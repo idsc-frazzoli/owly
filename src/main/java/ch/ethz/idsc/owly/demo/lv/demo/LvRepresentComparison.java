@@ -11,7 +11,9 @@ import ch.ethz.idsc.owly.glc.core.GoalInterface;
 import ch.ethz.idsc.owly.glc.core.StandardTrajectoryPlanner;
 import ch.ethz.idsc.owly.glc.core.TrajectoryPlanner;
 import ch.ethz.idsc.owly.gui.Gui;
+import ch.ethz.idsc.owly.gui.OwlyFrame;
 import ch.ethz.idsc.owly.math.StateSpaceModel;
+import ch.ethz.idsc.owly.math.TensorUnaryOperator;
 import ch.ethz.idsc.owly.math.flow.Flow;
 import ch.ethz.idsc.owly.math.flow.RungeKutta45Integrator;
 import ch.ethz.idsc.owly.math.state.EmptyTrajectoryRegionQuery;
@@ -24,9 +26,9 @@ import ch.ethz.idsc.tensor.sca.Log;
 
 /** the coordinates represent the population of predators and prey.
  * the domain coordinates are computed from the log of the state coordinates */
-enum LvDemo {
+enum LvRepresentComparison {
   ;
-  public static void main(String[] args) {
+  static void launch(TensorUnaryOperator represent) {
     Tensor eta = Tensors.vector(10, 10);
     StateIntegrator stateIntegrator = FixedStateIntegrator.create( //
         RungeKutta45Integrator.INSTANCE, RationalScalar.of(1, 30), 4);
@@ -37,9 +39,16 @@ enum LvDemo {
     TrajectoryPlanner trajectoryPlanner = new StandardTrajectoryPlanner( //
         eta, stateIntegrator, controls, EmptyTrajectoryRegionQuery.INSTANCE, goalInterface);
     // ---
-    trajectoryPlanner.represent = Log::of;
-    trajectoryPlanner.insertRoot(Tensors.vector(2, .1));
+    trajectoryPlanner.represent = represent;
+    trajectoryPlanner.insertRoot(Tensors.vector(2, .5));
     Expand.maxSteps(trajectoryPlanner, 4000);
-    Gui.glc(trajectoryPlanner);
+    OwlyFrame owlyFrame = Gui.glc(trajectoryPlanner);
+    owlyFrame.configCoordinateOffset(100, 300);
+    owlyFrame.jFrame.setBounds(100, 100, 500, 500);
+  }
+
+  public static void main(String[] args) {
+    launch(Log::of);
+    launch(t -> t);
   }
 }
