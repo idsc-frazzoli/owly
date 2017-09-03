@@ -5,6 +5,7 @@ import ch.ethz.idsc.owly.demo.rn.RnNodeCollection;
 import ch.ethz.idsc.owly.demo.rn.RnTransitionSpace;
 import ch.ethz.idsc.owly.gui.Gui;
 import ch.ethz.idsc.owly.gui.OwlyFrame;
+import ch.ethz.idsc.owly.math.sample.BoxRandomSample;
 import ch.ethz.idsc.owly.rrts.adapter.LengthCostFunction;
 import ch.ethz.idsc.owly.rrts.adapter.RrtsNodes;
 import ch.ethz.idsc.owly.rrts.core.DefaultRrts;
@@ -27,7 +28,7 @@ enum R2Demo {
     // ---
     Rrts rrts = new DefaultRrts(rnts, nc, trq, LengthCostFunction.IDENTITY);
     RrtsNode root = rrts.insertAsNode(Tensors.vector(0, 0), 5).get();
-    RnUniformRandomSample rnUniformSampler = new RnUniformRandomSample(min, max);
+    BoxRandomSample rnUniformSampler = new BoxRandomSample(min, max);
     for (int c = 0; c < 1000; ++c)
       rrts.insertAsNode(rnUniformSampler.nextSample(), 15);
     System.out.println("rewireCount=" + rrts.rewireCount());

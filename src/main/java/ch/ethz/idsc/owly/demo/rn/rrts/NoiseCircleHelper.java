@@ -8,11 +8,12 @@ import ch.ethz.idsc.owly.demo.rn.RnNodeCollection;
 import ch.ethz.idsc.owly.demo.rn.RnTransitionSpace;
 import ch.ethz.idsc.owly.glc.core.Expand;
 import ch.ethz.idsc.owly.glc.core.TrajectorySample;
+import ch.ethz.idsc.owly.math.sample.CircleRandomSample;
+import ch.ethz.idsc.owly.math.sample.RandomSample;
 import ch.ethz.idsc.owly.math.state.StateTime;
 import ch.ethz.idsc.owly.rrts.adapter.LengthCostFunction;
 import ch.ethz.idsc.owly.rrts.adapter.RrtsNodes;
 import ch.ethz.idsc.owly.rrts.core.DefaultRrts;
-import ch.ethz.idsc.owly.rrts.core.RandomSampleInterface;
 import ch.ethz.idsc.owly.rrts.core.Rrts;
 import ch.ethz.idsc.owly.rrts.core.RrtsNode;
 import ch.ethz.idsc.owly.rrts.core.RrtsNodeCollection;
@@ -50,8 +51,8 @@ class NoiseCircleHelper {
     // int iters =
     Rrts rrts = new DefaultRrts(rnts, nc, obstacleQuery, LengthCostFunction.IDENTITY);
     root = rrts.insertAsNode(orig, 5).get();
-    RandomSampleInterface spaceSampler = new CircleRandomSample(center, radius);
-    RandomSampleInterface goalSampler = new CircleRandomSample(goal, RealScalar.of(.5));
+    RandomSample spaceSampler = new CircleRandomSample(center, radius);
+    RandomSample goalSampler = new CircleRandomSample(goal, RealScalar.of(.5));
     rrtsPlanner = new RrtsPlanner(rrts, spaceSampler, goalSampler);
   }
 

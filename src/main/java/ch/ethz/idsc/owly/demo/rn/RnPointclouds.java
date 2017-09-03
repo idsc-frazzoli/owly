@@ -2,12 +2,11 @@
 package ch.ethz.idsc.owly.demo.rn;
 
 import ch.ethz.idsc.owly.math.region.Region;
+import ch.ethz.idsc.owly.math.sample.BoxRandomSample;
+import ch.ethz.idsc.owly.math.sample.RandomSample;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
-import ch.ethz.idsc.tensor.Tensors;
-import ch.ethz.idsc.tensor.pdf.Distribution;
-import ch.ethz.idsc.tensor.pdf.RandomVariate;
-import ch.ethz.idsc.tensor.pdf.UniformDistribution;
+import ch.ethz.idsc.tensor.alg.Array;
 
 public enum RnPointclouds {
   ;
@@ -17,17 +16,8 @@ public enum RnPointclouds {
    * @param radius of each obstacle
    * @return region with random points as obstacles */
   public static Region createRandomRegion(int num, Tensor offset, Tensor width, Scalar radius) {
-    return RnPointcloudRegion.of(randomPoints(num, offset, width), radius);
-  }
-
-  /* package */ static Tensor randomPoints(int num, Tensor offset, Tensor width) {
-    Tensor points = Tensors.empty();
-    Distribution distribution = UniformDistribution.unit();
-    for (int index = 0; index < num; ++index) {
-      Tensor rand = RandomVariate.of(distribution, width.length());
-      Tensor point = width.pmul(rand).add(offset);
-      points.append(point);
-    }
-    return points;
+    RandomSample randomSample = new BoxRandomSample(offset, offset.add(width));
+    Tensor points = Array.of(list -> randomSample.nextSample(), num);
+    return RnPointcloudRegion.of(points, radius);
   }
 }

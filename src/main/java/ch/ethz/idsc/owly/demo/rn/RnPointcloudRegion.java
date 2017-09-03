@@ -3,6 +3,7 @@ package ch.ethz.idsc.owly.demo.rn;
 
 import ch.ethz.idsc.owly.data.nd.NdCenterInterface;
 import ch.ethz.idsc.owly.data.nd.NdCluster;
+import ch.ethz.idsc.owly.data.nd.NdMap;
 import ch.ethz.idsc.owly.data.nd.NdTreeMap;
 import ch.ethz.idsc.owly.math.region.EmptyRegion;
 import ch.ethz.idsc.owly.math.region.Region;
@@ -15,8 +16,6 @@ import ch.ethz.idsc.tensor.red.Max;
 import ch.ethz.idsc.tensor.red.Min;
 
 public class RnPointcloudRegion implements Region {
-  private static final String PLACEHOLDER = "PLACEHOLDER";
-
   /** @param points
    * @param radius
    * @return */
@@ -25,26 +24,27 @@ public class RnPointcloudRegion implements Region {
   }
 
   // ---
-  private final NdTreeMap<String> ndTreeMap;
+  private final NdMap<Void> ndMap;
   private final Scalar radius;
 
   private RnPointcloudRegion(Tensor points, Scalar radius) {
     Tensor pt = Transpose.of(points);
     Tensor lbounds = Tensors.vector(i -> pt.get(i).flatten(0).reduce(Min::of).get(), pt.length());
     Tensor ubounds = Tensors.vector(i -> pt.get(i).flatten(0).reduce(Max::of).get(), pt.length());
-    // System.out.println("---");
-    // System.out.println(lbounds);
-    // System.out.println(ubounds);
-    ndTreeMap = new NdTreeMap<>(lbounds, ubounds, 5, 10); // TODO magic const
+    System.out.println("---");
+    System.out.println(lbounds);
+    System.out.println(ubounds);
+    ndMap = new NdTreeMap<>(lbounds, ubounds, 5, 20);
     for (Tensor point : points)
-      ndTreeMap.add(point, PLACEHOLDER);
+      ndMap.add(point, null);
     this.radius = radius;
   }
 
   @Override
   public boolean isMember(Tensor tensor) {
     NdCenterInterface distanceInterface = NdCenterInterface.euclidean(tensor);
-    NdCluster<String> ndCluster = ndTreeMap.buildCluster(distanceInterface, 1);
+    NdCluster<Void> ndCluster = ndMap.buildCluster(distanceInterface, 1);
+    // System.out.println(ndCluster.considered() + " / " + ndMap.size());
     Scalar distance = ndCluster.collection().iterator().next().distance();
     return Scalars.lessEquals(distance, radius);
   }

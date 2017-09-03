@@ -1,5 +1,5 @@
 // code by jph
-package ch.ethz.idsc.owly.demo.rn.rrts;
+package ch.ethz.idsc.owly.math.sample;
 
 import ch.ethz.idsc.owly.demo.util.UserHome;
 import ch.ethz.idsc.tensor.RealScalar;
