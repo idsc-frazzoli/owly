@@ -35,7 +35,7 @@ public class RnPointcloudRegion implements Region {
     // System.out.println("---");
     // System.out.println(lbounds);
     // System.out.println(ubounds);
-    ndTreeMap = new NdTreeMap<>(lbounds, ubounds, 10, 5); // TODO magic const
+    ndTreeMap = new NdTreeMap<>(lbounds, ubounds, 5, 10); // TODO magic const
     for (Tensor point : points)
       ndTreeMap.add(point, PLACEHOLDER);
     this.radius = radius;
@@ -45,7 +45,7 @@ public class RnPointcloudRegion implements Region {
   public boolean isMember(Tensor tensor) {
     NdCenterInterface distanceInterface = NdCenterInterface.euclidean(tensor);
     NdCluster<String> ndCluster = ndTreeMap.buildCluster(distanceInterface, 1);
-    Scalar distance = ndCluster.iterator().next().distance;
+    Scalar distance = ndCluster.collection().iterator().next().distance();
     return Scalars.lessEquals(distance, radius);
   }
 }

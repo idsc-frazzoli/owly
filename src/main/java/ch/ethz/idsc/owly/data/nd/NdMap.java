@@ -17,8 +17,11 @@ public interface NdMap<V> extends Serializable {
   /** @return number of entries stored in map */
   int size();
 
-  /** @param distancer
-   * @param limit
-   * @return */
-  NdCluster<V> buildCluster(NdCenterInterface distancer, int limit);
+  /** the application layer should not make assumptions
+   * on the ordering of the points in the cluster
+   * 
+   * @param ndCenter
+   * @param limit strictly positive
+   * @return cluster of no more than limit closest points to given ndCenter */
+  NdCluster<V> buildCluster(NdCenterInterface ndCenter, int limit);
 }

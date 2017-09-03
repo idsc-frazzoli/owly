@@ -30,27 +30,27 @@ public class NdTreeMapTest extends TestCase {
       Tensor center = Tensors.vector(0, 0);
       NdCenterInterface distancer = NdCenterInterface.euclidean(center);
       NdCluster<String> cluster = ndTreeMap.buildCluster(distancer, 1);
-      assertTrue(cluster.iterator().next().value().equals("d5"));
+      assertTrue(cluster.collection().iterator().next().value().equals("d5"));
     }
     {
       Tensor center = Tensors.vector(5, 5);
       NdCenterInterface distancer = NdCenterInterface.euclidean(center);
       NdCluster<String> cluster = ndTreeMap.buildCluster(distancer, 1);
-      assertTrue(cluster.iterator().next().value().equals("d6"));
+      assertTrue(cluster.collection().iterator().next().value().equals("d6"));
     }
     {
       Tensor center = Tensors.vector(1.1, 0.9);
       NdCenterInterface distancer = NdCenterInterface.euclidean(center);
       NdCluster<String> cluster = ndTreeMap.buildCluster(distancer, 2);
       List<String> list = Arrays.asList("d1", "d4");
-      for (NdEntry<String> point : cluster)
+      for (NdEntry<String> point : cluster.collection())
         assertTrue(list.contains(point.value()));
     }
   }
 
   public void testCornerCase() {
     NdTreeMap<String> ndTreeMap = //
-        new NdTreeMap<>(Tensors.vector(-2, -3), Tensors.vector(8, 9), 400, 2);
+        new NdTreeMap<>(Tensors.vector(-2, -3), Tensors.vector(8, 9), 10, 2);
     Tensor location = Array.zeros(2);
     for (int c = 0; c < 400; ++c)
       ndTreeMap.add(location, "s" + c);
