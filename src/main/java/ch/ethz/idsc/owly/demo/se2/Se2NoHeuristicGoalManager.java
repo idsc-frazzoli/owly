@@ -25,9 +25,7 @@ public final class Se2NoHeuristicGoalManager extends Se2AbstractGoalManager {
 
   @Override // from CostFunction
   public Scalar costIncrement(GlcNode node, List<StateTime> trajectory, Flow flow) {
-    StateTime from = node.stateTime();
-    // integrate(1,t)
-    return StateTimeTrajectories.timeIncrement(from, trajectory);
+    return StateTimeTrajectories.timeIncrement(node.stateTime(), trajectory); // integrate(1, t)
   }
 
   @Override // from CostFunction

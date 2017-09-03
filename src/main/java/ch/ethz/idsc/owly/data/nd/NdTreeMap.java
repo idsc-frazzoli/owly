@@ -19,7 +19,7 @@ import ch.ethz.idsc.tensor.TensorRuntimeException;
 import ch.ethz.idsc.tensor.Tensors;
 import ch.ethz.idsc.tensor.alg.VectorQ;
 
-public class NdTreeMap<V> implements Serializable {
+public class NdTreeMap<V> implements NdMap<V> {
   private static final Scalar HALF = RationalScalar.of(1, 2);
   // ---
   private final Node root;
@@ -59,26 +59,29 @@ public class NdTreeMap<V> implements Serializable {
 
   /** @param location vector with same length as lbounds and ubounds
    * @param value */
+  @Override
   public void add(Tensor location, V value) {
     if (!VectorQ.ofLength(location, global_lBounds.length()))
       throw TensorRuntimeException.of(location);
-    add(new NdEntry<V>(location, value));
+    add(new NdPair<V>(location, value));
   }
 
-  private void add(NdEntry<V> ndEntry) {
+  private void add(NdPair<V> ndEntry) {
     resetBounds();
     root.add(ndEntry);
     // by modification of the Node class the entry removal is eliminated and does not occur anymore
     ++size;
   }
 
-  public NdCluster<V> buildCluster(Tensor center, int size, NdDistanceInterface distancer) {
+  @Override
+  public NdCluster<V> buildCluster(NdCenterInterface ndCenter, int limit) {
     resetBounds();
-    NdCluster<V> cluster = new NdCluster<V>(center, size, distancer);
+    NdCluster<V> cluster = new NdCluster<V>(ndCenter, limit);
     root.addToCluster(cluster);
     return cluster;
   }
 
+  @Override
   public int size() {
     return size;
   }
@@ -113,7 +116,7 @@ public class NdTreeMap<V> implements Serializable {
     private Node lChild;
     private Node rChild;
     /** queue is set to null when node transform from leaf node to interior node */
-    private Queue<NdEntry<V>> queue = new LinkedList<NdEntry<V>>();
+    private Queue<NdPair<V>> queue = new LinkedList<>();
 
     private Node(int depth) {
       this.depth = depth;
@@ -131,7 +134,7 @@ public class NdTreeMap<V> implements Serializable {
       return lBounds.Get(index).add(uBounds.Get(index)).multiply(HALF);
     }
 
-    private void add(final NdEntry<V> ndEntry) {
+    private void add(final NdPair<V> ndEntry) {
       if (internal()) {
         Tensor location = ndEntry.location;
         int dimension = dimension();
@@ -159,7 +162,7 @@ public class NdTreeMap<V> implements Serializable {
       else {
         int dimension = dimension();
         Scalar median = median(dimension);
-        for (NdEntry<V> entry : queue)
+        for (NdPair<V> entry : queue)
           if (Scalars.lessThan(entry.location.Get(dimension), median)) {
             if (Objects.isNull(lChild))
               lChild = new Node(depth - 1);
@@ -181,10 +184,8 @@ public class NdTreeMap<V> implements Serializable {
         boolean lFirst = Scalars.lessThan(cluster.center.Get(dimension), median);
         addChildToCluster(cluster, median, lFirst);
         addChildToCluster(cluster, median, !lFirst);
-      } else {
-        for (NdEntry<V> point : queue)
-          cluster.consider(point);
-      }
+      } else
+        queue.forEach(cluster::consider);
     }
 
     private void addChildToCluster(NdCluster<V> cluster, Scalar median, boolean left) {
@@ -231,8 +232,8 @@ public class NdTreeMap<V> implements Serializable {
       GlobalAssert.that(Objects.isNull(node.lChild));
       GlobalAssert.that(Objects.isNull(node.rChild));
       System.out.println(v + "" + node.queue.size());
-      for (NdEntry<V> entry : node.queue)
-        System.out.println(v + "" + entry.location + " " + entry.value);
+      for (NdPair<V> entry : node.queue)
+        System.out.println(v + "" + entry.location + " " + entry.value());
     }
   }
 }

@@ -46,7 +46,8 @@ public abstract class TrajectoryPlanner implements ExpandInterface<GlcNode>, Ser
     return eta;
   }
 
-  // EXPERIMENTAL
+  /** mapping from state to domain coordinates
+   * Examples: identity, mod, log, ... */
   public TensorUnaryOperator represent = tensor -> tensor;
 
   /** Floor(eta * state) == Floor(state / domain_size)

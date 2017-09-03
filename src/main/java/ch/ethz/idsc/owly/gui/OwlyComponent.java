@@ -61,6 +61,12 @@ public class OwlyComponent {
     @Override
     protected void paintComponent(Graphics graphics) {
       render((Graphics2D) graphics, getSize());
+      { // display frame rate
+        long period = System.nanoTime() - lastRepaint;
+        lastRepaint = System.nanoTime();
+        graphics.setColor(Color.LIGHT_GRAY);
+        graphics.drawString(String.format("%4.1f Hz \u0f5c", 1.0e9 / period), 0, 10);
+      }
     }
   };
   private RenderElements renderBackground = new RenderElements();
@@ -142,12 +148,6 @@ public class OwlyComponent {
     graphics.fillRect(0, 0, dimension.width, dimension.height);
     // ---
     renderBackground.list.forEach(renderInterface -> renderInterface.render(owlyLayer, graphics));
-    { // display frame rate
-      long period = System.nanoTime() - lastRepaint;
-      lastRepaint = System.nanoTime();
-      graphics.setColor(Color.GRAY);
-      graphics.drawString(String.format("%4.1f Hz \u0f5c", 1.0e9 / period), 0, 10);
-    }
     {
       graphics.setColor(Color.LIGHT_GRAY);
       graphics.draw(new Line2D.Double(model2Point2D(Tensors.vector(-10, 1)), model2Point2D(Tensors.vector(10, 1))));

@@ -30,7 +30,7 @@ import ch.ethz.idsc.tensor.red.Norm2Squared;
 public class R2RrtsEntity extends AbstractRrtsEntity {
   private static final Tensor FALLBACK_CONTROL = Tensors.vector(0, 0).unmodifiable();
   /** preserve 1[s] of the former trajectory */
-  private static final Scalar DELAY_HINT = RealScalar.ONE;
+  private static final Scalar DELAY_HINT = RealScalar.of(.5);
   // ---
   TransitionRegionQuery obstacleQuery; // TODO design not final
 

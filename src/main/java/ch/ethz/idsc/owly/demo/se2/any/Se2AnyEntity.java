@@ -52,7 +52,7 @@ import ch.ethz.idsc.tensor.alg.Array;
 import ch.ethz.idsc.tensor.sca.Sqrt;
 
 /** omni-directional movement with constant speed */
-public class Se2AnyEntity extends AbstractAnyEntity {
+class Se2AnyEntity extends AbstractAnyEntity {
   // private static final JLabel JLABEL = new JLabel();
   private static final Tensor FALLBACK_CONTROL = Array.zeros(2).unmodifiable(); // {angle=0, vel=0}
   private static final Tensor SHAPE = Tensors.matrixDouble( //
