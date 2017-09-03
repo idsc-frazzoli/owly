@@ -30,7 +30,7 @@ enum R2NoiseDemo {
     RrtsNode root = rrts.insertAsNode(Tensors.vector(0, 0), 5).get();
     CircleRandomSample circleSampler = new CircleRandomSample(Tensors.vector(2, 0), RealScalar.of(3));
     for (int c = 0; c < 1000; ++c)
-      rrts.insertAsNode(circleSampler.nextSample(), 15);
+      rrts.insertAsNode(circleSampler.randomSample(), 15);
     System.out.println("rewireCount=" + rrts.rewireCount());
     RrtsNodes.costConsistency(root, rnts, LengthCostFunction.IDENTITY);
     OwlyFrame owlyFrame = Gui.start();

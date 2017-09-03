@@ -16,7 +16,7 @@ import ch.ethz.idsc.tensor.sca.Sqrt;
 
 /** produces bi-variate random samples uniformly draw from a circle with
  * given center and radius */
-public class CircleRandomSample implements RandomSample {
+public class CircleRandomSample implements RandomSampleInterface {
   private static final Distribution THETA = UniformDistribution.of(-Math.PI, Math.PI);
   // ---
   private final Tensor center;
@@ -29,7 +29,7 @@ public class CircleRandomSample implements RandomSample {
   }
 
   @Override
-  public Tensor nextSample() {
+  public Tensor randomSample() {
     Scalar theta = RandomVariate.of(THETA);
     Scalar residue = Sqrt.FUNCTION.apply(RandomVariate.of(UniformDistribution.unit()));
     return center.add(Tensors.of(Cos.FUNCTION.apply(theta), Sin.FUNCTION.apply(theta)) //

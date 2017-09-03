@@ -12,11 +12,7 @@ enum CircleRandomSampleDemo {
   public static void main(String[] args) throws Exception {
     CircleRandomSample circleSampler = //
         new CircleRandomSample(Tensors.vector(1, 1), RealScalar.of(2));
-    Tensor matrix = Tensors.empty();
-    for (int count = 0; count < 10000; ++count) {
-      Tensor vec = circleSampler.nextSample();
-      matrix.append(vec);
-    }
+    Tensor matrix = RandomSample.of(circleSampler, 10000);
     Put.of(UserHome.file("samples.txt"), matrix);
   }
 }

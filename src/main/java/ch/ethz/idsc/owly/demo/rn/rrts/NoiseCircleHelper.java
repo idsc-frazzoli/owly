@@ -9,7 +9,7 @@ import ch.ethz.idsc.owly.demo.rn.RnTransitionSpace;
 import ch.ethz.idsc.owly.glc.core.Expand;
 import ch.ethz.idsc.owly.glc.core.TrajectorySample;
 import ch.ethz.idsc.owly.math.sample.CircleRandomSample;
-import ch.ethz.idsc.owly.math.sample.RandomSample;
+import ch.ethz.idsc.owly.math.sample.RandomSampleInterface;
 import ch.ethz.idsc.owly.math.state.StateTime;
 import ch.ethz.idsc.owly.rrts.adapter.LengthCostFunction;
 import ch.ethz.idsc.owly.rrts.adapter.RrtsNodes;
@@ -51,8 +51,8 @@ class NoiseCircleHelper {
     // int iters =
     Rrts rrts = new DefaultRrts(rnts, nc, obstacleQuery, LengthCostFunction.IDENTITY);
     root = rrts.insertAsNode(orig, 5).get();
-    RandomSample spaceSampler = new CircleRandomSample(center, radius);
-    RandomSample goalSampler = new CircleRandomSample(goal, RealScalar.of(.5));
+    RandomSampleInterface spaceSampler = new CircleRandomSample(center, radius);
+    RandomSampleInterface goalSampler = new CircleRandomSample(goal, RealScalar.of(.5));
     rrtsPlanner = new RrtsPlanner(rrts, spaceSampler, goalSampler);
   }
 

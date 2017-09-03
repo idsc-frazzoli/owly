@@ -10,7 +10,7 @@ import ch.ethz.idsc.tensor.pdf.Distribution;
 import ch.ethz.idsc.tensor.pdf.RandomVariate;
 import ch.ethz.idsc.tensor.pdf.UniformDistribution;
 
-public class BoxRandomSample implements RandomSample {
+public class BoxRandomSample implements RandomSampleInterface {
   private final List<Distribution> distributions = new LinkedList<>();
 
   /** the parameters define the coordinate bounds of the axis-aligned box
@@ -25,7 +25,7 @@ public class BoxRandomSample implements RandomSample {
   }
 
   @Override
-  public Tensor nextSample() {
+  public Tensor randomSample() {
     return Tensor.of(distributions.stream().map(RandomVariate::of));
   }
 }

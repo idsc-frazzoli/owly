@@ -31,9 +31,9 @@ public class RnPointcloudRegion implements Region {
     Tensor pt = Transpose.of(points);
     Tensor lbounds = Tensors.vector(i -> pt.get(i).flatten(0).reduce(Min::of).get(), pt.length());
     Tensor ubounds = Tensors.vector(i -> pt.get(i).flatten(0).reduce(Max::of).get(), pt.length());
-    System.out.println("---");
-    System.out.println(lbounds);
-    System.out.println(ubounds);
+    // System.out.println("---");
+    // System.out.println(lbounds);
+    // System.out.println(ubounds);
     ndMap = new NdTreeMap<>(lbounds, ubounds, 5, 20);
     for (Tensor point : points)
       ndMap.add(point, null);

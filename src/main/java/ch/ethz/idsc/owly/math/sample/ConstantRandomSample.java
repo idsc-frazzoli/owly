@@ -3,7 +3,7 @@ package ch.ethz.idsc.owly.math.sample;
 
 import ch.ethz.idsc.tensor.Tensor;
 
-public class ConstantRandomSample implements RandomSample {
+public class ConstantRandomSample implements RandomSampleInterface {
   private final Tensor tensor;
 
   public ConstantRandomSample(Tensor sample) {
@@ -11,7 +11,7 @@ public class ConstantRandomSample implements RandomSample {
   }
 
   @Override
-  public Tensor nextSample() {
+  public Tensor randomSample() {
     return tensor;
   }
 }

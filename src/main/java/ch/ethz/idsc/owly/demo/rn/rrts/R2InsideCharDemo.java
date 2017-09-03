@@ -41,7 +41,7 @@ enum R2InsideCharDemo {
     int frame = 0;
     while (frame++ < 20 && owlyFrame.jFrame.isVisible()) {
       for (int c = 0; c < 50; ++c)
-        rrts.insertAsNode(rnUniformSampler.nextSample(), 15);
+        rrts.insertAsNode(rnUniformSampler.randomSample(), 15);
       owlyFrame.setRrts(root, trq);
       Thread.sleep(10);
     }

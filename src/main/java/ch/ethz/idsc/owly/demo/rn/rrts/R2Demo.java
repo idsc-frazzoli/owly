@@ -30,7 +30,7 @@ enum R2Demo {
     RrtsNode root = rrts.insertAsNode(Tensors.vector(0, 0), 5).get();
     BoxRandomSample rnUniformSampler = new BoxRandomSample(min, max);
     for (int c = 0; c < 1000; ++c)
-      rrts.insertAsNode(rnUniformSampler.nextSample(), 15);
+      rrts.insertAsNode(rnUniformSampler.randomSample(), 15);
     System.out.println("rewireCount=" + rrts.rewireCount());
     RrtsNodes.costConsistency(root, rnts, LengthCostFunction.IDENTITY);
     OwlyFrame owlyFrame = Gui.start();

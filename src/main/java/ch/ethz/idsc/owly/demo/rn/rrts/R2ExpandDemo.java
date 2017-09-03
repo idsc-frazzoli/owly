@@ -38,7 +38,7 @@ enum R2ExpandDemo {
     int frame = 0;
     while (frame++ < 40 && owlyFrame.jFrame.isVisible()) {
       for (int c = 0; c < 10; ++c)
-        rrts.insertAsNode(rnUniformSampler.nextSample(), 20);
+        rrts.insertAsNode(rnUniformSampler.randomSample(), 20);
       owlyFrame.setRrts(root, trq);
       gsw.append(owlyFrame.offscreen());
       Thread.sleep(100);
