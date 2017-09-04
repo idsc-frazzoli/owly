@@ -9,7 +9,8 @@ import java.util.List;
 import ch.ethz.idsc.tensor.img.Hue;
 
 /** Hsluv is similar to {@link Hue} but attempts to balance overall brightness for all colors */
-public class Hsluv {
+public enum Hsluv {
+  ;
   /** @param hue in range [0, 1), value is taken modulo 1
    * @param sat saturation in range [0, 1]
    * @param lgt lightness with lgt == 0.5 for most intense color
