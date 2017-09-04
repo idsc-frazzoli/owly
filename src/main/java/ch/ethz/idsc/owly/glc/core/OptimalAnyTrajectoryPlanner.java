@@ -30,7 +30,7 @@ import ch.ethz.idsc.tensor.Tensor;
  * Assumptions: -All states of all obstacles are known at all times
  * -No new Obstacles are discovered */
 public class OptimalAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
-  private final Collection<Flow> controls;
+  private final NodeIntegratorFlow nodeIntegratorFlow;
   // CandidateMap saves neglected/pruned Nodes in a bucket for each domain
   private final Map<Tensor, Set<CandidatePair>> candidateMap = //
       new HashMap<>();
@@ -43,13 +43,12 @@ public class OptimalAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
       GoalInterface goalInterface //
   ) {
     super(eta, stateIntegrator, obstacleQuery, goalInterface);
-    this.controls = controls;
+    nodeIntegratorFlow = new NodeIntegratorFlow(stateIntegrator, controls, goalInterface);
   }
 
   @Override // from ExpandInterface
   public void expand(final GlcNode node) {
-    Map<GlcNode, List<StateTime>> connectors = //
-        SharedUtils.integrate(node, controls, getStateIntegrator(), getGoalInterface(), true);
+    Map<GlcNode, List<StateTime>> connectors = nodeIntegratorFlow.parallel(node);
     CandidatePairQueueMap candidatePairQueueMap = new CandidatePairQueueMap();
     for (GlcNode next : connectors.keySet()) { // <- order of keys is non-deterministic
       // ALL Candidates are saved in temporary CandidateList

@@ -5,12 +5,34 @@ import java.io.Serializable;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 import ch.ethz.idsc.owly.data.Lists;
 import ch.ethz.idsc.owly.math.flow.Flow;
 import ch.ethz.idsc.owly.math.state.StateIntegrator;
 import ch.ethz.idsc.owly.math.state.StateTime;
+
+/* private */ class FlowTrajectory {
+  final Flow flow;
+  final List<StateTime> trajectory;
+  final StateTime last;
+
+  FlowTrajectory(Flow flow, List<StateTime> trajectory) {
+    this.flow = flow;
+    this.trajectory = trajectory;
+    last = Lists.getLast(trajectory);
+  }
+
+  List<StateTime> trajectory() {
+    return trajectory;
+  }
+
+  GlcNode createGlcNode(GlcNode node, CostFunction costFunction) {
+    return GlcNode.of(flow, last, //
+        node.costFromRoot().add(costFunction.costIncrement(node, trajectory, flow)), //
+        costFunction.minCostToGoal(last.state()));
+  }
+}
 
 /** utility class used in {@link StandardTrajectoryPlanner} to
  * compute the trajectories from a given node for all controls.
@@ -20,30 +42,38 @@ import ch.ethz.idsc.owly.math.state.StateTime;
 /* package */ class NodeIntegratorFlow implements Serializable {
   private final StateIntegrator stateIntegrator;
   private final Collection<Flow> controls;
+  private final CostFunction costFunction;
 
   /** @param stateIntegrator
    * @param controls */
-  public NodeIntegratorFlow(StateIntegrator stateIntegrator, Collection<Flow> controls) {
+  public NodeIntegratorFlow(StateIntegrator stateIntegrator, Collection<Flow> controls, CostFunction costFunction) {
     this.stateIntegrator = stateIntegrator;
     this.controls = controls;
+    this.costFunction = costFunction;
+  }
+
+  /** parallel trajectory integration is used by {@link StandardTrajectoryPlanner}
+   * 
+   * @param node from which to expand
+   * @param costFunction
+   * @return */
+  public Map<GlcNode, List<StateTime>> parallel(GlcNode node) {
+    // parallel results in speedup of ~25% (rice2demo)
+    return controls.stream().parallel() //
+        .map(flow -> new FlowTrajectory(flow, stateIntegrator.trajectory(node.stateTime(), flow))) //
+        .collect(Collectors.toMap( //
+            flowTrajectory -> flowTrajectory.createGlcNode(node, costFunction), //
+            FlowTrajectory::trajectory));
   }
 
   /** @param node from which to expand
    * @param costFunction
    * @return */
-  public Map<GlcNode, List<StateTime>> parallel(GlcNode node, CostFunction costFunction) {
-    Map<GlcNode, List<StateTime>> map = new ConcurrentHashMap<>(); // <- for use of parallel()
-    // parallel results in speedup of ~25% (rice2demo)
-    // TODO howto stream.collect to map
-    controls.stream().parallel().forEach(flow -> {
-      final List<StateTime> trajectory = stateIntegrator.trajectory(node.stateTime(), flow);
-      final StateTime last = Lists.getLast(trajectory);
-      final GlcNode next = GlcNode.of(flow, last, //
-          node.costFromRoot().add(costFunction.costIncrement(node, trajectory, flow)), //
-          costFunction.minCostToGoal(last.state()) //
-      );
-      map.put(next, trajectory);
-    });
-    return map;
+  public Map<GlcNode, List<StateTime>> serial(GlcNode node) {
+    return controls.stream() //
+        .map(flow -> new FlowTrajectory(flow, stateIntegrator.trajectory(node.stateTime(), flow))) //
+        .collect(Collectors.toMap( //
+            flowTrajectory -> flowTrajectory.createGlcNode(node, costFunction), //
+            FlowTrajectory::trajectory));
   }
 }
