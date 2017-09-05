@@ -1,7 +1,6 @@
 // code by jph
 package ch.ethz.idsc.owly.demo.delta.glc;
 
-import ch.ethz.idsc.owly.demo.delta.DeltaEntity;
 import ch.ethz.idsc.owly.demo.delta.ImageGradient;
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
 import ch.ethz.idsc.owly.gui.ani.OwlyAnimationFrame;

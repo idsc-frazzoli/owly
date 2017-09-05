@@ -129,14 +129,20 @@ public abstract class AbstractAnyEntity extends AbstractEntity {
     thread = new Thread(() -> {
       while (true) {
         Stopwatch stopwatch = Stopwatch.started();
-        head = (this.getFutureTrajectoryUntil(delayHint())); // Point on trajectory with delay from now
+        head = getFutureTrajectoryUntil(delayHint()); // Point on trajectory with delay from now
         // Rootswitch
         int index = getIndexOfLastNodeOf(head);
+        Trajectories.print(head);
+        System.out.println("headsize " + head.size());
+        System.out.println("index    " + index);
+        //
         Optional<GlcNode> optional = trajectoryPlanner.existsInTree(head.get(index).stateTime());
         if (!optional.isPresent())
           throw new RuntimeException();
         GlcNode newRoot = optional.get(); // getting last GlcNode in Head as root
-        head = (head.subList(0, index + 1)); // cutting head to this Node
+        System.out.println("NEW ROOT");
+        System.out.println(newRoot.stateTime().toInfoString());
+        head = head.subList(0, index + 1); // cutting head to this Node
         int depthLimitIncrease = trajectoryPlanner.switchRootToNode(newRoot);
         parameters.increaseDepthLimit(depthLimitIncrease);
         // ObstacleUpdate
