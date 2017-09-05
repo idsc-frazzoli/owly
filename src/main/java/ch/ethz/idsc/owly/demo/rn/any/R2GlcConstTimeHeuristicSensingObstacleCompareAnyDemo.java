@@ -10,7 +10,6 @@ import ch.ethz.idsc.owly.demo.rn.R2Controls;
 import ch.ethz.idsc.owly.demo.rn.R2NoiseRegion;
 import ch.ethz.idsc.owly.demo.rn.R2Parameters;
 import ch.ethz.idsc.owly.demo.rn.RnSimpleCircleGoalManager;
-import ch.ethz.idsc.owly.demo.rn.RnSimpleCircleHeuristicGoalManager;
 import ch.ethz.idsc.owly.glc.adapter.Parameters;
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
 import ch.ethz.idsc.owly.glc.adapter.StateTimeTrajectories;

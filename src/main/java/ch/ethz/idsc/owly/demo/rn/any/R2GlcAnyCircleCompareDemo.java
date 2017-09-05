@@ -4,7 +4,6 @@ package ch.ethz.idsc.owly.demo.rn.any;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -15,6 +14,7 @@ import ch.ethz.idsc.owly.demo.rn.R2Controls;
 import ch.ethz.idsc.owly.demo.rn.R2NoiseRegion;
 import ch.ethz.idsc.owly.demo.rn.R2Parameters;
 import ch.ethz.idsc.owly.demo.rn.RnSimpleCircleGoalManager;
+import ch.ethz.idsc.owly.demo.util.UserHome;
 import ch.ethz.idsc.owly.glc.adapter.Parameters;
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
 import ch.ethz.idsc.owly.glc.core.AbstractAnyTrajectoryPlanner;
@@ -99,10 +99,10 @@ enum R2GlcAnyCircleCompareDemo {
     owlyStandardFrame.configCoordinateOffset(400, 400);
     owlyStandardFrame.jFrame.setBounds(0, 0, 800, 800);
     // owlyStandardFrame.setGlc((TrajectoryPlanner) standardTrajectoryPlanner);
-    Path file = Paths.get("R2Comparison.csv");
-    //TODO JAN how to save csv somewhere else
+    // save csv is userhome:
+    Path path = UserHome.file("R2Comparison.csv").toPath();
     List<String> lines = Arrays.asList("timeStandard, timeDiff, iterationsDiff, CostDiff");
-    Files.write(file, lines, Charset.forName("UTF-8"));
+    Files.write(path, lines, Charset.forName("UTF-8"));
     for (int iter = 1; iter < 30; iter++) {
       Thread.sleep(10000);
       // ANY:
@@ -166,7 +166,7 @@ enum R2GlcAnyCircleCompareDemo {
                 RealScalar.of(itersAny).subtract(RealScalar.of(itersStandard)).divide(RealScalar.of(itersStandard)).multiply(RealScalar.of(100)).number()
                     .toString(), //
                 anyCost.subtract(staCost).divide(staCost).multiply(RealScalar.of(100)).toString()));
-        Files.write(file, lines, Charset.forName("UTF-8"), StandardOpenOption.APPEND);
+        Files.write(path, lines, Charset.forName("UTF-8"), StandardOpenOption.APPEND);
       }
       if (!owlyAnyFrame.jFrame.isVisible())
         break;

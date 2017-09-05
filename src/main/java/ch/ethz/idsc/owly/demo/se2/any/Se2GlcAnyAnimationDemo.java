@@ -19,7 +19,6 @@ enum Se2GlcAnyAnimationDemo {
     ImageRegion imageRegion = ImageRegions.loadFromRepository("/io/track0_100.png", Tensors.vector(10, 10), false);
     // Region obstacleRegion = new R2NoiseRegion(0.8);
     imageRegion = R2ImageRegions.inside_gtob();
-    
     se2AnyEntity.startLife(imageRegion, root); // (trq, root);
     owlyAnimationFrame.set(se2AnyEntity);
     owlyAnimationFrame.configCoordinateOffset(50, 700);
