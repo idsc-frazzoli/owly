@@ -121,9 +121,9 @@ public abstract class AbstractAnyTrajectoryPlanner extends AbstractTrajectoryPla
       setBestNull();
       // -- RESORTING OF TREE
       if (!noHeuristic) {
-        // treeCollection.stream().parallel() //
-        // .forEach(glcNode -> glcNode.setMinCostToGoal(getGoalInterface().minCostToGoal(glcNode.state())));
-        relabelingDomains();
+        treeCollection.stream().parallel() //
+            .forEach(glcNode -> glcNode.setMinCostToGoal(getGoalInterface().minCostToGoal(glcNode.state())));
+        // relabelingDomains();
         List<GlcNode> list = new LinkedList<>(queue());
         queue().clear();
         queue().addAll(list);

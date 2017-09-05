@@ -64,7 +64,6 @@ public class OwlyComponent {
         long period = System.nanoTime() - lastRepaint;
         lastRepaint = System.nanoTime();
         graphics.setColor(Color.LIGHT_GRAY);
-        // \u0f5c
         graphics.drawString(String.format("%4.1f Hz", 1.0e9 / period), 0, 10);
       }
     }

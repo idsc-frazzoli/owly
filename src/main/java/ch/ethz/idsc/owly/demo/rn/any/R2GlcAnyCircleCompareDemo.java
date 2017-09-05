@@ -1,7 +1,12 @@
 // code by jl
 package ch.ethz.idsc.owly.demo.rn.any;
 
+import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
@@ -9,13 +14,14 @@ import ch.ethz.idsc.owly.demo.rn.R2Controls;
 import ch.ethz.idsc.owly.demo.rn.R2NoiseRegion;
 import ch.ethz.idsc.owly.demo.rn.R2Parameters;
 import ch.ethz.idsc.owly.demo.rn.RnSimpleCircleGoalManager;
+import ch.ethz.idsc.owly.demo.util.UserHome;
 import ch.ethz.idsc.owly.glc.adapter.Parameters;
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
+import ch.ethz.idsc.owly.glc.core.AbstractAnyTrajectoryPlanner;
 import ch.ethz.idsc.owly.glc.core.AnyPlannerInterface;
 import ch.ethz.idsc.owly.glc.core.GlcExpand;
 import ch.ethz.idsc.owly.glc.core.OptimalAnyTrajectoryPlanner;
 import ch.ethz.idsc.owly.glc.core.StandardTrajectoryPlanner;
-import ch.ethz.idsc.owly.glc.core.TrajectoryPlanner;
 import ch.ethz.idsc.owly.gui.Gui;
 import ch.ethz.idsc.owly.gui.OwlyFrame;
 import ch.ethz.idsc.owly.math.flow.EulerIntegrator;
@@ -42,7 +48,7 @@ import ch.ethz.idsc.tensor.sca.Sin;
 enum R2GlcAnyCircleCompareDemo {
   ;
   public static void main(String[] args) throws Exception {
-    RationalScalar resolution = (RationalScalar) RealScalar.of(15);
+    RationalScalar resolution = (RationalScalar) RealScalar.of(20);
     Scalar timeScale = RealScalar.of(2);
     Scalar depthScale = RealScalar.of(100);
     Tensor partitionScale = Tensors.vector(30, 30);
@@ -75,13 +81,13 @@ enum R2GlcAnyCircleCompareDemo {
         parameters.getEta(), stateIntegrator, controls, obstacleQuery, rnGoal);
     anyTrajectoryPlanner.switchRootToState(Tensors.vector(0, 1).multiply(circleRadius));
     GlcExpand.maxDepth(anyTrajectoryPlanner, parameters.getDepthLimit());
-    List<StateTime> trajectory = anyTrajectoryPlanner.trajectoryToBest();
+    List<StateTime> anyTrajectory = anyTrajectoryPlanner.trajectoryToBest();
     // StateTimeTrajectories.print(trajectory);
     // AnimationWriter gsw = AnimationWriter.of(UserHome.Pictures("R2_Circle_Gif.gif"), 250);
     OwlyFrame owlyAnyFrame = Gui.start();
     owlyAnyFrame.configCoordinateOffset(400, 400);
     owlyAnyFrame.jFrame.setBounds(0, 0, 800, 800);
-    owlyAnyFrame.setGlc((TrajectoryPlanner) anyTrajectoryPlanner);
+    // owlyAnyFrame.setGlc((TrajectoryPlanner) anyTrajectoryPlanner);
     // STANDARD PLANNER
     StandardTrajectoryPlanner standardTrajectoryPlanner = new StandardTrajectoryPlanner( //
         parameters.getEta(), stateIntegrator, controls, obstacleQuery, rnGoal);
@@ -92,18 +98,22 @@ enum R2GlcAnyCircleCompareDemo {
     OwlyFrame owlyStandardFrame = Gui.start();
     owlyStandardFrame.configCoordinateOffset(400, 400);
     owlyStandardFrame.jFrame.setBounds(0, 0, 800, 800);
-    owlyStandardFrame.setGlc((TrajectoryPlanner) standardTrajectoryPlanner);
-    for (int iter = 1; iter < 100; iter++) {
-      Thread.sleep(100);
+    // owlyStandardFrame.setGlc((TrajectoryPlanner) standardTrajectoryPlanner);
+    // save csv is userhome:
+    Path path = UserHome.file("R2Comparison.csv").toPath();
+    List<String> lines = Arrays.asList("timeStandard, timeDiff, iterationsDiff, CostDiff");
+    Files.write(path, lines, Charset.forName("UTF-8"));
+    for (int iter = 1; iter < 30; iter++) {
+      Thread.sleep(10000);
       // ANY:
       // -- ROOTCHANGE
       long ticAny = System.nanoTime();
       boolean switchingRoot = false;
       StateTime newRootState = null;
-      if (trajectory.size() > 0) {
+      if (anyTrajectory.size() > 0) {
         switchingRoot = true;
         // --
-        newRootState = trajectory.get(trajectory.size() > 5 ? 5 : 0);
+        newRootState = anyTrajectory.get(anyTrajectory.size() > 5 ? 5 : 0);
         int increment = anyTrajectoryPlanner.switchRootToState(newRootState.state());
         parameters.increaseDepthLimit(increment);
       }
@@ -123,9 +133,9 @@ enum R2GlcAnyCircleCompareDemo {
       anyTrajectoryPlanner.changeToGoal(rnGoal2, goalSearchHelper);
       // -- EXPANDING
       int itersAny = GlcExpand.maxDepth(anyTrajectoryPlanner, parameters.getDepthLimit());
-      trajectory = anyTrajectoryPlanner.trajectoryToBest();
+      anyTrajectory = anyTrajectoryPlanner.trajectoryToBest();
       long tocAny = System.nanoTime();
-      owlyAnyFrame.setGlc((TrajectoryPlanner) anyTrajectoryPlanner);
+      // owlyAnyFrame.setGlc((TrajectoryPlanner) anyTrajectoryPlanner);
       // StateTimeTrajectories.print(trajectory);
       // gsw.append(owlyFrame.offscreen());
       // --
@@ -137,13 +147,26 @@ enum R2GlcAnyCircleCompareDemo {
         standardTrajectoryPlanner.insertRoot(newRootState.state());
         int itersStandard = GlcExpand.maxDepth(standardTrajectoryPlanner, parameters.getDepthLimit());
         long tocStandard = System.nanoTime();
-        owlyStandardFrame.setGlc((TrajectoryPlanner) standardTrajectoryPlanner);
+        // owlyStandardFrame.setGlc((TrajectoryPlanner) standardTrajectoryPlanner);
         System.out.println("****COMPARING TIME:  ****");
-        System.out.println("ANY: " + (tocAny - ticAny) * 1e-9);
-        System.out.println("STA: " + (tocStandard - ticStandard) * 1e-9);
+        Scalar anyTimeDiff = RealScalar.of((tocAny - ticAny) * 1e-9);
+        Scalar staTimeDiff = RealScalar.of((tocStandard - ticStandard) * 1e-9);
+        System.out.println("ANY: " + anyTimeDiff);
+        System.out.println("STA: " + staTimeDiff);
         System.out.println("****COMPARING Iterations:  ****");
         System.out.println("ANY: " + itersAny);
         System.out.println("STA: " + itersStandard);
+        System.out.println("****COMPARING COST: ****");
+        Scalar anyCost = ((AbstractAnyTrajectoryPlanner) anyTrajectoryPlanner).getGoalCost();
+        System.out.println("ANY: " + anyCost);
+        Scalar staCost = standardTrajectoryPlanner.getBest().get().costFromRoot();
+        System.out.println("STA: " + staCost);
+        lines = Arrays
+            .asList(String.join(",", staTimeDiff.toString(), anyTimeDiff.subtract(staTimeDiff).divide(staTimeDiff).multiply(RealScalar.of(100)).toString(), //
+                RealScalar.of(itersAny).subtract(RealScalar.of(itersStandard)).divide(RealScalar.of(itersStandard)).multiply(RealScalar.of(100)).number()
+                    .toString(), //
+                anyCost.subtract(staCost).divide(staCost).multiply(RealScalar.of(100)).toString()));
+        Files.write(path, lines, Charset.forName("UTF-8"), StandardOpenOption.APPEND);
       }
       if (!owlyAnyFrame.jFrame.isVisible())
         break;
