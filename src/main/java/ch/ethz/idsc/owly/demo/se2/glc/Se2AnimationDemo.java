@@ -41,7 +41,7 @@ enum Se2AnimationDemo {
 
   public static void main(String[] args) {
     OwlyAnimationFrame owlyAnimationFrame = new OwlyAnimationFrame();
-    _launch1(owlyAnimationFrame);
+    _launch2(owlyAnimationFrame);
     owlyAnimationFrame.configCoordinateOffset(50, 700);
     owlyAnimationFrame.treeRender = null;
     owlyAnimationFrame.jFrame.setBounds(100, 50, 1200, 800);

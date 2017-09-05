@@ -1,8 +1,8 @@
 // code by jph
 package ch.ethz.idsc.owly.math.car;
 
-import ch.ethz.idsc.owly.demo.car.VehicleModel;
-import ch.ethz.idsc.owly.demo.car.box.CHatchbackModel;
+import ch.ethz.idsc.owly.model.car.VehicleModel;
+import ch.ethz.idsc.owly.model.car.shop.CHatchbackModel;
 import ch.ethz.idsc.tensor.DoubleScalar;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
