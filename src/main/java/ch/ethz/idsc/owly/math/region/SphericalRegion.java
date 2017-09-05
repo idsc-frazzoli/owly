@@ -32,6 +32,6 @@ public class SphericalRegion extends ImplicitFunctionRegion {
 
   @Override
   public Scalar evaluate(Tensor x) {
-    return Norm._2.of(x.subtract(center)).subtract(radius);
+    return Norm._2.ofVector(x.subtract(center)).subtract(radius);
   }
 }

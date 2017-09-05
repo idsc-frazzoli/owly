@@ -19,7 +19,6 @@ import javax.swing.JComponent;
 import javax.swing.event.MouseInputAdapter;
 import javax.swing.event.MouseInputListener;
 
-import ch.ethz.idsc.tensor.DecimalScalar;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
@@ -61,6 +60,13 @@ public class OwlyComponent {
     @Override
     protected void paintComponent(Graphics graphics) {
       render((Graphics2D) graphics, getSize());
+      { // display frame rate only when rendering in component
+        long period = System.nanoTime() - lastRepaint;
+        lastRepaint = System.nanoTime();
+        graphics.setColor(Color.LIGHT_GRAY);
+        // \u0f5c
+        graphics.drawString(String.format("%4.1f Hz", 1.0e9 / period), 0, 10);
+      }
     }
   };
   private RenderElements renderBackground = new RenderElements();
@@ -74,12 +80,17 @@ public class OwlyComponent {
       public void mouseWheelMoved(MouseWheelEvent event) {
         final int delta = -event.getWheelRotation(); // either 1 or -1
         int mods = event.getModifiersEx();
-        if ((mods & 128) == 0) { // ctrl pressed?
+        int mask = MouseWheelEvent.CTRL_DOWN_MASK; // 128 = 2^7
+        if ((mods & mask) == 0) { // ctrl pressed?
           owlyLayer.incrementMouseWheel(delta);
         } else {
           Scalar factor = Power.of(RealScalar.of(2), delta);
           Tensor scale = DiagonalMatrix.of(Tensors.of(factor, factor, RealScalar.ONE));
-          model2pixel = model2pixel.dot(scale);
+          Tensor shift = Tensors.vector(event.getX(), event.getY());
+          shift = shift.subtract(shift.multiply(factor));
+          scale.set(shift.Get(0), 0, 2);
+          scale.set(shift.Get(1), 1, 2);
+          model2pixel = scale.dot(model2pixel);
         }
         jComponent.repaint();
       }
@@ -126,7 +137,7 @@ public class OwlyComponent {
         @Override
         public void mousePressed(MouseEvent mouseEvent) {
           Tensor location = toModel(mouseEvent.getPoint());
-          System.out.println(location.map(Round.toMultipleOf(DecimalScalar.of(0.001))) + ",");
+          System.out.println(location.map(Round._3) + ",");
         }
       };
       jComponent.addMouseListener(mouseListener);
@@ -176,7 +187,7 @@ public class OwlyComponent {
    * @param point
    * @return tensor of length 2 */
   public Tensor toModel(Point point) {
-    return LinearSolve.of(model2pixel, toAffinePoint(Tensors.vector(point.x, point.y))).extract(0, 2);
+    return LinearSolve.of(model2pixel, Tensors.vector(point.x, point.y, 1)).extract(0, 2);
   }
 
   /** @param vector */

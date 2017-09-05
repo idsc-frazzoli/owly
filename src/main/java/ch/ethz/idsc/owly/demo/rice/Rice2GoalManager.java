@@ -38,7 +38,7 @@ public class Rice2GoalManager extends SimpleTrajectoryRegionQuery implements Goa
   public Scalar minCostToGoal(Tensor x) {
     Tensor pc = x.extract(0, 2);
     Tensor pd = center.extract(0, 2);
-    Scalar mindist = Ramp.of(Norm._2.of(pc.subtract(pd)).subtract(radius));
+    Scalar mindist = Ramp.of(Norm._2.ofVector(pc.subtract(pd)).subtract(radius));
     return mindist; // .divide(1 [m/s]), since max velocity == 1 => division is obsolete
   }
 }

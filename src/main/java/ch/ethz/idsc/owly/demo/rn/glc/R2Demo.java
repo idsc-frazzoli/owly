@@ -63,7 +63,7 @@ enum R2Demo {
     if (optional.isPresent()) {
       GlcNode goalNode = optional.get(); // <- throws exception if
       Scalar cost = goalNode.costFromRoot();
-      Scalar lowerBound = Ramp.of(Norm._2.of(stateGoal.subtract(stateRoot)).subtract(radius));
+      Scalar lowerBound = Ramp.of(Norm._2.ofVector(stateGoal.subtract(stateRoot)).subtract(radius));
       if (Scalars.lessThan(cost, lowerBound))
         throw TensorRuntimeException.of(cost, lowerBound);
     }

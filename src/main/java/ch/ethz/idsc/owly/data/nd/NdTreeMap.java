@@ -6,19 +6,25 @@ import java.io.Serializable;
 import java.util.LinkedList;
 import java.util.Objects;
 import java.util.Queue;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
+import ch.ethz.idsc.owly.data.GlobalAssert;
 import ch.ethz.idsc.tensor.RationalScalar;
+import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Scalars;
 import ch.ethz.idsc.tensor.Tensor;
+import ch.ethz.idsc.tensor.TensorRuntimeException;
+import ch.ethz.idsc.tensor.Tensors;
+import ch.ethz.idsc.tensor.alg.VectorQ;
 
-public class NdTreeMap<V> implements Serializable {
+public class NdTreeMap<V> implements NdMap<V> {
   private static final Scalar HALF = RationalScalar.of(1, 2);
   // ---
   private final Node root;
   private final int maxDensity;
   private int size;
-  private int numRemoved;
   private final Tensor global_lBounds;
   private final Tensor global_uBounds;
   // ---
@@ -26,40 +32,78 @@ public class NdTreeMap<V> implements Serializable {
   private Tensor lBounds;
   private Tensor uBounds;
 
+  /** lbounds and ubounds are vectors of identical length
+   * for instance if the points to be added are in the unit square then
+   * <pre>
+   * lbounds = {0, 0}
+   * ubounds = {1, 1}
+   * </pre>
+   * 
+   * @param lbounds smallest coordinates of points to be added
+   * @param ubounds greatest coordinates of points to be added
+   * @param maxDensity is the maximum queue size of leaf nodes, except
+   * for leaf nodes with maxDepth, which have unlimited queue size.
+   * @param maxDepth 16 is reasonable for most applications */
   public NdTreeMap(Tensor lbounds, Tensor ubounds, int maxDensity, int maxDepth) {
+    VectorQ.orThrow(lbounds);
+    VectorQ.orThrow(ubounds);
+    if (lbounds.length() != ubounds.length())
+      throw TensorRuntimeException.of(lbounds, ubounds);
+    if (!IntStream.range(0, lbounds.length()).allMatch(index -> Scalars.lessEquals(lbounds.Get(index), ubounds.Get(index))))
+      throw TensorRuntimeException.of(lbounds, ubounds);
     global_lBounds = lbounds;
     global_uBounds = ubounds;
     this.maxDensity = maxDensity;
     root = new Node(maxDepth);
   }
 
+  /** @param location vector with same length as lbounds and ubounds
+   * @param value */
+  @Override
   public void add(Tensor location, V value) {
-    add(new NdEntry<V>(location, value));
+    if (!VectorQ.ofLength(location, global_lBounds.length()))
+      throw TensorRuntimeException.of(location);
+    add(new NdPair<V>(location, value));
   }
 
-  private NdEntry<V> add(NdEntry<V> point) {
+  private void add(NdPair<V> ndEntry) {
     resetBounds();
-    NdEntry<V> removed = root.add(point);
-    if (Objects.isNull(removed)) {
-      ++size;
-    } else {
-      ++numRemoved;
-      throw new RuntimeException();
-      // System.out.printf("Removed %s (#%d)\n", Arrays
-      // .toString(removed.location), ++numRemoved);
-    }
-    return removed;
+    root.add(ndEntry);
+    // by modification of the Node class the entry removal is eliminated and does not occur anymore
+    ++size;
   }
 
-  public NdCluster<V> buildCluster(Tensor center, int size, NdDistanceInterface distancer) {
+  @Override
+  public NdCluster<V> buildCluster(NdCenterInterface ndCenter, int limit) {
     resetBounds();
-    NdCluster<V> cluster = new NdCluster<V>(center, size, distancer);
+    NdCluster<V> cluster = new NdCluster<V>(ndCenter, limit);
     root.addToCluster(cluster);
     return cluster;
   }
 
+  @Override
   public int size() {
     return size;
+  }
+
+  /** function returns the queue size of leaf nodes in the tree.
+   * use the function to determine if the tree is well balanced.
+   * 
+   * <p>Example use:
+   * Tally.sorted(Flatten.of(ndTreeMap.binSize()))
+   * 
+   * @return */
+  public Tensor binSize() {
+    return binSize(root);
+  }
+
+  private Tensor binSize(Node node) {
+    if (Objects.isNull(node.queue))
+      return Tensors.of( //
+          Objects.isNull(node.lChild) ? RealScalar.ZERO : binSize(node.lChild), //
+          Objects.isNull(node.rChild) ? RealScalar.ZERO : binSize(node.rChild) //
+      );
+    return RealScalar.of(node.queue.size());
   }
 
   private void resetBounds() {
@@ -69,75 +113,83 @@ public class NdTreeMap<V> implements Serializable {
 
   private class Node implements Serializable {
     private final int depth;
-    private boolean internal = false;
     private Node lChild;
     private Node rChild;
-    private Queue<NdEntry<V>> queue = new LinkedList<NdEntry<V>>();
+    /** queue is set to null when node transform from leaf node to interior node */
+    private Queue<NdPair<V>> queue = new LinkedList<>();
 
-    Node(int depth) {
+    private Node(int depth) {
       this.depth = depth;
+    }
+
+    private boolean internal() {
+      return Objects.isNull(queue);
+    }
+
+    private int dimension() {
+      return depth % lBounds.length();
     }
 
     private Scalar median(int index) {
       return lBounds.Get(index).add(uBounds.Get(index)).multiply(HALF);
     }
 
-    NdEntry<V> add(final NdEntry<V> point) {
-      if (internal) {
-        Tensor location = point.location;
-        int dimension = depth % location.length();
+    private void add(final NdPair<V> ndEntry) {
+      if (internal()) {
+        Tensor location = ndEntry.location;
+        int dimension = dimension();
         Scalar median = median(dimension);
         if (Scalars.lessThan(location.Get(dimension), median)) {
           uBounds.set(median, dimension);
           if (Objects.isNull(lChild))
             lChild = new Node(depth - 1);
-          return lChild.add(point);
+          lChild.add(ndEntry);
+          return;
         }
         lBounds.set(median, dimension);
         if (Objects.isNull(rChild))
           rChild = new Node(depth - 1);
-        return rChild.add(point);
+        rChild.add(ndEntry);
+      } else //
+      if (queue.size() < maxDensity)
+        queue.add(ndEntry);
+      else //
+      if (depth == 1)
+        queue.add(ndEntry);
+      // the original code removed a node from the queue: return queue.poll();
+      // in our opinion this behavior is undesired.
+      // at the lowest depth we grow the queue indefinitely, instead.
+      else {
+        int dimension = dimension();
+        Scalar median = median(dimension);
+        for (NdPair<V> entry : queue)
+          if (Scalars.lessThan(entry.location.Get(dimension), median)) {
+            if (Objects.isNull(lChild))
+              lChild = new Node(depth - 1);
+            lChild.queue.add(entry);
+          } else {
+            if (Objects.isNull(rChild))
+              rChild = new Node(depth - 1);
+            rChild.queue.add(entry);
+          }
+        queue = null;
+        add(ndEntry);
       }
-      if (queue.size() < maxDensity) {
-        queue.add(point);
-        return null;
-      }
-      if (depth == 1) {
-        queue.add(point);
-        return queue.poll();
-      }
-      int dimension = depth % lBounds.length();
-      Scalar median = median(dimension);
-      for (NdEntry<V> p : queue)
-        if (Scalars.lessThan(p.location.Get(dimension), median)) {
-          if (Objects.isNull(lChild))
-            lChild = new Node(depth - 1);
-          lChild.queue.add(p);
-        } else {
-          if (Objects.isNull(rChild))
-            rChild = new Node(depth - 1);
-          rChild.queue.add(p);
-        }
-      queue = null;
-      internal = true;
-      return add(point);
     }
 
-    void addToCluster(NdCluster<V> cluster) {
-      if (internal) {
-        final int dimension = depth % lBounds.length();
+    private void addToCluster(NdCluster<V> cluster) {
+      if (internal()) {
+        final int dimension = dimension();
         Scalar median = median(dimension);
         boolean lFirst = Scalars.lessThan(cluster.center.Get(dimension), median);
         addChildToCluster(cluster, median, lFirst);
         addChildToCluster(cluster, median, !lFirst);
-      } else {
-        for (NdEntry<V> point : queue)
-          cluster.consider(point);
-      }
+      } else
+        queue.forEach(cluster::consider);
     }
 
     private void addChildToCluster(NdCluster<V> cluster, Scalar median, boolean left) {
-      int dimension = depth % lBounds.length();
+      final int dimension = dimension();
       if (left) {
         if (Objects.isNull(lChild))
           return;
@@ -157,6 +209,31 @@ public class NdTreeMap<V> implements Serializable {
           rChild.addToCluster(cluster);
         lBounds.set(copy, dimension);
       }
+    }
+  }
+
+  /***************************************************/
+  // functions for testing
+  /* package */ void print() {
+    print(root);
+  }
+
+  private void print(Node node) {
+    String v = IntStream.range(0, root.depth - node.depth) //
+        .mapToObj(i -> " ") //
+        .collect(Collectors.joining());
+    if (Objects.isNull(node.queue)) {
+      System.out.println(v + "<empty>");
+      if (Objects.nonNull(node.lChild))
+        print(node.lChild);
+      if (Objects.nonNull(node.rChild))
+        print(node.rChild);
+    } else {
+      GlobalAssert.that(Objects.isNull(node.lChild));
+      GlobalAssert.that(Objects.isNull(node.rChild));
+      System.out.println(v + "" + node.queue.size());
+      for (NdPair<V> entry : node.queue)
+        System.out.println(v + "" + entry.location + " " + entry.value());
     }
   }
 }

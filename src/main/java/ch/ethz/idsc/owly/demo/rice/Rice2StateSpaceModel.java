@@ -41,6 +41,6 @@ public class Rice2StateSpaceModel implements StateSpaceModel {
     // 0 0 0 L
     // where L == lambda
     // confirmed with mathematica
-    return Norm._2.of(Tensors.of(RealScalar.ONE, lambda));
+    return Norm._2.ofVector(Tensors.of(RealScalar.ONE, lambda));
   }
 }

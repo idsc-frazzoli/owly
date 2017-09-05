@@ -23,10 +23,29 @@ public enum Se2Utils {
   public static Tensor toSE2Matrix(Tensor x) {
     GlobalAssert.that(VectorQ.ofLength(x, 3));
     Scalar angle = x.Get(2);
-    return Tensors.matrix(new Scalar[][] { //
-        { Cos.of(angle), Sin.of(angle).negate(), x.Get(0) }, //
-        { Sin.of(angle), Cos.of(angle), x.Get(1) }, //
+    Scalar cos = Cos.of(angle);
+    Scalar sin = Sin.of(angle);
+    return Tensors.matrix(new Tensor[][] { //
+        { cos, sin.negate(), x.Get(0) }, //
+        { sin, cos, x.Get(1) }, //
         { RealScalar.ZERO, RealScalar.ZERO, RealScalar.ONE }, //
+    });
+  }
+
+  /** @param x = {px, py, angle}
+   * @return 3x3 matrix
+   * [+Ca +Sa 0]
+   * [-Sa +Ca 0]
+   * [px py 1] */
+  public static Tensor toSE2MatrixTranspose(Tensor x) {
+    GlobalAssert.that(VectorQ.ofLength(x, 3));
+    Scalar angle = x.Get(2);
+    Scalar cos = Cos.of(angle);
+    Scalar sin = Sin.of(angle);
+    return Tensors.matrix(new Tensor[][] { //
+        { cos, sin, RealScalar.ZERO }, //
+        { sin.negate(), cos, RealScalar.ZERO }, //
+        { x.Get(0), x.Get(1), RealScalar.ONE }, //
     });
   }
 

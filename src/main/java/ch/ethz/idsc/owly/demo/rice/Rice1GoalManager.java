@@ -13,7 +13,6 @@ import ch.ethz.idsc.owly.math.state.StateTime;
 import ch.ethz.idsc.owly.math.state.TimeInvariantRegion;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
-import ch.ethz.idsc.tensor.red.Norm;
 import ch.ethz.idsc.tensor.sca.Ramp;
 
 public class Rice1GoalManager extends SimpleTrajectoryRegionQuery implements GoalInterface {
@@ -36,7 +35,7 @@ public class Rice1GoalManager extends SimpleTrajectoryRegionQuery implements Goa
   public Scalar minCostToGoal(Tensor x) {
     Scalar pc = x.Get(0);
     Scalar pd = center.Get(0);
-    Scalar mindist = Ramp.of(Norm._2.of(pc.subtract(pd)).subtract(radius.get(0)));
+    Scalar mindist = Ramp.of(pc.subtract(pd).abs().subtract(radius.get(0)));
     return mindist; // .divide(1 [m/s]), since max velocity == 1 => division is obsolete
   }
 }

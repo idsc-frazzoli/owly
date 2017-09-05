@@ -12,7 +12,7 @@ import junit.framework.TestCase;
 
 public class Se2GoalManagerTest extends TestCase {
   public void testDefault() {
-    Se2DefaultGoalManager se2DefaultGoalManager = new Se2DefaultGoalManager(//
+    Se2NoHeuristicGoalManager se2DefaultGoalManager = new Se2NoHeuristicGoalManager(//
         Tensors.vector(0, 0, Math.PI), //
         Tensors.vector(0.1, 0.1, 0.1 * Math.PI));
     assertFalse(HeuristicQ.of(se2DefaultGoalManager.getGoalInterface()));
@@ -31,7 +31,7 @@ public class Se2GoalManagerTest extends TestCase {
 
   public void testMinDist() {
     Tensor radiusVector = Tensors.of(DoubleScalar.of(0.1), DoubleScalar.of(0.1), RealScalar.of(Math.PI * 0.1));
-    Se2MinDistGoalManager se2MinDistGoalManager = new Se2MinDistGoalManager(//
+    Se2MinDistCurvGoalManager se2MinDistGoalManager = new Se2MinDistCurvGoalManager(//
         Tensors.vector(0, 0, Math.PI), radiusVector);
     assertTrue(HeuristicQ.of(se2MinDistGoalManager.getGoalInterface()));
     assertEquals(se2MinDistGoalManager.minCostToGoal(Tensors.vector(0, 0, 1.1 * Math.PI)), RealScalar.ZERO);
@@ -75,7 +75,7 @@ public class Se2GoalManagerTest extends TestCase {
 
   public void testWrapExt() {
     Tensor radiusVector = Tensors.of(DoubleScalar.of(0.1), DoubleScalar.of(0.1), RealScalar.of(Math.PI * 0.1));
-    Se2MinDistGoalManager se2MinDistGoalManager = new Se2MinDistGoalManager(//
+    Se2MinDistCurvGoalManager se2MinDistGoalManager = new Se2MinDistCurvGoalManager(//
         Tensors.vector(0, 0, Math.PI), radiusVector);
     CoordinateWrap se2Wrap = new Se2Wrap(Tensors.vector(1, 1, 1));
     Se2WrapGoalManagerExt se2WrapGoalManagerExt = new Se2WrapGoalManagerExt(se2Wrap, se2MinDistGoalManager);

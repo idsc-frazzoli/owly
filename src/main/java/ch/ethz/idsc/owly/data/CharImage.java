@@ -18,6 +18,7 @@ public class CharImage {
     return new CharImage(dimension, Color.WHITE, Color.BLACK);
   }
 
+  // ---
   private final BufferedImage bufferedImage;
   private final Graphics graphics;
 

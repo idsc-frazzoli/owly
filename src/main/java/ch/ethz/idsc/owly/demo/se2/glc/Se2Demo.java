@@ -6,7 +6,8 @@ import java.util.List;
 import java.util.Optional;
 
 import ch.ethz.idsc.owly.demo.se2.Se2Controls;
-import ch.ethz.idsc.owly.demo.se2.Se2DefaultGoalManager;
+import ch.ethz.idsc.owly.demo.se2.Se2MinTimeGoalManager;
+import ch.ethz.idsc.owly.demo.se2.Se2Wrap;
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
 import ch.ethz.idsc.owly.glc.adapter.StateTimeTrajectories;
 import ch.ethz.idsc.owly.glc.core.Expand;
@@ -15,6 +16,7 @@ import ch.ethz.idsc.owly.glc.core.GlcNodes;
 import ch.ethz.idsc.owly.glc.core.StandardTrajectoryPlanner;
 import ch.ethz.idsc.owly.glc.core.TrajectoryPlanner;
 import ch.ethz.idsc.owly.gui.Gui;
+import ch.ethz.idsc.owly.math.CoordinateWrap;
 import ch.ethz.idsc.owly.math.RotationUtils;
 import ch.ethz.idsc.owly.math.flow.Flow;
 import ch.ethz.idsc.owly.math.region.HyperplaneRegion;
@@ -32,14 +34,16 @@ import ch.ethz.idsc.tensor.Tensors;
 /** (x,y,theta) */
 enum Se2Demo {
   ;
+  // FIXME JAN this demo fails!
   public static void main(String[] args) {
     Tensor eta = Tensors.vector(3, 3, 50 / Math.PI);
     StateIntegrator stateIntegrator = FixedStateIntegrator.createDefault(RationalScalar.of(1, 6), 5);
     System.out.println("scale=" + eta);
-    Collection<Flow> controls = Se2Controls.createControls(RotationUtils.DEGREE(45), 10);
-    Se2DefaultGoalManager se2GoalManager = new Se2DefaultGoalManager(//
-        Tensors.vector(2, 0, Math.PI * 0), //
-        Tensors.vector(0.1, 0.1, 10 / 180 * Math.PI));
+    Collection<Flow> controls = Se2Controls.createControls(RotationUtils.DEGREE(35), 10);
+    Se2MinTimeGoalManager se2GoalManager = new Se2MinTimeGoalManager(//
+        Tensors.vector(2, 1, Math.PI * -1), //
+        Tensors.vector(0.1, 0.1, 10 / 180 * Math.PI), //
+        controls);
     TrajectoryRegionQuery obstacleQuery = //
         new SimpleTrajectoryRegionQuery(new TimeInvariantRegion( //
             RegionUnion.of( //
@@ -51,6 +55,8 @@ enum Se2Demo {
         eta, stateIntegrator, controls, obstacleQuery, se2GoalManager.getGoalInterface());
     // ---
     trajectoryPlanner.insertRoot(Tensors.vector(0, 0, 0));
+    CoordinateWrap coordinateWrap = new Se2Wrap(Tensors.vector(1, 1, 1));
+    trajectoryPlanner.represent = coordinateWrap::represent;
     int iters = Expand.maxSteps(trajectoryPlanner, 2000);
     System.out.println(iters);
     Optional<GlcNode> optional = trajectoryPlanner.getBest();

@@ -50,13 +50,13 @@ public class TimeDependentTurningRingRegion implements StateTimeRegion {
     // ---
     Scalar time = stateTime.time();
     Tensor state = stateTime.state().extract(0, 2); // <- asserts that state.length() == 2
-    Scalar radius = Norm._2.of(state.subtract(center));
+    Scalar radius = Norm._2.ofVector(state.subtract(center));
     if (Scalars.lessEquals(lowerRingRadius, radius) && Scalars.lessEquals(radius, upperRingRadius)) { // in Obstacle radial
       Scalar upperGapAngle = initialGapAngle.add(gapSizeAngle.divide(RealScalar.of(2)));
       Scalar lowerGapAngle = initialGapAngle.subtract(gapSizeAngle.divide(RealScalar.of(2)));
       Tensor vec1 = state.subtract(center);
       Tensor vec2 = Tensors.vector(1, 0);
-      Tensor angleTensor = ArcCos.of((vec1.dot(vec2)).divide(Norm._2.of(vec1)).divide(Norm._2.of(vec2)));
+      Tensor angleTensor = ArcCos.of((vec1.dot(vec2)).divide(Norm._2.ofVector(vec1)).divide(Norm._2.ofVector(vec2)));
       if (!angleTensor.isScalar())
         throw new RuntimeException();
       Scalar angle = (Scalar) angleTensor;

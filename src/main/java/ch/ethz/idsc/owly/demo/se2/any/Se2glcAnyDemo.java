@@ -5,7 +5,7 @@ import java.util.Collection;
 import java.util.List;
 
 import ch.ethz.idsc.owly.demo.se2.Se2Controls;
-import ch.ethz.idsc.owly.demo.se2.Se2DefaultGoalManager;
+import ch.ethz.idsc.owly.demo.se2.Se2NoHeuristicGoalManager;
 import ch.ethz.idsc.owly.demo.se2.Se2StateSpaceModel;
 import ch.ethz.idsc.owly.demo.se2.glc.Se2Parameters;
 import ch.ethz.idsc.owly.glc.adapter.Parameters;
@@ -52,7 +52,7 @@ class Se2glcAnyDemo {
     parameters.printResolution();
     // Se2Controls uses Se2StateSpaceModel
     Collection<Flow> controls = Se2Controls.createControls(RotationUtils.DEGREE(45), parameters.getResolutionInt());
-    Se2DefaultGoalManager se2GoalManager = new Se2DefaultGoalManager(//
+    Se2NoHeuristicGoalManager se2GoalManager = new Se2NoHeuristicGoalManager(//
         Tensors.vector(0, 1, Math.PI), //
         Tensors.vector(0.1, 0.1, 0.1 * Math.PI));
     TrajectoryRegionQuery obstacleQuery = //
@@ -75,7 +75,7 @@ class Se2glcAnyDemo {
     Gui.glc((TrajectoryPlanner) trajectoryPlanner);
     tic = System.nanoTime();
     // --
-    Se2DefaultGoalManager se2GoalManager2 = new Se2DefaultGoalManager(//
+    Se2NoHeuristicGoalManager se2GoalManager2 = new Se2NoHeuristicGoalManager(//
         Tensors.vector(-3, 1, Math.PI), //
         Tensors.vector(0.1, 0.1, 0.1 * Math.PI));
     StateTime newRootState = null;

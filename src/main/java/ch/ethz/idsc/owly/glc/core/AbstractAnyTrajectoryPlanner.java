@@ -50,7 +50,7 @@ public abstract class AbstractAnyTrajectoryPlanner extends AbstractTrajectoryPla
       increaseDepthBy = switchRootToNode(newRoot);
     } else {
       System.err.println("***RESET***");
-      System.out.println("This domain  is not labelled yet:");
+      System.out.println("This domain is not labelled yet:");
       System.out.println(state);
       if (!domainMap().isEmpty()) {
         this.deleteSubtreeOf(getRoot());
@@ -114,6 +114,7 @@ public abstract class AbstractAnyTrajectoryPlanner extends AbstractTrajectoryPla
       boolean noHeuristic = !HeuristicQ.of(getGoalInterface()) && !HeuristicQ.of(newGoal);
       setGoalInterface(newGoal);
       long tic = System.nanoTime();
+      @SuppressWarnings("unused")
       GlcNode root = getRoot();
       // Collection<GlcNode> treeCollection = Nodes.ofSubtree(root);
       Collection<GlcNode> treeCollection = domainMap().values();

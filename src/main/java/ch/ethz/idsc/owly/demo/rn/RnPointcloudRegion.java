@@ -1,8 +1,9 @@
 // code by jph
 package ch.ethz.idsc.owly.demo.rn;
 
+import ch.ethz.idsc.owly.data.nd.NdCenterInterface;
 import ch.ethz.idsc.owly.data.nd.NdCluster;
-import ch.ethz.idsc.owly.data.nd.NdDistanceInterface;
+import ch.ethz.idsc.owly.data.nd.NdMap;
 import ch.ethz.idsc.owly.data.nd.NdTreeMap;
 import ch.ethz.idsc.owly.math.region.EmptyRegion;
 import ch.ethz.idsc.owly.math.region.Region;
@@ -15,8 +16,6 @@ import ch.ethz.idsc.tensor.red.Max;
 import ch.ethz.idsc.tensor.red.Min;
 
 public class RnPointcloudRegion implements Region {
-  private static final String PLACEHOLDER = "PLACEHOLDER";
-
   /** @param points
    * @param radius
    * @return */
@@ -25,7 +24,7 @@ public class RnPointcloudRegion implements Region {
   }
 
   // ---
-  private final NdTreeMap<String> ndTreeMap;
+  private final NdMap<Void> ndMap;
   private final Scalar radius;
 
   private RnPointcloudRegion(Tensor points, Scalar radius) {
@@ -35,16 +34,18 @@ public class RnPointcloudRegion implements Region {
     // System.out.println("---");
     // System.out.println(lbounds);
     // System.out.println(ubounds);
-    ndTreeMap = new NdTreeMap<>(lbounds, ubounds, 10, 5); // TODO magic const
+    ndMap = new NdTreeMap<>(lbounds, ubounds, 5, 20);
     for (Tensor point : points)
-      ndTreeMap.add(point, PLACEHOLDER);
+      ndMap.add(point, null);
     this.radius = radius;
   }
 
   @Override
   public boolean isMember(Tensor tensor) {
-    NdCluster<String> ndCluster = ndTreeMap.buildCluster(tensor, 1, NdDistanceInterface.EUCLIDEAN);
-    Scalar distance = ndCluster.iterator().next().distanceToCenter;
+    NdCenterInterface distanceInterface = NdCenterInterface.euclidean(tensor);
+    NdCluster<Void> ndCluster = ndMap.buildCluster(distanceInterface, 1);
+    // System.out.println(ndCluster.considered() + " / " + ndMap.size());
+    Scalar distance = ndCluster.collection().iterator().next().distance();
     return Scalars.lessEquals(distance, radius);
   }
 }

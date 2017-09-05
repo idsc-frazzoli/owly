@@ -50,7 +50,7 @@ public class ImageGradient implements Serializable {
     field = TensorMap.of(Cross2D::of, field, 2).multiply(amp);
     field = N.of(field);
     interpolation = LinearInterpolation.of(field);
-    maxNorm = field.flatten(2).map(Norm._2::of).reduce(Max::of).get();
+    maxNorm = field.flatten(1).map(Norm._2::ofVector).reduce(Max::of).get();
   }
 
   public Tensor rotate(Tensor tensor) {

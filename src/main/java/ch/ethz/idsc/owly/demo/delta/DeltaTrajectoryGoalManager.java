@@ -46,7 +46,7 @@ public class DeltaTrajectoryGoalManager extends TrajectoryGoalManager {
   @Override
   public Scalar costIncrement(GlcNode node, List<StateTime> trajectory, Flow flow) {
     StateTime from = node.stateTime();
-    Scalar sum = Norm._2.of(flow.getU()).add(timeCostScalingFactor);
+    Scalar sum = Norm._2.ofVector(flow.getU()).add(timeCostScalingFactor);
     // Costfunction: integrate (u^2 +1, t)
     return sum.multiply(StateTimeTrajectories.timeIncrement(from, trajectory));
   }
@@ -57,7 +57,7 @@ public class DeltaTrajectoryGoalManager extends TrajectoryGoalManager {
     // p. 79 Eq: 6.4.14
     // Heuristic needs to be underestimating: (Euclideandistance-radius) / (MaxControl+Max(|Vectorfield|)
     // return RealScalar.ZERO;
-    return Ramp.of(Norm._2.of(x.subtract(Lists.getLast(heuristicTrajectory).state())) //
+    return Ramp.of(Norm._2.ofVector(x.subtract(Lists.getLast(heuristicTrajectory).state())) //
         .subtract(radius).divide(maxSpeed));
   }
 }

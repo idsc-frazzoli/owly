@@ -38,7 +38,7 @@ public class Se2TrajectoryGoalManager extends TrajectoryGoalManager {
   @Override
   public Scalar minCostToGoal(Tensor x) {
     x = x.extract(0, 2);
-    return Ramp.of(Norm._2.of(x.subtract(Lists.getLast(heuristicTrajectory).state().extract(0, 2))).subtract(radius)//
+    return Ramp.of(Norm._2.ofVector(x.subtract(Lists.getLast(heuristicTrajectory).state().extract(0, 2))).subtract(radius)//
         .divide(RealScalar.ONE)); // divide by maximum "speed"
   }
 }

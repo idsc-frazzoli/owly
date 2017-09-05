@@ -39,7 +39,7 @@ public class Normalize2DTest extends TestCase {
   public void testUp2() {
     double eps = Math.nextUp(0.0);
     Tensor vec = unlessZero(RealScalar.of(eps), RealScalar.of(eps));
-    assertTrue(Chop._12.close(Norm._2.of(vec), RealScalar.ONE));
+    assertTrue(Chop._12.close(Norm._2.ofVector(vec), RealScalar.ONE));
   }
 
   public void testFail() {

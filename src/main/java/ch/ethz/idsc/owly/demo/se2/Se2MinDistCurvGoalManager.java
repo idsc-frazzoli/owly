@@ -10,14 +10,14 @@ import ch.ethz.idsc.owly.math.state.StateTime;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
-import ch.ethz.idsc.tensor.red.Norm;
+import ch.ethz.idsc.tensor.red.Norm2Squared;
 import ch.ethz.idsc.tensor.sca.Ramp;
 
 /** Nonholonomic Wheeled Robot
  * 
  * bapaden phd thesis: (5.5.13) */
-public class Se2MinDistGoalManager extends Se2DefaultGoalManager {
-  public Se2MinDistGoalManager(Tensor goal, Tensor radiusVector) {
+public final class Se2MinDistCurvGoalManager extends Se2AbstractGoalManager {
+  public Se2MinDistCurvGoalManager(Tensor goal, Tensor radiusVector) {
     super(goal, radiusVector);
   }
 
@@ -27,15 +27,12 @@ public class Se2MinDistGoalManager extends Se2DefaultGoalManager {
     // Cost increases with time and input length
     // TODO currently all Se2models only change angle, no amplitude changes
     // integrate(||u||²+1,t)
-    return RealScalar.ONE.add(Norm._2SQUARED.of(flow.getU()))//
+    return RealScalar.ONE.add(Norm2Squared.ofVector(flow.getU()))//
         .multiply(StateTimeTrajectories.timeIncrement(from, trajectory));
   }
 
   @Override // Heuristic function
-  public Scalar minCostToGoal(Tensor x) {
-    Tensor cur_xy = x.extract(0, 2);
-    // Euclidean distance
-    Scalar dxy = Norm._2.of(cur_xy.subtract(center.extract(0, 2))).subtract(radiusSpace());
-    return Ramp.of(dxy);
+  public Scalar minCostToGoal(Tensor tensor) {
+    return Ramp.of(d_xy(tensor).subtract(radiusSpace())); // Euclidean distance
   }
 }

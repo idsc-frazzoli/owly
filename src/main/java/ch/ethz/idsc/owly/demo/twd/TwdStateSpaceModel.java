@@ -96,7 +96,7 @@ public class TwdStateSpaceModel implements StateSpaceModel {
    * @param state2 = {px2, py2, theta2}
    * @return non-negative positional distance between state1 and state2 */
   public static Scalar errorPosition(Tensor state1, Tensor state2) {
-    return Norm._2.of(state1.extract(0, 2).subtract(state2.extract(0, 2)));
+    return Norm._2.ofVector(state1.extract(0, 2).subtract(state2.extract(0, 2)));
   }
 
   public static Scalar errorRotation(Tensor state1, Tensor state2) {

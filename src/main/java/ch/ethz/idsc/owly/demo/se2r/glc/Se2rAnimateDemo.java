@@ -3,8 +3,9 @@ package ch.ethz.idsc.owly.demo.se2r.glc;
 
 import java.util.Collection;
 
+import ch.ethz.idsc.owly.demo.se2.Se2AbstractGoalManager;
 import ch.ethz.idsc.owly.demo.se2.Se2Controls;
-import ch.ethz.idsc.owly.demo.se2r.Se2rGoalManager;
+import ch.ethz.idsc.owly.demo.se2.Se2MinTimeGoalManager;
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
 import ch.ethz.idsc.owly.glc.core.Expand;
 import ch.ethz.idsc.owly.glc.core.StandardTrajectoryPlanner;
@@ -20,7 +21,6 @@ import ch.ethz.idsc.owly.math.state.FixedStateIntegrator;
 import ch.ethz.idsc.owly.math.state.StateIntegrator;
 import ch.ethz.idsc.owly.math.state.TimeInvariantRegion;
 import ch.ethz.idsc.owly.math.state.TrajectoryRegionQuery;
-import ch.ethz.idsc.tensor.DoubleScalar;
 import ch.ethz.idsc.tensor.RationalScalar;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Tensor;
@@ -35,9 +35,9 @@ enum Se2rAnimateDemo {
         RungeKutta4Integrator.INSTANCE, RationalScalar.of(1, 6), 5);
     Collection<Flow> controls = Se2Controls.createControlsForwardAndReverse(RotationUtils.DEGREE(45), 6);
     // place holder for parameter class
-    Se2rGoalManager se2GoalManager = new Se2rGoalManager( //
-        Tensors.vector(-1, -1), RealScalar.of(Math.PI * 2), //
-        DoubleScalar.of(.1), RotationUtils.DEGREE(10));
+    Se2AbstractGoalManager se2GoalManager = new Se2MinTimeGoalManager( //
+        Tensors.vector(-1, -1, Math.PI * 2), //
+        Tensors.vector(.1, .1, 0.17), controls);
     TrajectoryRegionQuery obstacleQuery = //
         new SimpleTrajectoryRegionQuery(new TimeInvariantRegion( //
             RegionUnion.of( //

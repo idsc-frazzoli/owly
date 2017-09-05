@@ -22,10 +22,8 @@ import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
 import ch.ethz.idsc.tensor.sca.Log;
 
-/** this demo deliberately does not create a tree but
- * only shows the integration of a single trajectory
- * 
- * the coordinates represent the population of predators and prey */
+/** the coordinates represent the population of predators and prey.
+ * the domain coordinates are computed from the log of the state coordinates */
 enum LvDemo {
   ;
   public static void main(String[] args) {

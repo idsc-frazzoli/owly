@@ -21,7 +21,7 @@ public class Se2WrapDemoTest extends TestCase {
     iters = Expand.maxSteps(trajectoryPlanner, 100);
     assertTrue(iters < 100);
     GlcNode glcNode = trajectoryPlanner.getBest().get();
-    Scalar error = Norm._2.of(glcNode.state().subtract(Tensors.vector(-0.2, 0, Math.PI * 2)));
+    Scalar error = Norm._2.ofVector(glcNode.state().subtract(Tensors.vector(-0.2, 0, Math.PI * 2)));
     assertTrue(Scalars.lessThan(error, RealScalar.of(0.5)));
   }
 
@@ -32,7 +32,7 @@ public class Se2WrapDemoTest extends TestCase {
     iters = Expand.maxSteps(trajectoryPlanner, 1000);
     assertTrue(iters < 1000);
     GlcNode glcNode = trajectoryPlanner.getBest().get();
-    Scalar error = Norm._2.of(glcNode.state().subtract(Tensors.vector(-0.2, 0, 0)));
+    Scalar error = Norm._2.ofVector(glcNode.state().subtract(Tensors.vector(-0.2, 0, 0)));
     assertTrue(Scalars.lessThan(error, RealScalar.of(0.5)));
   }
 }

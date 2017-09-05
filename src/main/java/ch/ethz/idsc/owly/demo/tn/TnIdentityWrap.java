@@ -14,6 +14,6 @@ class TnIdentityWrap implements CoordinateWrap {
 
   @Override
   public Scalar distance(Tensor p, Tensor q) {
-    return Norm._2.of(p.subtract(q));
+    return Norm._2.ofVector(p.subtract(q));
   }
 }

@@ -39,7 +39,7 @@ public class TwdStateSpaceModelTest extends TestCase {
     Collection<Flow> collection = TwdControls.createControls(ssm, 10);
     for (Flow flow : collection) {
       Tensor fxu = ssm.f(Array.zeros(3), flow.getU());
-      Scalar ninf = Norm.INFINITY.of(fxu);
+      Scalar ninf = Norm.INFINITY.ofVector(fxu);
       Scalar none = Norm._1.of(fxu);
       assertTrue(Scalars.lessEquals(ninf, RealScalar.ONE));
       assertTrue(none.equals(RealScalar.ONE));
