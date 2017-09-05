@@ -20,11 +20,17 @@ import ch.ethz.idsc.tensor.Scalars;
 import ch.ethz.idsc.tensor.Tensor;
 
 public class PsuGoalManager implements Region, CostFunction {
+  public static GoalInterface of(CoordinateWrap coordinateWrap, Tensor center, Tensor radius) {
+    PsuGoalManager psuGoalManager = new PsuGoalManager(coordinateWrap, center, radius);
+    return new GoalAdapter(psuGoalManager, new SimpleTrajectoryRegionQuery(new TimeInvariantRegion(psuGoalManager)));
+  }
+
+  // ---
   private final CoordinateWrap coordinateWrap;
   private final Tensor center;
   private final Tensor radius;
 
-  public PsuGoalManager(CoordinateWrap coordinateWrap, Tensor center, Tensor radius) {
+  private PsuGoalManager(CoordinateWrap coordinateWrap, Tensor center, Tensor radius) {
     this.coordinateWrap = coordinateWrap;
     this.center = center;
     this.radius = radius;
@@ -44,9 +50,5 @@ public class PsuGoalManager implements Region, CostFunction {
   @Override
   public boolean isMember(Tensor x) {
     return Scalars.lessThan(coordinateWrap.distance(x, center).subtract(radius), RealScalar.ZERO);
-  }
-
-  public GoalInterface getGoalInterface() {
-    return new GoalAdapter(this, new SimpleTrajectoryRegionQuery(new TimeInvariantRegion(this)));
   }
 }

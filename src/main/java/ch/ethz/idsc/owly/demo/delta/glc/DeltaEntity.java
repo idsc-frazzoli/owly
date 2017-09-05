@@ -1,5 +1,5 @@
 // code by jph
-package ch.ethz.idsc.owly.demo.psu.glc;
+package ch.ethz.idsc.owly.demo.delta.glc;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
@@ -8,19 +8,19 @@ import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.util.Collection;
 
-import ch.ethz.idsc.owly.demo.psu.PsuControls;
-import ch.ethz.idsc.owly.demo.psu.PsuGoalManager;
-import ch.ethz.idsc.owly.demo.psu.PsuStateSpaceModel;
-import ch.ethz.idsc.owly.demo.psu.PsuWrap;
-import ch.ethz.idsc.owly.glc.core.GoalInterface;
+import ch.ethz.idsc.owly.demo.delta.DeltaControls;
+import ch.ethz.idsc.owly.demo.delta.DeltaGoalManager;
+import ch.ethz.idsc.owly.demo.delta.DeltaStateSpaceModel;
+import ch.ethz.idsc.owly.demo.delta.ImageGradient;
 import ch.ethz.idsc.owly.glc.core.StandardTrajectoryPlanner;
 import ch.ethz.idsc.owly.glc.core.TrajectoryPlanner;
 import ch.ethz.idsc.owly.gui.OwlyLayer;
 import ch.ethz.idsc.owly.gui.ani.AbstractEntity;
 import ch.ethz.idsc.owly.gui.ani.PlannerType;
+import ch.ethz.idsc.owly.math.flow.EulerIntegrator;
 import ch.ethz.idsc.owly.math.flow.Flow;
-import ch.ethz.idsc.owly.math.flow.RungeKutta4Integrator;
-import ch.ethz.idsc.owly.math.state.EmptyTrajectoryRegionQuery;
+import ch.ethz.idsc.owly.math.flow.RungeKutta45Integrator;
+import ch.ethz.idsc.owly.math.state.EpisodeIntegrator;
 import ch.ethz.idsc.owly.math.state.FixedStateIntegrator;
 import ch.ethz.idsc.owly.math.state.SimpleEpisodeIntegrator;
 import ch.ethz.idsc.owly.math.state.StateIntegrator;
@@ -31,22 +31,33 @@ import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
+import ch.ethz.idsc.tensor.red.Norm2Squared;
 
-public class PsuEntity extends AbstractEntity {
-  private static final Tensor FALLBACK_CONTROL = Tensors.vector(0).unmodifiable();
+/** class controls delta using {@link StandardTrajectoryPlanner} */
+/* package */ class DeltaEntity extends AbstractEntity {
+  private static final Tensor FALLBACK_CONTROL = Tensors.vector(0, 0).unmodifiable();
   /** preserve 1[s] of the former trajectory */
-  private static final Scalar DELAY_HINT = RealScalar.ONE;
+  private static final Scalar DELAY_HINT = RealScalar.of(2);
+  private static final Scalar maxInput = RealScalar.of(.6);
 
-  public PsuEntity() {
-    super(new SimpleEpisodeIntegrator( //
-        PsuStateSpaceModel.INSTANCE, //
-        RungeKutta4Integrator.INSTANCE, //
-        new StateTime(Tensors.vector(0, 0), RealScalar.ZERO)));
+  public static DeltaEntity createDefault(ImageGradient ipr, Tensor state) {
+    EpisodeIntegrator episodeIntegrator = new SimpleEpisodeIntegrator( //
+        new DeltaStateSpaceModel(ipr, maxInput), //
+        EulerIntegrator.INSTANCE, //
+        new StateTime(state, RealScalar.ZERO));
+    return new DeltaEntity(episodeIntegrator, ipr, state);
+  }
+
+  private final ImageGradient ipr;
+
+  public DeltaEntity(EpisodeIntegrator episodeIntegrator, ImageGradient ipr, Tensor state) {
+    super(episodeIntegrator);
+    this.ipr = ipr;
   }
 
   @Override
   protected Scalar distance(Tensor x, Tensor y) {
-    return PsuWrap.INSTANCE.distance(x, y);
+    return Norm2Squared.ofVector(x.subtract(y));
   }
 
   @Override
@@ -66,18 +77,15 @@ public class PsuEntity extends AbstractEntity {
 
   @Override
   public TrajectoryPlanner createTrajectoryPlanner(TrajectoryRegionQuery obstacleQuery, Tensor goal) {
-    Tensor eta = Tensors.vector(6, 8);
+    Tensor eta = Tensors.vector(5, 5);
     StateIntegrator stateIntegrator = FixedStateIntegrator.create( //
-        RungeKutta4Integrator.INSTANCE, RationalScalar.of(1, 4), 5);
-    Collection<Flow> controls = PsuControls.createControls(0.2, 6);
-    PsuWrap psuWrap = PsuWrap.INSTANCE;
-    GoalInterface goalInterface = PsuGoalManager.of( //
-        psuWrap, psuWrap.represent(goal.extract(0, 2)), RealScalar.of(0.2));
-    // ---
-    TrajectoryPlanner trajectoryPlanner = new StandardTrajectoryPlanner( //
-        eta, stateIntegrator, controls, EmptyTrajectoryRegionQuery.INSTANCE, goalInterface);
-    trajectoryPlanner.represent = psuWrap::represent;
-    return trajectoryPlanner;
+        RungeKutta45Integrator.INSTANCE, RationalScalar.of(1, 10), 4);
+    Collection<Flow> controls = DeltaControls.createControls( //
+        new DeltaStateSpaceModel(ipr, maxInput), maxInput, 10);
+    DeltaGoalManager deltaGoalManager = new DeltaGoalManager( //
+        goal.extract(0, 2), Tensors.vector(.3, .3));
+    return new StandardTrajectoryPlanner( //
+        eta, stateIntegrator, controls, obstacleQuery, deltaGoalManager);
   }
 
   @Override

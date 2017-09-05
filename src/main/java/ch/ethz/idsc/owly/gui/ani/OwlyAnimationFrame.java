@@ -179,6 +179,8 @@ public class OwlyAnimationFrame {
         if (controllable instanceof AbstractEntity) {
           AbstractEntity abstractEntity = (AbstractEntity) controllable;
           List<TrajectorySample> tail = trajectoryPlanner.detailedTrajectoryTo(optional.get());
+          // System.out.println("TAIL: <<<<<<<");
+          // Trajectories.print(tail);
           trajectory = Trajectories.glue(head, tail);
           abstractEntity.setTrajectory(trajectory);
         }
