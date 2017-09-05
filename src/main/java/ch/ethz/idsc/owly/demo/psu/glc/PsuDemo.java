@@ -12,6 +12,7 @@ import ch.ethz.idsc.owly.glc.adapter.StateTimeTrajectories;
 import ch.ethz.idsc.owly.glc.core.Expand;
 import ch.ethz.idsc.owly.glc.core.GlcNode;
 import ch.ethz.idsc.owly.glc.core.GlcNodes;
+import ch.ethz.idsc.owly.glc.core.GoalInterface;
 import ch.ethz.idsc.owly.glc.core.StandardTrajectoryPlanner;
 import ch.ethz.idsc.owly.glc.core.TrajectoryPlanner;
 import ch.ethz.idsc.owly.gui.Gui;
@@ -40,11 +41,11 @@ enum PsuDemo {
         RungeKutta4Integrator.INSTANCE, RationalScalar.of(1, 4), 5);
     Collection<Flow> controls = PsuControls.createControls(0.2, 6);
     PsuWrap psuWrap = PsuWrap.INSTANCE;
-    PsuGoalManager psuGoalManager = new PsuGoalManager(psuWrap, //
-        Tensors.vector(Math.PI * 0.7, .5), RealScalar.of(0.3));
+    GoalInterface goalInterface = PsuGoalManager.of( //
+        psuWrap, Tensors.vector(Math.PI * 0.7, .5), RealScalar.of(0.3));
     // ---
     TrajectoryPlanner trajectoryPlanner = new StandardTrajectoryPlanner( //
-        eta, stateIntegrator, controls, EmptyTrajectoryRegionQuery.INSTANCE, psuGoalManager.getGoalInterface());
+        eta, stateIntegrator, controls, EmptyTrajectoryRegionQuery.INSTANCE, goalInterface);
     trajectoryPlanner.represent = psuWrap::represent;
     // ---
     trajectoryPlanner.insertRoot(Tensors.vector(0, 0));
@@ -58,11 +59,11 @@ enum PsuDemo {
         RungeKutta45Integrator.INSTANCE, RationalScalar.of(1, 4), 5);
     Collection<Flow> controls = PsuControls.createControls(0.2, 6);
     PsuWrap psuWrap = PsuWrap.INSTANCE;
-    PsuGoalManager psuGoalManager = new PsuGoalManager(psuWrap, //
-        Tensors.vector(Math.PI, 2), RealScalar.of(0.3));
+    GoalInterface goalInterface = PsuGoalManager.of( //
+        psuWrap, Tensors.vector(Math.PI, 2), RealScalar.of(0.3));
     // ---
     TrajectoryPlanner trajectoryPlanner = new StandardTrajectoryPlanner( //
-        eta, stateIntegrator, controls, EmptyTrajectoryRegionQuery.INSTANCE, psuGoalManager.getGoalInterface());
+        eta, stateIntegrator, controls, EmptyTrajectoryRegionQuery.INSTANCE, goalInterface);
     trajectoryPlanner.represent = psuWrap::represent;
     // ---
     trajectoryPlanner.insertRoot(Tensors.vector(0, 0));

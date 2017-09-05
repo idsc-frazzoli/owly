@@ -12,6 +12,7 @@ import ch.ethz.idsc.owly.demo.psu.PsuControls;
 import ch.ethz.idsc.owly.demo.psu.PsuGoalManager;
 import ch.ethz.idsc.owly.demo.psu.PsuStateSpaceModel;
 import ch.ethz.idsc.owly.demo.psu.PsuWrap;
+import ch.ethz.idsc.owly.glc.core.GoalInterface;
 import ch.ethz.idsc.owly.glc.core.StandardTrajectoryPlanner;
 import ch.ethz.idsc.owly.glc.core.TrajectoryPlanner;
 import ch.ethz.idsc.owly.gui.OwlyLayer;
@@ -70,11 +71,11 @@ public class PsuEntity extends AbstractEntity {
         RungeKutta4Integrator.INSTANCE, RationalScalar.of(1, 4), 5);
     Collection<Flow> controls = PsuControls.createControls(0.2, 6);
     PsuWrap psuWrap = PsuWrap.INSTANCE;
-    PsuGoalManager psuGoalManager = //
-        new PsuGoalManager(psuWrap, psuWrap.represent(goal.extract(0, 2)), RealScalar.of(0.2));
+    GoalInterface goalInterface = PsuGoalManager.of( //
+        psuWrap, psuWrap.represent(goal.extract(0, 2)), RealScalar.of(0.2));
     // ---
     TrajectoryPlanner trajectoryPlanner = new StandardTrajectoryPlanner( //
-        eta, stateIntegrator, controls, EmptyTrajectoryRegionQuery.INSTANCE, psuGoalManager.getGoalInterface());
+        eta, stateIntegrator, controls, EmptyTrajectoryRegionQuery.INSTANCE, goalInterface);
     trajectoryPlanner.represent = psuWrap::represent;
     return trajectoryPlanner;
   }
