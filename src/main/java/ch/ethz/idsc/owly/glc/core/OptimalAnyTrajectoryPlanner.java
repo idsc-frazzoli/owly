@@ -89,7 +89,7 @@ public class OptimalAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
                   System.err.println("The Candidate in the bucket has children");
                   throw new RuntimeException();
                 }
-                getCandidateMap().get(domainKey).add(formerCandidate);
+                candidateMap.get(domainKey).add(formerCandidate);
                 // formerLabel disconnecting
                 if (formerLabel.parent() != null)
                   formerLabel.parent().removeEdgeTo(formerLabel);
@@ -102,6 +102,8 @@ public class OptimalAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
                   offerDestination(next, connectors.get(next));
                 break;
               }
+            } else {
+              break;
             }
           } else { // No formerLabel, so definitely adding a Node
             if (getObstacleQuery().isDisjoint(connectors.get(next))) {

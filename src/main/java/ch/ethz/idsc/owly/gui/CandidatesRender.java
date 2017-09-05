@@ -27,7 +27,7 @@ public class CandidatesRender implements RenderInterface {
   public void render(OwlyLayer owlyLayer, Graphics2D graphics) {
     graphics.setColor(Color.black);
     Map<Tensor, Set<CandidatePair>> candidateMap = OptimalAnyTrajectoryPlanner.getCandidateMap();
-    long candidateThreshold = 1000; // Threshold, rendering the first ___ Candidates
+    long candidateThreshold = -1; // Threshold, rendering the first ___ Candidates
     long iter = 0;
     Iterator<Set<CandidatePair>> candidateMapIterator = candidateMap.values().iterator();
     while (candidateMapIterator.hasNext()) {
