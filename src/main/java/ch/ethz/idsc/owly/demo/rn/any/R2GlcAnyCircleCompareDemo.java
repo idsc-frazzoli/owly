@@ -100,6 +100,7 @@ enum R2GlcAnyCircleCompareDemo {
     owlyStandardFrame.jFrame.setBounds(0, 0, 800, 800);
     // owlyStandardFrame.setGlc((TrajectoryPlanner) standardTrajectoryPlanner);
     Path file = Paths.get("R2Comparison.csv");
+    //TODO JAN how to save csv somewhere else
     List<String> lines = Arrays.asList("timeStandard, timeDiff, iterationsDiff, CostDiff");
     Files.write(file, lines, Charset.forName("UTF-8"));
     for (int iter = 1; iter < 30; iter++) {
