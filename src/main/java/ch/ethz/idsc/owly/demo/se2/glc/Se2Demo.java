@@ -7,6 +7,7 @@ import java.util.Optional;
 
 import ch.ethz.idsc.owly.demo.se2.Se2Controls;
 import ch.ethz.idsc.owly.demo.se2.Se2MinTimeGoalManager;
+import ch.ethz.idsc.owly.demo.se2.Se2Wrap;
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
 import ch.ethz.idsc.owly.glc.adapter.StateTimeTrajectories;
 import ch.ethz.idsc.owly.glc.core.Expand;
@@ -15,6 +16,7 @@ import ch.ethz.idsc.owly.glc.core.GlcNodes;
 import ch.ethz.idsc.owly.glc.core.StandardTrajectoryPlanner;
 import ch.ethz.idsc.owly.glc.core.TrajectoryPlanner;
 import ch.ethz.idsc.owly.gui.Gui;
+import ch.ethz.idsc.owly.math.CoordinateWrap;
 import ch.ethz.idsc.owly.math.RotationUtils;
 import ch.ethz.idsc.owly.math.flow.Flow;
 import ch.ethz.idsc.owly.math.region.HyperplaneRegion;
@@ -53,6 +55,8 @@ enum Se2Demo {
         eta, stateIntegrator, controls, obstacleQuery, se2GoalManager.getGoalInterface());
     // ---
     trajectoryPlanner.insertRoot(Tensors.vector(0, 0, 0));
+    CoordinateWrap coordinateWrap = new Se2Wrap(Tensors.vector(1, 1, 1));
+    trajectoryPlanner.represent = coordinateWrap::represent;
     int iters = Expand.maxSteps(trajectoryPlanner, 2000);
     System.out.println(iters);
     Optional<GlcNode> optional = trajectoryPlanner.getBest();

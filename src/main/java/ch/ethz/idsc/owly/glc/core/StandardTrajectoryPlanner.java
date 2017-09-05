@@ -23,7 +23,7 @@ import ch.ethz.idsc.tensor.Tensor;
  * <li>nodes that get replaced in a domain, are also removed from the queue
  * </ul> */
 public class StandardTrajectoryPlanner extends AbstractTrajectoryPlanner {
-  private final NodeIntegratorFlow nodeIntegratorFlow;
+  private final ControlsIntegrator controlsIntegrator;
 
   public StandardTrajectoryPlanner( //
       Tensor eta, //
@@ -32,12 +32,12 @@ public class StandardTrajectoryPlanner extends AbstractTrajectoryPlanner {
       TrajectoryRegionQuery obstacleQuery, //
       GoalInterface goalInterface) {
     super(eta, stateIntegrator, obstacleQuery, goalInterface);
-    nodeIntegratorFlow = new NodeIntegratorFlow(stateIntegrator, controls);
+    controlsIntegrator = new ControlsIntegrator(stateIntegrator, controls, goalInterface);
   }
 
   @Override // from ExpandInterface
   public void expand(final GlcNode node) {
-    Map<GlcNode, List<StateTime>> connectors = nodeIntegratorFlow.parallel(node, getGoalInterface());
+    Map<GlcNode, List<StateTime>> connectors = controlsIntegrator.inParallel(node);
     // ---
     DomainQueueMap domainQueueMap = new DomainQueueMap(); // holds candidates for insertion
     for (GlcNode next : connectors.keySet()) { // <- order of keys is non-deterministic
@@ -66,7 +66,10 @@ public class StandardTrajectoryPlanner extends AbstractTrajectoryPlanner {
             if (getObstacleQuery().isDisjoint(connectors.get(next))) { // no collision
               /** removal from queue is unsure; needs to be checked with theory. */
               boolean removed = queue().remove(formerLabel);
-              GlobalAssert.that(removed);
+              if (!removed) {
+                System.err.println("miss: " + domainKey + " " + formerLabel.stateTime());
+                // GlobalAssert.that(removed);
+              }
               formerLabel.parent().removeEdgeTo(formerLabel);
               node.insertEdgeTo(next);
               boolean replaced = insert(domainKey, next);
