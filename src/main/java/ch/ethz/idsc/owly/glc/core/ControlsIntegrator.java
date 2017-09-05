@@ -12,10 +12,11 @@ import ch.ethz.idsc.owly.math.flow.Flow;
 import ch.ethz.idsc.owly.math.state.StateIntegrator;
 import ch.ethz.idsc.owly.math.state.StateTime;
 
+/** private utility class to facilitate the construction of the map */
 /* private */ class FlowTrajectory {
-  final Flow flow;
-  final List<StateTime> trajectory;
-  final StateTime last;
+  private final Flow flow;
+  private final List<StateTime> trajectory;
+  private final StateTime last;
 
   FlowTrajectory(Flow flow, List<StateTime> trajectory) {
     this.flow = flow;
@@ -34,19 +35,20 @@ import ch.ethz.idsc.owly.math.state.StateTime;
   }
 }
 
-/** utility class used in {@link StandardTrajectoryPlanner} to
+/** utility class used in {@link TrajectoryPlanner}s to
  * compute the trajectories from a given node for all controls.
  * 
  * since the integration is independent for all controls,
- * the implementation happens in parallel. */
-/* package */ class NodeIntegratorFlow implements Serializable {
+ * the implementation can be carried out in parallel. */
+/* package */ class ControlsIntegrator implements Serializable {
   private final StateIntegrator stateIntegrator;
   private final Collection<Flow> controls;
   private final CostFunction costFunction;
 
   /** @param stateIntegrator
-   * @param controls */
-  public NodeIntegratorFlow(StateIntegrator stateIntegrator, Collection<Flow> controls, CostFunction costFunction) {
+   * @param controls
+   * @param costFunction */
+  public ControlsIntegrator(StateIntegrator stateIntegrator, Collection<Flow> controls, CostFunction costFunction) {
     this.stateIntegrator = stateIntegrator;
     this.controls = controls;
     this.costFunction = costFunction;
@@ -57,7 +59,7 @@ import ch.ethz.idsc.owly.math.state.StateTime;
    * @param node from which to expand
    * @param costFunction
    * @return */
-  public Map<GlcNode, List<StateTime>> parallel(GlcNode node) {
+  public Map<GlcNode, List<StateTime>> inParallel(GlcNode node) {
     // parallel results in speedup of ~25% (rice2demo)
     return controls.stream().parallel() //
         .map(flow -> new FlowTrajectory(flow, stateIntegrator.trajectory(node.stateTime(), flow))) //
@@ -69,7 +71,7 @@ import ch.ethz.idsc.owly.math.state.StateTime;
   /** @param node from which to expand
    * @param costFunction
    * @return */
-  public Map<GlcNode, List<StateTime>> serial(GlcNode node) {
+  public Map<GlcNode, List<StateTime>> inSequence(GlcNode node) {
     return controls.stream() //
         .map(flow -> new FlowTrajectory(flow, stateIntegrator.trajectory(node.stateTime(), flow))) //
         .collect(Collectors.toMap( //

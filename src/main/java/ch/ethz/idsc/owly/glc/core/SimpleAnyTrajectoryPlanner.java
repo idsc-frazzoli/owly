@@ -24,10 +24,9 @@ import ch.ethz.idsc.tensor.Tensor;
  * Assumptions: -All states of all obstacles are known at all times
  * -No new Obstacles are discovered */
 public class SimpleAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
-  private final NodeIntegratorFlow nodeIntegratorFlow;
-  // private final Collection<Flow> controls;
-  // private final Map<Tensor, DomainQueue> domainCandidateMap = new HashMap<>();
+  private final ControlsIntegrator controlsIntegrator;
 
+  // private final Map<Tensor, DomainQueue> domainCandidateMap = new HashMap<>();
   // private final Queue<Node> queue = new PriorityQueue<>(NodeMeritComparator.instance);
   public SimpleAnyTrajectoryPlanner( //
       Tensor eta, //
@@ -37,14 +36,13 @@ public class SimpleAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
       GoalInterface goalInterface //
   ) {
     super(eta, stateIntegrator, obstacleQuery, goalInterface);
-    // this.controls = controls;
-    nodeIntegratorFlow = new NodeIntegratorFlow(stateIntegrator, controls, goalInterface);
+    controlsIntegrator = new ControlsIntegrator(stateIntegrator, controls, goalInterface);
   }
 
   @Override // from ExpandInterface
   public void expand(final GlcNode node) {
     // TODO JONAS check if parallel can be used, i have tested parallel and it works
-    Map<GlcNode, List<StateTime>> connectors = nodeIntegratorFlow.serial(node);
+    Map<GlcNode, List<StateTime>> connectors = controlsIntegrator.inSequence(node);
     // --
     CandidatePairQueueMap candidates = new CandidatePairQueueMap();
     for (GlcNode next : connectors.keySet()) { // <- order of keys is non-deterministic
