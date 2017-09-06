@@ -12,6 +12,8 @@ import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
 import ch.ethz.idsc.tensor.alg.Range;
+import ch.ethz.idsc.tensor.red.Max;
+import ch.ethz.idsc.tensor.red.Norm;
 import ch.ethz.idsc.tensor.sca.Chop;
 import ch.ethz.idsc.tensor.sca.Cos;
 import ch.ethz.idsc.tensor.sca.Sin;
@@ -25,5 +27,14 @@ public enum DeltaControls {
       collection.add(StateSpaceModels.createFlow(stateSpaceModel, u));
     }
     return collection;
+  }
+
+  /** @param controls
+   * @return */
+  public static Scalar maxSpeed(Collection<Flow> controls) {
+    return controls.stream() //
+        .map(Flow::getU) //
+        .map(Norm._2::ofVector) //
+        .reduce(Max::of).get();
   }
 }

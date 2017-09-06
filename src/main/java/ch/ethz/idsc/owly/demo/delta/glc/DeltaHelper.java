@@ -4,8 +4,9 @@ package ch.ethz.idsc.owly.demo.delta.glc;
 import java.util.Collection;
 
 import ch.ethz.idsc.owly.demo.delta.DeltaControls;
-import ch.ethz.idsc.owly.demo.delta.DeltaGoalManager;
 import ch.ethz.idsc.owly.demo.delta.DeltaHeuristicGoalManager;
+import ch.ethz.idsc.owly.demo.delta.DeltaMinTimeGoalManager;
+import ch.ethz.idsc.owly.demo.delta.DeltaNoHeuristicGoalManager;
 import ch.ethz.idsc.owly.demo.delta.DeltaParameters;
 import ch.ethz.idsc.owly.demo.delta.DeltaStateSpaceModel;
 import ch.ethz.idsc.owly.demo.delta.ImageGradient;
@@ -46,8 +47,30 @@ public enum DeltaHelper {
     TrajectoryRegionQuery obstacleQuery = //
         new SimpleTrajectoryRegionQuery(new TimeInvariantRegion( //
             new ImageRegion(obstacleImage, range, true)));
-    DeltaGoalManager deltaGoalManager = new DeltaGoalManager( //
-        Tensors.vector(2.1, 0.3), Tensors.vector(.3, .3));
+    DeltaNoHeuristicGoalManager deltaGoalManager = new DeltaNoHeuristicGoalManager( //
+        Tensors.vector(2.1, 0.3), RealScalar.of(.3));
+    TrajectoryPlanner trajectoryPlanner = new StandardTrajectoryPlanner( //
+        eta, stateIntegrator, controls, obstacleQuery, deltaGoalManager);
+    trajectoryPlanner.insertRoot(Tensors.vector(8.8, 0.5));
+    return trajectoryPlanner;
+  }
+
+  // don't change this function, make a separate function if necessary
+  public static TrajectoryPlanner createMinTimeDefault(Scalar amp) throws Exception {
+    Tensor eta = Tensors.vector(8, 8);
+    StateIntegrator stateIntegrator = FixedStateIntegrator.create( //
+        RungeKutta45Integrator.INSTANCE, RationalScalar.of(1, 10), 4);
+    Tensor range = Tensors.vector(9, 6.5);
+    ImageGradient ipr = new ImageGradient(ResourceData.of("/io/delta_uxy.png"), range, amp);
+    Scalar maxInput = RealScalar.ONE;
+    Collection<Flow> controls = DeltaControls.createControls( //
+        new DeltaStateSpaceModel(ipr, maxInput), maxInput, 25);
+    Tensor obstacleImage = ResourceData.of("/io/delta_free.png"); //
+    TrajectoryRegionQuery obstacleQuery = //
+        new SimpleTrajectoryRegionQuery(new TimeInvariantRegion( //
+            new ImageRegion(obstacleImage, range, true)));
+    DeltaMinTimeGoalManager deltaGoalManager = new DeltaMinTimeGoalManager( //
+        Tensors.vector(2.1, 0.3), RealScalar.of(.3), controls, ipr.maxNormGradient());
     TrajectoryPlanner trajectoryPlanner = new StandardTrajectoryPlanner( //
         eta, stateIntegrator, controls, obstacleQuery, deltaGoalManager);
     trajectoryPlanner.insertRoot(Tensors.vector(8.8, 0.5));

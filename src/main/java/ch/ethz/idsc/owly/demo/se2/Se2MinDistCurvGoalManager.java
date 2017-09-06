@@ -22,13 +22,12 @@ public final class Se2MinDistCurvGoalManager extends Se2AbstractGoalManager {
   }
 
   @Override // Cost function
-  public Scalar costIncrement(GlcNode node, List<StateTime> trajectory, Flow flow) {
-    StateTime from = node.stateTime();
+  public Scalar costIncrement(GlcNode glcNode, List<StateTime> trajectory, Flow flow) {
     // Cost increases with time and input length
     // TODO currently all Se2models only change angle, no amplitude changes
     // integrate(||u||²+1,t)
     return RealScalar.ONE.add(Norm2Squared.ofVector(flow.getU()))//
-        .multiply(StateTimeTrajectories.timeIncrement(from, trajectory));
+        .multiply(StateTimeTrajectories.timeIncrement(glcNode, trajectory));
   }
 
   @Override // Heuristic function

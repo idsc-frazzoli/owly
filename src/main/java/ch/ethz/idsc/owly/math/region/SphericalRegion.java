@@ -10,14 +10,18 @@ import ch.ethz.idsc.tensor.red.Norm;
 
 /** the spherical region is a special case of an {@link EllipsoidRegion}.
  * 
- * {@link SphericalRegion} is implemented separately, because the implementation
+ * <p>{@link SphericalRegion} is implemented separately, because the implementation
  * 1) requires less operations than if treated as an elliptic case
  * 2) is numerically more stable in corner cases
  * 
- * the function returns the minimal Euclidean distance that is separating
+ * <p>the function returns the minimal Euclidean distance that is separating
  * the input coordinate from the spherical region
  * 
- * for radius == 0, the region reduces to a single point: the center */
+ * <p>for radius == 0, the region evaluates
+ * <ul>
+ * <li>zero in a single point: the center, and
+ * <li>negative nowhere
+ * </ul> */
 public class SphericalRegion extends ImplicitFunctionRegion {
   private final Tensor center;
   private final Scalar radius;

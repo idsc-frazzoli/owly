@@ -32,7 +32,7 @@ public class ImageGradient implements Serializable {
   // ---
   private final Tensor scale;
   private final Interpolation interpolation;
-  private final Scalar maxNorm;
+  private final Scalar maxNormGradient;
 
   /** @param image with rank 2. For instance, Dimensions.of(image) == [179, 128]
    * @param range with length() == 2
@@ -44,13 +44,13 @@ public class ImageGradient implements Serializable {
     scale = Tensors.vector(dims).pmul(range.map(Scalar::reciprocal));
     Tensor diffx = Differences.of(image);
     diffx = TensorMap.of(t -> t.extract(0, dims.get(1) - 1), diffx, 1);
-    Tensor diffy = Transpose.of(Differences.of(Transpose.of(image)));
+    Tensor diffy = TensorMap.of(Differences::of, image, 1);
     diffy = diffy.extract(0, dims.get(0) - 1);
     Tensor field = Transpose.of(Tensors.of(diffx, diffy), 2, 0, 1);
     field = TensorMap.of(Cross2D::of, field, 2).multiply(amp);
     field = N.of(field);
     interpolation = LinearInterpolation.of(field);
-    maxNorm = field.flatten(1).map(Norm._2::ofVector).reduce(Max::of).get();
+    maxNormGradient = field.flatten(1).map(Norm._2::ofVector).reduce(Max::of).get();
   }
 
   public Tensor rotate(Tensor tensor) {
@@ -66,7 +66,7 @@ public class ImageGradient implements Serializable {
   }
 
   /** @return max(||gradient||) */
-  public Scalar maxNorm() {
-    return maxNorm;
+  public Scalar maxNormGradient() {
+    return maxNormGradient;
   }
 }

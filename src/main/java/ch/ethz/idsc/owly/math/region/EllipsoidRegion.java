@@ -13,7 +13,9 @@ import ch.ethz.idsc.tensor.red.Norm2Squared;
  * The region also finds applications for other spaces, such as R^n x R^m
  * where axis depended scaling is desired. One use case is the Lotka-Volterra model.
  * 
- * Notice: evaluate(...) does not correspond to Euclidean distance */
+ * Notice: evaluate(...) does not correspond to Euclidean distance
+ * 
+ * @see SphericalRegion */
 public class EllipsoidRegion extends ImplicitFunctionRegion {
   private final Tensor center;
   private final Tensor invert;
@@ -25,7 +27,8 @@ public class EllipsoidRegion extends ImplicitFunctionRegion {
    * @param center of the ellipsoid
    * @param radius of the different axes with same number of entries as center
    * all components of radius must be strictly positive.
-   * if a component of radius is RealScalar.POSITIVE_INFINITY, this corresponds to a cylinder */
+   * if a component of radius is RealScalar.POSITIVE_INFINITY, this corresponds to a cylinder
+   * @see SphericalRegion */
   public EllipsoidRegion(Tensor center, Tensor radius) {
     if (center.length() != radius.length())
       throw TensorRuntimeException.of(center, radius);

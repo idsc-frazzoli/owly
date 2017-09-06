@@ -21,13 +21,13 @@ public class ImageGradientTest extends TestCase {
     {
       ImageGradient ig = new ImageGradient(image, range, RealScalar.of(.5)); // -.25 .5
       res = ig.rotate(Tensors.vector(2, 3));
-      max = ig.maxNorm();
+      max = ig.maxNormGradient();
     }
     {
       ImageGradient ig = new ImageGradient(image, range, RealScalar.ONE); // -.25 .5
       Tensor cmp = ig.rotate(Tensors.vector(2, 3));
       assertEquals(cmp, res.multiply(RealScalar.of(2)));
-      assertEquals(ig.maxNorm(), max.multiply(RealScalar.of(2)));
+      assertEquals(ig.maxNormGradient(), max.multiply(RealScalar.of(2)));
     }
   }
 }

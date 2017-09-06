@@ -9,9 +9,10 @@ import java.awt.geom.Rectangle2D;
 import java.util.Collection;
 
 import ch.ethz.idsc.owly.demo.delta.DeltaControls;
-import ch.ethz.idsc.owly.demo.delta.DeltaGoalManager;
+import ch.ethz.idsc.owly.demo.delta.DeltaMinTimeGoalManager;
 import ch.ethz.idsc.owly.demo.delta.DeltaStateSpaceModel;
 import ch.ethz.idsc.owly.demo.delta.ImageGradient;
+import ch.ethz.idsc.owly.glc.core.GoalInterface;
 import ch.ethz.idsc.owly.glc.core.StandardTrajectoryPlanner;
 import ch.ethz.idsc.owly.glc.core.TrajectoryPlanner;
 import ch.ethz.idsc.owly.gui.OwlyLayer;
@@ -38,21 +39,24 @@ import ch.ethz.idsc.tensor.red.Norm2Squared;
   private static final Tensor FALLBACK_CONTROL = Tensors.vector(0, 0).unmodifiable();
   /** preserve 1[s] of the former trajectory */
   private static final Scalar DELAY_HINT = RealScalar.of(2);
-  private static final Scalar maxInput = RealScalar.of(.6);
+  // ---
+  /** the constants define the control */
+  private static final Scalar U_NORM = RealScalar.of(.6);
+  private static final int U_SIZE = 12;
 
-  public static DeltaEntity createDefault(ImageGradient ipr, Tensor state) {
+  public static DeltaEntity createDefault(ImageGradient imageGradient, Tensor state) {
     EpisodeIntegrator episodeIntegrator = new SimpleEpisodeIntegrator( //
-        new DeltaStateSpaceModel(ipr, maxInput), //
+        new DeltaStateSpaceModel(imageGradient, U_NORM), //
         EulerIntegrator.INSTANCE, //
         new StateTime(state, RealScalar.ZERO));
-    return new DeltaEntity(episodeIntegrator, ipr, state);
+    return new DeltaEntity(episodeIntegrator, imageGradient, state);
   }
 
-  private final ImageGradient ipr;
+  private final ImageGradient imageGradient;
 
-  public DeltaEntity(EpisodeIntegrator episodeIntegrator, ImageGradient ipr, Tensor state) {
+  public DeltaEntity(EpisodeIntegrator episodeIntegrator, ImageGradient imageGradient, Tensor state) {
     super(episodeIntegrator);
-    this.ipr = ipr;
+    this.imageGradient = imageGradient;
   }
 
   @Override
@@ -81,11 +85,11 @@ import ch.ethz.idsc.tensor.red.Norm2Squared;
     StateIntegrator stateIntegrator = FixedStateIntegrator.create( //
         RungeKutta45Integrator.INSTANCE, RationalScalar.of(1, 10), 4);
     Collection<Flow> controls = DeltaControls.createControls( //
-        new DeltaStateSpaceModel(ipr, maxInput), maxInput, 10);
-    DeltaGoalManager deltaGoalManager = new DeltaGoalManager( //
-        goal.extract(0, 2), Tensors.vector(.3, .3));
+        new DeltaStateSpaceModel(imageGradient, U_NORM), U_NORM, U_SIZE);
+    GoalInterface goalInterface = new DeltaMinTimeGoalManager( //
+        goal.extract(0, 2), RealScalar.of(.3), controls, imageGradient.maxNormGradient());
     return new StandardTrajectoryPlanner( //
-        eta, stateIntegrator, controls, obstacleQuery, deltaGoalManager);
+        eta, stateIntegrator, controls, obstacleQuery, goalInterface);
   }
 
   @Override
