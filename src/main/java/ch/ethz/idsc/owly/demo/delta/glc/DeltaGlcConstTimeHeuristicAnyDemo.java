@@ -20,7 +20,6 @@ import ch.ethz.idsc.owly.gui.Gui;
 import ch.ethz.idsc.owly.gui.OwlyFrame;
 import ch.ethz.idsc.owly.math.region.EllipsoidRegion;
 import ch.ethz.idsc.owly.math.region.Region;
-import ch.ethz.idsc.owly.math.region.RegionUnion;
 import ch.ethz.idsc.owly.math.state.StateTime;
 import ch.ethz.idsc.tensor.DoubleScalar;
 import ch.ethz.idsc.tensor.RationalScalar;
@@ -34,9 +33,11 @@ enum DeltaGlcConstTimeHeuristicAnyDemo {
   public static void main(String[] args) throws Exception {
     // -- Quick Planner init
     RationalScalar quickResolution = (RationalScalar) RationalScalar.of(10, 1);
-    Tensor partitionScale = Tensors.vector(2e26, 2e26);
-    TrajectoryPlannerContainer quickTrajectoryPlannerContainer = DeltaHelper.createGlc(RealScalar.of(-0.5), quickResolution, partitionScale);
+    Tensor partitionScale = Tensors.vector(120, 120);
+    long tic = System.nanoTime();
+    TrajectoryPlannerContainer quickTrajectoryPlannerContainer = DeltaHelper.createGlc(RealScalar.of(-0.02), quickResolution, partitionScale);
     GlcExpand.maxDepth(quickTrajectoryPlannerContainer.getTrajectoryPlanner(), DoubleScalar.POSITIVE_INFINITY.number().intValue());
+    System.out.println("QuickPlanner took: " + (System.nanoTime() - tic) * 1e-9 + "s");
     OwlyFrame quickOwlyFrame = Gui.start();
     quickOwlyFrame.configCoordinateOffset(33, 416);
     quickOwlyFrame.jFrame.setBounds(100, 100, 620, 475);
@@ -49,12 +50,13 @@ enum DeltaGlcConstTimeHeuristicAnyDemo {
     } else {
       throw new RuntimeException();
     }
+    Scalar quickCostFromRoot = quickTrajectoryPlannerContainer.getTrajectoryPlanner().getBest().get().costFromRoot();
     DebugUtils.heuristicConsistencyCheck(quickTrajectoryPlannerContainer.getTrajectoryPlanner());
     System.out.println("***QUICK PLANNER FINISHED***");
     // -- SLOWPLANNER
-    partitionScale = Tensors.vector(6e29, 6e29);
-    RationalScalar resolution = (RationalScalar) RationalScalar.of(14, 1);
-    TrajectoryPlannerContainer slowTrajectoryPlannerContainer = DeltaHelper.createGlcAny(RealScalar.of(-0.5), resolution, partitionScale);
+    partitionScale = Tensors.vector(100, 100);
+    RationalScalar resolution = (RationalScalar) RationalScalar.of(13, 1);
+    TrajectoryPlannerContainer slowTrajectoryPlannerContainer = DeltaHelper.createGlcAny(RealScalar.of(-0.02), resolution, partitionScale);
     // -- GOALMANAGER
     Iterator<StateTime> iterator = quickTrajectory.iterator();
     List<Region> goalRegions = new ArrayList<>();
@@ -78,55 +80,58 @@ enum DeltaGlcConstTimeHeuristicAnyDemo {
     // -- ANYTIMELOOP
     boolean finalGoalFound = false;
     while (!finalGoalFound) {
+      tic = System.nanoTime();
       List<StateTime> trajectory = new ArrayList<>();
       Optional<GlcNode> finalGoalNode = null;
       // --
       // -- ROOTCHANGE
       // TODO JONAS use Stopwatch
-      long ticTemp = System.nanoTime();
-      finalGoalNode = slowTrajectoryPlannerContainer.getTrajectoryPlanner().getFinalGoalNode();
-      if (finalGoalNode.isPresent())
-        trajectory = GlcNodes.getPathFromRootTo(finalGoalNode.get());
-      System.out.println("trajectorys size: " + trajectory.size());
-      if (trajectory.size() > 5) {
-        //
-        StateTime newRootState = trajectory.get(trajectory.size() > 7 ? 2 : 0);
-        int increment = ((OptimalAnyTrajectoryPlanner) slowTrajectoryPlannerContainer.getTrajectoryPlanner()).switchRootToState(newRootState.state());
-        slowTrajectoryPlannerContainer.getParameters().increaseDepthLimit(increment);
-      }
-      long tocTemp = System.nanoTime();
-      System.out.println("Rootchange took: " + (tocTemp - ticTemp) * 1e-9 + "s");
-      // -- GOALCHANGE
-      // Goalchange here is not needed, as getFurthest Goal deasl with it,
-      long tic = System.nanoTime();
-      ticTemp = tic;
-      // get GlcNode (€ Goal) with highest Cost (furthest down the path)
-      Optional<StateTime> furthestState = ((OptimalAnyTrajectoryPlanner) slowTrajectoryPlannerContainer//
-          .getTrajectoryPlanner()).getFurthestGoalState();
-      if (furthestState.isPresent()) {
-        if (trajectoryGoalManager.getGoalRegionList().get(trajectoryGoalManager.getGoalRegionList().size() - 1).isMember(furthestState.get().state())) {
-          System.out.println("***Last Goal was found***");
-          finalGoalFound = true;
-        }
-      }
-      Scalar maxSpeed = ((DeltaStateSpaceModel) slowTrajectoryPlannerContainer.getStateSpaceModel()).getMaxPossibleChange();
-      trajectoryGoalManager = new DeltaTrajectoryGoalManager(trajectoryGoalManager.deleteRegionsBefore(furthestState) //
-          , quickTrajectory, radius, maxSpeed);
-      ((OptimalAnyTrajectoryPlanner) slowTrajectoryPlannerContainer.getTrajectoryPlanner()).changeToGoal(//
-          trajectoryGoalManager, RegionUnion.wrap(goalCheckHelpRegions));
-      if (trajectoryGoalManager.getGoalRegionList().size() < 2)
-        System.err.println("GoalRegion in singular --> FINAL GOAL");
-      tocTemp = System.nanoTime();
-      System.out.println("Goalchange took: " + (tocTemp - ticTemp) * 1e-9 + "s");
-      // --
+      // long ticTemp = System.nanoTime();
+      // finalGoalNode = slowTrajectoryPlannerContainer.getTrajectoryPlanner().getFinalGoalNode();
+      // if (finalGoalNode.isPresent())
+      // trajectory = GlcNodes.getPathFromRootTo(finalGoalNode.get());
+      // System.out.println("trajectorys size: " + trajectory.size());
+      // if (trajectory.size() > 7) {
+      // //
+      // StateTime newRootState = trajectory.get(trajectory.size() > 7 ? 2 : 0);
+      // int increment = ((OptimalAnyTrajectoryPlanner) slowTrajectoryPlannerContainer.getTrajectoryPlanner()).switchRootToState(newRootState.state());
+      // slowTrajectoryPlannerContainer.getParameters().increaseDepthLimit(increment);
+      // }
+      // long tocTemp = System.nanoTime();
+      // System.out.println("Rootchange took: " + (tocTemp - ticTemp) * 1e-9 + "s");
+      // // -- GOALCHANGE
+      // // Goalchange here is not needed, as getFurthest Goal deasl with it,
+      // tic = System.nanoTime();
+      // ticTemp = tic;
+      // // get GlcNode (€ Goal) with highest Cost (furthest down the path)
+      // Optional<StateTime> furthestState = ((OptimalAnyTrajectoryPlanner) slowTrajectoryPlannerContainer//
+      // .getTrajectoryPlanner()).getFurthestGoalState();
+      // if (furthestState.isPresent()) {
+      // if (trajectoryGoalManager.getGoalRegionList().get(trajectoryGoalManager.getGoalRegionList().size() - 1).isMember(furthestState.get().state())) {
+      // System.out.println("***Last Goal was found***");
+      // finalGoalFound = true;
+      // }
+      // }
+      // Scalar maxSpeed = ((DeltaStateSpaceModel) slowTrajectoryPlannerContainer.getStateSpaceModel()).getMaxPossibleChange();
+      // trajectoryGoalManager = new DeltaTrajectoryGoalManager(trajectoryGoalManager.deleteRegionsBefore(furthestState) //
+      // , quickTrajectory, radius, maxSpeed);
+      // ((OptimalAnyTrajectoryPlanner) slowTrajectoryPlannerContainer.getTrajectoryPlanner()).changeToGoal(//
+      // trajectoryGoalManager, RegionUnion.wrap(goalCheckHelpRegions));
+      // if (trajectoryGoalManager.getGoalRegionList().size() < 2)
+      // System.err.println("GoalRegion in singular --> FINAL GOAL");
+      // tocTemp = System.nanoTime();
+      // System.out.println("Goalchange took: " + (tocTemp - ticTemp) * 1e-9 + "s");
+      // // --
       // -- EXPANDING
-      ticTemp = System.nanoTime();
-      int expandIter = GlcExpand.constTime(slowTrajectoryPlannerContainer.getTrajectoryPlanner(), //
-          planningTime, slowTrajectoryPlannerContainer.getParameters().getDepthLimit());
-      furthestState = ((OptimalAnyTrajectoryPlanner) slowTrajectoryPlannerContainer.getTrajectoryPlanner()).getFurthestGoalState();
+      long ticTemp = System.nanoTime();
+      int expandIter = GlcExpand.constTime(slowTrajectoryPlannerContainer.getTrajectoryPlanner(), planningTime,
+          slowTrajectoryPlannerContainer.getParameters().getDepthLimit());
+      // int expandIter = GlcExpand.constTime(slowTrajectoryPlannerContainer.getTrajectoryPlanner(), //
+      // planningTime, slowTrajectoryPlannerContainer.getParameters().getDepthLimit());
+      Optional<StateTime> furthestState = ((OptimalAnyTrajectoryPlanner) slowTrajectoryPlannerContainer.getTrajectoryPlanner()).getFurthestGoalState();
       finalGoalNode = slowTrajectoryPlannerContainer.getTrajectoryPlanner().getFinalGoalNode();
       trajectory = GlcNodes.getPathFromRootTo(finalGoalNode.get());
-      tocTemp = System.nanoTime();
+      long tocTemp = System.nanoTime();
       System.out.println("Expanding " + expandIter + " Nodes took: " + (tocTemp - ticTemp) * 1e-9 + "s");
       long toc = System.nanoTime();
       owlyFrame.setGlc((TrajectoryPlanner) slowTrajectoryPlannerContainer.getTrajectoryPlanner());
@@ -138,6 +143,9 @@ enum DeltaGlcConstTimeHeuristicAnyDemo {
       if (!owlyFrame.jFrame.isVisible() || expandIter < 1)
         break;
       Thread.sleep(1);
+      Scalar slowCostFromRoot = slowTrajectoryPlannerContainer.getTrajectoryPlanner().getFinalGoalNode().get().costFromRoot();
+      System.out.println("Quick planner Cost: " + quickCostFromRoot);
+      System.out.println("Slow planner Cost : " + slowCostFromRoot);
     }
     System.out.println("Finished LOOP");
   }
