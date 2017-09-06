@@ -4,6 +4,7 @@ package ch.ethz.idsc.owly.glc.adapter;
 import java.util.List;
 
 import ch.ethz.idsc.owly.data.Lists;
+import ch.ethz.idsc.owly.glc.core.GlcNode;
 import ch.ethz.idsc.owly.math.state.StateTime;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
@@ -21,6 +22,10 @@ public enum StateTimeTrajectories {
     if (Scalars.lessEquals(dt, RealScalar.ZERO))
       throw new RuntimeException();
     return dt;
+  }
+
+  public static Scalar timeIncrement(GlcNode glcNode, List<StateTime> trajectory) {
+    return timeIncrement(glcNode.stateTime(), trajectory);
   }
 
   public static void print(List<StateTime> list) {

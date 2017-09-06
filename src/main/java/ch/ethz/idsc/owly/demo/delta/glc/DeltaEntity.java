@@ -9,7 +9,7 @@ import java.awt.geom.Rectangle2D;
 import java.util.Collection;
 
 import ch.ethz.idsc.owly.demo.delta.DeltaControls;
-import ch.ethz.idsc.owly.demo.delta.DeltaGoalManager;
+import ch.ethz.idsc.owly.demo.delta.DeltaNoHeuristicGoalManager;
 import ch.ethz.idsc.owly.demo.delta.DeltaStateSpaceModel;
 import ch.ethz.idsc.owly.demo.delta.ImageGradient;
 import ch.ethz.idsc.owly.glc.core.StandardTrajectoryPlanner;
@@ -82,7 +82,7 @@ import ch.ethz.idsc.tensor.red.Norm2Squared;
         RungeKutta45Integrator.INSTANCE, RationalScalar.of(1, 10), 4);
     Collection<Flow> controls = DeltaControls.createControls( //
         new DeltaStateSpaceModel(ipr, maxInput), maxInput, 10);
-    DeltaGoalManager deltaGoalManager = new DeltaGoalManager( //
+    DeltaNoHeuristicGoalManager deltaGoalManager = new DeltaNoHeuristicGoalManager( //
         goal.extract(0, 2), Tensors.vector(.3, .3));
     return new StandardTrajectoryPlanner( //
         eta, stateIntegrator, controls, obstacleQuery, deltaGoalManager);

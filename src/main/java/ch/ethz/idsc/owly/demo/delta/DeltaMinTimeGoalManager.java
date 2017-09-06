@@ -1,6 +1,7 @@
 // code by jph
-package ch.ethz.idsc.owly.demo.rice;
+package ch.ethz.idsc.owly.demo.delta;
 
+import java.util.Collection;
 import java.util.List;
 
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
@@ -16,28 +17,26 @@ import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.red.Norm;
 import ch.ethz.idsc.tensor.sca.Ramp;
 
-public class Rice2GoalManager extends SimpleTrajectoryRegionQuery implements GoalInterface {
+/** default goal manager for delta example that does not make use of max norm of flow */
+public class DeltaMinTimeGoalManager extends SimpleTrajectoryRegionQuery implements GoalInterface {
   private final Tensor center;
   private final Scalar radius;
+  private final Scalar maxSpeed;
 
-  public Rice2GoalManager(Tensor center, Tensor radius) {
-    super(new TimeInvariantRegion(new EllipsoidRegion(center, radius)));
+  public DeltaMinTimeGoalManager(Tensor center, Scalar radius, Collection<Flow> controls) {
+    super(new TimeInvariantRegion(EllipsoidRegion.spherical(center, radius)));
     this.center = center;
-    if (!radius.Get(0).equals(radius.Get(1)))
-      throw new RuntimeException(); // x-y radius have to be equal
-    this.radius = radius.Get(0);
+    this.radius = radius;
+    maxSpeed = DeltaControls.maxSpeed(controls);
   }
 
   @Override
   public Scalar costIncrement(GlcNode glcNode, List<StateTime> trajectory, Flow flow) {
-    return StateTimeTrajectories.timeIncrement(glcNode, trajectory);
+    return StateTimeTrajectories.timeIncrement(glcNode.stateTime(), trajectory);
   }
 
   @Override
   public Scalar minCostToGoal(Tensor x) {
-    Tensor pc = x.extract(0, 2);
-    Tensor pd = center.extract(0, 2);
-    Scalar mindist = Ramp.of(Norm._2.ofVector(pc.subtract(pd)).subtract(radius));
-    return mindist; // .divide(1 [m/s]), since max velocity == 1 => division is obsolete
+    return Ramp.of(Norm._2.ofVector(x.subtract(center)).subtract(radius).divide(maxSpeed));
   }
 }

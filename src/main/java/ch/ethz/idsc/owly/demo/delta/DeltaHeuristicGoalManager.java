@@ -39,12 +39,13 @@ public class DeltaHeuristicGoalManager extends SimpleTrajectoryRegionQuery imple
     this.timeCostScalingFactor = timeCostScalingFactor;
   }
 
-  // --
+  // ---
+  @Deprecated
   public DeltaHeuristicGoalManager(Region region, Tensor center, Tensor radius, Scalar maxSpeed) {
     this(region, center, radius, maxSpeed, RealScalar.ONE);
   }
 
-  public DeltaHeuristicGoalManager(Region region, Tensor center, Tensor radius, Scalar maxSpeed, Scalar timeCostScalingFactor) {
+  private DeltaHeuristicGoalManager(Region region, Tensor center, Tensor radius, Scalar maxSpeed, Scalar timeCostScalingFactor) {
     super(new TimeInvariantRegion(region));
     this.center = center;
     this.maxSpeed = maxSpeed;
@@ -53,7 +54,6 @@ public class DeltaHeuristicGoalManager extends SimpleTrajectoryRegionQuery imple
     this.radius = radius.Get(0);
     this.timeCostScalingFactor = timeCostScalingFactor;
   }
-  // --
 
   @Override
   public Scalar costIncrement(GlcNode node, List<StateTime> trajectory, Flow flow) {
@@ -68,7 +68,6 @@ public class DeltaHeuristicGoalManager extends SimpleTrajectoryRegionQuery imple
     // B. Paden: A Generalized Label Correcting Method for Optimal Kinodynamic Motion Planning
     // p. 79 Eq: 6.4.14
     // Heuristic needs to be underestimating: (Euclideandistance-radius) / (MaxControl+Max(|Vectorfield|)
-    // return RealScalar.ZERO;
     return Ramp.of(Norm._2.ofVector(x.subtract(center)).subtract(radius).divide(maxSpeed));
   }
 }

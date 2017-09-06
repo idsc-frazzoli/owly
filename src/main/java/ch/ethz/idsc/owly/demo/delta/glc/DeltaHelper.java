@@ -4,8 +4,8 @@ package ch.ethz.idsc.owly.demo.delta.glc;
 import java.util.Collection;
 
 import ch.ethz.idsc.owly.demo.delta.DeltaControls;
-import ch.ethz.idsc.owly.demo.delta.DeltaGoalManager;
 import ch.ethz.idsc.owly.demo.delta.DeltaHeuristicGoalManager;
+import ch.ethz.idsc.owly.demo.delta.DeltaNoHeuristicGoalManager;
 import ch.ethz.idsc.owly.demo.delta.DeltaParameters;
 import ch.ethz.idsc.owly.demo.delta.DeltaStateSpaceModel;
 import ch.ethz.idsc.owly.demo.delta.ImageGradient;
@@ -46,7 +46,7 @@ public enum DeltaHelper {
     TrajectoryRegionQuery obstacleQuery = //
         new SimpleTrajectoryRegionQuery(new TimeInvariantRegion( //
             new ImageRegion(obstacleImage, range, true)));
-    DeltaGoalManager deltaGoalManager = new DeltaGoalManager( //
+    DeltaNoHeuristicGoalManager deltaGoalManager = new DeltaNoHeuristicGoalManager( //
         Tensors.vector(2.1, 0.3), Tensors.vector(.3, .3));
     TrajectoryPlanner trajectoryPlanner = new StandardTrajectoryPlanner( //
         eta, stateIntegrator, controls, obstacleQuery, deltaGoalManager);

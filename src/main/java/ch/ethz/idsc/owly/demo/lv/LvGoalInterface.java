@@ -24,9 +24,8 @@ public class LvGoalInterface extends SimpleTrajectoryRegionQuery implements Goal
   }
 
   @Override
-  public Scalar costIncrement(GlcNode node, List<StateTime> trajectory, Flow flow) {
-    StateTime from = node.stateTime();
-    return StateTimeTrajectories.timeIncrement(from, trajectory);
+  public Scalar costIncrement(GlcNode glcNode, List<StateTime> trajectory, Flow flow) {
+    return StateTimeTrajectories.timeIncrement(glcNode, trajectory);
   }
 
   @Override

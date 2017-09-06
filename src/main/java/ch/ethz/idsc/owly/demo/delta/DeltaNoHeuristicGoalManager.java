@@ -16,8 +16,8 @@ import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
 
 /** default goal manager for delta example that does not make use of max norm of flow */
-public class DeltaGoalManager extends SimpleTrajectoryRegionQuery implements GoalInterface {
-  public DeltaGoalManager(Tensor center, Tensor radius) {
+public class DeltaNoHeuristicGoalManager extends SimpleTrajectoryRegionQuery implements GoalInterface {
+  public DeltaNoHeuristicGoalManager(Tensor center, Tensor radius) {
     super(new TimeInvariantRegion(new EllipsoidRegion(center, radius)));
   }
 

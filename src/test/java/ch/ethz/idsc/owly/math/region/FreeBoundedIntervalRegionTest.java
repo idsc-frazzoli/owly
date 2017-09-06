@@ -24,7 +24,7 @@ public class FreeBoundedIntervalRegionTest extends TestCase {
   public void testTrajectory() {
     FreeBoundedIntervalRegion bir = new FreeBoundedIntervalRegion(0, RealScalar.of(10), RealScalar.of(20));
     TrajectoryRegionQuery trq = new SimpleTrajectoryRegionQuery(new TimeInvariantRegion(bir));
-    assertTrue(trq.isDisjoint(Arrays.asList(new StateTime(Tensors.vector(15), null))));
-    assertFalse(trq.isDisjoint(Arrays.asList(new StateTime(Tensors.vector(5), null))));
+    assertTrue(trq.isDisjoint(Arrays.asList(new StateTime(Tensors.vector(15), RealScalar.ZERO))));
+    assertFalse(trq.isDisjoint(Arrays.asList(new StateTime(Tensors.vector(5), RealScalar.ZERO))));
   }
 }

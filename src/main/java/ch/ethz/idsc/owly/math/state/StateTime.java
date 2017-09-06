@@ -4,6 +4,7 @@ package ch.ethz.idsc.owly.math.state;
 import java.io.Serializable;
 import java.util.Objects;
 
+import ch.ethz.idsc.owly.data.GlobalAssert;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
 
@@ -13,8 +14,10 @@ public final class StateTime implements Serializable {
   private final Scalar time;
 
   /** @param x the state
-   * @param time the time of the state */
+   * @param time the time of the state
+   * @throws Exception if either of the input parameters is null */
   public StateTime(Tensor x, Scalar time) {
+    GlobalAssert.that(Objects.nonNull(time));
     this.x = x.unmodifiable();
     this.time = time;
   }

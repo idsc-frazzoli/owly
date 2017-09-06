@@ -30,8 +30,8 @@ public final class Se2MinTimeGoalManager extends Se2AbstractGoalManager {
   }
 
   @Override // from CostFunction
-  public Scalar costIncrement(GlcNode node, List<StateTime> trajectory, Flow flow) {
-    return StateTimeTrajectories.timeIncrement(node.stateTime(), trajectory);
+  public Scalar costIncrement(GlcNode glcNode, List<StateTime> trajectory, Flow flow) {
+    return StateTimeTrajectories.timeIncrement(glcNode, trajectory);
   }
 
   @Override // from HeuristicFunction

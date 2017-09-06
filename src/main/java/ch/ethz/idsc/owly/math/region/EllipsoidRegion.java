@@ -6,6 +6,7 @@ import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Scalars;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.TensorRuntimeException;
+import ch.ethz.idsc.tensor.alg.Array;
 import ch.ethz.idsc.tensor.red.Norm2Squared;
 
 /** EllipsoidRegion implements an axis aligned elliptic region in the vector space R^n.
@@ -15,6 +16,14 @@ import ch.ethz.idsc.tensor.red.Norm2Squared;
  * 
  * Notice: evaluate(...) does not correspond to Euclidean distance */
 public class EllipsoidRegion extends ImplicitFunctionRegion {
+  /** @param center
+   * @param radius
+   * @return */
+  public static Region spherical(Tensor center, Scalar radius) {
+    return new EllipsoidRegion(center, Array.of(list -> radius, center.length()));
+  }
+
+  // ---
   private final Tensor center;
   private final Tensor invert;
 
