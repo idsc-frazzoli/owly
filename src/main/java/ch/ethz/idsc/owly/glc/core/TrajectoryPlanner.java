@@ -33,8 +33,7 @@ public abstract class TrajectoryPlanner implements ExpandInterface<GlcNode>, Ser
   /** best is a reference to a Node in the goal region,
    * or null if such a node has not been identified
    * use function setBestNull() to reset best to null */
-  /* package */ final NavigableMap<GlcNode, List<StateTime>> best = //
-      new TreeMap<GlcNode, List<StateTime>>(NodeMeritComparator.INSTANCE);
+  /* package */ final NavigableMap<GlcNode, List<StateTime>> best = new TreeMap<>(NodeMeritComparator.INSTANCE);
   private int replaceCount = 0;
 
   /* package */ TrajectoryPlanner(Tensor eta) {

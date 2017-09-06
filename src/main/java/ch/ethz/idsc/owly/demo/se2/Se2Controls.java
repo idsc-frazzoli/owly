@@ -6,7 +6,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
-import ch.ethz.idsc.owly.math.RotationUtils;
 import ch.ethz.idsc.owly.math.StateSpaceModels;
 import ch.ethz.idsc.owly.math.flow.Flow;
 import ch.ethz.idsc.tensor.RealScalar;
@@ -56,11 +55,5 @@ public enum Se2Controls {
    * @return rad/s */
   public static Scalar maxTurning(Collection<Flow> controls) {
     return controls.stream().map(Flow::getU).map(t -> t.Get(0).abs()).reduce(Max::of).get();
-  }
-
-  public static void main(String[] args) {
-    Collection<Flow> controls = Se2Controls.createControls(RotationUtils.DEGREE(45), 6);
-    System.out.println(maxSpeed(controls));
-    System.out.println(maxTurning(controls));
   }
 }

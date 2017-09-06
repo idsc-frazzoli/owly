@@ -5,7 +5,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
-import ch.ethz.idsc.owly.demo.se2.Se2AbstractGoalManager;
 import ch.ethz.idsc.owly.demo.se2.Se2Controls;
 import ch.ethz.idsc.owly.demo.se2.Se2MinTimeGoalManager;
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
@@ -13,6 +12,7 @@ import ch.ethz.idsc.owly.glc.adapter.StateTimeTrajectories;
 import ch.ethz.idsc.owly.glc.core.Expand;
 import ch.ethz.idsc.owly.glc.core.GlcNode;
 import ch.ethz.idsc.owly.glc.core.GlcNodes;
+import ch.ethz.idsc.owly.glc.core.GoalInterface;
 import ch.ethz.idsc.owly.glc.core.StandardTrajectoryPlanner;
 import ch.ethz.idsc.owly.glc.core.TrajectoryPlanner;
 import ch.ethz.idsc.owly.gui.Gui;
@@ -40,7 +40,7 @@ enum Se2rDemo {
         RungeKutta45Integrator.INSTANCE, RationalScalar.of(1, 6), 5);
     Collection<Flow> controls = Se2Controls.createControlsForwardAndReverse(RotationUtils.DEGREE(45), 6);
     // place holder for parameter class
-    Se2AbstractGoalManager se2GoalManager = new Se2MinTimeGoalManager( //
+    GoalInterface goalInterface = Se2MinTimeGoalManager.create( //
         Tensors.vector(-1, -1, Math.PI * 2), //
         Tensors.vector(.1, .1, .17), //
         controls);
@@ -52,7 +52,7 @@ enum Se2rDemo {
             )));
     // ---
     TrajectoryPlanner trajectoryPlanner = new StandardTrajectoryPlanner( //
-        eta, stateIntegrator, controls, obstacleQuery, se2GoalManager.getGoalInterface());
+        eta, stateIntegrator, controls, obstacleQuery, goalInterface);
     // ---
     trajectoryPlanner.insertRoot(Tensors.vector(0, 0, 0));
     int iters = Expand.maxSteps(trajectoryPlanner, 20000);

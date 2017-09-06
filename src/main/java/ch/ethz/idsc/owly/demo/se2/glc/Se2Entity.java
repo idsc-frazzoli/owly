@@ -14,7 +14,7 @@ import javax.swing.JLabel;
 
 import ch.ethz.idsc.owly.data.GlobalAssert;
 import ch.ethz.idsc.owly.demo.se2.Se2Controls;
-import ch.ethz.idsc.owly.demo.se2.Se2MinDistCurvGoalManager;
+import ch.ethz.idsc.owly.demo.se2.Se2MinTimeMinShiftGoalManager;
 import ch.ethz.idsc.owly.demo.se2.Se2StateSpaceModel;
 import ch.ethz.idsc.owly.demo.se2.Se2Wrap;
 import ch.ethz.idsc.owly.glc.core.GoalInterface;
@@ -117,8 +117,7 @@ public class Se2Entity extends AbstractEntity {
     this.obstacleQuery = obstacleQuery;
     StateIntegrator stateIntegrator = //
         FixedStateIntegrator.create(integrator, RationalScalar.of(1, 10), 4); // TODO magic const
-    Se2MinDistCurvGoalManager se2MinDistGoalManager = new Se2MinDistCurvGoalManager(goal, goalRadius);
-    GoalInterface goalInterface = se2MinDistGoalManager.getGoalInterface();
+    GoalInterface goalInterface = Se2MinTimeMinShiftGoalManager.create(goal, goalRadius, controls);
     TrajectoryPlanner trajectoryPlanner = new StandardTrajectoryPlanner( //
         PARTITIONSCALE, stateIntegrator, controls, obstacleQuery, goalInterface);
     trajectoryPlanner.represent = SE2WRAP::represent;

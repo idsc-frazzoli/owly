@@ -26,8 +26,6 @@ import ch.ethz.idsc.tensor.Tensor;
 public class SimpleAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
   private final ControlsIntegrator controlsIntegrator;
 
-  // private final Map<Tensor, DomainQueue> domainCandidateMap = new HashMap<>();
-  // private final Queue<Node> queue = new PriorityQueue<>(NodeMeritComparator.instance);
   public SimpleAnyTrajectoryPlanner( //
       Tensor eta, //
       StateIntegrator stateIntegrator, //

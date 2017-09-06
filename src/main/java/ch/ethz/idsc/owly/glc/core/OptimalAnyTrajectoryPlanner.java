@@ -32,8 +32,7 @@ import ch.ethz.idsc.tensor.Tensor;
 public class OptimalAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
   private final ControlsIntegrator controlsIntegrator;
   // CandidateMap saves neglected/pruned Nodes in a bucket for each domain
-  private final Map<Tensor, Set<CandidatePair>> candidateMap = //
-      new HashMap<>();
+  private final Map<Tensor, Set<CandidatePair>> candidateMap = new HashMap<>();
 
   public OptimalAnyTrajectoryPlanner( //
       Tensor eta, //

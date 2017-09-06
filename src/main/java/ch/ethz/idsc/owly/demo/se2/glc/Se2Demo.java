@@ -13,6 +13,7 @@ import ch.ethz.idsc.owly.glc.adapter.StateTimeTrajectories;
 import ch.ethz.idsc.owly.glc.core.Expand;
 import ch.ethz.idsc.owly.glc.core.GlcNode;
 import ch.ethz.idsc.owly.glc.core.GlcNodes;
+import ch.ethz.idsc.owly.glc.core.GoalInterface;
 import ch.ethz.idsc.owly.glc.core.StandardTrajectoryPlanner;
 import ch.ethz.idsc.owly.glc.core.TrajectoryPlanner;
 import ch.ethz.idsc.owly.gui.Gui;
@@ -40,7 +41,7 @@ enum Se2Demo {
     StateIntegrator stateIntegrator = FixedStateIntegrator.createDefault(RationalScalar.of(1, 6), 5);
     System.out.println("scale=" + eta);
     Collection<Flow> controls = Se2Controls.createControls(RotationUtils.DEGREE(35), 10);
-    Se2MinTimeGoalManager se2GoalManager = new Se2MinTimeGoalManager(//
+    GoalInterface goalInterface = Se2MinTimeGoalManager.create( //
         Tensors.vector(2, 1, Math.PI * -1), //
         Tensors.vector(0.1, 0.1, 10 / 180 * Math.PI), //
         controls);
@@ -52,7 +53,7 @@ enum Se2Demo {
             )));
     // ---
     TrajectoryPlanner trajectoryPlanner = new StandardTrajectoryPlanner( //
-        eta, stateIntegrator, controls, obstacleQuery, se2GoalManager.getGoalInterface());
+        eta, stateIntegrator, controls, obstacleQuery, goalInterface);
     // ---
     trajectoryPlanner.insertRoot(Tensors.vector(0, 0, 0));
     CoordinateWrap coordinateWrap = new Se2Wrap(Tensors.vector(1, 1, 1));
