@@ -34,7 +34,7 @@ public class DeltaxtStateSpaceModel implements StateSpaceModel {
     Scalar n = RealScalar.of(4); // dimensions of StateSpace + Dimensions of InputSpace
     // lipschitz constant on vector-valued function from:
     // https://math.stackexchange.com/questions/1132078/proof-that-a-vector-valued-function-is-lipschitz-continuous-on-a-closed-rectangl
-    return imageGradient.maxNorm().add(maxInput).multiply(n);
+    return imageGradient.maxNormGradient().add(maxInput).multiply(n);
   }
 
   public Scalar getMaxInput() {
@@ -42,7 +42,7 @@ public class DeltaxtStateSpaceModel implements StateSpaceModel {
   }
 
   public Scalar getMaxPossibleChange() {
-    return maxInput.add(imageGradient.maxNorm());
+    return maxInput.add(imageGradient.maxNormGradient());
     // TODO modify due to time state
   }
 }

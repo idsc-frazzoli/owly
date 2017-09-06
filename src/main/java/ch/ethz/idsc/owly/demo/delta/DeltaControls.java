@@ -29,6 +29,8 @@ public enum DeltaControls {
     return collection;
   }
 
+  /** @param controls
+   * @return */
   public static Scalar maxSpeed(Collection<Flow> controls) {
     return controls.stream() //
         .map(Flow::getU) //

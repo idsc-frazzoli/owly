@@ -12,15 +12,23 @@ import ch.ethz.idsc.tensor.RealScalar;
 enum DeltaDemo {
   ;
   public static void main(String[] args) throws Exception {
-    TrajectoryPlanner trajectoryPlanner = DeltaHelper.createDefault(RealScalar.of(.5)); // -.25 .5
+    // for 0.5 (in direction of river):
+    // mintime w/o heuristic requires 1623 expands
+    // mintime w/. heuristic requires 1334 expands
+    // for -.02 (against direction of river)
+    // mintime w/o heuristic requires 2846 expands
+    // mintime w/. heuristic requires 2844 expands
+    TrajectoryPlanner trajectoryPlanner = DeltaHelper.createMinTimeDefault(RealScalar.of(-.25)); // -.25 .5
     OwlyFrame owlyFrame = Gui.start();
     owlyFrame.configCoordinateOffset(33, 416);
     owlyFrame.jFrame.setBounds(100, 100, 620, 475);
+    int steps = 0;
     while (!trajectoryPlanner.getBest().isPresent() && owlyFrame.jFrame.isVisible()) {
-      Expand.maxSteps(trajectoryPlanner, 30);
+      steps += Expand.maxSteps(trajectoryPlanner, 30);
       owlyFrame.setGlc(trajectoryPlanner);
       Thread.sleep(1);
       DebugUtils.heuristicConsistencyCheck(trajectoryPlanner);
     }
+    System.out.println("#expand = " + steps);
   }
 }
