@@ -20,7 +20,7 @@ import ch.ethz.idsc.tensor.Tensors;
 enum DeltaGlcDemo {
   ;
   public static void main(String[] args) throws Exception {
-    RationalScalar resolution = (RationalScalar) RationalScalar.of(9, 1);
+    RationalScalar resolution = (RationalScalar) RationalScalar.of(14, 1);
     Tensor partitionScale = Tensors.vector(60, 60);
     TrajectoryPlannerContainer trajectoryPlannerContainer = DeltaHelper.createGlc(RealScalar.of(-0.02), resolution, partitionScale);
     OwlyFrame owlyFrame = Gui.start();
