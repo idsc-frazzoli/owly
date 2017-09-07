@@ -26,10 +26,10 @@ import javax.swing.WindowConstants;
 import ch.ethz.idsc.owly.data.GlobalAssert;
 import ch.ethz.idsc.owly.data.TimeKeeper;
 import ch.ethz.idsc.owly.data.tree.Nodes;
-import ch.ethz.idsc.owly.glc.adapter.HeuristicQ;
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
 import ch.ethz.idsc.owly.glc.adapter.Trajectories;
 import ch.ethz.idsc.owly.glc.core.GlcNode;
+import ch.ethz.idsc.owly.glc.core.GlcNodes;
 import ch.ethz.idsc.owly.glc.core.TrajectoryPlanner;
 import ch.ethz.idsc.owly.glc.core.TrajectorySample;
 import ch.ethz.idsc.owly.gui.EtaRender;
@@ -169,16 +169,18 @@ public class OwlyAnimationFrame {
     @Override
     public void expandResult(List<TrajectorySample> head, TrajectoryPlanner trajectoryPlanner) {
       etaRender.setEta(trajectoryPlanner.getEta());
-      Optional<GlcNode> optional = trajectoryPlanner.getBest();
-      // if (trajectoryPlanner.getGoalInterface() instanceof Heuristic) // movement till goalfound would be random walk
-      // if (trajectoryPlanner.getGoalInterface().hasHeuristic()) // movement till goalfound would be random walk
-      if (HeuristicQ.of(trajectoryPlanner.getGoalInterface()))
-        optional = trajectoryPlanner.getFinalGoalNode();
+      Optional<GlcNode> optional = trajectoryPlanner.getFinalGoalNode();
+      // test without heuristic
       if (optional.isPresent()) {
         List<TrajectorySample> trajectory = new ArrayList<>();
         if (controllable instanceof AbstractEntity) {
           AbstractEntity abstractEntity = (AbstractEntity) controllable;
           List<TrajectorySample> tail = trajectoryPlanner.detailedTrajectoryTo(optional.get());
+          {
+            Optional<GlcNode> temp = trajectoryPlanner.getBestOrElsePeek();
+            List<StateTime> tempList = GlcNodes.getPathFromRootTo(temp.get());
+            System.out.println("Root is: " + tempList.get(0).toInfoString());
+          }
           // System.out.println("TAIL: <<<<<<<");
           // Trajectories.print(tail);
           trajectory = Trajectories.glue(head, tail);

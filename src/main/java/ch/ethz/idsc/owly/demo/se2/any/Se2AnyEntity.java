@@ -14,11 +14,14 @@ import java.util.Optional;
 import ch.ethz.idsc.owly.demo.rn.R2Controls;
 import ch.ethz.idsc.owly.demo.rn.RnSimpleCircleHeuristicGoalManager;
 import ch.ethz.idsc.owly.demo.se2.Se2Controls;
+import ch.ethz.idsc.owly.demo.se2.Se2MinTimeEuclideanDistanceHeuristicGoalManager;
 import ch.ethz.idsc.owly.demo.se2.Se2StateSpaceModel;
 import ch.ethz.idsc.owly.demo.se2.Se2TrajectoryGoalManager;
 import ch.ethz.idsc.owly.demo.se2.Se2Wrap;
 import ch.ethz.idsc.owly.demo.se2.glc.Se2Parameters;
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
+import ch.ethz.idsc.owly.glc.adapter.Trajectories;
+import ch.ethz.idsc.owly.glc.core.DebugUtils;
 import ch.ethz.idsc.owly.glc.core.Expand;
 import ch.ethz.idsc.owly.glc.core.GlcNode;
 import ch.ethz.idsc.owly.glc.core.GlcNodes;
@@ -142,23 +145,29 @@ public class Se2AnyEntity extends AbstractAnyEntity {
 
   protected final GoalInterface createGoalFromR2(Tensor goal) {
     Tensor currentState = getEstimatedLocationAt(DELAY_HINT).extract(0, 2);
-    Tensor R2goal = goal.extract(0, 2);
+    Tensor r2goal = goal.extract(0, 2);
+    Tensor goalRadiusR2 = goalRadius.extract(0, 2).append(DoubleScalar.POSITIVE_INFINITY);
     long tic = System.nanoTime();
     // ---
     Tensor eta = Tensors.vector(8, 8);
-    StateIntegrator stateIntegrator = FixedStateIntegrator.create(EulerIntegrator.INSTANCE, RationalScalar.of(1, 5), 5);
-    Collection<Flow> controls = R2Controls.createRadial(10);
-    RnSimpleCircleHeuristicGoalManager rnGoal = new RnSimpleCircleHeuristicGoalManager(R2goal, goalRadius.Get(0));
+    StateIntegrator stateIntegratorR2 = FixedStateIntegrator.create(EulerIntegrator.INSTANCE, RationalScalar.of(1, 5), 5);
+    Collection<Flow> controlsR2 = R2Controls.createRadial(10);
+    RnSimpleCircleHeuristicGoalManager rnGoal = new RnSimpleCircleHeuristicGoalManager(r2goal, goalRadius.Get(0));
     // ---
     TrajectoryPlanner trajectoryPlanner = new StandardTrajectoryPlanner( //
-        eta, stateIntegrator, controls, obstacleQuery, rnGoal);
+        eta, stateIntegratorR2, controlsR2, obstacleQuery, rnGoal);
+    List<StateTime> currentStateList = new ArrayList<StateTime>();
+    currentStateList.add(new StateTime(currentState, RealScalar.ZERO));
+    if (!rnGoal.isDisjoint(currentStateList)) {
+      return new Se2MinTimeEuclideanDistanceHeuristicGoalManager(goal, goalRadius, controls).getGoalInterface();
+    }
     trajectoryPlanner.insertRoot(currentState);
     // int iters =
     Expand.maxTime(trajectoryPlanner, RealScalar.of(1)); // 1 [s]
     Optional<GlcNode> optional = trajectoryPlanner.getFinalGoalNode();
+    DebugUtils.heuristicConsistencyCheck(trajectoryPlanner);
     List<StateTime> trajectory = GlcNodes.getPathFromRootTo(optional.get());
     List<Region> goalRegionsList = new ArrayList<>();
-    Tensor goalRadiusR2 = goalRadius.extract(0, 2).append(DoubleScalar.POSITIVE_INFINITY);
     for (StateTime entry : trajectory) {
       Tensor goalTemp = Tensors.of(entry.state().Get(0), entry.state().Get(1), RealScalar.ZERO);
       if (trajectory.indexOf(entry) == (trajectory.size() - 1)) // if last entry of trajectory
@@ -168,7 +177,9 @@ public class Se2AnyEntity extends AbstractAnyEntity {
     }
     long toc = System.nanoTime();
     System.err.println("TrajectoryGoalcreation took: " + (toc - tic) * 1e-9 + "s");
-    return new Se2TrajectoryGoalManager(goalRegionsList, trajectory, goalRadiusR2);
+    System.out.println("Coarse guidance trajectory");
+    Trajectories.print(trajectoryPlanner.detailedTrajectoryTo(optional.get()));
+    return new Se2TrajectoryGoalManager(goalRegionsList, trajectory, goalRadiusR2, controls);
   }
 
   @Override

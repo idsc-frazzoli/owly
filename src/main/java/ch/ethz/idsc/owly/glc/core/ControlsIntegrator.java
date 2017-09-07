@@ -30,7 +30,7 @@ import ch.ethz.idsc.owly.math.state.StateTime;
 
   GlcNode createGlcNode(GlcNode node, CostFunction costFunction) {
     return GlcNode.of(flow, last, //
-        node.costFromRoot().add(costFunction.costIncrement(node, trajectory, flow)), //
+        node.merit().add(costFunction.costIncrement(node, trajectory, flow)), // TODO JAN: BUG WAS here
         costFunction.minCostToGoal(last.state()));
   }
 }

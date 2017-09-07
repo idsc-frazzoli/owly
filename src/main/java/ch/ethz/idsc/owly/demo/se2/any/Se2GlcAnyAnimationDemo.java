@@ -13,8 +13,8 @@ enum Se2GlcAnyAnimationDemo {
   static void launch1() throws Exception {
     OwlyAnimationFrame owlyAnimationFrame = new OwlyAnimationFrame();
     Tensor root = Tensors.vector(2.5, 0.75, 0);
-    root = Tensors.vector(6, 6, 1);
-    Se2AnyEntity se2AnyEntity = new Se2AnyEntity(root, 12);
+    root = Tensors.vector(7, 6, 1);
+    Se2AnyEntity se2AnyEntity = new Se2AnyEntity(root, 10);
     se2AnyEntity.trajectoryPlannerCallback = owlyAnimationFrame.trajectoryPlannerCallback;
     // Region obstacleRegion = new InvertedRegion(EmptyRegion.INSTANCE);
     ImageRegion obstacleRegion = ImageRegions.loadFromRepository("/io/track0_100.png", Tensors.vector(10, 10), false);
@@ -30,7 +30,7 @@ enum Se2GlcAnyAnimationDemo {
 
   static void launch2() throws Exception {
     OwlyAnimationFrame owlyAnimationFrame = new OwlyAnimationFrame();
-    Tensor root = Tensors.vector(7, 6, 1);
+    Tensor root = Tensors.vector(7.5, 6, 1);
     Se2AnyEntity se2AnyEntity = new Se2AnyEntity(root, 12);
     se2AnyEntity.trajectoryPlannerCallback = owlyAnimationFrame.trajectoryPlannerCallback;
     // Region obstacleRegion = new InvertedRegion(EmptyRegion.INSTANCE);

@@ -45,6 +45,7 @@ public class RnSimpleCircleHeuristicGoalManager extends SimpleTrajectoryRegionQu
 
   @Override
   public Scalar minCostToGoal(Tensor x) {
+    // return RealScalar.ZERO;
     return Ramp.of(Norm._2.ofVector(x.subtract(center)).subtract(radius));
   }
 }
