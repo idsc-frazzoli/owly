@@ -14,16 +14,22 @@ import ch.ethz.idsc.tensor.Scalars;
 public enum StateTimeTrajectories {
   ;
   // ---
-  /** @param from
+  /** @param stateTime
    * @param trajectory
-   * @return time increment between given from State and end of trajectory */
-  public static Scalar timeIncrement(StateTime from, List<StateTime> trajectory) {
-    Scalar dt = Lists.getLast(trajectory).time().subtract(from.time());
-    if (Scalars.lessEquals(dt, RealScalar.ZERO))
+   * @return time increment between given from State and end of trajectory
+   * @throws Exception if time of last node is smaller than of given stateTime */
+  public static Scalar timeIncrement(StateTime stateTime, List<StateTime> trajectory) {
+    Scalar dt = Lists.getLast(trajectory).time().subtract(stateTime.time());
+    if (Scalars.lessThan(dt, RealScalar.ZERO))
       throw new RuntimeException();
     return dt;
   }
 
+  /** see description of function {@link #timeIncrement(StateTime, List)}
+   * 
+   * @param glcNode
+   * @param trajectory
+   * @return */
   public static Scalar timeIncrement(GlcNode glcNode, List<StateTime> trajectory) {
     return timeIncrement(glcNode.stateTime(), trajectory);
   }

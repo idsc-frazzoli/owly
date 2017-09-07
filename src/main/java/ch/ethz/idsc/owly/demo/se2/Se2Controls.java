@@ -6,7 +6,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
-import ch.ethz.idsc.owly.math.RotationUtils;
 import ch.ethz.idsc.owly.math.StateSpaceModels;
 import ch.ethz.idsc.owly.math.flow.Flow;
 import ch.ethz.idsc.tensor.RealScalar;
@@ -21,7 +20,7 @@ public enum Se2Controls {
   /** @param angle of steering
    * @param speed, positive for forward, and negative for backward
    * @return */
-  private static Flow create(Scalar angle, Scalar speed) {
+  public static Flow singleton(Scalar angle, Scalar speed) {
     return StateSpaceModels.createFlow(Se2StateSpaceModel.INSTANCE, Tensors.of(angle, speed));
   }
 
@@ -33,15 +32,15 @@ public enum Se2Controls {
       ++num;
     List<Flow> list = new ArrayList<>();
     for (Tensor angle : Subdivide.of(rate_max.negate(), rate_max, num))
-      list.add(create((Scalar) angle, RealScalar.ONE));
+      list.add(singleton((Scalar) angle, RealScalar.ONE));
     return Collections.unmodifiableList(list);
   }
 
   public static Collection<Flow> createControlsForwardAndReverse(Scalar angle_max, int num) {
     List<Flow> list = new ArrayList<>();
     for (Tensor angle : Subdivide.of(angle_max.negate(), angle_max, num)) {
-      list.add(create(angle.Get(), RealScalar.ONE));
-      list.add(create(angle.Get(), RealScalar.ONE.negate()));
+      list.add(singleton(angle.Get(), RealScalar.ONE));
+      list.add(singleton(angle.Get(), RealScalar.ONE.negate()));
     }
     return list;
   }
@@ -56,11 +55,5 @@ public enum Se2Controls {
    * @return rad/s */
   public static Scalar maxTurning(Collection<Flow> controls) {
     return controls.stream().map(Flow::getU).map(t -> t.Get(0).abs()).reduce(Max::of).get();
-  }
-
-  public static void main(String[] args) {
-    Collection<Flow> controls = Se2Controls.createControls(RotationUtils.DEGREE(45), 6);
-    System.out.println(maxSpeed(controls));
-    System.out.println(maxTurning(controls));
   }
 }

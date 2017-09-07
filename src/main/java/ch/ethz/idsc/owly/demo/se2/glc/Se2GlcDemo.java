@@ -14,6 +14,7 @@ import ch.ethz.idsc.owly.glc.adapter.StateTimeTrajectories;
 import ch.ethz.idsc.owly.glc.core.GlcExpand;
 import ch.ethz.idsc.owly.glc.core.GlcNode;
 import ch.ethz.idsc.owly.glc.core.GlcNodes;
+import ch.ethz.idsc.owly.glc.core.GoalInterface;
 import ch.ethz.idsc.owly.glc.core.StandardTrajectoryPlanner;
 import ch.ethz.idsc.owly.glc.core.TrajectoryPlanner;
 import ch.ethz.idsc.owly.gui.Gui;
@@ -54,7 +55,7 @@ enum Se2GlcDemo {
     parameters.printResolution();
     // Se2Controls uses Se2StateSpaceModel
     Collection<Flow> controls = Se2Controls.createControls(RotationUtils.DEGREE(45), parameters.getResolutionInt());
-    Se2MinTimeGoalManager se2GoalManager = new Se2MinTimeGoalManager(// jan changed this to min-time
+    GoalInterface goalInterface = Se2MinTimeGoalManager.create( //
         Tensors.vector(0, 1, Math.PI), //
         Tensors.vector(0.1, 0.1, 10 / 180 * Math.PI), //
         controls);
@@ -65,7 +66,7 @@ enum Se2GlcDemo {
                 new HyperplaneRegion(Tensors.vector(0, +1, 0), RealScalar.of(1.5)) //
             )));
     TrajectoryPlanner trajectoryPlanner = new StandardTrajectoryPlanner( //
-        parameters.getEta(), stateIntegrator, controls, obstacleQuery, se2GoalManager.getGoalInterface());
+        parameters.getEta(), stateIntegrator, controls, obstacleQuery, goalInterface);
     trajectoryPlanner.insertRoot(Tensors.vector(1, 0, -0.5 * Math.PI));
     int iters = GlcExpand.maxDepth(trajectoryPlanner, parameters.getDepthLimit());
     // int iters = Expand.maxTime(trajectoryPlanner, RealScalar.of(3));

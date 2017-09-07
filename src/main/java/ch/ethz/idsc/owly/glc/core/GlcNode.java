@@ -13,7 +13,7 @@ import ch.ethz.idsc.tensor.Scalar;
 public interface GlcNode extends StateCostNode {
   /** creates {@link GlcNode} without parent and without descendants/children
    * 
-   * @param flow
+   * @param flow used to reach this node
    * @param stateTime
    * @param costFromRoot
    * @param minCostToGoal
