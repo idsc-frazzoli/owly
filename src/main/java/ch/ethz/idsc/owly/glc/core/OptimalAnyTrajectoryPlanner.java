@@ -23,6 +23,7 @@ import ch.ethz.idsc.owly.math.region.Region;
 import ch.ethz.idsc.owly.math.state.StateIntegrator;
 import ch.ethz.idsc.owly.math.state.StateTime;
 import ch.ethz.idsc.owly.math.state.TrajectoryRegionQuery;
+import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Scalars;
 import ch.ethz.idsc.tensor.Tensor;
 
@@ -50,6 +51,26 @@ public class OptimalAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
   public void expand(final GlcNode node) {
     Map<GlcNode, List<StateTime>> connectors = controlsIntegrator.inParallel(node);
     CandidatePairQueueMap candidatePairQueueMap = new CandidatePairQueueMap();
+    for (GlcNode next : connectors.keySet()) {
+      Scalar oldCost = node.costFromRoot();
+      Scalar oldMerit = node.merit();
+      Scalar oldHeuristic = getGoalInterface().minCostToGoal(node.state());
+      Scalar newCost = next.costFromRoot();
+      Scalar newMerit = next.merit();
+      Scalar newHeuristic = getGoalInterface().minCostToGoal(next.state());
+      if (!Scalars.lessEquals(oldMerit, newMerit)) {
+        System.out.println("oldState: " + node.stateTime().toInfoString());
+        System.out.println("oldCost:  " + oldCost);
+        System.out.println("oldHeuri: " + oldHeuristic);
+        System.out.println("oldMerit: " + oldMerit);
+        System.out.println("oldState: " + next.stateTime().toInfoString());
+        System.out.println("oldCost:  " + newCost);
+        System.out.println("oldHeuri: " + newHeuristic);
+        System.out.println("oldMerit: " + newMerit);
+        
+        throw new RuntimeException();
+      }
+    }
     for (GlcNode next : connectors.keySet()) { // <- order of keys is non-deterministic
       // ALL Candidates are saved in temporary CandidateList
       CandidatePair nextCandidate = new CandidatePair(node, next);
@@ -80,6 +101,8 @@ public class OptimalAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
             if (Scalars.lessThan(next.merit(), formerLabel.merit())) {
               // collision check only if new node is better
               if (getObstacleQuery().isDisjoint(connectors.get(next))) {// better node not collision
+                if (formerLabel.isRoot())
+                  throw new RuntimeException();
                 // final Collection<GlcNode> subDeleteTree =
                 deleteSubtreeOf(formerLabel);
                 // adding the formerLabel as formerCandidate to bucket
