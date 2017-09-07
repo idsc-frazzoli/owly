@@ -127,7 +127,7 @@ enum R2GlcAnyCircleCompareDemo {
         goalStateList.add(goalState);
       } while (!obstacleQuery.isDisjoint(goalStateList));
       RnSimpleCircleGoalManager rnGoal2 = new RnSimpleCircleGoalManager(goal, goalRadius);
-      System.out.println("Switching to Goal:" + goal);
+      // System.out.println("Switching to Goal:" + goal);
       Scalar goalSearchHelperRadius = goalRadius.add(RealScalar.ONE).multiply(RealScalar.of(2));
       Region goalSearchHelper = new EllipsoidRegion(goal, Array.of(l -> goalSearchHelperRadius, goal.length()));
       anyTrajectoryPlanner.changeToGoal(rnGoal2, goalSearchHelper);
@@ -140,6 +140,7 @@ enum R2GlcAnyCircleCompareDemo {
       // gsw.append(owlyFrame.offscreen());
       // --
       // Standard:
+      rnGoal2 = new RnSimpleCircleGoalManager(goal, goalRadius);
       if (switchingRoot) {
         long ticStandard = System.nanoTime();
         standardTrajectoryPlanner = new StandardTrajectoryPlanner( //

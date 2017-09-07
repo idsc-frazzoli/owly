@@ -9,8 +9,6 @@ import java.util.Collection;
 import java.util.Objects;
 
 import ch.ethz.idsc.owly.math.state.StateTime;
-import ch.ethz.idsc.tensor.Tensor;
-import ch.ethz.idsc.tensor.opt.ConvexHull;
 
 public class GoalRender implements RenderInterface {
   private Collection<StateTime> collection;
@@ -23,13 +21,13 @@ public class GoalRender implements RenderInterface {
   public void render(OwlyLayer owlyLayer, Graphics2D graphics) {
     if (Objects.isNull(collection))
       return;
-    { // draw convex hull of goal points
-      Tensor points = Tensor.of(collection.stream().map(StateTime::state).map(x -> x.extract(0, 2)));
-      if (2 < points.length()) {
-        graphics.setColor(new Color(224, 168, 0, 128));
-        graphics.fill(owlyLayer.toPath2D(ConvexHull.of(points)));
-      }
-    }
+    // { // draw convex hull of goal points
+    // Tensor points = Tensor.of(collection.stream().map(StateTime::state).map(x -> x.extract(0, 2)));
+    // if (2 < points.length()) {
+    // graphics.setColor(new Color(224, 168, 0, 128));
+    // graphics.fill(owlyLayer.toPath2D(ConvexHull.of(points)));
+    // }
+    // }
     { // draw discovered points
       double radius = 9;
       double offset = -radius * 0.5;
