@@ -12,7 +12,7 @@ import ch.ethz.idsc.tensor.Tensor;
 /** planner is shared between
  * {@link StandardTrajectoryPlanner} and {@link AbstractAnyTrajectoryPlanner} */
 /* package */ abstract class AbstractTrajectoryPlanner extends TrajectoryPlanner {
-  private final StateIntegrator stateIntegrator;
+  protected final StateIntegrator stateIntegrator;
   private /* not final */ TrajectoryRegionQuery obstacleQuery;
   private /* not final */ GoalInterface goalInterface;
 

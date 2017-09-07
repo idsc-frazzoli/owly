@@ -32,7 +32,6 @@ import ch.ethz.idsc.tensor.Tensor;
  * Assumptions: -All states of all obstacles are known at all times
  * -No new Obstacles are discovered */
 public class OptimalAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
-  private final ControlsIntegrator controlsIntegrator;
   // CandidateMap saves neglected/pruned Nodes in a bucket for each domain
   private final Map<Tensor, Set<CandidatePair>> candidateMap = new HashMap<>();
 
@@ -43,8 +42,7 @@ public class OptimalAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
       TrajectoryRegionQuery obstacleQuery, //
       GoalInterface goalInterface //
   ) {
-    super(eta, stateIntegrator, obstacleQuery, goalInterface);
-    controlsIntegrator = new ControlsIntegrator(stateIntegrator, controls, goalInterface);
+    super(eta, stateIntegrator, controls, obstacleQuery, goalInterface);
   }
 
   @Override // from ExpandInterface
@@ -63,11 +61,10 @@ public class OptimalAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
         System.out.println("oldCost:  " + oldCost);
         System.out.println("oldHeuri: " + oldHeuristic);
         System.out.println("oldMerit: " + oldMerit);
-        System.out.println("oldState: " + next.stateTime().toInfoString());
-        System.out.println("oldCost:  " + newCost);
-        System.out.println("oldHeuri: " + newHeuristic);
-        System.out.println("oldMerit: " + newMerit);
-        
+        System.out.println("newState: " + next.stateTime().toInfoString());
+        System.out.println("newCost:  " + newCost);
+        System.out.println("newHeuri: " + newHeuristic);
+        System.out.println("newMerit: " + newMerit);
         throw new RuntimeException();
       }
     }

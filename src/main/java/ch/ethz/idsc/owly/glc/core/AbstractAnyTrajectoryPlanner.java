@@ -12,6 +12,7 @@ import ch.ethz.idsc.owly.data.tree.Nodes;
 import ch.ethz.idsc.owly.glc.adapter.HeuristicQ;
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
 import ch.ethz.idsc.owly.glc.adapter.TrajectoryGoalManager;
+import ch.ethz.idsc.owly.math.flow.Flow;
 import ch.ethz.idsc.owly.math.region.EmptyRegion;
 import ch.ethz.idsc.owly.math.region.InvertedRegion;
 import ch.ethz.idsc.owly.math.region.Region;
@@ -23,13 +24,19 @@ import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
 
 public abstract class AbstractAnyTrajectoryPlanner extends AbstractTrajectoryPlanner implements AnyPlannerInterface {
+  protected ControlsIntegrator controlsIntegrator;
+  private Collection<Flow> controls;
+
   protected AbstractAnyTrajectoryPlanner( //
       Tensor eta, //
       StateIntegrator stateIntegrator, //
+      Collection<Flow> controls, //
       TrajectoryRegionQuery obstacleQuery, //
       GoalInterface goalInterface //
   ) {
     super(eta, stateIntegrator, obstacleQuery, goalInterface);
+    controlsIntegrator = new ControlsIntegrator(stateIntegrator, controls, goalInterface);
+    this.controls = controls;
   }
 
   @Override
@@ -112,7 +119,7 @@ public abstract class AbstractAnyTrajectoryPlanner extends AbstractTrajectoryPla
       // boolean noHeuristic = ((getGoalInterface() instanceof NoHeuristic) && (newGoal instanceof NoHeuristic));
       // boolean noHeuristic = !getGoalInterface().hasHeuristic() && !newGoal.hasHeuristic();
       boolean noHeuristic = !HeuristicQ.of(getGoalInterface()) && !HeuristicQ.of(newGoal);
-      setGoalInterface(newGoal);
+      changeGoalInterface(newGoal);
       long tic = System.nanoTime();
       Collection<GlcNode> treeCollection = domainMap().values();
       setBestNull();
@@ -170,6 +177,11 @@ public abstract class AbstractAnyTrajectoryPlanner extends AbstractTrajectoryPla
     }
     System.out.println("*** Goalswitch finished in " + (System.nanoTime() - tictotal) * 1e-9 + "s ***");
     return false;
+  }
+
+  protected void changeGoalInterface(GoalInterface newGoal) {
+    setGoalInterface(newGoal);
+    controlsIntegrator = new ControlsIntegrator(stateIntegrator, controls, newGoal);
   }
 
   /** Checks if relabeling is needed for all domains with their Candidates and relabels those.
