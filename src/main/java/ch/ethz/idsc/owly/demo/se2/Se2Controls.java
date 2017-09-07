@@ -51,6 +51,7 @@ public enum Se2Controls {
     return controls.stream().map(Flow::getU).map(t -> t.Get(1).abs()).reduce(Max::of).get();
   }
 
+  // FIXME maxTurningrate is wrong
   /** @param controls
    * @return rad/s */
   public static Scalar maxTurning(Collection<Flow> controls) {

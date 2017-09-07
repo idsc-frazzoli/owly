@@ -14,6 +14,7 @@ import java.util.Queue;
 import java.util.TreeMap;
 
 import ch.ethz.idsc.owly.data.GlobalAssert;
+import ch.ethz.idsc.owly.glc.adapter.HeuristicQ;
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
 import ch.ethz.idsc.owly.glc.adapter.TrajectoryGoalManager;
 import ch.ethz.idsc.owly.math.TensorUnaryOperator;
@@ -191,7 +192,10 @@ public abstract class TrajectoryPlanner implements ExpandInterface<GlcNode>, Ser
       if (furthest.isPresent())
         return furthest;
     }
-    return getBestOrElsePeek();
+    if (HeuristicQ.of(getGoalInterface())) {
+      return getBestOrElsePeek();
+    }
+    return getBest();
   }
 
   /** @param stateTime to be checked if corresponds to an existing Node in tree

@@ -33,7 +33,7 @@ public class SimpleAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
       TrajectoryRegionQuery obstacleQuery, //
       GoalInterface goalInterface //
   ) {
-    super(eta, stateIntegrator, obstacleQuery, goalInterface);
+    super(eta, stateIntegrator, controls, obstacleQuery, goalInterface);
     controlsIntegrator = new ControlsIntegrator(stateIntegrator, controls, goalInterface);
   }
 

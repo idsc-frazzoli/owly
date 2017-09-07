@@ -55,7 +55,7 @@ enum DeltaGlcConstTimeHeuristicAnyDemo {
     System.out.println("***QUICK PLANNER FINISHED***");
     // -- SLOWPLANNER
     partitionScale = Tensors.vector(100, 100);
-    RationalScalar resolution = (RationalScalar) RationalScalar.of(13, 1);
+    RationalScalar resolution = (RationalScalar) RationalScalar.of(12, 1);
     TrajectoryPlannerContainer slowTrajectoryPlannerContainer = DeltaHelper.createGlcAny(RealScalar.of(-0.02), resolution, partitionScale);
     // -- GOALMANAGER
     Iterator<StateTime> iterator = quickTrajectory.iterator();
@@ -86,19 +86,19 @@ enum DeltaGlcConstTimeHeuristicAnyDemo {
       // --
       // -- ROOTCHANGE
       // TODO JONAS use Stopwatch
-      // long ticTemp = System.nanoTime();
-      // finalGoalNode = slowTrajectoryPlannerContainer.getTrajectoryPlanner().getFinalGoalNode();
-      // if (finalGoalNode.isPresent())
-      // trajectory = GlcNodes.getPathFromRootTo(finalGoalNode.get());
-      // System.out.println("trajectorys size: " + trajectory.size());
-      // if (trajectory.size() > 7) {
-      // //
-      // StateTime newRootState = trajectory.get(trajectory.size() > 7 ? 2 : 0);
-      // int increment = ((OptimalAnyTrajectoryPlanner) slowTrajectoryPlannerContainer.getTrajectoryPlanner()).switchRootToState(newRootState.state());
-      // slowTrajectoryPlannerContainer.getParameters().increaseDepthLimit(increment);
-      // }
-      // long tocTemp = System.nanoTime();
-      // System.out.println("Rootchange took: " + (tocTemp - ticTemp) * 1e-9 + "s");
+      long ticTemp = System.nanoTime();
+      finalGoalNode = slowTrajectoryPlannerContainer.getTrajectoryPlanner().getFinalGoalNode();
+      if (finalGoalNode.isPresent())
+        trajectory = GlcNodes.getPathFromRootTo(finalGoalNode.get());
+      System.out.println("trajectorys size: " + trajectory.size());
+      if (trajectory.size() > 7) {
+        //
+        StateTime newRootState = trajectory.get(trajectory.size() > 7 ? 1 : 0);
+        int increment = ((OptimalAnyTrajectoryPlanner) slowTrajectoryPlannerContainer.getTrajectoryPlanner()).switchRootToState(newRootState.state());
+        slowTrajectoryPlannerContainer.getParameters().increaseDepthLimit(increment);
+      }
+      long tocTemp = System.nanoTime();
+      System.out.println("Rootchange took: " + (tocTemp - ticTemp) * 1e-9 + "s");
       // // -- GOALCHANGE
       // // Goalchange here is not needed, as getFurthest Goal deasl with it,
       // tic = System.nanoTime();
@@ -123,7 +123,7 @@ enum DeltaGlcConstTimeHeuristicAnyDemo {
       // System.out.println("Goalchange took: " + (tocTemp - ticTemp) * 1e-9 + "s");
       // // --
       // -- EXPANDING
-      long ticTemp = System.nanoTime();
+      ticTemp = System.nanoTime();
       int expandIter = GlcExpand.constTime(slowTrajectoryPlannerContainer.getTrajectoryPlanner(), planningTime,
           slowTrajectoryPlannerContainer.getParameters().getDepthLimit());
       // int expandIter = GlcExpand.constTime(slowTrajectoryPlannerContainer.getTrajectoryPlanner(), //
@@ -131,7 +131,7 @@ enum DeltaGlcConstTimeHeuristicAnyDemo {
       Optional<StateTime> furthestState = ((OptimalAnyTrajectoryPlanner) slowTrajectoryPlannerContainer.getTrajectoryPlanner()).getFurthestGoalState();
       finalGoalNode = slowTrajectoryPlannerContainer.getTrajectoryPlanner().getFinalGoalNode();
       trajectory = GlcNodes.getPathFromRootTo(finalGoalNode.get());
-      long tocTemp = System.nanoTime();
+      tocTemp = System.nanoTime();
       System.out.println("Expanding " + expandIter + " Nodes took: " + (tocTemp - ticTemp) * 1e-9 + "s");
       long toc = System.nanoTime();
       owlyFrame.setGlc((TrajectoryPlanner) slowTrajectoryPlannerContainer.getTrajectoryPlanner());
@@ -142,7 +142,7 @@ enum DeltaGlcConstTimeHeuristicAnyDemo {
       DebugUtils.heuristicConsistencyCheck(slowTrajectoryPlannerContainer.getTrajectoryPlanner());
       if (!owlyFrame.jFrame.isVisible() || expandIter < 1)
         break;
-      Thread.sleep(1);
+      Thread.sleep(10000);
       Scalar slowCostFromRoot = slowTrajectoryPlannerContainer.getTrajectoryPlanner().getFinalGoalNode().get().costFromRoot();
       System.out.println("Quick planner Cost: " + quickCostFromRoot);
       System.out.println("Slow planner Cost : " + slowCostFromRoot);
