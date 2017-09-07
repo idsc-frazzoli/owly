@@ -78,15 +78,16 @@ public enum DeltaHelper {
   }
 
   static TrajectoryPlannerContainer createGlc(Scalar gradientAmp, RationalScalar resolution, Tensor partitionScale) throws Exception {
-    Scalar timeScale = RealScalar.of(5);
-    Scalar depthScale = RealScalar.of(10);
+    Scalar timeScale = RealScalar.of(60);
+    Scalar depthScale = RealScalar.of(100);
     // Tensor partitionScale = Tensors.vector(2e26, 2e26);
     Scalar dtMax = RationalScalar.of(1, 6);
     int maxIter = 2000;
     Tensor range = Tensors.vector(9, 6.5);
     ImageGradient ipr = new ImageGradient(ResourceData.of("/io/delta_uxy.png"), range, gradientAmp); // -.25 .5
-    Scalar maxInput = RealScalar.ONE;
+    Scalar maxInput = RealScalar.of(0.1);
     DeltaStateSpaceModel stateSpaceModel = new DeltaStateSpaceModel(ipr, maxInput);
+    System.out.println("MaxGradient of field is: " + ipr.maxNormGradient());
     Collection<Flow> controls = DeltaControls.createControls( //
         stateSpaceModel, maxInput, resolution.number().intValue());
     Parameters parameters = new DeltaParameters(resolution, timeScale, depthScale, //
@@ -109,15 +110,16 @@ public enum DeltaHelper {
   }
 
   static TrajectoryPlannerContainer createGlcAny(Scalar gradientAmp, RationalScalar resolution, Tensor partitionScale) throws Exception {
-    Scalar timeScale = RealScalar.of(1);
-    Scalar depthScale = RealScalar.of(10);
+    Scalar timeScale = RealScalar.of(40);
+    Scalar depthScale = RealScalar.of(100);
     // Tensor partitionScale = Tensors.vector(6e29, 6e29);
     Scalar dtMax = RationalScalar.of(1, 6);
     int maxIter = 2000;
     Tensor range = Tensors.vector(9, 6.5);
     ImageGradient ipr = new ImageGradient(ResourceData.of("/io/delta_uxy.png"), range, gradientAmp); // -.25 .5
-    Scalar maxInput = RealScalar.ONE;
+    Scalar maxInput = RealScalar.of(0.1);
     DeltaStateSpaceModel stateSpaceModel = new DeltaStateSpaceModel(ipr, maxInput);
+    System.out.println("MaxGradient of field is: " + ipr.maxNormGradient());
     Collection<Flow> controls = DeltaControls.createControls( //
         stateSpaceModel, maxInput, resolution.number().intValue());
     Parameters parameters = new DeltaParameters(resolution, timeScale, depthScale, //

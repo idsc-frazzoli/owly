@@ -9,6 +9,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.PriorityQueue;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -75,7 +76,7 @@ public class OptimalAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
           final CandidatePair nextCandidatePair = candidateQueue.poll();
           final GlcNode formerLabel = getNode(domainKey);
           final GlcNode next = nextCandidatePair.getCandidate();
-          if (formerLabel != null) {
+          if (Objects.nonNull(formerLabel)) {
             if (Scalars.lessThan(next.merit(), formerLabel.merit())) {
               // collision check only if new node is better
               if (getObstacleQuery().isDisjoint(connectors.get(next))) {// better node not collision
@@ -94,7 +95,7 @@ public class OptimalAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
                 // adding next to tree and DomainMap
                 insertNodeInTree(nextParent, next);
                 // removing the nextCandidate from bucket of this domain as new is label
-                candidateMap.get(domainKey).remove(nextCandidatePair);
+                candidateMap.get(domainKey).remove(nextCandidatePair); // TODO JAN: time intense?
                 // GOAL check
                 if (!getGoalInterface().isDisjoint(connectors.get(next)))
                   offerDestination(next, connectors.get(next));
@@ -114,7 +115,7 @@ public class OptimalAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
                 throw new RuntimeException();
               }
               // removing the nextCandidate from bucket of this domain as new is label
-              candidateMap.get(domainKey).remove(nextCandidatePair);
+              candidateMap.get(domainKey).remove(nextCandidatePair); // TODO JAN time intense?
               // GOAL check
               if (!getGoalInterface().isDisjoint(connectors.get(next)))
                 offerDestination(next, connectors.get(next));

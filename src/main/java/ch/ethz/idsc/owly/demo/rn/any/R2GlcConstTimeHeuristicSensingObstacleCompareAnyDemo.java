@@ -1,6 +1,11 @@
 // code by jl
 package ch.ethz.idsc.owly.demo.rn.any;
 
+import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardOpenOption;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
@@ -9,7 +14,8 @@ import ch.ethz.idsc.owly.demo.rn.EuclideanDistanceDiscoverRegion;
 import ch.ethz.idsc.owly.demo.rn.R2Controls;
 import ch.ethz.idsc.owly.demo.rn.R2NoiseRegion;
 import ch.ethz.idsc.owly.demo.rn.R2Parameters;
-import ch.ethz.idsc.owly.demo.rn.RnSimpleCircleGoalManager;
+import ch.ethz.idsc.owly.demo.rn.RnSimpleCircleHeuristicGoalManager;
+import ch.ethz.idsc.owly.demo.util.UserHome;
 import ch.ethz.idsc.owly.glc.adapter.Parameters;
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
 import ch.ethz.idsc.owly.glc.adapter.StateTimeTrajectories;
@@ -60,7 +66,7 @@ enum R2GlcConstTimeHeuristicSensingObstacleCompareAnyDemo {
     Collection<Flow> controls = R2Controls.createRadial(parameters.getResolutionInt());
     // Creating Goals
     Tensor startState = Tensors.vector(-3, 0);
-    RnSimpleCircleGoalManager rnGoal = new RnSimpleCircleGoalManager(Tensors.vector(10, -4), RealScalar.of(0.3));
+    RnSimpleCircleHeuristicGoalManager rnGoal = new RnSimpleCircleHeuristicGoalManager(Tensors.vector(10, 0), RealScalar.of(0.3));
     Region environmentRegion = new R2NoiseRegion(0.1);
     TrajectoryRegionQuery obstacleQuery = //
         new SimpleTrajectoryRegionQuery(new TimeInvariantRegion(//
@@ -69,7 +75,7 @@ enum R2GlcConstTimeHeuristicSensingObstacleCompareAnyDemo {
     AnyPlannerInterface anyTrajectoryPlanner = new OptimalAnyTrajectoryPlanner( //
         parameters.getEta(), stateIntegrator, controls, obstacleQuery, rnGoal);
     anyTrajectoryPlanner.switchRootToState(startState);
-    GlcExpand.constTime(anyTrajectoryPlanner, runTime, parameters.getDepthLimit());
+    GlcExpand.maxDepth(anyTrajectoryPlanner, parameters.getDepthLimit());
     // --
     Optional<GlcNode> finalGoalNode = anyTrajectoryPlanner.getFinalGoalNode();
     List<StateTime> trajectory = GlcNodes.getPathFromRootTo(finalGoalNode.get());
@@ -78,18 +84,24 @@ enum R2GlcConstTimeHeuristicSensingObstacleCompareAnyDemo {
     owlyFrame.configCoordinateOffset(400, 400);
     owlyFrame.jFrame.setBounds(0, 0, 800, 800);
     owlyFrame.setGlc((TrajectoryPlanner) anyTrajectoryPlanner);
+    Path path = UserHome.file("R2Comparison.csv").toPath();
+    List<String> lines = Arrays.asList("timeStandard, timeDiff, iterationsDiff, CostDiff");
+    Files.write(path, lines, Charset.forName("UTF-8"));
     // -- Anytime loop
     for (int i = 0; i < 10; i++) {
       // while (!finalGoalFound) {
       Thread.sleep(1);
       // ANY
-      long ticAny = System.nanoTime();
       // -- ROOTCHANGE
       finalGoalNode = anyTrajectoryPlanner.getFinalGoalNode();
       if (finalGoalNode.isPresent())
         trajectory = GlcNodes.getPathFromRootTo(finalGoalNode.get());
       System.out.println("trajectorys size: " + trajectory.size());
       StateTime newRootState = null;
+      TrajectoryRegionQuery newObstacleQuery = //
+          new SimpleTrajectoryRegionQuery(new TimeInvariantRegion(//
+              EuclideanDistanceDiscoverRegion.of(environmentRegion, trajectory.get(0).state(), RealScalar.of(4))));
+      long ticAny = System.nanoTime();
       if (trajectory.size() > 5) {
         //
         newRootState = trajectory.get(trajectory.size() > 3 ? 3 : 0);
@@ -97,19 +109,16 @@ enum R2GlcConstTimeHeuristicSensingObstacleCompareAnyDemo {
         parameters.increaseDepthLimit(increment);
       }
       // -- OBSTACLE CHANGE
-      TrajectoryRegionQuery newObstacleQuery = //
-          new SimpleTrajectoryRegionQuery(new TimeInvariantRegion(//
-              EuclideanDistanceDiscoverRegion.of(environmentRegion, trajectory.get(0).state(), RealScalar.of(4))));
       anyTrajectoryPlanner.obstacleUpdate(newObstacleQuery, new SphericalRegion(trajectory.get(0).state(), RealScalar.of(4).add(RealScalar.ONE)));
       // -- EXPANDING
-      int itersAny = GlcExpand.constTime(anyTrajectoryPlanner, runTime, parameters.getDepthLimit());
-      owlyFrame.setGlc((TrajectoryPlanner) anyTrajectoryPlanner);
+      int itersAny = GlcExpand.maxDepth(anyTrajectoryPlanner, parameters.getDepthLimit());
       // check if furthest Goal is already in last Region in List
       trajectory = GlcNodes.getPathFromRootTo(finalGoalNode.get());
       // --
       long tocAny = System.nanoTime();
+      owlyFrame.setGlc((TrajectoryPlanner) anyTrajectoryPlanner);
       // DEFAULT:
-      long ticStandard = tocAny;
+      long ticStandard = System.nanoTime();
       int itersStandard = 0;
       StandardTrajectoryPlanner standardTrajectoryPlanner = null;
       if (newRootState != null) {
@@ -135,6 +144,12 @@ enum R2GlcConstTimeHeuristicSensingObstacleCompareAnyDemo {
         staCost = standardTrajectoryPlanner.getBest().get().costFromRoot();
       System.out.println("STA: " + staCost);
       System.out.println("*****Finished*****");
+      lines = Arrays
+          .asList(String.join(",", staTimeDiff.toString(), anyTimeDiff.subtract(staTimeDiff).divide(staTimeDiff).multiply(RealScalar.of(100)).toString(), //
+              RealScalar.of(itersAny).subtract(RealScalar.of(itersStandard)).divide(RealScalar.of(itersStandard)).multiply(RealScalar.of(100)).number()
+                  .toString(), //
+              anyCost.subtract(staCost).divide(staCost).multiply(RealScalar.of(100)).toString()));
+      Files.write(path, lines, Charset.forName("UTF-8"), StandardOpenOption.APPEND);
       DebugUtils.heuristicConsistencyCheck((TrajectoryPlanner) anyTrajectoryPlanner);
       if (!owlyFrame.jFrame.isVisible() || itersAny < 1)
         break;
