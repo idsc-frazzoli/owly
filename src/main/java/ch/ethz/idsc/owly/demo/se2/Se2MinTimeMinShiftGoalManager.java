@@ -23,7 +23,7 @@ import ch.ethz.idsc.tensor.sca.Ramp;
  * The cost does not account for curvature. */
 @DontModify
 public final class Se2MinTimeMinShiftGoalManager extends Se2AbstractGoalManager {
-  private static final Scalar SHIFT_PENALTY = RealScalar.of(.4);
+  public static final Scalar SHIFT_PENALTY = RealScalar.of(.4);
 
   public static GoalInterface create(Tensor goal, Tensor radiusVector, Collection<Flow> controls) {
     return new Se2MinTimeMinShiftGoalManager(goal, radiusVector, controls).getGoalInterface();
