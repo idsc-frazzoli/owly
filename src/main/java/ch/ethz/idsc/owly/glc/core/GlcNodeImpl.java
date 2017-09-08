@@ -25,7 +25,11 @@ import ch.ethz.idsc.tensor.Tensor;
    * not final, as changed when central node are made root */
   private Flow flow;
   private final StateTime stateTime;
+  /** accumulation of costs from root to this node.
+   * costFromRoot only depends on the past {@link StateTime}s and {@link Flow}s.
+   * costFromRoot is independent of a "goal". */
   private Scalar costFromRoot;
+  /** merit == costFromRoot + "Heuristic.minCostToGoal" */
   private Scalar merit;
   /** depth == 0 for root node, otherwise depth > 0 */
   private int depth = 0;
@@ -56,6 +60,12 @@ import ch.ethz.idsc.tensor.Tensor;
     return costFromRoot;
   }
 
+  /* at the moment both functions
+   * protected_insertChild, and protected_removeChild
+   * are used to _temporarily_ alter the tree structure
+   * when undoing the connectivity change the original
+   * content is required, therefore content is not deleted.
+   * instead use makeRoot() for instance. */
   @Override // from AbstractNode
   protected boolean protected_insertChild(GlcNode child) {
     boolean inserted = !children.containsKey(child.flow());
@@ -68,8 +78,6 @@ import ch.ethz.idsc.tensor.Tensor;
   protected final boolean protected_removeChild(GlcNode child) {
     boolean removed = children.containsKey(child.flow());
     children.remove(child.flow());
-    // TODO JONAS / JAN why does this fail in R2GlcAnyAnimationDemo
-    // ((GlcNodeImpl) child).flow = null;
     return removed;
   }
 

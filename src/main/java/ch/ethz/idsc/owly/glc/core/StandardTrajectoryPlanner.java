@@ -67,7 +67,7 @@ public class StandardTrajectoryPlanner extends AbstractTrajectoryPlanner {
               /** removal from queue is unsure; needs to be checked with theory. */
               boolean removed = queue().remove(formerLabel);
               if (!removed) {
-                System.err.println("miss: " + domainKey + " " + formerLabel.stateTime());
+                System.err.println("miss: " + domainKey + " " + formerLabel.stateTime().toInfoString());
                 // GlobalAssert.that(removed);
               }
               formerLabel.parent().removeEdgeTo(formerLabel);
