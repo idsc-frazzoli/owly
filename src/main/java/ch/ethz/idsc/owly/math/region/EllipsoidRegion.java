@@ -27,7 +27,7 @@ public class EllipsoidRegion extends ImplicitFunctionRegion {
    * @param center of the ellipsoid
    * @param radius of the different axes with same number of entries as center
    * all components of radius must be strictly positive.
-   * if a component of radius is RealScalar.POSITIVE_INFINITY, this corresponds to a cylinder
+   * if a component of radius is DoubleScalar.POSITIVE_INFINITY, this corresponds to a cylinder
    * @see SphericalRegion */
   public EllipsoidRegion(Tensor center, Tensor radius) {
     if (center.length() != radius.length())

@@ -247,6 +247,7 @@ public class OptimalAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
     if (newObstacle == this.getObstacleQuery() || newObstacle == null) {
       return;
     }
+    // TODO detect if no obstacles have moved --> do not check for collision
     long tictotal = System.nanoTime();
     System.out.println("*** OBSTACLE UPDATE ***");
     long tic = System.nanoTime();

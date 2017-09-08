@@ -191,6 +191,8 @@ public abstract class TrajectoryPlanner implements ExpandInterface<GlcNode>, Ser
       Optional<GlcNode> furthest = getFurthestGoalNode();
       if (furthest.isPresent())
         return furthest;
+      else // if TrajectoryGoalManager is used, the heuristic will not be "good enough for guidance"
+        return getBest();
     }
     if (HeuristicQ.of(getGoalInterface())) {
       return getBestOrElsePeek();
