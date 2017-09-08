@@ -1,7 +1,6 @@
 // code by jph
 package ch.ethz.idsc.owly.gui.ani;
 
-import java.awt.BorderLayout;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
@@ -16,13 +15,6 @@ import java.util.Optional;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import javax.swing.JButton;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JToolBar;
-import javax.swing.WindowConstants;
-
 import ch.ethz.idsc.owly.data.GlobalAssert;
 import ch.ethz.idsc.owly.data.TimeKeeper;
 import ch.ethz.idsc.owly.data.tree.Nodes;
@@ -32,10 +24,10 @@ import ch.ethz.idsc.owly.glc.core.GlcNode;
 import ch.ethz.idsc.owly.glc.core.GlcNodes;
 import ch.ethz.idsc.owly.glc.core.TrajectoryPlanner;
 import ch.ethz.idsc.owly.glc.core.TrajectorySample;
+import ch.ethz.idsc.owly.gui.BaseFrame;
 import ch.ethz.idsc.owly.gui.EtaRender;
 import ch.ethz.idsc.owly.gui.GoalRender;
 import ch.ethz.idsc.owly.gui.ObstacleRender;
-import ch.ethz.idsc.owly.gui.OwlyComponent;
 import ch.ethz.idsc.owly.gui.RenderElements;
 import ch.ethz.idsc.owly.gui.RenderInterface;
 import ch.ethz.idsc.owly.gui.TrajectoryRender;
@@ -53,10 +45,7 @@ import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
 
 // EXPERIMENTAL API not finalized 
-public class OwlyAnimationFrame {
-  public final JFrame jFrame = new JFrame();
-  private final OwlyComponent owlyComponent = new OwlyComponent();
-  private final JLabel jLabel = new JLabel();
+public class OwlyAnimationFrame extends BaseFrame {
   private final Timer timer = new Timer();
   // ---
   private final EtaRender etaRender = new EtaRender(Tensors.empty());
@@ -72,23 +61,6 @@ public class OwlyAnimationFrame {
   private TrajectoryRegionQuery obstacleQuery = null;
 
   public OwlyAnimationFrame() {
-    { // install frame components
-      JPanel jPanel = new JPanel(new BorderLayout());
-      {
-        JToolBar jToolBar = new JToolBar();
-        jToolBar.setFloatable(false);
-        { // TODO no toolbar is added
-          JButton jButton = new JButton("save2png");
-          jButton.setToolTipText("file is created in Pictures/...");
-          jToolBar.add(jButton);
-        }
-      }
-      jPanel.add(owlyComponent.jComponent, BorderLayout.CENTER);
-      jPanel.add(jLabel, BorderLayout.SOUTH);
-      jFrame.setContentPane(jPanel);
-    }
-    jFrame.setBounds(100, 50, 800, 800); // default, can be changed if necessary
-    jFrame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
     owlyComponent.renderElements = new RenderElements();
     owlyComponent.renderElements.list.add(etaRender);
     owlyComponent.renderElements.list.add(trajectoryRender);
@@ -266,9 +238,5 @@ public class OwlyAnimationFrame {
       RenderInterface renderInterface = (RenderInterface) animationInterface;
       owlyComponent.renderElements.list.add(renderInterface);
     }
-  }
-
-  public void configCoordinateOffset(int px, int py) {
-    owlyComponent.setOffset(Tensors.vector(px, py));
   }
 }

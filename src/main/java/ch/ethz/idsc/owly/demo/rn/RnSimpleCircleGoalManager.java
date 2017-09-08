@@ -20,6 +20,7 @@ import ch.ethz.idsc.tensor.red.Norm;
 
 /** objective is minimum path length
  * path length is measured in Euclidean distance */
+// TODO HOLD rename to RnNoHeuristicCircleGoalManager
 public class RnSimpleCircleGoalManager extends SimpleTrajectoryRegionQuery implements GoalInterface {
   /** constructor creates a spherical region in R^n with given center and radius.
    * distance measure is Euclidean distance.

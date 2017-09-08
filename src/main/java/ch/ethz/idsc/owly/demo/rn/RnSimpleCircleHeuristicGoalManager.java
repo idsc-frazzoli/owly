@@ -1,4 +1,4 @@
-// code by jph & jl
+// code by jph and jl
 package ch.ethz.idsc.owly.demo.rn;
 
 import java.util.List;
@@ -21,6 +21,7 @@ import ch.ethz.idsc.tensor.sca.Ramp;
 
 /** objective is minimum path length
  * path length is measured in Euclidean distance */
+// TODO HOLD rename to RnMinDistCircleGoalManager
 public class RnSimpleCircleHeuristicGoalManager extends SimpleTrajectoryRegionQuery implements GoalInterface {
   private final Tensor center;
   private final Scalar radius;
