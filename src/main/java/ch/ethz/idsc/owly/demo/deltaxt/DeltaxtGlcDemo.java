@@ -44,7 +44,7 @@ enum DeltaxtGlcDemo {
   public static void main(String[] args) throws Exception {
     // SETUP
     RationalScalar resolution = (RationalScalar) RationalScalar.of(12, 1);
-    Tensor partitionScale = Tensors.vector(4e9, 4e9, 4e9);
+    Tensor partitionScale = Tensors.vector(2e12, 2e12, 2e12);
     Scalar timeScale = RealScalar.of(5);
     Scalar depthScale = RealScalar.of(10);
     Scalar dtMax = RationalScalar.of(1, 6);
@@ -93,7 +93,7 @@ enum DeltaxtGlcDemo {
     owlyFrame.configCoordinateOffset(33, 416);
     owlyFrame.jFrame.setBounds(100, 100, 620, 475);
     owlyFrame.addBackground(imageRegion);
-    owlyFrame.addTrajectory(dinghyTrajectory, new Color(224, 168, 0, 224)); // add goalTrajectory Goalcolor
+    owlyFrame.addTrajectory(dinghyTrajectory, new Color(224, 168, 0, 224));
     while (!trajectoryPlanner.getBest().isPresent() && owlyFrame.jFrame.isVisible()) {
       GlcExpand.maxSteps(trajectoryPlanner, 30, parameters.getDepthLimit());
       owlyFrame.setGlc(trajectoryPlanner);
@@ -101,6 +101,8 @@ enum DeltaxtGlcDemo {
       DebugUtils.heuristicConsistencyCheck(trajectoryPlanner);
       if (trajectoryPlanner.getQueue().isEmpty())
         break;
+      if (trajectoryPlanner.getBest().isPresent())
+        owlyFrame.addTrajectory(dinghyTrajectory, new Color(224, 168, 0, 224));
     }
   }
 }

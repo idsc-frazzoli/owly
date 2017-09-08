@@ -11,6 +11,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
+import ch.ethz.idsc.owly.demo.rn.EuclideanDistanceDiscoverRegion;
 import ch.ethz.idsc.owly.demo.rn.R2Controls;
 import ch.ethz.idsc.owly.demo.rn.RnSimpleCircleHeuristicGoalManager;
 import ch.ethz.idsc.owly.demo.se2.Se2Controls;
@@ -38,6 +39,8 @@ import ch.ethz.idsc.owly.math.flow.EulerIntegrator;
 import ch.ethz.idsc.owly.math.flow.Flow;
 import ch.ethz.idsc.owly.math.flow.RungeKutta45Integrator;
 import ch.ethz.idsc.owly.math.region.EllipsoidRegion;
+import ch.ethz.idsc.owly.math.region.EmptyRegion;
+import ch.ethz.idsc.owly.math.region.InvertedRegion;
 import ch.ethz.idsc.owly.math.region.Region;
 import ch.ethz.idsc.owly.math.state.FixedStateIntegrator;
 import ch.ethz.idsc.owly.math.state.SimpleEpisodeIntegrator;
@@ -68,9 +71,9 @@ public class Se2AnyEntity extends AbstractAnyEntity {
   private static final Se2Wrap SE2WRAP = new Se2Wrap(Tensors.vector(1, 1, 2));
   // ---
   private final Tensor goalRadius;
-  private static final Scalar DELAY_HINT = RealScalar.of(2);
-  private static final Scalar EXPAND_TIME = RealScalar.of(1.75);
-  private TrajectoryRegionQuery obstacleQuery;
+  private static final Scalar DELAY_HINT = RealScalar.of(1.5);
+  private static final Scalar EXPAND_TIME = RealScalar.of(1);
+  private Region environmentRegion;
 
   /** @param state initial position of entity */
   public Se2AnyEntity(Tensor state, int resolution) {
@@ -79,7 +82,7 @@ public class Se2AnyEntity extends AbstractAnyEntity {
         new Se2Parameters( //
             (RationalScalar) RealScalar.of(resolution), // resolution
             RealScalar.of(2), // TimeScale
-            RealScalar.of(100), // DepthScale
+            RealScalar.of(200), // DepthScale
             Tensors.vector(5, 5, 50 / Math.PI), // PartitionScale 50/pi == 15.9155
             RationalScalar.of(1, 6), // dtMax
             2000, // maxIter
@@ -143,6 +146,10 @@ public class Se2AnyEntity extends AbstractAnyEntity {
     // return new Se2MinDistGoalManager(goal, goalRadius).getGoalInterface();
   }
 
+  protected Region createGoalCheckHelp(Tensor goal) {
+    return new InvertedRegion(EmptyRegion.INSTANCE);
+  }
+
   protected final GoalInterface createGoalFromR2(Tensor goal) {
     Tensor currentState = getEstimatedLocationAt(DELAY_HINT).extract(0, 2);
     Tensor r2goal = goal.extract(0, 2);
@@ -154,8 +161,11 @@ public class Se2AnyEntity extends AbstractAnyEntity {
     Collection<Flow> controlsR2 = R2Controls.createRadial(10);
     RnSimpleCircleHeuristicGoalManager rnGoal = new RnSimpleCircleHeuristicGoalManager(r2goal, goalRadius.Get(0));
     // ---
+    TrajectoryRegionQuery obstacleQueryR2 = new SimpleTrajectoryRegionQuery(new TimeInvariantRegion(//
+        EuclideanDistanceDiscoverRegion.of(environmentRegion, currentState, RealScalar.of(2))));
+    obstacleQueryR2 = new SimpleTrajectoryRegionQuery(new TimeInvariantRegion(environmentRegion));
     TrajectoryPlanner trajectoryPlanner = new StandardTrajectoryPlanner( //
-        eta, stateIntegratorR2, controlsR2, obstacleQuery, rnGoal);
+        eta, stateIntegratorR2, controlsR2, obstacleQueryR2, rnGoal);
     List<StateTime> currentStateList = new ArrayList<StateTime>();
     currentStateList.add(new StateTime(currentState, RealScalar.ZERO));
     if (!rnGoal.isDisjoint(currentStateList)) {
@@ -183,9 +193,17 @@ public class Se2AnyEntity extends AbstractAnyEntity {
   }
 
   @Override
-  protected TrajectoryRegionQuery initializeObstacle(Region region, Tensor currentState) {
-    obstacleQuery = new SimpleTrajectoryRegionQuery(new TimeInvariantRegion(region));
-    return obstacleQuery;
+  protected TrajectoryRegionQuery initializeObstacle(Region oldEnvironmentRegion, Tensor currentState) {
+    environmentRegion = oldEnvironmentRegion;
+    return new SimpleTrajectoryRegionQuery(new TimeInvariantRegion(oldEnvironmentRegion));
+    // return updateObstacle(oldEnvironmentRegion, currentState);
+  }
+
+  @Override
+  protected TrajectoryRegionQuery updateObstacle(Region oldEnvironmentRegion, Tensor currentState) {
+    environmentRegion = oldEnvironmentRegion; // environment stays the same
+    return new SimpleTrajectoryRegionQuery(new TimeInvariantRegion(//
+        EuclideanDistanceDiscoverRegion.of(oldEnvironmentRegion, currentState, RealScalar.of(4.5))));
   }
 
   @Override

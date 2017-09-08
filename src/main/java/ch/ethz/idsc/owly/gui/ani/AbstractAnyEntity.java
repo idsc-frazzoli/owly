@@ -50,6 +50,7 @@ public abstract class AbstractAnyEntity extends AbstractEntity {
       Scalar delayHint, Scalar expandTime) {
     super(episodeIntegrator);
     this.parameters = parameters;
+    System.out.println("Partitions in unit length:" + parameters.getEta());
     this.controls = controls;
     this.delayHint = delayHint;
     this.expandTime = expandTime;
@@ -83,7 +84,7 @@ public abstract class AbstractAnyEntity extends AbstractEntity {
   /** Creates the GoalCheckHelperRegion
    * 
    * @param goal Tensor with center location of Goal
-   * @return A Rwegion, which includes ALL GLcNodes, which could be followed by a trajectory, leading to the Goal */
+   * @return A Region, which includes ALL GLcNodes, which could be followed by a trajectory, leading to the Goal */
   protected Region createGoalCheckHelp(Tensor goal) {
     return new InvertedRegion(EmptyRegion.INSTANCE);
   }
@@ -184,8 +185,8 @@ public abstract class AbstractAnyEntity extends AbstractEntity {
    * @param region
    * @param currentState
    * @return ObstacleQuery */
-  protected TrajectoryRegionQuery initializeObstacle(Region region, Tensor currentState) {
-    return new SimpleTrajectoryRegionQuery(new TimeInvariantRegion(region));
+  protected TrajectoryRegionQuery initializeObstacle(Region oldEnvironmentRegion, Tensor currentState) {
+    return new SimpleTrajectoryRegionQuery(new TimeInvariantRegion(oldEnvironmentRegion));
   }
 
   @Override
