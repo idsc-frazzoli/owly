@@ -36,7 +36,8 @@ enum R2PointsDemo {
     Tensor partitionScale = Tensors.vector(5, 5);
     StateIntegrator stateIntegrator = FixedStateIntegrator.create(EulerIntegrator.INSTANCE, RationalScalar.of(1, 8), 4);
     Collection<Flow> controls = R2Controls.createRadial(20);
-    GoalInterface rnGoal = RnMinDistSphericalGoalManager.create(Tensors.vector(5, 5), DoubleScalar.of(.2));
+    GoalInterface goalInterface = //
+        RnMinDistSphericalGoalManager.create(Tensors.vector(5, 5), DoubleScalar.of(.2));
     // Tensors.matrix(new Number[][] { //
     // { 2.5, 1 }, { 2.5, 0 }, { 1.5, -1.5 }, { 0, 2 }, { 3.5, -0.5 } //
     // });
@@ -45,7 +46,7 @@ enum R2PointsDemo {
             RnPointclouds.createRandomRegion(10, Tensors.vector(0, 0), Tensors.vector(4, 4), RealScalar.of(0.6))));
     // ---
     TrajectoryPlanner trajectoryPlanner = new StandardTrajectoryPlanner( //
-        partitionScale, stateIntegrator, controls, obstacleQuery, rnGoal);
+        partitionScale, stateIntegrator, controls, obstacleQuery, goalInterface);
     trajectoryPlanner.insertRoot(Tensors.vector(-0.5, -0.5));
     int iters = Expand.maxSteps(trajectoryPlanner, 1000);
     System.out.println(iters);

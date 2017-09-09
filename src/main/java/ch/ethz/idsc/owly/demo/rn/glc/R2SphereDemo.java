@@ -37,7 +37,8 @@ enum R2SphereDemo {
     Tensor partitionScale = Tensors.vector(3.5, 4);
     StateIntegrator stateIntegrator = FixedStateIntegrator.create(EulerIntegrator.INSTANCE, RationalScalar.of(1, 8), 5);
     Collection<Flow> controls = R2Controls.createRadial(20);
-    GoalInterface rnGoal = RnMinDistSphericalGoalManager.create(Tensors.vector(5, 0), DoubleScalar.of(0.5));
+    GoalInterface goalInterface = //
+        RnMinDistSphericalGoalManager.create(Tensors.vector(5, 0), DoubleScalar.of(0.5));
     TrajectoryRegionQuery obstacleQuery = //
         new SimpleTrajectoryRegionQuery(new TimeInvariantRegion( //
             RegionUnion.of( //
@@ -46,7 +47,7 @@ enum R2SphereDemo {
             )));
     // ---
     TrajectoryPlanner trajectoryPlanner = new StandardTrajectoryPlanner( //
-        partitionScale, stateIntegrator, controls, obstacleQuery, rnGoal);
+        partitionScale, stateIntegrator, controls, obstacleQuery, goalInterface);
     trajectoryPlanner.insertRoot(Tensors.vector(0, 0));
     int iters = Expand.steps(trajectoryPlanner, 200);
     GlobalAssert.that(iters == 200);

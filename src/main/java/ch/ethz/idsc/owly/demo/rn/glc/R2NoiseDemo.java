@@ -47,14 +47,14 @@ enum R2NoiseDemo {
     final Tensor center = Tensors.vector(10, 0);
     final Scalar radius = DoubleScalar.of(.2);
     CostFunction costFunction = new R2NoiseCostFunction(threshold.subtract(RealScalar.of(.3)));
-    GoalInterface rnGoal = //
+    GoalInterface goalInterface = //
         new RnMinDistExtraCostGoalManager(center, radius, costFunction);
     // RnMinDistSphericalGoalManager.create(center, radius);
     TrajectoryRegionQuery obstacleQuery = //
         new SimpleTrajectoryRegionQuery(new TimeInvariantRegion(region));
     // ---
     TrajectoryPlanner trajectoryPlanner = new StandardTrajectoryPlanner( //
-        partitionScale, stateIntegrator, controls, obstacleQuery, rnGoal);
+        partitionScale, stateIntegrator, controls, obstacleQuery, goalInterface);
     trajectoryPlanner.insertRoot(Tensors.vector(0, 0));
     Stopwatch stopwatch = Stopwatch.started();
     int iters = Expand.maxSteps(trajectoryPlanner, 10000);

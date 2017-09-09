@@ -7,9 +7,12 @@ import java.awt.geom.Ellipse2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.util.Collection;
+import java.util.Objects;
 
 import ch.ethz.idsc.owly.demo.rn.R2Controls;
+import ch.ethz.idsc.owly.demo.rn.RnMinDistExtraCostGoalManager;
 import ch.ethz.idsc.owly.demo.rn.RnMinDistSphericalGoalManager;
+import ch.ethz.idsc.owly.glc.core.CostFunction;
 import ch.ethz.idsc.owly.glc.core.GoalInterface;
 import ch.ethz.idsc.owly.glc.core.StandardTrajectoryPlanner;
 import ch.ethz.idsc.owly.glc.core.TrajectoryPlanner;
@@ -24,7 +27,6 @@ import ch.ethz.idsc.owly.math.state.SimpleEpisodeIntegrator;
 import ch.ethz.idsc.owly.math.state.StateIntegrator;
 import ch.ethz.idsc.owly.math.state.StateTime;
 import ch.ethz.idsc.owly.math.state.TrajectoryRegionQuery;
-import ch.ethz.idsc.tensor.DoubleScalar;
 import ch.ethz.idsc.tensor.RationalScalar;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
@@ -39,6 +41,7 @@ import ch.ethz.idsc.tensor.red.Norm2Squared;
   private static final Scalar DELAY_HINT = RealScalar.of(.5);
   // ---
   private final Collection<Flow> controls = R2Controls.createRadial(36); // TODO magic const
+  private final Scalar goalRadius = RealScalar.of(.2); // TODO magic const
 
   /** @param state initial position of entity */
   public R2Entity(Tensor state) {
@@ -68,15 +71,19 @@ import ch.ethz.idsc.tensor.red.Norm2Squared;
     return PlannerType.STANDARD;
   }
 
+  public CostFunction costFunction = null;
+
   @Override
   public TrajectoryPlanner createTrajectoryPlanner(TrajectoryRegionQuery obstacleQuery, Tensor goal) {
     Tensor partitionScale = Tensors.vector(8, 8);
     StateIntegrator stateIntegrator = //
         FixedStateIntegrator.create(EulerIntegrator.INSTANCE, RationalScalar.of(1, 12), 4);
-    GoalInterface rnGoal = //
-        RnMinDistSphericalGoalManager.create(goal.extract(0, 2), DoubleScalar.of(.2));
+    final Tensor center = goal.extract(0, 2);
+    GoalInterface goalInterface = Objects.isNull(costFunction) ? //
+        RnMinDistSphericalGoalManager.create(center, goalRadius) : //
+        new RnMinDistExtraCostGoalManager(center, goalRadius, costFunction);
     return new StandardTrajectoryPlanner( //
-        partitionScale, stateIntegrator, controls, obstacleQuery, rnGoal);
+        partitionScale, stateIntegrator, controls, obstacleQuery, goalInterface);
   }
 
   @Override

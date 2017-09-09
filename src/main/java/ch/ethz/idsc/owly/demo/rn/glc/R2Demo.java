@@ -53,10 +53,10 @@ enum R2Demo {
     Tensor eta = Tensors.vector(8, 8);
     StateIntegrator stateIntegrator = FixedStateIntegrator.create(EulerIntegrator.INSTANCE, RationalScalar.of(1, 5), 5);
     Collection<Flow> controls = R2Controls.createRadial(36);
-    GoalInterface rnGoal = RnMinDistSphericalGoalManager.create(stateGoal, radius);
+    GoalInterface goalInterface = RnMinDistSphericalGoalManager.create(stateGoal, radius);
     // ---
     TrajectoryPlanner trajectoryPlanner = new StandardTrajectoryPlanner( //
-        eta, stateIntegrator, controls, obstacleQuery, rnGoal);
+        eta, stateIntegrator, controls, obstacleQuery, goalInterface);
     trajectoryPlanner.insertRoot(stateRoot);
     int iters = Expand.maxSteps(trajectoryPlanner, 200);
     System.out.println("iterations " + iters);

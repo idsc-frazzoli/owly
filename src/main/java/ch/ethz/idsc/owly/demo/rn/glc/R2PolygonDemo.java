@@ -35,7 +35,8 @@ enum R2PolygonDemo {
     Tensor partitionScale = Tensors.vector(5, 5);
     StateIntegrator stateIntegrator = FixedStateIntegrator.create(EulerIntegrator.INSTANCE, RationalScalar.of(1, 8), 4);
     Collection<Flow> controls = R2Controls.createRadial(20);
-    GoalInterface rnGoal = RnMinDistSphericalGoalManager.create(Tensors.vector(5, 5), DoubleScalar.of(.2));
+    GoalInterface goalInterface = //
+        RnMinDistSphericalGoalManager.create(Tensors.vector(5, 5), DoubleScalar.of(.2));
     TrajectoryRegionQuery obstacleQuery = //
         new SimpleTrajectoryRegionQuery(new TimeInvariantRegion( //
             new PolygonRegion(Tensors.matrix(new Number[][] { //
@@ -48,7 +49,7 @@ enum R2PolygonDemo {
             }))));
     // ---
     TrajectoryPlanner trajectoryPlanner = new StandardTrajectoryPlanner( //
-        partitionScale, stateIntegrator, controls, obstacleQuery, rnGoal);
+        partitionScale, stateIntegrator, controls, obstacleQuery, goalInterface);
     trajectoryPlanner.insertRoot(Tensors.vector(0, 0));
     int iters = Expand.maxSteps(trajectoryPlanner, 1500);
     System.out.println(iters);

@@ -9,7 +9,7 @@ import ch.ethz.idsc.owly.math.state.TimeInvariantRegion;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Tensors;
 
-enum R2AnimationDemo {
+enum R2NoiseAnimationDemo {
   ;
   public static void main(String[] args) {
     OwlyAnimationFrame owlyAnimationFrame = new OwlyAnimationFrame();
