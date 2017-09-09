@@ -52,7 +52,7 @@ public enum R2ImageRegions {
     return transpose(charImage.bufferedImage(), Tensors.vector(20, 10), false);
   }
 
-  public static ImageRegion inside_gtob() {
+  public static CharImage inside_gtob_charImage() {
     CharImage charImage = CharImage.fillWhite(new Dimension(640, 640));
     charImage.setFont(new Font(Font.DIALOG, Font.BOLD, 400));
     charImage.draw('G', new Point(0, 310));
@@ -60,6 +60,11 @@ public enum R2ImageRegions {
     charImage.draw('I', new Point(480, 323));
     charImage.draw('O', new Point(20, 560));
     charImage.draw('B', new Point(280, 580));
+    return charImage;
+  }
+
+  public static ImageRegion inside_gtob() {
+    CharImage charImage = inside_gtob_charImage();
     return transpose(charImage.bufferedImage(), Tensors.vector(12, 12), false);
   }
 }

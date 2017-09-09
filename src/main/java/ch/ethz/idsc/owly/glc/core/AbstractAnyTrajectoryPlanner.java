@@ -25,7 +25,7 @@ import ch.ethz.idsc.tensor.Tensor;
 
 public abstract class AbstractAnyTrajectoryPlanner extends AbstractTrajectoryPlanner implements AnyPlannerInterface {
   protected ControlsIntegrator controlsIntegrator;
-  private Collection<Flow> controls;
+  private final Collection<Flow> controls;
 
   protected AbstractAnyTrajectoryPlanner( //
       Tensor eta, //
@@ -193,6 +193,7 @@ public abstract class AbstractAnyTrajectoryPlanner extends AbstractTrajectoryPla
    * @return true if a Node in the Goal was found in this Collection */
   abstract boolean goalCheckTree(final Region goalCheckHelp);
 
+  // TODO JONAS this function is never called (and also not documented)
   abstract boolean goalCheckTree();
 
   @Override

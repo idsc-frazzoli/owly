@@ -10,7 +10,7 @@ import ch.ethz.idsc.tensor.Tensors;
 import ch.ethz.idsc.tensor.sca.Ceiling;
 import ch.ethz.idsc.tensor.sca.Log;
 
-// TODO Jonas take care of unused fields, maybe by now we can remove them for clarity
+// TODO JONAS take care of unused fields, maybe by now we can remove them for clarity
 public abstract class Parameters {
   // Initial condition
   @SuppressWarnings("unused")

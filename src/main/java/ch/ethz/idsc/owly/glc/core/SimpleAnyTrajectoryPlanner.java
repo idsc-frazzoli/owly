@@ -24,8 +24,6 @@ import ch.ethz.idsc.tensor.Tensor;
  * Assumptions: -All states of all obstacles are known at all times
  * -No new Obstacles are discovered */
 public class SimpleAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
-  private final ControlsIntegrator controlsIntegrator;
-
   public SimpleAnyTrajectoryPlanner( //
       Tensor eta, //
       StateIntegrator stateIntegrator, //
@@ -34,7 +32,6 @@ public class SimpleAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
       GoalInterface goalInterface //
   ) {
     super(eta, stateIntegrator, controls, obstacleQuery, goalInterface);
-    controlsIntegrator = new ControlsIntegrator(stateIntegrator, controls, goalInterface);
   }
 
   @Override // from ExpandInterface
