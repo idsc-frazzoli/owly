@@ -16,7 +16,7 @@ import junit.framework.TestCase;
 
 public class NdDualMapTest extends TestCase {
   public void testSimple() {
-    NdDualMap<String> m1 = new NdDualMap<>(Tensors.vector(-1, -2), Tensors.vector(2, 10), 3, 10);
+    NdMap<String> m1 = new NdDualMap<>(Tensors.vector(-1, -2), Tensors.vector(2, 10), 3, 10);
     m1.add(Tensors.vector(1, 0), "p2");
     m1.add(Tensors.vector(1, 5), "p4");
     m1.add(Tensors.vector(0, 0), "p1");
@@ -30,7 +30,7 @@ public class NdDualMapTest extends TestCase {
   }
 
   private static void _checkCenter(Tensor center, int n, int dim, int dep) {
-    NdDualMap<String> m2 = new NdDualMap<>(Tensors.vector(-2, -1, 0), Tensors.vector(2, 10, 3), dim, dep);
+    NdMap<String> m2 = new NdDualMap<>(Tensors.vector(-2, -1, 0), Tensors.vector(2, 10, 3), dim, dep);
     int index = 0;
     Distribution b = BernoulliDistribution.of(RealScalar.of(.25));
     Distribution ux = UniformDistribution.of(-2, 2);

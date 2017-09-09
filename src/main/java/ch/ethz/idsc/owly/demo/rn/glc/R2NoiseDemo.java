@@ -39,13 +39,14 @@ enum R2NoiseDemo {
   ;
   public static void main(String[] args) {
     Tensor partitionScale = Tensors.vector(8, 8);
-    Region region = new R2NoiseRegion(RealScalar.of(.1));
+    final Scalar threshold = RealScalar.of(.1);
+    Region region = new R2NoiseRegion(threshold);
     StateIntegrator stateIntegrator = //
         FixedStateIntegrator.create(EulerIntegrator.INSTANCE, RationalScalar.of(1, 12), 4);
     Collection<Flow> controls = R2Controls.createRadial(23);
     final Tensor center = Tensors.vector(10, 0);
     final Scalar radius = DoubleScalar.of(.2);
-    CostFunction costFunction = new R2NoiseCostFunction();
+    CostFunction costFunction = new R2NoiseCostFunction(threshold.subtract(RealScalar.of(.3)));
     GoalInterface rnGoal = //
         new RnMinDistExtraCostGoalManager(center, radius, costFunction);
     // RnMinDistSphericalGoalManager.create(center, radius);

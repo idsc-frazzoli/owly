@@ -18,7 +18,7 @@ import junit.framework.TestCase;
 
 public class NdListMapTest extends TestCase {
   public void testSimple() {
-    NdListMap<String> m1 = new NdListMap<>();
+    NdMap<String> m1 = new NdListMap<>();
     m1.add(Tensors.vector(1, 0), "p2");
     m1.add(Tensors.vector(1, 5), "p4");
     m1.add(Tensors.vector(0, 0), "p1");
@@ -42,8 +42,8 @@ public class NdListMapTest extends TestCase {
   }
 
   private static void _checkCenter(Tensor center, int n, int dim, int dep) {
-    NdListMap<String> m1 = new NdListMap<>();
-    NdTreeMap<String> m2 = new NdTreeMap<>(Tensors.vector(-2, -1), Tensors.vector(2, 10), dim, dep);
+    NdMap<String> m1 = new NdListMap<>();
+    NdMap<String> m2 = new NdTreeMap<>(Tensors.vector(-2, -1), Tensors.vector(2, 10), dim, dep);
     int index = 0;
     Distribution b = BernoulliDistribution.of(RealScalar.of(.25));
     Distribution ux = UniformDistribution.of(-2, 2);

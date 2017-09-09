@@ -3,6 +3,7 @@ package ch.ethz.idsc.owly.data.nd;
 
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
+import ch.ethz.idsc.tensor.TensorRuntimeException;
 
 public class NdDualMap<V> implements NdMap<V> {
   private final NdTreeMap<V> ndTreeMap;
@@ -34,9 +35,15 @@ public class NdDualMap<V> implements NdMap<V> {
       if (!s1.equals(s2)) {
         System.out.println(s1);
         System.out.println(s2);
-        throw new RuntimeException();
+        throw TensorRuntimeException.of(s1, s2);
       }
     }
     return c1;
+  }
+
+  @Override
+  public void clear() {
+    ndTreeMap.clear();
+    ndListMap.clear();
   }
 }

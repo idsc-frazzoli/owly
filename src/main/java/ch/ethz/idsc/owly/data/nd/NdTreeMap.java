@@ -22,13 +22,14 @@ import ch.ethz.idsc.tensor.alg.VectorQ;
 public class NdTreeMap<V> implements NdMap<V> {
   private static final Scalar HALF = RationalScalar.of(1, 2);
   // ---
-  private final Node root;
   private final int maxDensity;
+  private final int maxDepth;
   private int size;
   private final Tensor global_lBounds;
   private final Tensor global_uBounds;
   // ---
   // reused during adding as well as searching:
+  private Node root; // non final because of clear()
   private Tensor lBounds;
   private Tensor uBounds;
 
@@ -54,7 +55,8 @@ public class NdTreeMap<V> implements NdMap<V> {
     global_lBounds = lbounds;
     global_uBounds = ubounds;
     this.maxDensity = maxDensity;
-    root = new Node(maxDepth);
+    this.maxDepth = maxDepth;
+    clear();
   }
 
   /** @param location vector with same length as lbounds and ubounds
@@ -69,8 +71,12 @@ public class NdTreeMap<V> implements NdMap<V> {
   private void add(NdPair<V> ndEntry) {
     resetBounds();
     root.add(ndEntry);
-    // by modification of the Node class the entry removal is eliminated and does not occur anymore
     ++size;
+  }
+
+  @Override
+  public int size() {
+    return size;
   }
 
   @Override
@@ -82,8 +88,10 @@ public class NdTreeMap<V> implements NdMap<V> {
   }
 
   @Override
-  public int size() {
-    return size;
+  public void clear() {
+    root = null;
+    size = 0;
+    root = new Node(maxDepth);
   }
 
   /** function returns the queue size of leaf nodes in the tree.

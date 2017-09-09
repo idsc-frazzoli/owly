@@ -18,7 +18,7 @@ import junit.framework.TestCase;
 
 public class NdTreeMapTest extends TestCase {
   public void testSome() {
-    NdTreeMap<String> ndTreeMap = //
+    NdMap<String> ndTreeMap = //
         new NdTreeMap<>(Tensors.vector(-2, -3), Tensors.vector(8, 9), 10, 10);
     ndTreeMap.add(Tensors.vector(1, 1), "d1");
     ndTreeMap.add(Tensors.vector(1, 0), "d2");
@@ -48,8 +48,25 @@ public class NdTreeMapTest extends TestCase {
     }
   }
 
+  public void testClear() {
+    NdMap<String> ndMap = new NdTreeMap<>(Tensors.vector(-2, -3), Tensors.vector(8, 9), 10, 10);
+    ndMap.add(Tensors.vector(1, 1), "d1");
+    ndMap.add(Tensors.vector(1, 0), "d2");
+    ndMap.add(Tensors.vector(0, 1), "d3");
+    NdCenterInterface ndCenter = NdCenterInterface.euclidean(Tensors.vector(0, 0));
+    {
+      NdCluster<String> cluster = ndMap.buildCluster(ndCenter, 5);
+      assertEquals(cluster.size(), 3);
+    }
+    {
+      ndMap.clear();
+      NdCluster<String> cluster = ndMap.buildCluster(ndCenter, 5);
+      assertEquals(cluster.size(), 0);
+    }
+  }
+
   public void testCornerCase() {
-    NdTreeMap<String> ndTreeMap = //
+    NdMap<String> ndTreeMap = //
         new NdTreeMap<>(Tensors.vector(-2, -3), Tensors.vector(8, 9), 10, 2);
     Tensor location = Array.zeros(2);
     for (int c = 0; c < 400; ++c)
@@ -70,7 +87,7 @@ public class NdTreeMapTest extends TestCase {
   }
 
   public void testPrint() {
-    NdTreeMap<String> ndTreeMap = //
+    NdMap<String> ndTreeMap = //
         new NdTreeMap<>(Tensors.vector(0, 0), Tensors.vector(1, 1), 3, 3);
     for (int c = 0; c < 12; ++c) {
       Tensor location = RandomVariate.of(UniformDistribution.unit(), 2);
@@ -90,7 +107,7 @@ public class NdTreeMapTest extends TestCase {
   }
 
   public void testFail1() {
-    NdTreeMap<String> ndTreeMap = new NdTreeMap<>( //
+    NdMap<String> ndTreeMap = new NdTreeMap<>( //
         Tensors.vector(-2, -3), Tensors.vector(8, 9), 2, 2);
     Tensor location = Array.zeros(3);
     try {

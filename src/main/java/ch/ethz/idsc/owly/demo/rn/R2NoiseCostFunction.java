@@ -14,13 +14,16 @@ import ch.ethz.idsc.owly.math.state.StateTime;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
+import ch.ethz.idsc.tensor.sca.Ramp;
 
 /** typically superimposed on min dist cost function */
 public class R2NoiseCostFunction implements CostFunction {
   private static final ContinuousNoise CONTINUOUS_NOISE = ContinuousNoiseUtils.wrap2D(SimplexContinuousNoise.FUNCTION);
-
   // ---
-  public R2NoiseCostFunction() {
+  private final Scalar treshold;
+
+  public R2NoiseCostFunction(Scalar treshold) {
+    this.treshold = treshold;
   }
 
   @Override
@@ -30,14 +33,14 @@ public class R2NoiseCostFunction implements CostFunction {
 
   @Override
   public Scalar costIncrement(GlcNode glcNode, List<StateTime> trajectory, Flow flow) {
-    Tensor cost = Tensor.of(trajectory.stream().map(StateTime::state).map(R2NoiseCostFunction::pointCost));
+    Tensor cost = Tensor.of(trajectory.stream().map(StateTime::state).map(this::pointCost));
     Tensor dts = Trajectories.deltaTimes(glcNode, trajectory);
     return cost.dot(dts).Get();
   }
 
   /** @param tensor vector with at least 2 entries
    * @return value in the interval [0, 2] */
-  private static Scalar pointCost(Tensor tensor) {
-    return RealScalar.ONE.add(CONTINUOUS_NOISE.apply(tensor)).divide(RealScalar.of(2));
+  private Scalar pointCost(Tensor tensor) {
+    return Ramp.of(CONTINUOUS_NOISE.apply(tensor).subtract(treshold));
   }
 }

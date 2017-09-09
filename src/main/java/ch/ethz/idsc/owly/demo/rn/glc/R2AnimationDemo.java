@@ -14,7 +14,7 @@ enum R2AnimationDemo {
   public static void main(String[] args) {
     OwlyAnimationFrame owlyAnimationFrame = new OwlyAnimationFrame();
     owlyAnimationFrame.set(new R2Entity(Tensors.vector(0.2, 0.2)));
-    Region region = new R2NoiseRegion(RealScalar.of(.2));
+    Region region = new R2NoiseRegion(RealScalar.of(0.2));
     owlyAnimationFrame.setObstacleQuery(new SimpleTrajectoryRegionQuery(new TimeInvariantRegion(region)));
     owlyAnimationFrame.jFrame.setVisible(true);
   }
