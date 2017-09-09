@@ -38,12 +38,9 @@ public class RnMinDistSphericalGoalManager extends SimpleTrajectoryRegionQuery i
   private final Tensor center;
   private final Scalar radius;
 
-  /** constructor creates a spherical region in R^n with given center and radius.
-   * distance measure is Euclidean distance.
-   * 
-   * @param center vector with length == n
+  /** @param center vector with length == n
    * @param radius positive */
-  private RnMinDistSphericalGoalManager(Tensor center, Scalar radius) {
+  /* package */ RnMinDistSphericalGoalManager(Tensor center, Scalar radius) {
     super(new TimeInvariantRegion(new SphericalRegion(center, radius)));
     GlobalAssert.that(Scalars.lessThan(RealScalar.ZERO, radius));
     this.center = center;
@@ -57,6 +54,7 @@ public class RnMinDistSphericalGoalManager extends SimpleTrajectoryRegionQuery i
 
   @Override
   public Scalar minCostToGoal(Tensor x) {
+    // max(0, ||x - center|| - radius)
     return Ramp.of(Norm._2.ofVector(x.subtract(center)).subtract(radius));
   }
 }

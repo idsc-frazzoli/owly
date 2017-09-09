@@ -5,10 +5,11 @@ import java.util.List;
 
 import ch.ethz.idsc.owly.data.GlobalAssert;
 import ch.ethz.idsc.owly.glc.adapter.Trajectories;
-import ch.ethz.idsc.owly.glc.core.CostIncrementFunction;
+import ch.ethz.idsc.owly.glc.core.CostFunction;
 import ch.ethz.idsc.owly.glc.core.GlcNode;
 import ch.ethz.idsc.owly.math.flow.Flow;
 import ch.ethz.idsc.owly.math.state.StateTime;
+import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
@@ -22,7 +23,7 @@ import ch.ethz.idsc.tensor.sca.Floor;
  * a given trajectory is mapped to the pixels and costs are
  * weighted according to the traverse time */
 // TODO indicate clearly which classes flip along y-axis!
-public class ImageCostFunction implements CostIncrementFunction {
+public class ImageCostFunction implements CostFunction {
   private final Tensor image;
   private final List<Integer> dimensions;
   private final Tensor range;
@@ -56,6 +57,11 @@ public class ImageCostFunction implements CostIncrementFunction {
         return image.Get(piy, pix);
     }
     return outside;
+  }
+
+  @Override
+  public Scalar minCostToGoal(Tensor tensor) {
+    return RealScalar.ZERO;
   }
 
   @Override

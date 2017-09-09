@@ -68,7 +68,7 @@ enum R2GlcAnyCircleDemo {
                 new EllipsoidRegion(Tensors.vector(0, 0), Tensors.vector(1, 1).multiply(circleRadius).multiply(RealScalar.of(0.5))) //
                 , new InvertedRegion(new EllipsoidRegion(Tensors.vector(0, 0), Tensors.vector(1, 1).multiply(circleRadius).multiply(RealScalar.of(2)))) //
                 // , RnPointclouds.createRandomRegion(30, Tensors.vector(12, 12), Tensors.vector(0, 0), RealScalar.of(0.6)) //
-                , new R2NoiseRegion(.2)//
+                , new R2NoiseRegion(RealScalar.of(.2))//
             )));
     // --
     AnyPlannerInterface trajectoryPlanner = new OptimalAnyTrajectoryPlanner( //

@@ -59,7 +59,7 @@ enum R2GlcConstTimeHeuristicSensingObstacleAnyDemo {
     // Creating Goals
     Tensor startState = Tensors.vector(-3, 0);
     GoalInterface rnGoal = RnMinDistSphericalGoalManager.create(Tensors.vector(10, -4), RealScalar.of(0.3));
-    Region environmentRegion = new R2NoiseRegion(0.1);
+    Region environmentRegion = new R2NoiseRegion(RealScalar.of(0.1));
     TrajectoryRegionQuery obstacleQuery = //
         new SimpleTrajectoryRegionQuery(new TimeInvariantRegion(//
             EuclideanDistanceDiscoverRegion.of(environmentRegion, startState, RealScalar.of(4))));

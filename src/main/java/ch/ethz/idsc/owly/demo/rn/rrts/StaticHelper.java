@@ -27,6 +27,6 @@ import ch.ethz.idsc.tensor.Tensors;
 
   public static TransitionRegionQuery noise1() {
     return new SampledTransitionRegionQuery(new SimpleTrajectoryRegionQuery( //
-        new TimeInvariantRegion(new R2NoiseRegion(.4))), RealScalar.of(.1));
+        new TimeInvariantRegion(new R2NoiseRegion(RealScalar.of(.4)))), RealScalar.of(.1));
   }
 }

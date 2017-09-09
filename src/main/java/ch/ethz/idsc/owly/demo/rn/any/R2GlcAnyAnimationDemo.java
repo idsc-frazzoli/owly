@@ -4,6 +4,7 @@ package ch.ethz.idsc.owly.demo.rn.any;
 import ch.ethz.idsc.owly.demo.rn.R2NoiseRegion;
 import ch.ethz.idsc.owly.gui.ani.OwlyAnimationFrame;
 import ch.ethz.idsc.owly.math.region.Region;
+import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
 
@@ -14,7 +15,7 @@ enum R2GlcAnyAnimationDemo {
     Tensor root = Tensors.vector(0.2, 0.2);
     R2AnyEntity r2AnyEntity = new R2AnyEntity(root, 15);
     r2AnyEntity.trajectoryPlannerCallback = owlyAnimationFrame.trajectoryPlannerCallback;
-    Region obstacleRegion = new R2NoiseRegion(0.1);
+    Region obstacleRegion = new R2NoiseRegion(RealScalar.of(0.1));
     r2AnyEntity.startLife(obstacleRegion, root); // (trq, root);
     owlyAnimationFrame.set(r2AnyEntity);
     owlyAnimationFrame.jFrame.setVisible(true);
