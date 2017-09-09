@@ -97,7 +97,7 @@ public class OptimalAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
           if (Objects.nonNull(formerLabel)) {
             if (Scalars.lessThan(next.merit(), formerLabel.merit())) {
               // collision check only if new node is better
-              if (getObstacleQuery().isDisjoint(connectors.get(next))) {// better node not collision
+              if (getObstacleQuery().isDisjoint(connectors.get(next))) { // better node not collision
                 if (formerLabel.isRoot())
                   throw new RuntimeException();
                 // final Collection<GlcNode> subDeleteTree =
@@ -115,7 +115,8 @@ public class OptimalAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
                 // adding next to tree and DomainMap
                 insertNodeInTree(nextParent, next);
                 // removing the nextCandidate from bucket of this domain as new is label
-                candidateMap.get(domainKey).remove(nextCandidatePair); // TODO JAN: time intense?
+                // two lookups in HashSets: one with key Tensor, other with key Object
+                candidateMap.get(domainKey).remove(nextCandidatePair);
                 // GOAL check
                 if (!getGoalInterface().isDisjoint(connectors.get(next)))
                   offerDestination(next, connectors.get(next));
@@ -135,7 +136,8 @@ public class OptimalAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
                 throw new RuntimeException();
               }
               // removing the nextCandidate from bucket of this domain as new is label
-              candidateMap.get(domainKey).remove(nextCandidatePair); // TODO JAN time intense?
+              // two lookups in HashSets: one with key Tensor, other with key Object
+              candidateMap.get(domainKey).remove(nextCandidatePair);
               // GOAL check
               if (!getGoalInterface().isDisjoint(connectors.get(next)))
                 offerDestination(next, connectors.get(next));

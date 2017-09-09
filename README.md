@@ -121,4 +121,4 @@ The library is used in the projects:
 * `owly3d`
 * `matsim`
 
-The repository has over `150` unit tests.
+The repository has over `160` unit tests.

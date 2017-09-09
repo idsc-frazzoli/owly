@@ -11,16 +11,16 @@ import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
 import ch.ethz.idsc.tensor.alg.Array;
 import ch.ethz.idsc.tensor.alg.Dimensions;
-import ch.ethz.idsc.tensor.io.Primitives;
 import ch.ethz.idsc.tensor.sca.Decrement;
 
-/** gives manhatten distance */
+/** computes manhatten distance by flood fill */
 public class FloodFill2D {
   ;
   public static Tensor of(Set<Tensor> seeds, Scalar ttl, Tensor array, Scalar free) {
     FloodFill2D floodFill = new FloodFill2D(seeds, ttl, array, free);
     return floodFill.array;
   }
+  // ---
 
   private final List<Integer> dimensions;
   private final Tensor array;
@@ -54,10 +54,10 @@ public class FloodFill2D {
     }
   }
 
+  // TODO redundant to ImageRegion etc.
   private void populate(Tensor point, Scalar ttl) {
-    int[] index = Primitives.toArrayInt(point);
-    int x = index[0];
-    int y = index[1];
+    int x = point.Get(0).number().intValue();
+    int y = point.Get(1).number().intValue();
     if (0 <= x && x < dimensions.get(0) && //
         0 <= y && y < dimensions.get(1) && //
         Scalars.isZero(array.Get(x, y)) && //

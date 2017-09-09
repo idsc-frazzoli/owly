@@ -1,14 +1,14 @@
 // code by jph
-package ch.ethz.idsc.owly.demo.rn;
+package ch.ethz.idsc.owly.demo.util;
 
 import java.util.List;
 
 import ch.ethz.idsc.owly.data.GlobalAssert;
+import ch.ethz.idsc.owly.glc.adapter.Trajectories;
 import ch.ethz.idsc.owly.glc.core.CostIncrementFunction;
 import ch.ethz.idsc.owly.glc.core.GlcNode;
 import ch.ethz.idsc.owly.math.flow.Flow;
 import ch.ethz.idsc.owly.math.state.StateTime;
-import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
@@ -18,6 +18,10 @@ import ch.ethz.idsc.tensor.alg.MatrixQ;
 import ch.ethz.idsc.tensor.alg.VectorQ;
 import ch.ethz.idsc.tensor.sca.Floor;
 
+/** current implementation uses 2d image to store costs
+ * a given trajectory is mapped to the pixels and costs are
+ * weighted according to the traverse time */
+// TODO indicate clearly which classes flip along y-axis!
 public class ImageCostFunction implements CostIncrementFunction {
   private final Tensor image;
   private final List<Integer> dimensions;
@@ -40,11 +44,11 @@ public class ImageCostFunction implements CostIncrementFunction {
     this.outside = outside;
   }
 
-  private Scalar _pointcost(Tensor tensor) {
+  private Scalar pointcost(Tensor tensor) {
     if (tensor.length() != 2)
       tensor = tensor.extract(0, 2);
-    // TODO code redundant
     Tensor pixel = Floor.of(tensor.pmul(scale));
+    // TODO code redundant to ImageRegion for instance
     int pix = pixel.Get(0).number().intValue();
     if (0 <= pix && pix < dimensions.get(1)) {
       int piy = max_y - pixel.Get(1).number().intValue();
@@ -52,6 +56,15 @@ public class ImageCostFunction implements CostIncrementFunction {
         return image.Get(piy, pix);
     }
     return outside;
+  }
+
+  @Override
+  public Scalar costIncrement(GlcNode glcNode, List<StateTime> trajectory, Flow flow) {
+    Tensor dts = Trajectories.deltaTimes(glcNode, trajectory);
+    Tensor cost = Tensor.of(trajectory.stream() //
+        .map(StateTime::state) //
+        .map(this::pointcost));
+    return cost.dot(dts).Get();
   }
 
   public Tensor image() {
@@ -64,19 +77,6 @@ public class ImageCostFunction implements CostIncrementFunction {
 
   public Tensor origin() {
     return Array.zeros(2);
-  }
-
-  @Override
-  public Scalar costIncrement(GlcNode glcNode, List<StateTime> trajectory, Flow flow) {
-    Scalar prev = glcNode.stateTime().time();
-    Scalar sum = RealScalar.ZERO;
-    for (StateTime stateTime : trajectory) {
-      Scalar next = stateTime.time();
-      Scalar dt = next.subtract(prev);
-      sum = sum.add(_pointcost(stateTime.state()).multiply(dt));
-      prev = next;
-    }
-    return sum;
   }
 
   public static void main(String[] args) {

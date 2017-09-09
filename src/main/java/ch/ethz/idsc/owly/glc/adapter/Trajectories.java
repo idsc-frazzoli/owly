@@ -6,7 +6,12 @@ import java.util.Collections;
 import java.util.List;
 
 import ch.ethz.idsc.owly.data.GlobalAssert;
+import ch.ethz.idsc.owly.glc.core.GlcNode;
 import ch.ethz.idsc.owly.glc.core.TrajectorySample;
+import ch.ethz.idsc.owly.math.state.StateTime;
+import ch.ethz.idsc.tensor.Scalar;
+import ch.ethz.idsc.tensor.Tensor;
+import ch.ethz.idsc.tensor.Tensors;
 
 public enum Trajectories {
   ;
@@ -28,6 +33,20 @@ public enum Trajectories {
     GlobalAssert.that(!tst.getFlow().isPresent());
     trajectory.addAll(tail.subList(1, tail.size()));
     return Collections.unmodifiableList(trajectory);
+  }
+
+  /** @param glcNode
+   * @param trajectory
+   * @return vector with {dt_0, dt_1, ... } */
+  public static Tensor deltaTimes(GlcNode glcNode, List<StateTime> trajectory) {
+    Tensor dts = Tensors.empty();
+    Scalar prev = glcNode.stateTime().time();
+    for (StateTime stateTime : trajectory) {
+      Scalar next = stateTime.time();
+      dts.append(next.subtract(prev));
+      prev = next;
+    }
+    return dts;
   }
 
   public static void print(List<TrajectorySample> list) {

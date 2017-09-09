@@ -3,7 +3,7 @@ package ch.ethz.idsc.owly.glc.core;
 
 import java.util.List;
 
-import ch.ethz.idsc.owly.demo.rn.ImageCostFunction;
+import ch.ethz.idsc.owly.demo.util.ImageCostFunction;
 import ch.ethz.idsc.owly.math.flow.Flow;
 import ch.ethz.idsc.owly.math.state.StateTime;
 import ch.ethz.idsc.tensor.Scalar;

@@ -16,12 +16,10 @@ import ch.ethz.idsc.owly.math.state.StateTime;
 /* private */ class FlowTrajectory {
   private final Flow flow;
   private final List<StateTime> trajectory;
-  private final StateTime last;
 
   FlowTrajectory(Flow flow, List<StateTime> trajectory) {
     this.flow = flow;
     this.trajectory = trajectory;
-    last = Lists.getLast(trajectory);
   }
 
   List<StateTime> trajectory() {
@@ -29,6 +27,7 @@ import ch.ethz.idsc.owly.math.state.StateTime;
   }
 
   GlcNode createGlcNode(GlcNode node, CostFunction costFunction) {
+    StateTime last = Lists.getLast(trajectory);
     return GlcNode.of(flow, last, //
         node.costFromRoot().add(costFunction.costIncrement(node, trajectory, flow)), //
         costFunction.minCostToGoal(last.state()));
