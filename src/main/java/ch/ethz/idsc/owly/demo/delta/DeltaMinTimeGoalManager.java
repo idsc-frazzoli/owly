@@ -21,6 +21,7 @@ import ch.ethz.idsc.tensor.sca.Ramp;
 public class DeltaMinTimeGoalManager extends SimpleTrajectoryRegionQuery implements GoalInterface {
   private final Tensor center;
   private final Scalar radius;
+  /** unit of maxMove is speed, e.g. [m/s] */
   private final Scalar maxMove;
 
   /** @param center
@@ -37,11 +38,13 @@ public class DeltaMinTimeGoalManager extends SimpleTrajectoryRegionQuery impleme
 
   @Override
   public Scalar costIncrement(GlcNode glcNode, List<StateTime> trajectory, Flow flow) {
+    // unit [s]
     return StateTimeTrajectories.timeIncrement(glcNode.stateTime(), trajectory);
   }
 
   @Override
   public Scalar minCostToGoal(Tensor x) {
+    // unit [m] / [m/s] simplifies to [s]
     return Ramp.of(Norm._2.ofVector(x.subtract(center)).subtract(radius).divide(maxMove));
   }
 }

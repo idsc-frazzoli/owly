@@ -12,7 +12,7 @@ import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
 
 /** superimpose cost from image onto normal cost */
-// TODO make generic functionality that adds costs functions and heuristics
+// TODO use MultiCostFunction
 public class RnMinDistExtraCostGoalManager extends RnMinDistSphericalGoalManager implements GoalInterface {
   private final CostFunction costFunction;
 

@@ -16,9 +16,13 @@ import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.sca.Ramp;
 
-/** typically superimposed on min dist cost function */
+/** the cost increment may be zero
+ * therefore, min cost to goal also is zero
+ * 
+ * typically superimposed on min dist cost function */
 public class R2NoiseCostFunction implements CostFunction {
-  private static final ContinuousNoise CONTINUOUS_NOISE = ContinuousNoiseUtils.wrap2D(SimplexContinuousNoise.FUNCTION);
+  private static final ContinuousNoise CONTINUOUS_NOISE = //
+      ContinuousNoiseUtils.wrap2D(SimplexContinuousNoise.FUNCTION);
   // ---
   private final Scalar treshold;
 
