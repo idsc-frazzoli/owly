@@ -123,7 +123,7 @@ public class Se2AnyEntity extends AbstractAnyEntity {
       Color color = new Color(64, 64, 64, 128);
       graphics.setColor(color);
       Tensor matrix = Se2Utils.toSE2Matrix(stateTime.state());
-      Path2D path2d = owlyLayer.toPath2D(Tensor.of(SHAPE.flatten(0).map(matrix::dot)));
+      Path2D path2d = owlyLayer.toPath2D(Tensor.of(SHAPE.stream().map(matrix::dot)));
       graphics.fill(path2d);
     }
     { // indicate position delay[s] into the future
@@ -135,7 +135,7 @@ public class Se2AnyEntity extends AbstractAnyEntity {
     {
       graphics.setColor(new Color(0, 128, 255, 192));
       Tensor matrix = owlyLayer.getMouseSe2Matrix();
-      Path2D path2d = owlyLayer.toPath2D(Tensor.of(SHAPE.flatten(0).map(matrix::dot)));
+      Path2D path2d = owlyLayer.toPath2D(Tensor.of(SHAPE.stream().map(matrix::dot)));
       graphics.fill(path2d);
     }
   }

@@ -21,6 +21,7 @@ public class GoalRender implements RenderInterface {
   public void render(OwlyLayer owlyLayer, Graphics2D graphics) {
     if (Objects.isNull(collection))
       return;
+    // TODO JONAS/JAN reenable with option to disable
     // { // draw convex hull of goal points
     // Tensor points = Tensor.of(collection.stream().map(StateTime::state).map(x -> x.extract(0, 2)));
     // if (2 < points.length()) {

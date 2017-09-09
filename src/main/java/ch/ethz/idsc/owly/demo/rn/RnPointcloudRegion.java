@@ -29,8 +29,8 @@ public class RnPointcloudRegion implements Region {
 
   private RnPointcloudRegion(Tensor points, Scalar radius) {
     Tensor pt = Transpose.of(points);
-    Tensor lbounds = Tensors.vector(i -> pt.get(i).flatten(0).reduce(Min::of).get(), pt.length());
-    Tensor ubounds = Tensors.vector(i -> pt.get(i).flatten(0).reduce(Max::of).get(), pt.length());
+    Tensor lbounds = Tensors.vector(i -> pt.get(i).stream().reduce(Min::of).get(), pt.length());
+    Tensor ubounds = Tensors.vector(i -> pt.get(i).stream().reduce(Max::of).get(), pt.length());
     // System.out.println("---");
     // System.out.println(lbounds);
     // System.out.println(ubounds);

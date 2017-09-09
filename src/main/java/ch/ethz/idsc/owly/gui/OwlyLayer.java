@@ -62,7 +62,7 @@ public abstract class OwlyLayer {
       Point2D point2d = toPoint2D(polygon.get(0));
       path2d.moveTo(point2d.getX(), point2d.getY());
     }
-    polygon.flatten(0) //
+    polygon.stream() //
         .skip(1) // first coordinate already used in moveTo
         .map(this::toPoint2D) //
         .forEach(point2d -> path2d.lineTo(point2d.getX(), point2d.getY()));

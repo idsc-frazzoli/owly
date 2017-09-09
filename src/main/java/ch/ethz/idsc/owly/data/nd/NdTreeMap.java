@@ -3,7 +3,7 @@
 package ch.ethz.idsc.owly.data.nd;
 
 import java.io.Serializable;
-import java.util.LinkedList;
+import java.util.ArrayDeque;
 import java.util.Objects;
 import java.util.Queue;
 import java.util.stream.Collectors;
@@ -116,7 +116,7 @@ public class NdTreeMap<V> implements NdMap<V> {
     private Node lChild;
     private Node rChild;
     /** queue is set to null when node transform from leaf node to interior node */
-    private Queue<NdPair<V>> queue = new LinkedList<>();
+    private Queue<NdPair<V>> queue = new ArrayDeque<>();
 
     private Node(int depth) {
       this.depth = depth;
