@@ -14,9 +14,11 @@ import javax.swing.JLabel;
 
 import ch.ethz.idsc.owly.data.GlobalAssert;
 import ch.ethz.idsc.owly.demo.se2.Se2Controls;
+import ch.ethz.idsc.owly.demo.se2.Se2MinTimeMinShiftExtraCostGoalManager;
 import ch.ethz.idsc.owly.demo.se2.Se2MinTimeMinShiftGoalManager;
 import ch.ethz.idsc.owly.demo.se2.Se2StateSpaceModel;
 import ch.ethz.idsc.owly.demo.se2.Se2Wrap;
+import ch.ethz.idsc.owly.glc.core.CostFunction;
 import ch.ethz.idsc.owly.glc.core.GoalInterface;
 import ch.ethz.idsc.owly.glc.core.StandardTrajectoryPlanner;
 import ch.ethz.idsc.owly.glc.core.TrajectoryPlanner;
@@ -111,13 +113,17 @@ public class Se2Entity extends AbstractEntity {
     return PlannerType.STANDARD;
   }
 
+  public CostFunction costFunction = null;
+
   @Override
   public TrajectoryPlanner createTrajectoryPlanner(TrajectoryRegionQuery obstacleQuery, Tensor goal) {
     GlobalAssert.that(VectorQ.ofLength(goal, 3));
     this.obstacleQuery = obstacleQuery;
     StateIntegrator stateIntegrator = //
         FixedStateIntegrator.create(integrator, RationalScalar.of(1, 10), 4); // TODO magic const
-    GoalInterface goalInterface = Se2MinTimeMinShiftGoalManager.create(goal, goalRadius, controls);
+    GoalInterface goalInterface = Objects.isNull(costFunction) ? //
+        Se2MinTimeMinShiftGoalManager.create(goal, goalRadius, controls) : //
+        Se2MinTimeMinShiftExtraCostGoalManager.create(goal, goalRadius, controls, costFunction);
     TrajectoryPlanner trajectoryPlanner = new StandardTrajectoryPlanner( //
         PARTITIONSCALE, stateIntegrator, controls, obstacleQuery, goalInterface);
     trajectoryPlanner.represent = SE2WRAP::represent;

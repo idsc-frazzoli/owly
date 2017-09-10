@@ -1,6 +1,8 @@
 // code by jph
 package ch.ethz.idsc.owly.demo.se2.glc;
 
+import java.io.IOException;
+
 import ch.ethz.idsc.owly.demo.rn.R2ImageRegions;
 import ch.ethz.idsc.owly.demo.se2.Se2PointsVsRegion;
 import ch.ethz.idsc.owly.demo.se2.Se2PointsVsRegions;
@@ -39,9 +41,20 @@ enum Se2AnimationDemo {
     owlyAnimationFrame.addBackground(imageRegion);
   }
 
-  public static void main(String[] args) {
+  static void _launch3(OwlyAnimationFrame owlyAnimationFrame) throws IOException {
+    Se2Entity se2Entity = Se2Entity.createDefault(Tensors.vector(6, 6, 1));
+    se2Entity.costFunction = R2ImageRegions.imageCost_gtob();
+    ImageRegion imageRegion = R2ImageRegions.inside_gtob();
+    TrajectoryRegionQuery trq = createCarQuery(imageRegion);
+    se2Entity.obstacleQuery = trq;
+    owlyAnimationFrame.set(se2Entity);
+    owlyAnimationFrame.setObstacleQuery(trq);
+    owlyAnimationFrame.addBackground(imageRegion);
+  }
+
+  public static void main(String[] args) throws IOException {
     OwlyAnimationFrame owlyAnimationFrame = new OwlyAnimationFrame();
-    _launch2(owlyAnimationFrame);
+    _launch3(owlyAnimationFrame);
     owlyAnimationFrame.configCoordinateOffset(50, 700);
     owlyAnimationFrame.treeRender = null;
     owlyAnimationFrame.jFrame.setBounds(100, 50, 1200, 800);
