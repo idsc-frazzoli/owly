@@ -10,6 +10,7 @@ import ch.ethz.idsc.owly.rrts.adapter.AbstractTransition;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Scalars;
 import ch.ethz.idsc.tensor.Tensor;
+import ch.ethz.idsc.tensor.TensorRuntimeException;
 import ch.ethz.idsc.tensor.red.Norm;
 
 /** agents moves with unit speed, i.e.
@@ -27,7 +28,7 @@ public class RnTransition extends AbstractTransition {
   @Override
   public List<StateTime> sampled(Scalar t0, Scalar ofs, Scalar dt) {
     if (Scalars.lessThan(dt, ofs))
-      throw new RuntimeException();
+      throw TensorRuntimeException.of(ofs, dt);
     final Scalar length = length();
     if (Scalars.isZero(length))
       return Collections.emptyList();

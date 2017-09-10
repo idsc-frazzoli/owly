@@ -9,6 +9,7 @@ import ch.ethz.idsc.owly.math.state.StateTime;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Scalars;
+import ch.ethz.idsc.tensor.TensorRuntimeException;
 
 /** utility functions that operate on List<StateTime> */
 public enum StateTimeTrajectories {
@@ -21,7 +22,7 @@ public enum StateTimeTrajectories {
   public static Scalar timeIncrement(StateTime stateTime, List<StateTime> trajectory) {
     Scalar dt = Lists.getLast(trajectory).time().subtract(stateTime.time());
     if (Scalars.lessThan(dt, RealScalar.ZERO))
-      throw new RuntimeException();
+      throw TensorRuntimeException.of(dt);
     return dt;
   }
 

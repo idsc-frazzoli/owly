@@ -7,12 +7,13 @@ import java.util.Optional;
 
 import ch.ethz.idsc.owly.demo.rn.R2Bubbles;
 import ch.ethz.idsc.owly.demo.rn.R2Controls;
-import ch.ethz.idsc.owly.demo.rn.RnSimpleCircleHeuristicGoalManager;
+import ch.ethz.idsc.owly.demo.rn.RnMinDistSphericalGoalManager;
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
 import ch.ethz.idsc.owly.glc.adapter.StateTimeTrajectories;
 import ch.ethz.idsc.owly.glc.core.Expand;
 import ch.ethz.idsc.owly.glc.core.GlcNode;
 import ch.ethz.idsc.owly.glc.core.GlcNodes;
+import ch.ethz.idsc.owly.glc.core.GoalInterface;
 import ch.ethz.idsc.owly.glc.core.StandardTrajectoryPlanner;
 import ch.ethz.idsc.owly.glc.core.TrajectoryPlanner;
 import ch.ethz.idsc.owly.gui.Gui;
@@ -52,10 +53,10 @@ enum R2Demo {
     Tensor eta = Tensors.vector(8, 8);
     StateIntegrator stateIntegrator = FixedStateIntegrator.create(EulerIntegrator.INSTANCE, RationalScalar.of(1, 5), 5);
     Collection<Flow> controls = R2Controls.createRadial(36);
-    RnSimpleCircleHeuristicGoalManager rnGoal = new RnSimpleCircleHeuristicGoalManager(stateGoal, radius);
+    GoalInterface goalInterface = RnMinDistSphericalGoalManager.create(stateGoal, radius);
     // ---
     TrajectoryPlanner trajectoryPlanner = new StandardTrajectoryPlanner( //
-        eta, stateIntegrator, controls, obstacleQuery, rnGoal);
+        eta, stateIntegrator, controls, obstacleQuery, goalInterface);
     trajectoryPlanner.insertRoot(stateRoot);
     int iters = Expand.maxSteps(trajectoryPlanner, 200);
     System.out.println("iterations " + iters);

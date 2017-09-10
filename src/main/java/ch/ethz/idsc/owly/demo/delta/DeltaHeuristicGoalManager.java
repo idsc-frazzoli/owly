@@ -15,6 +15,7 @@ import ch.ethz.idsc.owly.math.state.TimeInvariantRegion;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
+import ch.ethz.idsc.tensor.TensorRuntimeException;
 import ch.ethz.idsc.tensor.red.Norm;
 import ch.ethz.idsc.tensor.sca.Ramp;
 
@@ -34,33 +35,29 @@ public class DeltaHeuristicGoalManager extends SimpleTrajectoryRegionQuery imple
     this.center = center;
     this.maxSpeed = maxSpeed;
     if (!radius.Get(0).equals(radius.Get(1)))
-      throw new RuntimeException(); // x-y radius have to be equal
+      throw TensorRuntimeException.of(radius); // x-y radius have to be equal
     this.radius = radius.Get(0);
     this.timeCostScalingFactor = timeCostScalingFactor;
   }
 
-  // ---
   @Deprecated
-  public DeltaHeuristicGoalManager(Region region, Tensor center, Tensor radius, Scalar maxSpeed) {
-    this(region, center, radius, maxSpeed, RealScalar.ONE);
-  }
-
   private DeltaHeuristicGoalManager(Region region, Tensor center, Tensor radius, Scalar maxSpeed, Scalar timeCostScalingFactor) {
     super(new TimeInvariantRegion(region));
     this.center = center;
     this.maxSpeed = maxSpeed;
     if (!radius.Get(0).equals(radius.Get(1)))
-      throw new RuntimeException(); // x-y radius have to be equal
+      throw TensorRuntimeException.of(radius); // x-y radius have to be equal
     this.radius = radius.Get(0);
     this.timeCostScalingFactor = timeCostScalingFactor;
   }
 
   @Override
   public Scalar costIncrement(GlcNode node, List<StateTime> trajectory, Flow flow) {
-    StateTime from = node.stateTime();
+    // TODO JONAS this doesn't make sense unless Flow varies in Norm_2
+    // ... at the moment sum is the same for all flows
     Scalar sum = Norm._2.ofVector(flow.getU()).add(timeCostScalingFactor);
     // Costfunction: integrate (u^2 +1, t)
-    return sum.multiply(StateTimeTrajectories.timeIncrement(from, trajectory));
+    return sum.multiply(StateTimeTrajectories.timeIncrement(node.stateTime(), trajectory));
   }
 
   @Override

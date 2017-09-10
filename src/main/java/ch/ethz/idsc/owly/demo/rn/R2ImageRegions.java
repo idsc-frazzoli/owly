@@ -5,9 +5,16 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Point;
 import java.awt.image.BufferedImage;
+import java.io.IOException;
+import java.util.Set;
 
 import ch.ethz.idsc.owly.data.CharImage;
+import ch.ethz.idsc.owly.demo.util.FloodFill2D;
+import ch.ethz.idsc.owly.demo.util.ImageCostFunction;
+import ch.ethz.idsc.owly.glc.core.CostFunction;
 import ch.ethz.idsc.owly.math.region.ImageRegion;
+import ch.ethz.idsc.tensor.DoubleScalar;
+import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
 import ch.ethz.idsc.tensor.alg.Transpose;
@@ -52,7 +59,7 @@ public enum R2ImageRegions {
     return transpose(charImage.bufferedImage(), Tensors.vector(20, 10), false);
   }
 
-  public static ImageRegion inside_gtob() {
+  public static CharImage inside_gtob_charImage() {
     CharImage charImage = CharImage.fillWhite(new Dimension(640, 640));
     charImage.setFont(new Font(Font.DIALOG, Font.BOLD, 400));
     charImage.draw('G', new Point(0, 310));
@@ -60,6 +67,22 @@ public enum R2ImageRegions {
     charImage.draw('I', new Point(480, 323));
     charImage.draw('O', new Point(20, 560));
     charImage.draw('B', new Point(280, 580));
-    return transpose(charImage.bufferedImage(), Tensors.vector(12, 12), false);
+    return charImage;
+  }
+
+  private static final Tensor GTOB_RANGE = Tensors.vector(12, 12);
+
+  public static ImageRegion inside_gtob() {
+    CharImage charImage = inside_gtob_charImage();
+    return transpose(charImage.bufferedImage(), GTOB_RANGE, false);
+  }
+
+  public static CostFunction imageCost_gtob() throws IOException {
+    CharImage charImage = inside_gtob_charImage();
+    final Tensor tensor = Transpose.of(ImageFormat.from(charImage.bufferedImage()));
+    Set<Tensor> seeds = FloodFill2D.seeds(tensor);
+    final int ttl = 15; // magic const
+    Tensor cost = FloodFill2D.of(seeds, RealScalar.of(ttl), tensor);
+    return new ImageCostFunction(cost.divide(DoubleScalar.of(ttl)), GTOB_RANGE, RealScalar.ZERO);
   }
 }

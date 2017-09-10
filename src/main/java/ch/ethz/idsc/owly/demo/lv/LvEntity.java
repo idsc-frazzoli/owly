@@ -71,10 +71,10 @@ public class LvEntity extends AbstractEntity {
     Tensor partitionScale = Tensors.vector(8, 8);
     StateIntegrator stateIntegrator = //
         FixedStateIntegrator.create(INTEGRATOR, RationalScalar.of(1, 12), 4);
-    GoalInterface rnGoal = //
+    GoalInterface goalInterface = //
         new LvGoalInterface(goal.extract(0, 2), Tensors.vector(.2, .2));
     return new StandardTrajectoryPlanner( //
-        partitionScale, stateIntegrator, controls, obstacleQuery, rnGoal);
+        partitionScale, stateIntegrator, controls, obstacleQuery, goalInterface);
   }
 
   @Override

@@ -11,7 +11,7 @@ import java.util.Collection;
 import ch.ethz.idsc.owly.demo.rn.EuclideanDistanceDiscoverRegion;
 import ch.ethz.idsc.owly.demo.rn.R2Controls;
 import ch.ethz.idsc.owly.demo.rn.R2Parameters;
-import ch.ethz.idsc.owly.demo.rn.RnSimpleCircleHeuristicGoalManager;
+import ch.ethz.idsc.owly.demo.rn.RnMinDistSphericalGoalManager;
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
 import ch.ethz.idsc.owly.glc.core.GoalInterface;
 import ch.ethz.idsc.owly.gui.OwlyLayer;
@@ -98,7 +98,7 @@ public class R2AnyEntity extends AbstractAnyEntity {
 
   @Override
   protected final GoalInterface createGoal(Tensor goal) {
-    return new RnSimpleCircleHeuristicGoalManager(goal.extract(0, 2), goalRadius);
+    return RnMinDistSphericalGoalManager.create(goal.extract(0, 2), goalRadius);
   }
 
   @Override

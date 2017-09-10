@@ -20,18 +20,27 @@ import ch.ethz.idsc.tensor.red.Norm;
 import ch.ethz.idsc.tensor.sca.Ramp;
 
 /** objective is minimum path length
- * path length is measured in Euclidean distance */
-// TODO HOLD rename to RnMinDistCircleGoalManager
-public class RnSimpleCircleHeuristicGoalManager extends SimpleTrajectoryRegionQuery implements GoalInterface {
-  private final Tensor center;
-  private final Scalar radius;
-
-  /** constructor creates a spherical region in R^n with given center and radius.
-   * distance measure is Euclidean distance.
+ * path length is measured in Euclidean distance using Norm._2::ofVector
+ * 
+ * @see SphericalRegion */
+public class RnMinDistSphericalGoalManager extends SimpleTrajectoryRegionQuery implements GoalInterface {
+  /** creates a spherical region in R^n with given center and radius.
+   * min distance to goal is measured in Euclidean distance.
+   * Therefore the distance is independent from the max speed.
    * 
    * @param center vector with length == n
    * @param radius positive */
-  public RnSimpleCircleHeuristicGoalManager(Tensor center, Scalar radius) {
+  public static GoalInterface create(Tensor center, Scalar radius) {
+    return new RnMinDistSphericalGoalManager(center, radius);
+  }
+  // ---
+
+  private final Tensor center;
+  private final Scalar radius;
+
+  /** @param center vector with length == n
+   * @param radius positive */
+  /* package */ RnMinDistSphericalGoalManager(Tensor center, Scalar radius) {
     super(new TimeInvariantRegion(new SphericalRegion(center, radius)));
     GlobalAssert.that(Scalars.lessThan(RealScalar.ZERO, radius));
     this.center = center;
@@ -40,13 +49,12 @@ public class RnSimpleCircleHeuristicGoalManager extends SimpleTrajectoryRegionQu
 
   @Override
   public Scalar costIncrement(GlcNode glcNode, List<StateTime> trajectory, Flow flow) {
-    StateTime from = glcNode.stateTime();
-    return Norm._2.ofVector(from.state().subtract(Lists.getLast(trajectory).state()));
+    return Norm._2.ofVector(glcNode.stateTime().state().subtract(Lists.getLast(trajectory).state()));
   }
 
   @Override
   public Scalar minCostToGoal(Tensor x) {
-    // return RealScalar.ZERO;
+    // max(0, ||x - center|| - radius)
     return Ramp.of(Norm._2.ofVector(x.subtract(center)).subtract(radius));
   }
 }

@@ -28,7 +28,7 @@ public class ImageGradient implements Serializable {
     return Transpose.of(Reverse.of(tensor)); // flip y's, then swap x-y
   }
 
-  private static final Tensor ZEROS = N.of(Array.zeros(2));
+  private static final Tensor ZEROS = N.DOUBLE.of(Array.zeros(2));
   // ---
   private final Tensor scale;
   private final Interpolation interpolation;
@@ -48,7 +48,7 @@ public class ImageGradient implements Serializable {
     diffy = diffy.extract(0, dims.get(0) - 1);
     Tensor field = Transpose.of(Tensors.of(diffx, diffy), 2, 0, 1);
     field = TensorMap.of(Cross2D::of, field, 2).multiply(amp);
-    field = N.of(field);
+    field = N.DOUBLE.of(field);
     interpolation = LinearInterpolation.of(field);
     maxNormGradient = field.flatten(1).map(Norm._2::ofVector).reduce(Max::of).get();
   }

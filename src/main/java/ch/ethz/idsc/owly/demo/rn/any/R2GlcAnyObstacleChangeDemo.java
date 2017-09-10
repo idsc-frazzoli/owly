@@ -61,7 +61,7 @@ enum R2GlcAnyObstacleChangeDemo {
                 new EllipsoidRegion(Tensors.vector(0, 0), Tensors.vector(3, 3))//
                 , new InvertedRegion(new EllipsoidRegion(Tensors.vector(0, 0), Tensors.vector(8, 8)))
                 // , RnPointclouds.createRandomRegion(30, Tensors.vector(12, 12), Tensors.vector(0, 0), RealScalar.of(0.6)) //
-                , new R2NoiseRegion(.2)//
+                , new R2NoiseRegion(RealScalar.of(.2)) //
             )));
     // --
     AnyPlannerInterface trajectoryPlanner = new OptimalAnyTrajectoryPlanner( //
@@ -80,7 +80,7 @@ enum R2GlcAnyObstacleChangeDemo {
                 // new EllipsoidRegion(Tensors.vector(0, 0), Tensors.vector(3, 3)),//
                 new InvertedRegion(new EllipsoidRegion(Tensors.vector(0, 0), Tensors.vector(8, 8))),
                 // RnPointclouds.createRandomRegion(30, Tensors.vector(12, 12), Tensors.vector(0, 0), RealScalar.of(0.6)), //
-                new R2NoiseRegion(.2)//
+                new R2NoiseRegion(RealScalar.of(.2)) //
             )));
     trajectoryPlanner.obstacleUpdate(obstacleQuery2);
     owlyFrame.setGlc((TrajectoryPlanner) trajectoryPlanner);

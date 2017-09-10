@@ -27,9 +27,9 @@ public class IntegratorTest extends TestCase {
     assertEquals(euler_x1, rk4_x1);
     assertEquals(euler_x1, rk45_x1);
     // ---
-    assertFalse(euler_x1.flatten(0).anyMatch(s -> !ExactNumberQ.of(s)));
-    assertFalse(mid_x1.flatten(0).anyMatch(s -> !ExactNumberQ.of(s)));
-    assertFalse(rk4_x1.flatten(0).anyMatch(s -> !ExactNumberQ.of(s)));
-    assertFalse(rk45_x1.flatten(0).anyMatch(s -> !ExactNumberQ.of(s)));
+    assertTrue(euler_x1.stream().allMatch(ExactNumberQ::of));
+    assertTrue(mid_x1.stream().allMatch(ExactNumberQ::of));
+    assertTrue(rk4_x1.stream().allMatch(ExactNumberQ::of));
+    assertTrue(rk45_x1.stream().allMatch(ExactNumberQ::of));
   }
 }

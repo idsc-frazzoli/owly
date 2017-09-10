@@ -14,7 +14,7 @@ public class Se2PointsVsRegion implements Region {
   private final Region region;
 
   public Se2PointsVsRegion(Tensor points, Region region) {
-    this.points = Tensor.of(points.flatten(0).map(row -> row.append(RealScalar.ONE))).unmodifiable();
+    this.points = Tensor.of(points.stream().map(row -> row.append(RealScalar.ONE))).unmodifiable();
     this.region = region;
   }
 
@@ -22,7 +22,7 @@ public class Se2PointsVsRegion implements Region {
    * @return true if any of the points subject to the given transformation are in region */
   @Override
   public boolean isMember(Tensor tensor) {
-    return points.dot(Se2Utils.toSE2MatrixTranspose(tensor)).flatten(0).anyMatch(region::isMember);
+    return points.dot(Se2Utils.toSE2MatrixTranspose(tensor)).stream().anyMatch(region::isMember);
   }
 
   public Tensor points() {

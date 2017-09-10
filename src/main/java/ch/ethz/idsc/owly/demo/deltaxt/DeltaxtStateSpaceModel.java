@@ -6,6 +6,7 @@ import ch.ethz.idsc.owly.math.StateSpaceModel;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
+import ch.ethz.idsc.tensor.TensorRuntimeException;
 import ch.ethz.idsc.tensor.Tensors;
 import ch.ethz.idsc.tensor.alg.Join;
 
@@ -23,7 +24,7 @@ public class DeltaxtStateSpaceModel implements StateSpaceModel {
   public Tensor f(Tensor x, Tensor u) {
     int toIndex = x.length() - 1;
     if (toIndex != 2)
-      throw new RuntimeException();
+      throw TensorRuntimeException.of(x, u);
     Tensor fxy = imageGradient.rotate(x.extract(0, toIndex));
     return Join.of(fxy.add(u), AFFINE_ONE);
   }

@@ -13,7 +13,7 @@ import java.util.Optional;
 
 import ch.ethz.idsc.owly.demo.rn.EuclideanDistanceDiscoverRegion;
 import ch.ethz.idsc.owly.demo.rn.R2Controls;
-import ch.ethz.idsc.owly.demo.rn.RnSimpleCircleHeuristicGoalManager;
+import ch.ethz.idsc.owly.demo.rn.RnMinDistSphericalGoalManager;
 import ch.ethz.idsc.owly.demo.se2.Se2Controls;
 import ch.ethz.idsc.owly.demo.se2.Se2MinTimeEuclideanDistanceHeuristicGoalManager;
 import ch.ethz.idsc.owly.demo.se2.Se2StateSpaceModel;
@@ -123,7 +123,7 @@ public class Se2AnyEntity extends AbstractAnyEntity {
       Color color = new Color(64, 64, 64, 128);
       graphics.setColor(color);
       Tensor matrix = Se2Utils.toSE2Matrix(stateTime.state());
-      Path2D path2d = owlyLayer.toPath2D(Tensor.of(SHAPE.flatten(0).map(matrix::dot)));
+      Path2D path2d = owlyLayer.toPath2D(Tensor.of(SHAPE.stream().map(matrix::dot)));
       graphics.fill(path2d);
     }
     { // indicate position delay[s] into the future
@@ -135,7 +135,7 @@ public class Se2AnyEntity extends AbstractAnyEntity {
     {
       graphics.setColor(new Color(0, 128, 255, 192));
       Tensor matrix = owlyLayer.getMouseSe2Matrix();
-      Path2D path2d = owlyLayer.toPath2D(Tensor.of(SHAPE.flatten(0).map(matrix::dot)));
+      Path2D path2d = owlyLayer.toPath2D(Tensor.of(SHAPE.stream().map(matrix::dot)));
       graphics.fill(path2d);
     }
   }
@@ -159,7 +159,8 @@ public class Se2AnyEntity extends AbstractAnyEntity {
     Tensor eta = Tensors.vector(8, 8);
     StateIntegrator stateIntegratorR2 = FixedStateIntegrator.create(EulerIntegrator.INSTANCE, RationalScalar.of(1, 5), 5);
     Collection<Flow> controlsR2 = R2Controls.createRadial(10);
-    RnSimpleCircleHeuristicGoalManager rnGoal = new RnSimpleCircleHeuristicGoalManager(r2goal, goalRadius.Get(0));
+    // TODO JONAS extract R2planner from Se2AnyEntity
+    GoalInterface rnGoal = RnMinDistSphericalGoalManager.create(r2goal, goalRadius.Get(0));
     // ---
     TrajectoryRegionQuery obstacleQueryR2 = new SimpleTrajectoryRegionQuery(new TimeInvariantRegion(//
         EuclideanDistanceDiscoverRegion.of(environmentRegion, currentState, RealScalar.of(2))));

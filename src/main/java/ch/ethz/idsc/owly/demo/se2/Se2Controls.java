@@ -14,6 +14,7 @@ import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
 import ch.ethz.idsc.tensor.alg.Subdivide;
 import ch.ethz.idsc.tensor.red.Max;
+import ch.ethz.idsc.tensor.red.Norm;
 
 public enum Se2Controls {
   ;
@@ -48,13 +49,13 @@ public enum Se2Controls {
   /** @param controls
    * @return m/s */
   public static Scalar maxSpeed(Collection<Flow> controls) {
-    return controls.stream().map(Flow::getU).map(t -> t.Get(1).abs()).reduce(Max::of).get();
+    return controls.stream().map(Flow::getU).map(u -> u.Get(1).abs()).reduce(Max::of).get();
   }
 
-  // FIXME maxTurningrate is wrong
   /** @param controls
    * @return rad/s */
   public static Scalar maxTurning(Collection<Flow> controls) {
-    return controls.stream().map(Flow::getU).map(t -> t.Get(0).abs()).reduce(Max::of).get();
+    return Norm.INFINITY.ofVector(Tensor.of(controls.stream().map(Flow::getU).map(u -> u.Get(0)))) //
+        .multiply(maxSpeed(controls));
   }
 }

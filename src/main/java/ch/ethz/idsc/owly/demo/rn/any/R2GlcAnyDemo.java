@@ -6,12 +6,13 @@ import java.util.List;
 
 import ch.ethz.idsc.owly.demo.rn.R2Controls;
 import ch.ethz.idsc.owly.demo.rn.R2Parameters;
-import ch.ethz.idsc.owly.demo.rn.RnSimpleCircleHeuristicGoalManager;
+import ch.ethz.idsc.owly.demo.rn.RnMinDistSphericalGoalManager;
 import ch.ethz.idsc.owly.glc.adapter.Parameters;
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
 import ch.ethz.idsc.owly.glc.adapter.StateTimeTrajectories;
 import ch.ethz.idsc.owly.glc.core.AnyPlannerInterface;
 import ch.ethz.idsc.owly.glc.core.GlcExpand;
+import ch.ethz.idsc.owly.glc.core.GoalInterface;
 import ch.ethz.idsc.owly.glc.core.OptimalAnyTrajectoryPlanner;
 import ch.ethz.idsc.owly.glc.core.TrajectoryPlanner;
 import ch.ethz.idsc.owly.gui.Gui;
@@ -47,7 +48,7 @@ enum R2GlcAnyDemo {
     StateIntegrator stateIntegrator = FixedStateIntegrator.create(EulerIntegrator.INSTANCE, parameters.getdtMax(), //
         parameters.getTrajectorySize());
     Collection<Flow> controls = R2Controls.createRadial(parameters.getResolutionInt());
-    RnSimpleCircleHeuristicGoalManager rnGoal = new RnSimpleCircleHeuristicGoalManager(Tensors.vector(5, 5), DoubleScalar.of(.25));
+    GoalInterface rnGoal = RnMinDistSphericalGoalManager.create(Tensors.vector(5, 5), DoubleScalar.of(.25));
     // performance depends on heuristic: zeroHeuristic vs rnGoal
     // Heuristic heuristic = new ZeroHeuristic(); // rnGoal
     TrajectoryRegionQuery obstacleQuery = new SimpleTrajectoryRegionQuery(new TimeInvariantRegion(EmptyRegion.INSTANCE));
@@ -65,7 +66,7 @@ enum R2GlcAnyDemo {
       goal = goal.add(Tensors.vector(1, 1));
       goal.set(Mod.function(5), 0);
       goal.set(Mod.function(5), 1);
-      RnSimpleCircleHeuristicGoalManager rnGoal2 = new RnSimpleCircleHeuristicGoalManager(goal, DoubleScalar.of(.25));
+      GoalInterface rnGoal2 = RnMinDistSphericalGoalManager.create(goal, DoubleScalar.of(.25));
       List<StateTime> trajectory = trajectoryPlanner.trajectoryToBest();
       if (trajectory != null) {
         StateTime newRootState = trajectory.get(trajectory.size() > 1 ? 1 : 0);

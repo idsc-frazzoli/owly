@@ -17,6 +17,7 @@ public class BoundedBoxRegion implements Region {
   @Override
   public boolean isMember(Tensor tensor) {
     boolean inside = true;
+    // TODO implement using stream
     for (int index = 0; index < tensor.length(); ++index) {
       Scalar value = tensor.Get(index);
       inside &= //

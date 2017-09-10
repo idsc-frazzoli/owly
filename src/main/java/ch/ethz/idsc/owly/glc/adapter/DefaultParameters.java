@@ -24,7 +24,9 @@ public abstract class DefaultParameters extends Parameters {
     return EtaLfNonZero(lipschitz);
   }
 
+  // TODO JONAS rename to lowercase etaL..
   protected abstract Tensor EtaLfZero();
 
+  // TODO JONAS rename to lowercase etaL..
   protected abstract Tensor EtaLfNonZero(Scalar lipschitz);
 }

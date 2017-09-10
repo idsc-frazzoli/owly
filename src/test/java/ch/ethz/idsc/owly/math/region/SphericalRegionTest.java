@@ -23,4 +23,13 @@ public class SphericalRegionTest extends TestCase {
     SphericalRegion region = new SphericalRegion(Tensors.vector(1, 1), RealScalar.ZERO);
     assertEquals(region.evaluate(Tensors.vector(11, 1)), RealScalar.of(10));
   }
+
+  public void testFail() {
+    try {
+      new SphericalRegion(RealScalar.ZERO, RealScalar.ONE);
+      assertTrue(false);
+    } catch (Exception exception) {
+      // ---
+    }
+  }
 }

@@ -5,6 +5,7 @@ import java.io.Serializable;
 
 import ch.ethz.idsc.tensor.Scalars;
 
+/** CandidatePair is used in HashSet */
 /* package */ public class CandidatePair implements Comparable<CandidatePair>, Serializable {
   private final GlcNode origin;
   private final GlcNode candidate;

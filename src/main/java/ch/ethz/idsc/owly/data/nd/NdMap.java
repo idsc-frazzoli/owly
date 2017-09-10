@@ -24,4 +24,12 @@ public interface NdMap<V> extends Serializable {
    * @param limit strictly positive
    * @return cluster of no more than limit closest points to given ndCenter */
   NdCluster<V> buildCluster(NdCenterInterface ndCenter, int limit);
+
+  /** clears all entries from map */
+  void clear();
+
+  /** @return true if size() == 0 */
+  default boolean isEmpty() {
+    return size() == 0;
+  }
 }

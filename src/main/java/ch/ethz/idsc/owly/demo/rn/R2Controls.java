@@ -5,14 +5,18 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import ch.ethz.idsc.owly.data.GlobalAssert;
 import ch.ethz.idsc.owly.math.SingleIntegratorStateSpaceModel;
 import ch.ethz.idsc.owly.math.StateSpaceModel;
 import ch.ethz.idsc.owly.math.StateSpaceModels;
 import ch.ethz.idsc.owly.math.flow.Flow;
 import ch.ethz.idsc.tensor.DoubleScalar;
+import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
 import ch.ethz.idsc.tensor.alg.Range;
+import ch.ethz.idsc.tensor.red.Max;
+import ch.ethz.idsc.tensor.red.Norm;
 import ch.ethz.idsc.tensor.sca.Chop;
 import ch.ethz.idsc.tensor.sca.Cos;
 import ch.ethz.idsc.tensor.sca.Sin;
@@ -30,5 +34,11 @@ public enum R2Controls {
       list.add(StateSpaceModels.createFlow(stateSpaceModel, u));
     }
     return list;
+  }
+
+  public static Scalar maxSpeed(Collection<Flow> controls) {
+    int length = controls.iterator().next().getU().length();
+    GlobalAssert.that(length == 2);
+    return controls.stream().map(Flow::getU).map(Norm._2::ofVector).reduce(Max::of).get();
   }
 }

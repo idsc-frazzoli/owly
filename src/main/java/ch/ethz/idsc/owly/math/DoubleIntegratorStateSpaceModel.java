@@ -4,6 +4,7 @@ package ch.ethz.idsc.owly.math;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
+import ch.ethz.idsc.tensor.TensorRuntimeException;
 import ch.ethz.idsc.tensor.alg.Join;
 
 /** implementation for R^n */
@@ -14,7 +15,7 @@ public enum DoubleIntegratorStateSpaceModel implements StateSpaceModel {
   @Override
   public Tensor f(Tensor x, Tensor u) {
     if (x.length() != u.length() * 2)
-      throw new RuntimeException();
+      throw TensorRuntimeException.of(x, u);
     Tensor v = x.extract(u.length(), x.length());
     return Join.of(v, u);
   }

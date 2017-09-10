@@ -6,8 +6,9 @@ import java.util.List;
 
 import ch.ethz.idsc.tensor.Tensor;
 
+/** class for verification of {@link NdTreeMap} */
 public class NdListMap<V> implements NdMap<V> {
-  List<NdPair<V>> list = new ArrayList<>();
+  private final List<NdPair<V>> list = new ArrayList<>();
 
   @Override
   public void add(Tensor location, V value) {
@@ -22,5 +23,10 @@ public class NdListMap<V> implements NdMap<V> {
   @Override
   public NdCluster<V> buildCluster(NdCenterInterface ndCenter, int limit) {
     return new NdCluster<>(list, ndCenter, limit);
+  }
+
+  @Override
+  public void clear() {
+    list.clear();
   }
 }
