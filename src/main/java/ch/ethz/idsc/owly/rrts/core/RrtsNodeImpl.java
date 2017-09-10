@@ -5,6 +5,7 @@ import ch.ethz.idsc.owly.data.tree.SetNode;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Scalars;
 import ch.ethz.idsc.tensor.Tensor;
+import ch.ethz.idsc.tensor.TensorRuntimeException;
 
 /** Implementation based on
  * Sertac Karaman and Emilio Frazzoli, 2011:
@@ -33,7 +34,7 @@ import ch.ethz.idsc.tensor.Tensor;
     final Scalar nodeCostFromRoot = costFromRoot().add(costFromParent);
     // the condition of cost reduction is not strictly necessary
     if (!Scalars.lessThan(nodeCostFromRoot, child.costFromRoot()))
-      throw new RuntimeException();
+      throw TensorRuntimeException.of(nodeCostFromRoot, child.costFromRoot());
     _propagate(child, nodeCostFromRoot);
     ((RrtsNodeImpl) child).costFromRoot = nodeCostFromRoot;
   }

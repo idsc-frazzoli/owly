@@ -113,6 +113,7 @@ public class Se2Entity extends AbstractEntity {
     return PlannerType.STANDARD;
   }
 
+  // TODO JAN design is despicable
   public CostFunction costFunction = null;
 
   @Override

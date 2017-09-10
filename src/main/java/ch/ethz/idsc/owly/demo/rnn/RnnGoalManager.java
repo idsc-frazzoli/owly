@@ -18,6 +18,7 @@ import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Scalars;
 import ch.ethz.idsc.tensor.Tensor;
+import ch.ethz.idsc.tensor.TensorRuntimeException;
 import ch.ethz.idsc.tensor.alg.Array;
 
 /** cost is a varying distance metric */
@@ -35,7 +36,7 @@ class RnnGoalManager extends SimpleTrajectoryRegionQuery implements GoalInterfac
     Scalar sum = trajectory.stream().map(StateTime::state).map(continuousNoise).reduce(Scalar::add).get();
     sum = sum.add(RealScalar.of(trajectory.size()));
     if (Scalars.lessThan(sum, RealScalar.ZERO))
-      throw new RuntimeException();
+      throw TensorRuntimeException.of(sum);
     return sum;
   }
 

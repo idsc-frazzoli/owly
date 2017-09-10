@@ -13,6 +13,7 @@ import ch.ethz.idsc.owly.math.region.Region;
 import ch.ethz.idsc.owly.math.state.StateTime;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
+import ch.ethz.idsc.tensor.TensorRuntimeException;
 import ch.ethz.idsc.tensor.red.Norm;
 import ch.ethz.idsc.tensor.sca.Ramp;
 
@@ -26,7 +27,7 @@ public class Se2TrajectoryGoalManager extends TrajectoryGoalManager {
     super(goalRegions);
     this.heuristicTrajectory = heuristicTrajectory;
     if (!radius.Get(0).equals(radius.Get(1)))
-      throw new RuntimeException(); // x-y radius have to be equal
+      throw TensorRuntimeException.of(radius); // x-y radius have to be equal
     this.radius = radius.Get(0);
     this.maxSpeed = Se2Controls.maxSpeed(controls);
     System.out.println("HERE maxSpeed " + maxSpeed);

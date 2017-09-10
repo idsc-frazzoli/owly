@@ -28,7 +28,7 @@ public enum Nodes {
   @SuppressWarnings("unchecked")
   public static <T extends Node> List<T> listToRoot(T node) {
     if (Objects.isNull(node))
-      throw new RuntimeException();
+      throw new NullPointerException();
     List<T> list = new ArrayList<>();
     while (Objects.nonNull(node)) {
       list.add(node);

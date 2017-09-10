@@ -14,6 +14,7 @@ import ch.ethz.idsc.owly.math.state.StateTime;
 import ch.ethz.idsc.owly.math.state.TimeInvariantRegion;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
+import ch.ethz.idsc.tensor.TensorRuntimeException;
 import ch.ethz.idsc.tensor.red.Norm;
 import ch.ethz.idsc.tensor.sca.Power;
 import ch.ethz.idsc.tensor.sca.Ramp;
@@ -29,7 +30,7 @@ public class DeltaxtGoalManagerExt extends SimpleTrajectoryRegionQuery implement
     this.center = center;
     this.maxSpeed = maxSpeed;
     if (!radius.Get(0).equals(radius.Get(1)))
-      throw new RuntimeException(); // x-y radius have to be equal
+      throw TensorRuntimeException.of(radius); // x-y radius have to be equal
     this.radius = radius;
   }
 
@@ -38,7 +39,7 @@ public class DeltaxtGoalManagerExt extends SimpleTrajectoryRegionQuery implement
     this.center = center;
     this.maxSpeed = maxSpeed;
     if (!radius.Get(0).equals(radius.Get(1)))
-      throw new RuntimeException(); // x-y radius have to be equal
+      throw TensorRuntimeException.of(radius); // x-y radius have to be equal
     this.radius = radius.Get(0);
   }
   // --

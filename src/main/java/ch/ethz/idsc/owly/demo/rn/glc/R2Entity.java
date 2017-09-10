@@ -71,6 +71,7 @@ import ch.ethz.idsc.tensor.red.Norm2Squared;
     return PlannerType.STANDARD;
   }
 
+  // TODO JAN design is despicable
   public CostFunction costFunction = null;
 
   @Override
