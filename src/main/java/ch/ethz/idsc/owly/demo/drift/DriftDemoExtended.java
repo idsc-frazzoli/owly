@@ -21,25 +21,27 @@ import ch.ethz.idsc.tensor.RationalScalar;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
 
-public enum DriftDemo {
+public enum DriftDemoExtended {
   ;
   public static void main(String[] args) {
-    Collection<Flow> controls = DriftControls.create();
-    Tensor eta = Tensors.vector(30, 30, 5);
-    StateIntegrator stateIntegrator = // 
+    Collection<Flow> controls = DriftControls.createExtended();
+    Tensor eta = Tensors.vector(.1, .1, .1, 30, 30, 5);
+    StateIntegrator stateIntegrator = //
         FixedStateIntegrator.createDefault(RationalScalar.of(1, 10), 7);
     System.out.println("scale=" + eta);
     GoalInterface goalInterface = DriftGoalManager.createStandard(//
-        Tensors.vector(-0.3055, 0.5032, 8), //
-        Tensors.vector(0.05, 0.05, 0.25));
+        Tensors.vector(0, 0, 0, -0.3055, 0.5032, 8), //
+        Tensors.vector( //
+            Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY, //
+            0.05, 0.05, 0.25));
     TrajectoryRegionQuery obstacleQuery = //
         EmptyTrajectoryRegionQuery.INSTANCE;
     // ---
     TrajectoryPlanner trajectoryPlanner = new StandardTrajectoryPlanner( //
         eta, stateIntegrator, controls, obstacleQuery, goalInterface);
     // ---
-    trajectoryPlanner.insertRoot(Tensors.vector(0, 0, 4));
-    int iters = Expand.maxSteps(trajectoryPlanner, 5000);
+    trajectoryPlanner.insertRoot(Tensors.vector(0, 0, 0, 0, 0, 4));
+    int iters = Expand.maxSteps(trajectoryPlanner, 10000);
     System.out.println(iters);
     Optional<GlcNode> optional = trajectoryPlanner.getBest();
     if (optional.isPresent()) {
@@ -47,7 +49,7 @@ public enum DriftDemo {
       for (GlcNode node : trajectory) {
         if (!node.isRoot())
           System.out.println(node.flow().getU());
-        System.out.println(node.stateTime().toInfoString());
+        System.out.println(node.stateTime().toCompactString());
       }
       // StateTimeTrajectories.print(trajectory);
     }

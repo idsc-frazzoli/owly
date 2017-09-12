@@ -7,6 +7,7 @@ import java.util.Objects;
 import ch.ethz.idsc.owly.data.GlobalAssert;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
+import ch.ethz.idsc.tensor.sca.Round;
 
 /** StateTime is immutable, contents of instance do not change after construction */
 public final class StateTime implements Serializable {
@@ -34,6 +35,10 @@ public final class StateTime implements Serializable {
 
   public String toInfoString() {
     return String.format("t=%s  x=%s", time(), state().toString());
+  }
+
+  public String toCompactString() {
+    return String.format("t=%s  x=%s", time(), state().map(Round._4).toString());
   }
 
   @Override // from Object
