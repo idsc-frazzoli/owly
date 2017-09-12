@@ -21,7 +21,7 @@ public class DriftParameters implements Serializable {
   // Pacejka3
   // Scalar B1 = 13.8509;par.C1=1.367;par.D1=0.9622;
   // Scalar B2 = 14.1663;par.C2=1.3652;par.D2=0.9744;
-  public final Pacejka3 pacejka3 = // 
+  public final Pacejka3 pacejka3 = //
       new Pacejka3((13.8509 + 14.1663) / 2, (1.367 + 1.3652) / 2, (0.9622 + 0.9744) / 2);
   // Scalar B = (par.B1 + par.B2) / 2;
   // Scalar C = (par.C1 + par.C2) / 2;

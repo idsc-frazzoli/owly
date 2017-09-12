@@ -18,18 +18,18 @@ public enum DriftControls {
     Collection<Flow> collection = new HashSet<>();
     DriftParameters driftParameters = new DriftParameters();
     DriftStateSpaceModel driftStateSpaceModel = new DriftStateSpaceModel(driftParameters);
-    for (Tensor theta : Subdivide.of(-20*Math.PI/180, 20*Math.PI/180, 10)) {
+    for (Tensor theta : Subdivide.of(-20 * Math.PI / 180, 20 * Math.PI / 180, 10)) {
       Tensor u = Tensors.of(theta, RealScalar.of(1815));
       collection.add(StateSpaceModels.createFlow(driftStateSpaceModel, u));
     }
     return collection;
   }
-  
+
   public static Collection<Flow> createExtended() {
     Collection<Flow> collection = new HashSet<>();
     DriftParameters driftParameters = new DriftParameters();
     StateSpaceModel stateSpaceModel = new DriftExtStateSpaceModel(driftParameters);
-    for (Tensor theta : Subdivide.of(-20*Math.PI/180, 20*Math.PI/180, 10)) {
+    for (Tensor theta : Subdivide.of(-20 * Math.PI / 180, 20 * Math.PI / 180, 10)) {
       Tensor u = Tensors.of(theta, RealScalar.of(1815));
       collection.add(StateSpaceModels.createFlow(stateSpaceModel, u));
     }

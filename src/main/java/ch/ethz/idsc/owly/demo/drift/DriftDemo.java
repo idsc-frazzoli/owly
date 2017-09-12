@@ -26,7 +26,7 @@ public enum DriftDemo {
   public static void main(String[] args) {
     Collection<Flow> controls = DriftControls.create();
     Tensor eta = Tensors.vector(30, 30, 5);
-    StateIntegrator stateIntegrator = // 
+    StateIntegrator stateIntegrator = //
         FixedStateIntegrator.createDefault(RationalScalar.of(1, 10), 7);
     System.out.println("scale=" + eta);
     GoalInterface goalInterface = DriftGoalManager.createStandard(//
