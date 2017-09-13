@@ -33,7 +33,7 @@ import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
 
 /** (x,y,theta) */
-class Se2glcAnyDemo {
+class Se2GlcAnyDemo {
   public static void main(String[] args) throws Exception {
     RationalScalar resolution = (RationalScalar) RealScalar.of(8);
     Scalar timeScale = RealScalar.of(4);

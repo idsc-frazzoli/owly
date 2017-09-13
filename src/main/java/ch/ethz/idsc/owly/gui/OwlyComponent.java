@@ -78,8 +78,8 @@ public class OwlyComponent {
       @Override
       public void mouseWheelMoved(MouseWheelEvent event) {
         final int delta = -event.getWheelRotation(); // either 1 or -1
-        int mods = event.getModifiersEx();
-        int mask = MouseWheelEvent.CTRL_DOWN_MASK; // 128 = 2^7
+        final int mods = event.getModifiersEx();
+        final int mask = MouseWheelEvent.CTRL_DOWN_MASK; // 128 = 2^7
         if ((mods & mask) == 0) { // ctrl pressed?
           owlyLayer.incrementMouseWheel(delta);
         } else {

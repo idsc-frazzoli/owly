@@ -17,6 +17,7 @@ import ch.ethz.idsc.owly.glc.core.TrajectoryPlanner;
 import ch.ethz.idsc.owly.gui.Gui;
 import ch.ethz.idsc.owly.math.flow.Flow;
 import ch.ethz.idsc.owly.math.region.HyperplaneRegion;
+import ch.ethz.idsc.owly.math.region.RegionUnion;
 import ch.ethz.idsc.owly.math.state.FixedStateIntegrator;
 import ch.ethz.idsc.owly.math.state.StateIntegrator;
 import ch.ethz.idsc.owly.math.state.TimeInvariantRegion;
@@ -26,30 +27,32 @@ import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
 
-public enum DriftDemoExtended {
+enum DriftExtDemo {
   ;
   public static void main(String[] args) throws IOException {
-    Collection<Flow> controls = DriftControls.createExtended();
-    Tensor eta = Tensors.vector(.1, .1, .1, 30, 30, 5);
+    // the resolution refers to the last 3 of the state coordinates (x,y,theta,beta,r,Ux)
+    Tensor eta = Tensors.vector(30, 30, 5); // magic const
     StateIntegrator stateIntegrator = //
         FixedStateIntegrator.createDefault(RationalScalar.of(1, 10), 7);
     System.out.println("scale=" + eta);
+    Collection<Flow> controls = DriftControls.createExtended(10); // magic const
     GoalInterface goalInterface = DriftGoalManager.createStandard(//
         Tensors.vector(0, 0, 0, -0.3055, 0.5032, 8), //
         Tensors.vector( //
             Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY, //
             0.05, 0.05, 0.25));
-    // TrajectoryRegionQuery obstacleQuery = //
-    // EmptyTrajectoryRegionQuery.INSTANCE;
-    // // ---
+    // ---
     TrajectoryRegionQuery obstacleQuery = //
         new SimpleTrajectoryRegionQuery(new TimeInvariantRegion( //
-            new HyperplaneRegion(Tensors.vector(0, 0, 0, 0, 1, 0), RealScalar.ZERO) //
-        //
-        ));
+            RegionUnion.of( //
+                new NegativeHalfspaceRegion(4) // ensure that r is non-negative
+                , // impose that x < Threshold
+                new HyperplaneRegion(Tensors.vector(-1, 0, 0, 0, 0, 0), RealScalar.of(12)) //
+            )));
     // ---
     TrajectoryPlanner trajectoryPlanner = new StandardTrajectoryPlanner( //
         eta, stateIntegrator, controls, obstacleQuery, goalInterface);
+    trajectoryPlanner.represent = x -> x.extract(3, 6); // consider only (beta,r,Ux)
     // ---
     trajectoryPlanner.insertRoot(Tensors.vector(0, 0, 0, 0, 0, 1));
     int iters = Expand.maxSteps(trajectoryPlanner, 10000);

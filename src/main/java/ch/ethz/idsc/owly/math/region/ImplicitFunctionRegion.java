@@ -2,8 +2,8 @@
 package ch.ethz.idsc.owly.math.region;
 
 import ch.ethz.idsc.owly.math.ImplicitFunction;
-import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Tensor;
+import ch.ethz.idsc.tensor.sca.SignInterface;
 
 /** region {x | f(x) <= 0} defined by the overriding implicit function f
  * 
@@ -17,7 +17,7 @@ import ch.ethz.idsc.tensor.Tensor;
 public abstract class ImplicitFunctionRegion implements Region, ImplicitFunction {
   @Override
   public final boolean isMember(Tensor tensor) {
-    RealScalar realScalar = (RealScalar) evaluate(tensor);
-    return realScalar.signInt() <= 0;
+    SignInterface signInterface = (SignInterface) evaluate(tensor);
+    return signInterface.signInt() <= 0;
   }
 }

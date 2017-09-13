@@ -3,6 +3,7 @@ package ch.ethz.idsc.owly.gui.ani;
 
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.MouseWheelEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.ArrayList;
@@ -100,36 +101,46 @@ public class OwlyAnimationFrame extends BaseFrame {
 
       @Override
       public void mouseClicked(MouseEvent mouseEvent) {
-        if (mouseEvent.getButton() == 1) {
-          if (Objects.nonNull(mpw)) {
-            mpw.flagShutdown();
-            mpw = null;
-          }
-          if (controllable instanceof AbstractEntity) {
-            AbstractEntity abstractEntity = (AbstractEntity) controllable;
-            final Tensor goal = owlyComponent.getMouseGoal();
-            final List<TrajectorySample> head = //
-                abstractEntity.getFutureTrajectoryUntil(abstractEntity.delayHint());
-            switch (abstractEntity.getPlannerType()) {
-            case STANDARD: {
-              TrajectoryPlanner trajectoryPlanner = //
-                  abstractEntity.createTrajectoryPlanner(obstacleQuery, goal);
-              mpw = new MotionPlanWorker(trajectoryPlannerCallback);
-              mpw.start(head, trajectoryPlanner);
-              break;
+        final int mods = mouseEvent.getModifiersEx();
+        final int mask = MouseWheelEvent.CTRL_DOWN_MASK; // 128 = 2^7
+        if (mouseEvent.getButton() == MouseEvent.BUTTON1) {
+          if ((mods & mask) == 0) { // no ctrl pressed
+            if (Objects.nonNull(mpw)) {
+              mpw.flagShutdown();
+              mpw = null;
             }
-            case ANY: {
-              AbstractAnyEntity abstractAnyEntity = (AbstractAnyEntity) abstractEntity;
-              abstractAnyEntity.switchToGoal(trajectoryPlannerCallback, head, goal);
-              break;
+            if (controllable instanceof AbstractEntity) {
+              AbstractEntity abstractEntity = (AbstractEntity) controllable;
+              final Tensor goal = owlyComponent.getMouseGoal();
+              final List<TrajectorySample> head = //
+                  abstractEntity.getFutureTrajectoryUntil(abstractEntity.delayHint());
+              switch (abstractEntity.getPlannerType()) {
+              case STANDARD: {
+                TrajectoryPlanner trajectoryPlanner = //
+                    abstractEntity.createTrajectoryPlanner(obstacleQuery, goal);
+                mpw = new MotionPlanWorker(trajectoryPlannerCallback);
+                mpw.start(head, trajectoryPlanner);
+                break;
+              }
+              case ANY: {
+                AbstractAnyEntity abstractAnyEntity = (AbstractAnyEntity) abstractEntity;
+                abstractAnyEntity.switchToGoal(trajectoryPlannerCallback, head, goal);
+                break;
+              }
+              case RRTS: {
+                AbstractRrtsEntity abstractRrtsEntity = (AbstractRrtsEntity) abstractEntity;
+                abstractRrtsEntity.startPlanner(trajectoryPlannerCallback, head, goal);
+                break;
+              }
+              default:
+                throw new RuntimeException();
+              }
             }
-            case RRTS: {
-              AbstractRrtsEntity abstractRrtsEntity = (AbstractRrtsEntity) abstractEntity;
-              abstractRrtsEntity.startPlanner(trajectoryPlannerCallback, head, goal);
-              break;
-            }
-            default:
-              throw new RuntimeException();
+          } else { // ctrl pressed
+            System.out.println(owlyComponent.getMouseGoal());
+            if (controllable instanceof AbstractEntity) {
+              AbstractEntity abstractEntity = (AbstractEntity) controllable;
+              // abstractEntity.resetStateTo(owlyComponent.getMouseGoal());
             }
           }
         }

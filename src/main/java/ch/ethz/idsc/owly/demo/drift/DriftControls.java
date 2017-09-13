@@ -14,22 +14,24 @@ import ch.ethz.idsc.tensor.alg.Subdivide;
 
 public enum DriftControls {
   ;
-  public static Collection<Flow> create() {
-    Collection<Flow> collection = new HashSet<>();
-    DriftParameters driftParameters = new DriftParameters();
-    DriftStateSpaceModel driftStateSpaceModel = new DriftStateSpaceModel(driftParameters);
-    for (Tensor theta : Subdivide.of(-20 * Math.PI / 180, 20 * Math.PI / 180, 10)) {
-      Tensor u = Tensors.of(theta, RealScalar.of(1815));
-      collection.add(StateSpaceModels.createFlow(driftStateSpaceModel, u));
-    }
-    return collection;
+  /** @param thetas
+   * @return */
+  public static Collection<Flow> create(int thetas) {
+    return _create(new DriftStateSpaceModel(new DriftParameters()), thetas);
   }
 
-  public static Collection<Flow> createExtended() {
+  /** @param thetas
+   * @return */
+  public static Collection<Flow> createExtended(int thetas) {
+    return _create(new DriftExtStateSpaceModel(new DriftParameters()), thetas);
+  }
+
+  // helper function
+  private static Collection<Flow> _create(StateSpaceModel stateSpaceModel, int thetas) {
+    if (thetas % 2 == 1)
+      ++thetas;
     Collection<Flow> collection = new HashSet<>();
-    DriftParameters driftParameters = new DriftParameters();
-    StateSpaceModel stateSpaceModel = new DriftExtStateSpaceModel(driftParameters);
-    for (Tensor theta : Subdivide.of(-20 * Math.PI / 180, 20 * Math.PI / 180, 10)) {
+    for (Tensor theta : Subdivide.of(-20 * Math.PI / 180, 20 * Math.PI / 180, thetas)) {
       Tensor u = Tensors.of(theta, RealScalar.of(1815));
       collection.add(StateSpaceModels.createFlow(stateSpaceModel, u));
     }
