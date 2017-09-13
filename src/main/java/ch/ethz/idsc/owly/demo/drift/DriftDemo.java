@@ -21,7 +21,7 @@ import ch.ethz.idsc.tensor.RationalScalar;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
 
-public enum DriftDemo {
+enum DriftDemo {
   ;
   public static void main(String[] args) {
     Collection<Flow> controls = DriftControls.create();

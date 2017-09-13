@@ -31,7 +31,6 @@ public class DriftExtStateSpaceModel implements StateSpaceModel {
 
   @Override
   public Scalar getLipschitz() {
-    // TODO Auto-generated method stub
     return null;
   }
 }

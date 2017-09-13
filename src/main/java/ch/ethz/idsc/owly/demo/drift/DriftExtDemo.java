@@ -16,17 +16,15 @@ import ch.ethz.idsc.owly.glc.core.StandardTrajectoryPlanner;
 import ch.ethz.idsc.owly.glc.core.TrajectoryPlanner;
 import ch.ethz.idsc.owly.gui.Gui;
 import ch.ethz.idsc.owly.math.flow.Flow;
-import ch.ethz.idsc.owly.math.region.HyperplaneRegion;
 import ch.ethz.idsc.owly.math.state.FixedStateIntegrator;
 import ch.ethz.idsc.owly.math.state.StateIntegrator;
 import ch.ethz.idsc.owly.math.state.TimeInvariantRegion;
 import ch.ethz.idsc.owly.math.state.TrajectoryRegionQuery;
 import ch.ethz.idsc.tensor.RationalScalar;
-import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
 
-public enum DriftDemoExtended {
+enum DriftExtDemo {
   ;
   public static void main(String[] args) throws IOException {
     Collection<Flow> controls = DriftControls.createExtended();
@@ -39,13 +37,11 @@ public enum DriftDemoExtended {
         Tensors.vector( //
             Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY, //
             0.05, 0.05, 0.25));
-    // TrajectoryRegionQuery obstacleQuery = //
-    // EmptyTrajectoryRegionQuery.INSTANCE;
-    // // ---
+    // ---
     TrajectoryRegionQuery obstacleQuery = //
         new SimpleTrajectoryRegionQuery(new TimeInvariantRegion( //
-            new HyperplaneRegion(Tensors.vector(0, 0, 0, 0, 1, 0), RealScalar.ZERO) //
-        //
+            new NegativeHalfspaceRegion(4) //
+        // new HyperplaneRegion(Tensors.vector(0, 0, 0, 0, 1, 0), RealScalar.ZERO) //
         ));
     // ---
     TrajectoryPlanner trajectoryPlanner = new StandardTrajectoryPlanner( //
