@@ -53,7 +53,7 @@ public class DriftExtTest extends TestCase {
     trajectoryPlanner.insertRoot(Tensors.vector(0, 0, 0, 0, 0, 1));
     int iters = Expand.maxSteps(trajectoryPlanner, 2000);
     System.out.println("drift iterations:" + iters);
-    assertTrue(iters < 1500);
+    assertTrue(iters < 1900);
     Optional<GlcNode> optional = trajectoryPlanner.getBest();
     assertTrue(optional.isPresent());
   }
