@@ -17,6 +17,8 @@ public enum Hsluv {
    * @param alpha in range [0, 1] for transparency
    * @return color */
   public static Color of(double hue, double sat, double lgt, double alpha) {
+    if (!Double.isFinite(hue))
+      throw new RuntimeException("h=" + hue);
     hue %= 1;
     if (hue < 0)
       hue += 1;

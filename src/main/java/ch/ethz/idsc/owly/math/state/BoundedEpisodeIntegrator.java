@@ -16,6 +16,10 @@ import ch.ethz.idsc.tensor.sca.Ceiling;
 public class BoundedEpisodeIntegrator extends AbstractEpisodeIntegrator {
   private final Scalar maxStep;
 
+  /** @param stateSpaceModel
+   * @param integrator
+   * @param stateTime initial state
+   * @param maxStep in time that given integrator applies */
   public BoundedEpisodeIntegrator(StateSpaceModel stateSpaceModel, Integrator integrator, StateTime stateTime, Scalar maxStep) {
     super(stateSpaceModel, integrator, stateTime);
     if (Scalars.lessEquals(maxStep, RealScalar.ZERO))
