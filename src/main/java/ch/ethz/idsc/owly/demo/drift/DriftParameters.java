@@ -15,7 +15,6 @@ public class DriftParameters implements Serializable {
   // ---
   /** mass [kg] */
   public final Scalar m = RealScalar.of(1412);
-  public final Scalar mg = GRAVITATION.multiply(m);
   /** yawing moment of inertia [kgm2] */
   private final Scalar Iz = RealScalar.of(1536.7 + 427.7084); // sprung mass inertia + unsprung mass inertia
   private final Scalar Iz_reciprocal = Iz.reciprocal(); // sprung mass inertia + unsprung mass inertia
@@ -36,14 +35,10 @@ public class DriftParameters implements Serializable {
   /** friction */
   public final Scalar muF = RealScalar.of(0.55);
   public final Scalar muR = RealScalar.of(0.53);
-
-  public Scalar Fz_F() {
-    return mg.multiply(b).divide(a.add(b));
-  }
-
-  public Scalar Fz_R() {
-    return mg.multiply(a).divide(a.add(b));
-  }
+  /** constant expressions that used to be functions */
+  private final Scalar mg = GRAVITATION.multiply(m);
+  public final Scalar Fz_F = mg.multiply(b).divide(a.add(b));
+  public final Scalar Fz_R = mg.multiply(a).divide(a.add(b));
 
   public Scalar Iz_invert() {
     return Iz_reciprocal;
