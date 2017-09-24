@@ -49,7 +49,7 @@ public enum CarStatic {
   // FIXME the model doesn't seem to work with vel < 0
   // however, there is no good reason for this failure: using a different arrangement of tires,
   // one could easily adapt the model on a "mirrored" car
-  private static CarState x0_demo1Reverse() {
+  public static CarState x0_demo1Reverse() {
     VehicleModel vehicleModel = CHatchbackModel.standard();
     Scalar speed = RealScalar.of(30 + 3.6 * Dz1).negate();
     return new CarState(Tensors.vector( //

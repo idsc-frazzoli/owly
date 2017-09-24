@@ -36,8 +36,7 @@ import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
 import ch.ethz.idsc.tensor.alg.Array;
-import ch.ethz.idsc.tensor.sca.Cos;
-import ch.ethz.idsc.tensor.sca.Sin;
+import ch.ethz.idsc.tensor.lie.AngleVector;
 
 enum R2GlcAnyCircleDemo {
   ;
@@ -51,7 +50,7 @@ enum R2GlcAnyCircleDemo {
     Scalar lipschitz = RealScalar.ONE;
     Scalar circleRadius = RealScalar.of(6);
     Scalar goalAngle = RealScalar.ZERO;
-    Tensor goal = Tensors.of(Cos.of(goalAngle), Sin.of(goalAngle)).multiply(circleRadius);
+    Tensor goal = AngleVector.of(goalAngle).multiply(circleRadius);
     Scalar goalRadius = DoubleScalar.of(.25);
     System.out.println("Goal is: " + goal);
     Parameters parameters = new R2Parameters( //
@@ -97,7 +96,7 @@ enum R2GlcAnyCircleDemo {
       do {
         goalStateList.clear();
         goalAngle = goalAngle.subtract(RealScalar.of(0.1 * Math.PI));
-        goal = Tensors.of(Cos.of(goalAngle), Sin.of(goalAngle)).multiply(circleRadius);
+        goal = AngleVector.of(goalAngle).multiply(circleRadius);
         StateTime goalState = new StateTime(goal, RealScalar.ZERO);
         goalStateList.add(goalState);
       } while (!obstacleQuery.isDisjoint(goalStateList));
