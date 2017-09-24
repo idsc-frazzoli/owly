@@ -35,13 +35,13 @@ public class DriftStateSpaceModel implements StateSpaceModel {
 
   private Scalar Fy_F(Scalar beta, Scalar r, Scalar Ux, Scalar delta) {
     Scalar aF = a_F(beta, r, Ux, delta);
-    Scalar FzF = driftParameters.Fz_F();
+    Scalar FzF = driftParameters.Fz_F;
     return pacejka(aF, RealScalar.ZERO, FzF, driftParameters.muF);
   }
 
   private Scalar Fy_R(Scalar beta, Scalar r, Scalar Ux, Scalar FxR) {
     Scalar aR = a_R(beta, r, Ux);
-    Scalar FzR = driftParameters.Fz_R();
+    Scalar FzR = driftParameters.Fz_R;
     return pacejka(aR, FxR, FzR, driftParameters.muR);
   }
 
