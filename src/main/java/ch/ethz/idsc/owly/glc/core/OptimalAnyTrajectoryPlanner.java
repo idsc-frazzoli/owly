@@ -244,7 +244,7 @@ public class OptimalAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
     obstacleUpdate(newObstacle, new InvertedRegion(EmptyRegion.INSTANCE));
   }
 
-  //TODO JAN; obstacle check function
+  // TODO JAN; obstacle check function
   @Override
   public void obstacleUpdate(TrajectoryRegionQuery newObstacle, Region possibleNewObstacleRegion) {
     if (newObstacle == this.getObstacleQuery() || newObstacle == null) {
@@ -257,13 +257,12 @@ public class OptimalAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
     setObstacleQuery(newObstacle);
     GlcNode root = getRoot();
     // TODO JONAS: What to do if root in collision
-
     List<GlcNode> domainMapList = new ArrayList<>(domainMap().values());
     int test = domainMapList.size();
     // only iterate through domains where node is in collision
     domainMapList.removeIf(node -> !(possibleNewObstacleRegion.isMember(node.state())));
     System.out.println("Only checking " + domainMapList.size() + " instead of " + test + " domains");
-    //sorting as breath first search: lowest depth first
+    // sorting as breath first search: lowest depth first
     Collections.sort(domainMapList, NodeDepthComparator.INSTANCE); // iterating from low Depth to high depht
     int deletedNodes = 0;
     int addedNodes = 0;
@@ -272,11 +271,11 @@ public class OptimalAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
       List<StateTime> connector = new ArrayList<>();
       Tensor domainKey = convertToKey(label.state());
       if (getNode(domainKey) == label) { // check if nothing was changed in previous loopiteration, otherwise next domain
-      // maybe break into next for loop iteration better?
+        // maybe break into next for loop iteration better?
         PriorityQueue<CandidatePair> candidateQueue = new PriorityQueue<>();
         if (candidateMap.containsKey(domainKey)) { // fills candidatebucket
           Set<CandidatePair> tempCandidateSet = candidateMap.get(domainKey);
-          //updating the heuristic of the candidatebucket
+          // updating the heuristic of the candidatebucket
           tempCandidateSet.parallelStream().forEach(cp -> //
           cp.getCandidate().setMinCostToGoal(getGoalInterface().minCostToGoal(cp.getCandidate().state())));
           candidateQueue.addAll(tempCandidateSet);
@@ -284,7 +283,7 @@ public class OptimalAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
         if (!label.isRoot()) {
           connector = getStateIntegrator().trajectory(label.parent().stateTime(), label.flow());
           if (getObstacleQuery().isDisjoint(connector)) { // label NOT in Collision
-            while (!candidateQueue.isEmpty()) { //checking for better candidates/open doors
+            while (!candidateQueue.isEmpty()) { // checking for better candidates/open doors
               CandidatePair nextBest = candidateQueue.element();
               GlcNode nextBestNode = nextBest.getCandidate();
               GlcNode nextBestParent = nextBest.getOrigin();
