@@ -159,7 +159,7 @@ public class OptimalAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
     }
     long tic = System.nanoTime();
     // needed for change of depthlimit
-    int increasedDepthBy = newRoot.reCalculateDepth();
+    int increasedDepthBy = newRoot.depthDifferenceToRoot();
     // -- DEBUGING Values
     // -- Collecting Oldtree
     GlcNode oldRoot = getRoot();
