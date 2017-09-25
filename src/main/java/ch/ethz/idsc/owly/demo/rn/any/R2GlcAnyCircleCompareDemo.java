@@ -157,7 +157,7 @@ enum R2GlcAnyCircleCompareDemo {
         System.out.println("ANY: " + itersAny);
         System.out.println("STA: " + itersStandard);
         System.out.println("****COMPARING COST: ****");
-        Scalar anyCost = ((AbstractAnyTrajectoryPlanner) anyTrajectoryPlanner).getGoalCost();
+        Scalar anyCost = ((AbstractAnyTrajectoryPlanner) anyTrajectoryPlanner).getTrajectoryCost();
         System.out.println("ANY: " + anyCost);
         Scalar staCost = standardTrajectoryPlanner.getBest().get().costFromRoot();
         System.out.println("STA: " + staCost);
