@@ -270,7 +270,7 @@ public abstract class AbstractAnyTrajectoryPlanner extends AbstractTrajectoryPla
     return Optional.ofNullable(regionQueue.peek());
   }
 
-  public final Scalar getGoalCost() {
+  public final Scalar getTrajectoryCost() {
     GlcNode root = getRoot();
     if (getBest().isPresent())
       return getBest().get().costFromRoot().subtract(root.costFromRoot());

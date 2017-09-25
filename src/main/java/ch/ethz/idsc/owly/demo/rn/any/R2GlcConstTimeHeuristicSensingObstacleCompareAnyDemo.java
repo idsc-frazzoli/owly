@@ -1,11 +1,6 @@
 // code by jl
 package ch.ethz.idsc.owly.demo.rn.any;
 
-import java.nio.charset.Charset;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.StandardOpenOption;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
@@ -15,8 +10,8 @@ import ch.ethz.idsc.owly.demo.rn.R2Controls;
 import ch.ethz.idsc.owly.demo.rn.R2NoiseRegion;
 import ch.ethz.idsc.owly.demo.rn.R2Parameters;
 import ch.ethz.idsc.owly.demo.rn.RnMinDistSphericalGoalManager;
-import ch.ethz.idsc.owly.demo.util.UserHome;
 import ch.ethz.idsc.owly.glc.adapter.Parameters;
+import ch.ethz.idsc.owly.glc.adapter.RunCompare;
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
 import ch.ethz.idsc.owly.glc.adapter.StateTimeTrajectories;
 import ch.ethz.idsc.owly.glc.core.AbstractAnyTrajectoryPlanner;
@@ -56,7 +51,6 @@ enum R2GlcConstTimeHeuristicSensingObstacleCompareAnyDemo {
     Tensor partitionScale = Tensors.vector(20, 20);
     Scalar dtMax = RationalScalar.of(1, 6);
     int maxIter = 2000;
-    Scalar runTime = RealScalar.of(0.3);
     Scalar lipschitz = RealScalar.ONE;
     Parameters parameters = new R2Parameters( //
         resolution, timeScale, depthScale, partitionScale, dtMax, maxIter, lipschitz);
@@ -67,7 +61,7 @@ enum R2GlcConstTimeHeuristicSensingObstacleCompareAnyDemo {
     Collection<Flow> controls = R2Controls.createRadial(parameters.getResolutionInt());
     // Creating Goals
     Tensor startState = Tensors.vector(-3, 0);
-    GoalInterface rnGoal = RnMinDistSphericalGoalManager.create(Tensors.vector(10, 0), RealScalar.of(0.3));
+    GoalInterface rnGoal = RnMinDistSphericalGoalManager.create(Tensors.vector(20, 20), RealScalar.of(0.3));
     Region environmentRegion = new R2NoiseRegion(RealScalar.of(0.1));
     TrajectoryRegionQuery obstacleQuery = //
         new SimpleTrajectoryRegionQuery(new TimeInvariantRegion(//
@@ -85,11 +79,9 @@ enum R2GlcConstTimeHeuristicSensingObstacleCompareAnyDemo {
     owlyFrame.configCoordinateOffset(400, 400);
     owlyFrame.jFrame.setBounds(0, 0, 800, 800);
     owlyFrame.setGlc((TrajectoryPlanner) anyTrajectoryPlanner);
-    Path path = UserHome.file("R2Comparison.csv").toPath();
-    List<String> lines = Arrays.asList("timeStandard, timeDiff, iterationsDiff, CostDiff");
-    Files.write(path, lines, Charset.forName("UTF-8"));
+    RunCompare timingDatabase = new RunCompare(2);
     // -- Anytime loop
-    for (int i = 0; i < 10; i++) {
+    for (int i = 0; i < 40; i++) {
       // while (!finalGoalFound) {
       Thread.sleep(1);
       // ANY
@@ -102,7 +94,7 @@ enum R2GlcConstTimeHeuristicSensingObstacleCompareAnyDemo {
       TrajectoryRegionQuery newObstacleQuery = //
           new SimpleTrajectoryRegionQuery(new TimeInvariantRegion(//
               EuclideanDistanceDiscoverRegion.of(environmentRegion, trajectory.get(0).state(), RealScalar.of(4))));
-      long ticAny = System.nanoTime();
+      timingDatabase.startStopwatchFor(1);
       if (trajectory.size() > 5) {
         //
         newRootState = trajectory.get(trajectory.size() > 3 ? 3 : 0);
@@ -113,13 +105,14 @@ enum R2GlcConstTimeHeuristicSensingObstacleCompareAnyDemo {
       anyTrajectoryPlanner.obstacleUpdate(newObstacleQuery, new SphericalRegion(trajectory.get(0).state(), RealScalar.of(4).add(RealScalar.ONE)));
       // -- EXPANDING
       int itersAny = GlcExpand.maxDepth(anyTrajectoryPlanner, parameters.getDepthLimit());
+      timingDatabase.saveIterations(itersAny, 1);
       // check if furthest Goal is already in last Region in List
       trajectory = GlcNodes.getPathFromRootTo(finalGoalNode.get());
       // --
-      long tocAny = System.nanoTime();
+      timingDatabase.stopStopwatchFor(1);
       owlyFrame.setGlc((TrajectoryPlanner) anyTrajectoryPlanner);
       // DEFAULT:
-      long ticStandard = System.nanoTime();
+      timingDatabase.startStopwatchFor(0);
       int itersStandard = 0;
       StandardTrajectoryPlanner standardTrajectoryPlanner = null;
       if (newRootState != null) {
@@ -128,33 +121,22 @@ enum R2GlcConstTimeHeuristicSensingObstacleCompareAnyDemo {
         standardTrajectoryPlanner.insertRoot(newRootState);
         itersStandard = GlcExpand.maxDepth(standardTrajectoryPlanner, parameters.getDepthLimit());
       }
-      long tocStandard = System.nanoTime();
-      System.out.println("****COMPARING TIME:  ****");
-      Scalar anyTimeDiff = RealScalar.of((tocAny - ticAny) * 1e-9);
-      Scalar staTimeDiff = RealScalar.of((tocStandard - ticStandard) * 1e-9);
-      System.out.println("ANY: " + anyTimeDiff);
-      System.out.println("STA: " + staTimeDiff);
-      System.out.println("****COMPARING Iterations:  ****");
-      System.out.println("ANY: " + itersAny);
-      System.out.println("STA: " + itersStandard);
-      System.out.println("****COMPARING COST: ****");
-      Scalar anyCost = ((AbstractAnyTrajectoryPlanner) anyTrajectoryPlanner).getGoalCost();
-      System.out.println("ANY: " + anyCost);
+      timingDatabase.stopStopwatchFor(0);
+      timingDatabase.saveIterations(itersStandard, 0);
+      if (itersStandard < 1)
+        break;
+      timingDatabase.saveCost(((AbstractAnyTrajectoryPlanner) anyTrajectoryPlanner).getTrajectoryCost(), 1);
       Scalar staCost = DoubleScalar.POSITIVE_INFINITY;
       if (standardTrajectoryPlanner != null)
         staCost = standardTrajectoryPlanner.getBest().get().costFromRoot();
-      System.out.println("STA: " + staCost);
+      timingDatabase.saveCost(staCost, 0);
       System.out.println("*****Finished*****");
-      lines = Arrays
-          .asList(String.join(",", staTimeDiff.toString(), anyTimeDiff.subtract(staTimeDiff).divide(staTimeDiff).multiply(RealScalar.of(100)).toString(), //
-              RealScalar.of(itersAny).subtract(RealScalar.of(itersStandard)).divide(RealScalar.of(itersStandard)).multiply(RealScalar.of(100)).number()
-                  .toString(), //
-              anyCost.subtract(staCost).divide(staCost).multiply(RealScalar.of(100)).toString()));
-      Files.write(path, lines, Charset.forName("UTF-8"), StandardOpenOption.APPEND);
+      timingDatabase.write2lines();
       DebugUtils.heuristicConsistencyCheck((TrajectoryPlanner) anyTrajectoryPlanner);
       if (!owlyFrame.jFrame.isVisible() || itersAny < 1)
         break;
     }
+    timingDatabase.write2File();
     System.out.println("Finished LOOP");
   }
 }

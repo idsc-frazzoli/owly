@@ -36,8 +36,7 @@ public class SimpleAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
 
   @Override // from ExpandInterface
   public void expand(final GlcNode node) {
-    // TODO JONAS check if parallel can be used, i have tested parallel and it works
-    Map<GlcNode, List<StateTime>> connectors = controlsIntegrator.inSequence(node);
+    Map<GlcNode, List<StateTime>> connectors = controlsIntegrator.inParallel(node);
     // --
     CandidatePairQueueMap candidates = new CandidatePairQueueMap();
     for (GlcNode next : connectors.keySet()) { // <- order of keys is non-deterministic
@@ -101,7 +100,7 @@ public class SimpleAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
       System.out.println("node is already root");
       return 0;
     }
-    int increaseDepthBy = newRoot.reCalculateDepth();
+    int increaseDepthBy = newRoot.depthDifferenceToRoot();
     int oldDomainMapSize = domainMap().size();
     int oldTreeSize = Nodes.ofSubtree(oldRoot).size();
     System.out.println("changing to root:" + newRoot.state());

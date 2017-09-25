@@ -108,9 +108,8 @@ import ch.ethz.idsc.tensor.Tensor;
   }
 
   @Override // from GlcNode
-  public int reCalculateDepth() {
-    depth = Nodes.listToRoot(this).size() - 1;
-    return depth; // as RootNode has depth 0 (NOT 1)
+  public int depthDifferenceToRoot() {
+    return Nodes.listToRoot(this).size() - 1;
   }
 
   @Override // from GlcNode

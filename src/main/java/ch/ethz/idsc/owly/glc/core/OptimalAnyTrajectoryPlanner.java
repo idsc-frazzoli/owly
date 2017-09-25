@@ -159,7 +159,7 @@ public class OptimalAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
     }
     long tic = System.nanoTime();
     // needed for change of depthlimit
-    int increasedDepthBy = newRoot.reCalculateDepth();
+    int increasedDepthBy = newRoot.depthDifferenceToRoot();
     // -- DEBUGING Values
     // -- Collecting Oldtree
     GlcNode oldRoot = getRoot();
@@ -244,6 +244,7 @@ public class OptimalAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
     obstacleUpdate(newObstacle, new InvertedRegion(EmptyRegion.INSTANCE));
   }
 
+  // TODO JAN; obstacle check function
   @Override
   public void obstacleUpdate(TrajectoryRegionQuery newObstacle, Region possibleNewObstacleRegion) {
     if (newObstacle == this.getObstacleQuery() || newObstacle == null) {
@@ -258,18 +259,23 @@ public class OptimalAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
     // TODO JONAS: What to do if root in collision
     List<GlcNode> domainMapList = new ArrayList<>(domainMap().values());
     int test = domainMapList.size();
+    // only iterate through domains where node is in collision
     domainMapList.removeIf(node -> !(possibleNewObstacleRegion.isMember(node.state())));
     System.out.println("Only checking " + domainMapList.size() + " instead of " + test + " domains");
+    // sorting as breath first search: lowest depth first
     Collections.sort(domainMapList, NodeDepthComparator.INSTANCE); // iterating from low Depth to high depht
     int deletedNodes = 0;
     int addedNodes = 0;
+    // going through domains
     for (GlcNode label : domainMapList) {
       List<StateTime> connector = new ArrayList<>();
       Tensor domainKey = convertToKey(label.state());
-      if (getNode(domainKey) == label) { // check if nothing was changed in previous loopiteration
+      if (getNode(domainKey) == label) { // check if nothing was changed in previous loopiteration, otherwise next domain
+        // maybe break into next for loop iteration better?
         PriorityQueue<CandidatePair> candidateQueue = new PriorityQueue<>();
-        if (candidateMap.containsKey(domainKey)) { // fills candidatequeue
+        if (candidateMap.containsKey(domainKey)) { // fills candidatebucket
           Set<CandidatePair> tempCandidateSet = candidateMap.get(domainKey);
+          // updating the heuristic of the candidatebucket
           tempCandidateSet.parallelStream().forEach(cp -> //
           cp.getCandidate().setMinCostToGoal(getGoalInterface().minCostToGoal(cp.getCandidate().state())));
           candidateQueue.addAll(tempCandidateSet);
@@ -277,7 +283,7 @@ public class OptimalAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
         if (!label.isRoot()) {
           connector = getStateIntegrator().trajectory(label.parent().stateTime(), label.flow());
           if (getObstacleQuery().isDisjoint(connector)) { // label NOT in Collision
-            while (!candidateQueue.isEmpty()) {
+            while (!candidateQueue.isEmpty()) { // checking for better candidates/open doors
               CandidatePair nextBest = candidateQueue.element();
               GlcNode nextBestNode = nextBest.getCandidate();
               GlcNode nextBestParent = nextBest.getOrigin();
@@ -308,7 +314,7 @@ public class OptimalAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
                   candidateMap.get(domainKey).remove(nextBest);
                 }
               } else {
-                break;// no better candidate can be found, therefore delete candidateQueue while loop
+                break;// no better candidate can be found, therefore leave while loop of this CandidateQueue
               }
               final CandidatePair removedCP = candidateQueue.remove();
               if (removedCP != nextBest)
@@ -316,7 +322,6 @@ public class OptimalAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
             } // if CandidateQueue is empty finish with this domain
           } else { // DELETE label, as IN collision
             deletedNodes++;
-            // final Collection<GlcNode> subDeleteTree =
             deleteSubtreeOf(label);
             CandidatePair formerLabelCandidate = new CandidatePair(label.parent(), label);
             label.parent().removeEdgeTo(label);
