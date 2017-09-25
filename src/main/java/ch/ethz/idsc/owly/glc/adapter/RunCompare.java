@@ -13,6 +13,7 @@ import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Scalars;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
+import ch.ethz.idsc.tensor.sca.N;
 
 public class RunCompare {
   private Tensor currentRuntimes;
@@ -72,18 +73,26 @@ public class RunCompare {
     return stopwatch.display_seconds();
   }
 
+  /** Saves the number of iterations for planner with the right ID
+   * @param iterations
+   * @param plannerID */
   public void saveIterations(int iterations, int plannerID) {
     if (plannerID > numberOfPlanners)
       throw new RuntimeException();
     currentIterations.set(RealScalar.of(iterations), plannerID);
   }
 
+  /** Saves the cost for planner with the right ID
+   * @param cost
+   * @param plannerID */
   public void saveCost(Scalar cost, int plannerID) {
     if (plannerID > numberOfPlanners)
       throw new RuntimeException();
     currentCosts.set(cost, plannerID);
   }
 
+  /** writes the saved data in lines for later use,
+   * Needs to be called after each compare run (different planners solving the same issue) */
   public void write2lines() {
     for (int i = 0; i < numberOfPlanners; i++) {
       if (Scalars.lessThan(currentRuntimes.Get(i), RealScalar.ZERO) || //
@@ -102,8 +111,8 @@ public class RunCompare {
         .map(Scalar.class::cast).map(s -> s.divide(currentRuntimes.Get(0))));
     Tensor currentIterationsDiff = Tensor.of(currentIterations.extract(1, numberOfPlanners).stream()//
         .map(Scalar.class::cast).map(s -> s.subtract(currentIterations.Get(0))));
-    Tensor currentIterationsRelative = Tensor.of(currentIterationsDiff.stream()//
-        .map(Scalar.class::cast).map(s -> s.divide(currentIterations.Get(0))));
+    Tensor currentIterationsRelative = N.DOUBLE.of(Tensor.of(currentIterationsDiff.stream()//
+        .map(Scalar.class::cast).map(s -> s.divide(currentIterations.Get(0)))));
     Tensor currentCostDiff = Tensor.of(currentCosts.extract(1, numberOfPlanners).stream()//
         .map(Scalar.class::cast).map(s -> s.subtract(currentCosts.Get(0))));
     Tensor currentCostRelative = Tensor.of(currentCostDiff.stream()//
@@ -117,8 +126,11 @@ public class RunCompare {
           currentCostDiff.Get(i).toString(), //
           currentCostRelative.Get(i).toString());
     lines.add(String.join("", referenceData, compareData));
+    newRuns();
   }
 
+  /** writes the resulting data in a .csv file
+   * @throws Exception */
   public void write2File() throws Exception {
     Files.write(path, lines, Charset.forName("UTF-8"));
   }

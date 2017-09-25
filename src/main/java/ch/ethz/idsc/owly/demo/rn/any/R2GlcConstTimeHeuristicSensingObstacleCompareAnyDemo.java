@@ -61,7 +61,7 @@ enum R2GlcConstTimeHeuristicSensingObstacleCompareAnyDemo {
     Collection<Flow> controls = R2Controls.createRadial(parameters.getResolutionInt());
     // Creating Goals
     Tensor startState = Tensors.vector(-3, 0);
-    GoalInterface rnGoal = RnMinDistSphericalGoalManager.create(Tensors.vector(10, 0), RealScalar.of(0.3));
+    GoalInterface rnGoal = RnMinDistSphericalGoalManager.create(Tensors.vector(20, 20), RealScalar.of(0.3));
     Region environmentRegion = new R2NoiseRegion(RealScalar.of(0.1));
     TrajectoryRegionQuery obstacleQuery = //
         new SimpleTrajectoryRegionQuery(new TimeInvariantRegion(//
@@ -81,8 +81,7 @@ enum R2GlcConstTimeHeuristicSensingObstacleCompareAnyDemo {
     owlyFrame.setGlc((TrajectoryPlanner) anyTrajectoryPlanner);
     RunCompare timingDatabase = new RunCompare(2);
     // -- Anytime loop
-    for (int i = 0; i < 15; i++) {
-      timingDatabase.newRuns();
+    for (int i = 0; i < 40; i++) {
       // while (!finalGoalFound) {
       Thread.sleep(1);
       // ANY
