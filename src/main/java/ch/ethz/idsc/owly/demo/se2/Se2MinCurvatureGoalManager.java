@@ -10,6 +10,7 @@ import ch.ethz.idsc.owly.math.state.StateTime;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
+import ch.ethz.idsc.tensor.red.Max;
 import ch.ethz.idsc.tensor.sca.Power;
 import ch.ethz.idsc.tensor.sca.Ramp;
 
@@ -30,7 +31,9 @@ public final class Se2MinCurvatureGoalManager extends Se2AbstractGoalManager {
 
   @Override // from HeuristicFunction
   public Scalar minCostToGoal(Tensor tensor) {
-    return Ramp.of( //
-        d_xy(tensor).subtract(radiusSpace()));
+    // TODO JONAS how come the d_angle can be used here but not in Se2MinDistCurvGoalManager ?
+    return Ramp.of(Max.of( //
+        d_xy(tensor).subtract(radiusSpace()), //
+        d_angle(tensor).subtract(radiusAngle())));
   }
 }

@@ -66,7 +66,7 @@ public class BaseFrame {
   public final void configCoordinateOffset(int px, int py) {
     owlyComponent.setOffset(Tensors.vector(px, py));
   }
-  
+
   public final void close() {
     jFrame.setVisible(false);
     jFrame.dispose();
