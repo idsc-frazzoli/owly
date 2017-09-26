@@ -9,7 +9,8 @@ import ch.ethz.idsc.owly.demo.rn.EuclideanDistanceDiscoverRegion;
 import ch.ethz.idsc.owly.demo.rn.R2Controls;
 import ch.ethz.idsc.owly.demo.rn.R2NoiseRegion;
 import ch.ethz.idsc.owly.demo.rn.R2Parameters;
-import ch.ethz.idsc.owly.demo.rn.RnMinDistSphericalGoalManager;
+import ch.ethz.idsc.owly.demo.rn.RnSimpleCircleGoalManager;
+import ch.ethz.idsc.owly.glc.adapter.HeuristicQ;
 import ch.ethz.idsc.owly.glc.adapter.Parameters;
 import ch.ethz.idsc.owly.glc.adapter.RunCompare;
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
@@ -44,8 +45,7 @@ import ch.ethz.idsc.tensor.Tensors;
 
 enum R2GlcConstTimeHeuristicSensingObstacleCompareAnyDemo {
   ;
-  public static void main(String[] args) throws Exception {
-    RationalScalar resolution = (RationalScalar) RealScalar.of(8);
+  private static void _run(Scalar resolution, GoalInterface rnGoal) throws Exception {
     Scalar timeScale = RealScalar.of(5);
     Scalar depthScale = RealScalar.of(100);
     Tensor partitionScale = Tensors.vector(10, 10);
@@ -61,7 +61,6 @@ enum R2GlcConstTimeHeuristicSensingObstacleCompareAnyDemo {
     Collection<Flow> controls = R2Controls.createRadial(parameters.getResolutionInt());
     // Creating Goals
     Tensor startState = Tensors.vector(-3, 0);
-    GoalInterface rnGoal = RnMinDistSphericalGoalManager.create(Tensors.vector(20, 20), RealScalar.of(0.3));
     Region environmentRegion = new R2NoiseRegion(RealScalar.of(0.1));
     TrajectoryRegionQuery obstacleQuery = //
         new SimpleTrajectoryRegionQuery(new TimeInvariantRegion(//
@@ -75,10 +74,12 @@ enum R2GlcConstTimeHeuristicSensingObstacleCompareAnyDemo {
     Optional<GlcNode> finalGoalNode = anyTrajectoryPlanner.getFinalGoalNode();
     List<StateTime> trajectory = GlcNodes.getPathFromRootTo(finalGoalNode.get());
     StateTimeTrajectories.print(trajectory);
+    boolean useGui = false;
     OwlyFrame owlyFrame = Gui.start();
     owlyFrame.configCoordinateOffset(400, 400);
     owlyFrame.jFrame.setBounds(0, 0, 800, 800);
-    owlyFrame.setGlc((TrajectoryPlanner) anyTrajectoryPlanner);
+    if (useGui)
+      owlyFrame.setGlc((TrajectoryPlanner) anyTrajectoryPlanner);
     RunCompare timingDatabase = new RunCompare(2);
     // -- Anytime loop
     for (int i = 0; i < 40; i++) {
@@ -110,7 +111,8 @@ enum R2GlcConstTimeHeuristicSensingObstacleCompareAnyDemo {
       trajectory = GlcNodes.getPathFromRootTo(finalGoalNode.get());
       // --
       timingDatabase.stopStopwatchFor(1);
-      owlyFrame.setGlc((TrajectoryPlanner) anyTrajectoryPlanner);
+      if (useGui)
+        owlyFrame.setGlc((TrajectoryPlanner) anyTrajectoryPlanner);
       // DEFAULT:
       timingDatabase.startStopwatchFor(0);
       int itersStandard = 0;
@@ -136,7 +138,21 @@ enum R2GlcConstTimeHeuristicSensingObstacleCompareAnyDemo {
       if (!owlyFrame.jFrame.isVisible() || itersAny < 1)
         break;
     }
-    timingDatabase.write2File();
+    boolean heuristic = HeuristicQ.of(rnGoal);
+    timingDatabase.write2File((heuristic ? "H" : "noH") + resolution);
     System.out.println("Finished LOOP");
+    owlyFrame.close();
+  }
+
+  public static void main(String[] args) throws Exception {
+    GoalInterface[] values = new GoalInterface[] {
+        // RnMinDistSphericalGoalManager.create(Tensors.vector(20, 20), RealScalar.of(0.3)), //
+        new RnSimpleCircleGoalManager(Tensors.vector(13, 13), RealScalar.of(0.3)) //
+    };
+    for (GoalInterface rnGoal : values) {
+      _run(RealScalar.of(8), rnGoal);
+      _run(RealScalar.of(10), rnGoal);
+      _run(RealScalar.of(12), rnGoal);
+    }
   }
 }

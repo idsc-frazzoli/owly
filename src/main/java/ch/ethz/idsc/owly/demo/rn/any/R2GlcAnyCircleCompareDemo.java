@@ -157,6 +157,6 @@ enum R2GlcAnyCircleCompareDemo {
     // gsw.close();
     // System.out.println("created gif");
     System.out.println("Finished LOOP");
-    database.write2File();
+    database.write2File(""); // TODO
   }
 }
