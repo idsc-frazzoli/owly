@@ -45,10 +45,10 @@ import ch.ethz.idsc.tensor.Tensors;
 enum R2GlcConstTimeHeuristicSensingObstacleCompareAnyDemo {
   ;
   public static void main(String[] args) throws Exception {
-    RationalScalar resolution = (RationalScalar) RealScalar.of(15);
-    Scalar timeScale = RealScalar.of(2.5);
+    RationalScalar resolution = (RationalScalar) RealScalar.of(8);
+    Scalar timeScale = RealScalar.of(5);
     Scalar depthScale = RealScalar.of(100);
-    Tensor partitionScale = Tensors.vector(20, 20);
+    Tensor partitionScale = Tensors.vector(10, 10);
     Scalar dtMax = RationalScalar.of(1, 6);
     int maxIter = 2000;
     Scalar lipschitz = RealScalar.ONE;
