@@ -17,14 +17,14 @@ public class R2Parameters extends DefaultParameters {
 
   @Override
   /** @return if Lipschitz == 0: R*log(R)²/partitionScale */
-  protected Tensor EtaLfZero() {
+  protected Tensor etaLfZero() {
     return getPartitionScale().map(Scalar::reciprocal) //
         .multiply(getResolution().multiply(Power.of(Log.of(getResolution()), 2)));
   }
 
   @Override
   /** else : R²/partitionScale */
-  protected Tensor EtaLfNonZero(Scalar lipschitz) {
+  protected Tensor etaLfNonZero(Scalar lipschitz) {
     return getPartitionScale().map(Scalar::reciprocal) //
         .multiply(Power.of(getResolution(), RealScalar.ONE.add(lipschitz)));
   }

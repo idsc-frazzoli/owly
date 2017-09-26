@@ -20,13 +20,11 @@ public abstract class DefaultParameters extends Parameters {
    * @return else : R^(1+Lipschitz) /PS */
   public Tensor getEta() {
     if (Scalars.isZero(lipschitz))
-      return EtaLfZero();
-    return EtaLfNonZero(lipschitz);
+      return etaLfZero();
+    return etaLfNonZero(lipschitz);
   }
 
-  // TODO JONAS rename to lowercase etaL..
-  protected abstract Tensor EtaLfZero();
+  protected abstract Tensor etaLfZero();
 
-  // TODO JONAS rename to lowercase etaL..
-  protected abstract Tensor EtaLfNonZero(Scalar lipschitz);
+  protected abstract Tensor etaLfNonZero(Scalar lipschitz);
 }

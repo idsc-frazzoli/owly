@@ -9,10 +9,9 @@ import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Scalars;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.TensorRuntimeException;
-import ch.ethz.idsc.tensor.Tensors;
 import ch.ethz.idsc.tensor.alg.Last;
 import ch.ethz.idsc.tensor.red.Norm;
-import ch.ethz.idsc.tensor.red.VectorAngle;
+import ch.ethz.idsc.tensor.sca.ArcTan;
 import ch.ethz.idsc.tensor.sca.Mod;
 
 /** evaluate does not correspond to Euclidean distance */
@@ -55,9 +54,7 @@ public class TimeDependentTurningRingRegion implements StateTimeRegion {
       Scalar upperGapAngle = initialGapAngle.add(gapSizeAngle.divide(RealScalar.of(2)));
       Scalar lowerGapAngle = initialGapAngle.subtract(gapSizeAngle.divide(RealScalar.of(2)));
       Tensor vec1 = state.subtract(center);
-      Tensor vec2 = Tensors.vector(1, 0);
-      // TODO JONAS try ArcTan[x, y]
-      Scalar angle = VectorAngle.of(vec1, vec2);
+      Scalar angle = ArcTan.of(vec1.Get(0), vec1.Get(1));
       if (Scalars.lessThan(vec1.Get(1), RealScalar.ZERO)) { // if state is in lower half : negative Angle
         angle = angle.negate();
       }
