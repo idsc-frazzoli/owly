@@ -538,10 +538,4 @@ public class OptimalAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
     });
     return getBest().isPresent();
   }
-
-  @Override
-  public final boolean goalCheckTree() {
-    final Collection<GlcNode> treeCollection = Nodes.ofSubtree(getRoot());
-    return goalCheckTree(treeCollection);
-  }
 }

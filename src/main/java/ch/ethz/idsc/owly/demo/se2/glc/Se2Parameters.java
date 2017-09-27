@@ -17,14 +17,14 @@ public class Se2Parameters extends DefaultParameters {
 
   @Override
   /** @return if Lipschitz == 0: R*log(R)²/partitionScale */
-  protected Tensor EtaLfZero() {
+  protected Tensor etaLfZero() {
     return getPartitionScale().map(Scalar::reciprocal) //
         .multiply(getResolution().multiply(Power.of(Log.of(getResolution()), 2)));
   }
 
   @Override
   /** @return R^(5/Pi)/partitionScale */
-  protected Tensor EtaLfNonZero(Scalar lipschitz) {
+  protected Tensor etaLfNonZero(Scalar lipschitz) {
     return getPartitionScale().map(Scalar::reciprocal) //
         .multiply(Power.of(getResolution(), RealScalar.of(5).divide(RealScalar.of(Math.PI))));
   }

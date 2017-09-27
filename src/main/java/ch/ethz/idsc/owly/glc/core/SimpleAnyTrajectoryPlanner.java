@@ -144,11 +144,6 @@ public class SimpleAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
   }
 
   @Override
-  boolean goalCheckTree() {
-    return goalCheckTree(null);
-  }
-
-  @Override
   public void obstacleUpdate(TrajectoryRegionQuery newObstacle) {
     obstacleUpdate(newObstacle, new InvertedRegion(EmptyRegion.INSTANCE));
   }

@@ -193,9 +193,6 @@ public abstract class AbstractAnyTrajectoryPlanner extends AbstractTrajectoryPla
    * @return true if a Node in the Goal was found in this Collection */
   abstract boolean goalCheckTree(final Region goalCheckHelp);
 
-  // TODO JONAS this function is never called (and also not documented)
-  abstract boolean goalCheckTree();
-
   @Override
   abstract public void obstacleUpdate(TrajectoryRegionQuery newObstacle);
 

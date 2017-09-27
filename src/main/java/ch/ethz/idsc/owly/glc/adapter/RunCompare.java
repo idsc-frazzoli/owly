@@ -20,7 +20,6 @@ public class RunCompare {
   private Tensor currentIterations;
   private Tensor currentCosts;
   private final int numberOfPlanners;
-  private final Path path = UserHome.file("Comparison.csv").toPath();
   private List<String> lines = new ArrayList<String>();
   private Stopwatch stopwatch;
   private int currentPlannerID = -1;
@@ -100,7 +99,7 @@ public class RunCompare {
           Scalars.lessThan(currentCosts.Get(i), RealScalar.ZERO))
         throw new RuntimeException();
     }
-    String referenceData = String.join(", ", //
+    String referenceData = String.join(",", //
         currentRuntimes.Get(0).toString(), //
         currentIterations.Get(0).toString(), //
         currentCosts.Get(0).toString());
@@ -131,7 +130,8 @@ public class RunCompare {
 
   /** writes the resulting data in a .csv file
    * @throws Exception */
-  public void write2File() throws Exception {
+  public void write2File(String string) throws Exception {
+    Path path = UserHome.file("comparison_" + string + ".csv").toPath();
     Files.write(path, lines, Charset.forName("UTF-8"));
   }
 }

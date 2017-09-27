@@ -53,10 +53,9 @@ public class DeltaHeuristicGoalManager extends SimpleTrajectoryRegionQuery imple
 
   @Override
   public Scalar costIncrement(GlcNode node, List<StateTime> trajectory, Flow flow) {
-    // TODO JONAS this doesn't make sense unless Flow varies in Norm_2
-    // ... at the moment sum is the same for all flows
+    // 2Norm of flow.getU() used for future implemenation of a relative speed of the boat (inputNorm)
     Scalar sum = Norm._2.ofVector(flow.getU()).add(timeCostScalingFactor);
-    // Costfunction: integrate (u^2 +1, t)
+    // Costfunction: integrate (|u| +1, t)
     return sum.multiply(StateTimeTrajectories.timeIncrement(node.stateTime(), trajectory));
   }
 

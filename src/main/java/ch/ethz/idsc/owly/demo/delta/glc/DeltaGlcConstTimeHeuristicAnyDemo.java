@@ -6,6 +6,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 
+import ch.ethz.idsc.owly.data.Stopwatch;
 import ch.ethz.idsc.owly.demo.delta.DeltaStateSpaceModel;
 import ch.ethz.idsc.owly.demo.delta.DeltaTrajectoryGoalManager;
 import ch.ethz.idsc.owly.glc.adapter.StateTimeTrajectories;
@@ -34,10 +35,10 @@ enum DeltaGlcConstTimeHeuristicAnyDemo {
     // -- Quick Planner init
     RationalScalar quickResolution = (RationalScalar) RationalScalar.of(10, 1);
     Tensor partitionScale = Tensors.vector(120, 120);
-    long tic = System.nanoTime();
+    Stopwatch stopwatchTotal = Stopwatch.started();
     TrajectoryPlannerContainer quickTrajectoryPlannerContainer = DeltaHelper.createGlc(RealScalar.of(-0.02), quickResolution, partitionScale);
     GlcExpand.maxDepth(quickTrajectoryPlannerContainer.getTrajectoryPlanner(), DoubleScalar.POSITIVE_INFINITY.number().intValue());
-    System.out.println("QuickPlanner took: " + (System.nanoTime() - tic) * 1e-9 + "s");
+    System.out.println("QuickPlanner took: " + stopwatchTotal.display_seconds() + "s");
     OwlyFrame quickOwlyFrame = Gui.start();
     quickOwlyFrame.configCoordinateOffset(33, 416);
     quickOwlyFrame.jFrame.setBounds(100, 100, 620, 475);
@@ -80,13 +81,10 @@ enum DeltaGlcConstTimeHeuristicAnyDemo {
     // -- ANYTIMELOOP
     boolean finalGoalFound = false;
     while (!finalGoalFound) {
-      tic = System.nanoTime();
       List<StateTime> trajectory = new ArrayList<>();
       Optional<GlcNode> finalGoalNode = null;
-      // --
       // -- ROOTCHANGE
-      // TODO JONAS use Stopwatch
-      long ticTemp = System.nanoTime();
+      Stopwatch stopwatch = Stopwatch.started();
       finalGoalNode = slowTrajectoryPlannerContainer.getTrajectoryPlanner().getFinalGoalNode();
       if (finalGoalNode.isPresent())
         trajectory = GlcNodes.getPathFromRootTo(finalGoalNode.get());
@@ -97,8 +95,8 @@ enum DeltaGlcConstTimeHeuristicAnyDemo {
         int increment = ((OptimalAnyTrajectoryPlanner) slowTrajectoryPlannerContainer.getTrajectoryPlanner()).switchRootToState(newRootState.state());
         slowTrajectoryPlannerContainer.getParameters().increaseDepthLimit(increment);
       }
-      long tocTemp = System.nanoTime();
-      System.out.println("Rootchange took: " + (tocTemp - ticTemp) * 1e-9 + "s");
+      stopwatch.stop();
+      System.out.println("Rootchange took: " + stopwatch.display_seconds() + "s");
       // // -- GOALCHANGE
       // // Goalchange here is not needed, as getFurthest Goal deasl with it,
       // tic = System.nanoTime();
@@ -123,7 +121,8 @@ enum DeltaGlcConstTimeHeuristicAnyDemo {
       // System.out.println("Goalchange took: " + (tocTemp - ticTemp) * 1e-9 + "s");
       // // --
       // -- EXPANDING
-      ticTemp = System.nanoTime();
+      // TODO JAN: reseting of stopwatch?
+      Stopwatch stopwatch2 = Stopwatch.started();
       int expandIter = GlcExpand.constTime(slowTrajectoryPlannerContainer.getTrajectoryPlanner(), planningTime,
           slowTrajectoryPlannerContainer.getParameters().getDepthLimit());
       // int expandIter = GlcExpand.constTime(slowTrajectoryPlannerContainer.getTrajectoryPlanner(), //
@@ -131,11 +130,11 @@ enum DeltaGlcConstTimeHeuristicAnyDemo {
       Optional<StateTime> furthestState = ((OptimalAnyTrajectoryPlanner) slowTrajectoryPlannerContainer.getTrajectoryPlanner()).getFurthestGoalState();
       finalGoalNode = slowTrajectoryPlannerContainer.getTrajectoryPlanner().getFinalGoalNode();
       trajectory = GlcNodes.getPathFromRootTo(finalGoalNode.get());
-      tocTemp = System.nanoTime();
-      System.out.println("Expanding " + expandIter + " Nodes took: " + (tocTemp - ticTemp) * 1e-9 + "s");
-      long toc = System.nanoTime();
+      stopwatch2.stop();
+      System.out.println("Expanding " + expandIter + " Nodes took: " + stopwatch.display_seconds() + "s");
+      stopwatchTotal.stop();
       owlyFrame.setGlc((TrajectoryPlanner) slowTrajectoryPlannerContainer.getTrajectoryPlanner());
-      System.out.println((toc - tic) * 1e-9 + " Seconds needed to replan");
+      System.out.println(stopwatchTotal.display_seconds() + " Seconds needed to replan");
       System.out.println("After goal switch needed " + expandIter + " iterations");
       owlyFrame.setGlc((TrajectoryPlanner) slowTrajectoryPlannerContainer.getTrajectoryPlanner());
       System.out.println("*****Finished*****");

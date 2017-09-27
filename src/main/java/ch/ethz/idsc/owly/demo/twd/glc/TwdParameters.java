@@ -17,7 +17,7 @@ public class TwdParameters extends DefaultParameters {
 
   @Override
   /** @return if Lipschitz == 0: R*log(R)²/partitionScale */
-  protected Tensor EtaLfZero() {
+  protected Tensor etaLfZero() {
     return getPartitionScale().map(Scalar::reciprocal) //
         .multiply(getResolution().multiply(Power.of(Log.of(getResolution()), 2)));
   }
@@ -25,7 +25,7 @@ public class TwdParameters extends DefaultParameters {
   @Override
   /** @return R^(5/Pi)/partitionScale */
   // Formula from: B. Paden: A Generalized Label correcting Method: P. 57 Figure: 5-11
-  protected Tensor EtaLfNonZero(Scalar lipschitz) {
+  protected Tensor etaLfNonZero(Scalar lipschitz) {
     return getPartitionScale().map(Scalar::reciprocal) //
         .multiply(Power.of(getResolution(), RealScalar.of(5).divide(RealScalar.of(Math.PI))));
   }

@@ -13,9 +13,8 @@ import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
 
 /** Se2 goal region is not elliptic, therefore we implement {@link Region}
- * 
+ * This class exists to compare and show the effects of a Heuristic in the Se2Model
  * bapaden phd thesis: (6.4.10) */
-// TODO JONAS document why No-Heuristic class exists, since it's not good for performance
 public final class Se2NoHeuristicGoalManager extends Se2AbstractGoalManager {
   /** @param center
    * @param radiusVector with 3 entries the first 2 of which have to be identical */

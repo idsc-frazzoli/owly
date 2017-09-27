@@ -56,7 +56,7 @@ public class TimeDependentTurningRingRegion implements StateTimeRegion {
       Scalar lowerGapAngle = initialGapAngle.subtract(gapSizeAngle.divide(RealScalar.of(2)));
       Tensor vec1 = state.subtract(center);
       Tensor vec2 = Tensors.vector(1, 0);
-      // TODO JONAS try ArcTan[x, y]
+      // ArcTan[x, y] --> TestFailure
       Scalar angle = VectorAngle.of(vec1, vec2);
       if (Scalars.lessThan(vec1.Get(1), RealScalar.ZERO)) { // if state is in lower half : negative Angle
         angle = angle.negate();
