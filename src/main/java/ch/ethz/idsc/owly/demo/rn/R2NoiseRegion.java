@@ -27,6 +27,7 @@ public class R2NoiseRegion implements Region {
 
   @Override
   public boolean isMember(Tensor tensor) {
+    tensor = tensor.extract(0, 2);
     return Scalars.lessThan(threshold, CONTINUOUS_NOISE.apply(tensor));
   }
 }
