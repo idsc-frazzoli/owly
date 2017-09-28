@@ -131,7 +131,7 @@ public class RunCompare {
   /** writes the resulting data in a .csv file
    * @throws Exception */
   public void write2File(String string) throws Exception {
-    Path path = UserHome.file("comparison_" + string + ".csv").toPath();
+    Path path = UserHome.file(string + ".csv").toPath();
     Files.write(path, lines, Charset.forName("UTF-8"));
   }
 }
