@@ -18,7 +18,7 @@ import ch.ethz.idsc.tensor.sca.N;
 public class RunCompare {
   private Tensor currentRuntimes;
   private Tensor currentIterations;
-  private Tensor currentCosts;
+  private Tensor currentCosts = Tensors.vector(0);
   private final int numberOfPlanners;
   private List<String> lines = new ArrayList<String>();
   private Stopwatch stopwatch;
@@ -94,9 +94,9 @@ public class RunCompare {
    * Needs to be called after each compare run (different planners solving the same issue) */
   public void write2lines() {
     for (int i = 0; i < numberOfPlanners; i++) {
-      if (Scalars.lessThan(currentRuntimes.Get(i), RealScalar.ZERO) || //
-          Scalars.lessThan(currentIterations.Get(i), RealScalar.ZERO) || //
-          Scalars.lessThan(currentCosts.Get(i), RealScalar.ZERO))
+      if (Scalars.lessThan(currentRuntimes.Get(i), RealScalar.ZERO))
+        throw new RuntimeException();
+      if (Scalars.lessThan(currentIterations.Get(i), RealScalar.ZERO))
         throw new RuntimeException();
     }
     String referenceData = String.join(",", //
@@ -126,6 +126,11 @@ public class RunCompare {
           currentCostRelative.Get(i).toString());
     lines.add(String.join("", referenceData, compareData));
     newRuns();
+  }
+
+  public void printcurrent() {
+    System.out.println(" Current Times: " + currentRuntimes);
+    System.out.println("Current Iterations: " + currentIterations);
   }
 
   /** writes the resulting data in a .csv file

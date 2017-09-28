@@ -46,9 +46,10 @@ import ch.ethz.idsc.tensor.Tensors;
 
 enum R2GlcConstTimeHeuristicSensingObstacleCompareAnyDemo {
   ;
-  private static void _run(Scalar resolution, GoalInterface rnGoal) throws Exception {
+  private static void _run(Scalar resolution, GoalInterface rnGoal, boolean rechabilityRegion) throws Exception {
     boolean heuristic = HeuristicQ.of(rnGoal);
-    System.out.println("RUN " + (heuristic ? "H" : "noH") + "R" + resolution);
+    System.out.println("RUN R=" + resolution + (heuristic ? "H" : "noH") //
+        + (rechabilityRegion ? " with Reachability" : " no Reachability"));
     Scalar timeScale = RealScalar.of(5);
     Scalar depthScale = RealScalar.of(100);
     Tensor partitionScale = Tensors.vector(20, 20);
@@ -106,8 +107,10 @@ enum R2GlcConstTimeHeuristicSensingObstacleCompareAnyDemo {
         parameters.increaseDepthLimit(increment);
       }
       // -- OBSTACLE CHANGE
-      anyTrajectoryPlanner.obstacleUpdate(newObstacleQuery);
-      // anyTrajectoryPlanner.obstacleUpdate(newObstacleQuery, new SphericalRegion(trajectory.get(0).state(), RealScalar.of(6).add(RealScalar.ONE)));
+      if (rechabilityRegion)
+        anyTrajectoryPlanner.obstacleUpdate(newObstacleQuery, new SphericalRegion(trajectory.get(0).state(), RealScalar.of(6).add(RealScalar.ONE)));
+      else
+        anyTrajectoryPlanner.obstacleUpdate(newObstacleQuery);
       // -- EXPANDING
       int itersAny = GlcExpand.maxDepth(anyTrajectoryPlanner, parameters.getDepthLimit());
       timingDatabase.saveIterations(itersAny, 1);
@@ -142,19 +145,20 @@ enum R2GlcConstTimeHeuristicSensingObstacleCompareAnyDemo {
       if (!owlyFrame.jFrame.isVisible() || itersAny < 1)
         break;
     }
-    timingDatabase.write2File("R" + resolution + (heuristic ? "H" : "noH"));
+    timingDatabase.write2File("Res" + resolution + (heuristic ? "H" : "noH") + (rechabilityRegion ? "R" : "noR"));
     System.out.println("Finished LOOP");
     owlyFrame.close();
   }
 
   public static void main(String[] args) throws Exception {
-    GoalInterface[] values = new GoalInterface[] { RnMinDistSphericalGoalManager.create(Tensors.vector(20, 20), RealScalar.of(0.3)), //
-        new RnSimpleCircleGoalManager(Tensors.vector(16, 16), RealScalar.of(0.3)) //
+    GoalInterface[] values = new GoalInterface[] { RnMinDistSphericalGoalManager.create(Tensors.vector(15, 15), RealScalar.of(0.3)), //
+        new RnSimpleCircleGoalManager(Tensors.vector(12, 12), RealScalar.of(0.3)) //
     };
     for (GoalInterface rnGoal : values) {
-      // _run(RealScalar.of(8), rnGoal);
-      _run(RealScalar.of(10), rnGoal);
-      // _run(RealScalar.of(12), rnGoal);
+      // _run(RealScalar.of(8), rnGoal, true);
+      _run(RealScalar.of(12), rnGoal, true);
+      _run(RealScalar.of(12), rnGoal, false);
+      // _run(RealScalar.of(12), rnGoal, true);
     }
   }
 }

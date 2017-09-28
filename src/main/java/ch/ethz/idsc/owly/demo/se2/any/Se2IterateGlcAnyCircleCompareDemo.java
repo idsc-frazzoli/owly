@@ -5,11 +5,15 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import ch.ethz.idsc.owly.demo.se2.Se2AbstractGoalManager;
 import ch.ethz.idsc.owly.demo.se2.Se2Controls;
 import ch.ethz.idsc.owly.demo.se2.Se2MinCurvatureGoalManager;
+import ch.ethz.idsc.owly.demo.se2.Se2NoHeuristicGoalManager;
 import ch.ethz.idsc.owly.demo.se2.Se2StateSpaceModel;
 import ch.ethz.idsc.owly.demo.se2.glc.Se2Parameters;
+import ch.ethz.idsc.owly.glc.adapter.HeuristicQ;
 import ch.ethz.idsc.owly.glc.adapter.Parameters;
+import ch.ethz.idsc.owly.glc.adapter.RunCompare;
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
 import ch.ethz.idsc.owly.glc.core.AnyPlannerInterface;
 import ch.ethz.idsc.owly.glc.core.DebugUtils;
@@ -40,11 +44,12 @@ import ch.ethz.idsc.tensor.Tensors;
 
 /** (x,y,theta) */
 class Se2IterateGlcAnyCircleCompareDemo {
-  public static void main(String[] args) throws Exception {
-    RationalScalar resolution = (RationalScalar) RealScalar.of(10);
+  public static void _run(Scalar resolution) throws Exception {
+    RunCompare timingDatabase = new RunCompare(2);
+    boolean useGui = false;
     Scalar timeScale = RealScalar.of(4);
     Scalar depthScale = RealScalar.of(10);
-    Tensor partitionScale = Tensors.vector(3, 3, 50 / Math.PI);
+    Tensor partitionScale = Tensors.vector(10, 10, 50 / Math.PI);
     Scalar dtMax = RationalScalar.of(1, 12);
     int maxIter = 2000;
     StateSpaceModel stateSpaceModel = Se2StateSpaceModel.INSTANCE;
@@ -58,7 +63,7 @@ class Se2IterateGlcAnyCircleCompareDemo {
     System.out.println("1/Domainsize=" + parameters.getEta());
     parameters.printResolution();
     Collection<Flow> controls = Se2Controls.createControls(RotationUtils.DEGREE(45), parameters.getResolutionInt());
-    Se2MinCurvatureGoalManager se2GoalManager = new Se2MinCurvatureGoalManager( //
+    Se2AbstractGoalManager se2GoalManager = new Se2MinCurvatureGoalManager( //
         Tensors.vector(3, 0, 1.5 * Math.PI), radiusVector);
     TrajectoryRegionQuery obstacleQuery = //
         new SimpleTrajectoryRegionQuery(new TimeInvariantRegion( //
@@ -74,7 +79,6 @@ class Se2IterateGlcAnyCircleCompareDemo {
     goalList.add(Tensors.vector(0, 3, 0)); // North
     goalList.add(Tensors.vector(3, 0, -0.5 * Math.PI)); // East
     // ---
-    Scalar tic = RealScalar.of(System.nanoTime());
     System.out.println("***ANY***");
     // {
     AnyPlannerInterface anyTrajectoryPlanner = new OptimalAnyTrajectoryPlanner( //
@@ -82,9 +86,7 @@ class Se2IterateGlcAnyCircleCompareDemo {
     anyTrajectoryPlanner.switchRootToState(Tensors.vector(0, 3, 0));
     int iters = GlcExpand.maxDepth(anyTrajectoryPlanner, parameters.getDepthLimit());
     System.out.println("After " + iters + " iterations");
-    Scalar toc = RealScalar.of(System.nanoTime());
     // }
-    System.out.println(toc.subtract(tic).multiply(RealScalar.of(1e-9)) + " Seconds needed to plan");
     OwlyFrame owlyFrameAny = Gui.start();
     owlyFrameAny.setGlc((TrajectoryPlanner) anyTrajectoryPlanner);
     // ---
@@ -98,8 +100,6 @@ class Se2IterateGlcAnyCircleCompareDemo {
       iters = GlcExpand.maxDepth(defaultTrajectoryPlanner, parameters.getDepthLimit());
       DebugUtils.nodeAmountCompare(defaultTrajectoryPlanner);
       System.out.println("After " + iters + " iterations");
-      toc = RealScalar.of(System.nanoTime());
-      System.out.println(toc.subtract(tic).multiply(RealScalar.of(1e-9)) + " Seconds needed to plan");
       owlyFrameDefault.setGlc(defaultTrajectoryPlanner);
     }
     // --
@@ -107,47 +107,61 @@ class Se2IterateGlcAnyCircleCompareDemo {
     boolean goalFound = false;
     int expandIter = 0;
     System.out.println("****STARTING COMPARISON****");
-    while (owlyFrameAny.jFrame.isVisible()) {
+    while (owlyFrameAny.jFrame.isVisible() && iter < 20) {
       System.out.println("***NEW SET");
       List<StateTime> anyTrajectory = anyTrajectoryPlanner.trajectoryToBest();
       StateTime newRootState = null;
       if (anyTrajectory != null)
         newRootState = anyTrajectory.get(anyTrajectory.size() > 5 ? 5 : 0);
       int index = iter % 4;
-      Se2MinCurvatureGoalManager se2GoalManager2 = new Se2MinCurvatureGoalManager( //
+      Se2AbstractGoalManager se2GoalManager2 = new Se2MinCurvatureGoalManager( //
           goalList.get(index), radiusVector);
       // --
       System.out.println("***ANY***");
-      tic = RealScalar.of(System.nanoTime());
+      timingDatabase.startStopwatchFor(1);
       {
         int increment = anyTrajectoryPlanner.switchRootToState(newRootState.state());
         parameters.increaseDepthLimit(increment);
         // --
         goalFound = anyTrajectoryPlanner.changeToGoal(se2GoalManager2.getGoalInterface());
         // --
+        expandIter = 0;
         if (!goalFound)
           expandIter = GlcExpand.maxDepth(anyTrajectoryPlanner, parameters.getDepthLimit());
+        timingDatabase.saveIterations(expandIter, 1);
         System.out.println("After " + expandIter + " iterations");
-        owlyFrameAny.setGlc((TrajectoryPlanner) anyTrajectoryPlanner);
+        timingDatabase.stopStopwatchFor(1);
+        if (useGui)
+          owlyFrameAny.setGlc((TrajectoryPlanner) anyTrajectoryPlanner);
         // ---
       }
-      toc = RealScalar.of(System.nanoTime());
-      System.out.println((iter + 1) + ". iteration took: " + toc.subtract(tic).multiply(RealScalar.of(1e-9)) + "s");
       System.out.println("***DEFAULT***");
-      tic = RealScalar.of(System.nanoTime());
+      timingDatabase.startStopwatchFor(0);
       {
         StandardTrajectoryPlanner defaultTrajectoryPlanner = new StandardTrajectoryPlanner( //
             parameters.getEta(), stateIntegrator, controls, obstacleQuery, se2GoalManager2.getGoalInterface());
         defaultTrajectoryPlanner.insertRoot(newRootState.state());
         iters = GlcExpand.maxDepth(defaultTrajectoryPlanner, parameters.getDepthLimit());
+        timingDatabase.saveIterations(iters, 0);
         System.out.println("After " + iters + " iterations");
-        toc = RealScalar.of(System.nanoTime());
-        System.out.println(toc.subtract(tic).multiply(RealScalar.of(1e-9)) + " Seconds needed to plan");
-        owlyFrameDefault.setGlc(defaultTrajectoryPlanner);
+        timingDatabase.stopStopwatchFor(0);
+        if (useGui)
+          owlyFrameDefault.setGlc(defaultTrajectoryPlanner);
       }
-      toc = RealScalar.of(System.nanoTime());
-      System.out.println((iter + 1) + ". iteration took: " + toc.subtract(tic).multiply(RealScalar.of(1e-9)) + "s");
       iter++;
+      timingDatabase.write2lines();
     }
+    boolean heuristic = HeuristicQ.of(se2GoalManager);
+    timingDatabase.write2File("SE2R" + resolution + (heuristic ? "H" : "noH"));
+    owlyFrameDefault.close();
+    owlyFrameAny.close();
+    System.out.println("Finished loop");
+  }
+
+  public static void main(String[] args) throws Exception {
+    _run(RealScalar.of(8));
+    _run(RealScalar.of(12));
+    _run(RealScalar.of(14));
+    _run(RealScalar.of(16));
   }
 }

@@ -248,7 +248,10 @@ public class OptimalAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
   // TODO JAN; obstacle check function
   @Override
   public void obstacleUpdate(TrajectoryRegionQuery newObstacle, Region rechabilityObstacleRegion) {
-    if (newObstacle == this.getObstacleQuery() || newObstacle == null) {
+    if (newObstacle == this.getObstacleQuery())
+      return;
+    if (newObstacle == null) {
+      obstacleUpdate(newObstacle);
       return;
     }
     // TODO detect if no obstacles have moved --> do not check for collision

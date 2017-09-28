@@ -9,7 +9,7 @@ import ch.ethz.idsc.tensor.Scalars;
 import ch.ethz.idsc.tensor.Tensor;
 
 /** compare two nodes based on {@link GlcNode#merit()} */
-/* package */ enum NodeDepthComparator implements Comparator<Entry<Tensor,GlcNode>> {
+/* package */ enum NodeDepthComparator implements Comparator<Entry<Tensor, GlcNode>> {
   INSTANCE;
   // ---
   @Override
