@@ -52,7 +52,7 @@ enum TwdGlcConstTimeHeuristicSensingObstacleCompareAnyDemo {
         + (rechabilityRegion ? " with Reachability" : " no Reachability"));
     Scalar timeScale = RealScalar.of(2);
     Scalar depthScale = RealScalar.of(100);
-    Tensor partitionScale = Tensors.vector(5, 5, 20);
+    Tensor partitionScale = Tensors.vector(9, 9, 12);
     Scalar dtMax = RationalScalar.of(1, 6);
     int maxIter = 2000;
     Scalar lipschitz = RealScalar.ONE;
@@ -79,7 +79,7 @@ enum TwdGlcConstTimeHeuristicSensingObstacleCompareAnyDemo {
     Optional<GlcNode> finalGoalNode = anyTrajectoryPlanner.getFinalGoalNode();
     List<StateTime> trajectory = GlcNodes.getPathFromRootTo(finalGoalNode.get());
     StateTimeTrajectories.print(trajectory);
-    boolean useGui = true;
+    boolean useGui = false;
     OwlyFrame owlyFrame = Gui.start();
     owlyFrame.configCoordinateOffset(400, 400);
     owlyFrame.jFrame.setBounds(0, 0, 800, 800);
@@ -153,13 +153,14 @@ enum TwdGlcConstTimeHeuristicSensingObstacleCompareAnyDemo {
 
   public static void main(String[] args) throws Exception {
     GoalInterface[] values = new GoalInterface[] { new TwdMinCurvatureGoalManager(Tensors.vector(13, 13, 0), //
-        RealScalar.of(0.3), RealScalar.of(1)).getGoalInterface(), //
-        new TwdMinTimeGoalManager(Tensors.vector(13, 13, 0), RealScalar.of(0.3), RealScalar.of(1)).getGoalInterface() };
+        RealScalar.of(0.3), RealScalar.of(1)).getGoalInterface() //
+         , new TwdMinTimeGoalManager(Tensors.vector(13, 13, 0), RealScalar.of(0.3), RealScalar.of(1)).getGoalInterface() //
+    };
     for (GoalInterface twdGoal : values) {
       _run(RealScalar.of(9), twdGoal, false);
-      // _run(RealScalar.of(12), twdGoal, false);
-      // _run(RealScalar.of(12), twdGoal, false);
-      // _run(RealScalar.of(12), rnGoal, true);
+      _run(RealScalar.of(11), twdGoal, false);
+      _run(RealScalar.of(13), twdGoal, false);
+       _run(RealScalar.of(12), twdGoal, true);
     }
   }
 }

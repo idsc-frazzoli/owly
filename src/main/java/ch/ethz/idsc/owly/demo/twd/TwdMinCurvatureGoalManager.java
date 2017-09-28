@@ -30,7 +30,7 @@ public class TwdMinCurvatureGoalManager extends TwdAbstractGoalManager {
     // TODO Magic const
     // J(x,u) = (1+(delta(theta)/delta(position))²) * Ts
     return (RealScalar.ONE.add(Power.of(end.state().Get(2).subtract(from.state().Get(2)), 2) //
-        .divide(TwdStateSpaceModel.errorPosition(from.state(), end.state()))))//
+        .divide(TwdStateSpaceModel.errorPosition(from.state(), end.state()).add(RealScalar.ONE))))// if turnign on the place
             .multiply(StateTimeTrajectories.timeIncrement(from, trajectory));
   }
 

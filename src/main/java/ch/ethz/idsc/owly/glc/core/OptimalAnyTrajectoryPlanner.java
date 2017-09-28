@@ -68,6 +68,10 @@ public class OptimalAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
         System.out.println("newMerit: " + newMerit);
         throw new RuntimeException();
       }
+      if (Double.isInfinite(newHeuristic.number().doubleValue()))
+        throw new RuntimeException(" " + newHeuristic);
+      if (Double.isInfinite(newCost.number().doubleValue()))
+        throw new RuntimeException(" " + newCost);
     }
     for (GlcNode next : connectors.keySet()) { // <- order of keys is non-deterministic
       // ALL Candidates are saved in temporary CandidateList
