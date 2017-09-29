@@ -8,8 +8,7 @@ import java.util.Optional;
 import ch.ethz.idsc.owly.demo.rn.EuclideanDistanceDiscoverRegion;
 import ch.ethz.idsc.owly.demo.rn.R2NoiseRegion;
 import ch.ethz.idsc.owly.demo.twd.TwdControls;
-import ch.ethz.idsc.owly.demo.twd.TwdMinCurvatureGoalManager;
-import ch.ethz.idsc.owly.demo.twd.TwdMinTimeGoalManager;
+import ch.ethz.idsc.owly.demo.twd.TwdNoHeuristicGoalManager;
 import ch.ethz.idsc.owly.demo.twd.TwdStateSpaceModel;
 import ch.ethz.idsc.owly.glc.adapter.HeuristicQ;
 import ch.ethz.idsc.owly.glc.adapter.Parameters;
@@ -46,13 +45,13 @@ import ch.ethz.idsc.tensor.Tensors;
 
 enum TwdGlcConstTimeHeuristicSensingObstacleCompareAnyDemo {
   ;
-  private static void _run(Scalar resolution, GoalInterface twdGoal, boolean rechabilityRegion) throws Exception {
+  private static void _run(Scalar resolution, GoalInterface twdGoal, boolean rechabilityRegion, Scalar sensingRadius) throws Exception {
     boolean heuristic = HeuristicQ.of(twdGoal);
     System.out.println("RUN R=" + resolution + (heuristic ? "H" : "noH") //
         + (rechabilityRegion ? " with Reachability" : " no Reachability"));
-    Scalar timeScale = RealScalar.of(2);
+    Scalar timeScale = RealScalar.of(8);
     Scalar depthScale = RealScalar.of(100);
-    Tensor partitionScale = Tensors.vector(9, 9, 12);
+    Tensor partitionScale = Tensors.vector(3, 3, 1);
     Scalar dtMax = RationalScalar.of(1, 6);
     int maxIter = 2000;
     Scalar lipschitz = RealScalar.ONE;
@@ -79,7 +78,7 @@ enum TwdGlcConstTimeHeuristicSensingObstacleCompareAnyDemo {
     Optional<GlcNode> finalGoalNode = anyTrajectoryPlanner.getFinalGoalNode();
     List<StateTime> trajectory = GlcNodes.getPathFromRootTo(finalGoalNode.get());
     StateTimeTrajectories.print(trajectory);
-    boolean useGui = false;
+    boolean useGui = true;
     OwlyFrame owlyFrame = Gui.start();
     owlyFrame.configCoordinateOffset(400, 400);
     owlyFrame.jFrame.setBounds(0, 0, 800, 800);
@@ -87,7 +86,7 @@ enum TwdGlcConstTimeHeuristicSensingObstacleCompareAnyDemo {
       owlyFrame.setGlc((TrajectoryPlanner) anyTrajectoryPlanner);
     RunCompare timingDatabase = new RunCompare(2);
     // -- Anytime loop
-    for (int i = 0; i < 13; i++) {
+    for (int i = 0; i < 18; i++) {
       // while (!finalGoalFound) {
       Thread.sleep(1);
       // ANY
@@ -99,7 +98,7 @@ enum TwdGlcConstTimeHeuristicSensingObstacleCompareAnyDemo {
       StateTime newRootState = null;
       TrajectoryRegionQuery newObstacleQuery = //
           new SimpleTrajectoryRegionQuery(new TimeInvariantRegion(//
-              EuclideanDistanceDiscoverRegion.of(environmentRegion, trajectory.get(0).state(), RealScalar.of(6))));
+              EuclideanDistanceDiscoverRegion.of(environmentRegion, trajectory.get(0).state(), sensingRadius)));
       timingDatabase.startStopwatchFor(1);
       if (trajectory.size() > 5) {
         //
@@ -109,7 +108,7 @@ enum TwdGlcConstTimeHeuristicSensingObstacleCompareAnyDemo {
       }
       // -- OBSTACLE CHANGE
       if (rechabilityRegion)
-        anyTrajectoryPlanner.obstacleUpdate(newObstacleQuery, new SphericalRegion(trajectory.get(0).state(), RealScalar.of(6).add(RealScalar.ONE)));
+        anyTrajectoryPlanner.obstacleUpdate(newObstacleQuery, new SphericalRegion(trajectory.get(0).state(), sensingRadius.add(RealScalar.ONE)));
       else
         anyTrajectoryPlanner.obstacleUpdate(newObstacleQuery);
       // -- EXPANDING
@@ -146,21 +145,23 @@ enum TwdGlcConstTimeHeuristicSensingObstacleCompareAnyDemo {
       if (!owlyFrame.jFrame.isVisible() || itersAny < 1)
         break;
     }
-    timingDatabase.write2File("TWDRes" + resolution + (heuristic ? "H" : "noH") + (rechabilityRegion ? "R" : "noR"));
+    timingDatabase.write2File("TWDRes" + resolution + (heuristic ? "H" : "noH") + (rechabilityRegion ? "R" : "noR") + "S" + sensingRadius);
     System.out.println("Finished LOOP");
-    owlyFrame.close();
+    // owlyFrame.close();
   }
 
   public static void main(String[] args) throws Exception {
-    GoalInterface[] values = new GoalInterface[] { new TwdMinCurvatureGoalManager(Tensors.vector(13, 13, 0), //
-        RealScalar.of(0.3), RealScalar.of(1)).getGoalInterface() //
-         , new TwdMinTimeGoalManager(Tensors.vector(13, 13, 0), RealScalar.of(0.3), RealScalar.of(1)).getGoalInterface() //
+    GoalInterface[] values = new GoalInterface[] { //
+        // new TwdMinCurvatureGoalManager(Tensors.vector(13, 13, 0), RealScalar.of(0.3), RealScalar.of(1)).getGoalInterface()
+        // , new TwdMinTimeGoalManager(Tensors.vector(13, 13, 0), RealScalar.of(0.3), RealScalar.of(1)).getGoalInterface()
+        new TwdNoHeuristicGoalManager(Tensors.vector(6, 6, 0), Tensors.vector(0.3, 0.3, 1)).getGoalInterface() //
     };
     for (GoalInterface twdGoal : values) {
-      _run(RealScalar.of(9), twdGoal, false);
-      _run(RealScalar.of(11), twdGoal, false);
-      _run(RealScalar.of(13), twdGoal, false);
-       _run(RealScalar.of(12), twdGoal, true);
+      _run(RealScalar.of(3), twdGoal, false, RealScalar.of(5));
+      // _run(RealScalar.of(9), twdGoal, false, RealScalar.of(8));
+      // _run(RealScalar.of(11), twdGoal, false);
+      // _run(RealScalar.of(9), twdGoal, true);
+      // _run(RealScalar.of(11), twdGoal, true);
     }
   }
 }

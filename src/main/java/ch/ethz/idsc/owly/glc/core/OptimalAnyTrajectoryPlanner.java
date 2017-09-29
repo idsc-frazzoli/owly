@@ -48,6 +48,7 @@ public class OptimalAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
 
   @Override // from ExpandInterface
   public void expand(final GlcNode node) {
+    integratorWatch.start();
     Map<GlcNode, List<StateTime>> connectors = controlsIntegrator.inParallel(node);
     CandidatePairQueueMap candidatePairQueueMap = new CandidatePairQueueMap();
     for (GlcNode next : connectors.keySet()) {
@@ -85,7 +86,10 @@ public class OptimalAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
         candidateMap.put(entry.getKey(), new HashSet<CandidatePair>());
       getCandidateMap().get(entry.getKey()).addAll(entry.getValue());
     }
+    integratorWatch.stop();
+    processCWatch.start();
     processCandidates(node, connectors, candidatePairQueueMap);
+    processCWatch.stop();
   }
 
   private void processCandidates( //

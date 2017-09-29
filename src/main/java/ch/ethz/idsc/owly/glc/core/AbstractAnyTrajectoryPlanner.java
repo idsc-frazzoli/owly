@@ -2,12 +2,14 @@
 package ch.ethz.idsc.owly.glc.core;
 
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Optional;
 
+import ch.ethz.idsc.owly.data.Stopwatch;
 import ch.ethz.idsc.owly.data.tree.Nodes;
 import ch.ethz.idsc.owly.glc.adapter.HeuristicQ;
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
@@ -26,6 +28,7 @@ import ch.ethz.idsc.tensor.Tensor;
 public abstract class AbstractAnyTrajectoryPlanner extends AbstractTrajectoryPlanner implements AnyPlannerInterface {
   protected ControlsIntegrator controlsIntegrator;
   private final Collection<Flow> controls;
+  public Stopwatch subTreeDeleterWatch = Stopwatch.stopped();
 
   protected AbstractAnyTrajectoryPlanner( //
       Tensor eta, //
@@ -82,14 +85,26 @@ public abstract class AbstractAnyTrajectoryPlanner extends AbstractTrajectoryPla
   /** @param baseNode Node, of which all children and itself should be deleted
    * @return the Collection of Nodes, which should be deleted */
   protected final Collection<GlcNode> deleteSubtreeOf(GlcNode baseNode) {
-    Collection<GlcNode> deleteTreeCollection = Nodes.ofSubtree(baseNode);
-    // -- GOAL: goalNode deleted?
+    subTreeDeleterWatch.start();
+    Collection<GlcNode> deleteTreeCollection = new HashSet<>();
+    Nodes.ofSubtree(baseNode, deleteTreeCollection);
+    // {
+    //
+    // domainMap().values().removeIf(deleteTreeCollection::contains);
+    // }
+    // Collection<GlcNode> deleteTreeCollection = Nodes.ofSubtree(baseNode);
+    // // -- GOAL: goalNode deleted?
     best.keySet().removeAll(deleteTreeCollection);
-    // -- QUEUE: Deleting Nodes from Queue
-    // removal from queue might lead to non convergence to optimal Solution, when R is increased
+    // // -- QUEUE: Deleting Nodes from Queue
+    // // removal from queue might lead to non convergence to optimal Solution, when R is increased
     queue().removeAll(deleteTreeCollection);
-    // -- DOMAINMAP: Removing Nodes (DeleteTree) from DomainMap
-    domainMap().values().removeAll(deleteTreeCollection);
+    // // -- DOMAINMAP: Removing Nodes (DeleteTree) from DomainMap
+    for (GlcNode node : deleteTreeCollection) {
+      domainMap().remove(convertToKey(node.state()));
+    }
+    // boolean test = domainMap().values().removeAll(deleteTreeCollection);
+    // if (test)
+    // throw new RuntimeException();
     // -- EDGE: Removing Edges between Nodes in DeleteTree
     // TODO edge removal of all nodes needed?
     // better for garbage collector, otherwise child<->parent pair might keep itself in existence
@@ -100,6 +115,7 @@ public abstract class AbstractAnyTrajectoryPlanner extends AbstractTrajectoryPla
     // TODO make parralel? If parralel, run in below exceptions
     deleteTreeCollection.stream().forEach(tempNode -> tempNode.parent().removeEdgeTo(tempNode));
     deleteTreeCollection.add(baseNode);
+    subTreeDeleterWatch.stop();
     if (!baseNode.isLeaf())
       throw new RuntimeException();
     return deleteTreeCollection;
@@ -272,5 +288,15 @@ public abstract class AbstractAnyTrajectoryPlanner extends AbstractTrajectoryPla
     if (getBest().isPresent())
       return getBest().get().costFromRoot().subtract(root.costFromRoot());
     return null;
+  }
+
+  @Override
+  public void printTimes() {
+    System.out.println("Integrator took: " + integratorWatch.display_seconds());
+    System.out.println("processing C took: " + processCWatch.display_seconds());
+    System.out.println(" deleting subtrees took " + subTreeDeleterWatch.display_seconds());
+    integratorWatch = Stopwatch.stopped();
+    processCWatch = Stopwatch.stopped();
+    subTreeDeleterWatch = Stopwatch.stopped();
   }
 }

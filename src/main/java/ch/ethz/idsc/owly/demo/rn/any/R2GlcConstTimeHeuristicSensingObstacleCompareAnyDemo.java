@@ -9,7 +9,6 @@ import ch.ethz.idsc.owly.demo.rn.EuclideanDistanceDiscoverRegion;
 import ch.ethz.idsc.owly.demo.rn.R2Controls;
 import ch.ethz.idsc.owly.demo.rn.R2NoiseRegion;
 import ch.ethz.idsc.owly.demo.rn.R2Parameters;
-import ch.ethz.idsc.owly.demo.rn.RnMinDistSphericalGoalManager;
 import ch.ethz.idsc.owly.demo.rn.RnSimpleCircleGoalManager;
 import ch.ethz.idsc.owly.glc.adapter.HeuristicQ;
 import ch.ethz.idsc.owly.glc.adapter.Parameters;
@@ -113,6 +112,7 @@ enum R2GlcConstTimeHeuristicSensingObstacleCompareAnyDemo {
         anyTrajectoryPlanner.obstacleUpdate(newObstacleQuery);
       // -- EXPANDING
       int itersAny = GlcExpand.maxDepth(anyTrajectoryPlanner, parameters.getDepthLimit());
+      ((OptimalAnyTrajectoryPlanner) anyTrajectoryPlanner).printTimes();
       timingDatabase.saveIterations(itersAny, 1);
       // check if furthest Goal is already in last Region in List
       trajectory = GlcNodes.getPathFromRootTo(finalGoalNode.get());
@@ -129,6 +129,7 @@ enum R2GlcConstTimeHeuristicSensingObstacleCompareAnyDemo {
             stateIntegrator, controls, newObstacleQuery, rnGoal);
         standardTrajectoryPlanner.insertRoot(newRootState);
         itersStandard = GlcExpand.maxDepth(standardTrajectoryPlanner, parameters.getDepthLimit());
+        standardTrajectoryPlanner.printTimes();
       }
       timingDatabase.stopStopwatchFor(0);
       timingDatabase.saveIterations(itersStandard, 0);
@@ -139,6 +140,7 @@ enum R2GlcConstTimeHeuristicSensingObstacleCompareAnyDemo {
       if (standardTrajectoryPlanner != null)
         staCost = standardTrajectoryPlanner.getBest().get().costFromRoot();
       timingDatabase.saveCost(staCost, 0);
+      timingDatabase.printcurrent();
       System.out.println("*****Finished*****");
       timingDatabase.write2lines();
       DebugUtils.heuristicConsistencyCheck((TrajectoryPlanner) anyTrajectoryPlanner);
@@ -151,13 +153,14 @@ enum R2GlcConstTimeHeuristicSensingObstacleCompareAnyDemo {
   }
 
   public static void main(String[] args) throws Exception {
-    GoalInterface[] values = new GoalInterface[] { RnMinDistSphericalGoalManager.create(Tensors.vector(15, 15), RealScalar.of(0.3)), //
-        new RnSimpleCircleGoalManager(Tensors.vector(12, 12), RealScalar.of(0.3)) //
+    GoalInterface[] values = new GoalInterface[] {
+        // RnMinDistSphericalGoalManager.create(Tensors.vector(25, 25), RealScalar.of(0.3)),
+        new RnSimpleCircleGoalManager(Tensors.vector(10, 10), RealScalar.of(0.3)) //
     };
     for (GoalInterface rnGoal : values) {
       // _run(RealScalar.of(8), rnGoal, true);
-      _run(RealScalar.of(12), rnGoal, true);
-      _run(RealScalar.of(12), rnGoal, false);
+      _run(RealScalar.of(15), rnGoal, true);
+      // _run(RealScalar.of(12), rnGoal, true);
       // _run(RealScalar.of(12), rnGoal, true);
     }
   }

@@ -1,6 +1,7 @@
 // code by jph
 package ch.ethz.idsc.owly.data;
 
+import java.io.Serializable;
 import java.util.Objects;
 
 /** Stopwatch with nano-seconds precision.
@@ -13,7 +14,7 @@ import java.util.Objects;
  * <li>the number on the display can be read anytime.
  * </ul> */
 @DontModify
-public class Stopwatch {
+public class Stopwatch implements Serializable {
   /** @return new instance of {@code Stopwatch} that is started upon creation */
   public static Stopwatch started() {
     Stopwatch stopwatch = new Stopwatch();

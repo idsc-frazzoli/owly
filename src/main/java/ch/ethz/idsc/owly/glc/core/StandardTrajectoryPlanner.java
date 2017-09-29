@@ -37,6 +37,7 @@ public class StandardTrajectoryPlanner extends AbstractTrajectoryPlanner {
 
   @Override // from ExpandInterface
   public void expand(final GlcNode node) {
+    integratorWatch.start();
     Map<GlcNode, List<StateTime>> connectors = controlsIntegrator.inParallel(node);
     // ---
     DomainQueueMap domainQueueMap = new DomainQueueMap(); // holds candidates for insertion
@@ -50,7 +51,10 @@ public class StandardTrajectoryPlanner extends AbstractTrajectoryPlanner {
       } else
         domainQueueMap.insert(domainKey, next); // node is considered without comparison to any former node
     }
+    integratorWatch.stop();
+    processCWatch.start();
     processCandidates(node, connectors, domainQueueMap);
+    processCWatch.stop();
   }
 
   private void processCandidates( //
