@@ -11,9 +11,11 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
-import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
+import java.util.Collection;
+import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import javax.swing.JComponent;
 import javax.swing.event.MouseInputAdapter;
@@ -28,7 +30,7 @@ import ch.ethz.idsc.tensor.mat.LinearSolve;
 import ch.ethz.idsc.tensor.sca.Power;
 import ch.ethz.idsc.tensor.sca.Round;
 
-public class OwlyComponent {
+public final class OwlyComponent {
   private static final int BUTTON_DRAG = 3;
   private static final Tensor MODEL2PIXEL_INITIAL = Tensors.matrix(new Number[][] { //
       { 60, 0, 300 }, //
@@ -46,8 +48,11 @@ public class OwlyComponent {
   private Tensor model2pixel;
   private final OwlyLayer owlyLayer = new OwlyLayer() {
     @Override
-    public Point2D toPoint2D_function(Tensor tensor) {
-      return model2Point2D(tensor);
+    public Point2D toPoint2D(Tensor x) {
+      Tensor point = model2pixel.dot(toAffinePoint(x));
+      return new Point2D.Double( //
+          point.Get(0).number().doubleValue(), //
+          point.Get(1).number().doubleValue());
     }
 
     @Override
@@ -68,9 +73,18 @@ public class OwlyComponent {
       }
     }
   };
-  private RenderElements renderBackground = new RenderElements();
-  public RenderElements renderElements; // TODO use setter function
+  private List<RenderInterface> renderBackground = new CopyOnWriteArrayList<>();
+  private List<RenderInterface> renderInterfaces = new CopyOnWriteArrayList<>();
   private long lastRepaint = System.nanoTime();
+
+  public void setRenderInterfaces(Collection<RenderInterface> collection) {
+    renderInterfaces.clear(); // TODO background
+    renderInterfaces.addAll(collection);
+  }
+
+  public void addRenderInterface(RenderInterface renderInterface) {
+    renderInterfaces.add(renderInterface);
+  }
 
   public OwlyComponent() {
     reset_model2pixel();
@@ -151,31 +165,12 @@ public class OwlyComponent {
     graphics.setColor(Color.WHITE);
     graphics.fillRect(0, 0, dimension.width, dimension.height);
     // ---
-    renderBackground.list.forEach(renderInterface -> renderInterface.render(owlyLayer, graphics));
-    {
-      graphics.setColor(Color.LIGHT_GRAY);
-      graphics.draw(new Line2D.Double(model2Point2D(Tensors.vector(-10, 1)), model2Point2D(Tensors.vector(10, 1))));
-      graphics.draw(new Line2D.Double(model2Point2D(Tensors.vector(1, -10)), model2Point2D(Tensors.vector(1, 10))));
-    }
-    {
-      graphics.setColor(Color.GRAY);
-      graphics.draw(new Line2D.Double(model2Point2D(Tensors.vector(-10, 0)), model2Point2D(Tensors.vector(10, 0))));
-      graphics.draw(new Line2D.Double(model2Point2D(Tensors.vector(0, -10)), model2Point2D(Tensors.vector(0, 10))));
-    }
-    if (Objects.nonNull(renderElements)) {
-      renderElements.list.forEach(renderInterface -> renderInterface.render(owlyLayer, graphics));
-    }
-  }
-
-  /* package */ Point2D model2Point2D(Tensor x) {
-    Tensor point = model2pixel.dot(toAffinePoint(x));
-    return new Point2D.Double( //
-        point.Get(0).number().doubleValue(), //
-        point.Get(1).number().doubleValue());
+    renderBackground.forEach(renderInterface -> renderInterface.render(owlyLayer, graphics));
+    renderInterfaces.forEach(renderInterface -> renderInterface.render(owlyLayer, graphics));
   }
 
   /** transforms point in pixel space to coordinates of model space
-   * inverse of function {@link OwlyComponent#toPoint2D(Tensor)}
+   * inverse of function model2Point2D(...)
    * 
    * @param point
    * @return tensor of length 2 */
@@ -195,6 +190,6 @@ public class OwlyComponent {
   }
 
   public void addDrawable(RenderInterface renderInterface) {
-    renderBackground.list.add(renderInterface);
+    renderBackground.add(renderInterface);
   }
 }

@@ -154,13 +154,13 @@ enum TwdGlcConstTimeHeuristicSensingObstacleCompareAnyDemo {
   public static void main(String[] args) throws Exception {
     GoalInterface[] values = new GoalInterface[] { new TwdMinCurvatureGoalManager(Tensors.vector(13, 13, 0), //
         RealScalar.of(0.3), RealScalar.of(1)).getGoalInterface() //
-         , new TwdMinTimeGoalManager(Tensors.vector(13, 13, 0), RealScalar.of(0.3), RealScalar.of(1)).getGoalInterface() //
+        , new TwdMinTimeGoalManager(Tensors.vector(13, 13, 0), RealScalar.of(0.3), RealScalar.of(1)).getGoalInterface() //
     };
     for (GoalInterface twdGoal : values) {
       _run(RealScalar.of(9), twdGoal, false);
       _run(RealScalar.of(11), twdGoal, false);
       _run(RealScalar.of(13), twdGoal, false);
-       _run(RealScalar.of(12), twdGoal, true);
+      _run(RealScalar.of(12), twdGoal, true);
     }
   }
 }

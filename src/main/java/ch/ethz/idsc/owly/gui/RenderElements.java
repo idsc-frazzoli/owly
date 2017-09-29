@@ -13,13 +13,11 @@ import ch.ethz.idsc.owly.math.state.TrajectoryRegionQuery;
 import ch.ethz.idsc.owly.rrts.adapter.SampledTransitionRegionQuery;
 import ch.ethz.idsc.owly.rrts.core.TransitionRegionQuery;
 
-public class RenderElements {
-  public final List<RenderInterface> list = new LinkedList<>();
-
-  public RenderElements() {
-  }
-
-  public RenderElements(TrajectoryPlanner trajectoryPlanner) {
+public enum RenderElements {
+  ;
+  public static List<RenderInterface> create(TrajectoryPlanner trajectoryPlanner) {
+    List<RenderInterface> list = new LinkedList<>();
+    list.add(GridRender.INSTANCE);
     list.add(new EtaRender(trajectoryPlanner.getEta()));
     list.add(new DomainRender(trajectoryPlanner.getDomainMap(), trajectoryPlanner.getEta()));
     {
@@ -50,13 +48,18 @@ public class RenderElements {
       }
     }
     list.add(new HudRender(trajectoryPlanner));
+    return list;
   }
 
-  public RenderElements(Collection<? extends StateCostNode> collection, TransitionRegionQuery transitionRegionQuery) {
+  public static List<RenderInterface> create( //
+      Collection<? extends StateCostNode> collection, TransitionRegionQuery transitionRegionQuery) {
+    List<RenderInterface> list = new LinkedList<>();
+    list.add(GridRender.INSTANCE);
     if (transitionRegionQuery instanceof SampledTransitionRegionQuery) {
       SampledTransitionRegionQuery strq = (SampledTransitionRegionQuery) transitionRegionQuery;
       list.add(new ObstacleRender(strq.getDiscoveredMembers()));
     }
     list.add(new TreeRender(collection));
+    return list;
   }
 }

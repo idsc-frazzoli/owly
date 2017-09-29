@@ -13,23 +13,22 @@ import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
 import ch.ethz.idsc.tensor.alg.Array;
 
+/** two abstract functions
+ * implemented only in */
 public abstract class OwlyLayer {
   private static final double WHEEL_ANGLE = Math.PI / 10;
   // ---
   private Tensor mouseLocation = Array.zeros(2);
   private int mouseWheel = 0;
 
-  public abstract Point2D toPoint2D_function(Tensor tensor);
-
+  // TODO function is not used
   public abstract Tensor model2pixel();
 
   /** only the first 2 entries of x are taken into account
    * 
    * @param x = {px, py, ...}
    * @return */
-  public Point2D toPoint2D(Tensor x) {
-    return toPoint2D_function(x);
-  }
+  public abstract Point2D toPoint2D(Tensor x);
 
   public Path2D toVector(Tensor x, Tensor dx) {
     x = x.extract(0, 2);
@@ -69,7 +68,7 @@ public abstract class OwlyLayer {
     return path2d;
   }
 
-  /** @param location of mouse in model coordinates */
+  /** @param vector of length == 2, location of mouse in model coordinates */
   /* package */ void setMouseLocation(Tensor location) {
     mouseLocation = location;
   }

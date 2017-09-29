@@ -28,8 +28,8 @@ import ch.ethz.idsc.owly.glc.core.TrajectorySample;
 import ch.ethz.idsc.owly.gui.BaseFrame;
 import ch.ethz.idsc.owly.gui.EtaRender;
 import ch.ethz.idsc.owly.gui.GoalRender;
+import ch.ethz.idsc.owly.gui.GridRender;
 import ch.ethz.idsc.owly.gui.ObstacleRender;
-import ch.ethz.idsc.owly.gui.RenderElements;
 import ch.ethz.idsc.owly.gui.RenderInterface;
 import ch.ethz.idsc.owly.gui.TrajectoryRender;
 import ch.ethz.idsc.owly.gui.TreeRender;
@@ -62,12 +62,12 @@ public class OwlyAnimationFrame extends BaseFrame {
   private TrajectoryRegionQuery obstacleQuery = null;
 
   public OwlyAnimationFrame() {
-    owlyComponent.renderElements = new RenderElements();
-    owlyComponent.renderElements.list.add(etaRender);
-    owlyComponent.renderElements.list.add(trajectoryRender);
-    owlyComponent.renderElements.list.add(obstacleRender);
-    owlyComponent.renderElements.list.add(goalRender);
-    owlyComponent.renderElements.list.add(treeRender);
+    owlyComponent.addRenderInterface(GridRender.INSTANCE);
+    owlyComponent.addRenderInterface(etaRender);
+    owlyComponent.addRenderInterface(trajectoryRender);
+    owlyComponent.addRenderInterface(obstacleRender);
+    owlyComponent.addRenderInterface(goalRender);
+    owlyComponent.addRenderInterface(treeRender);
     { // periodic task for integration
       final TimerTask timerTask = new TimerTask() {
         TimeKeeper timeKeeper = new TimeKeeper();
@@ -247,7 +247,7 @@ public class OwlyAnimationFrame extends BaseFrame {
     animationInterfaces.add(animationInterface);
     if (animationInterface instanceof RenderInterface) {
       RenderInterface renderInterface = (RenderInterface) animationInterface;
-      owlyComponent.renderElements.list.add(renderInterface);
+      owlyComponent.addRenderInterface(renderInterface);
     }
   }
 }

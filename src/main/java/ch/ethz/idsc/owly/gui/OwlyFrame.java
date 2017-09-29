@@ -118,7 +118,8 @@ public class OwlyFrame extends BaseFrame {
   private void repaint(int index) {
     if (0 <= index && index < backup.size())
       try {
-        owlyComponent.renderElements = new RenderElements(backup.get(index));
+        owlyComponent.setRenderInterfaces( //
+            RenderElements.create(backup.get(index)));
         jStatusLabel.setText(backup.get(index).infoString());
         owlyComponent.jComponent.repaint();
       } catch (Exception exception) {
@@ -131,7 +132,8 @@ public class OwlyFrame extends BaseFrame {
     try {
       Collection<RrtsNode> nodes = Nodes.ofSubtree(root);
       Collection<RrtsNode> collection = (Collection<RrtsNode>) Serialization.copy((Serializable) nodes);
-      owlyComponent.renderElements = new RenderElements(collection, Serialization.copy(transitionRegionQuery));
+      owlyComponent.setRenderInterfaces( //
+          RenderElements.create(collection, Serialization.copy(transitionRegionQuery)));
       owlyComponent.jComponent.repaint();
     } catch (Exception exception) {
       exception.printStackTrace();
