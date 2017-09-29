@@ -42,6 +42,8 @@ public class TreeRender implements RenderInterface {
     final double max = dss.getMax();
     for (StateCostNode node : collection) {
       double val = node.costFromRoot().number().doubleValue();
+      if (!Double.isFinite(val))
+        throw new RuntimeException("cost from root " + val);
       final double interp = (val - min) / (max - min);
       graphics.setColor(nodeColor.get(interp));
       final Point2D p1 = owlyLayer.toPoint2D(node.state());

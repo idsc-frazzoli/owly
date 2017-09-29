@@ -6,6 +6,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -67,6 +68,10 @@ public class OptimalAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
         System.out.println("newMerit: " + newMerit);
         throw new RuntimeException();
       }
+      if (Double.isInfinite(newHeuristic.number().doubleValue()))
+        throw new RuntimeException(" " + newHeuristic);
+      if (Double.isInfinite(newCost.number().doubleValue()))
+        throw new RuntimeException(" " + newCost);
     }
     for (GlcNode next : connectors.keySet()) { // <- order of keys is non-deterministic
       // ALL Candidates are saved in temporary CandidateList
@@ -246,8 +251,11 @@ public class OptimalAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
 
   // TODO JAN; obstacle check function
   @Override
-  public void obstacleUpdate(TrajectoryRegionQuery newObstacle, Region possibleNewObstacleRegion) {
-    if (newObstacle == this.getObstacleQuery() || newObstacle == null) {
+  public void obstacleUpdate(TrajectoryRegionQuery newObstacle, Region rechabilityObstacleRegion) {
+    if (newObstacle == this.getObstacleQuery())
+      return;
+    if (newObstacle == null) {
+      obstacleUpdate(newObstacle);
       return;
     }
     // TODO detect if no obstacles have moved --> do not check for collision
@@ -256,20 +264,28 @@ public class OptimalAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
     long tic = System.nanoTime();
     setObstacleQuery(newObstacle);
     GlcNode root = getRoot();
+    int oldDomainMapSize = domainMap().size();
+    int oldCandidateMapSize = candidateMap.size();
     // TODO JONAS: What to do if root in collision
-    List<GlcNode> domainMapList = new ArrayList<>(domainMap().values());
-    int test = domainMapList.size();
-    // only iterate through domains where node is in collision
-    domainMapList.removeIf(node -> !(possibleNewObstacleRegion.isMember(node.state())));
-    System.out.println("Only checking " + domainMapList.size() + " instead of " + test + " domains");
+    // DomainMap, over which it is iterated
+    Map<Tensor, GlcNode> iterableDomainMap = new HashMap<Tensor, GlcNode>(domainMap());
+    // only iterate through domains which are in the reachability Region, connectivity between nodes is useless,
+    // because it does not give us information if something could have changed for ancestors or predecessors
+    // only nodes are checked, no integration is performed (will be done on selected Nodes in the reachability set)
+    iterableDomainMap.values().removeIf(node -> !(rechabilityObstacleRegion.isMember(node.state())));
+    System.out.println("Only checking " + iterableDomainMap.size() + " instead of " + oldDomainMapSize + " domains");
     // sorting as breath first search: lowest depth first
-    Collections.sort(domainMapList, NodeDepthComparator.INSTANCE); // iterating from low Depth to high depht
+    iterableDomainMap = iterableDomainMap.entrySet()//
+        .stream()//
+        .sorted(NodeDepthComparator.INSTANCE).collect(Collectors.toMap( //
+            Map.Entry::getKey, Map.Entry::getValue, (e1, e2) -> e1, LinkedHashMap::new));
     int deletedNodes = 0;
     int addedNodes = 0;
     // going through domains
-    for (GlcNode label : domainMapList) {
+    for (Entry<Tensor, GlcNode> entry : iterableDomainMap.entrySet()) {
+      GlcNode label = entry.getValue();
+      Tensor domainKey = entry.getKey();
       List<StateTime> connector = new ArrayList<>();
-      Tensor domainKey = convertToKey(label.state());
       if (getNode(domainKey) == label) { // check if nothing was changed in previous loopiteration, otherwise next domain
         // maybe break into next for loop iteration better?
         PriorityQueue<CandidatePair> candidateQueue = new PriorityQueue<>();
@@ -293,7 +309,8 @@ public class OptimalAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
                   connector = getStateIntegrator().trajectory(nextBestParent.stateTime(), nextBestNode.flow());
                   if (getObstacleQuery().isDisjoint(connector)) {
                     // final Collection<GlcNode> subDeleteTree =
-                    deleteSubtreeOf(label);
+                    Collection<GlcNode> deletedNodesList = deleteSubtreeOf(label);
+                    deletedNodes += deletedNodesList.size();
                     CandidatePair formerLabelCandidate = new CandidatePair(label.parent(), label);
                     label.parent().removeEdgeTo(label);
                     if (!formerLabelCandidate.getCandidate().isLeaf()) {
@@ -321,8 +338,8 @@ public class OptimalAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
                 throw new RuntimeException();
             } // if CandidateQueue is empty finish with this domain
           } else { // DELETE label, as IN collision
-            deletedNodes++;
-            deleteSubtreeOf(label);
+            Collection<GlcNode> deletedNodesList = deleteSubtreeOf(label);
+            deletedNodes += deletedNodesList.size();
             CandidatePair formerLabelCandidate = new CandidatePair(label.parent(), label);
             label.parent().removeEdgeTo(label);
             if (!formerLabelCandidate.getCandidate().isLeaf()) {
@@ -365,15 +382,19 @@ public class OptimalAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
       }
     }
     long toc = System.nanoTime();
-    System.out.println("Obstacle check in DomainMap with " + domainMap().size() + //
+    System.out.println("Obstacle check in DomainMap with now " + domainMap().size() + //
         " domains took :" + (toc - tic) * 1e-9 + "s");
     System.out.println("Nodes added:  " + addedNodes);
-    System.out.println("Nodes deleted:" + deletedNodes);
+    System.out.println("Nodes deleted: " + deletedNodes);
+    addedNodes = 0;
+    deletedNodes = 0;
+    int checkedCandidateDomains = 0;
     tic = toc;
     // go through candidateMap without domain map
     for (Entry<Tensor, Set<CandidatePair>> entry : candidateMap.entrySet()) {
-      if (!domainMap().containsKey(entry.getKey()) && possibleNewObstacleRegion.isMember(entry.getKey())) {// was not checked in run before
+      if (!iterableDomainMap.containsKey(entry.getKey()) && rechabilityObstacleRegion.isMember(entry.getKey())) {// was not checked in run before
         PriorityQueue<CandidatePair> candidateQueue = new PriorityQueue<>();
+        checkedCandidateDomains++;
         entry.getValue().parallelStream().forEach(cp -> //
         cp.getCandidate().setMinCostToGoal(getGoalInterface().minCostToGoal(cp.getCandidate().state())));
         candidateQueue.addAll(entry.getValue());
@@ -410,7 +431,7 @@ public class OptimalAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
       }
     }
     toc = System.nanoTime();
-    System.out.println("Obstacle check in Rest of CandidateMap with " + (candidateMap.size() - domainMap().size())//
+    System.out.println("Obstacle check in Rest of CandidateMap with " + (checkedCandidateDomains)//
         + " domains took :" + (toc - tic) * 1e-9 + "s");
     System.out.println("Nodes added:  " + addedNodes);
     System.out.println("Nodes deleted:" + deletedNodes);
@@ -436,16 +457,19 @@ public class OptimalAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
   @Override
   /* package */ final void relabelingDomains() {
     GlcNode root = getRoot();
-    List<GlcNode> treeList = new ArrayList<GlcNode>(domainMap().values());
-    System.err.println("checking for domainlabel changes due to heuristic change,  Treesize: " + treeList.size());
-    treeList.stream().parallel() //
-        .forEach(glcNode -> glcNode.setMinCostToGoal(getGoalInterface().minCostToGoal(glcNode.state())));
-    Collections.sort(treeList, NodeDepthComparator.INSTANCE);
+    Map<Tensor, GlcNode> iterableTreeMap = new HashMap<Tensor, GlcNode>(domainMap());
+    System.err.println("checking for domainlabel changes due to heuristic change,  Treesize: " + iterableTreeMap.size());
+    iterableTreeMap = iterableTreeMap.entrySet()//
+        .stream()//
+        .sorted(NodeDepthComparator.INSTANCE).collect(Collectors.toMap( //
+            Map.Entry::getKey, Map.Entry::getValue, (e1, e2) -> e1, LinkedHashMap::new));
+    iterableTreeMap.values().stream().parallel().forEach(glcNode -> glcNode.setMinCostToGoal(getGoalInterface().minCostToGoal(glcNode.state())));
     int deletedNodes = 0;
     int replacedNodes = 0;
-    for (GlcNode label : treeList) {
+    for (Entry<Tensor, GlcNode> entry : iterableTreeMap.entrySet()) {
       // iterating through all Nodes in Tree starting at lowest depth
-      Tensor domainKey = convertToKey(label.state());
+      GlcNode label = entry.getValue();
+      Tensor domainKey = entry.getKey();
       if (getNode(domainKey) == label && !label.isRoot()) { // this node could have been deleted from tree in prev iteration
         // could be relabeled in loopiteration before, therefore no check is needed if changed
         if (getCandidateMap().containsKey(domainKey)) {

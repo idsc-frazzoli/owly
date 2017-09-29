@@ -1,16 +1,16 @@
 // code by jl
-package ch.ethz.idsc.owly.demo.rn.any;
+package ch.ethz.idsc.owly.demo.twd.glc;
 
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
 import ch.ethz.idsc.owly.demo.rn.EuclideanDistanceDiscoverRegion;
-import ch.ethz.idsc.owly.demo.rn.R2Controls;
 import ch.ethz.idsc.owly.demo.rn.R2NoiseRegion;
-import ch.ethz.idsc.owly.demo.rn.R2Parameters;
-import ch.ethz.idsc.owly.demo.rn.RnMinDistSphericalGoalManager;
-import ch.ethz.idsc.owly.demo.rn.RnSimpleCircleGoalManager;
+import ch.ethz.idsc.owly.demo.twd.TwdControls;
+import ch.ethz.idsc.owly.demo.twd.TwdMinCurvatureGoalManager;
+import ch.ethz.idsc.owly.demo.twd.TwdMinTimeGoalManager;
+import ch.ethz.idsc.owly.demo.twd.TwdStateSpaceModel;
 import ch.ethz.idsc.owly.glc.adapter.HeuristicQ;
 import ch.ethz.idsc.owly.glc.adapter.Parameters;
 import ch.ethz.idsc.owly.glc.adapter.RunCompare;
@@ -44,34 +44,35 @@ import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
 
-enum R2GlcConstTimeHeuristicSensingObstacleCompareAnyDemo {
+enum TwdGlcConstTimeHeuristicSensingObstacleCompareAnyDemo {
   ;
-  private static void _run(Scalar resolution, GoalInterface rnGoal, boolean rechabilityRegion) throws Exception {
-    boolean heuristic = HeuristicQ.of(rnGoal);
+  private static void _run(Scalar resolution, GoalInterface twdGoal, boolean rechabilityRegion) throws Exception {
+    boolean heuristic = HeuristicQ.of(twdGoal);
     System.out.println("RUN R=" + resolution + (heuristic ? "H" : "noH") //
         + (rechabilityRegion ? " with Reachability" : " no Reachability"));
-    Scalar timeScale = RealScalar.of(5);
+    Scalar timeScale = RealScalar.of(2);
     Scalar depthScale = RealScalar.of(100);
-    Tensor partitionScale = Tensors.vector(20, 20);
+    Tensor partitionScale = Tensors.vector(9, 9, 12);
     Scalar dtMax = RationalScalar.of(1, 6);
     int maxIter = 2000;
     Scalar lipschitz = RealScalar.ONE;
-    Parameters parameters = new R2Parameters( //
+    Parameters parameters = new TwdParameters( //
         resolution, timeScale, depthScale, partitionScale, dtMax, maxIter, lipschitz);
     StateIntegrator stateIntegrator = FixedStateIntegrator.create(EulerIntegrator.INSTANCE, parameters.getdtMax(), //
         parameters.getTrajectorySize());
     parameters.printResolution();
     System.out.println("DomainSize: 1/Eta: " + parameters.getEta().map(n -> RealScalar.ONE.divide(n)));
-    Collection<Flow> controls = R2Controls.createRadial(parameters.getResolutionInt());
+    TwdStateSpaceModel.createDefault();
+    Collection<Flow> controls = TwdControls.createControls(TwdStateSpaceModel.createDefault(), parameters.getResolutionInt());
     // Creating Goals
-    Tensor startState = Tensors.vector(-3, 0);
+    Tensor startState = Tensors.vector(0, 0, 0);
     Region environmentRegion = new R2NoiseRegion(RealScalar.of(0.1));
     TrajectoryRegionQuery obstacleQuery = //
         new SimpleTrajectoryRegionQuery(new TimeInvariantRegion(//
             EuclideanDistanceDiscoverRegion.of(environmentRegion, startState, RealScalar.of(4))));
     // TODO change back to AnyPlannerInterface
     AnyPlannerInterface anyTrajectoryPlanner = new OptimalAnyTrajectoryPlanner( //
-        parameters.getEta(), stateIntegrator, controls, obstacleQuery, rnGoal);
+        parameters.getEta(), stateIntegrator, controls, obstacleQuery, twdGoal);
     anyTrajectoryPlanner.switchRootToState(startState);
     GlcExpand.maxDepth(anyTrajectoryPlanner, parameters.getDepthLimit());
     // --
@@ -126,7 +127,7 @@ enum R2GlcConstTimeHeuristicSensingObstacleCompareAnyDemo {
       StandardTrajectoryPlanner standardTrajectoryPlanner = null;
       if (newRootState != null) {
         standardTrajectoryPlanner = new StandardTrajectoryPlanner(parameters.getEta(), //
-            stateIntegrator, controls, newObstacleQuery, rnGoal);
+            stateIntegrator, controls, newObstacleQuery, twdGoal);
         standardTrajectoryPlanner.insertRoot(newRootState);
         itersStandard = GlcExpand.maxDepth(standardTrajectoryPlanner, parameters.getDepthLimit());
       }
@@ -145,20 +146,21 @@ enum R2GlcConstTimeHeuristicSensingObstacleCompareAnyDemo {
       if (!owlyFrame.jFrame.isVisible() || itersAny < 1)
         break;
     }
-    timingDatabase.write2File("Res" + resolution + (heuristic ? "H" : "noH") + (rechabilityRegion ? "R" : "noR"));
+    timingDatabase.write2File("TWDRes" + resolution + (heuristic ? "H" : "noH") + (rechabilityRegion ? "R" : "noR"));
     System.out.println("Finished LOOP");
     owlyFrame.close();
   }
 
   public static void main(String[] args) throws Exception {
-    GoalInterface[] values = new GoalInterface[] { RnMinDistSphericalGoalManager.create(Tensors.vector(15, 15), RealScalar.of(0.3)), //
-        new RnSimpleCircleGoalManager(Tensors.vector(12, 12), RealScalar.of(0.3)) //
+    GoalInterface[] values = new GoalInterface[] { new TwdMinCurvatureGoalManager(Tensors.vector(13, 13, 0), //
+        RealScalar.of(0.3), RealScalar.of(1)).getGoalInterface() //
+         , new TwdMinTimeGoalManager(Tensors.vector(13, 13, 0), RealScalar.of(0.3), RealScalar.of(1)).getGoalInterface() //
     };
-    for (GoalInterface rnGoal : values) {
-      // _run(RealScalar.of(8), rnGoal, true);
-      _run(RealScalar.of(12), rnGoal, true);
-      _run(RealScalar.of(12), rnGoal, false);
-      // _run(RealScalar.of(12), rnGoal, true);
+    for (GoalInterface twdGoal : values) {
+      _run(RealScalar.of(9), twdGoal, false);
+      _run(RealScalar.of(11), twdGoal, false);
+      _run(RealScalar.of(13), twdGoal, false);
+       _run(RealScalar.of(12), twdGoal, true);
     }
   }
 }
