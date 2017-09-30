@@ -17,11 +17,11 @@ import ch.ethz.idsc.tensor.alg.VectorQ;
 
 /**  */
 public class GeometricLayer {
-  private final Deque<Tensor> deque = new ArrayDeque<>();
+  private final Deque<AffineFrame2D> deque = new ArrayDeque<>();
   private final Tensor mouseSe2State;
 
   public GeometricLayer(Tensor model2pixel, Tensor mouseSe2State) {
-    deque.push(model2pixel);
+    deque.push(new AffineFrame2D(model2pixel));
     this.mouseSe2State = mouseSe2State;
     GlobalAssert.that(VectorQ.ofLength(mouseSe2State, 3));
   }
@@ -31,10 +31,7 @@ public class GeometricLayer {
    * @param x = {px, py, ...}
    * @return */
   public Point2D toPoint2D(Tensor x) {
-    Tensor point = deque.peek().dot(toAffinePoint(x));
-    return new Point2D.Double( //
-        point.Get(0).number().doubleValue(), //
-        point.Get(1).number().doubleValue());
+    return deque.peek().toPoint2D(x);
   }
 
   /** inspired by opengl
@@ -48,10 +45,9 @@ public class GeometricLayer {
   public void popMatrix() {
     deque.pop();
   }
-
-  public Tensor model2pixel() {
-    return deque.peek().unmodifiable();
-  }
+  // public Tensor model2pixel() {
+  // return deque.peek().unmodifiable();
+  // }
 
   // function ignores all but the first and second entry of x
   private static Tensor toAffinePoint(Tensor x) {
