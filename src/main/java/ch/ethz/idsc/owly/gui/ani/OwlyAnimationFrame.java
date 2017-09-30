@@ -171,7 +171,7 @@ public class OwlyAnimationFrame extends TimerFrame {
       }
       if (Objects.nonNull(treeRender))
         treeRender.setCollection(new ArrayList<>(trajectoryPlanner.getDomainMap().values()));
-      geometricComponent.jComponent.repaint();
+      // no repaint
     }
 
     @Override

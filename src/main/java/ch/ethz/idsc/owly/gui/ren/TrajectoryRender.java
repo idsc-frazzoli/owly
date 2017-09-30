@@ -11,7 +11,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import ch.ethz.idsc.owly.glc.core.GlcNode;
 import ch.ethz.idsc.owly.glc.core.TrajectoryPlanner;
@@ -61,7 +60,10 @@ public class TrajectoryRender implements RenderInterface {
         }
       }
       { // draw trajectory as thick green line with white background
-        Path2D path2d = owlyLayer.toPath2D(list.stream().map(TrajectorySample::stateTime).collect(Collectors.toList()));
+        Path2D path2d = owlyLayer.toPath2D( //
+            Tensor.of(list.stream() //
+                .map(TrajectorySample::stateTime) //
+                .map(StateTime::state)));
         graphics.setStroke(new BasicStroke(5.0f));
         graphics.setColor(new Color(255, 255, 255, 128));
         graphics.draw(path2d);

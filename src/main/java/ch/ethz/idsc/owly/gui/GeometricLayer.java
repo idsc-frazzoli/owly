@@ -1,62 +1,72 @@
 // code by jph
 package ch.ethz.idsc.owly.gui;
 
+import java.awt.Shape;
+import java.awt.geom.Line2D;
 import java.awt.geom.Path2D;
 import java.awt.geom.Point2D;
-import java.util.List;
+import java.util.ArrayDeque;
+import java.util.Deque;
 
+import ch.ethz.idsc.owly.data.GlobalAssert;
 import ch.ethz.idsc.owly.math.Se2Utils;
-import ch.ethz.idsc.owly.math.state.StateTime;
 import ch.ethz.idsc.tensor.RealScalar;
-import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
-import ch.ethz.idsc.tensor.alg.Array;
+import ch.ethz.idsc.tensor.alg.VectorQ;
 
 /**  */
-public abstract class GeometricLayer {
-  private static final double WHEEL_ANGLE = Math.PI / 10;
-  // ---
-  private Tensor mouseLocation = Array.zeros(2);
-  private int mouseWheel = 0;
+public class GeometricLayer {
+  private final Deque<Tensor> deque = new ArrayDeque<>();
+  private final Tensor mouseSe2State;
 
-  // TODO function is not used
-  public abstract Tensor model2pixel();
+  public GeometricLayer(Tensor model2pixel, Tensor mouseSe2State) {
+    deque.push(model2pixel);
+    this.mouseSe2State = mouseSe2State;
+    GlobalAssert.that(VectorQ.ofLength(mouseSe2State, 3));
+  }
 
   /** only the first 2 entries of x are taken into account
    * 
    * @param x = {px, py, ...}
    * @return */
-  public abstract Point2D toPoint2D(Tensor x);
-
-  public Path2D toVector(Tensor x, Tensor dx) {
-    x = x.extract(0, 2);
-    dx = dx.extract(0, 2);
-    Path2D path2d = new Path2D.Double();
-    Point2D p1 = toPoint2D(x);
-    Point2D p2 = toPoint2D(x.add(dx));
-    path2d.moveTo(p1.getX(), p1.getY());
-    path2d.lineTo(p2.getX(), p2.getY());
-    return path2d;
+  public Point2D toPoint2D(Tensor x) {
+    Tensor point = deque.peek().dot(toAffinePoint(x));
+    return new Point2D.Double( //
+        point.Get(0).number().doubleValue(), //
+        point.Get(1).number().doubleValue());
   }
 
-  public Path2D toPath2D(List<StateTime> trajectory) {
-    Path2D path2d = new Path2D.Double();
-    if (!trajectory.isEmpty()) {
-      StateTime prev = trajectory.get(0);
-      Point2D p0 = toPoint2D(prev.state());
-      path2d.moveTo(p0.getX(), p0.getY());
-      for (StateTime stateTime : trajectory.subList(1, trajectory.size())) {
-        Point2D p1 = toPoint2D(stateTime.state());
-        path2d.lineTo(p1.getX(), p1.getY());
-      }
-    }
-    return path2d;
+  /** inspired by opengl
+   * 
+   * @param matrix 3x3 */
+  public void pushMatrix(Tensor matrix) {
+    deque.push(deque.peek().dot(matrix));
+  }
+
+  /** inspired by opengl */
+  public void popMatrix() {
+    deque.pop();
+  }
+
+  public Tensor model2pixel() {
+    return deque.peek().unmodifiable();
+  }
+
+  // function ignores all but the first and second entry of x
+  private static Tensor toAffinePoint(Tensor x) {
+    return Tensors.of(x.get(0), x.get(1), RealScalar.ONE);
+  }
+
+  public Shape toVector(Tensor x, Tensor dx) {
+    x = x.extract(0, 2);
+    dx = dx.extract(0, 2);
+    return new Line2D.Double(toPoint2D(x), toPoint2D(x.add(dx)));
   }
 
   public Path2D toPath2D(Tensor polygon) {
     Path2D path2d = new Path2D.Double();
-    {
+    if (!Tensors.isEmpty(polygon)) {
       Point2D point2d = toPoint2D(polygon.get(0));
       path2d.moveTo(point2d.getX(), point2d.getY());
     }
@@ -67,26 +77,9 @@ public abstract class GeometricLayer {
     return path2d;
   }
 
-  /** @param vector of length == 2, location of mouse in model coordinates */
-  /* package */ void setMouseLocation(Tensor location) {
-    mouseLocation = location;
-  }
-
-  /** @return location of mouse in model coordinates */
-  // public Tensor getMouseLocation() {
-  // return mouseLocation.copy();
-  // }
-  /* package */ void incrementMouseWheel(int delta) {
-    mouseWheel += delta;
-  }
-
-  /** @return absolute mouse wheel rotation since creation of component in model angle */
-  /* package */ Scalar getMouseAngle() {
-    return RealScalar.of(mouseWheel * WHEEL_ANGLE);
-  }
-
+  /** @return {x, y, alpha} */
   public Tensor getMouseSe2State() {
-    return Tensors.of(mouseLocation.Get(0), mouseLocation.Get(1), getMouseAngle());
+    return mouseSe2State;
   }
 
   /** @return affine matrix that combines mouse location and mouse wheel rotation */
