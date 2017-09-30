@@ -3,7 +3,6 @@ package ch.ethz.idsc.owly.demo.twd.glc;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
-import java.awt.geom.Path2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.util.Collection;
@@ -119,10 +118,10 @@ public class TwdEntity extends AbstractEntity {
       if (Objects.nonNull(obstacleQuery))
         if (!obstacleQuery.isDisjoint(Collections.singletonList(stateTime)))
           color = new Color(255, 64, 64, 128);
+      owlyLayer.pushMatrix(Se2Utils.toSE2Matrix(stateTime.state()));
       graphics.setColor(color);
-      Tensor matrix = Se2Utils.toSE2Matrix(stateTime.state());
-      Path2D path2d = owlyLayer.toPath2D(Tensor.of(SHAPE.stream().map(matrix::dot)));
-      graphics.fill(path2d);
+      graphics.fill(owlyLayer.toPath2D(SHAPE));
+      owlyLayer.popMatrix();
     }
     { // indicate position delay[s] into the future
       Tensor state = getEstimatedLocationAt(DELAY_HINT);
@@ -131,10 +130,10 @@ public class TwdEntity extends AbstractEntity {
       graphics.fill(new Rectangle2D.Double(point.getX() - 2, point.getY() - 2, 5, 5));
     }
     {
+      owlyLayer.pushMatrix(owlyLayer.getMouseSe2Matrix());
       graphics.setColor(new Color(0, 128, 255, 192));
-      Tensor matrix = owlyLayer.getMouseSe2Matrix();
-      Path2D path2d = owlyLayer.toPath2D(Tensor.of(SHAPE.stream().map(matrix::dot)));
-      graphics.fill(path2d);
+      graphics.fill(owlyLayer.toPath2D(SHAPE));
+      owlyLayer.popMatrix();
     }
   }
 }

@@ -101,8 +101,8 @@ public final class GeometricComponent {
             int dx = now.x - down.x;
             int dy = now.y - down.y;
             down = now;
-            model2pixel.set(s -> s.add(RealScalar.of(dx)), 0, 2);
-            model2pixel.set(s -> s.add(RealScalar.of(dy)), 1, 2);
+            model2pixel.set(scalar -> scalar.add(RealScalar.of(dx)), 0, 2);
+            model2pixel.set(scalar -> scalar.add(RealScalar.of(dy)), 1, 2);
             jComponent.repaint();
           }
         }
