@@ -8,7 +8,7 @@ import java.awt.image.ImageObserver;
 
 import javax.swing.JLabel;
 
-import ch.ethz.idsc.owly.gui.OwlyLayer;
+import ch.ethz.idsc.owly.gui.GeometricLayer;
 import ch.ethz.idsc.owly.gui.RenderInterface;
 import ch.ethz.idsc.owly.math.region.ImageRegion;
 import ch.ethz.idsc.tensor.RealScalar;
@@ -39,7 +39,7 @@ public class ImageRegionRender implements RenderInterface {
   }
 
   @Override
-  public void render(OwlyLayer owlyLayer, Graphics2D graphics) {
+  public void render(GeometricLayer owlyLayer, Graphics2D graphics) {
     Point2D origin = owlyLayer.toPoint2D(Tensors.of(RealScalar.ZERO, range.Get(1)));
     Point2D uprigh = owlyLayer.toPoint2D(Tensors.of(range.Get(0), RealScalar.ZERO));
     int width = (int) (uprigh.getX() - origin.getX());

@@ -1,16 +1,18 @@
 // code by jph
-package ch.ethz.idsc.owly.gui;
+package ch.ethz.idsc.owly.gui.ren;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.geom.Line2D;
 
+import ch.ethz.idsc.owly.gui.GeometricLayer;
+import ch.ethz.idsc.owly.gui.RenderInterface;
 import ch.ethz.idsc.tensor.Tensors;
 
 public enum GridRender implements RenderInterface {
   INSTANCE;
   @Override
-  public void render(OwlyLayer owlyLayer, Graphics2D graphics) {
+  public void render(GeometricLayer owlyLayer, Graphics2D graphics) {
     {
       graphics.setColor(Color.LIGHT_GRAY);
       graphics.draw(new Line2D.Double(owlyLayer.toPoint2D(Tensors.vector(-10, 1)), owlyLayer.toPoint2D(Tensors.vector(10, 1))));

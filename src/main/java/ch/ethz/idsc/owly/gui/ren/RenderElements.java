@@ -1,5 +1,5 @@
 // code by jph
-package ch.ethz.idsc.owly.gui;
+package ch.ethz.idsc.owly.gui.ren;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -9,13 +9,14 @@ import ch.ethz.idsc.owly.data.tree.StateCostNode;
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
 import ch.ethz.idsc.owly.glc.core.OptimalAnyTrajectoryPlanner;
 import ch.ethz.idsc.owly.glc.core.TrajectoryPlanner;
+import ch.ethz.idsc.owly.gui.RenderInterface;
 import ch.ethz.idsc.owly.math.state.TrajectoryRegionQuery;
 import ch.ethz.idsc.owly.rrts.adapter.SampledTransitionRegionQuery;
 import ch.ethz.idsc.owly.rrts.core.TransitionRegionQuery;
 
 public enum RenderElements {
   ;
-  public static List<RenderInterface> create(TrajectoryPlanner trajectoryPlanner) {
+  public static Collection<RenderInterface> create(TrajectoryPlanner trajectoryPlanner) {
     List<RenderInterface> list = new LinkedList<>();
     list.add(GridRender.INSTANCE);
     list.add(new EtaRender(trajectoryPlanner.getEta()));
@@ -51,7 +52,7 @@ public enum RenderElements {
     return list;
   }
 
-  public static List<RenderInterface> create( //
+  public static Collection<RenderInterface> create( //
       Collection<? extends StateCostNode> collection, TransitionRegionQuery transitionRegionQuery) {
     List<RenderInterface> list = new LinkedList<>();
     list.add(GridRender.INSTANCE);

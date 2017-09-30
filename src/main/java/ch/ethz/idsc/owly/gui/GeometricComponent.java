@@ -30,7 +30,7 @@ import ch.ethz.idsc.tensor.mat.LinearSolve;
 import ch.ethz.idsc.tensor.sca.Power;
 import ch.ethz.idsc.tensor.sca.Round;
 
-public final class OwlyComponent {
+public final class GeometricComponent {
   private static final int BUTTON_DRAG = 3;
   private static final Tensor MODEL2PIXEL_INITIAL = Tensors.matrix(new Number[][] { //
       { 60, 0, 300 }, //
@@ -46,7 +46,7 @@ public final class OwlyComponent {
   /***************************************************/
   // 3x3 affine matrix that maps model to pixel coordinates
   private Tensor model2pixel;
-  private final OwlyLayer owlyLayer = new OwlyLayer() {
+  private final GeometricLayer owlyLayer = new GeometricLayer() {
     @Override
     public Point2D toPoint2D(Tensor x) {
       Tensor point = model2pixel.dot(toAffinePoint(x));
@@ -73,8 +73,8 @@ public final class OwlyComponent {
       }
     }
   };
-  private List<RenderInterface> renderBackground = new CopyOnWriteArrayList<>();
-  private List<RenderInterface> renderInterfaces = new CopyOnWriteArrayList<>();
+  private final List<RenderInterface> renderBackground = new CopyOnWriteArrayList<>();
+  private final List<RenderInterface> renderInterfaces = new CopyOnWriteArrayList<>();
   private long lastRepaint = System.nanoTime();
 
   public void setRenderInterfaces(Collection<RenderInterface> collection) {
@@ -86,7 +86,7 @@ public final class OwlyComponent {
     renderInterfaces.add(renderInterface);
   }
 
-  public OwlyComponent() {
+  public GeometricComponent() {
     reset_model2pixel();
     jComponent.addMouseWheelListener(new MouseWheelListener() {
       @Override
@@ -189,7 +189,7 @@ public final class OwlyComponent {
     return owlyLayer.getMouseSe2State();
   }
 
-  public void addDrawable(RenderInterface renderInterface) {
+  public void addRenderInterfaceBackground(RenderInterface renderInterface) {
     renderBackground.add(renderInterface);
   }
 }

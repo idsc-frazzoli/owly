@@ -19,11 +19,14 @@ import ch.ethz.idsc.owly.data.tree.Nodes;
 import ch.ethz.idsc.owly.glc.core.TrajectoryPlanner;
 import ch.ethz.idsc.owly.glc.core.TrajectorySample;
 import ch.ethz.idsc.owly.gui.misc.ImageRegionRender;
+import ch.ethz.idsc.owly.gui.ren.RenderElements;
+import ch.ethz.idsc.owly.gui.ren.TrajectoryRender;
 import ch.ethz.idsc.owly.math.region.ImageRegion;
 import ch.ethz.idsc.owly.rrts.core.RrtsNode;
 import ch.ethz.idsc.owly.rrts.core.TransitionRegionQuery;
 import ch.ethz.idsc.tensor.io.Serialization;
 
+// TODO JAN move class
 public class OwlyFrame extends BaseFrame {
   private boolean replay = false;
   private int replayIndex = 0;
@@ -37,7 +40,7 @@ public class OwlyFrame extends BaseFrame {
       jButton.addActionListener(new ActionListener() {
         @Override
         public void actionPerformed(ActionEvent actionEvent) {
-          owlyComponent.reset_model2pixel();
+          geometricComponent.reset_model2pixel();
           repaint(replayIndex);
         }
       });
@@ -118,10 +121,10 @@ public class OwlyFrame extends BaseFrame {
   private void repaint(int index) {
     if (0 <= index && index < backup.size())
       try {
-        owlyComponent.setRenderInterfaces( //
+        geometricComponent.setRenderInterfaces( //
             RenderElements.create(backup.get(index)));
         jStatusLabel.setText(backup.get(index).infoString());
-        owlyComponent.jComponent.repaint();
+        geometricComponent.jComponent.repaint();
       } catch (Exception exception) {
         exception.printStackTrace();
       }
@@ -132,9 +135,9 @@ public class OwlyFrame extends BaseFrame {
     try {
       Collection<RrtsNode> nodes = Nodes.ofSubtree(root);
       Collection<RrtsNode> collection = (Collection<RrtsNode>) Serialization.copy((Serializable) nodes);
-      owlyComponent.setRenderInterfaces( //
+      geometricComponent.setRenderInterfaces( //
           RenderElements.create(collection, Serialization.copy(transitionRegionQuery)));
-      owlyComponent.jComponent.repaint();
+      geometricComponent.jComponent.repaint();
     } catch (Exception exception) {
       exception.printStackTrace();
     }
@@ -145,19 +148,19 @@ public class OwlyFrame extends BaseFrame {
   }
 
   public void addBackground(RenderInterface renderInterface) {
-    owlyComponent.addDrawable(renderInterface);
+    geometricComponent.addRenderInterfaceBackground(renderInterface);
   }
 
   public void addTrajectory(List<TrajectorySample> trajectory) {
     TrajectoryRender trajectoryRenderer = new TrajectoryRender(null);
     trajectoryRenderer.setTrajectory(trajectory);
-    owlyComponent.addDrawable(trajectoryRenderer);
+    geometricComponent.addRenderInterfaceBackground(trajectoryRenderer);
   }
 
   public void addTrajectory(List<TrajectorySample> trajectory, Color color) {
     TrajectoryRender trajectoryRenderer = new TrajectoryRender(null);
     trajectoryRenderer.setColor(color);
     trajectoryRenderer.setTrajectory(trajectory);
-    owlyComponent.addDrawable(trajectoryRenderer);
+    geometricComponent.addRenderInterfaceBackground(trajectoryRenderer);
   }
 }

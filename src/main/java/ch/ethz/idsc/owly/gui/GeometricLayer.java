@@ -13,9 +13,8 @@ import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
 import ch.ethz.idsc.tensor.alg.Array;
 
-/** two abstract functions
- * implemented only in */
-public abstract class OwlyLayer {
+/**  */
+public abstract class GeometricLayer {
   private static final double WHEEL_ANGLE = Math.PI / 10;
   // ---
   private Tensor mouseLocation = Array.zeros(2);

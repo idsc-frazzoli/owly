@@ -26,7 +26,7 @@ public class BaseFrame {
   public final JFrame jFrame = new JFrame();
   private final JPanel jPanel = new JPanel(new BorderLayout());
   protected final JToolBar jToolBar = new JToolBar();
-  protected final OwlyComponent owlyComponent = new OwlyComponent();
+  public final GeometricComponent geometricComponent = new GeometricComponent();
   protected final JLabel jStatusLabel = new JLabel();
 
   protected BaseFrame() {
@@ -51,20 +51,21 @@ public class BaseFrame {
       jToolBar.add(jButton);
     }
     jPanel.add(jToolBar, BorderLayout.NORTH);
-    jPanel.add(owlyComponent.jComponent, BorderLayout.CENTER);
+    jPanel.add(geometricComponent.jComponent, BorderLayout.CENTER);
     jPanel.add(jStatusLabel, BorderLayout.SOUTH);
     jFrame.setContentPane(jPanel);
   }
 
   public final BufferedImage offscreen() {
-    Dimension dimension = owlyComponent.jComponent.getSize();
-    BufferedImage myBufferedImage = new BufferedImage(dimension.width, dimension.height, BufferedImage.TYPE_INT_ARGB);
-    owlyComponent.render(myBufferedImage.createGraphics(), dimension);
+    Dimension dimension = geometricComponent.jComponent.getSize();
+    BufferedImage myBufferedImage = //
+        new BufferedImage(dimension.width, dimension.height, BufferedImage.TYPE_INT_ARGB);
+    geometricComponent.render(myBufferedImage.createGraphics(), dimension);
     return myBufferedImage;
   }
 
   public final void configCoordinateOffset(int px, int py) {
-    owlyComponent.setOffset(Tensors.vector(px, py));
+    geometricComponent.setOffset(Tensors.vector(px, py));
   }
 
   public final void close() {
