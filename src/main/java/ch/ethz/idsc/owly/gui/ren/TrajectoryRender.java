@@ -1,5 +1,5 @@
 // code by jph
-package ch.ethz.idsc.owly.gui;
+package ch.ethz.idsc.owly.gui.ren;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
@@ -11,11 +11,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import ch.ethz.idsc.owly.glc.core.GlcNode;
 import ch.ethz.idsc.owly.glc.core.TrajectoryPlanner;
 import ch.ethz.idsc.owly.glc.core.TrajectorySample;
+import ch.ethz.idsc.owly.gui.GeometricLayer;
+import ch.ethz.idsc.owly.gui.RenderInterface;
 import ch.ethz.idsc.owly.math.flow.Flow;
 import ch.ethz.idsc.owly.math.state.StateTime;
 import ch.ethz.idsc.tensor.RealScalar;
@@ -42,7 +43,7 @@ public class TrajectoryRender implements RenderInterface {
   }
 
   @Override
-  public void render(OwlyLayer owlyLayer, Graphics2D graphics) {
+  public void render(GeometricLayer owlyLayer, Graphics2D graphics) {
     { // draw detailed trajectory from root to goal/furthestgo
       final List<TrajectorySample> list = trajectory;
       { // draw control vectors u along trajectory
@@ -59,7 +60,10 @@ public class TrajectoryRender implements RenderInterface {
         }
       }
       { // draw trajectory as thick green line with white background
-        Path2D path2d = owlyLayer.toPath2D(list.stream().map(TrajectorySample::stateTime).collect(Collectors.toList()));
+        Path2D path2d = owlyLayer.toPath2D( //
+            Tensor.of(list.stream() //
+                .map(TrajectorySample::stateTime) //
+                .map(StateTime::state)));
         graphics.setStroke(new BasicStroke(5.0f));
         graphics.setColor(new Color(255, 255, 255, 128));
         graphics.draw(path2d);

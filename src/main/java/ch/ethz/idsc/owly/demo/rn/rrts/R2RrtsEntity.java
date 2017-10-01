@@ -10,7 +10,7 @@ import java.util.List;
 
 import ch.ethz.idsc.owly.glc.core.TrajectoryPlanner;
 import ch.ethz.idsc.owly.glc.core.TrajectorySample;
-import ch.ethz.idsc.owly.gui.OwlyLayer;
+import ch.ethz.idsc.owly.gui.GeometricLayer;
 import ch.ethz.idsc.owly.gui.ani.AbstractRrtsEntity;
 import ch.ethz.idsc.owly.gui.ani.PlannerType;
 import ch.ethz.idsc.owly.gui.ani.TrajectoryPlannerCallback;
@@ -69,7 +69,7 @@ public class R2RrtsEntity extends AbstractRrtsEntity {
   }
 
   @Override
-  public void render(OwlyLayer owlyLayer, Graphics2D graphics) {
+  public void render(GeometricLayer owlyLayer, Graphics2D graphics) {
     { // indicate current position
       Tensor state = getStateTimeNow().state();
       Point2D point = owlyLayer.toPoint2D(state);

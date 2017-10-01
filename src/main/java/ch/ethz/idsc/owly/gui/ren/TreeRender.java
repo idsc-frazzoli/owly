@@ -1,5 +1,5 @@
 // code by jph
-package ch.ethz.idsc.owly.gui;
+package ch.ethz.idsc.owly.gui.ren;
 
 import java.awt.Graphics2D;
 import java.awt.Shape;
@@ -11,6 +11,8 @@ import java.util.DoubleSummaryStatistics;
 import java.util.Objects;
 
 import ch.ethz.idsc.owly.data.tree.StateCostNode;
+import ch.ethz.idsc.owly.gui.GeometricLayer;
+import ch.ethz.idsc.owly.gui.RenderInterface;
 import ch.ethz.idsc.owly.gui.misc.ColorLookup;
 import ch.ethz.idsc.tensor.Scalar;
 
@@ -29,10 +31,11 @@ public class TreeRender implements RenderInterface {
   }
 
   @Override
-  public void render(OwlyLayer owlyLayer, Graphics2D graphics) {
-    if (Objects.isNull(collection))
+  public void render(GeometricLayer owlyLayer, Graphics2D graphics) {
+    Collection<? extends StateCostNode> _collection = collection;
+    if (Objects.isNull(_collection))
       return;
-    DoubleSummaryStatistics dss = collection.stream() //
+    DoubleSummaryStatistics dss = _collection.stream() //
         .map(StateCostNode::costFromRoot) //
         .map(Scalar::number) //
         .mapToDouble(Number::doubleValue) //
@@ -40,7 +43,7 @@ public class TreeRender implements RenderInterface {
         .summaryStatistics();
     final double min = dss.getMin();
     final double max = dss.getMax();
-    for (StateCostNode node : collection) {
+    for (StateCostNode node : _collection) {
       double val = node.costFromRoot().number().doubleValue();
       if (!Double.isFinite(val))
         throw new RuntimeException("cost from root " + val);

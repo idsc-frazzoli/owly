@@ -1,5 +1,5 @@
 // code by jph
-package ch.ethz.idsc.owly.gui;
+package ch.ethz.idsc.owly.gui.ren;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
@@ -9,17 +9,19 @@ import java.awt.geom.Point2D;
 import java.util.Collection;
 
 import ch.ethz.idsc.owly.glc.core.GlcNode;
+import ch.ethz.idsc.owly.gui.GeometricLayer;
+import ch.ethz.idsc.owly.gui.RenderInterface;
 import ch.ethz.idsc.tensor.Tensor;
 
-class QueueRender implements RenderInterface {
+public class QueueRender implements RenderInterface {
   private Collection<GlcNode> collection;
 
-  QueueRender(Collection<GlcNode> collection) {
+  public QueueRender(Collection<GlcNode> collection) {
     this.collection = collection;
   }
 
   @Override
-  public void render(OwlyLayer owlyLayer, Graphics2D graphics) {
+  public void render(GeometricLayer owlyLayer, Graphics2D graphics) {
     graphics.setColor(new Color(0, 192, 192, 128));
     for (GlcNode node : collection) {
       Tensor x = node.stateTime().state();

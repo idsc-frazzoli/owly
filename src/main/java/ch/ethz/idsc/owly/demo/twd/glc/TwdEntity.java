@@ -3,7 +3,6 @@ package ch.ethz.idsc.owly.demo.twd.glc;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
-import java.awt.geom.Path2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.util.Collection;
@@ -17,7 +16,7 @@ import ch.ethz.idsc.owly.demo.twd.TwdMinCurvatureGoalManager;
 import ch.ethz.idsc.owly.demo.twd.TwdStateSpaceModel;
 import ch.ethz.idsc.owly.glc.core.StandardTrajectoryPlanner;
 import ch.ethz.idsc.owly.glc.core.TrajectoryPlanner;
-import ch.ethz.idsc.owly.gui.OwlyLayer;
+import ch.ethz.idsc.owly.gui.GeometricLayer;
 import ch.ethz.idsc.owly.gui.ani.AbstractEntity;
 import ch.ethz.idsc.owly.gui.ani.PlannerType;
 import ch.ethz.idsc.owly.math.Se2Utils;
@@ -112,17 +111,17 @@ public class TwdEntity extends AbstractEntity {
   }
 
   @Override
-  public void render(OwlyLayer owlyLayer, Graphics2D graphics) {
+  public void render(GeometricLayer owlyLayer, Graphics2D graphics) {
     { // indicate current position
       StateTime stateTime = getStateTimeNow();
       Color color = new Color(64, 64, 64, 128);
       if (Objects.nonNull(obstacleQuery))
         if (!obstacleQuery.isDisjoint(Collections.singletonList(stateTime)))
           color = new Color(255, 64, 64, 128);
+      owlyLayer.pushMatrix(Se2Utils.toSE2Matrix(stateTime.state()));
       graphics.setColor(color);
-      Tensor matrix = Se2Utils.toSE2Matrix(stateTime.state());
-      Path2D path2d = owlyLayer.toPath2D(Tensor.of(SHAPE.stream().map(matrix::dot)));
-      graphics.fill(path2d);
+      graphics.fill(owlyLayer.toPath2D(SHAPE));
+      owlyLayer.popMatrix();
     }
     { // indicate position delay[s] into the future
       Tensor state = getEstimatedLocationAt(DELAY_HINT);
@@ -131,10 +130,10 @@ public class TwdEntity extends AbstractEntity {
       graphics.fill(new Rectangle2D.Double(point.getX() - 2, point.getY() - 2, 5, 5));
     }
     {
+      owlyLayer.pushMatrix(owlyLayer.getMouseSe2Matrix());
       graphics.setColor(new Color(0, 128, 255, 192));
-      Tensor matrix = owlyLayer.getMouseSe2Matrix();
-      Path2D path2d = owlyLayer.toPath2D(Tensor.of(SHAPE.stream().map(matrix::dot)));
-      graphics.fill(path2d);
+      graphics.fill(owlyLayer.toPath2D(SHAPE));
+      owlyLayer.popMatrix();
     }
   }
 }
