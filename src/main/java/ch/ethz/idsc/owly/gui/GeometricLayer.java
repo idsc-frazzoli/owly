@@ -10,7 +10,6 @@ import java.util.Deque;
 
 import ch.ethz.idsc.owly.data.GlobalAssert;
 import ch.ethz.idsc.owly.math.Se2Utils;
-import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
 import ch.ethz.idsc.tensor.alg.VectorQ;
@@ -44,14 +43,6 @@ public class GeometricLayer {
   /** inspired by opengl */
   public void popMatrix() {
     deque.pop();
-  }
-  // public Tensor model2pixel() {
-  // return deque.peek().unmodifiable();
-  // }
-
-  // function ignores all but the first and second entry of x
-  private static Tensor toAffinePoint(Tensor x) {
-    return Tensors.of(x.get(0), x.get(1), RealScalar.ONE);
   }
 
   public Shape toVector(Tensor x, Tensor dx) {
