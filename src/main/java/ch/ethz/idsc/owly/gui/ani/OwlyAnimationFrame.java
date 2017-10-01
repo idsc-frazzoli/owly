@@ -4,8 +4,6 @@ package ch.ethz.idsc.owly.gui.ani;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
@@ -13,7 +11,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.Timer;
 import java.util.TimerTask;
 
 import ch.ethz.idsc.owly.data.GlobalAssert;
@@ -25,15 +22,15 @@ import ch.ethz.idsc.owly.glc.core.GlcNode;
 import ch.ethz.idsc.owly.glc.core.GlcNodes;
 import ch.ethz.idsc.owly.glc.core.TrajectoryPlanner;
 import ch.ethz.idsc.owly.glc.core.TrajectorySample;
-import ch.ethz.idsc.owly.gui.BaseFrame;
-import ch.ethz.idsc.owly.gui.EtaRender;
-import ch.ethz.idsc.owly.gui.GoalRender;
-import ch.ethz.idsc.owly.gui.ObstacleRender;
-import ch.ethz.idsc.owly.gui.RenderElements;
 import ch.ethz.idsc.owly.gui.RenderInterface;
-import ch.ethz.idsc.owly.gui.TrajectoryRender;
-import ch.ethz.idsc.owly.gui.TreeRender;
+import ch.ethz.idsc.owly.gui.TimerFrame;
 import ch.ethz.idsc.owly.gui.misc.ImageRegionRender;
+import ch.ethz.idsc.owly.gui.ren.EtaRender;
+import ch.ethz.idsc.owly.gui.ren.GoalRender;
+import ch.ethz.idsc.owly.gui.ren.GridRender;
+import ch.ethz.idsc.owly.gui.ren.ObstacleRender;
+import ch.ethz.idsc.owly.gui.ren.TrajectoryRender;
+import ch.ethz.idsc.owly.gui.ren.TreeRender;
 import ch.ethz.idsc.owly.math.region.ImageRegion;
 import ch.ethz.idsc.owly.math.state.StateTime;
 import ch.ethz.idsc.owly.math.state.TrajectoryRegionQuery;
@@ -46,9 +43,7 @@ import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
 
 // EXPERIMENTAL API not finalized 
-public class OwlyAnimationFrame extends BaseFrame {
-  private final Timer timer = new Timer();
-  // ---
+public class OwlyAnimationFrame extends TimerFrame {
   private final EtaRender etaRender = new EtaRender(Tensors.empty());
   private final TrajectoryRender trajectoryRender = new TrajectoryRender(null);
   private final ObstacleRender obstacleRender = new ObstacleRender(null);
@@ -62,12 +57,12 @@ public class OwlyAnimationFrame extends BaseFrame {
   private TrajectoryRegionQuery obstacleQuery = null;
 
   public OwlyAnimationFrame() {
-    owlyComponent.renderElements = new RenderElements();
-    owlyComponent.renderElements.list.add(etaRender);
-    owlyComponent.renderElements.list.add(trajectoryRender);
-    owlyComponent.renderElements.list.add(obstacleRender);
-    owlyComponent.renderElements.list.add(goalRender);
-    owlyComponent.renderElements.list.add(treeRender);
+    geometricComponent.addRenderInterface(GridRender.INSTANCE);
+    geometricComponent.addRenderInterface(etaRender);
+    geometricComponent.addRenderInterface(trajectoryRender);
+    geometricComponent.addRenderInterface(obstacleRender);
+    geometricComponent.addRenderInterface(goalRender);
+    geometricComponent.addRenderInterface(treeRender);
     { // periodic task for integration
       final TimerTask timerTask = new TimerTask() {
         TimeKeeper timeKeeper = new TimeKeeper();
@@ -80,23 +75,8 @@ public class OwlyAnimationFrame extends BaseFrame {
       };
       timer.schedule(timerTask, 100, 20);
     }
-    { // periodic task for rendering
-      final TimerTask timerTask = new TimerTask() {
-        @Override
-        public void run() {
-          owlyComponent.jComponent.repaint();
-        }
-      };
-      timer.schedule(timerTask, 100, 50);
-    }
-    jFrame.addWindowListener(new WindowAdapter() {
-      @Override
-      public void windowClosing(WindowEvent windowEvent) {
-        timer.cancel();
-      }
-    });
     // ---
-    owlyComponent.jComponent.addMouseListener(new MouseAdapter() {
+    geometricComponent.jComponent.addMouseListener(new MouseAdapter() {
       MotionPlanWorker mpw = null;
 
       @Override
@@ -111,7 +91,7 @@ public class OwlyAnimationFrame extends BaseFrame {
             }
             if (controllable instanceof AbstractEntity) {
               AbstractEntity abstractEntity = (AbstractEntity) controllable;
-              final Tensor goal = owlyComponent.getMouseGoal();
+              final Tensor goal = geometricComponent.getMouseGoal();
               final List<TrajectorySample> head = //
                   abstractEntity.getFutureTrajectoryUntil(abstractEntity.delayHint());
               switch (abstractEntity.getPlannerType()) {
@@ -137,7 +117,7 @@ public class OwlyAnimationFrame extends BaseFrame {
               }
             }
           } else { // ctrl pressed
-            System.out.println(owlyComponent.getMouseGoal());
+            System.out.println(geometricComponent.getMouseGoal());
             if (controllable instanceof AbstractEntity) {
               AbstractEntity abstractEntity = (AbstractEntity) controllable;
               // abstractEntity.resetStateTo(owlyComponent.getMouseGoal());
@@ -191,7 +171,7 @@ public class OwlyAnimationFrame extends BaseFrame {
       }
       if (Objects.nonNull(treeRender))
         treeRender.setCollection(new ArrayList<>(trajectoryPlanner.getDomainMap().values()));
-      owlyComponent.jComponent.repaint();
+      // no repaint
     }
 
     @Override
@@ -237,7 +217,7 @@ public class OwlyAnimationFrame extends BaseFrame {
   }
 
   public void addBackground(RenderInterface renderInterface) {
-    owlyComponent.addDrawable(renderInterface);
+    geometricComponent.addRenderInterfaceBackground(renderInterface);
   }
 
   private void add(AnimationInterface animationInterface) {
@@ -247,7 +227,7 @@ public class OwlyAnimationFrame extends BaseFrame {
     animationInterfaces.add(animationInterface);
     if (animationInterface instanceof RenderInterface) {
       RenderInterface renderInterface = (RenderInterface) animationInterface;
-      owlyComponent.renderElements.list.add(renderInterface);
+      geometricComponent.addRenderInterface(renderInterface);
     }
   }
 }

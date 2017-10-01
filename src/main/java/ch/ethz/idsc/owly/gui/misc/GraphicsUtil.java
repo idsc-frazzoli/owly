@@ -1,5 +1,5 @@
 // code by jph
-package ch.ethz.idsc.owly.gui;
+package ch.ethz.idsc.owly.gui.misc;
 
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;

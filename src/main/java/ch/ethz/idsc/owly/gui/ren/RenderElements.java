@@ -1,5 +1,5 @@
 // code by jph
-package ch.ethz.idsc.owly.gui;
+package ch.ethz.idsc.owly.gui.ren;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -9,17 +9,16 @@ import ch.ethz.idsc.owly.data.tree.StateCostNode;
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
 import ch.ethz.idsc.owly.glc.core.OptimalAnyTrajectoryPlanner;
 import ch.ethz.idsc.owly.glc.core.TrajectoryPlanner;
+import ch.ethz.idsc.owly.gui.RenderInterface;
 import ch.ethz.idsc.owly.math.state.TrajectoryRegionQuery;
 import ch.ethz.idsc.owly.rrts.adapter.SampledTransitionRegionQuery;
 import ch.ethz.idsc.owly.rrts.core.TransitionRegionQuery;
 
-public class RenderElements {
-  public final List<RenderInterface> list = new LinkedList<>();
-
-  public RenderElements() {
-  }
-
-  public RenderElements(TrajectoryPlanner trajectoryPlanner) {
+public enum RenderElements {
+  ;
+  public static Collection<RenderInterface> create(TrajectoryPlanner trajectoryPlanner) {
+    List<RenderInterface> list = new LinkedList<>();
+    list.add(GridRender.INSTANCE);
     list.add(new EtaRender(trajectoryPlanner.getEta()));
     list.add(new DomainRender(trajectoryPlanner.getDomainMap(), trajectoryPlanner.getEta()));
     {
@@ -50,13 +49,18 @@ public class RenderElements {
       }
     }
     list.add(new HudRender(trajectoryPlanner));
+    return list;
   }
 
-  public RenderElements(Collection<? extends StateCostNode> collection, TransitionRegionQuery transitionRegionQuery) {
+  public static Collection<RenderInterface> create( //
+      Collection<? extends StateCostNode> collection, TransitionRegionQuery transitionRegionQuery) {
+    List<RenderInterface> list = new LinkedList<>();
+    list.add(GridRender.INSTANCE);
     if (transitionRegionQuery instanceof SampledTransitionRegionQuery) {
       SampledTransitionRegionQuery strq = (SampledTransitionRegionQuery) transitionRegionQuery;
       list.add(new ObstacleRender(strq.getDiscoveredMembers()));
     }
     list.add(new TreeRender(collection));
+    return list;
   }
 }

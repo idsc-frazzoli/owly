@@ -1,5 +1,5 @@
 // code by jl
-package ch.ethz.idsc.owly.gui;
+package ch.ethz.idsc.owly.gui.ren;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
@@ -14,19 +14,21 @@ import java.util.Set;
 
 import ch.ethz.idsc.owly.glc.core.CandidatePair;
 import ch.ethz.idsc.owly.glc.core.OptimalAnyTrajectoryPlanner;
+import ch.ethz.idsc.owly.gui.GeometricLayer;
+import ch.ethz.idsc.owly.gui.RenderInterface;
 import ch.ethz.idsc.tensor.Tensor;
 
-public class CandidatesRender implements RenderInterface {
-  private final OptimalAnyTrajectoryPlanner OptimalAnyTrajectoryPlanner;
+class CandidatesRender implements RenderInterface {
+  private final OptimalAnyTrajectoryPlanner optimalAnyTrajectoryPlanner;
 
-  public CandidatesRender(OptimalAnyTrajectoryPlanner OptimalAnyTrajectoryPlanner) {
-    this.OptimalAnyTrajectoryPlanner = OptimalAnyTrajectoryPlanner;
+  CandidatesRender(OptimalAnyTrajectoryPlanner optimalAnyTrajectoryPlanner) {
+    this.optimalAnyTrajectoryPlanner = optimalAnyTrajectoryPlanner;
   }
 
   @Override
-  public void render(OwlyLayer owlyLayer, Graphics2D graphics) {
+  public void render(GeometricLayer owlyLayer, Graphics2D graphics) {
     graphics.setColor(Color.black);
-    Map<Tensor, Set<CandidatePair>> candidateMap = OptimalAnyTrajectoryPlanner.getCandidateMap();
+    Map<Tensor, Set<CandidatePair>> candidateMap = optimalAnyTrajectoryPlanner.getCandidateMap();
     long candidateThreshold = -1; // Threshold, rendering the first ___ Candidates
     long iter = 0;
     Iterator<Set<CandidatePair>> candidateMapIterator = candidateMap.values().iterator();
