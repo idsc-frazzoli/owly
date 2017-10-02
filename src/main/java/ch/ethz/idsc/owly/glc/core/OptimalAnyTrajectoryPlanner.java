@@ -24,7 +24,6 @@ import ch.ethz.idsc.owly.math.region.Region;
 import ch.ethz.idsc.owly.math.state.StateIntegrator;
 import ch.ethz.idsc.owly.math.state.StateTime;
 import ch.ethz.idsc.owly.math.state.TrajectoryRegionQuery;
-import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Scalars;
 import ch.ethz.idsc.tensor.Tensor;
 
@@ -51,42 +50,47 @@ public class OptimalAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
     integratorWatch.start();
     Map<GlcNode, List<StateTime>> connectors = controlsIntegrator.inParallel(node);
     CandidatePairQueueMap candidatePairQueueMap = new CandidatePairQueueMap();
-    for (GlcNode next : connectors.keySet()) {
-      Scalar oldCost = node.costFromRoot();
-      Scalar oldMerit = node.merit();
-      Scalar oldHeuristic = getGoalInterface().minCostToGoal(node.state());
-      Scalar newCost = next.costFromRoot();
-      Scalar newMerit = next.merit();
-      Scalar newHeuristic = getGoalInterface().minCostToGoal(next.state());
-      if (!Scalars.lessEquals(oldMerit, newMerit)) {
-        System.out.println("oldState: " + node.stateTime().toInfoString());
-        System.out.println("oldCost:  " + oldCost);
-        System.out.println("oldHeuri: " + oldHeuristic);
-        System.out.println("oldMerit: " + oldMerit);
-        System.out.println("newState: " + next.stateTime().toInfoString());
-        System.out.println("newCost:  " + newCost);
-        System.out.println("newHeuri: " + newHeuristic);
-        System.out.println("newMerit: " + newMerit);
-        throw new RuntimeException();
-      }
-      if (Double.isInfinite(newHeuristic.number().doubleValue()))
-        throw new RuntimeException(" " + newHeuristic);
-      if (Double.isInfinite(newCost.number().doubleValue()))
-        throw new RuntimeException(" " + newCost);
-    }
+    integratorWatch.stop();
+    integratorWatch1.start();
     for (GlcNode next : connectors.keySet()) { // <- order of keys is non-deterministic
+      // TODO TimeLoss of 7% in TWD
+      // {
+      // Scalar oldCost = node.costFromRoot();
+      // Scalar oldMerit = node.merit();
+      // Scalar oldHeuristic = getGoalInterface().minCostToGoal(node.state());
+      // Scalar newCost = next.costFromRoot();
+      // Scalar newMerit = next.merit();
+      // Scalar newHeuristic = getGoalInterface().minCostToGoal(next.state());
+      // if (!Scalars.lessEquals(oldMerit, newMerit)) {
+      // System.out.println("oldState: " + node.stateTime().toInfoString());
+      // System.out.println("oldCost: " + oldCost);
+      // System.out.println("oldHeuri: " + oldHeuristic);
+      // System.out.println("oldMerit: " + oldMerit);
+      // System.out.println("newState: " + next.stateTime().toInfoString());
+      // System.out.println("newCost: " + newCost);
+      // System.out.println("newHeuri: " + newHeuristic);
+      // System.out.println("newMerit: " + newMerit);
+      // throw new RuntimeException();
+      // }
+      // if (Double.isInfinite(newHeuristic.number().doubleValue()))
+      // throw new RuntimeException(" " + newHeuristic);
+      // if (Double.isInfinite(newCost.number().doubleValue()))
+      // throw new RuntimeException(" " + newCost);
+      // }
       // ALL Candidates are saved in temporary CandidateList
       CandidatePair nextCandidate = new CandidatePair(node, next);
       final Tensor domainKey = convertToKey(next.state());
       candidatePairQueueMap.insert(domainKey, nextCandidate);
     }
+    integratorWatch1.stop();
+    integratorWatch2.start();
     // saving the candidates in the corresponding Buckets
     for (Entry<Tensor, CandidatePairQueue> entry : candidatePairQueueMap.map.entrySet()) {
       if (!getCandidateMap().containsKey(entry.getKey()))
         candidateMap.put(entry.getKey(), new HashSet<CandidatePair>());
       getCandidateMap().get(entry.getKey()).addAll(entry.getValue());
     }
-    integratorWatch.stop();
+    integratorWatch2.stop();
     processCWatch.start();
     processCandidates(node, connectors, candidatePairQueueMap);
     processCWatch.stop();

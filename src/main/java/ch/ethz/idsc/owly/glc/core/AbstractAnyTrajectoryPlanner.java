@@ -29,6 +29,8 @@ public abstract class AbstractAnyTrajectoryPlanner extends AbstractTrajectoryPla
   protected ControlsIntegrator controlsIntegrator;
   private final Collection<Flow> controls;
   public Stopwatch subTreeDeleterWatch = Stopwatch.stopped();
+  public Stopwatch integratorWatch1 = Stopwatch.stopped();
+  public Stopwatch integratorWatch2 = Stopwatch.stopped();
 
   protected AbstractAnyTrajectoryPlanner( //
       Tensor eta, //
@@ -292,11 +294,16 @@ public abstract class AbstractAnyTrajectoryPlanner extends AbstractTrajectoryPla
 
   @Override
   public void printTimes() {
+    System.out.println("Times for the AnyPlanner");
     System.out.println("Integrator took: " + integratorWatch.display_seconds());
+    System.out.println(" Integratorwatch1: " + integratorWatch1.display_seconds());
+    System.out.println(" Integratorwatch2: " + integratorWatch2.display_seconds());
     System.out.println("processing C took: " + processCWatch.display_seconds());
     System.out.println(" deleting subtrees took " + subTreeDeleterWatch.display_seconds());
     integratorWatch = Stopwatch.stopped();
     processCWatch = Stopwatch.stopped();
     subTreeDeleterWatch = Stopwatch.stopped();
+    integratorWatch1 = Stopwatch.stopped();
+    integratorWatch2 = Stopwatch.stopped();
   }
 }

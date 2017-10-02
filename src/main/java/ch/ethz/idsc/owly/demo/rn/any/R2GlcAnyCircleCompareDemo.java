@@ -8,15 +8,19 @@ import java.util.List;
 import ch.ethz.idsc.owly.demo.rn.R2Controls;
 import ch.ethz.idsc.owly.demo.rn.R2NoiseRegion;
 import ch.ethz.idsc.owly.demo.rn.R2Parameters;
+import ch.ethz.idsc.owly.demo.rn.RnMinDistSphericalGoalManager;
 import ch.ethz.idsc.owly.demo.rn.RnSimpleCircleGoalManager;
+import ch.ethz.idsc.owly.glc.adapter.HeuristicQ;
 import ch.ethz.idsc.owly.glc.adapter.Parameters;
 import ch.ethz.idsc.owly.glc.adapter.RunCompare;
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
 import ch.ethz.idsc.owly.glc.core.AbstractAnyTrajectoryPlanner;
 import ch.ethz.idsc.owly.glc.core.AnyPlannerInterface;
 import ch.ethz.idsc.owly.glc.core.GlcExpand;
+import ch.ethz.idsc.owly.glc.core.GoalInterface;
 import ch.ethz.idsc.owly.glc.core.OptimalAnyTrajectoryPlanner;
 import ch.ethz.idsc.owly.glc.core.StandardTrajectoryPlanner;
+import ch.ethz.idsc.owly.glc.core.TrajectoryPlanner;
 import ch.ethz.idsc.owly.gui.Gui;
 import ch.ethz.idsc.owly.gui.OwlyFrame;
 import ch.ethz.idsc.owly.math.flow.EulerIntegrator;
@@ -53,13 +57,15 @@ enum R2GlcAnyCircleCompareDemo {
     Scalar goalAngle = RealScalar.ZERO;
     Tensor goal = AngleVector.of(goalAngle).multiply(circleRadius);
     Scalar goalRadius = DoubleScalar.of(.25);
+    boolean activateGui = false;
     System.out.println("Goal is: " + goal);
     Parameters parameters = new R2Parameters( //
         resolution, timeScale, depthScale, partitionScale, dtMax, maxIter, lipschitz);
     StateIntegrator stateIntegrator = FixedStateIntegrator.create(EulerIntegrator.INSTANCE, parameters.getdtMax(), //
         parameters.getTrajectorySize());
     Collection<Flow> controls = R2Controls.createRadial(parameters.getResolutionInt()); // max (grad(F)) ==1
-    RnSimpleCircleGoalManager rnGoal = new RnSimpleCircleGoalManager(goal, goalRadius);
+    // RnSimpleCircleGoalManager rnGoal = new RnSimpleCircleGoalManager(goal, goalRadius);
+    GoalInterface rnGoal = RnMinDistSphericalGoalManager.create(goal, goalRadius);
     // performance depends on heuristic: zeroHeuristic vs rnGoal
     // Heuristic heuristic = new ZeroHeuristic(); // rnGoal
     TrajectoryRegionQuery obstacleQuery = //
@@ -95,7 +101,7 @@ enum R2GlcAnyCircleCompareDemo {
     // owlyStandardFrame.setGlc((TrajectoryPlanner) standardTrajectoryPlanner);
     RunCompare database = new RunCompare(2);
     for (int iter = 1; iter < 30; iter++) {
-      Thread.sleep(10000);
+      Thread.sleep(5);
       // ANY:
       // -- ROOTCHANGE
       database.startStopwatchFor(1);
@@ -117,31 +123,31 @@ enum R2GlcAnyCircleCompareDemo {
         StateTime goalState = new StateTime(goal, RealScalar.ZERO);
         goalStateList.add(goalState);
       } while (!obstacleQuery.isDisjoint(goalStateList));
-      RnSimpleCircleGoalManager rnGoal2 = new RnSimpleCircleGoalManager(goal, goalRadius);
+      rnGoal = new RnSimpleCircleGoalManager(goal, goalRadius);
       // System.out.println("Switching to Goal:" + goal);
       Scalar goalSearchHelperRadius = goalRadius.add(RealScalar.ONE).multiply(RealScalar.of(2));
       Region goalSearchHelper = new EllipsoidRegion(goal, Array.of(l -> goalSearchHelperRadius, goal.length()));
-      anyTrajectoryPlanner.changeToGoal(rnGoal2, goalSearchHelper);
+      anyTrajectoryPlanner.changeToGoal(rnGoal, goalSearchHelper);
       // -- EXPANDING
       int itersAny = GlcExpand.maxDepth(anyTrajectoryPlanner, parameters.getDepthLimit());
       database.saveIterations(itersAny, 1);
       anyTrajectory = anyTrajectoryPlanner.trajectoryToBest();
       database.stopStopwatchFor(1);
-      // owlyAnyFrame.setGlc((TrajectoryPlanner) anyTrajectoryPlanner);
-      // StateTimeTrajectories.print(trajectory);
+      if (activateGui)
+        owlyAnyFrame.setGlc((TrajectoryPlanner) anyTrajectoryPlanner);
       // gsw.append(owlyFrame.offscreen());
       // --
       // Standard:
-      rnGoal2 = new RnSimpleCircleGoalManager(goal, goalRadius);
       if (switchingRoot) {
         database.startStopwatchFor(0);
         standardTrajectoryPlanner = new StandardTrajectoryPlanner( //
-            parameters.getEta(), stateIntegrator, controls, obstacleQuery, rnGoal2);
+            parameters.getEta(), stateIntegrator, controls, obstacleQuery, rnGoal);
         standardTrajectoryPlanner.insertRoot(newRootState.state());
         int itersStandard = GlcExpand.maxDepth(standardTrajectoryPlanner, parameters.getDepthLimit());
         database.stopStopwatchFor(0);
         database.saveIterations(itersStandard, 0);
-        // owlyStandardFrame.setGlc((TrajectoryPlanner) standardTrajectoryPlanner);
+        if (activateGui)
+          owlyStandardFrame.setGlc((TrajectoryPlanner) standardTrajectoryPlanner);
         Scalar anyCost = ((AbstractAnyTrajectoryPlanner) anyTrajectoryPlanner).getTrajectoryCost();
         database.saveCost(anyCost, 1);
         Scalar staCost = standardTrajectoryPlanner.getBest().get().costFromRoot();
@@ -157,6 +163,7 @@ enum R2GlcAnyCircleCompareDemo {
     // gsw.close();
     // System.out.println("created gif");
     System.out.println("Finished LOOP");
-    database.write2File(""); // TODO
+    boolean test = HeuristicQ.of(rnGoal);
+    database.write2File("R2Res" + parameters.getResolution() + "GC" + (test ? "H" : "noH") + "R");
   }
 }

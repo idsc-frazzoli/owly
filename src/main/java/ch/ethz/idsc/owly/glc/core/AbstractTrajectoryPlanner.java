@@ -63,6 +63,7 @@ import ch.ethz.idsc.tensor.Tensor;
   }
 
   public void printTimes() {
+    System.out.println("Times for the Default Planner");
     System.out.println("Integrator took: " + integratorWatch.display_seconds());
     System.out.println("processing C took: " + processCWatch.display_seconds());
     integratorWatch = Stopwatch.stopped();
