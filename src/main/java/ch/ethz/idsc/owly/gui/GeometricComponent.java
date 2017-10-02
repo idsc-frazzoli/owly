@@ -153,7 +153,7 @@ public final class GeometricComponent {
     model2pixel.set(vector.Get(1), 1, 2);
   }
 
-  void reset_model2pixel() {
+  public void reset_model2pixel() {
     model2pixel = MODEL2PIXEL_INITIAL.copy();
   }
 

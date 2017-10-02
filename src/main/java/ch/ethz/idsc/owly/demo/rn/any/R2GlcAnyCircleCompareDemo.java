@@ -21,8 +21,8 @@ import ch.ethz.idsc.owly.glc.core.GoalInterface;
 import ch.ethz.idsc.owly.glc.core.OptimalAnyTrajectoryPlanner;
 import ch.ethz.idsc.owly.glc.core.StandardTrajectoryPlanner;
 import ch.ethz.idsc.owly.glc.core.TrajectoryPlanner;
-import ch.ethz.idsc.owly.gui.Gui;
-import ch.ethz.idsc.owly.gui.OwlyFrame;
+import ch.ethz.idsc.owly.gui.ani.OwlyFrame;
+import ch.ethz.idsc.owly.gui.ani.OwlyGui;
 import ch.ethz.idsc.owly.math.flow.EulerIntegrator;
 import ch.ethz.idsc.owly.math.flow.Flow;
 import ch.ethz.idsc.owly.math.region.EllipsoidRegion;
@@ -84,7 +84,7 @@ enum R2GlcAnyCircleCompareDemo {
     List<StateTime> anyTrajectory = anyTrajectoryPlanner.trajectoryToBest();
     // StateTimeTrajectories.print(trajectory);
     // AnimationWriter gsw = AnimationWriter.of(UserHome.Pictures("R2_Circle_Gif.gif"), 250);
-    OwlyFrame owlyAnyFrame = Gui.start();
+    OwlyFrame owlyAnyFrame = OwlyGui.start();
     owlyAnyFrame.configCoordinateOffset(400, 400);
     owlyAnyFrame.jFrame.setBounds(0, 0, 800, 800);
     // owlyAnyFrame.setGlc((TrajectoryPlanner) anyTrajectoryPlanner);
@@ -95,7 +95,7 @@ enum R2GlcAnyCircleCompareDemo {
     GlcExpand.maxDepth(standardTrajectoryPlanner, parameters.getDepthLimit());
     // StateTimeTrajectories.print(trajectory);
     // AnimationWriter gsw = AnimationWriter.of(UserHome.Pictures("R2_Circle_Gif.gif"), 250);
-    OwlyFrame owlyStandardFrame = Gui.start();
+    OwlyFrame owlyStandardFrame = OwlyGui.start();
     owlyStandardFrame.configCoordinateOffset(400, 400);
     owlyStandardFrame.jFrame.setBounds(0, 0, 800, 800);
     // owlyStandardFrame.setGlc((TrajectoryPlanner) standardTrajectoryPlanner);

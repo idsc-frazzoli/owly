@@ -4,8 +4,8 @@ package ch.ethz.idsc.owly.demo.delta.glc;
 import ch.ethz.idsc.owly.glc.core.DebugUtils;
 import ch.ethz.idsc.owly.glc.core.Expand;
 import ch.ethz.idsc.owly.glc.core.TrajectoryPlanner;
-import ch.ethz.idsc.owly.gui.Gui;
-import ch.ethz.idsc.owly.gui.OwlyFrame;
+import ch.ethz.idsc.owly.gui.ani.OwlyFrame;
+import ch.ethz.idsc.owly.gui.ani.OwlyGui;
 import ch.ethz.idsc.tensor.RealScalar;
 
 /** simple animation of small boat driving upstream, or downstream in a river delta */
@@ -19,7 +19,7 @@ enum DeltaDemo {
     // mintime w/o heuristic requires 2846 expands
     // mintime w/. heuristic requires 2844 expands
     TrajectoryPlanner trajectoryPlanner = DeltaHelper.createMinTimeDefault(RealScalar.of(-.25)); // -.25 .5
-    OwlyFrame owlyFrame = Gui.start();
+    OwlyFrame owlyFrame = OwlyGui.start();
     owlyFrame.configCoordinateOffset(33, 416);
     owlyFrame.jFrame.setBounds(100, 100, 620, 475);
     int steps = 0;

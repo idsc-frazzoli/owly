@@ -11,9 +11,9 @@ import java.util.DoubleSummaryStatistics;
 import java.util.Objects;
 
 import ch.ethz.idsc.owly.data.tree.StateCostNode;
+import ch.ethz.idsc.owly.gui.ColorLookup;
 import ch.ethz.idsc.owly.gui.GeometricLayer;
 import ch.ethz.idsc.owly.gui.RenderInterface;
-import ch.ethz.idsc.owly.gui.misc.ColorLookup;
 import ch.ethz.idsc.tensor.Scalar;
 
 /** renders the edges between nodes

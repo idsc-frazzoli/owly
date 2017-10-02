@@ -20,8 +20,8 @@ import ch.ethz.idsc.owly.glc.core.GlcExpand;
 import ch.ethz.idsc.owly.glc.core.OptimalAnyTrajectoryPlanner;
 import ch.ethz.idsc.owly.glc.core.StandardTrajectoryPlanner;
 import ch.ethz.idsc.owly.glc.core.TrajectoryPlanner;
-import ch.ethz.idsc.owly.gui.Gui;
-import ch.ethz.idsc.owly.gui.OwlyFrame;
+import ch.ethz.idsc.owly.gui.ani.OwlyFrame;
+import ch.ethz.idsc.owly.gui.ani.OwlyGui;
 import ch.ethz.idsc.owly.math.RotationUtils;
 import ch.ethz.idsc.owly.math.StateSpaceModel;
 import ch.ethz.idsc.owly.math.flow.Flow;
@@ -86,12 +86,12 @@ class Se2IterateGlcAnyCircleCompareDemo {
     int iters = GlcExpand.maxDepth(anyTrajectoryPlanner, parameters.getDepthLimit());
     System.out.println("After " + iters + " iterations");
     // }
-    OwlyFrame owlyFrameAny = Gui.start();
+    OwlyFrame owlyFrameAny = OwlyGui.start();
     owlyFrameAny.setGlc((TrajectoryPlanner) anyTrajectoryPlanner);
     // ---
     System.out.println("***DEFAULT**");
     // ---
-    OwlyFrame owlyFrameDefault = Gui.start();
+    OwlyFrame owlyFrameDefault = OwlyGui.start();
     {
       StandardTrajectoryPlanner defaultTrajectoryPlanner = new StandardTrajectoryPlanner( //
           parameters.getEta(), stateIntegrator, controls, obstacleQuery, se2GoalManager.getGoalInterface());

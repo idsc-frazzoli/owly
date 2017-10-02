@@ -10,8 +10,8 @@ import ch.ethz.idsc.owly.glc.core.Expand;
 import ch.ethz.idsc.owly.glc.core.GoalInterface;
 import ch.ethz.idsc.owly.glc.core.StandardTrajectoryPlanner;
 import ch.ethz.idsc.owly.glc.core.TrajectoryPlanner;
-import ch.ethz.idsc.owly.gui.Gui;
-import ch.ethz.idsc.owly.gui.OwlyFrame;
+import ch.ethz.idsc.owly.gui.ani.OwlyFrame;
+import ch.ethz.idsc.owly.gui.ani.OwlyGui;
 import ch.ethz.idsc.owly.math.StateSpaceModel;
 import ch.ethz.idsc.owly.math.TensorUnaryOperator;
 import ch.ethz.idsc.owly.math.flow.Flow;
@@ -42,7 +42,7 @@ enum LvRepresentComparison {
     trajectoryPlanner.represent = represent;
     trajectoryPlanner.insertRoot(Tensors.vector(2, .5));
     Expand.maxSteps(trajectoryPlanner, 4000);
-    OwlyFrame owlyFrame = Gui.glc(trajectoryPlanner);
+    OwlyFrame owlyFrame = OwlyGui.glc(trajectoryPlanner);
     owlyFrame.configCoordinateOffset(100, 300);
     owlyFrame.jFrame.setBounds(100, 100, 500, 500);
   }

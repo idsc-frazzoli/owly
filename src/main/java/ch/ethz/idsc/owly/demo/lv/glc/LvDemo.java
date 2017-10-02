@@ -10,7 +10,7 @@ import ch.ethz.idsc.owly.glc.core.Expand;
 import ch.ethz.idsc.owly.glc.core.GoalInterface;
 import ch.ethz.idsc.owly.glc.core.StandardTrajectoryPlanner;
 import ch.ethz.idsc.owly.glc.core.TrajectoryPlanner;
-import ch.ethz.idsc.owly.gui.Gui;
+import ch.ethz.idsc.owly.gui.ani.OwlyGui;
 import ch.ethz.idsc.owly.math.StateSpaceModel;
 import ch.ethz.idsc.owly.math.flow.Flow;
 import ch.ethz.idsc.owly.math.flow.RungeKutta45Integrator;
@@ -40,6 +40,6 @@ enum LvDemo {
     trajectoryPlanner.represent = Log::of;
     trajectoryPlanner.insertRoot(Tensors.vector(2, .1));
     Expand.maxSteps(trajectoryPlanner, 4000);
-    Gui.glc(trajectoryPlanner);
+    OwlyGui.glc(trajectoryPlanner);
   }
 }
