@@ -28,9 +28,9 @@ import ch.ethz.idsc.tensor.Tensor;
 public abstract class AbstractAnyTrajectoryPlanner extends AbstractTrajectoryPlanner implements AnyPlannerInterface {
   protected ControlsIntegrator controlsIntegrator;
   private final Collection<Flow> controls;
-  public Stopwatch subTreeDeleterWatch = Stopwatch.stopped();
-  public Stopwatch integratorWatch1 = Stopwatch.stopped();
-  public Stopwatch integratorWatch2 = Stopwatch.stopped();
+  public transient Stopwatch subTreeDeleterWatch = Stopwatch.stopped();
+  public transient Stopwatch integratorWatch1 = Stopwatch.stopped();
+  public transient Stopwatch integratorWatch2 = Stopwatch.stopped();
 
   protected AbstractAnyTrajectoryPlanner( //
       Tensor eta, //

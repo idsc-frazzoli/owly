@@ -1,6 +1,8 @@
 // code by jph
 package ch.ethz.idsc.owly.data;
 
+import java.io.Serializable;
+
 import junit.framework.TestCase;
 
 public class StopwatchTest extends TestCase {
@@ -24,6 +26,7 @@ public class StopwatchTest extends TestCase {
 
   public void testStarted() {
     Stopwatch stopwatch = Stopwatch.started();
+    assertFalse(stopwatch instanceof Serializable);
     try {
       stopwatch.start();
       assertTrue(false);
@@ -31,5 +34,10 @@ public class StopwatchTest extends TestCase {
       // ---
     }
     assertTrue(0 < stopwatch.display_nanoSeconds());
+  }
+
+  public void testNonSerializable() {
+    Stopwatch stopwatch = Stopwatch.started();
+    assertFalse(stopwatch instanceof Serializable);
   }
 }
