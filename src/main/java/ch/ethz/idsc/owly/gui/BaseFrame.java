@@ -17,6 +17,7 @@ import javax.swing.WindowConstants;
 
 import ch.ethz.idsc.owly.demo.util.UserHome;
 import ch.ethz.idsc.owly.gui.ani.OwlyAnimationFrame;
+import ch.ethz.idsc.owly.gui.ani.OwlyFrame;
 import ch.ethz.idsc.tensor.Tensors;
 
 /** base class for {@link OwlyFrame} and {@link OwlyAnimationFrame} */

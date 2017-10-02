@@ -6,6 +6,7 @@ import java.util.Objects;
 import java.util.Optional;
 
 import ch.ethz.idsc.owly.data.GlobalAssert;
+import ch.ethz.idsc.owly.data.Stopwatch;
 import ch.ethz.idsc.owly.data.tree.Nodes;
 import ch.ethz.idsc.owly.math.state.StateIntegrator;
 import ch.ethz.idsc.owly.math.state.TrajectoryRegionQuery;
@@ -17,6 +18,8 @@ import ch.ethz.idsc.tensor.Tensor;
   protected final StateIntegrator stateIntegrator;
   private /* not final */ TrajectoryRegionQuery obstacleQuery;
   private /* not final */ GoalInterface goalInterface;
+  protected transient Stopwatch integratorWatch = Stopwatch.stopped();
+  protected transient Stopwatch processCWatch = Stopwatch.stopped();
 
   protected AbstractTrajectoryPlanner( //
       Tensor eta, //
@@ -60,5 +63,13 @@ import ch.ethz.idsc.tensor.Tensor;
   @Override
   protected Optional<GlcNode> getFurthestGoalNode() {
     return Optional.empty();
+  }
+
+  public void printTimes() {
+    System.out.println("Times for the Default Planner");
+    System.out.println("Integrator took: " + integratorWatch.display_seconds());
+    System.out.println("processing C took: " + processCWatch.display_seconds());
+    integratorWatch = Stopwatch.stopped();
+    processCWatch = Stopwatch.stopped();
   }
 }

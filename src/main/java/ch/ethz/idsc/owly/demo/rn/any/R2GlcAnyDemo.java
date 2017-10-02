@@ -15,8 +15,8 @@ import ch.ethz.idsc.owly.glc.core.GlcExpand;
 import ch.ethz.idsc.owly.glc.core.GoalInterface;
 import ch.ethz.idsc.owly.glc.core.OptimalAnyTrajectoryPlanner;
 import ch.ethz.idsc.owly.glc.core.TrajectoryPlanner;
-import ch.ethz.idsc.owly.gui.Gui;
-import ch.ethz.idsc.owly.gui.OwlyFrame;
+import ch.ethz.idsc.owly.gui.ani.OwlyFrame;
+import ch.ethz.idsc.owly.gui.ani.OwlyGui;
 import ch.ethz.idsc.owly.math.flow.EulerIntegrator;
 import ch.ethz.idsc.owly.math.flow.Flow;
 import ch.ethz.idsc.owly.math.region.EmptyRegion;
@@ -59,7 +59,7 @@ enum R2GlcAnyDemo {
         parameters.getEta(), stateIntegrator, controls, obstacleQuery, rnGoal);
     trajectoryPlanner.switchRootToState(Tensors.vector(0, 0));
     GlcExpand.maxDepth(trajectoryPlanner, parameters.getDepthLimit());
-    OwlyFrame owlyFrame = Gui.start();
+    OwlyFrame owlyFrame = OwlyGui.start();
     Tensor goal = Tensors.vector(6, 6);
     for (int iter = 0; iter < 20; iter++) {
       long tic = System.nanoTime();

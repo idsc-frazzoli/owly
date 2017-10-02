@@ -10,8 +10,8 @@ import ch.ethz.idsc.owly.glc.core.Expand;
 import ch.ethz.idsc.owly.glc.core.GoalInterface;
 import ch.ethz.idsc.owly.glc.core.StandardTrajectoryPlanner;
 import ch.ethz.idsc.owly.glc.core.TrajectoryPlanner;
-import ch.ethz.idsc.owly.gui.Gui;
-import ch.ethz.idsc.owly.gui.OwlyFrame;
+import ch.ethz.idsc.owly.gui.ani.OwlyFrame;
+import ch.ethz.idsc.owly.gui.ani.OwlyGui;
 import ch.ethz.idsc.owly.math.RotationUtils;
 import ch.ethz.idsc.owly.math.flow.Flow;
 import ch.ethz.idsc.owly.math.flow.RungeKutta4Integrator;
@@ -49,7 +49,7 @@ enum Se2rAnimateDemo {
         eta, stateIntegrator, controls, obstacleQuery, goalInterface);
     // ---
     trajectoryPlanner.insertRoot(Tensors.vector(0, 0, 0));
-    OwlyFrame owlyFrame = Gui.start();
+    OwlyFrame owlyFrame = OwlyGui.start();
     owlyFrame.configCoordinateOffset(169, 71);
     owlyFrame.jFrame.setBounds(100, 100, 300, 200);
     while (!trajectoryPlanner.getBest().isPresent() && owlyFrame.jFrame.isVisible()) {

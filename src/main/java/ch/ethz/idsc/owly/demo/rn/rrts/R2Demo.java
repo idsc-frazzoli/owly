@@ -3,8 +3,8 @@ package ch.ethz.idsc.owly.demo.rn.rrts;
 
 import ch.ethz.idsc.owly.demo.rn.RnNodeCollection;
 import ch.ethz.idsc.owly.demo.rn.RnTransitionSpace;
-import ch.ethz.idsc.owly.gui.Gui;
-import ch.ethz.idsc.owly.gui.OwlyFrame;
+import ch.ethz.idsc.owly.gui.ani.OwlyFrame;
+import ch.ethz.idsc.owly.gui.ani.OwlyGui;
 import ch.ethz.idsc.owly.math.sample.BoxRandomSample;
 import ch.ethz.idsc.owly.rrts.adapter.LengthCostFunction;
 import ch.ethz.idsc.owly.rrts.adapter.RrtsNodes;
@@ -33,7 +33,7 @@ enum R2Demo {
       rrts.insertAsNode(rnUniformSampler.randomSample(), 15);
     System.out.println("rewireCount=" + rrts.rewireCount());
     RrtsNodes.costConsistency(root, rnts, LengthCostFunction.IDENTITY);
-    OwlyFrame owlyFrame = Gui.start();
+    OwlyFrame owlyFrame = OwlyGui.start();
     owlyFrame.configCoordinateOffset(42, 456);
     owlyFrame.jFrame.setBounds(100, 100, 500, 500);
     owlyFrame.setRrts(root, trq);

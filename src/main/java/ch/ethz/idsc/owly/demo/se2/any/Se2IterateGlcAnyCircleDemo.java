@@ -17,8 +17,8 @@ import ch.ethz.idsc.owly.glc.core.DebugUtils;
 import ch.ethz.idsc.owly.glc.core.GlcExpand;
 import ch.ethz.idsc.owly.glc.core.OptimalAnyTrajectoryPlanner;
 import ch.ethz.idsc.owly.glc.core.TrajectoryPlanner;
-import ch.ethz.idsc.owly.gui.Gui;
-import ch.ethz.idsc.owly.gui.OwlyFrame;
+import ch.ethz.idsc.owly.gui.ani.OwlyFrame;
+import ch.ethz.idsc.owly.gui.ani.OwlyGui;
 import ch.ethz.idsc.owly.math.RotationUtils;
 import ch.ethz.idsc.owly.math.StateSpaceModel;
 import ch.ethz.idsc.owly.math.flow.Flow;
@@ -82,7 +82,7 @@ class Se2IterateGlcAnyCircleDemo {
     System.out.println("After " + iters + " iterations");
     Scalar toc = RealScalar.of(System.nanoTime());
     System.out.println(toc.subtract(tic).multiply(RealScalar.of(1e-9)) + " Seconds needed to plan");
-    OwlyFrame owlyFrame = Gui.start();
+    OwlyFrame owlyFrame = OwlyGui.start();
     owlyFrame.setGlc((TrajectoryPlanner) trajectoryPlanner);
     // ---
     int iter = 1;

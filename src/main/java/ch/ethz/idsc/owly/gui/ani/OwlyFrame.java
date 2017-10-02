@@ -1,5 +1,5 @@
 // code by jph and jl
-package ch.ethz.idsc.owly.gui;
+package ch.ethz.idsc.owly.gui.ani;
 
 import java.awt.Color;
 import java.awt.event.ActionEvent;
@@ -18,7 +18,9 @@ import javax.swing.event.ChangeListener;
 import ch.ethz.idsc.owly.data.tree.Nodes;
 import ch.ethz.idsc.owly.glc.core.TrajectoryPlanner;
 import ch.ethz.idsc.owly.glc.core.TrajectorySample;
-import ch.ethz.idsc.owly.gui.misc.ImageRegionRender;
+import ch.ethz.idsc.owly.gui.BaseFrame;
+import ch.ethz.idsc.owly.gui.RenderInterface;
+import ch.ethz.idsc.owly.gui.ren.ImageRegionRender;
 import ch.ethz.idsc.owly.gui.ren.RenderElements;
 import ch.ethz.idsc.owly.gui.ren.TrajectoryRender;
 import ch.ethz.idsc.owly.math.region.ImageRegion;
@@ -26,7 +28,6 @@ import ch.ethz.idsc.owly.rrts.core.RrtsNode;
 import ch.ethz.idsc.owly.rrts.core.TransitionRegionQuery;
 import ch.ethz.idsc.tensor.io.Serialization;
 
-// TODO JAN move class
 public class OwlyFrame extends BaseFrame {
   private boolean replay = false;
   private int replayIndex = 0;

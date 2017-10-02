@@ -79,6 +79,17 @@ public enum DeltaHelper {
   }
 
   static TrajectoryPlannerContainer createGlc(Scalar gradientAmp, RationalScalar resolution, Tensor partitionScale) throws Exception {
+    Tensor goal = Tensors.vector(2.9, 2.4);
+    return createGlcToGoal(gradientAmp, resolution, partitionScale, goal);
+  }
+
+  static TrajectoryPlannerContainer createGlcToGoal(Scalar gradientAmp, RationalScalar resolution, Tensor partitionScale, Tensor goal) throws Exception {
+    Tensor root = Tensors.vector(8.8, 0.5);
+    return createGlcFromRootToGoal(gradientAmp, resolution, partitionScale, root, goal);
+  }
+
+  static TrajectoryPlannerContainer createGlcFromRootToGoal(Scalar gradientAmp, RationalScalar resolution, Tensor partitionScale, Tensor root, Tensor goal)
+      throws Exception {
     Scalar timeScale = RealScalar.of(60);
     Scalar depthScale = RealScalar.of(100);
     // Tensor partitionScale = Tensors.vector(2e26, 2e26);
@@ -101,7 +112,7 @@ public enum DeltaHelper {
         new SimpleTrajectoryRegionQuery(new TimeInvariantRegion( //
             new ImageRegion(obstacleImage, range, true)));
     DeltaHeuristicGoalManager deltaGoalManager = new DeltaHeuristicGoalManager( //
-        Tensors.vector(2.9, 2.4), Tensors.vector(.3, .3), stateSpaceModel.getMaxPossibleChange());
+        goal, Tensors.vector(.3, .3), stateSpaceModel.getMaxPossibleChange());
     // DeltaGoalManager deltaGoalManager = new DeltaGoalManager( //
     // Tensors.vector(2.1, 0.3), Tensors.vector(.3, .3));
     TrajectoryPlanner trajectoryPlanner = new StandardTrajectoryPlanner( //

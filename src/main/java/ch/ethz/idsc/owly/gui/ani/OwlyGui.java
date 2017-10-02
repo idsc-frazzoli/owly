@@ -1,10 +1,9 @@
 // code by jph
-package ch.ethz.idsc.owly.gui;
+package ch.ethz.idsc.owly.gui.ani;
 
 import ch.ethz.idsc.owly.glc.core.TrajectoryPlanner;
 
-// TODO JAN rename to OwlyGui and move
-public enum Gui {
+public enum OwlyGui {
   ;
   public static OwlyFrame start() {
     OwlyFrame owlyFrame = new OwlyFrame();

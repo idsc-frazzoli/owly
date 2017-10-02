@@ -1,5 +1,5 @@
 // code by jph
-package ch.ethz.idsc.owly.gui.misc;
+package ch.ethz.idsc.owly.gui;
 
 import java.awt.Color;
 

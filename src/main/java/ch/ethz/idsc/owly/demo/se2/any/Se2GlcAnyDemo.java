@@ -15,7 +15,7 @@ import ch.ethz.idsc.owly.glc.core.AnyPlannerInterface;
 import ch.ethz.idsc.owly.glc.core.GlcExpand;
 import ch.ethz.idsc.owly.glc.core.OptimalAnyTrajectoryPlanner;
 import ch.ethz.idsc.owly.glc.core.TrajectoryPlanner;
-import ch.ethz.idsc.owly.gui.Gui;
+import ch.ethz.idsc.owly.gui.ani.OwlyGui;
 import ch.ethz.idsc.owly.math.RotationUtils;
 import ch.ethz.idsc.owly.math.StateSpaceModel;
 import ch.ethz.idsc.owly.math.flow.Flow;
@@ -72,7 +72,7 @@ class Se2GlcAnyDemo {
     List<StateTime> trajectory = trajectoryPlanner.trajectoryToBest();
     long toc = System.nanoTime();
     System.out.println((toc - tic) * 1e-9 + " Seconds needed to plan");
-    Gui.glc((TrajectoryPlanner) trajectoryPlanner);
+    OwlyGui.glc((TrajectoryPlanner) trajectoryPlanner);
     tic = System.nanoTime();
     // --
     Se2NoHeuristicGoalManager se2GoalManager2 = new Se2NoHeuristicGoalManager(//
@@ -93,6 +93,6 @@ class Se2GlcAnyDemo {
     toc = System.nanoTime();
     System.out.println((toc - tic) * 1e-9 + " Seconds needed to replan");
     System.out.println("After root switch needed " + iters2 + " iterations");
-    Gui.glc((TrajectoryPlanner) trajectoryPlanner);
+    OwlyGui.glc((TrajectoryPlanner) trajectoryPlanner);
   }
 }

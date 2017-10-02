@@ -27,6 +27,7 @@ public class RunCompare {
   public RunCompare(int numberOfPlanners) {
     this.numberOfPlanners = numberOfPlanners;
     String reference = "timeReference, iterationsReference, CostReference";
+    currentRuntimes = Tensors.vector(0);
     String firstLine = "";
     for (int i = 1; i < numberOfPlanners; i++) {
       firstLine = String.join(",", firstLine, //
@@ -36,6 +37,7 @@ public class RunCompare {
           String.join("", "relative iteration Difference to Ref of run", Integer.toString(i + 1)), //
           String.join("", "cost Difference to Ref of run ", Integer.toString(i + 1)), //
           String.join("", "relative cost Difference to Ref of run ", Integer.toString(i + 1)));
+      currentRuntimes.append(RealScalar.ZERO);
     }
     newRuns();
     lines.add(String.join("", reference, firstLine));
@@ -46,7 +48,7 @@ public class RunCompare {
     List<Integer> list = new ArrayList<>();
     for (int i = 0; i < numberOfPlanners; i++)
       list.add(-1);
-    currentRuntimes = Tensors.vector(list);
+    // currentRuntimes = Tensors.vector(list);
     currentIterations = Tensors.vector(list);
     currentCosts = Tensors.vector(list);
   }
@@ -72,6 +74,14 @@ public class RunCompare {
     return stopwatch.display_seconds();
   }
 
+  public double pauseStopwatchFor(int plannerID) {
+    if (plannerID != currentPlannerID || plannerID < 0)
+      throw new RuntimeException();
+    stopwatch.stop();
+    currentRuntimes.set(currentRuntimes.Get(plannerID).add(RealScalar.of(stopwatch.display_seconds())), plannerID);
+    return stopwatch.display_seconds();
+  }
+
   /** Saves the number of iterations for planner with the right ID
    * @param iterations
    * @param plannerID */
@@ -87,7 +97,8 @@ public class RunCompare {
   public void saveCost(Scalar cost, int plannerID) {
     if (plannerID > numberOfPlanners)
       throw new RuntimeException();
-    currentCosts.set(cost, plannerID);
+    // TODO Nicer way to convert from rational number to float
+    currentCosts.set(RealScalar.of(cost.number().doubleValue()), plannerID);
   }
 
   /** writes the saved data in lines for later use,
