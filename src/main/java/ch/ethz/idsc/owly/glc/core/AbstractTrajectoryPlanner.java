@@ -3,8 +3,11 @@ package ch.ethz.idsc.owly.glc.core;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Objects;
+
 
 import ch.ethz.idsc.owly.data.Stopwatch;
+import ch.ethz.idsc.owly.data.GlobalAssert;
 import ch.ethz.idsc.owly.data.tree.Nodes;
 import ch.ethz.idsc.owly.math.state.StateIntegrator;
 import ch.ethz.idsc.owly.math.state.TrajectoryRegionQuery;
@@ -25,6 +28,7 @@ import ch.ethz.idsc.tensor.Tensor;
       TrajectoryRegionQuery obstacleQuery, //
       GoalInterface goalInterface) {
     super(eta);
+    GlobalAssert.that(Objects.nonNull(obstacleQuery));
     this.stateIntegrator = stateIntegrator;
     this.obstacleQuery = obstacleQuery;
     this.goalInterface = goalInterface;

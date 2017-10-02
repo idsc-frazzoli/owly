@@ -1,5 +1,5 @@
 // code by jph
-package ch.ethz.idsc.owly.gui;
+package ch.ethz.idsc.owly.gui.ren;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
@@ -8,6 +8,8 @@ import java.awt.geom.Point2D;
 import java.util.Collection;
 import java.util.Objects;
 
+import ch.ethz.idsc.owly.gui.GeometricLayer;
+import ch.ethz.idsc.owly.gui.RenderInterface;
 import ch.ethz.idsc.owly.math.state.StateTime;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.opt.ConvexHull;
@@ -23,7 +25,7 @@ public class GoalRender implements RenderInterface {
   }
 
   @Override
-  public void render(OwlyLayer owlyLayer, Graphics2D graphics) {
+  public void render(GeometricLayer owlyLayer, Graphics2D graphics) {
     if (Objects.isNull(collection))
       return;
     if (CONVEX) { // draw convex hull of goal points

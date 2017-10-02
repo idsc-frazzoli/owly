@@ -35,7 +35,7 @@ import ch.ethz.idsc.tensor.Tensors;
 /** (x,y,theta) */
 enum Se2Demo {
   ;
-  // FIXME JAN this demo fails!
+  // TODO JAN this demo has 'misses', why !?
   public static void main(String[] args) {
     Tensor eta = Tensors.vector(3, 3, 50 / Math.PI);
     StateIntegrator stateIntegrator = FixedStateIntegrator.createDefault(RationalScalar.of(1, 6), 5);

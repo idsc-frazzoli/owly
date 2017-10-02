@@ -29,7 +29,7 @@ import ch.ethz.idsc.owly.glc.core.GlcNodes;
 import ch.ethz.idsc.owly.glc.core.GoalInterface;
 import ch.ethz.idsc.owly.glc.core.StandardTrajectoryPlanner;
 import ch.ethz.idsc.owly.glc.core.TrajectoryPlanner;
-import ch.ethz.idsc.owly.gui.OwlyLayer;
+import ch.ethz.idsc.owly.gui.GeometricLayer;
 import ch.ethz.idsc.owly.gui.ani.AbstractAnyEntity;
 import ch.ethz.idsc.owly.gui.ani.PlannerType;
 import ch.ethz.idsc.owly.math.CoordinateWrap;
@@ -117,7 +117,7 @@ public class Se2AnyEntity extends AbstractAnyEntity {
   }
 
   @Override
-  public void render(OwlyLayer owlyLayer, Graphics2D graphics) {
+  public void render(GeometricLayer owlyLayer, Graphics2D graphics) {
     {// indicate current position
       StateTime stateTime = getStateTimeNow();
       Color color = new Color(64, 64, 64, 128);

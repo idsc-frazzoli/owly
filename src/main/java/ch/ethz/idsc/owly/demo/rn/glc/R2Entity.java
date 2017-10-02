@@ -16,7 +16,7 @@ import ch.ethz.idsc.owly.glc.core.CostFunction;
 import ch.ethz.idsc.owly.glc.core.GoalInterface;
 import ch.ethz.idsc.owly.glc.core.StandardTrajectoryPlanner;
 import ch.ethz.idsc.owly.glc.core.TrajectoryPlanner;
-import ch.ethz.idsc.owly.gui.OwlyLayer;
+import ch.ethz.idsc.owly.gui.GeometricLayer;
 import ch.ethz.idsc.owly.gui.ani.AbstractEntity;
 import ch.ethz.idsc.owly.gui.ani.PlannerType;
 import ch.ethz.idsc.owly.math.SingleIntegratorStateSpaceModel;
@@ -88,7 +88,7 @@ import ch.ethz.idsc.tensor.red.Norm2Squared;
   }
 
   @Override
-  public void render(OwlyLayer owlyLayer, Graphics2D graphics) {
+  public void render(GeometricLayer owlyLayer, Graphics2D graphics) {
     { // indicate current position
       Tensor state = getStateTimeNow().state();
       Point2D point = owlyLayer.toPoint2D(state);
