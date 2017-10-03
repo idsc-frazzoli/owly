@@ -38,6 +38,7 @@ public class Stopwatch {
   private Stopwatch() {
   }
 
+  /***************************************************/
   /** start stopwatch
    * @throws Exception if stopwatch is already started */
   public void start() {
@@ -67,6 +68,16 @@ public class Stopwatch {
     return display_nanoSeconds() * 1e-9;
   }
 
+  /** reset display to 0:00:00
+   * @throws Exception if stopwatch is not in stopped state */
+  public void resetToZero() { // idea by Jonas
+    if (!isStopped())
+      throw new RuntimeException();
+    frozen = 0;
+    // stopped implies: tic == null
+  }
+
+  /***************************************************/
   /** @return true if stopwatch is not started */
   // function is private because state of stopwatch can be tracked in the application layer
   private boolean isStopped() {

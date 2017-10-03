@@ -34,14 +34,20 @@ import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
 import ch.ethz.idsc.tensor.red.Norm2Squared;
 
-/** omni-directional movement with constant speed */
+/** omni-directional movement with constant speed
+ * 
+ * the implementation chooses certain values */
 /* package */ class R2Entity extends AbstractEntity {
-  private static final Tensor FALLBACK_CONTROL = Tensors.vector(0, 0).unmodifiable();
-  /** preserve 1[s] of the former trajectory */
-  private static final Scalar DELAY_HINT = RealScalar.of(.5);
+  private static final Tensor FALLBACK_CONTROL = Tensors.vectorDouble(0, 0).unmodifiable();
+  /** preserve 0.5[s] of the former trajectory
+   * planning should not exceed that duration, otherwise
+   * the entity may not be able to follow a planned trajectory */
+  private static final Scalar DELAY_HINT = RealScalar.of(0.5);
   // ---
-  private final Collection<Flow> controls = R2Controls.createRadial(36); // TODO magic const
-  private final Scalar goalRadius = RealScalar.of(.2); // TODO magic const
+  /** 36 corresponds to 10[Degree] resolution */
+  private final Collection<Flow> controls = R2Controls.createRadial(36);
+  /** radius of spherical goal region */
+  private final Scalar goalRadius = RealScalar.of(0.2);
 
   /** @param state initial position of entity */
   public R2Entity(Tensor state) {
@@ -95,7 +101,7 @@ import ch.ethz.idsc.tensor.red.Norm2Squared;
       graphics.setColor(new Color(64, 128, 64, 192));
       graphics.fill(new Ellipse2D.Double(point.getX() - 2, point.getY() - 2, 7, 7));
     }
-    { // indicate position 1[s] into the future
+    { // indicate position DELAY[s] into the future
       Tensor state = getEstimatedLocationAt(DELAY_HINT);
       Point2D point = owlyLayer.toPoint2D(state);
       graphics.setColor(new Color(255, 128, 128 - 64, 128 + 64));

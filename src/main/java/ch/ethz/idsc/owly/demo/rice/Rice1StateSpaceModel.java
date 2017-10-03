@@ -2,11 +2,10 @@
 package ch.ethz.idsc.owly.demo.rice;
 
 import ch.ethz.idsc.owly.math.StateSpaceModel;
-import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
-import ch.ethz.idsc.tensor.Scalars;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.TensorRuntimeException;
+import ch.ethz.idsc.tensor.sca.Sign;
 
 /** Single Integrator with friction
  * 
@@ -16,8 +15,8 @@ public class Rice1StateSpaceModel implements StateSpaceModel {
 
   /** @param lambda strictly positive friction coefficient */
   public Rice1StateSpaceModel(Scalar lambda) {
-    // TODO use lambda = Exp(input_lambda)
-    if (Scalars.lessEquals(lambda, RealScalar.ZERO))
+    // one could re-parameterize: lambda == Exp.of(mu)
+    if (Sign.isPositive(lambda))
       throw TensorRuntimeException.of(lambda);
     this.lambda = lambda;
   }

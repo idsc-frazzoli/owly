@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Map.Entry;
 
 import ch.ethz.idsc.owly.data.tree.Nodes;
@@ -55,12 +56,12 @@ public class SimpleAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
     for (Entry<Tensor, CandidatePairQueue> entry : candidates.map.entrySet()) {
       final Tensor domain_key = entry.getKey();
       final CandidatePairQueue candidateQueue = entry.getValue();
-      if (candidateQueue != null && !getBest().isPresent()) {
+      if (Objects.nonNull(candidateQueue) && !getBest().isPresent()) {
         while (!candidateQueue.isEmpty()) {
           final CandidatePair nextCandidatePair = candidateQueue.element();
           final GlcNode formerLabel = getNode(domain_key);
           final GlcNode next = nextCandidatePair.getCandidate();
-          if (formerLabel != null) {
+          if (Objects.nonNull(formerLabel)) {
             if (Scalars.lessThan(next.merit(), formerLabel.merit())) {
               // collision check only if new node is better
               if (getObstacleQuery().isDisjoint(connectors.get(next))) {// better node not collision

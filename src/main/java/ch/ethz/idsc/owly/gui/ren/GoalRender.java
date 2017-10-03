@@ -15,7 +15,7 @@ import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.opt.ConvexHull;
 
 public class GoalRender implements RenderInterface {
-  // TODO JONAS/JAN reenable with option to disable
+  // TODO JONAS/JAN reenable drawing of complex hull with option to disable
   public static final boolean CONVEX = false;
   // ---
   private Collection<StateTime> collection;

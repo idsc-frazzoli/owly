@@ -72,7 +72,7 @@ enum R2GlcConstTimeHeuristicAnyDemo {
     TrajectoryRegionQuery obstacleQuery = //
         new SimpleTrajectoryRegionQuery(new TimeInvariantRegion( //
             region));
-    // TODO change back to AnyPlannerInterface
+    // TODO JONAS: can remove todo "change back to AnyPlannerInterface"
     AnyPlannerInterface trajectoryPlanner = new OptimalAnyTrajectoryPlanner( //
         parameters.getEta(), stateIntegrator, controls, obstacleQuery, rnGoal);
     Tensor startState = Tensors.vector(-3, 0);

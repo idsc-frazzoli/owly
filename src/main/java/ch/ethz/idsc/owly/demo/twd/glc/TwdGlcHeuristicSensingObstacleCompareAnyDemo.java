@@ -69,7 +69,7 @@ enum TwdGlcHeuristicSensingObstacleCompareAnyDemo {
     TrajectoryRegionQuery obstacleQuery = //
         new SimpleTrajectoryRegionQuery(new TimeInvariantRegion(//
             EuclideanDistanceDiscoverRegion.of(environmentRegion, startState, RealScalar.of(4))));
-    // TODO change back to AnyPlannerInterface
+    // TODO JONAS: can remove todo "change back to AnyPlannerInterface"
     AnyPlannerInterface anyTrajectoryPlanner = new OptimalAnyTrajectoryPlanner( //
         parameters.getEta(), stateIntegrator, controls, obstacleQuery, twdGoal);
     anyTrajectoryPlanner.switchRootToState(startState);

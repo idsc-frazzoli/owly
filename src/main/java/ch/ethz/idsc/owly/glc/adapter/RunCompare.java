@@ -1,3 +1,4 @@
+// code by jl
 package ch.ethz.idsc.owly.glc.adapter;
 
 import java.nio.charset.Charset;
@@ -97,8 +98,7 @@ public class RunCompare {
   public void saveCost(Scalar cost, int plannerID) {
     if (plannerID > numberOfPlanners)
       throw new RuntimeException();
-    // TODO Nicer way to convert from rational number to float
-    currentCosts.set(RealScalar.of(cost.number().doubleValue()), plannerID);
+    currentCosts.set(N.DOUBLE.of(cost), plannerID);
   }
 
   /** writes the saved data in lines for later use,

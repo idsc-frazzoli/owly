@@ -40,4 +40,13 @@ public class StopwatchTest extends TestCase {
     Stopwatch stopwatch = Stopwatch.started();
     assertFalse(stopwatch instanceof Serializable);
   }
+
+  public void testReset() {
+    Stopwatch stopwatch = Stopwatch.started();
+    Math.sin(1);
+    stopwatch.stop();
+    assertTrue(0 < stopwatch.display_nanoSeconds());
+    stopwatch.resetToZero();
+    assertTrue(0 == stopwatch.display_nanoSeconds());
+  }
 }
