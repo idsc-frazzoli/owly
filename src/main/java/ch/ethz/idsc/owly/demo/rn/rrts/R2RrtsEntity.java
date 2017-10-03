@@ -28,9 +28,9 @@ import ch.ethz.idsc.tensor.red.Norm2Squared;
 
 // TODO JAN the redundancy in R2****Entity shows that re-factoring is needed!
 public class R2RrtsEntity extends AbstractRrtsEntity {
-  private static final Tensor FALLBACK_CONTROL = Tensors.vector(0, 0).unmodifiable();
-  /** preserve 1[s] of the former trajectory */
-  private static final Scalar DELAY_HINT = RealScalar.of(.5);
+  private static final Tensor FALLBACK_CONTROL = Tensors.vectorDouble(0, 0).unmodifiable();
+  /** preserve 0.5[s] of the former trajectory */
+  private static final Scalar DELAY_HINT = RealScalar.of(0.5);
   // ---
   TransitionRegionQuery obstacleQuery; // TODO design not final
 
