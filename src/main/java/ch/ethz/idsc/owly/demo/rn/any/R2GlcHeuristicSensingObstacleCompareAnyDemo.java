@@ -68,7 +68,7 @@ enum R2GlcHeuristicSensingObstacleCompareAnyDemo {
     TrajectoryRegionQuery obstacleQuery = //
         new SimpleTrajectoryRegionQuery(new TimeInvariantRegion(//
             EuclideanDistanceDiscoverRegion.of(environmentRegion, startState, sensingRadius)));
-    // TODO change back to AnyPlannerInterface
+    // TODO JONAS: can remove todo "change back to AnyPlannerInterface"
     AnyPlannerInterface anyTrajectoryPlanner = new OptimalAnyTrajectoryPlanner( //
         parameters.getEta(), stateIntegrator, controls, obstacleQuery, rnGoal);
     anyTrajectoryPlanner.switchRootToState(startState);

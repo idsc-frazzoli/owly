@@ -30,7 +30,6 @@ public class FloodFill2D {
   private final Tensor array;
   private final Tensor tensor;
   private Set<Tensor> next;
-  // private final Set<Tensor> total = new HashSet<>(); // does not help the speedup
 
   private FloodFill2D(Set<Tensor> prev, Scalar ttl, Tensor tensor) {
     dimensions = Dimensions.of(tensor);
@@ -57,11 +56,9 @@ public class FloodFill2D {
     }
   }
 
-  // TODO redundant to ImageRegion etc.
+  // point to pixel map similar to ImageRegion
   private void populate(Tensor point, Scalar ttl) {
-    // boolean added = total.add(point);
-    // if (!added)
-    // return;
+    // using a hash set to prevent duplicates does not help to speed up
     int c0 = point.Get(0).number().intValue();
     if (0 <= c0 && c0 < dimensions.get(0)) {
       int c1 = point.Get(1).number().intValue();

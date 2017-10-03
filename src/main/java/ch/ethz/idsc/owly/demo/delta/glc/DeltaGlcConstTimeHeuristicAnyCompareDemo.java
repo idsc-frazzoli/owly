@@ -121,8 +121,8 @@ enum DeltaGlcConstTimeHeuristicAnyCompareDemo {
       // System.out.println("Goalchange took: " + (tocTemp - ticTemp) * 1e-9 + "s");
       // // --
       // -- EXPANDING
-      // TODO JAN: reseting of stopwatch?
-      Stopwatch stopwatch2 = Stopwatch.started();
+      stopwatch.resetToZero();
+      stopwatch.start();
       int expandIter = GlcExpand.constTime(slowTrajectoryPlannerContainer.getTrajectoryPlanner(), planningTime,
           slowTrajectoryPlannerContainer.getParameters().getDepthLimit());
       // int expandIter = GlcExpand.constTime(slowTrajectoryPlannerContainer.getTrajectoryPlanner(), //
@@ -130,7 +130,7 @@ enum DeltaGlcConstTimeHeuristicAnyCompareDemo {
       Optional<StateTime> furthestState = ((OptimalAnyTrajectoryPlanner) slowTrajectoryPlannerContainer.getTrajectoryPlanner()).getFurthestGoalState();
       finalGoalNode = slowTrajectoryPlannerContainer.getTrajectoryPlanner().getFinalGoalNode();
       trajectory = GlcNodes.getPathFromRootTo(finalGoalNode.get());
-      stopwatch2.stop();
+      stopwatch.stop();
       System.out.println("Expanding " + expandIter + " Nodes took: " + stopwatch.display_seconds() + "s");
       stopwatchTotal.stop();
       owlyFrame.setGlc((TrajectoryPlanner) slowTrajectoryPlannerContainer.getTrajectoryPlanner());

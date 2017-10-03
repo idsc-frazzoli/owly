@@ -10,12 +10,15 @@ import ch.ethz.idsc.owly.math.StateSpaceModel;
  * {@link StateSpaceModel}
  * @author jolo1992 */
 public class TrajectoryPlannerContainer {
-  // TODO maybe PlannerInterface?
+  // TODO maybe PlannerInterface (<- does not exist ?!)
   private final TrajectoryPlanner trajectoryPlanner;
   private final Parameters parameters;
   private final StateSpaceModel stateSpaceModel;
 
-  public TrajectoryPlannerContainer(TrajectoryPlanner trajectoryPlanner, Parameters parameters, StateSpaceModel stateSpaceModel) {
+  public TrajectoryPlannerContainer( //
+      TrajectoryPlanner trajectoryPlanner, //
+      Parameters parameters, //
+      StateSpaceModel stateSpaceModel) {
     this.trajectoryPlanner = trajectoryPlanner;
     this.parameters = parameters;
     this.stateSpaceModel = stateSpaceModel;

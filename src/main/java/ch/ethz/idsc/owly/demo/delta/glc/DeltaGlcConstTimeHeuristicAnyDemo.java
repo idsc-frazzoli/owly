@@ -103,8 +103,8 @@ enum DeltaGlcConstTimeHeuristicAnyDemo {
       stopwatch.stop();
       System.out.println("Rootchange took: " + stopwatch.display_seconds() + "s");
       // -- EXPANDING
-      // TODO JAN: reseting of stopwatch?
-      Stopwatch stopwatch2 = Stopwatch.started();
+      stopwatch.resetToZero();
+      stopwatch.start();
       int expandIter = GlcExpand.constTime(slowTrajectoryPlannerContainer.getTrajectoryPlanner(), planningTime,
           slowTrajectoryPlannerContainer.getParameters().getDepthLimit());
       // int expandIter = GlcExpand.constTime(slowTrajectoryPlannerContainer.getTrajectoryPlanner(), //
@@ -112,7 +112,7 @@ enum DeltaGlcConstTimeHeuristicAnyDemo {
       // Optional<StateTime> furthestState = ((OptimalAnyTrajectoryPlanner) slowTrajectoryPlannerContainer.getTrajectoryPlanner()).getFurthestGoalState();
       finalGoalNode = slowTrajectoryPlannerContainer.getTrajectoryPlanner().getFinalGoalNode();
       trajectory = GlcNodes.getPathFromRootTo(finalGoalNode.get());
-      stopwatch2.stop();
+      stopwatch.stop();
       timingDatabase.pauseStopwatchFor(1);
       timingDatabase.saveIterations(expandIter, 1);
       System.out.println("Expanding " + expandIter + " Nodes took: " + stopwatch.display_seconds() + "s");

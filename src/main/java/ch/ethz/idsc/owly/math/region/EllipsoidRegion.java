@@ -3,10 +3,10 @@ package ch.ethz.idsc.owly.math.region;
 
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
-import ch.ethz.idsc.tensor.Scalars;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.TensorRuntimeException;
 import ch.ethz.idsc.tensor.red.Norm2Squared;
+import ch.ethz.idsc.tensor.sca.Sign;
 
 /** EllipsoidRegion implements an axis aligned elliptic region in the vector space R^n.
  * 
@@ -34,7 +34,7 @@ public class EllipsoidRegion extends ImplicitFunctionRegion {
       throw TensorRuntimeException.of(center, radius);
     if (radius.stream() // <- assert that radius are strictly positive
         .map(Scalar.class::cast) //
-        .anyMatch(scalar -> Scalars.lessEquals(scalar, RealScalar.ZERO)))
+        .anyMatch(scalar -> !Sign.isPositive(scalar)))
       throw TensorRuntimeException.of(radius);
     // ---
     this.center = center;

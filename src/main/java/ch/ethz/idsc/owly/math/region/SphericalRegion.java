@@ -2,12 +2,11 @@
 package ch.ethz.idsc.owly.math.region;
 
 import ch.ethz.idsc.owly.data.GlobalAssert;
-import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
-import ch.ethz.idsc.tensor.Scalars;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.alg.VectorQ;
 import ch.ethz.idsc.tensor.red.Norm;
+import ch.ethz.idsc.tensor.sca.Sign;
 
 /** the spherical region is a special case of an {@link EllipsoidRegion}.
  * 
@@ -32,7 +31,7 @@ public class SphericalRegion extends ImplicitFunctionRegion {
    * @param radius non-negative */
   public SphericalRegion(Tensor center, Scalar radius) {
     VectorQ.orThrow(center);
-    GlobalAssert.that(Scalars.lessEquals(RealScalar.ZERO, radius));
+    GlobalAssert.that(!Sign.isNegative(radius));
     this.center = center;
     this.radius = radius;
   }

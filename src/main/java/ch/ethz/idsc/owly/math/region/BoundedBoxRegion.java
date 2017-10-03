@@ -1,10 +1,14 @@
 // code by jph
 package ch.ethz.idsc.owly.math.region;
 
-import ch.ethz.idsc.tensor.Scalar;
+import java.util.stream.IntStream;
+
 import ch.ethz.idsc.tensor.Scalars;
 import ch.ethz.idsc.tensor.Tensor;
 
+/** region is open
+ * coordinates on the boundary are inside
+ * same convention as {@link ImplicitFunctionRegion} */
 public class BoundedBoxRegion implements Region {
   private final Tensor lo;
   private final Tensor hi;
@@ -16,14 +20,8 @@ public class BoundedBoxRegion implements Region {
 
   @Override
   public boolean isMember(Tensor tensor) {
-    boolean inside = true;
-    // TODO implement using stream
-    for (int index = 0; index < tensor.length(); ++index) {
-      Scalar value = tensor.Get(index);
-      inside &= //
-          Scalars.lessEquals(lo.Get(index), value) && //
-              Scalars.lessEquals(value, hi.Get(index));
-    }
-    return inside;
+    return IntStream.range(0, lo.length()) //
+        .allMatch(index -> Scalars.lessEquals(lo.Get(index), tensor.Get(index)) //
+            && Scalars.lessEquals(tensor.Get(index), hi.Get(index)));
   }
 }

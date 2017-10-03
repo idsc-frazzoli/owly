@@ -29,6 +29,10 @@ public class TwdMinCurvatureGoalManager extends TwdAbstractGoalManager {
     StateTime end = trajectory.get(trajectory.size() - 1);
     // TODO Magic const
     // J(x,u) = (1+(delta(theta)/delta(position))²) * Ts
+    // TODO JONAS 1) instead of "end.state().Get(2).subtract(from.state().Get(2))" -> use
+    // ... TwdStateSpaceModel.errorRotation(...)
+    // TODO JONAS 2) instead of Power.of(...,2) -> use
+    // ... AbsSquared.of(...) for faster result
     return (RealScalar.ONE.add(Power.of(end.state().Get(2).subtract(from.state().Get(2)), 2) //
         .divide(TwdStateSpaceModel.errorPosition(from.state(), end.state()).add(RealScalar.ONE))))// if turnign on the place
             .multiply(StateTimeTrajectories.timeIncrement(from, trajectory));
