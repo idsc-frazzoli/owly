@@ -7,10 +7,9 @@ import java.util.List;
 import ch.ethz.idsc.owly.math.flow.Flow;
 import ch.ethz.idsc.owly.math.flow.Integrator;
 import ch.ethz.idsc.owly.math.flow.MidpointIntegrator;
-import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
-import ch.ethz.idsc.tensor.Scalars;
 import ch.ethz.idsc.tensor.TensorRuntimeException;
+import ch.ethz.idsc.tensor.sca.Sign;
 
 /** trajectory integration with fixed step size over given time period */
 public class FixedStateIntegrator implements StateIntegrator {
@@ -36,7 +35,7 @@ public class FixedStateIntegrator implements StateIntegrator {
    * @param timeStep non-negative period of one step
    * @param trajectorySize number of steps */
   private FixedStateIntegrator(Integrator integrator, Scalar timeStep, int trajectorySize) {
-    if (Scalars.lessThan(timeStep, RealScalar.ZERO))
+    if (!Sign.isPositive(timeStep))
       throw TensorRuntimeException.of(timeStep);
     this.integrator = integrator;
     this.timeStep = timeStep;

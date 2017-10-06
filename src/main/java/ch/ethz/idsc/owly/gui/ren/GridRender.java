@@ -11,6 +11,7 @@ import ch.ethz.idsc.tensor.Tensors;
 
 public enum GridRender implements RenderInterface {
   INSTANCE;
+  // ---
   @Override
   public void render(GeometricLayer owlyLayer, Graphics2D graphics) {
     {

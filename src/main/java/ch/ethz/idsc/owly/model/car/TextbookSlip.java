@@ -14,7 +14,7 @@ import ch.ethz.idsc.tensor.red.Hypot;
  * 
  * Important: use {@link RobustSlip} instead */
 class TextbookSlip implements SlipInterface {
-  private static final Scalar eps = RealScalar.of(1e-8);
+  private static final Scalar EPS = RealScalar.of(1e-8);
   // ---
   private final Scalar mux;
   private final Scalar muy;
@@ -31,8 +31,8 @@ class TextbookSlip implements SlipInterface {
     final Scalar sy = RealScalar.ONE.add(sx).multiply(vy.divide(vx));
     final Scalar s = Hypot.of(sx, sy);
     final Scalar mu = pacejka3.apply(s);
-    mux = mu.multiply(robustDiv(sx, s, eps)).negate(); // hack !
-    muy = mu.multiply(robustDiv(sy, s, eps)).negate(); // hack !
+    mux = mu.multiply(robustDiv(sx, s, EPS)).negate(); // hack !
+    muy = mu.multiply(robustDiv(sy, s, EPS)).negate(); // hack !
   }
 
   @Override
