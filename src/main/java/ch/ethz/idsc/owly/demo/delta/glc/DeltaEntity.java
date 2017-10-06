@@ -36,7 +36,7 @@ import ch.ethz.idsc.tensor.red.Norm2Squared;
 
 /** class controls delta using {@link StandardTrajectoryPlanner} */
 /* package */ class DeltaEntity extends AbstractEntity {
-  private static final Tensor FALLBACK_CONTROL = Tensors.vector(0, 0).unmodifiable();
+  private static final Tensor FALLBACK_CONTROL = Tensors.vectorDouble(0, 0).unmodifiable();
   /** preserve 1[s] of the former trajectory */
   private static final Scalar DELAY_HINT = RealScalar.of(2);
   // ---

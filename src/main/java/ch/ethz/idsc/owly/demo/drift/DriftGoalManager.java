@@ -21,7 +21,7 @@ public class DriftGoalManager extends SimpleTrajectoryRegionQuery implements Goa
   }
 
   // ---
-  public DriftGoalManager(Region region) {
+  private DriftGoalManager(Region region) {
     super(new TimeInvariantRegion(region));
   }
 

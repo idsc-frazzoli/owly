@@ -9,7 +9,6 @@ import ch.ethz.idsc.owly.glc.core.GlcNode;
 import ch.ethz.idsc.owly.glc.core.GoalInterface;
 import ch.ethz.idsc.owly.math.flow.Flow;
 import ch.ethz.idsc.owly.math.region.EllipsoidRegion;
-import ch.ethz.idsc.owly.math.region.Region;
 import ch.ethz.idsc.owly.math.state.StateTime;
 import ch.ethz.idsc.owly.math.state.TimeInvariantRegion;
 import ch.ethz.idsc.tensor.RealScalar;
@@ -32,17 +31,6 @@ public class DeltaHeuristicGoalManager extends SimpleTrajectoryRegionQuery imple
 
   public DeltaHeuristicGoalManager(Tensor center, Tensor radius, Scalar maxSpeed, Scalar timeCostScalingFactor) {
     super(new TimeInvariantRegion(new EllipsoidRegion(center, radius)));
-    this.center = center;
-    this.maxSpeed = maxSpeed;
-    if (!radius.Get(0).equals(radius.Get(1)))
-      throw TensorRuntimeException.of(radius); // x-y radius have to be equal
-    this.radius = radius.Get(0);
-    this.timeCostScalingFactor = timeCostScalingFactor;
-  }
-
-  @Deprecated
-  private DeltaHeuristicGoalManager(Region region, Tensor center, Tensor radius, Scalar maxSpeed, Scalar timeCostScalingFactor) {
-    super(new TimeInvariantRegion(region));
     this.center = center;
     this.maxSpeed = maxSpeed;
     if (!radius.Get(0).equals(radius.Get(1)))

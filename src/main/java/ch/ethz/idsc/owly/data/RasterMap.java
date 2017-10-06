@@ -21,9 +21,6 @@ public abstract class RasterMap<T> implements Serializable {
     map.put(key, value);
   }
 
-  // public T get(Tensor tensor) {
-  // return getWithKey(toKey(tensor));
-  // }
   public synchronized T getWithKey(Tensor key) {
     return map.get(key);
   }

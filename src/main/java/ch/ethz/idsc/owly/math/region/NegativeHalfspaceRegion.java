@@ -1,10 +1,8 @@
 // code by jph
-package ch.ethz.idsc.owly.demo.drift;
+package ch.ethz.idsc.owly.math.region;
 
-import ch.ethz.idsc.owly.math.region.Region;
-import ch.ethz.idsc.tensor.RealScalar;
-import ch.ethz.idsc.tensor.Scalars;
 import ch.ethz.idsc.tensor.Tensor;
+import ch.ethz.idsc.tensor.sca.Sign;
 
 /** open region consisting of all states with a negative coordinate at a given index */
 public class NegativeHalfspaceRegion implements Region {
@@ -17,6 +15,6 @@ public class NegativeHalfspaceRegion implements Region {
 
   @Override
   public boolean isMember(Tensor tensor) {
-    return Scalars.lessThan(tensor.Get(index), RealScalar.ZERO);
+    return Sign.isNegative(tensor.Get(index));
   }
 }

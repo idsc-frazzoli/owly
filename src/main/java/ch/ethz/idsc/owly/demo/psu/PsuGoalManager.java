@@ -16,8 +16,8 @@ import ch.ethz.idsc.owly.math.state.StateTime;
 import ch.ethz.idsc.owly.math.state.TimeInvariantRegion;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
-import ch.ethz.idsc.tensor.Scalars;
 import ch.ethz.idsc.tensor.Tensor;
+import ch.ethz.idsc.tensor.sca.Sign;
 
 public class PsuGoalManager implements Region, CostFunction {
   public static GoalInterface of(CoordinateWrap coordinateWrap, Tensor center, Tensor radius) {
@@ -48,6 +48,6 @@ public class PsuGoalManager implements Region, CostFunction {
 
   @Override
   public boolean isMember(Tensor x) {
-    return Scalars.lessThan(coordinateWrap.distance(x, center).subtract(radius), RealScalar.ZERO);
+    return Sign.isNegative(coordinateWrap.distance(x, center).subtract(radius));
   }
 }

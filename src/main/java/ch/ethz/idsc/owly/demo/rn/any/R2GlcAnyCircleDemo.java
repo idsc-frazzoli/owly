@@ -8,7 +8,7 @@ import java.util.List;
 import ch.ethz.idsc.owly.demo.rn.R2Controls;
 import ch.ethz.idsc.owly.demo.rn.R2NoiseRegion;
 import ch.ethz.idsc.owly.demo.rn.R2Parameters;
-import ch.ethz.idsc.owly.demo.rn.RnSimpleCircleGoalManager;
+import ch.ethz.idsc.owly.demo.rn.RnNoHeuristicCircleGoalManager;
 import ch.ethz.idsc.owly.glc.adapter.Parameters;
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
 import ch.ethz.idsc.owly.glc.core.AnyPlannerInterface;
@@ -58,7 +58,7 @@ enum R2GlcAnyCircleDemo {
     StateIntegrator stateIntegrator = FixedStateIntegrator.create(EulerIntegrator.INSTANCE, parameters.getdtMax(), //
         parameters.getTrajectorySize());
     Collection<Flow> controls = R2Controls.createRadial(parameters.getResolutionInt()); // max (grad(F)) ==1
-    RnSimpleCircleGoalManager rnGoal = new RnSimpleCircleGoalManager(goal, goalRadius);
+    RnNoHeuristicCircleGoalManager rnGoal = new RnNoHeuristicCircleGoalManager(goal, goalRadius);
     // performance depends on heuristic: zeroHeuristic vs rnGoal
     // Heuristic heuristic = new ZeroHeuristic(); // rnGoal
     TrajectoryRegionQuery obstacleQuery = //
@@ -100,7 +100,7 @@ enum R2GlcAnyCircleDemo {
         StateTime goalState = new StateTime(goal, RealScalar.ZERO);
         goalStateList.add(goalState);
       } while (!obstacleQuery.isDisjoint(goalStateList));
-      GoalInterface rnGoal2 = new RnSimpleCircleGoalManager(goal, goalRadius);
+      GoalInterface rnGoal2 = new RnNoHeuristicCircleGoalManager(goal, goalRadius);
       System.out.println("Switching to Goal:" + goal);
       Scalar goalSearchHelperRadius = goalRadius.add(RealScalar.ONE).multiply(RealScalar.of(2));
       Region goalSearchHelper = new EllipsoidRegion(goal, Array.of(l -> goalSearchHelperRadius, goal.length()));

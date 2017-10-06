@@ -1,3 +1,4 @@
+// code by edo
 package ch.ethz.idsc.owly.demo.drift;
 
 import java.io.IOException;
@@ -7,7 +8,7 @@ import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
 
-public enum EulerIntegrationTest {
+public enum EulerIntegrationDemo {
   ;
   public static void main(String[] args) throws IOException {
     DriftStateSpaceModel driftStateSpaceModel = new DriftStateSpaceModel(new DriftParameters());

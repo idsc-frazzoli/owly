@@ -9,7 +9,7 @@ import ch.ethz.idsc.owly.demo.rn.R2Controls;
 import ch.ethz.idsc.owly.demo.rn.R2NoiseRegion;
 import ch.ethz.idsc.owly.demo.rn.R2Parameters;
 import ch.ethz.idsc.owly.demo.rn.RnMinDistSphericalGoalManager;
-import ch.ethz.idsc.owly.demo.rn.RnSimpleCircleGoalManager;
+import ch.ethz.idsc.owly.demo.rn.RnNoHeuristicCircleGoalManager;
 import ch.ethz.idsc.owly.glc.adapter.HeuristicQ;
 import ch.ethz.idsc.owly.glc.adapter.Parameters;
 import ch.ethz.idsc.owly.glc.adapter.RunCompare;
@@ -123,7 +123,7 @@ enum R2GlcAnyCircleCompareDemo {
         StateTime goalState = new StateTime(goal, RealScalar.ZERO);
         goalStateList.add(goalState);
       } while (!obstacleQuery.isDisjoint(goalStateList));
-      rnGoal = new RnSimpleCircleGoalManager(goal, goalRadius);
+      rnGoal = new RnNoHeuristicCircleGoalManager(goal, goalRadius);
       // System.out.println("Switching to Goal:" + goal);
       Scalar goalSearchHelperRadius = goalRadius.add(RealScalar.ONE).multiply(RealScalar.of(2));
       Region goalSearchHelper = new EllipsoidRegion(goal, Array.of(l -> goalSearchHelperRadius, goal.length()));
