@@ -66,7 +66,7 @@ class NoiseCircleHelper {
       System.out.println("Trajectory to goal region:");
       RrtsNode best = rrtsPlanner.getBest().get();
       List<RrtsNode> sequence = Nodes.listFromRoot(best);
-      // TODO magic const
+      // magic const
       trajectory = RnFlowTrajectory.createTrajectory(rnts, sequence, tail.time(), RealScalar.of(.1));
     }
   }

@@ -27,7 +27,7 @@ public class RnxtHeuristicEllipsoidGoalManager extends SimpleTrajectoryRegionQue
   private final Tensor rnRadius;
 
   /** constructor creates a spherical region in R^n x T with given center and radius.
-   * distance measure is Euclidean distance, if radius(i) = infinity => cyclinder
+   * distance measure is Euclidean distance, if radius(i) = infinity => cylinder
    * 
    * @param center vector with length == n
    * @param radius positive */
@@ -36,7 +36,7 @@ public class RnxtHeuristicEllipsoidGoalManager extends SimpleTrajectoryRegionQue
   }
 
   /** constructor creates a ellipsoid region in R^n x T with given center and radius.
-   * distance measure is Euclidean distance, if radius(i) = infinity => cyclinder
+   * distance measure is Euclidean distance, if radius(i) = infinity => cylinder
    * 
    * @param center vector with length == n
    * @param radius vector with length == n & positive in all entrys */

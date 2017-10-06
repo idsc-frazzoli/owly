@@ -59,7 +59,6 @@ import ch.ethz.idsc.tensor.sca.Sqrt;
 
 /** omni-directional movement with constant speed */
 public class Se2AnyEntity extends AbstractAnyEntity {
-  // private static final JLabel JLABEL = new JLabel();
   private static final Tensor FALLBACK_CONTROL = Array.zeros(2).unmodifiable(); // {angle=0, vel=0}
   private static final Tensor SHAPE = Tensors.matrixDouble( //
       new double[][] { //
@@ -78,7 +77,7 @@ public class Se2AnyEntity extends AbstractAnyEntity {
   /** @param state initial position of entity */
   public Se2AnyEntity(Tensor state, int resolution) {
     super(state, //
-        // --
+        // ---
         new Se2Parameters( //
             (RationalScalar) RealScalar.of(resolution), // resolution
             RealScalar.of(2), // TimeScale
@@ -87,14 +86,13 @@ public class Se2AnyEntity extends AbstractAnyEntity {
             RationalScalar.of(1, 6), // dtMax
             2000, // maxIter
             Se2StateSpaceModel.INSTANCE.getLipschitz()), // Lipschitz
-        // --
         Se2Controls.createControlsForwardAndReverse(RotationUtils.DEGREE(60), resolution), //
-        // --
+        // ---
         new SimpleEpisodeIntegrator( //
             Se2StateSpaceModel.INSTANCE, //
             RungeKutta45Integrator.INSTANCE, //
             new StateTime(state, RealScalar.ZERO)),
-        //
+        // ---
         DELAY_HINT, EXPAND_TIME); //
     final Scalar goalRadius_xy = Sqrt.of(RealScalar.of(2)).divide(parameters.getEta().Get(0));
     final Scalar goalRadius_theta = Sqrt.of(RealScalar.of(2)).divide(parameters.getEta().Get(2));
@@ -146,6 +144,7 @@ public class Se2AnyEntity extends AbstractAnyEntity {
     // return new Se2MinDistGoalManager(goal, goalRadius).getGoalInterface();
   }
 
+  @Override
   protected Region createGoalCheckHelp(Tensor goal) {
     return new InvertedRegion(EmptyRegion.INSTANCE);
   }

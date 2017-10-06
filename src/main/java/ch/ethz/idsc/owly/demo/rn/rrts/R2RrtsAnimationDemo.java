@@ -11,8 +11,6 @@ enum R2RrtsAnimationDemo {
     R2RrtsEntity r2RrtsEntity = new R2RrtsEntity(Tensors.vector(0, 0));
     r2RrtsEntity.obstacleQuery = StaticHelper.noise1();
     owlyAnimationFrame.set(r2RrtsEntity);
-    // Region region = new R2NoiseRegion(.2);
-    // owlyAnimationFrame.setObstacleQuery(new SimpleTrajectoryRegionQuery(new TimeInvariantRegion(region)));
     owlyAnimationFrame.jFrame.setVisible(true);
   }
 }
