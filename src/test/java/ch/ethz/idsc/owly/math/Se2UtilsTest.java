@@ -16,11 +16,4 @@ public class Se2UtilsTest extends TestCase {
     Scalar det = Det.of(matrix);
     assertTrue(Chop._14.close(det, RealScalar.ONE));
   }
-
-  public void testSimple2() {
-    Tensor matrix = Se2Utils.toSE2MatrixTranspose(Tensors.vector(2, 3, 4));
-    assertEquals(matrix.get(Tensor.ALL, 2), Tensors.vector(0, 0, 1));
-    Scalar det = Det.of(matrix);
-    assertTrue(Chop._14.close(det, RealScalar.ONE));
-  }
 }

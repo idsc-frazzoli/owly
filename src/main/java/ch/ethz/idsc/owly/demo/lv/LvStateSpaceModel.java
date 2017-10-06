@@ -24,7 +24,7 @@ public class LvStateSpaceModel implements StateSpaceModel {
    * 
    * @param f0 decay rate for predators
    * @param f1 growth rate for prey */
-  public LvStateSpaceModel(Scalar f0, Scalar f1) {
+  private LvStateSpaceModel(Scalar f0, Scalar f1) {
     this.f0 = f0;
     this.f1 = f1;
   }

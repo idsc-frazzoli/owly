@@ -20,14 +20,13 @@ import ch.ethz.idsc.tensor.red.Norm;
 
 /** objective is minimum path length
  * path length is measured in Euclidean distance */
-// TODO HOLD rename to RnNoHeuristicCircleGoalManager
-public class RnSimpleCircleGoalManager extends SimpleTrajectoryRegionQuery implements GoalInterface {
+public class RnNoHeuristicCircleGoalManager extends SimpleTrajectoryRegionQuery implements GoalInterface {
   /** constructor creates a spherical region in R^n with given center and radius.
    * distance measure is Euclidean distance.
    * 
    * @param center vector with length == n
    * @param radius positive */
-  public RnSimpleCircleGoalManager(Tensor center, Scalar radius) {
+  public RnNoHeuristicCircleGoalManager(Tensor center, Scalar radius) {
     super(new TimeInvariantRegion(new SphericalRegion(center, radius)));
     GlobalAssert.that(Scalars.lessThan(RealScalar.ZERO, radius));
   }

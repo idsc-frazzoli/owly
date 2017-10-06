@@ -9,8 +9,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Objects;
 
-import javax.swing.JLabel;
-
 import ch.ethz.idsc.owly.data.GlobalAssert;
 import ch.ethz.idsc.owly.demo.se2.Se2Controls;
 import ch.ethz.idsc.owly.demo.se2.Se2MinTimeMinShiftExtraCostGoalManager;
@@ -45,8 +43,6 @@ import ch.ethz.idsc.tensor.alg.VectorQ;
 import ch.ethz.idsc.tensor.sca.Sqrt;
 
 public class Se2Entity extends AbstractEntity {
-  @SuppressWarnings("unused")
-  private static final JLabel JLABEL = new JLabel();
   private static final Tensor FALLBACK_CONTROL = Array.zeros(2).unmodifiable(); // {angle=0, vel=0}
   private static final Scalar DELAY_HINT = RealScalar.of(1.5);
   private static final Tensor SHAPE = Tensors.matrixDouble( //
@@ -179,7 +175,7 @@ public class Se2Entity extends AbstractEntity {
     // m.Get(0, 2).number().doubleValue(), //
     // m.Get(1, 2).number().doubleValue());
     // GraphicsUtil.setQualityHigh(graphics);
-    // graphics.drawImage(bufferedImage, at, JLABEL);
+    // graphics.drawImage(bufferedImage, at, null);
     // GraphicsUtil.setQualityDefault(graphics);
     // }
   }

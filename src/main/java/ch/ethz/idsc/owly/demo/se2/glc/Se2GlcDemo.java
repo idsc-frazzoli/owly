@@ -77,6 +77,5 @@ enum Se2GlcDemo {
       StateTimeTrajectories.print(trajectory);
     }
     OwlyGui.glc(trajectoryPlanner);
-    // glcFrame.glcComponent.addTrajectoryPlanner(trajectoryPlanner);
   }
 }

@@ -18,6 +18,7 @@ import ch.ethz.idsc.tensor.sca.Mod;
 /** evaluate does not correspond to Euclidean distance */
 public class TimeDependentTurningRingRegion implements StateTimeRegion {
   private static Mod MOD = Mod.function(2 * Math.PI, -Math.PI);
+  // ---
   private final Tensor center;
   private final Scalar initialGapAngle;
   private final Scalar gapSizeAngle;

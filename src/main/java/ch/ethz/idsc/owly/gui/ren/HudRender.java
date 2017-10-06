@@ -8,6 +8,7 @@ import ch.ethz.idsc.owly.glc.core.TrajectoryPlanner;
 import ch.ethz.idsc.owly.gui.GeometricLayer;
 import ch.ethz.idsc.owly.gui.RenderInterface;
 
+// TODO decide on purpose of HudRender, for now, do nothing
 class HudRender implements RenderInterface {
   private static final Color SHADING = new Color(0, 0, 0, 64);
   // ---
@@ -21,6 +22,5 @@ class HudRender implements RenderInterface {
   @Override
   public void render(GeometricLayer owlyLayer, Graphics2D graphics) {
     graphics.setColor(SHADING);
-    // TODO decide on purpose of HudRender, for now, do nothing
   }
 }

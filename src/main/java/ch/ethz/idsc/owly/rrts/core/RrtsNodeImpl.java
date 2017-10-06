@@ -22,7 +22,7 @@ import ch.ethz.idsc.tensor.TensorRuntimeException;
 
   @Override
   public RrtsNode connectTo(Tensor state, Scalar costFromRoot) {
-    RrtsNodeImpl leaf = new RrtsNodeImpl(state, costFromRoot);
+    RrtsNode leaf = new RrtsNodeImpl(state, costFromRoot);
     this.insertEdgeTo(leaf);
     return leaf;
   }
