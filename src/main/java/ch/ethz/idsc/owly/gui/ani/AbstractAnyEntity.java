@@ -42,11 +42,15 @@ public abstract class AbstractAnyEntity extends AbstractEntity {
    * @param parameters
    * @param controls
    * @param episodeIntegrator */
-  public AbstractAnyEntity(Tensor state, Parameters parameters, Collection<Flow> controls, EpisodeIntegrator episodeIntegrator) {
+  public AbstractAnyEntity(Tensor state, Parameters parameters, //
+      Collection<Flow> controls, EpisodeIntegrator episodeIntegrator) {
     this(state, parameters, controls, episodeIntegrator, RealScalar.ONE, RealScalar.of(0.5));
   }
 
-  public AbstractAnyEntity(Tensor state, Parameters parameters, Collection<Flow> controls, EpisodeIntegrator episodeIntegrator, //
+  public AbstractAnyEntity( //
+      Tensor state, Parameters parameters, //
+      Collection<Flow> controls, //
+      EpisodeIntegrator episodeIntegrator, //
       Scalar delayHint, Scalar expandTime) {
     super(episodeIntegrator);
     this.parameters = parameters;
