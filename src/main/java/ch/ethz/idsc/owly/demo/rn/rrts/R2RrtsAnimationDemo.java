@@ -1,16 +1,21 @@
 // code by jph
 package ch.ethz.idsc.owly.demo.rn.rrts;
 
+import ch.ethz.idsc.owly.demo.util.DemoInterface;
 import ch.ethz.idsc.owly.gui.ani.OwlyAnimationFrame;
 import ch.ethz.idsc.tensor.Tensors;
 
-enum R2RrtsAnimationDemo {
-  ;
-  public static void main(String[] args) {
+public class R2RrtsAnimationDemo implements DemoInterface {
+  @Override
+  public void start() {
     OwlyAnimationFrame owlyAnimationFrame = new OwlyAnimationFrame();
     R2RrtsEntity r2RrtsEntity = new R2RrtsEntity(Tensors.vector(0, 0));
     r2RrtsEntity.obstacleQuery = StaticHelper.noise1();
     owlyAnimationFrame.set(r2RrtsEntity);
     owlyAnimationFrame.jFrame.setVisible(true);
+  }
+
+  public static void main(String[] args) {
+    new R2RrtsAnimationDemo().start();
   }
 }

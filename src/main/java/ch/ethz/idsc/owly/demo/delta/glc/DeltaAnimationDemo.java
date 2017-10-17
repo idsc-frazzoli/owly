@@ -2,6 +2,7 @@
 package ch.ethz.idsc.owly.demo.delta.glc;
 
 import ch.ethz.idsc.owly.demo.delta.ImageGradient;
+import ch.ethz.idsc.owly.demo.util.DemoInterface;
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
 import ch.ethz.idsc.owly.gui.ani.OwlyAnimationFrame;
 import ch.ethz.idsc.owly.math.region.ImageRegion;
@@ -13,9 +14,9 @@ import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
 import ch.ethz.idsc.tensor.io.ResourceData;
 
-enum DeltaAnimationDemo {
-  ;
-  public static void main(String[] args) throws Exception {
+public class DeltaAnimationDemo implements DemoInterface {
+  @Override
+  public void start() {
     OwlyAnimationFrame owlyAnimationFrame = new OwlyAnimationFrame();
     // ---
     Scalar amp = RealScalar.of(-.05);
@@ -29,5 +30,9 @@ enum DeltaAnimationDemo {
     owlyAnimationFrame.addBackground(imageRegion);
     owlyAnimationFrame.jFrame.setVisible(true);
     owlyAnimationFrame.configCoordinateOffset(50, 600);
+  }
+
+  public static void main(String[] args) throws Exception {
+    new DeltaAnimationDemo().start();
   }
 }
