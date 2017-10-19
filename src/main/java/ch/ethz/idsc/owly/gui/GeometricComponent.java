@@ -155,6 +155,9 @@ public final class GeometricComponent {
 
   public void reset_model2pixel() {
     model2pixel = MODEL2PIXEL_INITIAL.copy();
+    // for testing the effect of rotation:
+    // Tensor mat = Se2Utils.toSE2Matrix(Tensors.vector(0, 0, .5));
+    // model2pixel = MODEL2PIXEL_INITIAL.dot(mat);
   }
 
   void render(Graphics2D graphics, Dimension dimension) {

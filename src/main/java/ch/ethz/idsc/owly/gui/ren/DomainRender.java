@@ -27,17 +27,18 @@ class DomainRender implements RenderInterface {
   }
 
   @Override
-  public void render(GeometricLayer owlyLayer, Graphics2D graphics) {
+  public void render(GeometricLayer geometricLayer, Graphics2D graphics) {
     graphics.setColor(SHADING);
-    Point2D h1 = owlyLayer.toPoint2D(Tensors.vector(0, 0));
-    Point2D h2 = owlyLayer.toPoint2D(eta_invert);
+    Point2D h1 = geometricLayer.toPoint2D(Tensors.vector(0, 0));
+    Point2D h2 = geometricLayer.toPoint2D(eta_invert);
     double w = h2.getX() - h1.getX() - 1;
     double h = h1.getY() - h2.getY() - 1;
     if (w < 0 || h < 0)
       return;
+    // TODO no good when rotated
     map.keySet().stream().map(t -> t.extract(0, 2)).distinct().forEach(key -> {
       Tensor x = key.pmul(eta_invert);
-      Point2D p = owlyLayer.toPoint2D(x);
+      Point2D p = geometricLayer.toPoint2D(x);
       Shape shape = new Rectangle2D.Double(p.getX(), p.getY() - h, w, h);
       graphics.fill(shape);
     });

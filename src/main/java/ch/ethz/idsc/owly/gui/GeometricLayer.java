@@ -45,6 +45,10 @@ public class GeometricLayer {
     deque.pop();
   }
 
+  public Tensor getMatrix() {
+    return deque.peek().tensor_copy();
+  }
+
   public Shape toVector(Tensor x, Tensor dx) {
     x = x.extract(0, 2);
     dx = dx.extract(0, 2);

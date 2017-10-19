@@ -19,14 +19,14 @@ public class ObstacleRender implements RenderInterface {
   }
 
   @Override
-  public void render(GeometricLayer owlyLayer, Graphics2D graphics) {
+  public void render(GeometricLayer geometricLayer, Graphics2D graphics) {
     if (Objects.isNull(collection))
       return;
     // ---
     graphics.setColor(new Color(0, 0, 0, 128));
     // TODO JAN this is really slow for large collections
     for (StateTime stateTime : collection) {
-      Point2D point2d = owlyLayer.toPoint2D(stateTime.state());
+      Point2D point2d = geometricLayer.toPoint2D(stateTime.state());
       graphics.drawRect((int) point2d.getX(), (int) point2d.getY(), 2, 2);
     }
   }

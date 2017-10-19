@@ -20,7 +20,7 @@ public class EtaRender implements RenderInterface {
   }
 
   @Override
-  public void render(GeometricLayer owlyLayer, Graphics2D graphics) {
+  public void render(GeometricLayer geometricLayer, Graphics2D graphics) {
     if (eta.length() < 2)
       return;
     Tensor inv = eta.map(Scalar::reciprocal);
@@ -29,14 +29,14 @@ public class EtaRender implements RenderInterface {
     for (int i = 0; i < ceiling.Get(1).number().intValue(); ++i) {
       double dy = i * inv.Get(1).number().doubleValue();
       graphics.draw(new Line2D.Double( //
-          owlyLayer.toPoint2D(Tensors.vector(0, dy)), //
-          owlyLayer.toPoint2D(Tensors.vector(1, dy))));
+          geometricLayer.toPoint2D(Tensors.vector(0, dy)), //
+          geometricLayer.toPoint2D(Tensors.vector(1, dy))));
     }
     for (int i = 0; i < ceiling.Get(0).number().intValue(); ++i) {
       double dx = i * inv.Get(0).number().doubleValue();
       graphics.draw(new Line2D.Double( //
-          owlyLayer.toPoint2D(Tensors.vector(dx, 0)), //
-          owlyLayer.toPoint2D(Tensors.vector(dx, 1))));
+          geometricLayer.toPoint2D(Tensors.vector(dx, 0)), //
+          geometricLayer.toPoint2D(Tensors.vector(dx, 1))));
     }
   }
 

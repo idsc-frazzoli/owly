@@ -26,7 +26,7 @@ class CandidatesRender implements RenderInterface {
   }
 
   @Override
-  public void render(GeometricLayer owlyLayer, Graphics2D graphics) {
+  public void render(GeometricLayer geometricLayer, Graphics2D graphics) {
     graphics.setColor(Color.black);
     Map<Tensor, Set<CandidatePair>> candidateMap = optimalAnyTrajectoryPlanner.getCandidateMap();
     long candidateThreshold = -1; // Threshold, rendering the first ___ Candidates
@@ -40,8 +40,8 @@ class CandidatesRender implements RenderInterface {
         if (iter > candidateThreshold)
           break;
         final CandidatePair candidate = candidateSetIterator.next();
-        final Point2D p1 = owlyLayer.toPoint2D(candidate.getCandidate().state());
-        final Point2D p2 = owlyLayer.toPoint2D(candidate.getOrigin().state());
+        final Point2D p1 = geometricLayer.toPoint2D(candidate.getCandidate().state());
+        final Point2D p2 = geometricLayer.toPoint2D(candidate.getOrigin().state());
         Stroke dashed = new BasicStroke(//
             (float) 1, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL, 0, new float[] { 5 }, 0);
         graphics.setStroke(dashed);

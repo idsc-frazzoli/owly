@@ -20,7 +20,7 @@ class HudRender implements RenderInterface {
   }
 
   @Override
-  public void render(GeometricLayer owlyLayer, Graphics2D graphics) {
+  public void render(GeometricLayer geometricLayer, Graphics2D graphics) {
     graphics.setColor(SHADING);
   }
 }

@@ -13,16 +13,16 @@ public enum GridRender implements RenderInterface {
   INSTANCE;
   // ---
   @Override
-  public void render(GeometricLayer owlyLayer, Graphics2D graphics) {
+  public void render(GeometricLayer geometricLayer, Graphics2D graphics) {
     {
       graphics.setColor(Color.LIGHT_GRAY);
-      graphics.draw(new Line2D.Double(owlyLayer.toPoint2D(Tensors.vector(-10, 1)), owlyLayer.toPoint2D(Tensors.vector(10, 1))));
-      graphics.draw(new Line2D.Double(owlyLayer.toPoint2D(Tensors.vector(1, -10)), owlyLayer.toPoint2D(Tensors.vector(1, 10))));
+      graphics.draw(new Line2D.Double(geometricLayer.toPoint2D(Tensors.vector(-10, 1)), geometricLayer.toPoint2D(Tensors.vector(10, 1))));
+      graphics.draw(new Line2D.Double(geometricLayer.toPoint2D(Tensors.vector(1, -10)), geometricLayer.toPoint2D(Tensors.vector(1, 10))));
     }
     {
       graphics.setColor(Color.GRAY);
-      graphics.draw(new Line2D.Double(owlyLayer.toPoint2D(Tensors.vector(-10, 0)), owlyLayer.toPoint2D(Tensors.vector(10, 0))));
-      graphics.draw(new Line2D.Double(owlyLayer.toPoint2D(Tensors.vector(0, -10)), owlyLayer.toPoint2D(Tensors.vector(0, 10))));
+      graphics.draw(new Line2D.Double(geometricLayer.toPoint2D(Tensors.vector(-10, 0)), geometricLayer.toPoint2D(Tensors.vector(10, 0))));
+      graphics.draw(new Line2D.Double(geometricLayer.toPoint2D(Tensors.vector(0, -10)), geometricLayer.toPoint2D(Tensors.vector(0, 10))));
     }
   }
 }

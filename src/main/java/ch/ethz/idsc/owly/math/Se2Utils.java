@@ -1,14 +1,14 @@
 // code by jph
 package ch.ethz.idsc.owly.math;
 
+import java.awt.geom.AffineTransform;
+
 import ch.ethz.idsc.owly.data.GlobalAssert;
-import ch.ethz.idsc.tensor.ComplexScalar;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
 import ch.ethz.idsc.tensor.alg.VectorQ;
-import ch.ethz.idsc.tensor.sca.Arg;
 import ch.ethz.idsc.tensor.sca.Cos;
 import ch.ethz.idsc.tensor.sca.Sin;
 
@@ -32,9 +32,13 @@ public enum Se2Utils {
     });
   }
 
-  // function not called
-  static Tensor mat2vec(Tensor mat) {
-    Scalar arg = Arg.of(ComplexScalar.of(mat.Get(0, 0), mat.Get(1, 0)));
-    return Tensors.of(mat.get(0, 2), mat.get(1, 2), arg);
+  public static AffineTransform toAffineTransform(Tensor m) {
+    return new AffineTransform( //
+        m.Get(0, 0).number().doubleValue(), //
+        m.Get(1, 0).number().doubleValue(), //
+        m.Get(0, 1).number().doubleValue(), //
+        m.Get(1, 1).number().doubleValue(), //
+        m.Get(0, 2).number().doubleValue(), //
+        m.Get(1, 2).number().doubleValue());
   }
 }

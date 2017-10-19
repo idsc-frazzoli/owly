@@ -31,7 +31,7 @@ public class TreeRender implements RenderInterface {
   }
 
   @Override
-  public void render(GeometricLayer owlyLayer, Graphics2D graphics) {
+  public void render(GeometricLayer geometricLayer, Graphics2D graphics) {
     Collection<? extends StateCostNode> _collection = collection;
     if (Objects.isNull(_collection))
       return;
@@ -49,11 +49,11 @@ public class TreeRender implements RenderInterface {
         throw new RuntimeException("cost from root " + val);
       final double interp = (val - min) / (max - min);
       graphics.setColor(nodeColor.get(interp));
-      final Point2D p1 = owlyLayer.toPoint2D(node.state());
+      final Point2D p1 = geometricLayer.toPoint2D(node.state());
       graphics.fill(new Rectangle2D.Double(p1.getX(), p1.getY(), NODE_WIDTH, NODE_WIDTH));
       StateCostNode parent = node.parent();
       if (Objects.nonNull(parent)) {
-        Point2D p2 = owlyLayer.toPoint2D(parent.state());
+        Point2D p2 = geometricLayer.toPoint2D(parent.state());
         graphics.setColor(edgeColor.get(interp));
         Shape shape = new Line2D.Double(p1.getX(), p1.getY(), p2.getX(), p2.getY());
         graphics.draw(shape);

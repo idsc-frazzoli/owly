@@ -115,25 +115,25 @@ public class Se2AnyEntity extends AbstractAnyEntity {
   }
 
   @Override
-  public void render(GeometricLayer owlyLayer, Graphics2D graphics) {
+  public void render(GeometricLayer geometricLayer, Graphics2D graphics) {
     {// indicate current position
       StateTime stateTime = getStateTimeNow();
       Color color = new Color(64, 64, 64, 128);
       graphics.setColor(color);
       Tensor matrix = Se2Utils.toSE2Matrix(stateTime.state());
-      Path2D path2d = owlyLayer.toPath2D(Tensor.of(SHAPE.stream().map(matrix::dot)));
+      Path2D path2d = geometricLayer.toPath2D(Tensor.of(SHAPE.stream().map(matrix::dot)));
       graphics.fill(path2d);
     }
     { // indicate position delay[s] into the future
       Tensor state = getEstimatedLocationAt(delayHint());
-      Point2D point = owlyLayer.toPoint2D(state);
+      Point2D point = geometricLayer.toPoint2D(state);
       graphics.setColor(new Color(255, 128, 64, 192));
       graphics.fill(new Rectangle2D.Double(point.getX() - 2, point.getY() - 2, 5, 5));
     }
     {
       graphics.setColor(new Color(0, 128, 255, 192));
-      Tensor matrix = owlyLayer.getMouseSe2Matrix();
-      Path2D path2d = owlyLayer.toPath2D(Tensor.of(SHAPE.stream().map(matrix::dot)));
+      Tensor matrix = geometricLayer.getMouseSe2Matrix();
+      Path2D path2d = geometricLayer.toPath2D(Tensor.of(SHAPE.stream().map(matrix::dot)));
       graphics.fill(path2d);
     }
   }

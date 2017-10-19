@@ -133,32 +133,32 @@ public class Se2Entity extends AbstractEntity {
   }
 
   @Override
-  public void render(GeometricLayer owlyLayer, Graphics2D graphics) {
+  public void render(GeometricLayer geometricLayer, Graphics2D graphics) {
     { // indicate current position
       final StateTime stateTime = getStateTimeNow();
       Color color = new Color(64, 64, 64, 128);
       if (!obstacleQuery_isDisjoint(stateTime))
         color = new Color(255, 64, 64, 128);
-      owlyLayer.pushMatrix(Se2Utils.toSE2Matrix(stateTime.state()));
+      geometricLayer.pushMatrix(Se2Utils.toSE2Matrix(stateTime.state()));
       graphics.setColor(color);
-      graphics.fill(owlyLayer.toPath2D(SHAPE));
-      owlyLayer.popMatrix();
+      graphics.fill(geometricLayer.toPath2D(SHAPE));
+      geometricLayer.popMatrix();
     }
     { // indicate position delay[s] into the future
       Tensor state = getEstimatedLocationAt(DELAY_HINT);
-      Point2D point = owlyLayer.toPoint2D(state);
+      Point2D point = geometricLayer.toPoint2D(state);
       graphics.setColor(new Color(255, 128, 64, 192));
       graphics.fill(new Rectangle2D.Double(point.getX() - 2, point.getY() - 2, 5, 5));
     }
     {
       Color color = new Color(0, 128, 255, 192);
-      StateTime stateTime = new StateTime(owlyLayer.getMouseSe2State(), RealScalar.ZERO);
+      StateTime stateTime = new StateTime(geometricLayer.getMouseSe2State(), RealScalar.ZERO);
       if (!obstacleQuery_isDisjoint(stateTime))
         color = new Color(255, 96, 96, 128);
-      owlyLayer.pushMatrix(owlyLayer.getMouseSe2Matrix());
+      geometricLayer.pushMatrix(geometricLayer.getMouseSe2Matrix());
       graphics.setColor(color);
-      graphics.fill(owlyLayer.toPath2D(SHAPE));
-      owlyLayer.popMatrix();
+      graphics.fill(geometricLayer.toPath2D(SHAPE));
+      geometricLayer.popMatrix();
     }
     // {
     // Tensor model2pixel = owlyLayer.model2pixel();
