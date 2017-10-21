@@ -19,6 +19,7 @@ import ch.ethz.idsc.owly.gui.GeometricLayer;
 import ch.ethz.idsc.owly.gui.ani.AbstractEntity;
 import ch.ethz.idsc.owly.gui.ani.PlannerType;
 import ch.ethz.idsc.owly.math.flow.Flow;
+import ch.ethz.idsc.owly.math.flow.Integrator;
 import ch.ethz.idsc.owly.math.flow.RungeKutta4Integrator;
 import ch.ethz.idsc.owly.math.state.EmptyTrajectoryRegionQuery;
 import ch.ethz.idsc.owly.math.state.FixedStateIntegrator;
@@ -33,6 +34,7 @@ import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
 
 public class PsuEntity extends AbstractEntity {
+  private static final Integrator INTEGRATOR = RungeKutta4Integrator.INSTANCE;
   private static final Tensor FALLBACK_CONTROL = Tensors.vector(0).unmodifiable();
   /** preserve 1[s] of the former trajectory */
   private static final Scalar DELAY_HINT = RealScalar.ONE;
@@ -40,7 +42,7 @@ public class PsuEntity extends AbstractEntity {
   public PsuEntity() {
     super(new SimpleEpisodeIntegrator( //
         PsuStateSpaceModel.INSTANCE, //
-        RungeKutta4Integrator.INSTANCE, //
+        INTEGRATOR, //
         new StateTime(Tensors.vector(0, 0), RealScalar.ZERO)));
   }
 
@@ -68,7 +70,7 @@ public class PsuEntity extends AbstractEntity {
   public TrajectoryPlanner createTrajectoryPlanner(TrajectoryRegionQuery obstacleQuery, Tensor goal) {
     Tensor eta = Tensors.vector(6, 8);
     StateIntegrator stateIntegrator = FixedStateIntegrator.create( //
-        RungeKutta4Integrator.INSTANCE, RationalScalar.of(1, 4), 5);
+        INTEGRATOR, RationalScalar.of(1, 4), 5);
     Collection<Flow> controls = PsuControls.createControls(0.2, 6);
     PsuWrap psuWrap = PsuWrap.INSTANCE;
     GoalInterface goalInterface = PsuGoalManager.of( //

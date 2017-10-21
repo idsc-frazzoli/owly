@@ -15,6 +15,7 @@ import ch.ethz.idsc.owly.demo.rn.EuclideanDistanceDiscoverRegion;
 import ch.ethz.idsc.owly.demo.rn.R2Controls;
 import ch.ethz.idsc.owly.demo.rn.RnMinDistSphericalGoalManager;
 import ch.ethz.idsc.owly.demo.se2.Se2Controls;
+import ch.ethz.idsc.owly.demo.se2.Se2Integrator;
 import ch.ethz.idsc.owly.demo.se2.Se2MinTimeEuclideanDistanceHeuristicGoalManager;
 import ch.ethz.idsc.owly.demo.se2.Se2StateSpaceModel;
 import ch.ethz.idsc.owly.demo.se2.Se2TrajectoryGoalManager;
@@ -37,7 +38,7 @@ import ch.ethz.idsc.owly.math.RotationUtils;
 import ch.ethz.idsc.owly.math.Se2Utils;
 import ch.ethz.idsc.owly.math.flow.EulerIntegrator;
 import ch.ethz.idsc.owly.math.flow.Flow;
-import ch.ethz.idsc.owly.math.flow.RungeKutta45Integrator;
+import ch.ethz.idsc.owly.math.flow.Integrator;
 import ch.ethz.idsc.owly.math.region.EllipsoidRegion;
 import ch.ethz.idsc.owly.math.region.EmptyRegion;
 import ch.ethz.idsc.owly.math.region.InvertedRegion;
@@ -59,6 +60,7 @@ import ch.ethz.idsc.tensor.sca.Sqrt;
 
 /** omni-directional movement with constant speed */
 public class Se2AnyEntity extends AbstractAnyEntity {
+  private static final Integrator INTEGRATOR = Se2Integrator.INSTANCE;
   private static final Tensor FALLBACK_CONTROL = Array.zeros(2).unmodifiable(); // {angle=0, vel=0}
   private static final Tensor SHAPE = Tensors.matrixDouble( //
       new double[][] { //
@@ -90,7 +92,7 @@ public class Se2AnyEntity extends AbstractAnyEntity {
         // ---
         new SimpleEpisodeIntegrator( //
             Se2StateSpaceModel.INSTANCE, //
-            RungeKutta45Integrator.INSTANCE, //
+            INTEGRATOR, //
             new StateTime(state, RealScalar.ZERO)),
         // ---
         DELAY_HINT, EXPAND_TIME); //
@@ -208,7 +210,7 @@ public class Se2AnyEntity extends AbstractAnyEntity {
 
   @Override
   protected StateIntegrator createIntegrator() {
-    return FixedStateIntegrator.create(RungeKutta45Integrator.INSTANCE, parameters.getdtMax(), parameters.getTrajectorySize());
+    return FixedStateIntegrator.create(INTEGRATOR, parameters.getdtMax(), parameters.getTrajectorySize());
   }
 
   @Override

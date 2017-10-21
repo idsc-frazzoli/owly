@@ -119,6 +119,7 @@ public class OwlyAnimationFrame extends TimerFrame {
           } else { // ctrl pressed
             System.out.println(geometricComponent.getMouseGoal());
             if (controllable instanceof AbstractEntity) {
+              @SuppressWarnings("unused")
               AbstractEntity abstractEntity = (AbstractEntity) controllable;
               // abstractEntity.resetStateTo(owlyComponent.getMouseGoal());
             }

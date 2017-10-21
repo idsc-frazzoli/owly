@@ -52,6 +52,7 @@ enum DeltaGlcConstTimeHeuristicAnyDemo {
     } else {
       throw new RuntimeException();
     }
+    @SuppressWarnings("unused")
     Scalar quickCostFromRoot = quickTrajectoryPlannerContainer.getTrajectoryPlanner().getBest().get().costFromRoot();
     DebugUtils.heuristicConsistencyCheck(quickTrajectoryPlannerContainer.getTrajectoryPlanner());
     System.out.println("***QUICK PLANNER FINISHED***");

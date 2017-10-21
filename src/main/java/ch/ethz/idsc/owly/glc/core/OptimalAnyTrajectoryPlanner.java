@@ -273,6 +273,7 @@ public class OptimalAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
     setObstacleQuery(newObstacle);
     GlcNode root = getRoot();
     int oldDomainMapSize = domainMap().size();
+    @SuppressWarnings("unused")
     int oldCandidateMapSize = candidateMap.size();
     // TODO JONAS: What to do if root in collision
     // DomainMap, over which it is iterated
