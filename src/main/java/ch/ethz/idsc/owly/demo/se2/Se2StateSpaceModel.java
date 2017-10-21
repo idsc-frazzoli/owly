@@ -20,7 +20,9 @@ import ch.ethz.idsc.tensor.sca.Sin;
  * for forward-only motion simply disallow negative velocity values
  * 
  * since the se2 state space model is parameter free,
- * the access to the model is via a singleton instance */
+ * the access to the model is via a singleton instance
+ * 
+ * @see Se2Integrator */
 public enum Se2StateSpaceModel implements StateSpaceModel {
   INSTANCE;
   // ---

@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Optional;
 
 import ch.ethz.idsc.owly.demo.se2.Se2Controls;
+import ch.ethz.idsc.owly.demo.se2.Se2Integrator;
 import ch.ethz.idsc.owly.demo.se2.Se2MinTimeGoalManager;
 import ch.ethz.idsc.owly.demo.se2.Se2Wrap;
 import ch.ethz.idsc.owly.demo.se2.Se2WrapGoalManagerExt;
@@ -37,7 +38,9 @@ enum Se2WrapDemoExt {
   public static void main(String[] args) {
     Tensor eta = Tensors.vector(3, 3, 50 / Math.PI);
     Tensor radiusVector = Tensors.of(DoubleScalar.of(0.2), DoubleScalar.of(0.2), RotationUtils.DEGREE(15));
-    StateIntegrator stateIntegrator = FixedStateIntegrator.createDefault(RationalScalar.of(1, 6), 5);
+    StateIntegrator stateIntegrator = FixedStateIntegrator.create( //
+        Se2Integrator.INSTANCE, //
+        RationalScalar.of(1, 6), 5);
     System.out.println("scale=" + eta);
     Collection<Flow> controls = Se2Controls.createControls(RotationUtils.DEGREE(45), 6);
     final CoordinateWrap identity = IdentityWrap.INSTANCE;
