@@ -19,6 +19,7 @@ import javax.swing.JComponent;
 import javax.swing.event.MouseInputAdapter;
 import javax.swing.event.MouseInputListener;
 
+import ch.ethz.idsc.owly.math.Se2Utils;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
@@ -27,6 +28,7 @@ import ch.ethz.idsc.tensor.alg.Array;
 import ch.ethz.idsc.tensor.alg.Join;
 import ch.ethz.idsc.tensor.mat.DiagonalMatrix;
 import ch.ethz.idsc.tensor.mat.LinearSolve;
+import ch.ethz.idsc.tensor.sca.ArcTan;
 import ch.ethz.idsc.tensor.sca.Power;
 import ch.ethz.idsc.tensor.sca.Round;
 
@@ -81,7 +83,8 @@ public final class GeometricComponent {
     });
     {
       MouseInputListener mouseInputListener = new MouseInputAdapter() {
-        Point down = null;
+        private Point down = null;
+        private Tensor center = null;
 
         @Override
         public void mouseMoved(MouseEvent mouseEvent) {
@@ -90,8 +93,11 @@ public final class GeometricComponent {
 
         @Override
         public void mousePressed(MouseEvent mouseEvent) {
-          if (mouseEvent.getButton() == BUTTON_DRAG)
+          if (mouseEvent.getButton() == BUTTON_DRAG) {
             down = mouseEvent.getPoint();
+            Dimension dimension = jComponent.getSize();
+            center = toModel(new Point(dimension.width / 2, dimension.height / 2)).unmodifiable();
+          }
         }
 
         @Override
@@ -100,9 +106,23 @@ public final class GeometricComponent {
             Point now = mouseEvent.getPoint();
             int dx = now.x - down.x;
             int dy = now.y - down.y;
+            // ---
+            Dimension dimension = jComponent.getSize();
+            Scalar a1 = ArcTan.of(RealScalar.of(now.x - dimension.width / 2), RealScalar.of(now.y - dimension.height / 2));
+            Scalar a2 = ArcTan.of(RealScalar.of(down.x - dimension.width / 2), RealScalar.of(down.y - dimension.height / 2));
+            // ---
             down = now;
-            model2pixel.set(scalar -> scalar.add(RealScalar.of(dx)), 0, 2);
-            model2pixel.set(scalar -> scalar.add(RealScalar.of(dy)), 1, 2);
+            final int mods = mouseEvent.getModifiersEx();
+            final int mask = MouseWheelEvent.CTRL_DOWN_MASK; // 128 = 2^7
+            if ((mods & mask) == 0) {
+              model2pixel.set(scalar -> scalar.add(RealScalar.of(dx)), 0, 2);
+              model2pixel.set(scalar -> scalar.add(RealScalar.of(dy)), 1, 2);
+              // System.out.println(Pretty.of(model2pixel.map(Round._3)));
+            } else {
+              Tensor t1 = Se2Utils.toSE2Matrix(Tensors.of(center.Get(0).negate(), center.Get(1).negate(), RealScalar.ZERO));
+              Tensor t2 = Se2Utils.toSE2Matrix(center.copy().append(a2.subtract(a1)));
+              model2pixel = model2pixel.dot(t2).dot(t1);
+            }
             jComponent.repaint();
           }
         }
@@ -110,6 +130,7 @@ public final class GeometricComponent {
         @Override
         public void mouseReleased(MouseEvent mouseEvent) {
           down = null;
+          center = null;
         }
       };
       jComponent.addMouseMotionListener(mouseInputListener);
@@ -155,9 +176,6 @@ public final class GeometricComponent {
 
   public void reset_model2pixel() {
     model2pixel = MODEL2PIXEL_INITIAL.copy();
-    // for testing the effect of rotation:
-    // Tensor mat = Se2Utils.toSE2Matrix(Tensors.vector(0, 0, .5));
-    // model2pixel = MODEL2PIXEL_INITIAL.dot(mat);
   }
 
   void render(Graphics2D graphics, Dimension dimension) {
