@@ -35,7 +35,7 @@ public class FixedStateIntegrator implements StateIntegrator {
    * @param timeStep non-negative period of one step
    * @param trajectorySize number of steps */
   private FixedStateIntegrator(Integrator integrator, Scalar timeStep, int trajectorySize) {
-    if (!Sign.isPositive(timeStep))
+    if (Sign.isNegativeOrZero(timeStep))
       throw TensorRuntimeException.of(timeStep);
     this.integrator = integrator;
     this.timeStep = timeStep;

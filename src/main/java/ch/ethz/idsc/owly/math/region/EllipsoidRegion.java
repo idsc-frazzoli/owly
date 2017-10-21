@@ -33,8 +33,7 @@ public class EllipsoidRegion extends ImplicitFunctionRegion {
     if (center.length() != radius.length())
       throw TensorRuntimeException.of(center, radius);
     if (radius.stream() // <- assert that radius are strictly positive
-        .map(Scalar.class::cast) //
-        .anyMatch(scalar -> !Sign.isPositive(scalar)))
+        .map(Scalar.class::cast).anyMatch(Sign::isNegativeOrZero))
       throw TensorRuntimeException.of(radius);
     // ---
     this.center = center;

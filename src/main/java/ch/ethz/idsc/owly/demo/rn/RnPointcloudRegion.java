@@ -20,7 +20,7 @@ public class RnPointcloudRegion implements Region {
    * @param radius
    * @return */
   public static Region of(Tensor points, Scalar radius) {
-    return points.length() == 0 ? EmptyRegion.INSTANCE : new RnPointcloudRegion(points, radius);
+    return Tensors.isEmpty(points) ? EmptyRegion.INSTANCE : new RnPointcloudRegion(points, radius);
   }
 
   // ---
