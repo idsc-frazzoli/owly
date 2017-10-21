@@ -16,6 +16,7 @@ import ch.ethz.idsc.owly.glc.core.StandardTrajectoryPlanner;
 import ch.ethz.idsc.owly.glc.core.TrajectoryPlanner;
 import ch.ethz.idsc.owly.gui.ani.OwlyGui;
 import ch.ethz.idsc.owly.math.flow.Flow;
+import ch.ethz.idsc.owly.math.flow.MidpointIntegrator;
 import ch.ethz.idsc.owly.math.region.HyperplaneRegion;
 import ch.ethz.idsc.owly.math.region.NegativeHalfspaceRegion;
 import ch.ethz.idsc.owly.math.region.RegionUnion;
@@ -33,8 +34,8 @@ enum DriftExtDemo {
   public static void main(String[] args) throws IOException {
     // the resolution refers to the last 3 of the state coordinates (x,y,theta,beta,r,Ux)
     Tensor eta = Tensors.vector(30, 30, 5); // magic const
-    StateIntegrator stateIntegrator = //
-        FixedStateIntegrator.createDefault(RationalScalar.of(1, 10), 7);
+    StateIntegrator stateIntegrator = FixedStateIntegrator.create( //
+        MidpointIntegrator.INSTANCE, RationalScalar.of(1, 10), 7);
     System.out.println("scale=" + eta);
     Collection<Flow> controls = DriftControls.createExtended(10); // magic const
     GoalInterface goalInterface = DriftGoalManager.createStandard(//

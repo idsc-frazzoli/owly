@@ -27,4 +27,13 @@ public class FreeBoundedIntervalRegionTest extends TestCase {
     assertTrue(trq.isDisjoint(Arrays.asList(new StateTime(Tensors.vector(15), RealScalar.ZERO))));
     assertFalse(trq.isDisjoint(Arrays.asList(new StateTime(Tensors.vector(5), RealScalar.ZERO))));
   }
+
+  public void testFail() {
+    try {
+      new FreeBoundedIntervalRegion(0, RealScalar.of(10), RealScalar.of(10));
+      assertTrue(false);
+    } catch (Exception exception) {
+      // ---
+    }
+  }
 }

@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Optional;
 
 import ch.ethz.idsc.owly.demo.se2.Se2Controls;
+import ch.ethz.idsc.owly.demo.se2.Se2Integrator;
 import ch.ethz.idsc.owly.demo.se2.Se2MinTimeGoalManager;
 import ch.ethz.idsc.owly.demo.se2.Se2Wrap;
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
@@ -38,7 +39,8 @@ enum Se2Demo {
   // TODO JAN this demo has 'misses', why !?
   public static void main(String[] args) {
     Tensor eta = Tensors.vector(3, 3, 50 / Math.PI);
-    StateIntegrator stateIntegrator = FixedStateIntegrator.createDefault(RationalScalar.of(1, 6), 5);
+    StateIntegrator stateIntegrator = FixedStateIntegrator.create( //
+        Se2Integrator.INSTANCE, RationalScalar.of(1, 6), 5);
     System.out.println("scale=" + eta);
     Collection<Flow> controls = Se2Controls.createControls(RotationUtils.DEGREE(35), 10);
     GoalInterface goalInterface = Se2MinTimeGoalManager.create( //

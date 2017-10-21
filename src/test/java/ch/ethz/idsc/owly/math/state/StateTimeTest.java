@@ -10,6 +10,13 @@ public class StateTimeTest extends TestCase {
     StateTime s1 = new StateTime(Tensors.vector(1, 0, 1), RealScalar.of(2));
     StateTime s2 = new StateTime(Tensors.vector(1, 0, 1), RealScalar.of(2));
     assertEquals(s1, s2);
+    assertEquals(s1.hashCode(), s2.hashCode());
+  }
+
+  public void testEquals() {
+    StateTime s1 = new StateTime(Tensors.vector(1, 0, 1), RealScalar.of(2));
+    assertFalse(s1.equals(null));
+    assertFalse(s1.equals(RealScalar.ONE));
   }
 
   public void testFail() {

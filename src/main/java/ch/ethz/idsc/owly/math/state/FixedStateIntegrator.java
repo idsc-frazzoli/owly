@@ -6,22 +6,16 @@ import java.util.List;
 
 import ch.ethz.idsc.owly.math.flow.Flow;
 import ch.ethz.idsc.owly.math.flow.Integrator;
-import ch.ethz.idsc.owly.math.flow.MidpointIntegrator;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.TensorRuntimeException;
 import ch.ethz.idsc.tensor.sca.Sign;
 
 /** trajectory integration with fixed step size over given time period */
 public class FixedStateIntegrator implements StateIntegrator {
-  /** uses {@link MidpointIntegrator}
-   * 
+  /** @param integrator
    * @param timeStep
    * @param trajectorySize
    * @return */
-  public static StateIntegrator createDefault(Scalar timeStep, int trajectorySize) {
-    return create(MidpointIntegrator.INSTANCE, timeStep, trajectorySize);
-  }
-
   public static StateIntegrator create(Integrator integrator, Scalar timeStep, int trajectorySize) {
     return new FixedStateIntegrator(integrator, timeStep, trajectorySize);
   }
