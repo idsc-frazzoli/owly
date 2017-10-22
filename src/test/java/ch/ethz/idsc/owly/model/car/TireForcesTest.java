@@ -35,7 +35,7 @@ public class TireForcesTest extends TestCase {
   public void testDemo1() {
     // System.out.println("TireForcesTest::demo1");
     VehicleModel carModel = CHatchbackModel.standard();
-    CarState carState = CarStatic.x0_demo1();
+    CarState carState = CarStatic.x0_demo1(carModel);
     // System.out.println(carState.asVector());
     CarControl carControl = carModel.createControl(Tensors.vector(0, 0, 0, 0));
     TireForces tireForces = new TireForces(carModel, carState, carControl, FrictionCoefficients.TIRE_DRY_ROAD);

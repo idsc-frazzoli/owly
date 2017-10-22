@@ -22,8 +22,7 @@ public enum CarStatic {
    * 25.794871794871792, 25.794871794871792, 25.794871794871792, 25.794871794871792}
    * 
    * @return */
-  public static CarState x0_demo1() {
-    VehicleModel vehicleModel = CHatchbackModel.standard();
+  public static CarState x0_demo1(VehicleModel vehicleModel) {
     Scalar speed = RealScalar.of(30 + 3.6 * Dz1);
     return new CarState(Tensors.vector( //
         speed.number().doubleValue() / 3.6, // Ux
