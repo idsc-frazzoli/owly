@@ -182,7 +182,7 @@ public class Se2AnyEntity extends AbstractAnyEntity {
     List<Region> goalRegionsList = new ArrayList<>();
     for (StateTime entry : trajectory) {
       Tensor goalTemp = Tensors.of(entry.state().Get(0), entry.state().Get(1), RealScalar.ZERO);
-      if (trajectory.indexOf(entry) == (trajectory.size() - 1)) // if last entry of trajectory
+      if (trajectory.indexOf(entry) == trajectory.size() - 1) // if last entry of trajectory
         goalRegionsList.add(new EllipsoidRegion(goal, goalRadius));
       else
         goalRegionsList.add(new EllipsoidRegion(goalTemp, goalRadiusR2));
