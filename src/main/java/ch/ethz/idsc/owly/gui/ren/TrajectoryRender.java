@@ -48,7 +48,7 @@ public class TrajectoryRender implements RenderInterface {
       final List<TrajectorySample> list = trajectory;
       { // draw control vectors u along trajectory
         int rgb = 64;
-        graphics.setColor(new Color(rgb, rgb, rgb, 192));
+        graphics.setColor(new Color(rgb, rgb, rgb, 128));
         for (TrajectorySample trajectorySample : list) {
           Optional<Flow> flow = trajectorySample.getFlow();
           if (flow.isPresent()) {

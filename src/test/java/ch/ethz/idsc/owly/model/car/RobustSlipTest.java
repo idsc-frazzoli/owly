@@ -46,4 +46,24 @@ public class RobustSlipTest extends TestCase {
   // final Pacejka3 pacejka3 = new Pacejka3(13, 1.3, 0.96);
   // System.out.println(new RobustSlip(pacejka3, Tensors.vector(10, 1), RealScalar.of(11)).slip());
   // }
+
+  public void testSimple2() {
+    final Pacejka3 pacejka3 = new Pacejka3(13.8509, 1.3670, 0.9622);
+    {
+      SlipInterface rs = new RobustSlip(pacejka3, Tensors.vector(1, 0), RealScalar.of(1.1));
+      System.out.println(rs.slip());
+    }
+    {
+      SlipInterface rs = new RobustSlip(pacejka3, Tensors.vector(-1, 0), RealScalar.of(-1.1));
+      System.out.println(rs.slip());
+    }
+    {
+      SlipInterface rs = new RobustSlip(pacejka3, Tensors.vector(1, 0), RealScalar.of(0.9));
+      System.out.println(rs.slip());
+    }
+    {
+      SlipInterface rs = new RobustSlip(pacejka3, Tensors.vector(-1, 0), RealScalar.of(-0.9));
+      System.out.println(rs.slip());
+    }
+  }
 }
