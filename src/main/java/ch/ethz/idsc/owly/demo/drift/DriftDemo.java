@@ -14,6 +14,7 @@ import ch.ethz.idsc.owly.glc.core.StandardTrajectoryPlanner;
 import ch.ethz.idsc.owly.glc.core.TrajectoryPlanner;
 import ch.ethz.idsc.owly.gui.ani.OwlyGui;
 import ch.ethz.idsc.owly.math.flow.Flow;
+import ch.ethz.idsc.owly.math.flow.MidpointIntegrator;
 import ch.ethz.idsc.owly.math.region.NegativeHalfspaceRegion;
 import ch.ethz.idsc.owly.math.state.FixedStateIntegrator;
 import ch.ethz.idsc.owly.math.state.StateIntegrator;
@@ -28,8 +29,8 @@ enum DriftDemo {
   public static void main(String[] args) {
     Collection<Flow> controls = DriftControls.create(10);
     Tensor eta = Tensors.vector(30, 30, 5);
-    StateIntegrator stateIntegrator = //
-        FixedStateIntegrator.createDefault(RationalScalar.of(1, 10), 7);
+    StateIntegrator stateIntegrator = FixedStateIntegrator.create( //
+        MidpointIntegrator.INSTANCE, RationalScalar.of(1, 10), 7);
     System.out.println("scale=" + eta);
     GoalInterface goalInterface = DriftGoalManager.createStandard(//
         Tensors.vector(-0.3055, 0.5032, 8), //

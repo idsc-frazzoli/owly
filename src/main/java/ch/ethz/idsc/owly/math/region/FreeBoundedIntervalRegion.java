@@ -17,7 +17,7 @@ public class FreeBoundedIntervalRegion extends ImplicitFunctionRegion {
   private final Scalar center;
 
   public FreeBoundedIntervalRegion(int index, Scalar lo, Scalar hi) {
-    if (!Scalars.lessThan(lo, hi))
+    if (Scalars.lessEquals(hi, lo))
       throw TensorRuntimeException.of(lo, hi);
     this.index = index;
     semiwidth = hi.subtract(lo).multiply(HALF);

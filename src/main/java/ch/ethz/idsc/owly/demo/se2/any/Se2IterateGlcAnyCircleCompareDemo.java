@@ -7,6 +7,7 @@ import java.util.List;
 
 import ch.ethz.idsc.owly.demo.se2.Se2AbstractGoalManager;
 import ch.ethz.idsc.owly.demo.se2.Se2Controls;
+import ch.ethz.idsc.owly.demo.se2.Se2Integrator;
 import ch.ethz.idsc.owly.demo.se2.Se2MinCurvatureGoalManager;
 import ch.ethz.idsc.owly.demo.se2.Se2StateSpaceModel;
 import ch.ethz.idsc.owly.demo.se2.glc.Se2Parameters;
@@ -56,8 +57,8 @@ class Se2IterateGlcAnyCircleCompareDemo {
     // --
     Parameters parameters = new Se2Parameters( //
         resolution, timeScale, depthScale, partitionScale, dtMax, maxIter, stateSpaceModel.getLipschitz());
-    StateIntegrator stateIntegrator = FixedStateIntegrator.createDefault(parameters.getdtMax(), //
-        parameters.getTrajectorySize());
+    StateIntegrator stateIntegrator = FixedStateIntegrator.create( //
+        Se2Integrator.INSTANCE, parameters.getdtMax(), parameters.getTrajectorySize());
     // ---
     System.out.println("1/Domainsize=" + parameters.getEta());
     parameters.printResolution();

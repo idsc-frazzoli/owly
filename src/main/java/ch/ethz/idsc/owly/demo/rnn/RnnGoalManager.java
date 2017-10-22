@@ -20,6 +20,7 @@ import ch.ethz.idsc.tensor.Scalars;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.TensorRuntimeException;
 import ch.ethz.idsc.tensor.alg.Array;
+import ch.ethz.idsc.tensor.alg.VectorQ;
 
 /** cost is a varying distance metric */
 class RnnGoalManager extends SimpleTrajectoryRegionQuery implements GoalInterface {
@@ -27,7 +28,7 @@ class RnnGoalManager extends SimpleTrajectoryRegionQuery implements GoalInterfac
 
   public RnnGoalManager(Tensor center, Scalar radius) {
     super(new TimeInvariantRegion(new EllipsoidRegion(center, Array.of(l -> radius, center.length()))));
-    GlobalAssert.that(center.length() == 2);
+    GlobalAssert.that(VectorQ.ofLength(center, 2));
     continuousNoise = ContinuousNoiseUtils.wrap2D(SimplexContinuousNoise.FUNCTION);
   }
 

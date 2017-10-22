@@ -38,4 +38,8 @@ import ch.ethz.idsc.tensor.Tensor;
   public AffineFrame2D dot(Tensor matrix) {
     return new AffineFrame2D(tensor.dot(matrix));
   }
+
+  public Tensor tensor_copy() {
+    return tensor.copy();
+  }
 }

@@ -22,7 +22,7 @@ public class BoundedEpisodeIntegrator extends AbstractEpisodeIntegrator {
    * @param maxStep in time that given integrator applies */
   public BoundedEpisodeIntegrator(StateSpaceModel stateSpaceModel, Integrator integrator, StateTime stateTime, Scalar maxStep) {
     super(stateSpaceModel, integrator, stateTime);
-    if (!Sign.isPositive(maxStep))
+    if (Sign.isNegativeOrZero(maxStep))
       throw TensorRuntimeException.of(maxStep);
     this.maxStep = maxStep;
   }

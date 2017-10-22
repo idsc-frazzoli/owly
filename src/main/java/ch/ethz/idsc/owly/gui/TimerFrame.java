@@ -11,7 +11,7 @@ public class TimerFrame extends BaseFrame {
 
   public TimerFrame() {
     { // periodic task for rendering
-      final TimerTask timerTask = new TimerTask() {
+      TimerTask timerTask = new TimerTask() {
         @Override
         public void run() {
           geometricComponent.jComponent.repaint();
@@ -22,7 +22,6 @@ public class TimerFrame extends BaseFrame {
     jFrame.addWindowListener(new WindowAdapter() {
       @Override
       public void windowClosed(WindowEvent windowEvent) {
-        System.out.println("shutdown timer");
         timer.cancel();
       }
     });

@@ -11,7 +11,7 @@ import junit.framework.TestCase;
 public class BrakeTorquesTest extends TestCase {
   public void testSimple() {
     VehicleModel carModel = CHatchbackModel.standard();
-    CarState carState = CarStatic.x0_demo1();
+    CarState carState = CarStatic.x0_demo1(carModel);
     CarControl cc = carModel.createControl(Tensors.vector(0, 1, 0, 0));
     Scalar mu = RealScalar.of(0.8); // friction coefficient on dry road
     TireForces tireForces = new TireForces(carModel, carState, cc, mu);

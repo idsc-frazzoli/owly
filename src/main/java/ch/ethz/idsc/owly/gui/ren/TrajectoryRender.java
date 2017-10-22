@@ -43,24 +43,24 @@ public class TrajectoryRender implements RenderInterface {
   }
 
   @Override
-  public void render(GeometricLayer owlyLayer, Graphics2D graphics) {
+  public void render(GeometricLayer geometricLayer, Graphics2D graphics) {
     { // draw detailed trajectory from root to goal/furthestgo
       final List<TrajectorySample> list = trajectory;
       { // draw control vectors u along trajectory
         int rgb = 64;
-        graphics.setColor(new Color(rgb, rgb, rgb, 192));
+        graphics.setColor(new Color(rgb, rgb, rgb, 128));
         for (TrajectorySample trajectorySample : list) {
           Optional<Flow> flow = trajectorySample.getFlow();
           if (flow.isPresent()) {
             Tensor uscaled = flow.get().getU().multiply(U_SCALE);
             while (uscaled.length() < 2)
               uscaled.append(RealScalar.ZERO);
-            graphics.draw(owlyLayer.toVector(trajectorySample.stateTime().state(), uscaled));
+            graphics.draw(geometricLayer.toVector(trajectorySample.stateTime().state(), uscaled));
           }
         }
       }
       { // draw trajectory as thick green line with white background
-        Path2D path2d = owlyLayer.toPath2D( //
+        Path2D path2d = geometricLayer.toPath2D( //
             Tensor.of(list.stream() //
                 .map(TrajectorySample::stateTime) //
                 .map(StateTime::state)));
@@ -76,7 +76,7 @@ public class TrajectoryRender implements RenderInterface {
     { // draw boxes at nodes in path from root to goal
       graphics.setColor(new Color(255, 0, 0, 96));
       trajectory.stream().map(TrajectorySample::stateTime).map(StateTime::state).forEach(state -> {
-        Point2D point2d = owlyLayer.toPoint2D(state);
+        Point2D point2d = geometricLayer.toPoint2D(state);
         graphics.draw(new Rectangle2D.Double(point2d.getX() - 1, point2d.getY() - 1, 2, 2));
       });
     }

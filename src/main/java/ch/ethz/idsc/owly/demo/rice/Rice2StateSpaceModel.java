@@ -20,7 +20,7 @@ public class Rice2StateSpaceModel implements StateSpaceModel {
   /** @param lambda strictly positive friction coefficient */
   public Rice2StateSpaceModel(Scalar lambda) {
     // one could re-parameterize: lambda == Exp.of(mu)
-    if (!Sign.isPositive(lambda))
+    if (Sign.isNegativeOrZero(lambda))
       throw TensorRuntimeException.of(lambda);
     this.lambda = lambda;
   }

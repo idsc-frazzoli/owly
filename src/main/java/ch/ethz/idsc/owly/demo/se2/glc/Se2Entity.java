@@ -11,6 +11,7 @@ import java.util.Objects;
 
 import ch.ethz.idsc.owly.data.GlobalAssert;
 import ch.ethz.idsc.owly.demo.se2.Se2Controls;
+import ch.ethz.idsc.owly.demo.se2.Se2Integrator;
 import ch.ethz.idsc.owly.demo.se2.Se2MinTimeMinShiftExtraCostGoalManager;
 import ch.ethz.idsc.owly.demo.se2.Se2MinTimeMinShiftGoalManager;
 import ch.ethz.idsc.owly.demo.se2.Se2StateSpaceModel;
@@ -25,8 +26,6 @@ import ch.ethz.idsc.owly.gui.ani.PlannerType;
 import ch.ethz.idsc.owly.math.RotationUtils;
 import ch.ethz.idsc.owly.math.Se2Utils;
 import ch.ethz.idsc.owly.math.flow.Flow;
-import ch.ethz.idsc.owly.math.flow.Integrator;
-import ch.ethz.idsc.owly.math.flow.RungeKutta4Integrator;
 import ch.ethz.idsc.owly.math.state.FixedStateIntegrator;
 import ch.ethz.idsc.owly.math.state.SimpleEpisodeIntegrator;
 import ch.ethz.idsc.owly.math.state.StateIntegrator;
@@ -61,22 +60,20 @@ public class Se2Entity extends AbstractEntity {
   }
 
   public static Se2Entity createDefault(Tensor state) {
-    return new Se2Entity(state, RungeKutta4Integrator.INSTANCE);
+    return new Se2Entity(state);
   }
 
   // ---
-  private final Integrator integrator;
   private final Collection<Flow> controls;
   private final Tensor goalRadius;
   public TrajectoryRegionQuery obstacleQuery = null;
   // private BufferedImage bufferedImage = null;
 
-  private Se2Entity(Tensor state, Integrator integrator) {
+  private Se2Entity(Tensor state) {
     super(new SimpleEpisodeIntegrator( //
         Se2StateSpaceModel.INSTANCE, //
-        integrator, //
+        Se2Integrator.INSTANCE, //
         new StateTime(state, RealScalar.ZERO))); // initial position
-    this.integrator = integrator;
     controls = Se2Controls.createControlsForwardAndReverse(RotationUtils.DEGREE(45), 6); // TODO magic const
     final Scalar goalRadius_xy = Sqrt.of(RealScalar.of(2)).divide(PARTITIONSCALE.Get(0));
     final Scalar goalRadius_theta = Sqrt.of(RealScalar.of(2)).divide(PARTITIONSCALE.Get(2));
@@ -116,7 +113,7 @@ public class Se2Entity extends AbstractEntity {
     GlobalAssert.that(VectorQ.ofLength(goal, 3));
     this.obstacleQuery = obstacleQuery;
     StateIntegrator stateIntegrator = //
-        FixedStateIntegrator.create(integrator, RationalScalar.of(1, 10), 4); // TODO magic const
+        FixedStateIntegrator.create(Se2Integrator.INSTANCE, RationalScalar.of(1, 10), 4); // TODO magic const
     GoalInterface goalInterface = Objects.isNull(costFunction) ? //
         Se2MinTimeMinShiftGoalManager.create(goal, goalRadius, controls) : //
         Se2MinTimeMinShiftExtraCostGoalManager.create(goal, goalRadius, controls, costFunction);
@@ -133,32 +130,32 @@ public class Se2Entity extends AbstractEntity {
   }
 
   @Override
-  public void render(GeometricLayer owlyLayer, Graphics2D graphics) {
+  public void render(GeometricLayer geometricLayer, Graphics2D graphics) {
     { // indicate current position
       final StateTime stateTime = getStateTimeNow();
       Color color = new Color(64, 64, 64, 128);
       if (!obstacleQuery_isDisjoint(stateTime))
         color = new Color(255, 64, 64, 128);
-      owlyLayer.pushMatrix(Se2Utils.toSE2Matrix(stateTime.state()));
+      geometricLayer.pushMatrix(Se2Utils.toSE2Matrix(stateTime.state()));
       graphics.setColor(color);
-      graphics.fill(owlyLayer.toPath2D(SHAPE));
-      owlyLayer.popMatrix();
+      graphics.fill(geometricLayer.toPath2D(SHAPE));
+      geometricLayer.popMatrix();
     }
     { // indicate position delay[s] into the future
       Tensor state = getEstimatedLocationAt(DELAY_HINT);
-      Point2D point = owlyLayer.toPoint2D(state);
+      Point2D point = geometricLayer.toPoint2D(state);
       graphics.setColor(new Color(255, 128, 64, 192));
       graphics.fill(new Rectangle2D.Double(point.getX() - 2, point.getY() - 2, 5, 5));
     }
     {
       Color color = new Color(0, 128, 255, 192);
-      StateTime stateTime = new StateTime(owlyLayer.getMouseSe2State(), RealScalar.ZERO);
+      StateTime stateTime = new StateTime(geometricLayer.getMouseSe2State(), RealScalar.ZERO);
       if (!obstacleQuery_isDisjoint(stateTime))
         color = new Color(255, 96, 96, 128);
-      owlyLayer.pushMatrix(owlyLayer.getMouseSe2Matrix());
+      geometricLayer.pushMatrix(geometricLayer.getMouseSe2Matrix());
       graphics.setColor(color);
-      graphics.fill(owlyLayer.toPath2D(SHAPE));
-      owlyLayer.popMatrix();
+      graphics.fill(geometricLayer.toPath2D(SHAPE));
+      geometricLayer.popMatrix();
     }
     // {
     // Tensor model2pixel = owlyLayer.model2pixel();
@@ -167,13 +164,6 @@ public class Se2Entity extends AbstractEntity {
     // translate.set(RealScalar.of(-32), 1, 2); // image width/2
     // Tensor image = DiagonalMatrix.of(.005, .005, 1);
     // Tensor m = model2pixel.dot(owlyLayer.getMouseSe2Matrix()).dot(image).dot(translate);
-    // AffineTransform at = new AffineTransform( //
-    // m.Get(0, 0).number().doubleValue(), //
-    // m.Get(1, 0).number().doubleValue(), //
-    // m.Get(0, 1).number().doubleValue(), //
-    // m.Get(1, 1).number().doubleValue(), //
-    // m.Get(0, 2).number().doubleValue(), //
-    // m.Get(1, 2).number().doubleValue());
     // GraphicsUtil.setQualityHigh(graphics);
     // graphics.drawImage(bufferedImage, at, null);
     // GraphicsUtil.setQualityDefault(graphics);

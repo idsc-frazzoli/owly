@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Optional;
 
 import ch.ethz.idsc.owly.demo.se2.Se2Controls;
+import ch.ethz.idsc.owly.demo.se2.Se2Integrator;
 import ch.ethz.idsc.owly.demo.se2.Se2MinTimeGoalManager;
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
 import ch.ethz.idsc.owly.glc.adapter.StateTimeTrajectories;
@@ -18,7 +19,6 @@ import ch.ethz.idsc.owly.glc.core.TrajectoryPlanner;
 import ch.ethz.idsc.owly.gui.ani.OwlyGui;
 import ch.ethz.idsc.owly.math.RotationUtils;
 import ch.ethz.idsc.owly.math.flow.Flow;
-import ch.ethz.idsc.owly.math.flow.RungeKutta45Integrator;
 import ch.ethz.idsc.owly.math.region.HyperplaneRegion;
 import ch.ethz.idsc.owly.math.region.RegionUnion;
 import ch.ethz.idsc.owly.math.state.FixedStateIntegrator;
@@ -37,7 +37,7 @@ enum Se2rDemo {
   public static void main(String[] args) {
     Tensor eta = Tensors.vector(6, 6, 50 / Math.PI);
     StateIntegrator stateIntegrator = FixedStateIntegrator.create( //
-        RungeKutta45Integrator.INSTANCE, RationalScalar.of(1, 6), 5);
+        Se2Integrator.INSTANCE, RationalScalar.of(1, 6), 5);
     Collection<Flow> controls = Se2Controls.createControlsForwardAndReverse(RotationUtils.DEGREE(45), 6);
     // place holder for parameter class
     GoalInterface goalInterface = Se2MinTimeGoalManager.create( //

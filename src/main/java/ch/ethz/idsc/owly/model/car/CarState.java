@@ -17,7 +17,7 @@ public class CarState {
   public final Scalar Ksi; // 4 heading of the car [rad]
   public final Scalar px; // 5 pos [m]
   public final Scalar py; // 6 pos [m]
-  /** rate for each tire */
+  /** rate for each tire, unmodifiable */
   public final Tensor omega; // [rad/s]
 
   public CarState(Tensor x) {
@@ -53,5 +53,9 @@ public class CarState {
 
   public Tensor rate_3d() {
     return Tensors.of(RealScalar.ZERO, RealScalar.ZERO, r);
+  }
+
+  public Tensor se2() {
+    return Tensors.of(px, py, Ksi);
   }
 }

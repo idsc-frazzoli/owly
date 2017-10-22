@@ -12,6 +12,7 @@ import ch.ethz.idsc.owly.glc.core.GoalInterface;
 import ch.ethz.idsc.owly.glc.core.StandardTrajectoryPlanner;
 import ch.ethz.idsc.owly.glc.core.TrajectoryPlanner;
 import ch.ethz.idsc.owly.math.flow.Flow;
+import ch.ethz.idsc.owly.math.flow.MidpointIntegrator;
 import ch.ethz.idsc.owly.math.region.HyperplaneRegion;
 import ch.ethz.idsc.owly.math.region.NegativeHalfspaceRegion;
 import ch.ethz.idsc.owly.math.region.RegionUnion;
@@ -30,8 +31,8 @@ public class DriftExtTest extends TestCase {
   public void testSimple() throws IOException {
     // the resolution refers to the last 3 of the state coordinates (x,y,theta,beta,r,Ux)
     Tensor eta = Tensors.vector(30, 30, 5);
-    StateIntegrator stateIntegrator = //
-        FixedStateIntegrator.createDefault(RationalScalar.of(1, 10), 7);
+    StateIntegrator stateIntegrator = FixedStateIntegrator.create( //
+        MidpointIntegrator.INSTANCE, RationalScalar.of(1, 10), 7);
     Collection<Flow> controls = DriftControls.createExtended(10);
     GoalInterface goalInterface = DriftGoalManager.createStandard(//
         Tensors.vector(0, 0, 0, -0.3055, 0.5032, 8), //

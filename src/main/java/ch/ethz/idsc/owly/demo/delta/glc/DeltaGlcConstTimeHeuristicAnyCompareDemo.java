@@ -127,6 +127,7 @@ enum DeltaGlcConstTimeHeuristicAnyCompareDemo {
           slowTrajectoryPlannerContainer.getParameters().getDepthLimit());
       // int expandIter = GlcExpand.constTime(slowTrajectoryPlannerContainer.getTrajectoryPlanner(), //
       // planningTime, slowTrajectoryPlannerContainer.getParameters().getDepthLimit());
+      @SuppressWarnings("unused")
       Optional<StateTime> furthestState = ((OptimalAnyTrajectoryPlanner) slowTrajectoryPlannerContainer.getTrajectoryPlanner()).getFurthestGoalState();
       finalGoalNode = slowTrajectoryPlannerContainer.getTrajectoryPlanner().getFinalGoalNode();
       trajectory = GlcNodes.getPathFromRootTo(finalGoalNode.get());

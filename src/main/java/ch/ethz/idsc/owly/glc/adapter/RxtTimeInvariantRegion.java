@@ -1,7 +1,9 @@
 // code by jl
-package ch.ethz.idsc.owly.math.state;
+package ch.ethz.idsc.owly.glc.adapter;
 
 import ch.ethz.idsc.owly.math.region.Region;
+import ch.ethz.idsc.owly.math.state.StateTime;
+import ch.ethz.idsc.owly.math.state.StateTimeRegion;
 import ch.ethz.idsc.tensor.TensorRuntimeException;
 import ch.ethz.idsc.tensor.alg.Last;
 

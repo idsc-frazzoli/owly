@@ -16,6 +16,7 @@ import ch.ethz.idsc.owly.glc.core.StandardTrajectoryPlanner;
 import ch.ethz.idsc.owly.glc.core.TrajectoryPlanner;
 import ch.ethz.idsc.owly.gui.ani.OwlyGui;
 import ch.ethz.idsc.owly.math.flow.Flow;
+import ch.ethz.idsc.owly.math.flow.MidpointIntegrator;
 import ch.ethz.idsc.owly.math.region.EllipsoidRegion;
 import ch.ethz.idsc.owly.math.region.RegionUnion;
 import ch.ethz.idsc.owly.math.state.FixedStateIntegrator;
@@ -36,7 +37,8 @@ enum RiceD1Demo {
   ;
   public static TrajectoryPlanner simple() {
     Tensor eta = Tensors.vector(5, 8);
-    StateIntegrator stateIntegrator = FixedStateIntegrator.createDefault(RationalScalar.of(1, 5), 5);
+    StateIntegrator stateIntegrator = FixedStateIntegrator.create( //
+        MidpointIntegrator.INSTANCE, RationalScalar.of(1, 5), 5);
     Collection<Flow> controls = Rice2Controls.createControls(RealScalar.of(.5), 15); //
     Rice1GoalManager rice1Goal = new Rice1GoalManager(Tensors.vector(6, -.7), Tensors.vector(.4, .3));
     TrajectoryRegionQuery obstacleQuery = //

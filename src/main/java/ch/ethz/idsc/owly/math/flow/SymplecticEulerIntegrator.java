@@ -10,6 +10,6 @@ enum SymplecticEulerIntegrator implements Integrator {
   @Override
   public Tensor step(Flow flow, Tensor x, Scalar h) {
     // LONGTERM implement
-    return null;
+    throw new RuntimeException();
   }
 }

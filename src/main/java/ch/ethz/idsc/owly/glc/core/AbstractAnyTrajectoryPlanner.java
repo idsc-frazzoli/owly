@@ -7,6 +7,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
+import java.util.Objects;
 import java.util.Optional;
 
 import ch.ethz.idsc.owly.data.Stopwatch;
@@ -244,7 +245,7 @@ public abstract class AbstractAnyTrajectoryPlanner extends AbstractTrajectoryPla
   @Override
   public final Optional<GlcNode> existsInTree(StateTime stateTime) {
     GlcNode label = domainMap().get(convertToKey(stateTime.state()));
-    if (label == null)
+    if (Objects.isNull(label))
       return Optional.empty();
     if (label.stateTime().state().equals(stateTime.state()))
       return Optional.ofNullable(label);

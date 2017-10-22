@@ -63,19 +63,19 @@ public class R2AnyEntity extends AbstractAnyEntity {
 
   /** implementation of 2 dots following trajectory
    * 
-   * @param owlyLayer
+   * @param geometricLayer
    * @param graphics */
   @Override
-  public void render(GeometricLayer owlyLayer, Graphics2D graphics) {
+  public void render(GeometricLayer geometricLayer, Graphics2D graphics) {
     { // indicate current position
       Tensor state = getStateTimeNow().state();
-      Point2D point = owlyLayer.toPoint2D(state);
+      Point2D point = geometricLayer.toPoint2D(state);
       graphics.setColor(new Color(64, 128, 64, 192));
       graphics.fill(new Ellipse2D.Double(point.getX() - 2, point.getY() - 2, 7, 7));
     }
     { // indicate position 1[s] into the future
       Tensor state = getEstimatedLocationAt(delayHint());
-      Point2D point = owlyLayer.toPoint2D(state);
+      Point2D point = geometricLayer.toPoint2D(state);
       graphics.setColor(new Color(255, 128, 128 - 64, 128 + 64));
       graphics.fill(new Rectangle2D.Double(point.getX() - 2, point.getY() - 2, 5, 5));
     }

@@ -14,6 +14,7 @@ import ch.ethz.idsc.owly.glc.core.TrajectoryPlanner;
 import ch.ethz.idsc.owly.gui.ani.OwlyFrame;
 import ch.ethz.idsc.owly.gui.ani.OwlyGui;
 import ch.ethz.idsc.owly.math.flow.Flow;
+import ch.ethz.idsc.owly.math.flow.MidpointIntegrator;
 import ch.ethz.idsc.owly.math.region.HyperplaneRegion;
 import ch.ethz.idsc.owly.math.region.RegionUnion;
 import ch.ethz.idsc.owly.math.state.FixedStateIntegrator;
@@ -45,8 +46,8 @@ enum TwdGlcDemo {
     parameters.printResolution();
     System.out.println("DomainSize: 1/Eta: " + parameters.getEta().map(n -> RealScalar.ONE.divide(n)));
     // --
-    StateIntegrator stateIntegrator = FixedStateIntegrator.createDefault(parameters.getdtMax(), //
-        parameters.getTrajectorySize());
+    StateIntegrator stateIntegrator = FixedStateIntegrator.create( //
+        MidpointIntegrator.INSTANCE, parameters.getdtMax(), parameters.getTrajectorySize());
     // --
     Collection<Flow> controls = TwdControls.createControls2( //
         stateSpaceModel, parameters.getResolutionInt());

@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Optional;
 
 import ch.ethz.idsc.owly.demo.se2.Se2Controls;
+import ch.ethz.idsc.owly.demo.se2.Se2Integrator;
 import ch.ethz.idsc.owly.demo.se2.Se2MinTimeGoalManager;
 import ch.ethz.idsc.owly.demo.se2.Se2StateSpaceModel;
 import ch.ethz.idsc.owly.glc.adapter.Parameters;
@@ -48,7 +49,9 @@ enum Se2GlcDemo {
     // --
     Parameters parameters = new Se2Parameters( //
         resolution, timeScale, depthScale, partitionScale, dtMax, maxIter, stateSpaceModel.getLipschitz());
-    StateIntegrator stateIntegrator = FixedStateIntegrator.createDefault(parameters.getdtMax(), //
+    StateIntegrator stateIntegrator = FixedStateIntegrator.create( //
+        Se2Integrator.INSTANCE, //
+        parameters.getdtMax(), //
         parameters.getTrajectorySize());
     // ---
     System.out.println("scale=" + parameters.getEta());

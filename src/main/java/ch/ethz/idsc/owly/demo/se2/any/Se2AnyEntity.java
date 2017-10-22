@@ -15,6 +15,7 @@ import ch.ethz.idsc.owly.demo.rn.EuclideanDistanceDiscoverRegion;
 import ch.ethz.idsc.owly.demo.rn.R2Controls;
 import ch.ethz.idsc.owly.demo.rn.RnMinDistSphericalGoalManager;
 import ch.ethz.idsc.owly.demo.se2.Se2Controls;
+import ch.ethz.idsc.owly.demo.se2.Se2Integrator;
 import ch.ethz.idsc.owly.demo.se2.Se2MinTimeEuclideanDistanceHeuristicGoalManager;
 import ch.ethz.idsc.owly.demo.se2.Se2StateSpaceModel;
 import ch.ethz.idsc.owly.demo.se2.Se2TrajectoryGoalManager;
@@ -37,7 +38,7 @@ import ch.ethz.idsc.owly.math.RotationUtils;
 import ch.ethz.idsc.owly.math.Se2Utils;
 import ch.ethz.idsc.owly.math.flow.EulerIntegrator;
 import ch.ethz.idsc.owly.math.flow.Flow;
-import ch.ethz.idsc.owly.math.flow.RungeKutta45Integrator;
+import ch.ethz.idsc.owly.math.flow.Integrator;
 import ch.ethz.idsc.owly.math.region.EllipsoidRegion;
 import ch.ethz.idsc.owly.math.region.EmptyRegion;
 import ch.ethz.idsc.owly.math.region.InvertedRegion;
@@ -59,6 +60,7 @@ import ch.ethz.idsc.tensor.sca.Sqrt;
 
 /** omni-directional movement with constant speed */
 public class Se2AnyEntity extends AbstractAnyEntity {
+  private static final Integrator INTEGRATOR = Se2Integrator.INSTANCE;
   private static final Tensor FALLBACK_CONTROL = Array.zeros(2).unmodifiable(); // {angle=0, vel=0}
   private static final Tensor SHAPE = Tensors.matrixDouble( //
       new double[][] { //
@@ -90,7 +92,7 @@ public class Se2AnyEntity extends AbstractAnyEntity {
         // ---
         new SimpleEpisodeIntegrator( //
             Se2StateSpaceModel.INSTANCE, //
-            RungeKutta45Integrator.INSTANCE, //
+            INTEGRATOR, //
             new StateTime(state, RealScalar.ZERO)),
         // ---
         DELAY_HINT, EXPAND_TIME); //
@@ -115,25 +117,25 @@ public class Se2AnyEntity extends AbstractAnyEntity {
   }
 
   @Override
-  public void render(GeometricLayer owlyLayer, Graphics2D graphics) {
+  public void render(GeometricLayer geometricLayer, Graphics2D graphics) {
     {// indicate current position
       StateTime stateTime = getStateTimeNow();
       Color color = new Color(64, 64, 64, 128);
       graphics.setColor(color);
       Tensor matrix = Se2Utils.toSE2Matrix(stateTime.state());
-      Path2D path2d = owlyLayer.toPath2D(Tensor.of(SHAPE.stream().map(matrix::dot)));
+      Path2D path2d = geometricLayer.toPath2D(Tensor.of(SHAPE.stream().map(matrix::dot)));
       graphics.fill(path2d);
     }
     { // indicate position delay[s] into the future
       Tensor state = getEstimatedLocationAt(delayHint());
-      Point2D point = owlyLayer.toPoint2D(state);
+      Point2D point = geometricLayer.toPoint2D(state);
       graphics.setColor(new Color(255, 128, 64, 192));
       graphics.fill(new Rectangle2D.Double(point.getX() - 2, point.getY() - 2, 5, 5));
     }
     {
       graphics.setColor(new Color(0, 128, 255, 192));
-      Tensor matrix = owlyLayer.getMouseSe2Matrix();
-      Path2D path2d = owlyLayer.toPath2D(Tensor.of(SHAPE.stream().map(matrix::dot)));
+      Tensor matrix = geometricLayer.getMouseSe2Matrix();
+      Path2D path2d = geometricLayer.toPath2D(Tensor.of(SHAPE.stream().map(matrix::dot)));
       graphics.fill(path2d);
     }
   }
@@ -180,7 +182,7 @@ public class Se2AnyEntity extends AbstractAnyEntity {
     List<Region> goalRegionsList = new ArrayList<>();
     for (StateTime entry : trajectory) {
       Tensor goalTemp = Tensors.of(entry.state().Get(0), entry.state().Get(1), RealScalar.ZERO);
-      if (trajectory.indexOf(entry) == (trajectory.size() - 1)) // if last entry of trajectory
+      if (trajectory.indexOf(entry) == trajectory.size() - 1) // if last entry of trajectory
         goalRegionsList.add(new EllipsoidRegion(goal, goalRadius));
       else
         goalRegionsList.add(new EllipsoidRegion(goalTemp, goalRadiusR2));
@@ -208,7 +210,7 @@ public class Se2AnyEntity extends AbstractAnyEntity {
 
   @Override
   protected StateIntegrator createIntegrator() {
-    return FixedStateIntegrator.create(RungeKutta45Integrator.INSTANCE, parameters.getdtMax(), parameters.getTrajectorySize());
+    return FixedStateIntegrator.create(INTEGRATOR, parameters.getdtMax(), parameters.getTrajectorySize());
   }
 
   @Override

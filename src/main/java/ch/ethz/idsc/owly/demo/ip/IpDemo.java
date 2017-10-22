@@ -15,6 +15,7 @@ import ch.ethz.idsc.owly.glc.core.TrajectoryPlanner;
 import ch.ethz.idsc.owly.gui.ani.OwlyGui;
 import ch.ethz.idsc.owly.math.StateSpaceModel;
 import ch.ethz.idsc.owly.math.flow.Flow;
+import ch.ethz.idsc.owly.math.flow.MidpointIntegrator;
 import ch.ethz.idsc.owly.math.region.FreeBoundedIntervalRegion;
 import ch.ethz.idsc.owly.math.region.RegionUnion;
 import ch.ethz.idsc.owly.math.state.FixedStateIntegrator;
@@ -31,7 +32,8 @@ import ch.ethz.idsc.tensor.Tensors;
 class IpDemo {
   public static void main(String[] args) {
     Tensor eta = Tensors.vector(10, 10, 10, 10);
-    StateIntegrator stateIntegrator = FixedStateIntegrator.createDefault(RationalScalar.of(1, 12), 5);
+    StateIntegrator stateIntegrator = FixedStateIntegrator.create( //
+        MidpointIntegrator.INSTANCE, RationalScalar.of(1, 12), 5);
     StateSpaceModel stateSpaceModel = new IpStateSpaceModel( //
         RealScalar.of(.3), // M
         RealScalar.of(.2), // m

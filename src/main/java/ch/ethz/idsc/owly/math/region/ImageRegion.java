@@ -60,6 +60,10 @@ public class ImageRegion implements Region {
     return range.unmodifiable();
   }
 
+  public Tensor scale() {
+    return scale.unmodifiable();
+  }
+
   public Tensor origin() {
     return Array.zeros(2);
   }

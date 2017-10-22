@@ -15,12 +15,13 @@ import ch.ethz.idsc.owly.math.state.TimeInvariantRegion;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
+import ch.ethz.idsc.tensor.alg.VectorQ;
 
 public class LvGoalInterface extends SimpleTrajectoryRegionQuery implements GoalInterface {
   // TODO euclidean distance used in ellipsoid should be replaced by logarithmic distance
   public LvGoalInterface(Tensor center, Tensor radius) {
     super(new TimeInvariantRegion(new EllipsoidRegion(center, radius)));
-    GlobalAssert.that(center.length() == 2);
+    GlobalAssert.that(VectorQ.ofLength(center, 2));
   }
 
   @Override

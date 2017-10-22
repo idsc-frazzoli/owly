@@ -19,4 +19,13 @@ public class Cross2DTest extends TestCase {
     Tensor mat = RotationMatrix.of(RealScalar.of(Math.PI / 2));
     assertTrue(Chop._10.close(Cross2D.of(x), mat.dot(x)));
   }
+
+  public void testFail() {
+    try {
+      Cross2D.of(RotationMatrix.of(RealScalar.ONE));
+      assertTrue(false);
+    } catch (Exception exception) {
+      // ---
+    }
+  }
 }

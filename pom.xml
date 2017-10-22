@@ -19,7 +19,12 @@
 		<dependency>
 			<groupId>ch.ethz.idsc</groupId>
 			<artifactId>tensor</artifactId>
-			<version>0.3.8</version>
+			<version>0.3.9</version>
+		</dependency>
+		<dependency>
+			<groupId>ch.ethz.idsc</groupId>
+			<artifactId>lcm-java</artifactId>
+			<version>0.0.4</version>
 		</dependency>
 		<dependency>
 			<groupId>junit</groupId>
@@ -41,6 +46,14 @@
 		<repository>
 			<id>tensor-mvn-repo</id>
 			<url>https://raw.github.com/idsc-frazzoli/tensor/mvn-repo/</url>
+			<snapshots>
+				<enabled>true</enabled>
+				<updatePolicy>always</updatePolicy>
+			</snapshots>
+		</repository>
+		<repository>
+			<id>lcm-java-mvn-repo</id>
+			<url>https://raw.github.com/idsc-frazzoli/lcm-java/mvn-repo/</url>
 			<snapshots>
 				<enabled>true</enabled>
 				<updatePolicy>always</updatePolicy>

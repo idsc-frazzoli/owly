@@ -260,9 +260,9 @@ public class OptimalAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
   // TODO JAN; obstacle check function
   @Override
   public void obstacleUpdate(TrajectoryRegionQuery newObstacle, Region rechabilityObstacleRegion) {
-    if (newObstacle == this.getObstacleQuery())
+    if (newObstacle == this.getObstacleQuery()) // intended: equality of reference
       return;
-    if (newObstacle == null) {
+    if (Objects.isNull(newObstacle)) {
       obstacleUpdate(newObstacle);
       return;
     }
@@ -273,6 +273,7 @@ public class OptimalAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
     setObstacleQuery(newObstacle);
     GlcNode root = getRoot();
     int oldDomainMapSize = domainMap().size();
+    @SuppressWarnings("unused")
     int oldCandidateMapSize = candidateMap.size();
     // TODO JONAS: What to do if root in collision
     // DomainMap, over which it is iterated

@@ -1,6 +1,7 @@
 // code by jl
 package ch.ethz.idsc.owly.demo.rnxt.glc;
 
+import ch.ethz.idsc.owly.data.GlobalAssert;
 import ch.ethz.idsc.owly.math.RotationUtils;
 import ch.ethz.idsc.owly.math.state.StateTime;
 import ch.ethz.idsc.owly.math.state.StateTimeRegion;
@@ -11,6 +12,7 @@ import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.TensorRuntimeException;
 import ch.ethz.idsc.tensor.Tensors;
 import ch.ethz.idsc.tensor.alg.Last;
+import ch.ethz.idsc.tensor.alg.VectorQ;
 import ch.ethz.idsc.tensor.red.Norm;
 import ch.ethz.idsc.tensor.red.VectorAngle;
 import ch.ethz.idsc.tensor.sca.Mod;
@@ -28,15 +30,14 @@ public class TimeDependentTurningRingRegion implements StateTimeRegion {
 
   /** Constructs a Ring, with a gap in it, which turns at 30°/s CCW
    * 
-   * @param center
+   * @param center vector of length 2
    * @param initialGapAngle: initial position where Gap should be
    * @param gapSizeAngle: size of Gap in rad
    * @param ringThickness: thickness of the obstacleRing
    * @param ringRadius: Radius of the Ring (to the middle) */
   public TimeDependentTurningRingRegion(Tensor center, Scalar initialGapAngle, Scalar gapSizeAngle, Scalar ringThickness, Scalar ringRadius) {
+    GlobalAssert.that(VectorQ.ofLength(center, 2));
     this.center = center;
-    if (center.length() != 2)
-      throw TensorRuntimeException.of(center);
     this.initialGapAngle = initialGapAngle;
     this.gapSizeAngle = gapSizeAngle;
     this.lowerRingRadius = ringRadius.subtract(ringThickness.divide(RealScalar.of(2)));
