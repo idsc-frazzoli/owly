@@ -52,6 +52,6 @@ public class DeltaHeuristicGoalManager extends SimpleTrajectoryRegionQuery imple
     // B. Paden: A Generalized Label Correcting Method for Optimal Kinodynamic Motion Planning
     // p. 79 Eq: 6.4.14
     // Heuristic needs to be underestimating: (Euclideandistance-radius) / (MaxControl+Max(|Vectorfield|)
-    return Ramp.of(Norm._2.ofVector(x.subtract(center)).subtract(radius).divide(maxSpeed));
+    return Ramp.of(Norm._2.between(x, center).subtract(radius).divide(maxSpeed));
   }
 }

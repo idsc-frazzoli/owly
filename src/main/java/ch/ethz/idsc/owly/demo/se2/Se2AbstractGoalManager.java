@@ -47,7 +47,7 @@ public abstract class Se2AbstractGoalManager implements Region, CostFunction {
 
   protected final Scalar d_xy(Tensor tensor) {
     Tensor cur_xy = tensor.extract(0, 2);
-    return Norm._2.ofVector(cur_xy.subtract(center.extract(0, 2)));
+    return Norm._2.between(cur_xy, center.extract(0, 2));
   }
 
   protected final Scalar d_angle(Tensor tensor) {

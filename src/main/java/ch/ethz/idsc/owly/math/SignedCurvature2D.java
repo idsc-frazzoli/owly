@@ -20,7 +20,7 @@ public enum SignedCurvature2D {
     // System.out.println("length of tensors: "+ a.length()+", "+ b.length()+", "+c.length());
     Scalar v = b.subtract(a).dot(Cross2D.of(c.subtract(b))).Get();
     Scalar w = b.subtract(a).dot(c.subtract(a)).Get();
-    Scalar n = Norm._2.ofVector(c.subtract(b));
+    Scalar n = Norm._2.between(c, b);
     Scalar den = Hypot.of(v, w).multiply(n);
     return TWO.multiply(v).divide(den);
   }

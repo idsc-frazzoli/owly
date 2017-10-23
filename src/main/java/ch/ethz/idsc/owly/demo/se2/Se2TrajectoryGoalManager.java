@@ -42,7 +42,7 @@ public class Se2TrajectoryGoalManager extends TrajectoryGoalManager {
   public Scalar minCostToGoal(Tensor x) {
     Tensor center = Lists.getLast(heuristicTrajectory).state().extract(0, 2);
     Tensor cur_xy = x.extract(0, 2);
-    return Ramp.of(Norm._2.ofVector(cur_xy.subtract(center)).subtract(radius).divide(maxSpeed));
+    return Ramp.of(Norm._2.between(cur_xy, center).subtract(radius).divide(maxSpeed));
     // return RealScalar.ZERO;
   }
 }

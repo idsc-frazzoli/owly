@@ -71,7 +71,7 @@ public class RnxtHeuristicEllipsoidGoalManager extends SimpleTrajectoryRegionQue
     Tensor rnVector = rnState.subtract(rnCenter);
     Scalar root = Hypot.BIFUNCTION.apply(rnRadius.Get(0).multiply(rnVector.Get(1)), rnRadius.Get(1).multiply(rnVector.Get(0)));
     // ---
-    Scalar specificRadius = rnRadius.Get(0).multiply(rnRadius.Get(1)).multiply(Norm._2.ofVector(rnState.subtract(rnCenter))).divide(root);
-    return Ramp.of(Norm._2.ofVector(rnState.subtract(rnCenter)).subtract(specificRadius)); // <- do not change
+    Scalar specificRadius = rnRadius.Get(0).multiply(rnRadius.Get(1)).multiply(Norm._2.between(rnState, rnCenter)).divide(root);
+    return Ramp.of(Norm._2.between(rnState, rnCenter).subtract(specificRadius)); // <- do not change
   }
 }

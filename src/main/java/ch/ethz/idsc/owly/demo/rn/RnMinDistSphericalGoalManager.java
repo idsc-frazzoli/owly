@@ -49,12 +49,12 @@ public class RnMinDistSphericalGoalManager extends SimpleTrajectoryRegionQuery i
 
   @Override
   public Scalar costIncrement(GlcNode glcNode, List<StateTime> trajectory, Flow flow) {
-    return Norm._2.ofVector(glcNode.stateTime().state().subtract(Lists.getLast(trajectory).state()));
+    return Norm._2.between(glcNode.stateTime().state(), Lists.getLast(trajectory).state());
   }
 
   @Override
   public Scalar minCostToGoal(Tensor x) {
     // max(0, ||x - center|| - radius)
-    return Ramp.of(Norm._2.ofVector(x.subtract(center)).subtract(radius));
+    return Ramp.of(Norm._2.between(x, center).subtract(radius));
   }
 }
