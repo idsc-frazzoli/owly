@@ -1,0 +1,48 @@
+// code by jph
+package ch.ethz.idsc.owly.demo.rnd.glc;
+
+import java.util.List;
+
+import ch.ethz.idsc.owly.data.GlobalAssert;
+import ch.ethz.idsc.owly.data.Lists;
+import ch.ethz.idsc.owly.demo.rnd.RndAndRegion;
+import ch.ethz.idsc.owly.demo.rnd.RndState;
+import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
+import ch.ethz.idsc.owly.glc.core.GlcNode;
+import ch.ethz.idsc.owly.glc.core.GoalInterface;
+import ch.ethz.idsc.owly.math.flow.Flow;
+import ch.ethz.idsc.owly.math.region.SphericalRegion;
+import ch.ethz.idsc.owly.math.state.StateTime;
+import ch.ethz.idsc.owly.math.state.TimeInvariantRegion;
+import ch.ethz.idsc.tensor.RealScalar;
+import ch.ethz.idsc.tensor.Scalar;
+import ch.ethz.idsc.tensor.Scalars;
+import ch.ethz.idsc.tensor.Tensor;
+import ch.ethz.idsc.tensor.red.Norm;
+import ch.ethz.idsc.tensor.sca.Ramp;
+
+public class RndMinDistSphericalGoalManager extends SimpleTrajectoryRegionQuery implements GoalInterface {
+  private final Tensor center;
+  private final Scalar radius;
+
+  public RndMinDistSphericalGoalManager(Tensor center, Scalar radius) {
+    super(new TimeInvariantRegion(RndAndRegion.trivial_1(new SphericalRegion(center, radius))));
+    GlobalAssert.that(Scalars.lessThan(RealScalar.ZERO, radius));
+    this.center = center;
+    this.radius = radius;
+  }
+
+  @Override
+  public Scalar minCostToGoal(Tensor x) {
+    RndState rndState = RndState.of(x);
+    // max(0, ||x - center|| - radius)
+    return Ramp.of(Norm._2.between(rndState.x1, center).subtract(radius));
+  }
+
+  @Override
+  public Scalar costIncrement(GlcNode glcNode, List<StateTime> trajectory, Flow flow) {
+    RndState rndState1 = RndState.of(glcNode.stateTime().state());
+    RndState rndState2 = RndState.of(Lists.getLast(trajectory).state());
+    return Norm._2.between(rndState1.x1, rndState2.x1);
+  }
+}
