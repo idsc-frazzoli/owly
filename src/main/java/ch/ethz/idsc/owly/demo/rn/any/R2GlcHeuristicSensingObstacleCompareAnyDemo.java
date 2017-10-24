@@ -167,7 +167,7 @@ enum R2GlcHeuristicSensingObstacleCompareAnyDemo {
     };
     for (GoalInterface rnGoal : values) {
       // _run(RealScalar.of(8), rnGoal, true);
-      _run(RealScalar.of(20), rnGoal, false);
+      _run(RealScalar.of(10), rnGoal, false);
       // _run(RealScalar.of(12), rnGoal, true);
       // _run(RealScalar.of(12), rnGoal, true);
     }

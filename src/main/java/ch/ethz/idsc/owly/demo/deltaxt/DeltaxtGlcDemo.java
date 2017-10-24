@@ -10,6 +10,8 @@ import ch.ethz.idsc.owly.data.Lists;
 import ch.ethz.idsc.owly.demo.delta.DeltaControls;
 import ch.ethz.idsc.owly.demo.delta.DeltaParameters;
 import ch.ethz.idsc.owly.demo.delta.ImageGradient;
+import ch.ethz.idsc.owly.demo.util.DemoInterface;
+import ch.ethz.idsc.owly.demo.util.UserHome;
 import ch.ethz.idsc.owly.glc.adapter.Parameters;
 import ch.ethz.idsc.owly.glc.adapter.RxtTimeInvariantRegion;
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
@@ -37,11 +39,12 @@ import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Scalars;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
+import ch.ethz.idsc.tensor.io.AnimationWriter;
 import ch.ethz.idsc.tensor.io.ResourceData;
 
-enum DeltaxtGlcDemo {
+public class DeltaxtGlcDemo implements DemoInterface {
   ;
-  public static void main(String[] args) throws Exception {
+  public void start() {
     // SETUP
     RationalScalar resolution = (RationalScalar) RationalScalar.of(12, 1);
     Tensor partitionScale = Tensors.vector(2e12, 2e12, 2e12);
@@ -50,6 +53,13 @@ enum DeltaxtGlcDemo {
     Scalar dtMax = RationalScalar.of(1, 6);
     int maxIter = 200000;
     Tensor range = Tensors.vector(9, 6.5);
+    AnimationWriter gsw = null;
+    try {
+      gsw = AnimationWriter.of(UserHome.Pictures("delta_s.gif"), 250);
+    } catch (Exception e2) {
+      // TODO Auto-generated catch block
+      e2.printStackTrace();
+    }
     ImageGradient ipr = new ImageGradient(ResourceData.of("/io/delta_uxy.png"), range, RealScalar.of(-0.1)); // -.25 .5
     Scalar maxInput = RealScalar.ONE;
     DeltaxtStateSpaceModel stateSpaceModel = new DeltaxtStateSpaceModel(ipr, maxInput);
@@ -91,18 +101,44 @@ enum DeltaxtGlcDemo {
     // RUN
     OwlyFrame owlyFrame = OwlyGui.start();
     owlyFrame.configCoordinateOffset(33, 416);
-    owlyFrame.jFrame.setBounds(100, 100, 620, 475);
+    owlyFrame.jFrame.setBounds(100, 100, 620, 525);
     owlyFrame.addBackground(imageRegion);
     owlyFrame.addTrajectory(dinghyTrajectory, new Color(224, 168, 0, 224));
     while (!trajectoryPlanner.getBest().isPresent() && owlyFrame.jFrame.isVisible()) {
       GlcExpand.maxSteps(trajectoryPlanner, 30, parameters.getDepthLimit());
       owlyFrame.setGlc(trajectoryPlanner);
-      Thread.sleep(1);
+      try {
+        gsw.append(owlyFrame.offscreen());
+      } catch (Exception e1) {
+        e1.printStackTrace();
+      }
+      try {
+        Thread.sleep(1);
+      } catch (InterruptedException e) {
+        e.printStackTrace();
+      }
       DebugUtils.heuristicConsistencyCheck(trajectoryPlanner);
       if (trajectoryPlanner.getQueue().isEmpty())
         break;
       if (trajectoryPlanner.getBest().isPresent())
         owlyFrame.addTrajectory(dinghyTrajectory, new Color(224, 168, 0, 224));
     }
+    int repeatLast = 6;
+    while (0 < repeatLast--)
+      try {
+        gsw.append(owlyFrame.offscreen());
+      } catch (Exception e) {
+        e.printStackTrace();
+      }
+    try {
+      gsw.close();
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+    System.out.println("created gif");
+  }
+
+  public static void main(String[] args) {
+    new DeltaxtGlcDemo().start();
   }
 }

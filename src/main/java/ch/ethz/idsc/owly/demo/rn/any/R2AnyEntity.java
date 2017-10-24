@@ -58,7 +58,9 @@ public class R2AnyEntity extends AbstractAnyEntity {
         new SimpleEpisodeIntegrator( //
             SingleIntegratorStateSpaceModel.INSTANCE, //
             EulerIntegrator.INSTANCE, //
-            new StateTime(state, RealScalar.ZERO)));
+            new StateTime(state, RealScalar.ZERO)), //
+        RealScalar.of(0.5), // lead time
+        RealScalar.of(0.3)); // expand Time
   }
 
   /** implementation of 2 dots following trajectory

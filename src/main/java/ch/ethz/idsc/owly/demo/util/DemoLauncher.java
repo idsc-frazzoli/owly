@@ -53,7 +53,7 @@ public enum DemoLauncher {
       jPanel.add(jButton);
     }
     jFrame.setContentPane(jPanel);
-    jFrame.setBounds(1200, 100, 200, 40 + demos.size() * 20);
+    jFrame.setBounds(1200, 100, 250, 40 + demos.size() * 20);
     jFrame.setVisible(true);
   }
 }

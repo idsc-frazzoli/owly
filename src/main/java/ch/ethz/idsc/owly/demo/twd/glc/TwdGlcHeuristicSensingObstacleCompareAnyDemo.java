@@ -140,6 +140,7 @@ enum TwdGlcHeuristicSensingObstacleCompareAnyDemo {
       timingDatabase.saveCost(staCost, 0);
       System.out.println("*****Finished*****");
       timingDatabase.write2lines();
+      timingDatabase.printcurrent();
       ((OptimalAnyTrajectoryPlanner) anyTrajectoryPlanner).printTimes();
       standardTrajectoryPlanner.printTimes();
       DebugUtils.heuristicConsistencyCheck((TrajectoryPlanner) anyTrajectoryPlanner);

@@ -39,7 +39,7 @@ import ch.ethz.idsc.tensor.Tensors;
 enum Se2GlcDemo {
   ;
   public static void main(String[] args) throws Exception {
-    RationalScalar resolution = (RationalScalar) RealScalar.of(4);
+    RationalScalar resolution = (RationalScalar) RealScalar.of(9);
     Scalar timeScale = RealScalar.of(10);
     Scalar depthScale = RealScalar.of(5);
     Tensor partitionScale = Tensors.vector(3, 3, 50 / Math.PI);
