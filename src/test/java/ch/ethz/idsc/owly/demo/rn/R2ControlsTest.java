@@ -28,4 +28,13 @@ public class R2ControlsTest extends TestCase {
     Scalar maxSpeed = R2Controls.maxSpeed(controls);
     assertTrue(Chop._14.close(maxSpeed, RealScalar.ONE));
   }
+
+  public void testFail() {
+    try {
+      R2Controls.createRadial(2);
+      assertTrue(false);
+    } catch (Exception exception) {
+      // ---
+    }
+  }
 }

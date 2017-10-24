@@ -45,6 +45,6 @@ public class DeltaMinTimeGoalManager extends SimpleTrajectoryRegionQuery impleme
   @Override
   public Scalar minCostToGoal(Tensor x) {
     // unit [m] / [m/s] simplifies to [s]
-    return Ramp.of(Norm._2.ofVector(x.subtract(center)).subtract(radius).divide(maxMove));
+    return Ramp.of(Norm._2.between(x, center).subtract(radius).divide(maxMove));
   }
 }

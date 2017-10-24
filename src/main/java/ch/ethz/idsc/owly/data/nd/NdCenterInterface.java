@@ -11,7 +11,7 @@ public interface NdCenterInterface extends VectorNormInterface {
     return new NdCenterInterface() {
       @Override
       public Scalar ofVector(Tensor vector) {
-        return Norm._2.ofVector(vector.subtract(center));
+        return Norm._2.between(vector, center);
       }
 
       @Override
