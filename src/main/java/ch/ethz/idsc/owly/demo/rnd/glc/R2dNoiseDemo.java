@@ -1,18 +1,18 @@
 // code by jph
-package ch.ethz.idsc.owly.demo.rn.glc;
+package ch.ethz.idsc.owly.demo.rnd.glc;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
+import ch.ethz.idsc.owly.data.GlobalAssert;
 import ch.ethz.idsc.owly.data.Stopwatch;
-import ch.ethz.idsc.owly.demo.rn.R2Controls;
-import ch.ethz.idsc.owly.demo.rn.R2NoiseCostFunction;
 import ch.ethz.idsc.owly.demo.rn.R2NoiseRegion;
-import ch.ethz.idsc.owly.demo.rn.RnMinDistExtraCostGoalManager;
+import ch.ethz.idsc.owly.demo.rnd.R2dControls;
+import ch.ethz.idsc.owly.demo.rnd.RndOrRegion;
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
 import ch.ethz.idsc.owly.glc.adapter.StateTimeTrajectories;
-import ch.ethz.idsc.owly.glc.core.CostFunction;
 import ch.ethz.idsc.owly.glc.core.Expand;
 import ch.ethz.idsc.owly.glc.core.GlcNode;
 import ch.ethz.idsc.owly.glc.core.GlcNodes;
@@ -36,29 +36,31 @@ import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
 
-enum R2NoiseDemo {
+enum R2dNoiseDemo {
   ;
   public static void main(String[] args) {
-    Tensor partitionScale = Tensors.vector(8, 8);
-    final Scalar threshold = RealScalar.of(.1);
-    Region region = new R2NoiseRegion(threshold);
+    Tensor partitionScale = Tensors.vector(6, 6, 6, 6);
+    final Scalar threshold = RealScalar.of(.2);
+    Region region = RndOrRegion.common(new R2NoiseRegion(threshold));
     StateIntegrator stateIntegrator = //
-        FixedStateIntegrator.create(EulerIntegrator.INSTANCE, RationalScalar.of(1, 12), 4);
-    Collection<Flow> controls = R2Controls.createRadial(23);
-    final Tensor center = Tensors.vector(10, 0);
+        FixedStateIntegrator.create(EulerIntegrator.INSTANCE, RationalScalar.of(1, 8), 3);
+    Collection<Flow> controls = R2dControls.createRadial(5);
+    final Tensor center = Tensors.vector(3, 0);
     final Scalar radius = DoubleScalar.of(.2);
-    CostFunction costFunction = new R2NoiseCostFunction(threshold.subtract(RealScalar.of(.3)));
     GoalInterface goalInterface = //
-        new RnMinDistExtraCostGoalManager(center, radius, costFunction);
-    // RnMinDistSphericalGoalManager.create(center, radius);
+        new RndMinDistSphericalGoalManager(center, radius);
     TrajectoryRegionQuery obstacleQuery = //
         new SimpleTrajectoryRegionQuery(new TimeInvariantRegion(region));
     // ---
     TrajectoryPlanner trajectoryPlanner = new StandardTrajectoryPlanner( //
         partitionScale, stateIntegrator, controls, obstacleQuery, goalInterface);
-    trajectoryPlanner.insertRoot(Tensors.vector(0, 0));
+    // Trajectories.s
+    Tensor root_x = Tensors.vector(0, 0, 0, 0);
+    boolean root_free = obstacleQuery.isDisjoint(Collections.singletonList(new StateTime(root_x, RealScalar.ONE)));
+    GlobalAssert.that(root_free);
+    trajectoryPlanner.insertRoot(root_x);
     Stopwatch stopwatch = Stopwatch.started();
-    int iters = Expand.maxSteps(trajectoryPlanner, 10000);
+    int iters = Expand.maxSteps(trajectoryPlanner, 1000);
     System.out.println(iters + " " + stopwatch.display_seconds());
     Optional<GlcNode> optional = trajectoryPlanner.getBest();
     if (optional.isPresent()) {
