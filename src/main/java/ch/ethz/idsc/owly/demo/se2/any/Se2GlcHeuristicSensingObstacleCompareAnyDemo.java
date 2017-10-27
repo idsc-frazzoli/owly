@@ -6,15 +6,9 @@ import java.util.List;
 import java.util.Optional;
 
 import ch.ethz.idsc.owly.demo.rn.EuclideanDistanceDiscoverRegion;
-import ch.ethz.idsc.owly.demo.rn.R2Controls;
 import ch.ethz.idsc.owly.demo.rn.R2NoiseRegion;
-import ch.ethz.idsc.owly.demo.rn.R2Parameters;
-import ch.ethz.idsc.owly.demo.rn.RnMinDistSphericalGoalManager;
 import ch.ethz.idsc.owly.demo.se2.Se2Controls;
-import ch.ethz.idsc.owly.demo.se2.Se2MinCurvatureGoalManager;
-import ch.ethz.idsc.owly.demo.se2.Se2MinDistCurvGoalManager;
 import ch.ethz.idsc.owly.demo.se2.Se2MinTimeEuclideanDistanceHeuristicGoalManager;
-import ch.ethz.idsc.owly.demo.se2.Se2MinTimeGoalManager;
 import ch.ethz.idsc.owly.demo.se2.Se2NoHeuristicGoalManager;
 import ch.ethz.idsc.owly.demo.se2.Se2StateSpaceModel;
 import ch.ethz.idsc.owly.demo.se2.glc.Se2Parameters;

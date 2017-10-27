@@ -8,6 +8,7 @@ import java.util.Optional;
 import ch.ethz.idsc.owly.demo.rn.R2Bubbles;
 import ch.ethz.idsc.owly.demo.rn.R2Controls;
 import ch.ethz.idsc.owly.demo.rn.RnMinDistSphericalGoalManager;
+import ch.ethz.idsc.owly.demo.util.UserHome;
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
 import ch.ethz.idsc.owly.glc.adapter.StateTimeTrajectories;
 import ch.ethz.idsc.owly.glc.core.Expand;
@@ -16,7 +17,6 @@ import ch.ethz.idsc.owly.glc.core.GlcNodes;
 import ch.ethz.idsc.owly.glc.core.GoalInterface;
 import ch.ethz.idsc.owly.glc.core.StandardTrajectoryPlanner;
 import ch.ethz.idsc.owly.glc.core.TrajectoryPlanner;
-import ch.ethz.idsc.owly.gui.ani.OwlyAnimationFrame;
 import ch.ethz.idsc.owly.gui.ani.OwlyFrame;
 import ch.ethz.idsc.owly.gui.ani.OwlyGui;
 import ch.ethz.idsc.owly.math.flow.EulerIntegrator;
@@ -34,20 +34,21 @@ import ch.ethz.idsc.tensor.Scalars;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.TensorRuntimeException;
 import ch.ethz.idsc.tensor.Tensors;
+import ch.ethz.idsc.tensor.io.AnimationWriter;
 import ch.ethz.idsc.tensor.red.Norm;
 import ch.ethz.idsc.tensor.sca.Ramp;
 
 enum R2DemoSlow {
   ;
-  static TrajectoryPlanner simpleEmpty() {
+  static TrajectoryPlanner simpleEmpty() throws Exception {
     return simple(EmptyTrajectoryRegionQuery.INSTANCE);
   }
 
-  static TrajectoryPlanner simpleR2Bubbles() {
+  static TrajectoryPlanner simpleR2Bubbles() throws Exception {
     return simple(new SimpleTrajectoryRegionQuery(new TimeInvariantRegion(new R2Bubbles())));
   }
 
-  private static TrajectoryPlanner simple(TrajectoryRegionQuery obstacleQuery) {
+  private static TrajectoryPlanner simple(TrajectoryRegionQuery obstacleQuery) throws Exception {
     final Tensor stateRoot = Tensors.vector(-2.2, -2.2);
     final Tensor stateGoal = Tensors.vector(2, 2);
     final Scalar radius = DoubleScalar.of(.25);
@@ -60,12 +61,14 @@ enum R2DemoSlow {
     TrajectoryPlanner trajectoryPlanner = new StandardTrajectoryPlanner( //
         eta, stateIntegrator, controls, obstacleQuery, goalInterface);
     trajectoryPlanner.insertRoot(stateRoot);
+    AnimationWriter gsw = AnimationWriter.of(UserHome.Pictures("delta_s.gif"), 250);
     OwlyFrame owly = OwlyGui.start();
     for (int i = 0; i < 5; i++) {
       int iters = Expand.maxSteps(trajectoryPlanner, 1);
-      owly.setGlc(trajectoryPlanner);     
-      
+      owly.setGlc(trajectoryPlanner);
+      gsw.append(owly.offscreen());
     }
+    gsw.close();
     Optional<GlcNode> optional = trajectoryPlanner.getBest();
     if (optional.isPresent()) {
       GlcNode goalNode = optional.get(); // <- throws exception if
@@ -83,10 +86,10 @@ enum R2DemoSlow {
       List<StateTime> trajectory = GlcNodes.getPathFromRootTo(optional.get());
       StateTimeTrajectories.print(trajectory);
     }
-//    OwlyGui.glc(trajectoryPlanner);
+    // OwlyGui.glc(trajectoryPlanner);
   }
 
-  public static void main(String[] args) {
+  public static void main(String[] args) throws Exception {
     demo(simpleEmpty());
     demo(simpleR2Bubbles());
   }
