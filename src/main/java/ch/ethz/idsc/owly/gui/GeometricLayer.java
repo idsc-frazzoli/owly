@@ -55,6 +55,8 @@ public class GeometricLayer {
     return new Line2D.Double(toPoint2D(x), toPoint2D(x.add(dx)));
   }
 
+  /** @param polygon
+   * @return path that is not closed */
   public Path2D toPath2D(Tensor polygon) {
     Path2D path2d = new Path2D.Double();
     if (!Tensors.isEmpty(polygon)) {
