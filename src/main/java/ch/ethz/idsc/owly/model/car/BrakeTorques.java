@@ -30,7 +30,7 @@ public class BrakeTorques {
       pressR = RealScalar.of(0.3).multiply(masterPress).add(RealScalar.of(1.05));
     }
     // ---
-    if (Scalars.lessThan(RealScalar.ZERO, masterPress)) {
+    if (Sign.isPositive(masterPress)) {
       if (Scalars.nonZero(carState.omega.Get(0))) {
         _Tb1L = pressF.multiply(vehicleModel.press2torF()).multiply(Sign.of(carState.omega.Get(0))).negate();
       } else {
@@ -56,7 +56,7 @@ public class BrakeTorques {
       }
     }
     // ---
-    if (Scalars.lessThan(RealScalar.ZERO, carControl.handbrake)) {
+    if (Sign.isPositive(carControl.handbrake)) {
       if (Scalars.nonZero(carState.omega.Get(2))) {
         _Tb2L = _Tb2L.subtract(carControl.handbrake.multiply(Sign.of(carState.omega.Get(2))));
       } else {

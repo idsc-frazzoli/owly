@@ -3,13 +3,12 @@ package ch.ethz.idsc.owly.glc.adapter;
 
 import java.util.List;
 
+import ch.ethz.idsc.owly.data.GlobalAssert;
 import ch.ethz.idsc.owly.data.Lists;
 import ch.ethz.idsc.owly.glc.core.GlcNode;
 import ch.ethz.idsc.owly.math.state.StateTime;
-import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
-import ch.ethz.idsc.tensor.Scalars;
-import ch.ethz.idsc.tensor.TensorRuntimeException;
+import ch.ethz.idsc.tensor.sca.Sign;
 
 /** utility functions that operate on List<StateTime> */
 public enum StateTimeTrajectories {
@@ -21,8 +20,7 @@ public enum StateTimeTrajectories {
    * @throws Exception if time of last node is smaller than of given stateTime */
   public static Scalar timeIncrement(StateTime stateTime, List<StateTime> trajectory) {
     Scalar dt = Lists.getLast(trajectory).time().subtract(stateTime.time());
-    if (Scalars.lessThan(dt, RealScalar.ZERO))
-      throw TensorRuntimeException.of(dt);
+    GlobalAssert.that(Sign.isPositiveOrZero(dt));
     return dt;
   }
 

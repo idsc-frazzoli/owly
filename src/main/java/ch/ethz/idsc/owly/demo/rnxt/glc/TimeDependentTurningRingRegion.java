@@ -10,11 +10,10 @@ import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Scalars;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.TensorRuntimeException;
-import ch.ethz.idsc.tensor.Tensors;
 import ch.ethz.idsc.tensor.alg.Last;
 import ch.ethz.idsc.tensor.alg.VectorQ;
 import ch.ethz.idsc.tensor.red.Norm;
-import ch.ethz.idsc.tensor.red.VectorAngle;
+import ch.ethz.idsc.tensor.sca.ArcTan;
 import ch.ethz.idsc.tensor.sca.Mod;
 
 /** evaluate does not correspond to Euclidean distance */
@@ -57,13 +56,7 @@ public class TimeDependentTurningRingRegion implements StateTimeRegion {
       Scalar upperGapAngle = initialGapAngle.add(gapSizeAngle.divide(RealScalar.of(2)));
       Scalar lowerGapAngle = initialGapAngle.subtract(gapSizeAngle.divide(RealScalar.of(2)));
       Tensor vec1 = state.subtract(center);
-      Tensor vec2 = Tensors.vector(1, 0);
-      // ArcTan[x, y] --> TestFailure
-      Scalar angle = VectorAngle.of(vec1, vec2);
-      if (Scalars.lessThan(vec1.Get(1), RealScalar.ZERO)) { // if state is in lower half : negative Angle
-        angle = angle.negate();
-      }
-      angle = angle.subtract(turningSpeed.multiply(time));
+      Scalar angle = ArcTan.of(vec1.Get(0), vec1.Get(1)).subtract(turningSpeed.multiply(time));
       if (Scalars.lessEquals(MOD.of(angle), upperGapAngle) && Scalars.lessEquals(lowerGapAngle, MOD.of(angle)))
         return false; // checks if in Gap
       return true; // Otherwise in Ring

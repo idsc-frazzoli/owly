@@ -14,12 +14,11 @@ import ch.ethz.idsc.owly.math.flow.Flow;
 import ch.ethz.idsc.owly.math.region.SphericalRegion;
 import ch.ethz.idsc.owly.math.state.StateTime;
 import ch.ethz.idsc.owly.math.state.TimeInvariantRegion;
-import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
-import ch.ethz.idsc.tensor.Scalars;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.red.Norm;
 import ch.ethz.idsc.tensor.sca.Ramp;
+import ch.ethz.idsc.tensor.sca.Sign;
 
 public class RndMinDistSphericalGoalManager extends SimpleTrajectoryRegionQuery implements GoalInterface {
   private final Tensor center;
@@ -27,7 +26,7 @@ public class RndMinDistSphericalGoalManager extends SimpleTrajectoryRegionQuery 
 
   public RndMinDistSphericalGoalManager(Tensor center, Scalar radius) {
     super(new TimeInvariantRegion(RndAndRegion.trivial_1(new SphericalRegion(center, radius))));
-    GlobalAssert.that(Scalars.lessThan(RealScalar.ZERO, radius));
+    GlobalAssert.that(Sign.isPositive(radius));
     this.center = center;
     this.radius = radius;
   }
