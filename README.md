@@ -23,9 +23,11 @@ by Sertac Karaman and Emilio Frazzoli,
 The following integrators are available:
 
 * Euler, Midpoint
-* Runge-Kutta 4th order, and 5th order 
+* Runge-Kutta 4th order, and 5th order
+* exact integrator for the group SE2
 
 The `owly` repository implements visualizations in 2D as showcased below.
+See also a [video](https://www.youtube.com/watch?v=lPQW3GqQqSY).
 
 The separate repository [owly3d](https://github.com/idsc-frazzoli/owly3d) implements animations and visualizations in 3D.
 
