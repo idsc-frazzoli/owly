@@ -16,11 +16,10 @@ import ch.ethz.idsc.owly.math.state.StateTime;
 import ch.ethz.idsc.owly.math.state.TimeInvariantRegion;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
-import ch.ethz.idsc.tensor.Scalars;
 import ch.ethz.idsc.tensor.Tensor;
-import ch.ethz.idsc.tensor.TensorRuntimeException;
 import ch.ethz.idsc.tensor.alg.Array;
 import ch.ethz.idsc.tensor.alg.VectorQ;
+import ch.ethz.idsc.tensor.sca.Sign;
 
 /** cost is a varying distance metric */
 class RnnGoalManager extends SimpleTrajectoryRegionQuery implements GoalInterface {
@@ -36,8 +35,7 @@ class RnnGoalManager extends SimpleTrajectoryRegionQuery implements GoalInterfac
   public Scalar costIncrement(GlcNode glcNode, List<StateTime> trajectory, Flow flow) {
     Scalar sum = trajectory.stream().map(StateTime::state).map(continuousNoise).reduce(Scalar::add).get();
     sum = sum.add(RealScalar.of(trajectory.size()));
-    if (Scalars.lessThan(sum, RealScalar.ZERO))
-      throw TensorRuntimeException.of(sum);
+    GlobalAssert.that(Sign.isPositiveOrZero(sum));
     return sum;
   }
 

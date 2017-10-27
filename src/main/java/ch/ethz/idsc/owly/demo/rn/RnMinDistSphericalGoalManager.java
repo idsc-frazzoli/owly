@@ -12,12 +12,11 @@ import ch.ethz.idsc.owly.math.flow.Flow;
 import ch.ethz.idsc.owly.math.region.SphericalRegion;
 import ch.ethz.idsc.owly.math.state.StateTime;
 import ch.ethz.idsc.owly.math.state.TimeInvariantRegion;
-import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
-import ch.ethz.idsc.tensor.Scalars;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.red.Norm;
 import ch.ethz.idsc.tensor.sca.Ramp;
+import ch.ethz.idsc.tensor.sca.Sign;
 
 /** objective is minimum path length
  * path length is measured in Euclidean distance using Norm._2::ofVector
@@ -42,7 +41,7 @@ public class RnMinDistSphericalGoalManager extends SimpleTrajectoryRegionQuery i
    * @param radius positive */
   /* package */ RnMinDistSphericalGoalManager(Tensor center, Scalar radius) {
     super(new TimeInvariantRegion(new SphericalRegion(center, radius)));
-    GlobalAssert.that(Scalars.lessThan(RealScalar.ZERO, radius));
+    GlobalAssert.that(Sign.isPositive(radius));
     this.center = center;
     this.radius = radius;
   }
