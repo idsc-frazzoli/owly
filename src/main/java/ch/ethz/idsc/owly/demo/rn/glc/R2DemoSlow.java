@@ -21,6 +21,8 @@ import ch.ethz.idsc.owly.gui.ani.OwlyFrame;
 import ch.ethz.idsc.owly.gui.ani.OwlyGui;
 import ch.ethz.idsc.owly.math.flow.EulerIntegrator;
 import ch.ethz.idsc.owly.math.flow.Flow;
+import ch.ethz.idsc.owly.math.region.EllipsoidRegion;
+import ch.ethz.idsc.owly.math.region.RegionUnion;
 import ch.ethz.idsc.owly.math.state.EmptyTrajectoryRegionQuery;
 import ch.ethz.idsc.owly.math.state.FixedStateIntegrator;
 import ch.ethz.idsc.owly.math.state.StateIntegrator;
@@ -48,10 +50,18 @@ enum R2DemoSlow {
     return simple(new SimpleTrajectoryRegionQuery(new TimeInvariantRegion(new R2Bubbles())));
   }
 
+  static TrajectoryPlanner simpleR2Circle() throws Exception {
+    TrajectoryRegionQuery obstacleQuery = //
+        new SimpleTrajectoryRegionQuery(new TimeInvariantRegion( //
+            RegionUnion.of( //
+                new EllipsoidRegion(Tensors.vector(-1, 0), Tensors.vector(2, 2)))));
+    return simple(obstacleQuery);
+  }
+
   private static TrajectoryPlanner simple(TrajectoryRegionQuery obstacleQuery) throws Exception {
     final Tensor stateRoot = Tensors.vector(-2.2, -2.2);
-    final Tensor stateGoal = Tensors.vector(2, 2);
-    final Scalar radius = DoubleScalar.of(.25);
+    final Tensor stateGoal = Tensors.vector(2, 3.5);
+    final Scalar radius = DoubleScalar.of(0.8);
     // ---
     Tensor eta = Tensors.vector(1.5, 1.5);
     StateIntegrator stateIntegrator = FixedStateIntegrator.create(EulerIntegrator.INSTANCE, RationalScalar.of(1, 5), 5);
@@ -61,13 +71,18 @@ enum R2DemoSlow {
     TrajectoryPlanner trajectoryPlanner = new StandardTrajectoryPlanner( //
         eta, stateIntegrator, controls, obstacleQuery, goalInterface);
     trajectoryPlanner.insertRoot(stateRoot);
-    AnimationWriter gsw = AnimationWriter.of(UserHome.Pictures("delta_s.gif"), 250);
+    AnimationWriter gsw = AnimationWriter.of(UserHome.Pictures("R2_Slow.gif"), 400);
     OwlyFrame owly = OwlyGui.start();
-    for (int i = 0; i < 5; i++) {
+    for (int i = 0; i < 20; i++) {
+      Optional<GlcNode> optional = trajectoryPlanner.getBest();
+      if (optional.isPresent())
+        break;
       int iters = Expand.maxSteps(trajectoryPlanner, 1);
       owly.setGlc(trajectoryPlanner);
       gsw.append(owly.offscreen());
     }
+    for (int i = 0; i < 4; i++)
+      gsw.append(owly.offscreen());
     gsw.close();
     Optional<GlcNode> optional = trajectoryPlanner.getBest();
     if (optional.isPresent()) {
@@ -90,7 +105,6 @@ enum R2DemoSlow {
   }
 
   public static void main(String[] args) throws Exception {
-    demo(simpleEmpty());
-    demo(simpleR2Bubbles());
+    simpleR2Circle();
   }
 }
