@@ -17,6 +17,11 @@ public abstract class AbstractCircularEntity extends AbstractEntity {
   }
 
   @Override
+  public final PlannerType getPlannerType() {
+    return PlannerType.STANDARD;
+  }
+
+  @Override
   public void render(GeometricLayer geometricLayer, Graphics2D graphics) {
     { // indicate current position
       Tensor state = getStateTimeNow().state();

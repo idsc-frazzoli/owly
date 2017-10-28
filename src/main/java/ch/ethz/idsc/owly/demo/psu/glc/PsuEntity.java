@@ -11,7 +11,6 @@ import ch.ethz.idsc.owly.glc.core.GoalInterface;
 import ch.ethz.idsc.owly.glc.core.StandardTrajectoryPlanner;
 import ch.ethz.idsc.owly.glc.core.TrajectoryPlanner;
 import ch.ethz.idsc.owly.gui.ani.AbstractCircularEntity;
-import ch.ethz.idsc.owly.gui.ani.PlannerType;
 import ch.ethz.idsc.owly.math.flow.Flow;
 import ch.ethz.idsc.owly.math.flow.Integrator;
 import ch.ethz.idsc.owly.math.flow.RungeKutta4Integrator;
@@ -53,11 +52,6 @@ import ch.ethz.idsc.tensor.Tensors;
   @Override
   public Scalar delayHint() {
     return DELAY_HINT;
-  }
-
-  @Override
-  public PlannerType getPlannerType() {
-    return PlannerType.STANDARD;
   }
 
   @Override
