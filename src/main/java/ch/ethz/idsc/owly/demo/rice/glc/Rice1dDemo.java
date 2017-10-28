@@ -33,13 +33,13 @@ import ch.ethz.idsc.tensor.Tensors;
  * 
  * References:
  * "Mobility and Autonomous Reconfiguration of Marsokhod" */
-enum RiceD1Demo {
+enum Rice1dDemo {
   ;
   public static TrajectoryPlanner simple() {
-    Tensor eta = Tensors.vector(5, 8);
+    Tensor eta = Tensors.vector(8, 8);
     StateIntegrator stateIntegrator = FixedStateIntegrator.create( //
-        MidpointIntegrator.INSTANCE, RationalScalar.of(1, 5), 5);
-    Collection<Flow> controls = Rice2Controls.createControls(RealScalar.of(.5), 15); //
+        MidpointIntegrator.INSTANCE, RationalScalar.of(1, 8), 5);
+    Collection<Flow> controls = Rice2Controls.create1d(RealScalar.of(-0.5), 15); //
     Rice1GoalManager rice1Goal = new Rice1GoalManager(Tensors.vector(6, -.7), Tensors.vector(.4, .3));
     TrajectoryRegionQuery obstacleQuery = //
         new SimpleTrajectoryRegionQuery(new TimeInvariantRegion( //

@@ -16,34 +16,35 @@ import ch.ethz.idsc.tensor.Tensors;
 import ch.ethz.idsc.tensor.alg.Range;
 import ch.ethz.idsc.tensor.alg.Subdivide;
 import ch.ethz.idsc.tensor.lie.AngleVector;
-import ch.ethz.idsc.tensor.sca.Chop;
 
 /** controls for position and velocity */
 public enum Rice2Controls {
   ;
-  /** @param lambda
+  /** @param mu
    * @param num
    * @return */
-  public static Collection<Flow> createControls(Scalar lambda, int num) {
-    StateSpaceModel stateSpaceModel = new Rice2StateSpaceModel(lambda);
+  public static Collection<Flow> create1d(Scalar mu, int num) {
+    StateSpaceModel stateSpaceModel = Rice2StateSpaceModel.of(mu);
     List<Flow> list = new ArrayList<>();
     for (Tensor u : Subdivide.of(DoubleScalar.of(-1), DoubleScalar.of(1), num))
       list.add(StateSpaceModels.createFlow(stateSpaceModel, Tensors.of(u)));
     return list;
   }
 
-  /** @param lambda
+  /** radial
+   * 
+   * @param mu
    * @param seg
    * @param num
    * @return */
-  public static Collection<Flow> createControls(Scalar lambda, int seg, int num) {
-    StateSpaceModel stateSpaceModel = new Rice2StateSpaceModel(lambda);
+  public static Collection<Flow> create2d(Scalar mu, int seg, int num) {
+    StateSpaceModel stateSpaceModel = Rice2StateSpaceModel.of(mu);
     Collection<Flow> collection = new HashSet<>();
+    // FIXME amp == 0 !? multiple times !?
     for (Tensor amp : Subdivide.of(0, 1, seg))
-      for (Tensor angle : Range.of(0, num).multiply(DoubleScalar.of(2 * Math.PI / num))) {
-        Tensor u = Chop._10.of(AngleVector.of(angle.Get()).multiply(amp.Get()));
-        collection.add(StateSpaceModels.createFlow(stateSpaceModel, u));
-      }
+      for (Tensor angle : Range.of(0, num).multiply(DoubleScalar.of(2 * Math.PI / num)))
+        collection.add(StateSpaceModels.createFlow(stateSpaceModel, //
+            AngleVector.of(angle.Get()).multiply(amp.Get())));
     return collection;
   }
 }

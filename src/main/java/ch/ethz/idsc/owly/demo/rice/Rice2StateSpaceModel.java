@@ -9,23 +9,28 @@ import ch.ethz.idsc.tensor.TensorRuntimeException;
 import ch.ethz.idsc.tensor.Tensors;
 import ch.ethz.idsc.tensor.alg.Join;
 import ch.ethz.idsc.tensor.red.Norm;
+import ch.ethz.idsc.tensor.sca.Exp;
 import ch.ethz.idsc.tensor.sca.Sign;
 
 /** Double Integrator with friction
  * 
  * implementation for n-dimensional position and velocity */
 public class Rice2StateSpaceModel implements StateSpaceModel {
+  public static StateSpaceModel of(Scalar mu) {
+    return new Rice2StateSpaceModel(Exp.of(mu));
+  }
+
+  // ---
   private final Scalar lambda;
 
   /** @param lambda strictly positive friction coefficient */
-  public Rice2StateSpaceModel(Scalar lambda) {
-    // one could re-parameterize: lambda == Exp.of(mu)
+  private Rice2StateSpaceModel(Scalar lambda) {
     if (Sign.isNegativeOrZero(lambda))
       throw TensorRuntimeException.of(lambda);
     this.lambda = lambda;
   }
 
-  @Override
+  @Override // from StateSpaceModel
   public Tensor f(Tensor x, Tensor u) {
     Tensor v = x.extract(u.length(), x.length());
     return Join.of(v, u.subtract(v).multiply(lambda));

@@ -31,14 +31,14 @@ import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
 
 /** position and velocity control in 2D with friction */
-enum RiceD2Demo {
+enum Rice2dDemo {
   ;
   // Hint: ensure that goal region contains at least 1 domain etc.
   public static void main(String[] args) {
     Tensor eta = Tensors.vector(3, 3, 6, 6);
     StateIntegrator stateIntegrator = FixedStateIntegrator.create( //
         MidpointIntegrator.INSTANCE, RationalScalar.of(1, 2), 5);
-    Collection<Flow> controls = Rice2Controls.createControls(RealScalar.of(.5), 3, 15);
+    Collection<Flow> controls = Rice2Controls.create2d(RealScalar.of(-.5), 3, 15);
     Rice2GoalManager rice2Goal = new Rice2GoalManager( //
         Tensors.vector(3, 3, -1, 0), Tensors.vector(.5, .5, .4, .4));
     TrajectoryRegionQuery obstacleQuery = //

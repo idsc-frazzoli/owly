@@ -19,6 +19,8 @@ import lcm.util.ClassVisitor;
 
 public enum DemoLauncher {
   ;
+  private static final int BUTTON_HEIGHT = 24;
+
   public static void main(String[] args) {
     List<Class<?>> demos = new LinkedList<>();
     ClassVisitor classVisitor = new ClassVisitor() {
@@ -53,7 +55,7 @@ public enum DemoLauncher {
       jPanel.add(jButton);
     }
     jFrame.setContentPane(jPanel);
-    jFrame.setBounds(1200, 100, 250, 40 + demos.size() * 20);
+    jFrame.setBounds(1200, 100, 250, 40 + demos.size() * BUTTON_HEIGHT);
     jFrame.setVisible(true);
   }
 }
