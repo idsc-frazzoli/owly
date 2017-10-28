@@ -9,7 +9,6 @@ import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 
 import ch.ethz.idsc.owly.glc.core.GlcNode;
@@ -24,23 +23,22 @@ import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
 
 public class TrajectoryRender implements RenderInterface {
-  public static Scalar U_SCALE = RealScalar.of(.33);
+  private static Scalar U_SCALE = RealScalar.of(.33);
+
+  public static RenderInterface of(TrajectoryPlanner trajectoryPlanner) {
+    TrajectoryRender trajectoryRender = new TrajectoryRender();
+    Optional<GlcNode> optional = trajectoryPlanner.getFinalGoalNode();
+    if (optional.isPresent()) {
+      final GlcNode node = optional.get();
+      // draw detailed trajectory from root to goal/furthestgo
+      trajectoryRender.setTrajectory(trajectoryPlanner.detailedTrajectoryTo(node));
+    }
+    return trajectoryRender;
+  }
+
   // ---
   private List<TrajectorySample> trajectory = new ArrayList<>();
   private Color trajectoryColor = new Color(0, 192, 0, 192);
-
-  public TrajectoryRender(TrajectoryPlanner trajectoryPlanner) {
-    // TODO design not elegant!
-    if (Objects.nonNull(trajectoryPlanner)) {
-      Optional<GlcNode> optional = trajectoryPlanner.getFinalGoalNode();
-      if (optional.isPresent()) {
-        final GlcNode node = optional.get();
-        { // draw detailed trajectory from root to goal/furthestgo
-          setTrajectory(trajectoryPlanner.detailedTrajectoryTo(node));
-        }
-      }
-    }
-  }
 
   @Override
   public void render(GeometricLayer geometricLayer, Graphics2D graphics) {

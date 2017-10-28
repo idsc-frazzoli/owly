@@ -6,8 +6,8 @@ import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
 import ch.ethz.idsc.tensor.alg.Join;
+import ch.ethz.idsc.tensor.lie.AngleVector;
 import ch.ethz.idsc.tensor.sca.Cos;
-import ch.ethz.idsc.tensor.sca.Sin;
 
 public class DriftExtStateSpaceModel implements StateSpaceModel {
   private final DriftStateSpaceModel driftStateSpaceModel;
@@ -24,9 +24,9 @@ public class DriftExtStateSpaceModel implements StateSpaceModel {
     Scalar Ux = x.Get(5);
     Scalar theta = x.Get(2);
     Scalar U = Ux.divide(Cos.of(beta));
-    Scalar UxWorld = U.multiply(Cos.of(beta.add(theta)));
-    Scalar UyWorld = U.multiply(Sin.of(beta.add(theta)));
-    return Join.of(Tensors.of(UxWorld, UyWorld, r), dxLower);
+    // Scalar UxWorld = U.multiply(Cos.of(beta.add(theta)));
+    // Scalar UyWorld = U.multiply(Sin.of(beta.add(theta)));
+    return Join.of(AngleVector.of(beta.add(theta)).multiply(U), Tensors.of(r), dxLower);
   }
 
   @Override

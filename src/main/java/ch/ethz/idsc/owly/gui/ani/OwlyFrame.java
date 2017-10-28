@@ -153,13 +153,13 @@ public class OwlyFrame extends BaseFrame {
   }
 
   public void addTrajectory(List<TrajectorySample> trajectory) {
-    TrajectoryRender trajectoryRenderer = new TrajectoryRender(null);
+    TrajectoryRender trajectoryRenderer = new TrajectoryRender();
     trajectoryRenderer.setTrajectory(trajectory);
     geometricComponent.addRenderInterfaceBackground(trajectoryRenderer);
   }
 
   public void addTrajectory(List<TrajectorySample> trajectory, Color color) {
-    TrajectoryRender trajectoryRenderer = new TrajectoryRender(null);
+    TrajectoryRender trajectoryRenderer = new TrajectoryRender();
     trajectoryRenderer.setColor(color);
     trajectoryRenderer.setTrajectory(trajectory);
     geometricComponent.addRenderInterfaceBackground(trajectoryRenderer);

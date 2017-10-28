@@ -30,7 +30,7 @@ public enum RenderElements {
     }
     list.add(new QueueRender(trajectoryPlanner.getQueue()));
     list.add(new TreeRender(trajectoryPlanner.getDomainMap().values()));
-    list.add(new TrajectoryRender(trajectoryPlanner));
+    list.add(TrajectoryRender.of(trajectoryPlanner));
     {
       if (trajectoryPlanner instanceof OptimalAnyTrajectoryPlanner) {
         OptimalAnyTrajectoryPlanner optimalAnyTrajectoryPlanner = (OptimalAnyTrajectoryPlanner) trajectoryPlanner;

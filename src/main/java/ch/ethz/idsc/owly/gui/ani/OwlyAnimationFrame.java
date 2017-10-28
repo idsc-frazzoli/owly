@@ -45,7 +45,7 @@ import ch.ethz.idsc.tensor.Tensors;
 // EXPERIMENTAL API not finalized 
 public class OwlyAnimationFrame extends TimerFrame {
   private final EtaRender etaRender = new EtaRender(Tensors.empty());
-  private final TrajectoryRender trajectoryRender = new TrajectoryRender(null);
+  private final TrajectoryRender trajectoryRender = new TrajectoryRender();
   private final ObstacleRender obstacleRender = new ObstacleRender(null);
   private final GoalRender goalRender = new GoalRender(null);
   private final TreeRender treeRender = new TreeRender(null);

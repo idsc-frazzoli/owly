@@ -22,6 +22,12 @@ import lcm.util.ClassVisitor;
 public enum DemoLauncher {
   ;
   private static final int BUTTON_HEIGHT = 24;
+  private static final Comparator<Class<?>> CLASSNAMECOMPARATOR = new Comparator<Class<?>>() {
+    @Override
+    public int compare(Class<?> c1, Class<?> c2) {
+      return c1.getName().compareToIgnoreCase(c2.getName());
+    }
+  };
 
   public static void main(String[] args) {
     List<Class<?>> demos = new LinkedList<>();
@@ -35,12 +41,7 @@ public enum DemoLauncher {
     };
     ClassDiscovery.execute(ClassPaths.getDefault(), classVisitor);
     // ---
-    Collections.sort(demos, new Comparator<Class<?>>() {
-      @Override
-      public int compare(Class<?> o1, Class<?> o2) {
-        return o1.getName().compareToIgnoreCase(o2.getName());
-      }
-    });
+    Collections.sort(demos, CLASSNAMECOMPARATOR);
     JFrame jFrame = new JFrame();
     jFrame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
     JPanel jPanel = new JPanel(new GridLayout(demos.size(), 1));

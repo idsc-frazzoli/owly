@@ -4,12 +4,12 @@ package ch.ethz.idsc.owly.demo.rice.glc;
 import java.util.Collection;
 
 import ch.ethz.idsc.owly.demo.rice.Rice1GoalManager;
+import ch.ethz.idsc.owly.demo.rice.Rice2StateSpaceModel;
 import ch.ethz.idsc.owly.glc.core.GoalInterface;
 import ch.ethz.idsc.owly.glc.core.StandardTrajectoryPlanner;
 import ch.ethz.idsc.owly.glc.core.TrajectoryPlanner;
 import ch.ethz.idsc.owly.gui.ani.AbstractCircularEntity;
 import ch.ethz.idsc.owly.gui.ani.PlannerType;
-import ch.ethz.idsc.owly.math.StateSpaceModel;
 import ch.ethz.idsc.owly.math.flow.Flow;
 import ch.ethz.idsc.owly.math.flow.Integrator;
 import ch.ethz.idsc.owly.math.flow.RungeKutta4Integrator;
@@ -31,8 +31,8 @@ import ch.ethz.idsc.tensor.red.Norm2Squared;
   private final Collection<Flow> controls;
 
   /** @param state initial position of entity */
-  public Rice1dEntity(StateSpaceModel stateSpaceModel, Tensor state, Collection<Flow> controls) {
-    super(new SimpleEpisodeIntegrator(stateSpaceModel, INTEGRATOR, //
+  public Rice1dEntity(Scalar mu, Tensor state, Collection<Flow> controls) {
+    super(new SimpleEpisodeIntegrator(Rice2StateSpaceModel.of(mu), INTEGRATOR, //
         new StateTime(state, RealScalar.ZERO)));
     this.controls = controls;
   }
@@ -49,8 +49,7 @@ import ch.ethz.idsc.tensor.red.Norm2Squared;
 
   @Override
   public Scalar delayHint() {
-    // preserve 1[s] of the former trajectory
-    return RealScalar.ONE;
+    return RealScalar.of(0.5);
   }
 
   @Override
@@ -63,7 +62,7 @@ import ch.ethz.idsc.tensor.red.Norm2Squared;
     Tensor partitionScale = Tensors.vector(8, 8);
     StateIntegrator stateIntegrator = //
         FixedStateIntegrator.create(INTEGRATOR, RationalScalar.of(1, 12), 4);
-    GoalInterface goalInterface = new Rice1GoalManager(goal.extract(0, 2), Tensors.vector(.4, .3));
+    GoalInterface goalInterface = new Rice1GoalManager(goal.extract(0, 2), Tensors.vector(.2, .3));
     return new StandardTrajectoryPlanner( //
         partitionScale, stateIntegrator, controls, obstacleQuery, goalInterface);
   }
