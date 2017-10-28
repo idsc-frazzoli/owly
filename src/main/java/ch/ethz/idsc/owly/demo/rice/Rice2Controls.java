@@ -13,6 +13,7 @@ import ch.ethz.idsc.tensor.DoubleScalar;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
+import ch.ethz.idsc.tensor.alg.Array;
 import ch.ethz.idsc.tensor.alg.Range;
 import ch.ethz.idsc.tensor.alg.Subdivide;
 import ch.ethz.idsc.tensor.lie.AngleVector;
@@ -20,8 +21,8 @@ import ch.ethz.idsc.tensor.lie.AngleVector;
 /** controls for position and velocity */
 public enum Rice2Controls {
   ;
-  /** @param mu
-   * @param num
+  /** @param mu coefficient, any real number
+   * @param num amplitude resolution
    * @return */
   public static Collection<Flow> create1d(Scalar mu, int num) {
     StateSpaceModel stateSpaceModel = Rice2StateSpaceModel.of(mu);
@@ -33,18 +34,20 @@ public enum Rice2Controls {
 
   /** radial
    * 
-   * @param mu
-   * @param seg
-   * @param num
+   * @param mu coefficient, any real number
+   * @param seg amplitude resolution (0, 1]
+   * @param num angular resolution
    * @return */
   public static Collection<Flow> create2d(Scalar mu, int seg, int num) {
     StateSpaceModel stateSpaceModel = Rice2StateSpaceModel.of(mu);
     Collection<Flow> collection = new HashSet<>();
-    // FIXME amp == 0 !? multiple times !?
-    for (Tensor amp : Subdivide.of(0, 1, seg))
-      for (Tensor angle : Range.of(0, num).multiply(DoubleScalar.of(2 * Math.PI / num)))
-        collection.add(StateSpaceModels.createFlow(stateSpaceModel, //
-            AngleVector.of(angle.Get()).multiply(amp.Get())));
+    collection.add(StateSpaceModels.createFlow(stateSpaceModel, Array.zeros(2)));
+    for (Tensor amp : Subdivide.of(0, 1, seg).extract(1, seg + 1))
+      for (Tensor angle : Range.of(0, num).multiply(DoubleScalar.of(2 * Math.PI / num))) {
+        Tensor u = AngleVector.of(angle.Get()).multiply(amp.Get());
+        // System.out.println(u);
+        collection.add(StateSpaceModels.createFlow(stateSpaceModel, u));
+      }
     return collection;
   }
 }

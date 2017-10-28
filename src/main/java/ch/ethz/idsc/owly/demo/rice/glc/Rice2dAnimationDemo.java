@@ -14,19 +14,19 @@ import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensors;
 
-public class Rice1dAnimationDemo implements DemoInterface {
+public class Rice2dAnimationDemo implements DemoInterface {
   @Override
   public void start() {
     OwlyAnimationFrame owlyAnimationFrame = new OwlyAnimationFrame();
     Scalar mu = RealScalar.ZERO;
     StateSpaceModel stateSpaceModel = Rice2StateSpaceModel.of(mu);
-    Collection<Flow> controls = Rice2Controls.create1d(mu, 15);
-    owlyAnimationFrame.set(new Rice1dEntity(stateSpaceModel, Tensors.vector(0, 0), controls));
+    Collection<Flow> controls = Rice2Controls.create2d(mu, 1, 15);
+    owlyAnimationFrame.set(new Rice2dEntity(stateSpaceModel, Tensors.vector(0, 0, 0, 0), controls));
     owlyAnimationFrame.setObstacleQuery(EmptyTrajectoryRegionQuery.INSTANCE);
     owlyAnimationFrame.jFrame.setVisible(true);
   }
 
   public static void main(String[] args) {
-    new Rice1dAnimationDemo().start();
+    new Rice2dAnimationDemo().start();
   }
 }

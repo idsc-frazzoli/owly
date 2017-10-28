@@ -1,11 +1,6 @@
 // code by jph
 package ch.ethz.idsc.owly.demo.delta.glc;
 
-import java.awt.Color;
-import java.awt.Graphics2D;
-import java.awt.geom.Ellipse2D;
-import java.awt.geom.Point2D;
-import java.awt.geom.Rectangle2D;
 import java.util.Collection;
 
 import ch.ethz.idsc.owly.demo.delta.DeltaControls;
@@ -15,8 +10,7 @@ import ch.ethz.idsc.owly.demo.delta.ImageGradient;
 import ch.ethz.idsc.owly.glc.core.GoalInterface;
 import ch.ethz.idsc.owly.glc.core.StandardTrajectoryPlanner;
 import ch.ethz.idsc.owly.glc.core.TrajectoryPlanner;
-import ch.ethz.idsc.owly.gui.GeometricLayer;
-import ch.ethz.idsc.owly.gui.ani.AbstractEntity;
+import ch.ethz.idsc.owly.gui.ani.AbstractCircularEntity;
 import ch.ethz.idsc.owly.gui.ani.PlannerType;
 import ch.ethz.idsc.owly.math.flow.EulerIntegrator;
 import ch.ethz.idsc.owly.math.flow.Flow;
@@ -35,7 +29,7 @@ import ch.ethz.idsc.tensor.Tensors;
 import ch.ethz.idsc.tensor.red.Norm2Squared;
 
 /** class controls delta using {@link StandardTrajectoryPlanner} */
-/* package */ class DeltaEntity extends AbstractEntity {
+/* package */ class DeltaEntity extends AbstractCircularEntity {
   private static final Tensor FALLBACK_CONTROL = Tensors.vectorDouble(0, 0).unmodifiable();
   /** preserve 1[s] of the former trajectory */
   private static final Scalar DELAY_HINT = RealScalar.of(2);
@@ -90,21 +84,5 @@ import ch.ethz.idsc.tensor.red.Norm2Squared;
         goal.extract(0, 2), RealScalar.of(.3), controls, imageGradient.maxNormGradient());
     return new StandardTrajectoryPlanner( //
         eta, stateIntegrator, controls, obstacleQuery, goalInterface);
-  }
-
-  @Override
-  public void render(GeometricLayer geometricLayer, Graphics2D graphics) {
-    { // indicate current position
-      Tensor state = getStateTimeNow().state();
-      Point2D point = geometricLayer.toPoint2D(state);
-      graphics.setColor(new Color(64, 128, 64, 192));
-      graphics.fill(new Ellipse2D.Double(point.getX() - 2, point.getY() - 2, 7, 7));
-    }
-    { // indicate position 1[s] into the future
-      Tensor state = getEstimatedLocationAt(DELAY_HINT);
-      Point2D point = geometricLayer.toPoint2D(state);
-      graphics.setColor(new Color(255, 128, 128 - 64, 128 + 64));
-      graphics.fill(new Rectangle2D.Double(point.getX() - 2, point.getY() - 2, 5, 5));
-    }
   }
 }
