@@ -25,7 +25,7 @@ import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.alg.Array;
 
-class CarEntity extends AbstractEntity {
+/* package */ class CarEntity extends AbstractEntity {
   private static final Integrator INTEGRATOR = RungeKutta4Integrator.INSTANCE;
   private static final Scalar MAX_TIME_STEP = RealScalar.of(.005);
 

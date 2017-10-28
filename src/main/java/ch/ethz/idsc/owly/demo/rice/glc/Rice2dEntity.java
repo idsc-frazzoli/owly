@@ -27,7 +27,7 @@ import ch.ethz.idsc.tensor.alg.Array;
 import ch.ethz.idsc.tensor.alg.Join;
 import ch.ethz.idsc.tensor.red.Norm2Squared;
 
-class Rice2dEntity extends AbstractCircularEntity {
+/* package */ class Rice2dEntity extends AbstractCircularEntity {
   private static final Integrator INTEGRATOR = RungeKutta4Integrator.INSTANCE;
   private static final Tensor FALLBACK_CONTROL = Tensors.vector(0, 0).unmodifiable();
   /** preserve 1[s] of the former trajectory */

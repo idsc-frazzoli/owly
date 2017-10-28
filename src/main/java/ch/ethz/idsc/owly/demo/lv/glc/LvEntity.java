@@ -1,8 +1,9 @@
 // code by jph
-package ch.ethz.idsc.owly.demo.lv;
+package ch.ethz.idsc.owly.demo.lv.glc;
 
 import java.util.Collection;
 
+import ch.ethz.idsc.owly.demo.lv.LvGoalInterface;
 import ch.ethz.idsc.owly.glc.core.GoalInterface;
 import ch.ethz.idsc.owly.glc.core.StandardTrajectoryPlanner;
 import ch.ethz.idsc.owly.glc.core.TrajectoryPlanner;
@@ -24,7 +25,7 @@ import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
 import ch.ethz.idsc.tensor.red.Norm2Squared;
 
-public class LvEntity extends AbstractCircularEntity {
+/* package */ class LvEntity extends AbstractCircularEntity {
   private static final Integrator INTEGRATOR = RungeKutta45Integrator.INSTANCE;
   // ---
   private final Collection<Flow> controls;

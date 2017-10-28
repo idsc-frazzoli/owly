@@ -32,12 +32,6 @@ import ch.ethz.idsc.tensor.red.Norm2Squared;
  * 
  * the implementation chooses certain values */
 /* package */ class R2Entity extends AbstractCircularEntity {
-  private static final Tensor FALLBACK_CONTROL = Tensors.vectorDouble(0, 0).unmodifiable();
-  /** preserve 0.5[s] of the former trajectory
-   * planning should not exceed that duration, otherwise
-   * the entity may not be able to follow a planned trajectory */
-  private static final Scalar DELAY_HINT = RealScalar.of(0.5);
-  // ---
   /** 36 corresponds to 10[Degree] resolution */
   private final Collection<Flow> controls = R2Controls.createRadial(36);
   /** radius of spherical goal region */
@@ -58,12 +52,15 @@ import ch.ethz.idsc.tensor.red.Norm2Squared;
 
   @Override
   protected Tensor fallbackControl() {
-    return FALLBACK_CONTROL;
+    return Tensors.vectorDouble(0, 0).unmodifiable();
   }
 
   @Override
   public Scalar delayHint() {
-    return DELAY_HINT;
+    /** preserve 0.5[s] of the former trajectory
+     * planning should not exceed that duration, otherwise
+     * the entity may not be able to follow a planned trajectory */
+    return RealScalar.of(0.5);
   }
 
   @Override

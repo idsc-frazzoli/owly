@@ -4,7 +4,6 @@ package ch.ethz.idsc.owly.demo.lv.glc;
 import java.util.Collection;
 
 import ch.ethz.idsc.owly.demo.lv.LvControls;
-import ch.ethz.idsc.owly.demo.lv.LvEntity;
 import ch.ethz.idsc.owly.demo.lv.LvStateSpaceModel;
 import ch.ethz.idsc.owly.demo.util.DemoInterface;
 import ch.ethz.idsc.owly.gui.ani.OwlyAnimationFrame;

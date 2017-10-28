@@ -5,9 +5,11 @@ import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
 
-/** implementation for arbitrary dimensions
+/** the name "single" hints that if the state is (position) then control u acts as (velocity).
  * 
- * formerly "IdentityStateSpaceModel" */
+ * implementation for arbitrary dimensions
+ * 
+ * see also {@link DoubleIntegratorStateSpaceModel} */
 public enum SingleIntegratorStateSpaceModel implements StateSpaceModel {
   INSTANCE;
   // ---

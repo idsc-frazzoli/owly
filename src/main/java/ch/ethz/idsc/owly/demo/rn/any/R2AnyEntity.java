@@ -35,7 +35,7 @@ import ch.ethz.idsc.tensor.Tensors;
 import ch.ethz.idsc.tensor.red.Norm2Squared;
 
 /** omni-directional movement with constant speed */
-public class R2AnyEntity extends AbstractAnyEntity {
+/* package */ class R2AnyEntity extends AbstractAnyEntity {
   private static final Tensor FALLBACK_CONTROL = Tensors.vector(0, 0).unmodifiable();
   // ---
   protected final Collection<Flow> controls = R2Controls.createRadial(parameters.getResolutionInt());

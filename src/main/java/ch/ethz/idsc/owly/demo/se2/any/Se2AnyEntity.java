@@ -58,8 +58,7 @@ import ch.ethz.idsc.tensor.Tensors;
 import ch.ethz.idsc.tensor.alg.Array;
 import ch.ethz.idsc.tensor.sca.Sqrt;
 
-/** omni-directional movement with constant speed */
-public class Se2AnyEntity extends AbstractAnyEntity {
+/* package */ class Se2AnyEntity extends AbstractAnyEntity {
   private static final Integrator INTEGRATOR = Se2Integrator.INSTANCE;
   private static final Tensor FALLBACK_CONTROL = Array.zeros(2).unmodifiable(); // {angle=0, vel=0}
   private static final Tensor SHAPE = Tensors.matrixDouble( //

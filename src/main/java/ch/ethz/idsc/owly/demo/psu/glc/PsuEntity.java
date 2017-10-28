@@ -27,7 +27,7 @@ import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
 
-public class PsuEntity extends AbstractCircularEntity {
+/* package */ class PsuEntity extends AbstractCircularEntity {
   private static final Integrator INTEGRATOR = RungeKutta4Integrator.INSTANCE;
   private static final Tensor FALLBACK_CONTROL = Tensors.vector(0).unmodifiable();
   /** preserve 1[s] of the former trajectory */

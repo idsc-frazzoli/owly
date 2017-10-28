@@ -25,7 +25,7 @@ import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
 import ch.ethz.idsc.tensor.red.Norm2Squared;
 
-class Rice1dEntity extends AbstractCircularEntity {
+/* package */ class Rice1dEntity extends AbstractCircularEntity {
   private static final Integrator INTEGRATOR = RungeKutta4Integrator.INSTANCE;
   // ---
   private final Collection<Flow> controls;

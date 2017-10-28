@@ -7,7 +7,12 @@ import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.TensorRuntimeException;
 import ch.ethz.idsc.tensor.alg.Join;
 
-/** implementation for R^n */
+/** the name "double" hints that if the state is (position, velocity) then
+ * control u acts as (acceleration).
+ * 
+ * implementation for linear coordinate system R^n
+ * 
+ * see also {@link SingleIntegratorStateSpaceModel} */
 public enum DoubleIntegratorStateSpaceModel implements StateSpaceModel {
   INSTANCE;
   // ---

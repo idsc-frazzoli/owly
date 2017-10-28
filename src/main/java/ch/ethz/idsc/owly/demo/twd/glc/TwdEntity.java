@@ -37,7 +37,7 @@ import ch.ethz.idsc.tensor.Tensors;
 import ch.ethz.idsc.tensor.alg.VectorQ;
 import ch.ethz.idsc.tensor.sca.Sqrt;
 
-public class TwdEntity extends AbstractEntity {
+/* package */ class TwdEntity extends AbstractEntity {
   // triangle
   private static final Tensor SHAPE = Tensors.matrixDouble( //
       new double[][] { { .3, 0, 1 }, { -.1, -.1, 1 }, { -.1, +.1, 1 } }).unmodifiable();
