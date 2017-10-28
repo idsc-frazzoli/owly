@@ -6,6 +6,7 @@ import ch.ethz.idsc.owly.math.StateSpaceModels;
 import ch.ethz.idsc.owly.math.flow.Flow;
 import ch.ethz.idsc.owly.math.flow.RungeKutta45Integrator;
 import ch.ethz.idsc.owly.math.flow.RungeKutta4Integrator;
+import ch.ethz.idsc.owly.math.se2.Se2Integrator;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;

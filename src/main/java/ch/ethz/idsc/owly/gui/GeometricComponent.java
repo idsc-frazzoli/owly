@@ -19,7 +19,7 @@ import javax.swing.JComponent;
 import javax.swing.event.MouseInputAdapter;
 import javax.swing.event.MouseInputListener;
 
-import ch.ethz.idsc.owly.math.Se2Utils;
+import ch.ethz.idsc.owly.math.se2.Se2Utils;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;

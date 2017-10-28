@@ -9,7 +9,7 @@ import java.util.ArrayDeque;
 import java.util.Deque;
 
 import ch.ethz.idsc.owly.data.GlobalAssert;
-import ch.ethz.idsc.owly.math.Se2Utils;
+import ch.ethz.idsc.owly.math.se2.Se2Utils;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
 import ch.ethz.idsc.tensor.alg.VectorQ;

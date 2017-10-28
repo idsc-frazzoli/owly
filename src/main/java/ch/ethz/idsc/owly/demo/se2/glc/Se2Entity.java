@@ -11,7 +11,6 @@ import java.util.Objects;
 
 import ch.ethz.idsc.owly.data.GlobalAssert;
 import ch.ethz.idsc.owly.demo.se2.Se2Controls;
-import ch.ethz.idsc.owly.demo.se2.Se2Integrator;
 import ch.ethz.idsc.owly.demo.se2.Se2MinTimeMinShiftExtraCostGoalManager;
 import ch.ethz.idsc.owly.demo.se2.Se2MinTimeMinShiftGoalManager;
 import ch.ethz.idsc.owly.demo.se2.Se2StateSpaceModel;
@@ -24,8 +23,9 @@ import ch.ethz.idsc.owly.gui.GeometricLayer;
 import ch.ethz.idsc.owly.gui.ani.AbstractEntity;
 import ch.ethz.idsc.owly.gui.ani.PlannerType;
 import ch.ethz.idsc.owly.math.RotationUtils;
-import ch.ethz.idsc.owly.math.Se2Utils;
 import ch.ethz.idsc.owly.math.flow.Flow;
+import ch.ethz.idsc.owly.math.se2.Se2Integrator;
+import ch.ethz.idsc.owly.math.se2.Se2Utils;
 import ch.ethz.idsc.owly.math.state.FixedStateIntegrator;
 import ch.ethz.idsc.owly.math.state.SimpleEpisodeIntegrator;
 import ch.ethz.idsc.owly.math.state.StateIntegrator;
