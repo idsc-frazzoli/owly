@@ -22,15 +22,18 @@ import ch.ethz.idsc.tensor.sca.Sin;
  * 11x faster than {@link RungeKutta45Integrator} */
 public enum Se2Integrator implements Integrator {
   INSTANCE;
+  // ---
   @Override
   public Tensor step(Flow flow, Tensor x, Scalar h) {
     Tensor u = flow.getU().multiply(h);
     Tensor ux = Tensors.of(u.Get(1), RealScalar.ZERO, u.Get(0));
     return combine_vy0(x, ux);
-    // return combine(x, ux);
   }
 
-  /** @param X1 == {px, py, alpha}
+  /** function integrates the special case where the y-component of X2
+   * is constrained to equal 0.
+   * 
+   * @param X1 == {px, py, alpha}
    * @param X2 == {vx, 0, beta}
    * @return log [ exp X1 * exp X2 ] */
   public static Tensor combine_vy0(Tensor X1, Tensor X2) {

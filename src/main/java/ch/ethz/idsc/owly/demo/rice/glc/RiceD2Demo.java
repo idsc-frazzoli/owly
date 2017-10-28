@@ -33,7 +33,7 @@ import ch.ethz.idsc.tensor.Tensors;
 /** position and velocity control in 2D with friction */
 enum RiceD2Demo {
   ;
-  // TODO in general ensure that goal region contains at least 1 domain etc.
+  // Hint: ensure that goal region contains at least 1 domain etc.
   public static void main(String[] args) {
     Tensor eta = Tensors.vector(3, 3, 6, 6);
     StateIntegrator stateIntegrator = FixedStateIntegrator.create( //

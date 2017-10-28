@@ -92,7 +92,6 @@ public abstract class AbstractAnyTrajectoryPlanner extends AbstractTrajectoryPla
     Collection<GlcNode> deleteTreeCollection = new HashSet<>();
     Nodes.ofSubtree(baseNode, deleteTreeCollection);
     // {
-    //
     // domainMap().values().removeIf(deleteTreeCollection::contains);
     // }
     // Collection<GlcNode> deleteTreeCollection = Nodes.ofSubtree(baseNode);
@@ -115,7 +114,7 @@ public abstract class AbstractAnyTrajectoryPlanner extends AbstractTrajectoryPla
     // baseRoot.parent().removeEdgeTo(baseRoot);
     // oldRoot has no parent, therefore is skipped
     deleteTreeCollection.remove(baseNode);
-    // TODO make parralel? If parralel, run in below exceptions
+    // TODO make parallel? If parallel, run in below exceptions
     deleteTreeCollection.stream().forEach(tempNode -> tempNode.parent().removeEdgeTo(tempNode));
     deleteTreeCollection.add(baseNode);
     subTreeDeleterWatch.stop();

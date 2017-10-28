@@ -158,9 +158,8 @@ public final class GeometricComponent {
   }
 
   /** @return {px, py, angle} in model space */
-  public Tensor getMouseGoal() {
-    // TODO design
-    return createLayer().getMouseSe2State();
+  public Tensor getMouseSe2State() {
+    return createLayer().getMouseSe2State(); // API design is not ideal
   }
 
   public void addRenderInterfaceBackground(RenderInterface renderInterface) {

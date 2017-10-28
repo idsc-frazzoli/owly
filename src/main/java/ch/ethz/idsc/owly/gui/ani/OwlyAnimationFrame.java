@@ -91,7 +91,7 @@ public class OwlyAnimationFrame extends TimerFrame {
             }
             if (controllable instanceof AbstractEntity) {
               AbstractEntity abstractEntity = (AbstractEntity) controllable;
-              final Tensor goal = geometricComponent.getMouseGoal();
+              final Tensor goal = geometricComponent.getMouseSe2State();
               final List<TrajectorySample> head = //
                   abstractEntity.getFutureTrajectoryUntil(abstractEntity.delayHint());
               switch (abstractEntity.getPlannerType()) {
@@ -117,7 +117,7 @@ public class OwlyAnimationFrame extends TimerFrame {
               }
             }
           } else { // ctrl pressed
-            System.out.println(geometricComponent.getMouseGoal());
+            System.out.println(geometricComponent.getMouseSe2State());
             if (controllable instanceof AbstractEntity) {
               @SuppressWarnings("unused")
               AbstractEntity abstractEntity = (AbstractEntity) controllable;
