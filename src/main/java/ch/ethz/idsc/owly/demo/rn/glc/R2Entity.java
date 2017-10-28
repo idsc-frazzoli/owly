@@ -53,7 +53,7 @@ import ch.ethz.idsc.tensor.red.Norm2Squared;
 
   @Override
   protected Scalar distance(Tensor x, Tensor y) {
-    return Norm2Squared.ofVector(x.subtract(y));
+    return Norm2Squared.between(x, y);
   }
 
   @Override

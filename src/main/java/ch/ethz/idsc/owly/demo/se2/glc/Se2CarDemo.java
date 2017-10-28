@@ -27,7 +27,6 @@ public abstract class Se2CarDemo implements DemoInterface {
       OwlyAnimationFrame owlyAnimationFrame = new OwlyAnimationFrame();
       configure(owlyAnimationFrame);
       owlyAnimationFrame.configCoordinateOffset(50, 700);
-      // owlyAnimationFrame.treeRender = null;
       owlyAnimationFrame.jFrame.setBounds(100, 50, 1200, 800);
       owlyAnimationFrame.jFrame.setVisible(true);
     } catch (Exception exception) {

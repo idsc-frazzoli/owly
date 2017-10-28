@@ -23,6 +23,8 @@ import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
+import ch.ethz.idsc.tensor.alg.Array;
+import ch.ethz.idsc.tensor.alg.Join;
 import ch.ethz.idsc.tensor.red.Norm2Squared;
 
 class Rice2dEntity extends AbstractCircularEntity {
@@ -42,7 +44,7 @@ class Rice2dEntity extends AbstractCircularEntity {
 
   @Override
   protected Scalar distance(Tensor x, Tensor y) {
-    return Norm2Squared.ofVector(x.subtract(y));
+    return Norm2Squared.between(x, y);
   }
 
   @Override
@@ -65,8 +67,9 @@ class Rice2dEntity extends AbstractCircularEntity {
     Tensor partitionScale = Tensors.vector(3, 3, 6, 6);
     StateIntegrator stateIntegrator = //
         FixedStateIntegrator.create(INTEGRATOR, RationalScalar.of(1, 12), 4);
-    // FIXME not updated yet
-    GoalInterface goalInterface = new Rice2GoalManager(goal.extract(0, 2), Tensors.vector(.4, .3));
+    Tensor center = Join.of(goal.extract(0, 2), Array.zeros(2));
+    GoalInterface goalInterface = new Rice2GoalManager( //
+        center, Tensors.vector(.5, .5, .4, .4));
     return new StandardTrajectoryPlanner( //
         partitionScale, stateIntegrator, controls, obstacleQuery, goalInterface);
   }

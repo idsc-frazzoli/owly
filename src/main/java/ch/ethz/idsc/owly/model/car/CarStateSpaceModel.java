@@ -55,7 +55,7 @@ public class CarStateSpaceModel implements StateSpaceModel {
     final Scalar rollFric = gForce.multiply(vehicleModel.muRoll());
     Deadzone deadzone = Deadzone.of(rollFric.negate(), rollFric);
     Tensor dir = total.extract(0, 2).map(deadzone);
-    // TODO vectorize
+    // formula for dux, duy could be vectorized
     final Scalar dux = dir.Get(0).subtract(vehicleModel.coulombFriction(carState.Ux)).divide(vehicleModel.mass());
     final Scalar duy = dir.Get(1).subtract(RealScalar.ZERO.multiply(vehicleModel.coulombFriction(carState.Uy))).divide(vehicleModel.mass());
     // ---

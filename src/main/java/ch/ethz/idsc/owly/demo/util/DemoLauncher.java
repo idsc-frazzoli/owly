@@ -17,6 +17,8 @@ import lcm.util.ClassDiscovery;
 import lcm.util.ClassPaths;
 import lcm.util.ClassVisitor;
 
+/** scans repository for classes that implement {@link DemoInterface}
+ * DemoLauncher creates a gui that allows to start these classes. */
 public enum DemoLauncher {
   ;
   private static final int BUTTON_HEIGHT = 24;

@@ -39,7 +39,7 @@ class Rice1dEntity extends AbstractCircularEntity {
 
   @Override
   protected Scalar distance(Tensor x, Tensor y) {
-    return Norm2Squared.ofVector(x.subtract(y));
+    return Norm2Squared.between(x, y);
   }
 
   @Override
