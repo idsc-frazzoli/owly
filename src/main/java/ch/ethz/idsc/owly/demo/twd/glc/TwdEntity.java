@@ -38,8 +38,6 @@ import ch.ethz.idsc.tensor.alg.VectorQ;
 import ch.ethz.idsc.tensor.sca.Sqrt;
 
 public class TwdEntity extends AbstractEntity {
-  private static final Tensor FALLBACK_CONTROL = Tensors.vector(0, 0).unmodifiable();
-  private static final Scalar DELAY_HINT = RealScalar.ONE;
   // triangle
   private static final Tensor SHAPE = Tensors.matrixDouble( //
       new double[][] { { .3, 0, 1 }, { -.1, -.1, 1 }, { -.1, +.1, 1 } }).unmodifiable();
@@ -80,12 +78,12 @@ public class TwdEntity extends AbstractEntity {
 
   @Override
   protected Tensor fallbackControl() {
-    return FALLBACK_CONTROL;
+    return Tensors.vector(0, 0).unmodifiable();
   }
 
   @Override
   public Scalar delayHint() {
-    return DELAY_HINT;
+    return RealScalar.ONE;
   }
 
   @Override
@@ -124,7 +122,7 @@ public class TwdEntity extends AbstractEntity {
       geometricLayer.popMatrix();
     }
     { // indicate position delay[s] into the future
-      Tensor state = getEstimatedLocationAt(DELAY_HINT);
+      Tensor state = getEstimatedLocationAt(delayHint());
       Point2D point = geometricLayer.toPoint2D(state);
       graphics.setColor(new Color(255, 128, 64, 192));
       graphics.fill(new Rectangle2D.Double(point.getX() - 2, point.getY() - 2, 5, 5));

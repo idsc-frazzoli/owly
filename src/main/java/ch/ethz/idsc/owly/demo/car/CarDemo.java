@@ -4,7 +4,6 @@ import ch.ethz.idsc.owly.demo.rn.R2NoiseRegion;
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
 import ch.ethz.idsc.owly.gui.ani.OwlyAnimationFrame;
 import ch.ethz.idsc.owly.math.region.Region;
-import ch.ethz.idsc.owly.math.state.TimeInvariantRegion;
 import ch.ethz.idsc.owly.model.car.CarState;
 import ch.ethz.idsc.owly.model.car.CarStateSpaceModel;
 import ch.ethz.idsc.owly.model.car.CarStatic;
@@ -23,7 +22,7 @@ public class CarDemo {
     OwlyAnimationFrame owlyAnimationFrame = new OwlyAnimationFrame();
     owlyAnimationFrame.set(carEntity);
     Region region = new R2NoiseRegion(RealScalar.of(0.2));
-    owlyAnimationFrame.setObstacleQuery(new SimpleTrajectoryRegionQuery(new TimeInvariantRegion(region)));
+    owlyAnimationFrame.setObstacleQuery(SimpleTrajectoryRegionQuery.timeInvariant(region));
     owlyAnimationFrame.jFrame.setVisible(true);
   }
 

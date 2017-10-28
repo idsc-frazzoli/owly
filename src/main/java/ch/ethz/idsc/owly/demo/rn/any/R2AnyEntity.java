@@ -26,7 +26,6 @@ import ch.ethz.idsc.owly.math.state.FixedStateIntegrator;
 import ch.ethz.idsc.owly.math.state.SimpleEpisodeIntegrator;
 import ch.ethz.idsc.owly.math.state.StateIntegrator;
 import ch.ethz.idsc.owly.math.state.StateTime;
-import ch.ethz.idsc.owly.math.state.TimeInvariantRegion;
 import ch.ethz.idsc.owly.math.state.TrajectoryRegionQuery;
 import ch.ethz.idsc.tensor.RationalScalar;
 import ch.ethz.idsc.tensor.RealScalar;
@@ -113,8 +112,8 @@ public class R2AnyEntity extends AbstractAnyEntity {
 
   @Override
   protected TrajectoryRegionQuery updateObstacle(Region environmentRegion, Tensor currentState) {
-    return new SimpleTrajectoryRegionQuery(new TimeInvariantRegion(//
-        EuclideanDistanceDiscoverRegion.of(environmentRegion, currentState, RealScalar.of(4))));
+    return SimpleTrajectoryRegionQuery.timeInvariant( //
+        EuclideanDistanceDiscoverRegion.of(environmentRegion, currentState, RealScalar.of(4)));
   }
 
   @Override

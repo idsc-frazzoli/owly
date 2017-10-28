@@ -23,7 +23,6 @@ import ch.ethz.idsc.owly.math.region.RegionUnion;
 import ch.ethz.idsc.owly.math.state.FixedStateIntegrator;
 import ch.ethz.idsc.owly.math.state.StateIntegrator;
 import ch.ethz.idsc.owly.math.state.StateTime;
-import ch.ethz.idsc.owly.math.state.TimeInvariantRegion;
 import ch.ethz.idsc.owly.math.state.TrajectoryRegionQuery;
 import ch.ethz.idsc.tensor.RationalScalar;
 import ch.ethz.idsc.tensor.RealScalar;
@@ -42,13 +41,13 @@ enum Rice2dDemo {
     Rice2GoalManager rice2Goal = new Rice2GoalManager( //
         Tensors.vector(3, 3, -1, 0), Tensors.vector(.5, .5, .4, .4));
     TrajectoryRegionQuery obstacleQuery = //
-        new SimpleTrajectoryRegionQuery(new TimeInvariantRegion( //
+        SimpleTrajectoryRegionQuery.timeInvariant( //
             RegionUnion.of( //
                 new HyperplaneRegion(Tensors.vector(1, +0, 0, 0), RealScalar.ZERO), //
                 new HyperplaneRegion(Tensors.vector(0, +1, 0, 0), RealScalar.ZERO), //
                 new HyperplaneRegion(Tensors.vector(0, -1, 0, 0), RealScalar.of(3.2)), //
                 new HyperplaneRegion(Tensors.vector(0, +0, 0, 1), RealScalar.ZERO) //
-            )));
+            ));
     // ---
     TrajectoryPlanner trajectoryPlanner = new StandardTrajectoryPlanner( //
         eta, stateIntegrator, controls, obstacleQuery, rice2Goal);

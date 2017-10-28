@@ -163,8 +163,8 @@ public class Se2AnyEntity extends AbstractAnyEntity {
     // TODO JONAS extract R2planner from Se2AnyEntity
     GoalInterface rnGoal = RnMinDistSphericalGoalManager.create(r2goal, goalRadius.Get(0));
     // ---
-    TrajectoryRegionQuery obstacleQueryR2 = new SimpleTrajectoryRegionQuery(new TimeInvariantRegion(//
-        EuclideanDistanceDiscoverRegion.of(environmentRegion, currentState, RealScalar.of(2))));
+    TrajectoryRegionQuery obstacleQueryR2 = SimpleTrajectoryRegionQuery.timeInvariant( //
+        EuclideanDistanceDiscoverRegion.of(environmentRegion, currentState, RealScalar.of(2)));
     obstacleQueryR2 = new SimpleTrajectoryRegionQuery(new TimeInvariantRegion(environmentRegion));
     TrajectoryPlanner trajectoryPlanner = new StandardTrajectoryPlanner( //
         eta, stateIntegratorR2, controlsR2, obstacleQueryR2, rnGoal);
@@ -197,15 +197,15 @@ public class Se2AnyEntity extends AbstractAnyEntity {
   @Override
   protected TrajectoryRegionQuery initializeObstacle(Region oldEnvironmentRegion, Tensor currentState) {
     environmentRegion = oldEnvironmentRegion;
-    return new SimpleTrajectoryRegionQuery(new TimeInvariantRegion(oldEnvironmentRegion));
+    return SimpleTrajectoryRegionQuery.timeInvariant(oldEnvironmentRegion);
     // return updateObstacle(oldEnvironmentRegion, currentState);
   }
 
   @Override
   protected TrajectoryRegionQuery updateObstacle(Region oldEnvironmentRegion, Tensor currentState) {
     environmentRegion = oldEnvironmentRegion; // environment stays the same
-    return new SimpleTrajectoryRegionQuery(new TimeInvariantRegion(//
-        EuclideanDistanceDiscoverRegion.of(oldEnvironmentRegion, currentState, RealScalar.of(4.5))));
+    return SimpleTrajectoryRegionQuery.timeInvariant( //
+        EuclideanDistanceDiscoverRegion.of(oldEnvironmentRegion, currentState, RealScalar.of(4.5)));
   }
 
   @Override

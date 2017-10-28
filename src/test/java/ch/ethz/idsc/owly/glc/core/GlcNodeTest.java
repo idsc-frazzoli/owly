@@ -7,14 +7,13 @@ import java.util.List;
 
 import ch.ethz.idsc.owly.demo.rn.R2Controls;
 import ch.ethz.idsc.owly.demo.rn.RnMinDistSphericalGoalManager;
-import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
 import ch.ethz.idsc.owly.math.flow.EulerIntegrator;
 import ch.ethz.idsc.owly.math.flow.Flow;
-import ch.ethz.idsc.owly.math.region.EmptyRegion;
+import ch.ethz.idsc.owly.math.state.EmptyTrajectoryRegionQuery;
 import ch.ethz.idsc.owly.math.state.FixedStateIntegrator;
 import ch.ethz.idsc.owly.math.state.StateIntegrator;
 import ch.ethz.idsc.owly.math.state.StateTime;
-import ch.ethz.idsc.owly.math.state.TimeInvariantRegion;
+import ch.ethz.idsc.owly.math.state.TrajectoryRegionQuery;
 import ch.ethz.idsc.tensor.DoubleScalar;
 import ch.ethz.idsc.tensor.RationalScalar;
 import ch.ethz.idsc.tensor.RealScalar;
@@ -64,7 +63,7 @@ public class GlcNodeTest extends TestCase {
     StateIntegrator stateIntegrator = FixedStateIntegrator.create(EulerIntegrator.INSTANCE, RationalScalar.of(1, 5), 5);
     Collection<Flow> controls = R2Controls.createRadial(36);
     GoalInterface rnGoal = RnMinDistSphericalGoalManager.create(stateGoal, radius);
-    SimpleTrajectoryRegionQuery obstacleQuery = new SimpleTrajectoryRegionQuery(new TimeInvariantRegion(EmptyRegion.INSTANCE));
+    TrajectoryRegionQuery obstacleQuery = EmptyTrajectoryRegionQuery.INSTANCE;
     // ---
     TrajectoryPlanner trajectoryPlanner = new StandardTrajectoryPlanner( //
         eta, stateIntegrator, controls, obstacleQuery, rnGoal);

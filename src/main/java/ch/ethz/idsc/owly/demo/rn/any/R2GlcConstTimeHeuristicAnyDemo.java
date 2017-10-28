@@ -29,7 +29,6 @@ import ch.ethz.idsc.owly.math.region.Region;
 import ch.ethz.idsc.owly.math.state.FixedStateIntegrator;
 import ch.ethz.idsc.owly.math.state.StateIntegrator;
 import ch.ethz.idsc.owly.math.state.StateTime;
-import ch.ethz.idsc.owly.math.state.TimeInvariantRegion;
 import ch.ethz.idsc.owly.math.state.TrajectoryRegionQuery;
 import ch.ethz.idsc.tensor.RationalScalar;
 import ch.ethz.idsc.tensor.RealScalar;
@@ -69,9 +68,7 @@ enum R2GlcConstTimeHeuristicAnyDemo {
     }
     RnTrajectoryGoalManager rnGoal = new RnTrajectoryGoalManager(goalRegions, precomputedTrajectory, radius);
     Region region = new R2NoiseRegion(RealScalar.of(.1));
-    TrajectoryRegionQuery obstacleQuery = //
-        new SimpleTrajectoryRegionQuery(new TimeInvariantRegion( //
-            region));
+    TrajectoryRegionQuery obstacleQuery = SimpleTrajectoryRegionQuery.timeInvariant(region);
     // TODO JONAS: can remove todo "change back to AnyPlannerInterface"
     AnyPlannerInterface trajectoryPlanner = new OptimalAnyTrajectoryPlanner( //
         parameters.getEta(), stateIntegrator, controls, obstacleQuery, rnGoal);

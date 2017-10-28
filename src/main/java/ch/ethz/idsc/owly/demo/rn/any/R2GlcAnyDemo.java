@@ -8,7 +8,6 @@ import ch.ethz.idsc.owly.demo.rn.R2Controls;
 import ch.ethz.idsc.owly.demo.rn.R2Parameters;
 import ch.ethz.idsc.owly.demo.rn.RnMinDistSphericalGoalManager;
 import ch.ethz.idsc.owly.glc.adapter.Parameters;
-import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
 import ch.ethz.idsc.owly.glc.adapter.StateTimeTrajectories;
 import ch.ethz.idsc.owly.glc.core.AnyPlannerInterface;
 import ch.ethz.idsc.owly.glc.core.GlcExpand;
@@ -19,11 +18,10 @@ import ch.ethz.idsc.owly.gui.ani.OwlyFrame;
 import ch.ethz.idsc.owly.gui.ani.OwlyGui;
 import ch.ethz.idsc.owly.math.flow.EulerIntegrator;
 import ch.ethz.idsc.owly.math.flow.Flow;
-import ch.ethz.idsc.owly.math.region.EmptyRegion;
+import ch.ethz.idsc.owly.math.state.EmptyTrajectoryRegionQuery;
 import ch.ethz.idsc.owly.math.state.FixedStateIntegrator;
 import ch.ethz.idsc.owly.math.state.StateIntegrator;
 import ch.ethz.idsc.owly.math.state.StateTime;
-import ch.ethz.idsc.owly.math.state.TimeInvariantRegion;
 import ch.ethz.idsc.owly.math.state.TrajectoryRegionQuery;
 import ch.ethz.idsc.tensor.DoubleScalar;
 import ch.ethz.idsc.tensor.RationalScalar;
@@ -51,7 +49,7 @@ enum R2GlcAnyDemo {
     GoalInterface rnGoal = RnMinDistSphericalGoalManager.create(Tensors.vector(5, 5), DoubleScalar.of(.25));
     // performance depends on heuristic: zeroHeuristic vs rnGoal
     // Heuristic heuristic = new ZeroHeuristic(); // rnGoal
-    TrajectoryRegionQuery obstacleQuery = new SimpleTrajectoryRegionQuery(new TimeInvariantRegion(EmptyRegion.INSTANCE));
+    TrajectoryRegionQuery obstacleQuery = EmptyTrajectoryRegionQuery.INSTANCE;
     // TrajectoryRegionQuery obstacleQuery = new SimpleTrajectoryRegionQuery( //
     // new TimeInvariantRegion(new R2Bubbles()));
     // ---

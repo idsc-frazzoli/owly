@@ -6,7 +6,6 @@ import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
 import ch.ethz.idsc.owly.glc.core.CostFunction;
 import ch.ethz.idsc.owly.glc.core.GoalInterface;
 import ch.ethz.idsc.owly.math.region.Region;
-import ch.ethz.idsc.owly.math.state.TimeInvariantRegion;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Scalars;
 import ch.ethz.idsc.tensor.Tensor;
@@ -34,6 +33,6 @@ public abstract class TwdAbstractGoalManager implements Region, CostFunction {
   }
 
   public final GoalInterface getGoalInterface() {
-    return new GoalAdapter(this, new SimpleTrajectoryRegionQuery(new TimeInvariantRegion(this)));
+    return new GoalAdapter(this, SimpleTrajectoryRegionQuery.timeInvariant(this));
   }
 }

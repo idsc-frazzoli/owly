@@ -27,7 +27,6 @@ import ch.ethz.idsc.owly.math.region.RegionUnion;
 import ch.ethz.idsc.owly.math.state.FixedStateIntegrator;
 import ch.ethz.idsc.owly.math.state.StateIntegrator;
 import ch.ethz.idsc.owly.math.state.StateTime;
-import ch.ethz.idsc.owly.math.state.TimeInvariantRegion;
 import ch.ethz.idsc.owly.math.state.TrajectoryRegionQuery;
 import ch.ethz.idsc.tensor.RationalScalar;
 import ch.ethz.idsc.tensor.RealScalar;
@@ -62,12 +61,11 @@ enum Se2GlcDemo {
         Tensors.vector(0, 1, Math.PI), //
         Tensors.vector(0.1, 0.1, 10 / 180 * Math.PI), //
         controls);
-    TrajectoryRegionQuery obstacleQuery = //
-        new SimpleTrajectoryRegionQuery(new TimeInvariantRegion( //
-            RegionUnion.of( //
-                new HyperplaneRegion(Tensors.vector(0, -1, 0), RealScalar.of(1.5)), //
-                new HyperplaneRegion(Tensors.vector(0, +1, 0), RealScalar.of(1.5)) //
-            )));
+    TrajectoryRegionQuery obstacleQuery = SimpleTrajectoryRegionQuery.timeInvariant( //
+        RegionUnion.of( //
+            new HyperplaneRegion(Tensors.vector(0, -1, 0), RealScalar.of(1.5)), //
+            new HyperplaneRegion(Tensors.vector(0, +1, 0), RealScalar.of(1.5)) //
+        ));
     TrajectoryPlanner trajectoryPlanner = new StandardTrajectoryPlanner( //
         parameters.getEta(), stateIntegrator, controls, obstacleQuery, goalInterface);
     trajectoryPlanner.insertRoot(Tensors.vector(1, 0, -0.5 * Math.PI));

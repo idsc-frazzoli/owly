@@ -22,7 +22,6 @@ import ch.ethz.idsc.owly.math.region.NegativeHalfspaceRegion;
 import ch.ethz.idsc.owly.math.region.RegionUnion;
 import ch.ethz.idsc.owly.math.state.FixedStateIntegrator;
 import ch.ethz.idsc.owly.math.state.StateIntegrator;
-import ch.ethz.idsc.owly.math.state.TimeInvariantRegion;
 import ch.ethz.idsc.owly.math.state.TrajectoryRegionQuery;
 import ch.ethz.idsc.tensor.RationalScalar;
 import ch.ethz.idsc.tensor.RealScalar;
@@ -45,12 +44,12 @@ enum DriftExtDemo {
             0.05, 0.05, 0.25));
     // ---
     TrajectoryRegionQuery obstacleQuery = //
-        new SimpleTrajectoryRegionQuery(new TimeInvariantRegion( //
+        SimpleTrajectoryRegionQuery.timeInvariant( //
             RegionUnion.of( //
                 new NegativeHalfspaceRegion(4) // ensure that r is non-negative
                 , // impose that x < Threshold
                 new HyperplaneRegion(Tensors.vector(-1, 0, 0, 0, 0, 0), RealScalar.of(12)) //
-            )));
+            ));
     // ---
     TrajectoryPlanner trajectoryPlanner = new StandardTrajectoryPlanner( //
         eta, stateIntegrator, controls, obstacleQuery, goalInterface);

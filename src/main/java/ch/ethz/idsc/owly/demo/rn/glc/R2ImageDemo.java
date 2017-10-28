@@ -25,7 +25,6 @@ import ch.ethz.idsc.owly.math.region.ImageRegion;
 import ch.ethz.idsc.owly.math.state.FixedStateIntegrator;
 import ch.ethz.idsc.owly.math.state.StateIntegrator;
 import ch.ethz.idsc.owly.math.state.StateTime;
-import ch.ethz.idsc.owly.math.state.TimeInvariantRegion;
 import ch.ethz.idsc.owly.math.state.TrajectoryRegionQuery;
 import ch.ethz.idsc.tensor.DoubleScalar;
 import ch.ethz.idsc.tensor.RationalScalar;
@@ -41,9 +40,7 @@ enum R2ImageDemo {
     Collection<Flow> controls = R2Controls.createRadial(23);
     GoalInterface goalInterface = //
         RnMinDistSphericalGoalManager.create(Tensors.vector(5, 10), DoubleScalar.of(.2));
-    TrajectoryRegionQuery obstacleQuery = //
-        new SimpleTrajectoryRegionQuery(new TimeInvariantRegion( //
-            imageRegion));
+    TrajectoryRegionQuery obstacleQuery = SimpleTrajectoryRegionQuery.timeInvariant(imageRegion);
     // ---
     TrajectoryPlanner trajectoryPlanner = new StandardTrajectoryPlanner( //
         partitionScale, stateIntegrator, controls, obstacleQuery, goalInterface);

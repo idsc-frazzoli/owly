@@ -18,7 +18,6 @@ import ch.ethz.idsc.owly.math.flow.MidpointIntegrator;
 import ch.ethz.idsc.owly.math.region.NegativeHalfspaceRegion;
 import ch.ethz.idsc.owly.math.state.FixedStateIntegrator;
 import ch.ethz.idsc.owly.math.state.StateIntegrator;
-import ch.ethz.idsc.owly.math.state.TimeInvariantRegion;
 import ch.ethz.idsc.owly.math.state.TrajectoryRegionQuery;
 import ch.ethz.idsc.tensor.RationalScalar;
 import ch.ethz.idsc.tensor.Tensor;
@@ -36,8 +35,7 @@ enum DriftDemo {
         Tensors.vector(-0.3055, 0.5032, 8), //
         Tensors.vector(0.05, 0.05, 0.25));
     TrajectoryRegionQuery obstacleQuery = //
-        new SimpleTrajectoryRegionQuery(new TimeInvariantRegion( //
-            new NegativeHalfspaceRegion(1)));
+        SimpleTrajectoryRegionQuery.timeInvariant(new NegativeHalfspaceRegion(1));
     // ---
     TrajectoryPlanner trajectoryPlanner = new StandardTrajectoryPlanner( //
         eta, stateIntegrator, controls, obstacleQuery, goalInterface);

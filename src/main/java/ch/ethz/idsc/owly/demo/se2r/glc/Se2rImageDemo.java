@@ -25,7 +25,6 @@ import ch.ethz.idsc.owly.math.region.ImageRegion;
 import ch.ethz.idsc.owly.math.state.FixedStateIntegrator;
 import ch.ethz.idsc.owly.math.state.StateIntegrator;
 import ch.ethz.idsc.owly.math.state.StateTime;
-import ch.ethz.idsc.owly.math.state.TimeInvariantRegion;
 import ch.ethz.idsc.owly.math.state.TrajectoryRegionQuery;
 import ch.ethz.idsc.tensor.RationalScalar;
 import ch.ethz.idsc.tensor.Tensor;
@@ -44,8 +43,7 @@ enum Se2rImageDemo {
     GoalInterface goalInterface = Se2MinTimeGoalManager.create( //
         Tensors.vector(4.0, 5.6, 0), //
         Tensors.vector(.1, .1, .17), controls);
-    TrajectoryRegionQuery obstacleQuery = //
-        new SimpleTrajectoryRegionQuery(new TimeInvariantRegion(imageRegion));
+    TrajectoryRegionQuery obstacleQuery = SimpleTrajectoryRegionQuery.timeInvariant(imageRegion);
     // ---
     TrajectoryPlanner trajectoryPlanner = new StandardTrajectoryPlanner( //
         partitionScale, stateIntegrator, controls, obstacleQuery, goalInterface);

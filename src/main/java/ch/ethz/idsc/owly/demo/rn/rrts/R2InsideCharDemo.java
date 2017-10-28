@@ -9,7 +9,6 @@ import ch.ethz.idsc.owly.gui.ani.OwlyFrame;
 import ch.ethz.idsc.owly.gui.ani.OwlyGui;
 import ch.ethz.idsc.owly.math.region.ImageRegion;
 import ch.ethz.idsc.owly.math.sample.BoxRandomSample;
-import ch.ethz.idsc.owly.math.state.TimeInvariantRegion;
 import ch.ethz.idsc.owly.rrts.adapter.LengthCostFunction;
 import ch.ethz.idsc.owly.rrts.adapter.RrtsNodes;
 import ch.ethz.idsc.owly.rrts.adapter.SampledTransitionRegionQuery;
@@ -27,9 +26,8 @@ enum R2InsideCharDemo {
   private static void explore(ImageRegion imageRegion, Tensor start) throws Exception {
     RnTransitionSpace rnss = new RnTransitionSpace();
     RrtsNodeCollection nc = new RnNodeCollection(imageRegion.origin(), imageRegion.range());
-    TransitionRegionQuery trq = //
-        new SampledTransitionRegionQuery(new SimpleTrajectoryRegionQuery( //
-            new TimeInvariantRegion(imageRegion)), RealScalar.of(.1));
+    TransitionRegionQuery trq = new SampledTransitionRegionQuery( //
+        SimpleTrajectoryRegionQuery.timeInvariant(imageRegion), RealScalar.of(.1));
     // ---
     Rrts rrts = new DefaultRrts(rnss, nc, trq, LengthCostFunction.IDENTITY);
     RrtsNode root = rrts.insertAsNode(start, 5).get();

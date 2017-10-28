@@ -30,7 +30,6 @@ import ch.ethz.idsc.owly.math.region.SphericalRegion;
 import ch.ethz.idsc.owly.math.state.FixedStateIntegrator;
 import ch.ethz.idsc.owly.math.state.StateIntegrator;
 import ch.ethz.idsc.owly.math.state.StateTime;
-import ch.ethz.idsc.owly.math.state.TimeInvariantRegion;
 import ch.ethz.idsc.owly.math.state.TrajectoryRegionQuery;
 import ch.ethz.idsc.tensor.RationalScalar;
 import ch.ethz.idsc.tensor.RealScalar;
@@ -60,9 +59,8 @@ enum R2GlcConstTimeHeuristicSensingObstacleAnyDemo {
     Tensor startState = Tensors.vector(-3, 0);
     GoalInterface rnGoal = RnMinDistSphericalGoalManager.create(Tensors.vector(10, -4), RealScalar.of(0.3));
     Region environmentRegion = new R2NoiseRegion(RealScalar.of(0.1));
-    TrajectoryRegionQuery obstacleQuery = //
-        new SimpleTrajectoryRegionQuery(new TimeInvariantRegion(//
-            EuclideanDistanceDiscoverRegion.of(environmentRegion, startState, RealScalar.of(4))));
+    TrajectoryRegionQuery obstacleQuery = SimpleTrajectoryRegionQuery.timeInvariant( //
+        EuclideanDistanceDiscoverRegion.of(environmentRegion, startState, RealScalar.of(4)));
     // TODO JONAS: can remove todo "change back to AnyPlannerInterface"
     AnyPlannerInterface trajectoryPlanner = new OptimalAnyTrajectoryPlanner( //
         parameters.getEta(), stateIntegrator, controls, obstacleQuery, rnGoal);
@@ -93,9 +91,8 @@ enum R2GlcConstTimeHeuristicSensingObstacleAnyDemo {
         parameters.increaseDepthLimit(increment);
       }
       // -- OBSTACLE CHANGE
-      TrajectoryRegionQuery newObstacleQuery = //
-          new SimpleTrajectoryRegionQuery(new TimeInvariantRegion(//
-              EuclideanDistanceDiscoverRegion.of(environmentRegion, trajectory.get(0).state(), RealScalar.of(4))));
+      TrajectoryRegionQuery newObstacleQuery = SimpleTrajectoryRegionQuery.timeInvariant( //
+          EuclideanDistanceDiscoverRegion.of(environmentRegion, trajectory.get(0).state(), RealScalar.of(4)));
       trajectoryPlanner.obstacleUpdate(newObstacleQuery, new SphericalRegion(trajectory.get(0).state(), RealScalar.of(4).add(RealScalar.ONE)));
       // // -- GOALCHANGE
       // ticTemp = tic;

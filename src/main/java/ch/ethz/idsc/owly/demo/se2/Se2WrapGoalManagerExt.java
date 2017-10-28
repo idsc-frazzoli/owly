@@ -13,7 +13,6 @@ import ch.ethz.idsc.owly.math.CoordinateWrap;
 import ch.ethz.idsc.owly.math.flow.Flow;
 import ch.ethz.idsc.owly.math.region.Region;
 import ch.ethz.idsc.owly.math.state.StateTime;
-import ch.ethz.idsc.owly.math.state.TimeInvariantRegion;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Scalars;
 import ch.ethz.idsc.tensor.Tensor;
@@ -51,6 +50,6 @@ public class Se2WrapGoalManagerExt implements Region, CostFunction {
   }
 
   public GoalInterface getGoalInterface() {
-    return new GoalAdapter(this, new SimpleTrajectoryRegionQuery(new TimeInvariantRegion(this)));
+    return new GoalAdapter(this, SimpleTrajectoryRegionQuery.timeInvariant(this));
   }
 }

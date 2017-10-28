@@ -25,7 +25,6 @@ import ch.ethz.idsc.owly.math.state.EmptyTrajectoryRegionQuery;
 import ch.ethz.idsc.owly.math.state.FixedStateIntegrator;
 import ch.ethz.idsc.owly.math.state.StateIntegrator;
 import ch.ethz.idsc.owly.math.state.StateTime;
-import ch.ethz.idsc.owly.math.state.TimeInvariantRegion;
 import ch.ethz.idsc.owly.math.state.TrajectoryRegionQuery;
 import ch.ethz.idsc.tensor.DoubleScalar;
 import ch.ethz.idsc.tensor.RationalScalar;
@@ -45,7 +44,7 @@ enum R2DemoSlow {
   }
 
   static TrajectoryPlanner simpleR2Bubbles() throws Exception {
-    return simple(new SimpleTrajectoryRegionQuery(new TimeInvariantRegion(new R2Bubbles())));
+    return simple(SimpleTrajectoryRegionQuery.timeInvariant(new R2Bubbles()));
   }
 
   private static TrajectoryPlanner simple(TrajectoryRegionQuery obstacleQuery) throws Exception {

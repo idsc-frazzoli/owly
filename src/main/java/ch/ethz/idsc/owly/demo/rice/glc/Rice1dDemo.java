@@ -22,7 +22,6 @@ import ch.ethz.idsc.owly.math.region.RegionUnion;
 import ch.ethz.idsc.owly.math.state.FixedStateIntegrator;
 import ch.ethz.idsc.owly.math.state.StateIntegrator;
 import ch.ethz.idsc.owly.math.state.StateTime;
-import ch.ethz.idsc.owly.math.state.TimeInvariantRegion;
 import ch.ethz.idsc.owly.math.state.TrajectoryRegionQuery;
 import ch.ethz.idsc.tensor.RationalScalar;
 import ch.ethz.idsc.tensor.RealScalar;
@@ -42,12 +41,12 @@ enum Rice1dDemo {
     Collection<Flow> controls = Rice2Controls.create1d(RealScalar.of(-0.5), 15); //
     Rice1GoalManager rice1Goal = new Rice1GoalManager(Tensors.vector(6, -.7), Tensors.vector(.4, .3));
     TrajectoryRegionQuery obstacleQuery = //
-        new SimpleTrajectoryRegionQuery(new TimeInvariantRegion( //
+        SimpleTrajectoryRegionQuery.timeInvariant( //
             RegionUnion.of( //
                 new EllipsoidRegion(Tensors.vector(+3, +1), Tensors.vector(1.75, .75)),
                 // , // speed limit along the way
                 new EllipsoidRegion(Tensors.vector(-2, +0), Tensors.vector(1, 1)) // block to the left
-            )));
+            ));
     // ---
     TrajectoryPlanner trajectoryPlanner = new StandardTrajectoryPlanner( //
         eta, stateIntegrator, controls, obstacleQuery, rice1Goal);

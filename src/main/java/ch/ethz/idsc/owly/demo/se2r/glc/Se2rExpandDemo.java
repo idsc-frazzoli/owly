@@ -20,7 +20,6 @@ import ch.ethz.idsc.owly.math.region.HyperplaneRegion;
 import ch.ethz.idsc.owly.math.region.RegionUnion;
 import ch.ethz.idsc.owly.math.state.FixedStateIntegrator;
 import ch.ethz.idsc.owly.math.state.StateIntegrator;
-import ch.ethz.idsc.owly.math.state.TimeInvariantRegion;
 import ch.ethz.idsc.owly.math.state.TrajectoryRegionQuery;
 import ch.ethz.idsc.tensor.RationalScalar;
 import ch.ethz.idsc.tensor.RealScalar;
@@ -40,12 +39,11 @@ enum Se2rExpandDemo {
     GoalInterface goalInterface = Se2MinTimeGoalManager.create( //
         Tensors.vector(-1, -1, Math.PI * 2), //
         Tensors.vector(.1, .1, 0.17), controls);
-    TrajectoryRegionQuery obstacleQuery = //
-        new SimpleTrajectoryRegionQuery(new TimeInvariantRegion( //
-            RegionUnion.of( //
-                new HyperplaneRegion(Tensors.vector(0, -1, 0), RealScalar.of(1.5)), //
-                new HyperplaneRegion(Tensors.vector(0, +1, 0), RealScalar.of(2.0)) //
-            )));
+    TrajectoryRegionQuery obstacleQuery = SimpleTrajectoryRegionQuery.timeInvariant( //
+        RegionUnion.of( //
+            new HyperplaneRegion(Tensors.vector(0, -1, 0), RealScalar.of(1.5)), //
+            new HyperplaneRegion(Tensors.vector(0, +1, 0), RealScalar.of(2.0)) //
+        ));
     // ---
     TrajectoryPlanner trajectoryPlanner = new StandardTrajectoryPlanner( //
         eta, stateIntegrator, controls, obstacleQuery, goalInterface);

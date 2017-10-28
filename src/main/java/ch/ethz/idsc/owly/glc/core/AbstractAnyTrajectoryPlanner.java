@@ -21,7 +21,6 @@ import ch.ethz.idsc.owly.math.region.InvertedRegion;
 import ch.ethz.idsc.owly.math.region.Region;
 import ch.ethz.idsc.owly.math.state.StateIntegrator;
 import ch.ethz.idsc.owly.math.state.StateTime;
-import ch.ethz.idsc.owly.math.state.TimeInvariantRegion;
 import ch.ethz.idsc.owly.math.state.TrajectoryRegionQuery;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
@@ -273,7 +272,7 @@ public abstract class AbstractAnyTrajectoryPlanner extends AbstractTrajectoryPla
     ListIterator<Region> iter = goalRegions.listIterator(goalRegions.size());
     DomainQueue regionQueue = new DomainQueue(); // priority queue over merit of GlcNodes
     while (iter.hasPrevious()) { // goes through all regions from last to first
-      SimpleTrajectoryRegionQuery strq = new SimpleTrajectoryRegionQuery(new TimeInvariantRegion(iter.previous()));// go through Regions from the last to first:
+      TrajectoryRegionQuery strq = SimpleTrajectoryRegionQuery.timeInvariant(iter.previous());// go through Regions from the last to first:
       for (GlcNode tempBest : best.keySet()) {
         List<StateTime> trajectory = best.get(tempBest);
         if (strq.firstMember(trajectory) >= 0)
