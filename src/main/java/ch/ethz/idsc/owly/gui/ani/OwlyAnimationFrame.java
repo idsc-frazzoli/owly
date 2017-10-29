@@ -155,17 +155,17 @@ public class OwlyAnimationFrame extends TimerFrame {
         System.err.println("NO TRAJECTORY BETWEEN ROOT TO GOAL");
       }
       {
-        TrajectoryRegionQuery trq = trajectoryPlanner.getObstacleQuery();
-        if (trq instanceof SimpleTrajectoryRegionQuery) {
-          SimpleTrajectoryRegionQuery simpleTrajectoryRegionQuery = (SimpleTrajectoryRegionQuery) trq;
+        TrajectoryRegionQuery transitionRegionQuery = trajectoryPlanner.getObstacleQuery();
+        if (transitionRegionQuery instanceof SimpleTrajectoryRegionQuery) {
+          SimpleTrajectoryRegionQuery simpleTrajectoryRegionQuery = (SimpleTrajectoryRegionQuery) transitionRegionQuery;
           Collection<StateTime> collection = simpleTrajectoryRegionQuery.getSparseDiscoveredMembers();
           obstacleRender.setCollection(new HashSet<>(collection));
         }
       }
       {
-        TrajectoryRegionQuery trq = trajectoryPlanner.getGoalInterface();
-        if (trq instanceof SimpleTrajectoryRegionQuery) {
-          SimpleTrajectoryRegionQuery simpleTrajectoryRegionQuery = (SimpleTrajectoryRegionQuery) trq;
+        TrajectoryRegionQuery transitionRegionQuery = trajectoryPlanner.getGoalInterface();
+        if (transitionRegionQuery instanceof SimpleTrajectoryRegionQuery) {
+          SimpleTrajectoryRegionQuery simpleTrajectoryRegionQuery = (SimpleTrajectoryRegionQuery) transitionRegionQuery;
           Collection<StateTime> collection = simpleTrajectoryRegionQuery.getSparseDiscoveredMembers();
           goalRender.setCollection(new HashSet<>(collection));
         }
@@ -187,8 +187,8 @@ public class OwlyAnimationFrame extends TimerFrame {
       {
         TransitionRegionQuery transitionRegionQuery = rrtsPlanner.getObstacleQuery();
         if (transitionRegionQuery instanceof SampledTransitionRegionQuery) {
-          SampledTransitionRegionQuery strq = (SampledTransitionRegionQuery) transitionRegionQuery;
-          obstacleRender.setCollection(new HashSet<>(strq.getDiscoveredMembers()));
+          SampledTransitionRegionQuery sampledTransitionRegionQuery = (SampledTransitionRegionQuery) transitionRegionQuery;
+          obstacleRender.setCollection(new HashSet<>(sampledTransitionRegionQuery.getSparseDiscoveredMembers()));
         }
       }
       if (rrtsPlanner.getBest().isPresent()) {

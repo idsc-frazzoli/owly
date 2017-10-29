@@ -58,7 +58,7 @@ public enum RenderElements {
     list.add(GridRender.INSTANCE);
     if (transitionRegionQuery instanceof SampledTransitionRegionQuery) {
       SampledTransitionRegionQuery strq = (SampledTransitionRegionQuery) transitionRegionQuery;
-      list.add(new ObstacleRender(strq.getDiscoveredMembers()));
+      list.add(new ObstacleRender(strq.getSparseDiscoveredMembers()));
     }
     list.add(new TreeRender(collection));
     return list;

@@ -28,10 +28,10 @@ public class SampledTransitionRegionQuery implements TransitionRegionQuery {
     return trajectoryRegionQuery.isDisjoint(list);
   }
 
-  public Collection<StateTime> getDiscoveredMembers() {
+  public Collection<StateTime> getSparseDiscoveredMembers() {
     if (trajectoryRegionQuery instanceof SimpleTrajectoryRegionQuery) {
-      SimpleTrajectoryRegionQuery strq = (SimpleTrajectoryRegionQuery) trajectoryRegionQuery;
-      return strq.getSparseDiscoveredMembers();
+      SimpleTrajectoryRegionQuery simpleTrajectoryRegionQuery = (SimpleTrajectoryRegionQuery) trajectoryRegionQuery;
+      return simpleTrajectoryRegionQuery.getSparseDiscoveredMembers();
     }
     return Collections.emptyList();
   }

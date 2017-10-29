@@ -37,4 +37,13 @@ public class Se2WrapTest extends TestCase {
       assertEquals(rep.Get(2), RealScalar.of(99));
     }
   }
+
+  public void testFail() {
+    try {
+      new Se2Wrap(Tensors.vector(1, 2));
+      assertTrue(false);
+    } catch (Exception exception) {
+      // ---
+    }
+  }
 }
