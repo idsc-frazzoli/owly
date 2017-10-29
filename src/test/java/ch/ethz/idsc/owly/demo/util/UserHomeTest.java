@@ -7,4 +7,13 @@ public class UserHomeTest extends TestCase {
   public void testSimple() {
     assertTrue(UserHome.file("").isDirectory());
   }
+
+  public void testNull() {
+    try {
+      UserHome.file(null);
+      assertTrue(false);
+    } catch (Exception exception) {
+      // ---
+    }
+  }
 }
