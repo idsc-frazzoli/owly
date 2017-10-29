@@ -39,7 +39,29 @@ public class Se2IntegratorTest extends TestCase {
 
   public void testRotate2() {
     Tensor x = Tensors.vector(-1, -2, 1);
-    Tensor u = Tensors.vector(2, 1);
+    Tensor u = Tensors.vector(2, .5);
+    Scalar h = RealScalar.of(.25);
+    Flow flow = StateSpaceModels.createFlow(Se2StateSpaceModel.INSTANCE, u);
+    Se2StateSpaceModel.INSTANCE.f(x, u);
+    Tensor expl = Se2Integrator.INSTANCE.step(flow, x, h);
+    Tensor imp1 = RungeKutta45Integrator.INSTANCE.step(flow, x, h);
+    assertTrue(Chop._07.close(imp1, expl));
+  }
+
+  public void testRotateHN() {
+    Tensor x = Tensors.vector(-1, -2, 1);
+    Tensor u = Tensors.vector(1.2, .7);
+    Scalar h = RealScalar.of(-.25);
+    Flow flow = StateSpaceModels.createFlow(Se2StateSpaceModel.INSTANCE, u);
+    Se2StateSpaceModel.INSTANCE.f(x, u);
+    Tensor expl = Se2Integrator.INSTANCE.step(flow, x, h);
+    Tensor impl = RungeKutta45Integrator.INSTANCE.step(flow, x, h);
+    assertTrue(Chop._07.close(impl, expl));
+  }
+
+  public void testRotateUN() {
+    Tensor x = Tensors.vector(-1, -2, 1);
+    Tensor u = Tensors.vector(2, -.8);
     Scalar h = RealScalar.of(.25);
     Flow flow = StateSpaceModels.createFlow(Se2StateSpaceModel.INSTANCE, u);
     Se2StateSpaceModel.INSTANCE.f(x, u);

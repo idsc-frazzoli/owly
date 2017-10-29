@@ -63,7 +63,8 @@ enum R2DemoSlow {
     AnimationWriter gsw = AnimationWriter.of(UserHome.Pictures("delta_s.gif"), 250);
     OwlyFrame owly = OwlyGui.start();
     for (int i = 0; i < 5; i++) {
-      int iters = Expand.maxSteps(trajectoryPlanner, 1);
+      // int iters =
+      Expand.maxSteps(trajectoryPlanner, 1);
       owly.setGlc(trajectoryPlanner);
       gsw.append(owly.offscreen());
     }

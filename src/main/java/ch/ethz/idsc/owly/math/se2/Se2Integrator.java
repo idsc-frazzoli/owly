@@ -25,8 +25,9 @@ public enum Se2Integrator implements Integrator {
   // ---
   @Override
   public Tensor step(Flow flow, Tensor x, Scalar h) {
-    Tensor u = flow.getU().multiply(h);
-    Tensor ux = Tensors.of(u.Get(1), RealScalar.ZERO, u.Get(0));
+    final Tensor u = flow.getU();
+    Scalar speed = u.Get(1).multiply(h);
+    Tensor ux = Tensors.of(speed, RealScalar.ZERO, u.Get(0).multiply(speed));
     return combine_vy0(x, ux);
   }
 

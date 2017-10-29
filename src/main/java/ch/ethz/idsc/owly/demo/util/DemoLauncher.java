@@ -49,7 +49,7 @@ public enum DemoLauncher {
       JButton jButton = new JButton(cls.getSimpleName());
       jButton.addActionListener(event -> {
         try {
-          DemoInterface demoInterface = (DemoInterface) cls.getConstructors()[0].newInstance();
+          DemoInterface demoInterface = (DemoInterface) cls.newInstance();
           demoInterface.start();
         } catch (Exception exception) {
           exception.printStackTrace();
