@@ -5,15 +5,15 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
-import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
 import ch.ethz.idsc.owly.math.state.StateTime;
+import ch.ethz.idsc.owly.math.state.StateTimeCollector;
 import ch.ethz.idsc.owly.math.state.TrajectoryRegionQuery;
 import ch.ethz.idsc.owly.rrts.core.Transition;
 import ch.ethz.idsc.owly.rrts.core.TransitionRegionQuery;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
 
-public class SampledTransitionRegionQuery implements TransitionRegionQuery {
+public class SampledTransitionRegionQuery implements TransitionRegionQuery, StateTimeCollector {
   private final TrajectoryRegionQuery trajectoryRegionQuery;
   private final Scalar dt;
 
@@ -28,11 +28,10 @@ public class SampledTransitionRegionQuery implements TransitionRegionQuery {
     return trajectoryRegionQuery.isDisjoint(list);
   }
 
-  public Collection<StateTime> getSparseDiscoveredMembers() {
-    if (trajectoryRegionQuery instanceof SimpleTrajectoryRegionQuery) {
-      SimpleTrajectoryRegionQuery simpleTrajectoryRegionQuery = (SimpleTrajectoryRegionQuery) trajectoryRegionQuery;
-      return simpleTrajectoryRegionQuery.getSparseDiscoveredMembers();
-    }
+  @Override
+  public Collection<StateTime> getMembers() {
+    if (trajectoryRegionQuery instanceof StateTimeCollector)
+      return ((StateTimeCollector) trajectoryRegionQuery).getMembers();
     return Collections.emptyList();
   }
 }

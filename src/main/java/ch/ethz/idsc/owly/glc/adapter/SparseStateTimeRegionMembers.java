@@ -7,11 +7,12 @@ import java.util.Collections;
 import ch.ethz.idsc.owly.data.LinearRasterMap;
 import ch.ethz.idsc.owly.data.RasterMap;
 import ch.ethz.idsc.owly.math.state.StateTime;
+import ch.ethz.idsc.owly.math.state.StateTimeCollector;
 import ch.ethz.idsc.owly.math.state.StateTimeRegionCallback;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
 
-public class SparseStateTimeRegionMembers implements StateTimeRegionCallback {
+public class SparseStateTimeRegionMembers implements StateTimeRegionCallback, StateTimeCollector {
   /** magic constants of scale are not universal but are suitable for most examples */
   private final RasterMap<StateTime> rasterMap = new LinearRasterMap<>(Tensors.vector(10, 10));
 
@@ -22,6 +23,7 @@ public class SparseStateTimeRegionMembers implements StateTimeRegionCallback {
       rasterMap.put(x.extract(0, 2), stateTime);
   }
 
+  @Override
   public Collection<StateTime> getMembers() {
     return Collections.unmodifiableCollection(rasterMap.values());
   }

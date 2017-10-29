@@ -6,7 +6,6 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
@@ -16,7 +15,6 @@ import java.util.TimerTask;
 import ch.ethz.idsc.owly.data.GlobalAssert;
 import ch.ethz.idsc.owly.data.TimeKeeper;
 import ch.ethz.idsc.owly.data.tree.Nodes;
-import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
 import ch.ethz.idsc.owly.glc.adapter.Trajectories;
 import ch.ethz.idsc.owly.glc.core.GlcNode;
 import ch.ethz.idsc.owly.glc.core.GlcNodes;
@@ -34,10 +32,8 @@ import ch.ethz.idsc.owly.gui.ren.TreeRender;
 import ch.ethz.idsc.owly.math.region.ImageRegion;
 import ch.ethz.idsc.owly.math.state.StateTime;
 import ch.ethz.idsc.owly.math.state.TrajectoryRegionQuery;
-import ch.ethz.idsc.owly.rrts.adapter.SampledTransitionRegionQuery;
 import ch.ethz.idsc.owly.rrts.core.RrtsNode;
 import ch.ethz.idsc.owly.rrts.core.RrtsPlanner;
-import ch.ethz.idsc.owly.rrts.core.TransitionRegionQuery;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
@@ -154,29 +150,14 @@ public class OwlyAnimationFrame extends TimerFrame {
       } else {
         System.err.println("NO TRAJECTORY BETWEEN ROOT TO GOAL");
       }
-      {
-        TrajectoryRegionQuery transitionRegionQuery = trajectoryPlanner.getObstacleQuery();
-        if (transitionRegionQuery instanceof SimpleTrajectoryRegionQuery) {
-          SimpleTrajectoryRegionQuery simpleTrajectoryRegionQuery = (SimpleTrajectoryRegionQuery) transitionRegionQuery;
-          Collection<StateTime> collection = simpleTrajectoryRegionQuery.getSparseDiscoveredMembers();
-          obstacleRender.setCollection(new HashSet<>(collection));
-        }
-      }
-      {
-        TrajectoryRegionQuery transitionRegionQuery = trajectoryPlanner.getGoalInterface();
-        if (transitionRegionQuery instanceof SimpleTrajectoryRegionQuery) {
-          SimpleTrajectoryRegionQuery simpleTrajectoryRegionQuery = (SimpleTrajectoryRegionQuery) transitionRegionQuery;
-          Collection<StateTime> collection = simpleTrajectoryRegionQuery.getSparseDiscoveredMembers();
-          goalRender.setCollection(new HashSet<>(collection));
-        }
-      }
+      obstacleRender.fromStateTimeCollector(trajectoryPlanner.getObstacleQuery());
+      goalRender.fromStateTimeCollector(trajectoryPlanner.getGoalInterface());
       treeRender.setCollection(new ArrayList<>(trajectoryPlanner.getDomainMap().values()));
       // no repaint
     }
 
     @Override
     public void expandResult(List<TrajectorySample> head, RrtsPlanner rrtsPlanner, List<TrajectorySample> tail) {
-      // TODO JAN code redundant to above... refactor
       List<TrajectorySample> trajectory = new ArrayList<>();
       if (controllable instanceof AbstractEntity) {
         AbstractEntity abstractEntity = (AbstractEntity) controllable;
@@ -184,13 +165,7 @@ public class OwlyAnimationFrame extends TimerFrame {
         abstractEntity.setTrajectory(trajectory);
       }
       trajectoryRender.setTrajectory(trajectory);
-      {
-        TransitionRegionQuery transitionRegionQuery = rrtsPlanner.getObstacleQuery();
-        if (transitionRegionQuery instanceof SampledTransitionRegionQuery) {
-          SampledTransitionRegionQuery sampledTransitionRegionQuery = (SampledTransitionRegionQuery) transitionRegionQuery;
-          obstacleRender.setCollection(new HashSet<>(sampledTransitionRegionQuery.getSparseDiscoveredMembers()));
-        }
-      }
+      obstacleRender.fromStateTimeCollector(rrtsPlanner.getObstacleQuery());
       if (rrtsPlanner.getBest().isPresent()) {
         RrtsNode root = Nodes.rootFrom(rrtsPlanner.getBest().get());
         Collection<RrtsNode> collection = Nodes.ofSubtree(root);

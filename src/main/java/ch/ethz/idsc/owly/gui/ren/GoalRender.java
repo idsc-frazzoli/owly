@@ -6,11 +6,14 @@ import java.awt.Graphics2D;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Point2D;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.Objects;
 
 import ch.ethz.idsc.owly.gui.GeometricLayer;
 import ch.ethz.idsc.owly.gui.RenderInterface;
 import ch.ethz.idsc.owly.math.state.StateTime;
+import ch.ethz.idsc.owly.math.state.StateTimeCollector;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.opt.ConvexHull;
 
@@ -46,7 +49,9 @@ public class GoalRender implements RenderInterface {
     }
   }
 
-  public void setCollection(Collection<StateTime> collection) {
-    this.collection = collection;
+  public void fromStateTimeCollector(Object object) {
+    collection = object instanceof StateTimeCollector //
+        ? new HashSet<>(((StateTimeCollector) object).getMembers()) //
+        : Collections.emptySet();
   }
 }

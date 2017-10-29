@@ -44,6 +44,7 @@ import ch.ethz.idsc.tensor.io.ResourceData;
 
 public class DeltaxtGlcDemo implements DemoInterface {
   ;
+  @Override
   public void start() {
     // SETUP
     RationalScalar resolution = (RationalScalar) RationalScalar.of(12, 1);
