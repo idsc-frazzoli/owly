@@ -49,7 +49,7 @@ public class ImageCostFunction implements CostFunction {
     if (tensor.length() != 2)
       tensor = tensor.extract(0, 2);
     Tensor pixel = Floor.of(tensor.pmul(scale));
-    // TODO code redundant to ImageRegion for instance
+    // code features redundancies for instance to ImageRegion
     int pix = pixel.Get(0).number().intValue();
     if (0 <= pix && pix < dimensions.get(1)) {
       int piy = max_y - pixel.Get(1).number().intValue();
@@ -83,8 +83,5 @@ public class ImageCostFunction implements CostFunction {
 
   public Tensor origin() {
     return Array.zeros(2);
-  }
-
-  public static void main(String[] args) {
   }
 }

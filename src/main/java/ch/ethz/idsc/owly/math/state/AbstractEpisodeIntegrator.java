@@ -26,7 +26,7 @@ abstract class AbstractEpisodeIntegrator implements EpisodeIntegrator {
    * @return */
   protected abstract List<StateTime> move(Flow flow, Scalar period);
 
-  @Override
+  @Override // from EpisodeIntegrator
   public final void move(Tensor u, Scalar now) {
     List<StateTime> trajectory = move(StateSpaceModels.createFlow(stateSpaceModel, u), now.subtract(stateTime.time()));
     stateTime = trajectory.get(trajectory.size() - 1);

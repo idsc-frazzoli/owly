@@ -13,7 +13,6 @@ import ch.ethz.idsc.owly.math.CoordinateWrap;
 import ch.ethz.idsc.owly.math.flow.Flow;
 import ch.ethz.idsc.owly.math.region.Region;
 import ch.ethz.idsc.owly.math.state.StateTime;
-import ch.ethz.idsc.owly.math.state.TimeInvariantRegion;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
@@ -22,7 +21,7 @@ import ch.ethz.idsc.tensor.sca.Sign;
 public class PsuGoalManager implements Region, CostFunction {
   public static GoalInterface of(CoordinateWrap coordinateWrap, Tensor center, Tensor radius) {
     PsuGoalManager psuGoalManager = new PsuGoalManager(coordinateWrap, center, radius);
-    return new GoalAdapter(psuGoalManager, new SimpleTrajectoryRegionQuery(new TimeInvariantRegion(psuGoalManager)));
+    return new GoalAdapter(psuGoalManager, SimpleTrajectoryRegionQuery.timeInvariant(psuGoalManager));
   }
 
   // ---

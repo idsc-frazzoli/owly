@@ -21,7 +21,6 @@ import ch.ethz.idsc.owly.math.region.RegionUnion;
 import ch.ethz.idsc.owly.math.state.FixedStateIntegrator;
 import ch.ethz.idsc.owly.math.state.StateIntegrator;
 import ch.ethz.idsc.owly.math.state.StateTime;
-import ch.ethz.idsc.owly.math.state.TimeInvariantRegion;
 import ch.ethz.idsc.owly.math.state.TrajectoryRegionQuery;
 import ch.ethz.idsc.tensor.RationalScalar;
 import ch.ethz.idsc.tensor.RealScalar;
@@ -45,12 +44,11 @@ class IpDemo {
         Tensors.vector(.1, .1, 1, 1));
     TrajectoryRegionQuery obstacleQuery =
         // new EmptyTrajectoryRegionQuery();
-        new SimpleTrajectoryRegionQuery( //
-            new TimeInvariantRegion( //
-                RegionUnion.of( //
-                    new FreeBoundedIntervalRegion(0, RealScalar.of(-1), RealScalar.of(+3)), // ,
-                    new FreeBoundedIntervalRegion(2, RealScalar.of(-2), RealScalar.of(+2)) // ,
-                )));
+        SimpleTrajectoryRegionQuery.timeInvariant( //
+            RegionUnion.of( //
+                new FreeBoundedIntervalRegion(0, RealScalar.of(-1), RealScalar.of(+3)), // ,
+                new FreeBoundedIntervalRegion(2, RealScalar.of(-2), RealScalar.of(+2)) // ,
+            ));
     // ---
     TrajectoryPlanner trajectoryPlanner = new StandardTrajectoryPlanner( //
         eta, stateIntegrator, controls, obstacleQuery, ipGoalManager);

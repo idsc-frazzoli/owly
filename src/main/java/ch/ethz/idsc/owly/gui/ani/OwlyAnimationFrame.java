@@ -45,10 +45,10 @@ import ch.ethz.idsc.tensor.Tensors;
 // EXPERIMENTAL API not finalized 
 public class OwlyAnimationFrame extends TimerFrame {
   private final EtaRender etaRender = new EtaRender(Tensors.empty());
-  private final TrajectoryRender trajectoryRender = new TrajectoryRender(null);
+  private final TrajectoryRender trajectoryRender = new TrajectoryRender();
   private final ObstacleRender obstacleRender = new ObstacleRender(null);
   private final GoalRender goalRender = new GoalRender(null);
-  public TreeRender treeRender = new TreeRender(null); // public is bad design but wait until API is refactored
+  private final TreeRender treeRender = new TreeRender(null);
   private final List<AnimationInterface> animationInterfaces = new LinkedList<>();
   /** reference to the entity that is controlled by the user */
   private AnimationInterface controllable = null;
@@ -91,7 +91,7 @@ public class OwlyAnimationFrame extends TimerFrame {
             }
             if (controllable instanceof AbstractEntity) {
               AbstractEntity abstractEntity = (AbstractEntity) controllable;
-              final Tensor goal = geometricComponent.getMouseGoal();
+              final Tensor goal = geometricComponent.getMouseSe2State();
               final List<TrajectorySample> head = //
                   abstractEntity.getFutureTrajectoryUntil(abstractEntity.delayHint());
               switch (abstractEntity.getPlannerType()) {
@@ -117,7 +117,7 @@ public class OwlyAnimationFrame extends TimerFrame {
               }
             }
           } else { // ctrl pressed
-            System.out.println(geometricComponent.getMouseGoal());
+            System.out.println(geometricComponent.getMouseSe2State());
             if (controllable instanceof AbstractEntity) {
               @SuppressWarnings("unused")
               AbstractEntity abstractEntity = (AbstractEntity) controllable;
@@ -170,8 +170,7 @@ public class OwlyAnimationFrame extends TimerFrame {
           goalRender.setCollection(new HashSet<>(collection));
         }
       }
-      if (Objects.nonNull(treeRender))
-        treeRender.setCollection(new ArrayList<>(trajectoryPlanner.getDomainMap().values()));
+      treeRender.setCollection(new ArrayList<>(trajectoryPlanner.getDomainMap().values()));
       // no repaint
     }
 
@@ -192,7 +191,7 @@ public class OwlyAnimationFrame extends TimerFrame {
           obstacleRender.setCollection(new HashSet<>(strq.getDiscoveredMembers()));
         }
       }
-      if (Objects.nonNull(treeRender) && rrtsPlanner.getBest().isPresent()) {
+      if (rrtsPlanner.getBest().isPresent()) {
         RrtsNode root = Nodes.rootFrom(rrtsPlanner.getBest().get());
         Collection<RrtsNode> collection = Nodes.ofSubtree(root);
         treeRender.setCollection(collection);

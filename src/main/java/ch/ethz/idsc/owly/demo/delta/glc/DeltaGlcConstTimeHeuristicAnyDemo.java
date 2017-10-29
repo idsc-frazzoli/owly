@@ -33,6 +33,7 @@ import ch.ethz.idsc.tensor.Tensors;
 
 enum DeltaGlcConstTimeHeuristicAnyDemo {
   ;
+  @SuppressWarnings("unused")
   public static void main(String[] args) throws Exception {
     // -- Quick Planner init
     RationalScalar quickResolution = (RationalScalar) RationalScalar.of(10, 1);
@@ -52,7 +53,6 @@ enum DeltaGlcConstTimeHeuristicAnyDemo {
     } else {
       throw new RuntimeException();
     }
-    @SuppressWarnings("unused")
     Scalar quickCostFromRoot = quickTrajectoryPlannerContainer.getTrajectoryPlanner().getBest().get().costFromRoot();
     DebugUtils.heuristicConsistencyCheck(quickTrajectoryPlannerContainer.getTrajectoryPlanner());
     System.out.println("***QUICK PLANNER FINISHED***");

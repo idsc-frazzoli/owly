@@ -37,7 +37,6 @@ import ch.ethz.idsc.owly.math.region.SphericalRegion;
 import ch.ethz.idsc.owly.math.state.FixedStateIntegrator;
 import ch.ethz.idsc.owly.math.state.StateIntegrator;
 import ch.ethz.idsc.owly.math.state.StateTime;
-import ch.ethz.idsc.owly.math.state.TimeInvariantRegion;
 import ch.ethz.idsc.owly.math.state.TrajectoryRegionQuery;
 import ch.ethz.idsc.tensor.DoubleScalar;
 import ch.ethz.idsc.tensor.RationalScalar;
@@ -71,9 +70,8 @@ enum Se2GlcHeuristicSensingObstacleCompareAnyDemo {
     Tensor startState = Tensors.vector(0, 0, 0);
     // TODO
     Region environmentRegion = new R2NoiseRegion(RealScalar.of(0.5));
-    TrajectoryRegionQuery obstacleQuery = //
-        new SimpleTrajectoryRegionQuery(new TimeInvariantRegion(//
-            EuclideanDistanceDiscoverRegion.of(environmentRegion, startState, sensingRadius)));
+    TrajectoryRegionQuery obstacleQuery = SimpleTrajectoryRegionQuery.timeInvariant( //
+        EuclideanDistanceDiscoverRegion.of(environmentRegion, startState, sensingRadius));
     // TODO JONAS: can remove todo "change back to AnyPlannerInterface"
     AnyPlannerInterface anyTrajectoryPlanner = new OptimalAnyTrajectoryPlanner( //
         parameters.getEta(), stateIntegrator, controls, obstacleQuery, se2Goal);
@@ -102,9 +100,8 @@ enum Se2GlcHeuristicSensingObstacleCompareAnyDemo {
       System.out.println("trajectorys size: " + trajectory.size());
       StateTime newRootState = null;
       newRootState = trajectory.get(trajectory.size() > 3 ? 3 : 0);
-      TrajectoryRegionQuery newObstacleQuery = //
-          new SimpleTrajectoryRegionQuery(new TimeInvariantRegion(//
-              EuclideanDistanceDiscoverRegion.of(environmentRegion, trajectory.get(0).state(), sensingRadius)));
+      TrajectoryRegionQuery newObstacleQuery = SimpleTrajectoryRegionQuery.timeInvariant( //
+          EuclideanDistanceDiscoverRegion.of(environmentRegion, trajectory.get(0).state(), sensingRadius));
       //
       // DEFAULT:
       StandardTrajectoryPlanner standardTrajectoryPlanner = null;

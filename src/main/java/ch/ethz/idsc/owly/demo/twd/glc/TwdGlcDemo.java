@@ -19,7 +19,6 @@ import ch.ethz.idsc.owly.math.region.HyperplaneRegion;
 import ch.ethz.idsc.owly.math.region.RegionUnion;
 import ch.ethz.idsc.owly.math.state.FixedStateIntegrator;
 import ch.ethz.idsc.owly.math.state.StateIntegrator;
-import ch.ethz.idsc.owly.math.state.TimeInvariantRegion;
 import ch.ethz.idsc.owly.math.state.TrajectoryRegionQuery;
 import ch.ethz.idsc.tensor.RationalScalar;
 import ch.ethz.idsc.tensor.RealScalar;
@@ -52,12 +51,11 @@ enum TwdGlcDemo {
     Collection<Flow> controls = TwdControls.createControls2( //
         stateSpaceModel, parameters.getResolutionInt());
     // --
-    TrajectoryRegionQuery obstacleQuery = //
-        new SimpleTrajectoryRegionQuery(new TimeInvariantRegion( //
-            RegionUnion.of( //
-                new HyperplaneRegion(Tensors.vector(0, -1, 0), RealScalar.of(4)), //
-                new HyperplaneRegion(Tensors.vector(0, +1, 0), RealScalar.of(3)) //
-            )));
+    TrajectoryRegionQuery obstacleQuery = SimpleTrajectoryRegionQuery.timeInvariant( //
+        RegionUnion.of( //
+            new HyperplaneRegion(Tensors.vector(0, -1, 0), RealScalar.of(4)), //
+            new HyperplaneRegion(Tensors.vector(0, +1, 0), RealScalar.of(3)) //
+        ));
     // --
     Tensor goalCenter = Tensors.vector(2, -2, -1 * Math.PI);
     // TwdDefaultGoalManager goalManager = new TwdDefaultGoalManager(goalCenter, radiusVector);

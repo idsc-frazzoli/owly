@@ -11,7 +11,7 @@ import ch.ethz.idsc.owly.math.state.StateTime;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
-import ch.ethz.idsc.tensor.sca.Power;
+import ch.ethz.idsc.tensor.sca.AbsSquared;
 import ch.ethz.idsc.tensor.sca.Ramp;
 
 /** Se2 goal region is not elliptic, therefore we implement {@link Region}
@@ -23,19 +23,15 @@ public class TwdMinCurvatureGoalManager extends TwdAbstractGoalManager {
   }
 
   /** Curvature is changed angle over distance covered. */
-  @Override // Cost Function
+  @Override // from CostIncrementFunction
   public Scalar costIncrement(GlcNode node, List<StateTime> trajectory, Flow flow) {
     StateTime from = node.stateTime();
     StateTime end = trajectory.get(trajectory.size() - 1);
-    // TODO Magic const
     // J(x,u) = (1+(delta(theta)/delta(position))²) * Ts
-    // TODO JONAS 1) instead of "end.state().Get(2).subtract(from.state().Get(2))" -> use
-    // ... TwdStateSpaceModel.errorRotation(...)
-    // TODO JONAS 2) instead of Power.of(...,2) -> use
-    // ... AbsSquared.of(...) for faster result
-    return (RealScalar.ONE.add(Power.of(end.state().Get(2).subtract(from.state().Get(2)), 2) //
-        .divide(TwdStateSpaceModel.errorPosition(from.state(), end.state()).add(RealScalar.ONE))))// if turnign on the place
-            .multiply(StateTimeTrajectories.timeIncrement(from, trajectory));
+    Scalar angledef = TwdStateSpaceModel.errorRotation(end.state(), from.state());
+    return RealScalar.ONE.add(AbsSquared.FUNCTION.apply(angledef) //
+        .divide(TwdStateSpaceModel.errorPosition(from.state(), end.state()).add(RealScalar.ONE)))// if turnign on the place
+        .multiply(StateTimeTrajectories.timeIncrement(from, trajectory));
   }
 
   // TODO only valid for assumption of maxSpeed = 1

@@ -26,7 +26,6 @@ import ch.ethz.idsc.owly.math.state.FixedStateIntegrator;
 import ch.ethz.idsc.owly.math.state.SimpleEpisodeIntegrator;
 import ch.ethz.idsc.owly.math.state.StateIntegrator;
 import ch.ethz.idsc.owly.math.state.StateTime;
-import ch.ethz.idsc.owly.math.state.TimeInvariantRegion;
 import ch.ethz.idsc.owly.math.state.TrajectoryRegionQuery;
 import ch.ethz.idsc.tensor.RationalScalar;
 import ch.ethz.idsc.tensor.RealScalar;
@@ -36,7 +35,7 @@ import ch.ethz.idsc.tensor.Tensors;
 import ch.ethz.idsc.tensor.red.Norm2Squared;
 
 /** omni-directional movement with constant speed */
-public class R2AnyEntity extends AbstractAnyEntity {
+/* package */ class R2AnyEntity extends AbstractAnyEntity {
   private static final Tensor FALLBACK_CONTROL = Tensors.vector(0, 0).unmodifiable();
   // ---
   protected final Collection<Flow> controls = R2Controls.createRadial(parameters.getResolutionInt());
@@ -90,7 +89,7 @@ public class R2AnyEntity extends AbstractAnyEntity {
 
   @Override
   protected Scalar distance(Tensor x, Tensor y) {
-    return Norm2Squared.ofVector(x.subtract(y));
+    return Norm2Squared.between(x, y);
   }
 
   @Override
@@ -113,8 +112,8 @@ public class R2AnyEntity extends AbstractAnyEntity {
 
   @Override
   protected TrajectoryRegionQuery updateObstacle(Region environmentRegion, Tensor currentState) {
-    return new SimpleTrajectoryRegionQuery(new TimeInvariantRegion(//
-        EuclideanDistanceDiscoverRegion.of(environmentRegion, currentState, RealScalar.of(4))));
+    return SimpleTrajectoryRegionQuery.timeInvariant( //
+        EuclideanDistanceDiscoverRegion.of(environmentRegion, currentState, RealScalar.of(4)));
   }
 
   @Override

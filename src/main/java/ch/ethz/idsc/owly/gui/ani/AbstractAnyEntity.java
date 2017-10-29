@@ -23,7 +23,6 @@ import ch.ethz.idsc.owly.math.region.InvertedRegion;
 import ch.ethz.idsc.owly.math.region.Region;
 import ch.ethz.idsc.owly.math.state.EpisodeIntegrator;
 import ch.ethz.idsc.owly.math.state.StateIntegrator;
-import ch.ethz.idsc.owly.math.state.TimeInvariantRegion;
 import ch.ethz.idsc.owly.math.state.TrajectoryRegionQuery;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
@@ -190,7 +189,7 @@ public abstract class AbstractAnyEntity extends AbstractEntity {
    * @param currentState
    * @return ObstacleQuery */
   protected TrajectoryRegionQuery initializeObstacle(Region oldEnvironmentRegion, Tensor currentState) {
-    return new SimpleTrajectoryRegionQuery(new TimeInvariantRegion(oldEnvironmentRegion));
+    return SimpleTrajectoryRegionQuery.timeInvariant(oldEnvironmentRegion);
   }
 
   @Override

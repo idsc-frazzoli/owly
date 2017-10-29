@@ -16,7 +16,7 @@ public class SimpleEpisodeIntegrator extends AbstractEpisodeIntegrator {
     super(stateSpaceModel, integrator, stateTime);
   }
 
-  @Override
+  @Override // from AbstractEpisodeIntegrator
   protected List<StateTime> move(Flow flow, Scalar period) {
     return FixedStateIntegrator.create(integrator, period, 1).trajectory(tail(), flow);
   }

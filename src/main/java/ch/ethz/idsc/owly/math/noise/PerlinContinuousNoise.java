@@ -41,7 +41,6 @@ public enum PerlinContinuousNoise implements NativeContinuousNoise {
    * 
    * @param t
    * @return */
-  // TODO extract function
   private static double fade(double t) {
     return t * t * t * (t * (t * 6 - 15) + 10);
   }

@@ -6,7 +6,7 @@ import junit.framework.TestCase;
 
 public class RiceD1DemoTest extends TestCase {
   public void testFindGoal() {
-    TrajectoryPlanner trajectoryPlanner = RiceD1Demo.simple();
+    TrajectoryPlanner trajectoryPlanner = Rice1dDemo.simple();
     assertTrue(trajectoryPlanner.getBest().isPresent());
   }
 }

@@ -17,8 +17,18 @@ import lcm.util.ClassDiscovery;
 import lcm.util.ClassPaths;
 import lcm.util.ClassVisitor;
 
+/** scans repository for classes that implement {@link DemoInterface}
+ * DemoLauncher creates a gui that allows to start these classes. */
 public enum DemoLauncher {
   ;
+  private static final int BUTTON_HEIGHT = 24;
+  private static final Comparator<Class<?>> CLASSNAMECOMPARATOR = new Comparator<Class<?>>() {
+    @Override
+    public int compare(Class<?> c1, Class<?> c2) {
+      return c1.getName().compareToIgnoreCase(c2.getName());
+    }
+  };
+
   public static void main(String[] args) {
     List<Class<?>> demos = new LinkedList<>();
     ClassVisitor classVisitor = new ClassVisitor() {
@@ -31,12 +41,7 @@ public enum DemoLauncher {
     };
     ClassDiscovery.execute(ClassPaths.getDefault(), classVisitor);
     // ---
-    Collections.sort(demos, new Comparator<Class<?>>() {
-      @Override
-      public int compare(Class<?> o1, Class<?> o2) {
-        return o1.getName().compareToIgnoreCase(o2.getName());
-      }
-    });
+    Collections.sort(demos, CLASSNAMECOMPARATOR);
     JFrame jFrame = new JFrame();
     jFrame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
     JPanel jPanel = new JPanel(new GridLayout(demos.size(), 1));
@@ -44,7 +49,7 @@ public enum DemoLauncher {
       JButton jButton = new JButton(cls.getSimpleName());
       jButton.addActionListener(event -> {
         try {
-          DemoInterface demoInterface = (DemoInterface) cls.getConstructors()[0].newInstance();
+          DemoInterface demoInterface = (DemoInterface) cls.newInstance();
           demoInterface.start();
         } catch (Exception exception) {
           exception.printStackTrace();
@@ -53,7 +58,7 @@ public enum DemoLauncher {
       jPanel.add(jButton);
     }
     jFrame.setContentPane(jPanel);
-    jFrame.setBounds(1200, 100, 250, 40 + demos.size() * 20);
+    jFrame.setBounds(1200, 100, 250, 40 + demos.size() * BUTTON_HEIGHT);
     jFrame.setVisible(true);
   }
 }

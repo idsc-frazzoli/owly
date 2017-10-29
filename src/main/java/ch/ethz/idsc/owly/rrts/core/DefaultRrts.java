@@ -35,7 +35,8 @@ public class DefaultRrts implements Rrts {
 
   @Override
   public Optional<RrtsNode> insertAsNode(Tensor state, int k_nearest) {
-    // TODO check if state is in collision, not easy since collision check works on `transition`s
+    // the collision check available to class works on transitions, but not on states
+    // that means no sanity collision check on state is carried out inside function insertAsNode
     int size = nodeCollection.size();
     if (size == 0) {
       RrtsNode rrtsNode = RrtsNode.createRoot(state, RealScalar.ZERO);

@@ -21,7 +21,6 @@ import ch.ethz.idsc.owly.math.region.EllipsoidRegion;
 import ch.ethz.idsc.owly.math.state.FixedStateIntegrator;
 import ch.ethz.idsc.owly.math.state.StateIntegrator;
 import ch.ethz.idsc.owly.math.state.StateTime;
-import ch.ethz.idsc.owly.math.state.TimeInvariantRegion;
 import ch.ethz.idsc.owly.math.state.TrajectoryRegionQuery;
 import ch.ethz.idsc.tensor.DoubleScalar;
 import ch.ethz.idsc.tensor.RationalScalar;
@@ -52,9 +51,8 @@ enum R2xtEllipsoidGlcDemo {
     // RnxtEllipsoidGoalManager rnGoal = new RnxtEllipsoidGoalManager(//
     // goal, Tensors.of(RealScalar.of(0.2), RealScalar.of(0.2), DoubleScalar.POSITIVE_INFINITY));
     // GoalRegion at x:5, y= 5 and all time
-    TrajectoryRegionQuery obstacleQuery = //
-        new SimpleTrajectoryRegionQuery(new TimeInvariantRegion( //
-            new EllipsoidRegion(goal, Tensors.vector(3, 3, 10))));
+    TrajectoryRegionQuery obstacleQuery = SimpleTrajectoryRegionQuery.timeInvariant( //
+        new EllipsoidRegion(goal, Tensors.vector(3, 3, 10)));
     // ObstacleEllipsoid around goal, which disappears after 10s
     // ---
     TrajectoryPlanner trajectoryPlanner = new StandardTrajectoryPlanner( //

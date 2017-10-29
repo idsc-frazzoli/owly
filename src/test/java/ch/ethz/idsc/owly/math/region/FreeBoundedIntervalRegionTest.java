@@ -5,7 +5,6 @@ import java.util.Arrays;
 
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
 import ch.ethz.idsc.owly.math.state.StateTime;
-import ch.ethz.idsc.owly.math.state.TimeInvariantRegion;
 import ch.ethz.idsc.owly.math.state.TrajectoryRegionQuery;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Tensors;
@@ -23,7 +22,7 @@ public class FreeBoundedIntervalRegionTest extends TestCase {
 
   public void testTrajectory() {
     FreeBoundedIntervalRegion bir = new FreeBoundedIntervalRegion(0, RealScalar.of(10), RealScalar.of(20));
-    TrajectoryRegionQuery trq = new SimpleTrajectoryRegionQuery(new TimeInvariantRegion(bir));
+    TrajectoryRegionQuery trq = SimpleTrajectoryRegionQuery.timeInvariant(bir);
     assertTrue(trq.isDisjoint(Arrays.asList(new StateTime(Tensors.vector(15), RealScalar.ZERO))));
     assertFalse(trq.isDisjoint(Arrays.asList(new StateTime(Tensors.vector(5), RealScalar.ZERO))));
   }

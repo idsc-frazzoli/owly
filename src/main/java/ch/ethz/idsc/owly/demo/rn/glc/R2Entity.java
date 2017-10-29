@@ -1,11 +1,6 @@
 // code by jph
 package ch.ethz.idsc.owly.demo.rn.glc;
 
-import java.awt.Color;
-import java.awt.Graphics2D;
-import java.awt.geom.Ellipse2D;
-import java.awt.geom.Point2D;
-import java.awt.geom.Rectangle2D;
 import java.util.Collection;
 import java.util.Objects;
 
@@ -16,9 +11,7 @@ import ch.ethz.idsc.owly.glc.core.CostFunction;
 import ch.ethz.idsc.owly.glc.core.GoalInterface;
 import ch.ethz.idsc.owly.glc.core.StandardTrajectoryPlanner;
 import ch.ethz.idsc.owly.glc.core.TrajectoryPlanner;
-import ch.ethz.idsc.owly.gui.GeometricLayer;
-import ch.ethz.idsc.owly.gui.ani.AbstractEntity;
-import ch.ethz.idsc.owly.gui.ani.PlannerType;
+import ch.ethz.idsc.owly.gui.ani.AbstractCircularEntity;
 import ch.ethz.idsc.owly.math.SingleIntegratorStateSpaceModel;
 import ch.ethz.idsc.owly.math.flow.EulerIntegrator;
 import ch.ethz.idsc.owly.math.flow.Flow;
@@ -37,13 +30,7 @@ import ch.ethz.idsc.tensor.red.Norm2Squared;
 /** omni-directional movement with constant speed
  * 
  * the implementation chooses certain values */
-/* package */ class R2Entity extends AbstractEntity {
-  private static final Tensor FALLBACK_CONTROL = Tensors.vectorDouble(0, 0).unmodifiable();
-  /** preserve 0.5[s] of the former trajectory
-   * planning should not exceed that duration, otherwise
-   * the entity may not be able to follow a planned trajectory */
-  private static final Scalar DELAY_HINT = RealScalar.of(0.5);
-  // ---
+/* package */ class R2Entity extends AbstractCircularEntity {
   /** 36 corresponds to 10[Degree] resolution */
   private final Collection<Flow> controls = R2Controls.createRadial(36);
   /** radius of spherical goal region */
@@ -59,22 +46,20 @@ import ch.ethz.idsc.tensor.red.Norm2Squared;
 
   @Override
   protected Scalar distance(Tensor x, Tensor y) {
-    return Norm2Squared.ofVector(x.subtract(y));
+    return Norm2Squared.between(x, y);
   }
 
   @Override
   protected Tensor fallbackControl() {
-    return FALLBACK_CONTROL;
+    return Tensors.vectorDouble(0, 0).unmodifiable();
   }
 
   @Override
   public Scalar delayHint() {
-    return DELAY_HINT;
-  }
-
-  @Override
-  public PlannerType getPlannerType() {
-    return PlannerType.STANDARD;
+    /** preserve 0.5[s] of the former trajectory
+     * planning should not exceed that duration, otherwise
+     * the entity may not be able to follow a planned trajectory */
+    return RealScalar.of(0.5);
   }
 
   // TODO JAN design is despicable
@@ -91,21 +76,5 @@ import ch.ethz.idsc.tensor.red.Norm2Squared;
         new RnMinDistExtraCostGoalManager(center, goalRadius, costFunction);
     return new StandardTrajectoryPlanner( //
         partitionScale, stateIntegrator, controls, obstacleQuery, goalInterface);
-  }
-
-  @Override
-  public void render(GeometricLayer geometricLayer, Graphics2D graphics) {
-    { // indicate current position
-      Tensor state = getStateTimeNow().state();
-      Point2D point = geometricLayer.toPoint2D(state);
-      graphics.setColor(new Color(64, 128, 64, 192));
-      graphics.fill(new Ellipse2D.Double(point.getX() - 2, point.getY() - 2, 7, 7));
-    }
-    { // indicate position DELAY[s] into the future
-      Tensor state = getEstimatedLocationAt(DELAY_HINT);
-      Point2D point = geometricLayer.toPoint2D(state);
-      graphics.setColor(new Color(255, 128, 128 - 64, 128 + 64));
-      graphics.fill(new Rectangle2D.Double(point.getX() - 2, point.getY() - 2, 5, 5));
-    }
   }
 }

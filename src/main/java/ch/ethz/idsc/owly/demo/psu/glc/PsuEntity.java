@@ -1,11 +1,6 @@
 // code by jph
 package ch.ethz.idsc.owly.demo.psu.glc;
 
-import java.awt.Color;
-import java.awt.Graphics2D;
-import java.awt.geom.Ellipse2D;
-import java.awt.geom.Point2D;
-import java.awt.geom.Rectangle2D;
 import java.util.Collection;
 
 import ch.ethz.idsc.owly.demo.psu.PsuControls;
@@ -15,9 +10,7 @@ import ch.ethz.idsc.owly.demo.psu.PsuWrap;
 import ch.ethz.idsc.owly.glc.core.GoalInterface;
 import ch.ethz.idsc.owly.glc.core.StandardTrajectoryPlanner;
 import ch.ethz.idsc.owly.glc.core.TrajectoryPlanner;
-import ch.ethz.idsc.owly.gui.GeometricLayer;
-import ch.ethz.idsc.owly.gui.ani.AbstractEntity;
-import ch.ethz.idsc.owly.gui.ani.PlannerType;
+import ch.ethz.idsc.owly.gui.ani.AbstractCircularEntity;
 import ch.ethz.idsc.owly.math.flow.Flow;
 import ch.ethz.idsc.owly.math.flow.Integrator;
 import ch.ethz.idsc.owly.math.flow.RungeKutta4Integrator;
@@ -33,7 +26,7 @@ import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
 
-public class PsuEntity extends AbstractEntity {
+/* package */ class PsuEntity extends AbstractCircularEntity {
   private static final Integrator INTEGRATOR = RungeKutta4Integrator.INSTANCE;
   private static final Tensor FALLBACK_CONTROL = Tensors.vector(0).unmodifiable();
   /** preserve 1[s] of the former trajectory */
@@ -62,11 +55,6 @@ public class PsuEntity extends AbstractEntity {
   }
 
   @Override
-  public PlannerType getPlannerType() {
-    return PlannerType.STANDARD;
-  }
-
-  @Override
   public TrajectoryPlanner createTrajectoryPlanner(TrajectoryRegionQuery obstacleQuery, Tensor goal) {
     Tensor eta = Tensors.vector(6, 8);
     StateIntegrator stateIntegrator = FixedStateIntegrator.create( //
@@ -80,21 +68,5 @@ public class PsuEntity extends AbstractEntity {
         eta, stateIntegrator, controls, EmptyTrajectoryRegionQuery.INSTANCE, goalInterface);
     trajectoryPlanner.represent = psuWrap::represent;
     return trajectoryPlanner;
-  }
-
-  @Override
-  public void render(GeometricLayer geometricLayer, Graphics2D graphics) {
-    { // indicate current position
-      Tensor state = getStateTimeNow().state();
-      Point2D point = geometricLayer.toPoint2D(state);
-      graphics.setColor(new Color(64, 128, 64, 192));
-      graphics.fill(new Ellipse2D.Double(point.getX() - 2, point.getY() - 2, 7, 7));
-    }
-    { // indicate position 1[s] into the future
-      Tensor state = getEstimatedLocationAt(DELAY_HINT);
-      Point2D point = geometricLayer.toPoint2D(state);
-      graphics.setColor(new Color(255, 128, 128 - 64, 128 + 64));
-      graphics.fill(new Rectangle2D.Double(point.getX() - 2, point.getY() - 2, 5, 5));
-    }
   }
 }

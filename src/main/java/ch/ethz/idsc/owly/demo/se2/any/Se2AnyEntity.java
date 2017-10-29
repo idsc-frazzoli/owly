@@ -15,7 +15,6 @@ import ch.ethz.idsc.owly.demo.rn.EuclideanDistanceDiscoverRegion;
 import ch.ethz.idsc.owly.demo.rn.R2Controls;
 import ch.ethz.idsc.owly.demo.rn.RnMinDistSphericalGoalManager;
 import ch.ethz.idsc.owly.demo.se2.Se2Controls;
-import ch.ethz.idsc.owly.demo.se2.Se2Integrator;
 import ch.ethz.idsc.owly.demo.se2.Se2MinTimeEuclideanDistanceHeuristicGoalManager;
 import ch.ethz.idsc.owly.demo.se2.Se2StateSpaceModel;
 import ch.ethz.idsc.owly.demo.se2.Se2TrajectoryGoalManager;
@@ -35,7 +34,6 @@ import ch.ethz.idsc.owly.gui.ani.AbstractAnyEntity;
 import ch.ethz.idsc.owly.gui.ani.PlannerType;
 import ch.ethz.idsc.owly.math.CoordinateWrap;
 import ch.ethz.idsc.owly.math.RotationUtils;
-import ch.ethz.idsc.owly.math.Se2Utils;
 import ch.ethz.idsc.owly.math.flow.EulerIntegrator;
 import ch.ethz.idsc.owly.math.flow.Flow;
 import ch.ethz.idsc.owly.math.flow.Integrator;
@@ -43,6 +41,8 @@ import ch.ethz.idsc.owly.math.region.EllipsoidRegion;
 import ch.ethz.idsc.owly.math.region.EmptyRegion;
 import ch.ethz.idsc.owly.math.region.InvertedRegion;
 import ch.ethz.idsc.owly.math.region.Region;
+import ch.ethz.idsc.owly.math.se2.Se2Integrator;
+import ch.ethz.idsc.owly.math.se2.Se2Utils;
 import ch.ethz.idsc.owly.math.state.FixedStateIntegrator;
 import ch.ethz.idsc.owly.math.state.SimpleEpisodeIntegrator;
 import ch.ethz.idsc.owly.math.state.StateIntegrator;
@@ -58,8 +58,7 @@ import ch.ethz.idsc.tensor.Tensors;
 import ch.ethz.idsc.tensor.alg.Array;
 import ch.ethz.idsc.tensor.sca.Sqrt;
 
-/** omni-directional movement with constant speed */
-public class Se2AnyEntity extends AbstractAnyEntity {
+/* package */ class Se2AnyEntity extends AbstractAnyEntity {
   private static final Integrator INTEGRATOR = Se2Integrator.INSTANCE;
   private static final Tensor FALLBACK_CONTROL = Array.zeros(2).unmodifiable(); // {angle=0, vel=0}
   private static final Tensor SHAPE = Tensors.matrixDouble( //
@@ -163,8 +162,8 @@ public class Se2AnyEntity extends AbstractAnyEntity {
     // TODO JONAS extract R2planner from Se2AnyEntity
     GoalInterface rnGoal = RnMinDistSphericalGoalManager.create(r2goal, goalRadius.Get(0));
     // ---
-    TrajectoryRegionQuery obstacleQueryR2 = new SimpleTrajectoryRegionQuery(new TimeInvariantRegion(//
-        EuclideanDistanceDiscoverRegion.of(environmentRegion, currentState, RealScalar.of(2))));
+    TrajectoryRegionQuery obstacleQueryR2 = SimpleTrajectoryRegionQuery.timeInvariant( //
+        EuclideanDistanceDiscoverRegion.of(environmentRegion, currentState, RealScalar.of(2)));
     obstacleQueryR2 = new SimpleTrajectoryRegionQuery(new TimeInvariantRegion(environmentRegion));
     TrajectoryPlanner trajectoryPlanner = new StandardTrajectoryPlanner( //
         eta, stateIntegratorR2, controlsR2, obstacleQueryR2, rnGoal);
@@ -197,15 +196,15 @@ public class Se2AnyEntity extends AbstractAnyEntity {
   @Override
   protected TrajectoryRegionQuery initializeObstacle(Region oldEnvironmentRegion, Tensor currentState) {
     environmentRegion = oldEnvironmentRegion;
-    return new SimpleTrajectoryRegionQuery(new TimeInvariantRegion(oldEnvironmentRegion));
+    return SimpleTrajectoryRegionQuery.timeInvariant(oldEnvironmentRegion);
     // return updateObstacle(oldEnvironmentRegion, currentState);
   }
 
   @Override
   protected TrajectoryRegionQuery updateObstacle(Region oldEnvironmentRegion, Tensor currentState) {
     environmentRegion = oldEnvironmentRegion; // environment stays the same
-    return new SimpleTrajectoryRegionQuery(new TimeInvariantRegion(//
-        EuclideanDistanceDiscoverRegion.of(oldEnvironmentRegion, currentState, RealScalar.of(4.5))));
+    return SimpleTrajectoryRegionQuery.timeInvariant( //
+        EuclideanDistanceDiscoverRegion.of(oldEnvironmentRegion, currentState, RealScalar.of(4.5)));
   }
 
   @Override

@@ -2,6 +2,7 @@
 package ch.ethz.idsc.owly.demo.se2;
 
 import ch.ethz.idsc.owly.math.StateSpaceModel;
+import ch.ethz.idsc.owly.math.se2.Se2Integrator;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
@@ -32,7 +33,12 @@ public enum Se2StateSpaceModel implements StateSpaceModel {
     // u = {angular rate, speed}
     // speed: positive for forward motion, or negative for backward motion
     Scalar angle = x.Get(2);
-    return Tensors.of(Cos.of(angle), Sin.of(angle), u.Get(0)).multiply(u.Get(1));
+    Scalar speed = u.Get(1);
+    return Tensors.of( //
+        Cos.FUNCTION.apply(angle), // change in px
+        Sin.FUNCTION.apply(angle), // change in py
+        u.Get(0) // change in angle
+    ).multiply(speed); // overall scaling based on signed speed
   }
 
   /** | f(x_1, u) - f(x_2, u) | <= L | x_1 - x_2 | */

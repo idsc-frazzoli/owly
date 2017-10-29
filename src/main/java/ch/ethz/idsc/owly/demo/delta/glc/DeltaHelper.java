@@ -22,7 +22,6 @@ import ch.ethz.idsc.owly.math.flow.RungeKutta45Integrator;
 import ch.ethz.idsc.owly.math.region.ImageRegion;
 import ch.ethz.idsc.owly.math.state.FixedStateIntegrator;
 import ch.ethz.idsc.owly.math.state.StateIntegrator;
-import ch.ethz.idsc.owly.math.state.TimeInvariantRegion;
 import ch.ethz.idsc.owly.math.state.TrajectoryRegionQuery;
 import ch.ethz.idsc.tensor.RationalScalar;
 import ch.ethz.idsc.tensor.RealScalar;
@@ -46,8 +45,7 @@ public enum DeltaHelper {
         new DeltaStateSpaceModel(ipr, maxInput), maxInput, 25);
     Tensor obstacleImage = ResourceData.of("/io/delta_free.png"); //
     TrajectoryRegionQuery obstacleQuery = //
-        new SimpleTrajectoryRegionQuery(new TimeInvariantRegion( //
-            new ImageRegion(obstacleImage, range, true)));
+        SimpleTrajectoryRegionQuery.timeInvariant(new ImageRegion(obstacleImage, range, true));
     GoalInterface goalInterface = DeltaNoHeuristicGoalManager.create( //
         Tensors.vector(2.1, 0.3), RealScalar.of(.3));
     TrajectoryPlanner trajectoryPlanner = new StandardTrajectoryPlanner( //
@@ -68,8 +66,7 @@ public enum DeltaHelper {
         new DeltaStateSpaceModel(ipr, maxInput), maxInput, 25);
     Tensor obstacleImage = ResourceData.of("/io/delta_free.png"); //
     TrajectoryRegionQuery obstacleQuery = //
-        new SimpleTrajectoryRegionQuery(new TimeInvariantRegion( //
-            new ImageRegion(obstacleImage, range, true)));
+        SimpleTrajectoryRegionQuery.timeInvariant(new ImageRegion(obstacleImage, range, true));
     DeltaMinTimeGoalManager deltaGoalManager = new DeltaMinTimeGoalManager( //
         Tensors.vector(2.1, 0.3), RealScalar.of(.3), controls, ipr.maxNormGradient());
     TrajectoryPlanner trajectoryPlanner = new StandardTrajectoryPlanner( //
@@ -109,8 +106,7 @@ public enum DeltaHelper {
         RungeKutta45Integrator.INSTANCE, parameters.getdtMax(), parameters.getTrajectorySize());
     Tensor obstacleImage = ResourceData.of("/io/delta_free.png"); //
     TrajectoryRegionQuery obstacleQuery = //
-        new SimpleTrajectoryRegionQuery(new TimeInvariantRegion( //
-            new ImageRegion(obstacleImage, range, true)));
+        SimpleTrajectoryRegionQuery.timeInvariant(new ImageRegion(obstacleImage, range, true));
     DeltaHeuristicGoalManager deltaGoalManager = new DeltaHeuristicGoalManager( //
         goal, Tensors.vector(.3, .3), stateSpaceModel.getMaxPossibleChange());
     // DeltaGoalManager deltaGoalManager = new DeltaGoalManager( //
@@ -141,8 +137,7 @@ public enum DeltaHelper {
         RungeKutta45Integrator.INSTANCE, parameters.getdtMax(), parameters.getTrajectorySize());
     Tensor obstacleImage = ResourceData.of("/io/delta_free.png");
     TrajectoryRegionQuery obstacleQuery = //
-        new SimpleTrajectoryRegionQuery(new TimeInvariantRegion( //
-            new ImageRegion(obstacleImage, range, true)));
+        SimpleTrajectoryRegionQuery.timeInvariant(new ImageRegion(obstacleImage, range, true));
     DeltaHeuristicGoalManager deltaGoalManager = new DeltaHeuristicGoalManager( //
         Tensors.vector(2.9, 2.4), Tensors.vector(.3, .3), stateSpaceModel.getMaxPossibleChange());
     // DeltaGoalManager deltaGoalManager = new DeltaGoalManager( //

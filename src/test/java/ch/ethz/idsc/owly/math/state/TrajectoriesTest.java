@@ -16,8 +16,8 @@ import junit.framework.TestCase;
 public class TrajectoriesTest extends TestCase {
   public void testDisjoint() {
     TrajectoryRegionQuery goalQuery = //
-        new SimpleTrajectoryRegionQuery(new TimeInvariantRegion( //
-            new EllipsoidRegion(Tensors.vector(10, 5), Tensors.vector(1, 1))));
+        SimpleTrajectoryRegionQuery.timeInvariant( //
+            new EllipsoidRegion(Tensors.vector(10, 5), Tensors.vector(1, 1)));
     List<StateTime> trajectory = new ArrayList<>();
     trajectory.add(new StateTime(Tensors.vector(0, 5), RealScalar.ZERO));
     trajectory.add(new StateTime(Tensors.vector(5, 5), RealScalar.ZERO));

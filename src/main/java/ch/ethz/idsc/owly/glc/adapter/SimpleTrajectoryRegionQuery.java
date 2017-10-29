@@ -3,11 +3,20 @@ package ch.ethz.idsc.owly.glc.adapter;
 
 import java.util.Collection;
 
+import ch.ethz.idsc.owly.math.region.Region;
 import ch.ethz.idsc.owly.math.state.StandardTrajectoryRegionQuery;
 import ch.ethz.idsc.owly.math.state.StateTime;
 import ch.ethz.idsc.owly.math.state.StateTimeRegion;
+import ch.ethz.idsc.owly.math.state.TimeInvariantRegion;
+import ch.ethz.idsc.owly.math.state.TrajectoryRegionQuery;
 
 public class SimpleTrajectoryRegionQuery extends StandardTrajectoryRegionQuery {
+  /** @param region
+   * @return */
+  public static TrajectoryRegionQuery timeInvariant(Region region) {
+    return new SimpleTrajectoryRegionQuery(new TimeInvariantRegion(region));
+  }
+
   /** @param stateTimeRegion */
   public SimpleTrajectoryRegionQuery(StateTimeRegion stateTimeRegion) {
     super(stateTimeRegion, new SparseStateTimeRegionMembers());

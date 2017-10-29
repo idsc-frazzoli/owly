@@ -5,25 +5,30 @@ import ch.ethz.idsc.owly.math.StateSpaceModel;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.TensorRuntimeException;
+import ch.ethz.idsc.tensor.sca.Exp;
 import ch.ethz.idsc.tensor.sca.Sign;
 
 /** Single Integrator with friction
  * 
  * implementation for n-dimensional velocity */
 public class Rice1StateSpaceModel implements StateSpaceModel {
+  public static StateSpaceModel of(Scalar mu) {
+    return new Rice1StateSpaceModel(Exp.of(mu));
+  }
+
+  // ---
   private final Scalar lambda;
 
   /** @param lambda strictly positive friction coefficient */
-  public Rice1StateSpaceModel(Scalar lambda) {
-    // one could re-parameterize: lambda == Exp.of(mu)
+  private Rice1StateSpaceModel(Scalar lambda) {
     if (Sign.isNegativeOrZero(lambda))
       throw TensorRuntimeException.of(lambda);
     this.lambda = lambda;
   }
 
-  @Override
+  @Override // from StateSpaceModel
   public Tensor f(Tensor x, Tensor u) {
-    Tensor v = x; // == x.extract(0, u.length());
+    Tensor v = x;
     return u.subtract(v).multiply(lambda);
   }
 

@@ -19,7 +19,7 @@ import javax.swing.JComponent;
 import javax.swing.event.MouseInputAdapter;
 import javax.swing.event.MouseInputListener;
 
-import ch.ethz.idsc.owly.math.Se2Utils;
+import ch.ethz.idsc.owly.math.se2.Se2Utils;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
@@ -158,9 +158,8 @@ public final class GeometricComponent {
   }
 
   /** @return {px, py, angle} in model space */
-  public Tensor getMouseGoal() {
-    // TODO design
-    return createLayer().getMouseSe2State();
+  public Tensor getMouseSe2State() {
+    return createLayer().getMouseSe2State(); // API design is not ideal
   }
 
   public void addRenderInterfaceBackground(RenderInterface renderInterface) {

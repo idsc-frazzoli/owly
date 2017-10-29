@@ -8,7 +8,6 @@ import ch.ethz.idsc.owly.demo.util.DemoInterface;
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
 import ch.ethz.idsc.owly.gui.ani.OwlyAnimationFrame;
 import ch.ethz.idsc.owly.math.region.ImageRegion;
-import ch.ethz.idsc.owly.math.state.TimeInvariantRegion;
 import ch.ethz.idsc.tensor.Tensors;
 
 /** demo shows the use of a cost image that is added to the distance cost
@@ -22,7 +21,7 @@ public class R2ImageAnimationDemo implements DemoInterface {
       r2Entity.costFunction = R2ImageRegions.imageCost_gtob();
       owlyAnimationFrame.set(r2Entity);
       ImageRegion imageRegion = R2ImageRegions.inside_gtob();
-      owlyAnimationFrame.setObstacleQuery(new SimpleTrajectoryRegionQuery(new TimeInvariantRegion(imageRegion)));
+      owlyAnimationFrame.setObstacleQuery(SimpleTrajectoryRegionQuery.timeInvariant(imageRegion));
       owlyAnimationFrame.addBackground(imageRegion);
       owlyAnimationFrame.configCoordinateOffset(50, 700);
       owlyAnimationFrame.jFrame.setVisible(true);

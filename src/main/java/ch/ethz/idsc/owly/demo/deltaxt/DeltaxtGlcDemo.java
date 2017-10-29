@@ -56,9 +56,8 @@ public class DeltaxtGlcDemo implements DemoInterface {
     AnimationWriter gsw = null;
     try {
       gsw = AnimationWriter.of(UserHome.Pictures("delta_s.gif"), 250);
-    } catch (Exception e2) {
-      // TODO Auto-generated catch block
-      e2.printStackTrace();
+    } catch (Exception exception) {
+      exception.printStackTrace();
     }
     ImageGradient ipr = new ImageGradient(ResourceData.of("/io/delta_uxy.png"), range, RealScalar.of(-0.1)); // -.25 .5
     Scalar maxInput = RealScalar.ONE;

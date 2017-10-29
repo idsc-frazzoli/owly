@@ -11,7 +11,6 @@ import java.util.Objects;
 
 import ch.ethz.idsc.owly.data.GlobalAssert;
 import ch.ethz.idsc.owly.demo.se2.Se2Controls;
-import ch.ethz.idsc.owly.demo.se2.Se2Integrator;
 import ch.ethz.idsc.owly.demo.se2.Se2MinTimeMinShiftExtraCostGoalManager;
 import ch.ethz.idsc.owly.demo.se2.Se2MinTimeMinShiftGoalManager;
 import ch.ethz.idsc.owly.demo.se2.Se2StateSpaceModel;
@@ -24,8 +23,9 @@ import ch.ethz.idsc.owly.gui.GeometricLayer;
 import ch.ethz.idsc.owly.gui.ani.AbstractEntity;
 import ch.ethz.idsc.owly.gui.ani.PlannerType;
 import ch.ethz.idsc.owly.math.RotationUtils;
-import ch.ethz.idsc.owly.math.Se2Utils;
 import ch.ethz.idsc.owly.math.flow.Flow;
+import ch.ethz.idsc.owly.math.se2.Se2Integrator;
+import ch.ethz.idsc.owly.math.se2.Se2Utils;
 import ch.ethz.idsc.owly.math.state.FixedStateIntegrator;
 import ch.ethz.idsc.owly.math.state.SimpleEpisodeIntegrator;
 import ch.ethz.idsc.owly.math.state.StateIntegrator;
@@ -41,9 +41,9 @@ import ch.ethz.idsc.tensor.alg.Array;
 import ch.ethz.idsc.tensor.alg.VectorQ;
 import ch.ethz.idsc.tensor.sca.Sqrt;
 
-public class Se2Entity extends AbstractEntity {
-  private static final Tensor FALLBACK_CONTROL = Array.zeros(2).unmodifiable(); // {angle=0, vel=0}
-  private static final Scalar DELAY_HINT = RealScalar.of(1.5);
+/** several magic constants are hard-coded in the implementation.
+ * that means, the functionality does not apply to all examples universally. */
+class Se2Entity extends AbstractEntity {
   private static final Tensor SHAPE = Tensors.matrixDouble( //
       new double[][] { //
           { .2, +.07, 1 }, //
@@ -74,7 +74,7 @@ public class Se2Entity extends AbstractEntity {
         Se2StateSpaceModel.INSTANCE, //
         Se2Integrator.INSTANCE, //
         new StateTime(state, RealScalar.ZERO))); // initial position
-    controls = Se2Controls.createControlsForwardAndReverse(RotationUtils.DEGREE(45), 6); // TODO magic const
+    controls = Se2Controls.createControlsForwardAndReverse(RotationUtils.DEGREE(45), 6);
     final Scalar goalRadius_xy = Sqrt.of(RealScalar.of(2)).divide(PARTITIONSCALE.Get(0));
     final Scalar goalRadius_theta = Sqrt.of(RealScalar.of(2)).divide(PARTITIONSCALE.Get(2));
     goalRadius = Tensors.of(goalRadius_xy, goalRadius_xy, goalRadius_theta);
@@ -92,12 +92,12 @@ public class Se2Entity extends AbstractEntity {
 
   @Override
   protected Tensor fallbackControl() {
-    return FALLBACK_CONTROL;
+    return Array.zeros(2).unmodifiable(); // {angle=0, vel=0}
   }
 
   @Override
   public Scalar delayHint() {
-    return DELAY_HINT;
+    return RealScalar.of(1.5);
   }
 
   @Override
@@ -113,7 +113,7 @@ public class Se2Entity extends AbstractEntity {
     GlobalAssert.that(VectorQ.ofLength(goal, 3));
     this.obstacleQuery = obstacleQuery;
     StateIntegrator stateIntegrator = //
-        FixedStateIntegrator.create(Se2Integrator.INSTANCE, RationalScalar.of(1, 10), 4); // TODO magic const
+        FixedStateIntegrator.create(Se2Integrator.INSTANCE, RationalScalar.of(1, 10), 4);
     GoalInterface goalInterface = Objects.isNull(costFunction) ? //
         Se2MinTimeMinShiftGoalManager.create(goal, goalRadius, controls) : //
         Se2MinTimeMinShiftExtraCostGoalManager.create(goal, goalRadius, controls, costFunction);
@@ -142,7 +142,7 @@ public class Se2Entity extends AbstractEntity {
       geometricLayer.popMatrix();
     }
     { // indicate position delay[s] into the future
-      Tensor state = getEstimatedLocationAt(DELAY_HINT);
+      Tensor state = getEstimatedLocationAt(delayHint());
       Point2D point = geometricLayer.toPoint2D(state);
       graphics.setColor(new Color(255, 128, 64, 192));
       graphics.fill(new Rectangle2D.Double(point.getX() - 2, point.getY() - 2, 5, 5));

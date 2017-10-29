@@ -21,7 +21,6 @@ import ch.ethz.idsc.owly.math.region.InvertedRegion;
 import ch.ethz.idsc.owly.math.region.Region;
 import ch.ethz.idsc.owly.math.state.StateIntegrator;
 import ch.ethz.idsc.owly.math.state.StateTime;
-import ch.ethz.idsc.owly.math.state.TimeInvariantRegion;
 import ch.ethz.idsc.owly.math.state.TrajectoryRegionQuery;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
@@ -92,7 +91,6 @@ public abstract class AbstractAnyTrajectoryPlanner extends AbstractTrajectoryPla
     Collection<GlcNode> deleteTreeCollection = new HashSet<>();
     Nodes.ofSubtree(baseNode, deleteTreeCollection);
     // {
-    //
     // domainMap().values().removeIf(deleteTreeCollection::contains);
     // }
     // Collection<GlcNode> deleteTreeCollection = Nodes.ofSubtree(baseNode);
@@ -115,7 +113,7 @@ public abstract class AbstractAnyTrajectoryPlanner extends AbstractTrajectoryPla
     // baseRoot.parent().removeEdgeTo(baseRoot);
     // oldRoot has no parent, therefore is skipped
     deleteTreeCollection.remove(baseNode);
-    // TODO make parralel? If parralel, run in below exceptions
+    // TODO make parallel? If parallel, run in below exceptions
     deleteTreeCollection.stream().forEach(tempNode -> tempNode.parent().removeEdgeTo(tempNode));
     deleteTreeCollection.add(baseNode);
     subTreeDeleterWatch.stop();
@@ -274,7 +272,7 @@ public abstract class AbstractAnyTrajectoryPlanner extends AbstractTrajectoryPla
     ListIterator<Region> iter = goalRegions.listIterator(goalRegions.size());
     DomainQueue regionQueue = new DomainQueue(); // priority queue over merit of GlcNodes
     while (iter.hasPrevious()) { // goes through all regions from last to first
-      SimpleTrajectoryRegionQuery strq = new SimpleTrajectoryRegionQuery(new TimeInvariantRegion(iter.previous()));// go through Regions from the last to first:
+      TrajectoryRegionQuery strq = SimpleTrajectoryRegionQuery.timeInvariant(iter.previous());// go through Regions from the last to first:
       for (GlcNode tempBest : best.keySet()) {
         List<StateTime> trajectory = best.get(tempBest);
         if (strq.firstMember(trajectory) >= 0)
