@@ -6,12 +6,11 @@ import java.util.LinkedList;
 import java.util.List;
 
 import ch.ethz.idsc.owly.data.tree.StateCostNode;
-import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
 import ch.ethz.idsc.owly.glc.core.OptimalAnyTrajectoryPlanner;
 import ch.ethz.idsc.owly.glc.core.TrajectoryPlanner;
 import ch.ethz.idsc.owly.gui.RenderInterface;
+import ch.ethz.idsc.owly.math.state.StateTimeCollector;
 import ch.ethz.idsc.owly.math.state.TrajectoryRegionQuery;
-import ch.ethz.idsc.owly.rrts.adapter.SampledTransitionRegionQuery;
 import ch.ethz.idsc.owly.rrts.core.TransitionRegionQuery;
 
 public enum RenderElements {
@@ -23,10 +22,8 @@ public enum RenderElements {
     list.add(new DomainRender(trajectoryPlanner.getDomainMap(), trajectoryPlanner.getEta()));
     {
       TrajectoryRegionQuery trq = trajectoryPlanner.getObstacleQuery();
-      if (trq instanceof SimpleTrajectoryRegionQuery) {
-        SimpleTrajectoryRegionQuery strq = (SimpleTrajectoryRegionQuery) trq;
-        list.add(new ObstacleRender(strq.getSparseDiscoveredMembers()));
-      }
+      if (trq instanceof StateTimeCollector)
+        list.add(new ObstacleRender(((StateTimeCollector) trq).getMembers()));
     }
     list.add(new QueueRender(trajectoryPlanner.getQueue()));
     list.add(new TreeRender(trajectoryPlanner.getDomainMap().values()));
@@ -39,14 +36,10 @@ public enum RenderElements {
     }
     {
       TrajectoryRegionQuery trq = trajectoryPlanner.getGoalInterface();
-      if (trq instanceof SimpleTrajectoryRegionQuery) {
-        SimpleTrajectoryRegionQuery strq = (SimpleTrajectoryRegionQuery) trq;
-        list.add(new GoalRender(strq.getSparseDiscoveredMembers()));
-      }
-      if (trq instanceof SimpleTrajectoryRegionQuery) {
-        SimpleTrajectoryRegionQuery strq = (SimpleTrajectoryRegionQuery) trq;
-        list.add(new GoalRender(strq.getSparseDiscoveredMembers()));
-      }
+      if (trq instanceof StateTimeCollector)
+        list.add(new GoalRender(((StateTimeCollector) trq).getMembers()));
+      if (trq instanceof StateTimeCollector)
+        list.add(new GoalRender(((StateTimeCollector) trq).getMembers()));
     }
     list.add(new HudRender(trajectoryPlanner));
     return list;
@@ -56,10 +49,8 @@ public enum RenderElements {
       Collection<? extends StateCostNode> collection, TransitionRegionQuery transitionRegionQuery) {
     List<RenderInterface> list = new LinkedList<>();
     list.add(GridRender.INSTANCE);
-    if (transitionRegionQuery instanceof SampledTransitionRegionQuery) {
-      SampledTransitionRegionQuery strq = (SampledTransitionRegionQuery) transitionRegionQuery;
-      list.add(new ObstacleRender(strq.getDiscoveredMembers()));
-    }
+    if (transitionRegionQuery instanceof StateTimeCollector)
+      list.add(new ObstacleRender(((StateTimeCollector) transitionRegionQuery).getMembers()));
     list.add(new TreeRender(collection));
     return list;
   }

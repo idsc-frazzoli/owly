@@ -15,10 +15,10 @@ import java.util.TreeMap;
 
 import ch.ethz.idsc.owly.data.GlobalAssert;
 import ch.ethz.idsc.owly.glc.adapter.HeuristicQ;
-import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
 import ch.ethz.idsc.owly.glc.adapter.TrajectoryGoalManager;
 import ch.ethz.idsc.owly.math.TensorUnaryOperator;
 import ch.ethz.idsc.owly.math.state.StateTime;
+import ch.ethz.idsc.owly.math.state.StateTimeCollector;
 import ch.ethz.idsc.owly.math.state.TrajectoryRegionQuery;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Tensor;
@@ -166,20 +166,15 @@ public abstract class TrajectoryPlanner implements ExpandInterface<GlcNode>, Ser
 
   public String infoString() {
     StringBuilder stringBuilder = new StringBuilder();
-    {
-      stringBuilder.append("nodes:" + domainMap.values().size() + ", ");
-    }
+    stringBuilder.append("nodes:" + domainMap().values().size() + ", ");
     {
       TrajectoryRegionQuery trajectoryRegionQuery = getObstacleQuery();
-      if (trajectoryRegionQuery instanceof SimpleTrajectoryRegionQuery) {
-        SimpleTrajectoryRegionQuery strq = (SimpleTrajectoryRegionQuery) trajectoryRegionQuery;
-        Collection<StateTime> collection = strq.getSparseDiscoveredMembers();
+      if (trajectoryRegionQuery instanceof StateTimeCollector) {
+        Collection<StateTime> collection = ((StateTimeCollector) trajectoryRegionQuery).getMembers();
         stringBuilder.append("obstacles:" + collection.size() + ", ");
       }
     }
-    {
-      stringBuilder.append("replacements:" + replaceCount());
-    }
+    stringBuilder.append("replacements:" + replaceCount());
     return stringBuilder.toString();
   }
 

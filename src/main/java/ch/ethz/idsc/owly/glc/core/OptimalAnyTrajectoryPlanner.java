@@ -257,7 +257,6 @@ public class OptimalAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
     obstacleUpdate(newObstacle, new InvertedRegion(EmptyRegion.INSTANCE));
   }
 
-  // TODO JAN; obstacle check function
   @Override
   public void obstacleUpdate(TrajectoryRegionQuery newObstacle, Region rechabilityObstacleRegion) {
     if (newObstacle == this.getObstacleQuery()) // intended: equality of reference
@@ -558,9 +557,8 @@ public class OptimalAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
   }
 
   private boolean goalCheckTree(Collection<GlcNode> treeCollection) {
-    // Parallel: 15%-50% Speedgain, tested with R2GlcConstTimeHeuristicAnyDemo,
-    // TODO JONAS/ JAN why does parallel give different result? then non parallel? e.g. R2GlcAnyCircleDemo
-    // JONAS still happening at current state
+    // Parallel: 15%-50% Speedgain, tested with R2GlcConstTimeHeuristicAnyDemo
+    // TODO parallel gives different result as compared to non-parallel? e.g. R2GlcAnyCircleDemo
     // No difference with synchronized, same bug, even with exactly the same List
     treeCollection.stream().forEach(node -> {
       if (!node.isRoot()) {
