@@ -43,11 +43,12 @@ enum R2xtRingGlcDemo {
     int maxIter = 1000000;
     Scalar lipschitz = RealScalar.ONE;
     Parameters parameters = new R2Parameters(resolution, timeScale, depthScale, partitionScale, dtMax, maxIter, lipschitz);
+    // TODO why does time has resolution only 1 !?
     System.out.println("1/DomainSize: " + parameters.getEta());
     StateIntegrator stateIntegrator = FixedStateIntegrator.create(EulerIntegrator.INSTANCE, parameters.getdtMax(), //
         parameters.getTrajectorySize());
     Collection<Flow> controls = R2Controls.createRadial(parameters.getResolutionInt());
-    controls.add(R2xtControls.stayPut(2));
+    controls.add(RnxTControls.stayPut(2));
     Tensor goal = Tensors.vector(5, 5);
     RnHeuristicEllipsoidGoalManager rnGoal = new RnHeuristicEllipsoidGoalManager(//
         goal, Tensors.of(RealScalar.of(0.2), RealScalar.of(0.2)));

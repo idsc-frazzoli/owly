@@ -2,9 +2,11 @@
 package ch.ethz.idsc.owly.demo.rnxt.glc;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
+import ch.ethz.idsc.owly.demo.rn.R2Controls;
 import ch.ethz.idsc.owly.demo.rn.R2Parameters;
 import ch.ethz.idsc.owly.demo.rn.RnHeuristicEllipsoidGoalManager;
 import ch.ethz.idsc.owly.glc.adapter.Parameters;
@@ -16,6 +18,7 @@ import ch.ethz.idsc.owly.glc.core.GlcNodes;
 import ch.ethz.idsc.owly.glc.core.StandardTrajectoryPlanner;
 import ch.ethz.idsc.owly.glc.core.TrajectoryPlanner;
 import ch.ethz.idsc.owly.gui.ani.OwlyGui;
+import ch.ethz.idsc.owly.math.StateTimeTensorFunction;
 import ch.ethz.idsc.owly.math.flow.EulerIntegrator;
 import ch.ethz.idsc.owly.math.flow.Flow;
 import ch.ethz.idsc.owly.math.region.EllipsoidRegion;
@@ -23,7 +26,6 @@ import ch.ethz.idsc.owly.math.state.FixedStateIntegrator;
 import ch.ethz.idsc.owly.math.state.StateIntegrator;
 import ch.ethz.idsc.owly.math.state.StateTime;
 import ch.ethz.idsc.owly.math.state.TrajectoryRegionQuery;
-import ch.ethz.idsc.tensor.DoubleScalar;
 import ch.ethz.idsc.tensor.RationalScalar;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
@@ -44,21 +46,26 @@ enum R2xtEllipsoidGlcDemo {
     System.out.println("1/DomainSize: " + parameters.getEta());
     StateIntegrator stateIntegrator = FixedStateIntegrator.create(EulerIntegrator.INSTANCE, parameters.getdtMax(), //
         parameters.getTrajectorySize());
-    Collection<Flow> controls = R2xtControls.createRadial(parameters.getResolutionInt());
-    Tensor goal = Tensors.vector(5, 5, 0);
+    Collection<Flow> controls = R2Controls.createRadial(parameters.getResolutionInt());
+    Tensor goal = Tensors.vector(5, 5);
     RnHeuristicEllipsoidGoalManager rnGoal = new RnHeuristicEllipsoidGoalManager(//
-        goal, Tensors.of(RealScalar.of(0.2), RealScalar.of(0.2), DoubleScalar.POSITIVE_INFINITY));
+        goal, Tensors.of(RealScalar.of(0.2), RealScalar.of(0.2)));
     // with HeuristicGoalManager only expand 10% of nodes
     // RnxtEllipsoidGoalManager rnGoal = new RnxtEllipsoidGoalManager(//
     // goal, Tensors.of(RealScalar.of(0.2), RealScalar.of(0.2), DoubleScalar.POSITIVE_INFINITY));
     // GoalRegion at x:5, y= 5 and all time
-    TrajectoryRegionQuery obstacleQuery = SimpleTrajectoryRegionQuery.timeInvariant( //
-        new EllipsoidRegion(goal, Tensors.vector(3, 3, 10)));
+    TrajectoryRegionQuery obstacleQuery = SimpleTrajectoryRegionQuery.timeDependent( //
+        new EllipsoidRegion(goal.copy().append(RealScalar.ZERO), Tensors.vector(3, 3, 10)));
     // ObstacleEllipsoid around goal, which disappears after 10s
+    StateTime root = new StateTime(Tensors.vector(0, 0), RealScalar.ZERO);
+    obstacleQuery.isDisjoint(Collections.singletonList(root));
+    rnGoal.isDisjoint(Collections.singletonList(root));
+    rnGoal.minCostToGoal(root.state());
     // ---
     TrajectoryPlanner trajectoryPlanner = new StandardTrajectoryPlanner( //
         parameters.getEta(), stateIntegrator, controls, obstacleQuery, rnGoal);
-    trajectoryPlanner.insertRoot(Tensors.vector(0, 0, 0));
+    trajectoryPlanner.represent = StateTimeTensorFunction.withTime();
+    trajectoryPlanner.insertRoot(root);
     int iters = Expand.maxSteps(trajectoryPlanner, maxIter);
     System.out.println(iters);
     Optional<GlcNode> optional = trajectoryPlanner.getBest();

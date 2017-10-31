@@ -18,6 +18,11 @@ public class SimpleTrajectoryRegionQuery extends StandardTrajectoryRegionQuery i
     return new SimpleTrajectoryRegionQuery(new TimeInvariantRegion(region));
   }
 
+  public static TrajectoryRegionQuery timeDependent(Region region) {
+    return new SimpleTrajectoryRegionQuery( // syntax is preposterous
+        stateTime -> region.isMember(stateTime.state().copy().append(stateTime.time())));
+  }
+
   /** @param stateTimeRegion */
   public SimpleTrajectoryRegionQuery(StateTimeRegion stateTimeRegion) {
     super(stateTimeRegion, new SparseStateTimeRegionMembers());
