@@ -19,6 +19,6 @@ public interface StateTimeTensorFunction extends Function<StateTime, Tensor>, Se
 
   /** @return */
   static StateTimeTensorFunction withTime() {
-    return StaticHelper.STATE_TIME;
+    return StateTime::joined;
   }
 }
