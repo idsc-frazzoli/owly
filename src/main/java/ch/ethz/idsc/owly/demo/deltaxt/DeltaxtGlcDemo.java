@@ -97,7 +97,7 @@ public class DeltaxtGlcDemo implements DemoInterface {
     DeltaxtDinghyGoalManager deltaGoalManager2 = new DeltaxtDinghyGoalManager(goalRegions, stateSpaceModel);
     TrajectoryPlanner trajectoryPlanner = new StandardTrajectoryPlanner( //
         parameters.getEta(), stateIntegrator, controls, obstacleQuery, deltaGoalManager2);
-    trajectoryPlanner.insertRoot(Tensors.vector(8.8, 0.5, 0));
+    trajectoryPlanner.insertRoot(new StateTime(Tensors.vector(8.8, 0.5, 0), RealScalar.ZERO));
     // RUN
     OwlyFrame owlyFrame = OwlyGui.start();
     owlyFrame.configCoordinateOffset(33, 416);

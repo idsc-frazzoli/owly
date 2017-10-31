@@ -44,7 +44,7 @@ enum R2PointsDemo {
     // ---
     TrajectoryPlanner trajectoryPlanner = new StandardTrajectoryPlanner( //
         partitionScale, stateIntegrator, controls, obstacleQuery, goalInterface);
-    trajectoryPlanner.insertRoot(Tensors.vector(-0.5, -0.5));
+    trajectoryPlanner.insertRoot(new StateTime(Tensors.vector(-0.5, -0.5), RealScalar.ZERO));
     int iters = Expand.maxSteps(trajectoryPlanner, 1000);
     System.out.println(iters);
     Optional<GlcNode> optional = trajectoryPlanner.getBest();

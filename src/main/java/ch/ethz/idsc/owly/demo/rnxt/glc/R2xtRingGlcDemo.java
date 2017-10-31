@@ -30,6 +30,7 @@ import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
+import ch.ethz.idsc.tensor.alg.Array;
 
 enum R2xtRingGlcDemo {
   ;
@@ -63,7 +64,7 @@ enum R2xtRingGlcDemo {
             RealScalar.of(0.5), //
             RealScalar.of(3)));
     // ---
-    StateTime root = new StateTime(Tensors.vector(0, 0), RealScalar.ZERO);
+    StateTime root = new StateTime(Array.zeros(2), RealScalar.ZERO);
     TrajectoryPlanner trajectoryPlanner = new StandardTrajectoryPlanner( //
         parameters.getEta(), stateIntegrator, controls, obstacleQuery, rnGoal);
     trajectoryPlanner.represent = StateTimeTensorFunction.withTime();

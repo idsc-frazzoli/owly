@@ -66,7 +66,7 @@ class Se2IterateGlcAnyStreetDemo {
     OptimalAnyTrajectoryPlanner trajectoryPlanner = new OptimalAnyTrajectoryPlanner( //
         parameters.getEta(), stateIntegrator, controls, obstacleQuery, se2GoalManager.getGoalInterface());
     // ---
-    trajectoryPlanner.insertRoot(Tensors.vector(-10, 0, 0));
+    trajectoryPlanner.insertRoot(new StateTime(Tensors.vector(-10, 0, 0), RealScalar.ZERO));
     int iters = GlcExpand.maxDepth(trajectoryPlanner, parameters.getDepthLimit());
     System.out.println("After " + iters + " iterations");
     long toc = System.nanoTime();

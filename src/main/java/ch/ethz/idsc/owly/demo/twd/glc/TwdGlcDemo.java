@@ -19,6 +19,7 @@ import ch.ethz.idsc.owly.math.region.HyperplaneRegion;
 import ch.ethz.idsc.owly.math.region.RegionUnion;
 import ch.ethz.idsc.owly.math.state.FixedStateIntegrator;
 import ch.ethz.idsc.owly.math.state.StateIntegrator;
+import ch.ethz.idsc.owly.math.state.StateTime;
 import ch.ethz.idsc.owly.math.state.TrajectoryRegionQuery;
 import ch.ethz.idsc.tensor.RationalScalar;
 import ch.ethz.idsc.tensor.RealScalar;
@@ -64,7 +65,7 @@ enum TwdGlcDemo {
     // --
     TrajectoryPlanner trajectoryPlanner = new StandardTrajectoryPlanner(parameters.getEta(), //
         stateIntegrator, controls, obstacleQuery, goalManager.getGoalInterface());
-    trajectoryPlanner.insertRoot(Tensors.vector(0, 0, 0.5 * Math.PI));
+    trajectoryPlanner.insertRoot(new StateTime(Tensors.vector(0, 0, 0.5 * Math.PI), RealScalar.ZERO));
     OwlyFrame owlyFrame = OwlyGui.start();
     owlyFrame.configCoordinateOffset(33, 416);
     owlyFrame.jFrame.setBounds(100, 100, 620, 475);

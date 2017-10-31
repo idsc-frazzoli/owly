@@ -26,6 +26,7 @@ import ch.ethz.idsc.tensor.RationalScalar;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
+import ch.ethz.idsc.tensor.alg.Array;
 
 /** inverted pendulum */
 class IpDemo {
@@ -53,7 +54,7 @@ class IpDemo {
     TrajectoryPlanner trajectoryPlanner = new StandardTrajectoryPlanner( //
         eta, stateIntegrator, controls, obstacleQuery, ipGoalManager);
     // ---
-    trajectoryPlanner.insertRoot(Tensors.vector(0, 0, 0, 0));
+    trajectoryPlanner.insertRoot(new StateTime(Array.zeros(4), RealScalar.ZERO));
     // new ExpandGlcFrame(trajectoryPlanner);
     int iters = Expand.maxSteps(trajectoryPlanner, 3000);
     System.out.println(iters);

@@ -27,8 +27,10 @@ import ch.ethz.idsc.owly.math.state.StateIntegrator;
 import ch.ethz.idsc.owly.math.state.StateTime;
 import ch.ethz.idsc.owly.math.state.TrajectoryRegionQuery;
 import ch.ethz.idsc.tensor.RationalScalar;
+import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
+import ch.ethz.idsc.tensor.alg.Array;
 
 /** (x,y,theta) */
 enum Se2rImageDemo {
@@ -48,7 +50,7 @@ enum Se2rImageDemo {
     TrajectoryPlanner trajectoryPlanner = new StandardTrajectoryPlanner( //
         partitionScale, stateIntegrator, controls, obstacleQuery, goalInterface);
     // ---
-    trajectoryPlanner.insertRoot(Tensors.vector(0, 0, 0));
+    trajectoryPlanner.insertRoot(new StateTime(Array.zeros(3), RealScalar.ZERO));
     OwlyFrame owlyFrame = OwlyGui.start();
     owlyFrame.configCoordinateOffset(100, 550);
     owlyFrame.jFrame.setBounds(100, 100, 700, 700);

@@ -52,7 +52,7 @@ enum Rice2dDemo {
     TrajectoryPlanner trajectoryPlanner = new StandardTrajectoryPlanner( //
         eta, stateIntegrator, controls, obstacleQuery, rice2Goal);
     // ---
-    trajectoryPlanner.insertRoot(Tensors.vector(0.1, 0.1, 0, 0));
+    trajectoryPlanner.insertRoot(new StateTime(Tensors.vector(0.1, 0.1, 0, 0), RealScalar.ZERO));
     Stopwatch stopwatch = Stopwatch.started();
     int iters = Expand.maxSteps(trajectoryPlanner, 1000);
     // 550 1.6898229210000002 without parallel integration of trajectories
