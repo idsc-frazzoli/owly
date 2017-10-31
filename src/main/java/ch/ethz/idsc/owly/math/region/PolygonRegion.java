@@ -16,4 +16,8 @@ public class PolygonRegion implements Region {
   public boolean isMember(Tensor tensor) {
     return Polygons.isInside(polygon, tensor);
   }
+
+  public Tensor polygon() {
+    return polygon.unmodifiable();
+  }
 }

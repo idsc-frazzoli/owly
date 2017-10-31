@@ -42,7 +42,7 @@ public class SimpleAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
     CandidatePairQueueMap candidates = new CandidatePairQueueMap();
     for (GlcNode next : connectors.keySet()) { // <- order of keys is non-deterministic
       CandidatePair nextCandidate = new CandidatePair(node, next);
-      final Tensor domain_key = convertToKey(next.state());
+      final Tensor domain_key = convertToKey(next.stateTime());
       candidates.insert(domain_key, nextCandidate);
       // ALL Candidates are saved in CandidateList
     }

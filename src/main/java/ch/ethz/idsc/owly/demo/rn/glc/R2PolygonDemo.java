@@ -15,10 +15,12 @@ import ch.ethz.idsc.owly.glc.core.GlcNodes;
 import ch.ethz.idsc.owly.glc.core.GoalInterface;
 import ch.ethz.idsc.owly.glc.core.StandardTrajectoryPlanner;
 import ch.ethz.idsc.owly.glc.core.TrajectoryPlanner;
+import ch.ethz.idsc.owly.gui.ani.OwlyFrame;
 import ch.ethz.idsc.owly.gui.ani.OwlyGui;
 import ch.ethz.idsc.owly.math.flow.EulerIntegrator;
 import ch.ethz.idsc.owly.math.flow.Flow;
 import ch.ethz.idsc.owly.math.region.PolygonRegion;
+import ch.ethz.idsc.owly.math.region.Region;
 import ch.ethz.idsc.owly.math.state.FixedStateIntegrator;
 import ch.ethz.idsc.owly.math.state.StateIntegrator;
 import ch.ethz.idsc.owly.math.state.StateTime;
@@ -36,15 +38,15 @@ enum R2PolygonDemo {
     Collection<Flow> controls = R2Controls.createRadial(20);
     GoalInterface goalInterface = //
         RnMinDistSphericalGoalManager.create(Tensors.vector(5, 5), DoubleScalar.of(.2));
-    TrajectoryRegionQuery obstacleQuery = SimpleTrajectoryRegionQuery.timeInvariant( //
-        new PolygonRegion(Tensors.matrix(new Number[][] { //
-            { 3, 0 }, //
-            { 4, 0 }, //
-            { 4, 6 }, //
-            { 1, 6 }, //
-            { 1, 3 }, //
-            { 3, 3 }//
-        })));
+    Region r1 = new PolygonRegion(Tensors.matrix(new Number[][] { //
+        { 3, 0 }, //
+        { 4, 0 }, //
+        { 4, 6 }, //
+        { 1, 6 }, //
+        { 1, 3 }, //
+        { 3, 3 } //
+    }));
+    TrajectoryRegionQuery obstacleQuery = SimpleTrajectoryRegionQuery.timeInvariant(r1);
     // ---
     TrajectoryPlanner trajectoryPlanner = new StandardTrajectoryPlanner( //
         partitionScale, stateIntegrator, controls, obstacleQuery, goalInterface);
@@ -56,6 +58,7 @@ enum R2PolygonDemo {
       List<StateTime> trajectory = GlcNodes.getPathFromRootTo(optional.get());
       StateTimeTrajectories.print(trajectory);
     }
-    OwlyGui.glc(trajectoryPlanner);
+    OwlyFrame owlyFrame = OwlyGui.glc(trajectoryPlanner);
+    owlyFrame.addRegionRender(r1);
   }
 }

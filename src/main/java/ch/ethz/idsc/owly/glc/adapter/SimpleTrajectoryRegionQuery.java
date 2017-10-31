@@ -8,6 +8,7 @@ import ch.ethz.idsc.owly.math.state.StandardTrajectoryRegionQuery;
 import ch.ethz.idsc.owly.math.state.StateTime;
 import ch.ethz.idsc.owly.math.state.StateTimeCollector;
 import ch.ethz.idsc.owly.math.state.StateTimeRegion;
+import ch.ethz.idsc.owly.math.state.TimeDependentRegion;
 import ch.ethz.idsc.owly.math.state.TimeInvariantRegion;
 import ch.ethz.idsc.owly.math.state.TrajectoryRegionQuery;
 
@@ -16,6 +17,10 @@ public class SimpleTrajectoryRegionQuery extends StandardTrajectoryRegionQuery i
    * @return */
   public static TrajectoryRegionQuery timeInvariant(Region region) {
     return new SimpleTrajectoryRegionQuery(new TimeInvariantRegion(region));
+  }
+
+  public static TrajectoryRegionQuery timeDependent(Region region) {
+    return new SimpleTrajectoryRegionQuery(new TimeDependentRegion(region));
   }
 
   /** @param stateTimeRegion */

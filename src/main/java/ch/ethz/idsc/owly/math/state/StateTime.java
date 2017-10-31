@@ -33,6 +33,11 @@ public final class StateTime implements Serializable {
     return time;
   }
 
+  /** @return concatenation of state and time */
+  public Tensor joined() {
+    return x.copy().append(time);
+  }
+
   public String toInfoString() {
     return String.format("t=%s  x=%s", time(), state().toString());
   }

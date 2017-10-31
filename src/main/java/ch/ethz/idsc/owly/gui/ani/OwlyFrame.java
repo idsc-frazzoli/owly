@@ -16,14 +16,21 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
 import ch.ethz.idsc.owly.data.tree.Nodes;
+import ch.ethz.idsc.owly.demo.rn.RnPointcloudRegion;
 import ch.ethz.idsc.owly.glc.core.TrajectoryPlanner;
 import ch.ethz.idsc.owly.glc.core.TrajectorySample;
 import ch.ethz.idsc.owly.gui.BaseFrame;
 import ch.ethz.idsc.owly.gui.RenderInterface;
-import ch.ethz.idsc.owly.gui.ren.ImageRegionRender;
+import ch.ethz.idsc.owly.gui.region.EllipsoidRegionRender;
+import ch.ethz.idsc.owly.gui.region.ImageRegionRender;
+import ch.ethz.idsc.owly.gui.region.PolygonRegionRender;
+import ch.ethz.idsc.owly.gui.region.RnPointcloudRegionRender;
 import ch.ethz.idsc.owly.gui.ren.RenderElements;
 import ch.ethz.idsc.owly.gui.ren.TrajectoryRender;
+import ch.ethz.idsc.owly.math.region.EllipsoidRegion;
 import ch.ethz.idsc.owly.math.region.ImageRegion;
+import ch.ethz.idsc.owly.math.region.PolygonRegion;
+import ch.ethz.idsc.owly.math.region.Region;
 import ch.ethz.idsc.owly.rrts.core.RrtsNode;
 import ch.ethz.idsc.owly.rrts.core.TransitionRegionQuery;
 import ch.ethz.idsc.tensor.io.Serialization;
@@ -144,8 +151,15 @@ public class OwlyFrame extends BaseFrame {
     }
   }
 
-  public void addBackground(ImageRegion imageRegion) {
-    addBackground(new ImageRegionRender(imageRegion));
+  public void addRegionRender(Region region) {
+    if (region instanceof ImageRegion)
+      addBackground(new ImageRegionRender((ImageRegion) region));
+    if (region instanceof EllipsoidRegion)
+      addBackground(new EllipsoidRegionRender((EllipsoidRegion) region));
+    if (region instanceof PolygonRegion)
+      addBackground(new PolygonRegionRender((PolygonRegion) region));
+    if (region instanceof RnPointcloudRegion)
+      addBackground(new RnPointcloudRegionRender((RnPointcloudRegion) region));
   }
 
   public void addBackground(RenderInterface renderInterface) {

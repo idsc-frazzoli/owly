@@ -16,7 +16,7 @@ import java.util.TreeMap;
 import ch.ethz.idsc.owly.data.GlobalAssert;
 import ch.ethz.idsc.owly.glc.adapter.HeuristicQ;
 import ch.ethz.idsc.owly.glc.adapter.TrajectoryGoalManager;
-import ch.ethz.idsc.owly.math.TensorUnaryOperator;
+import ch.ethz.idsc.owly.math.StateTimeTensorFunction;
 import ch.ethz.idsc.owly.math.state.StateTime;
 import ch.ethz.idsc.owly.math.state.StateTimeCollector;
 import ch.ethz.idsc.owly.math.state.TrajectoryRegionQuery;
@@ -45,22 +45,26 @@ public abstract class TrajectoryPlanner implements ExpandInterface<GlcNode>, Ser
     return eta;
   }
 
-  /** mapping from state to domain coordinates
+  /** mapping from state time to domain coordinates
+   * 
+   * <p>The default value drops time information and only considers
+   * {@link StateTime#state()}.
+   * 
    * Examples: identity, mod, log, ... */
-  public TensorUnaryOperator represent = tensor -> tensor;
+  public StateTimeTensorFunction represent = StateTime::state;
 
   /** Floor(eta * state) == Floor(state / domain_size)
    * 
-   * @param x state
+   * @param stateTime
    * @return */
-  /* package */ Tensor convertToKey(Tensor x) {
-    return eta.pmul(represent.apply(x)).map(Floor.FUNCTION);
+  /* package */ Tensor convertToKey(StateTime stateTime) {
+    return eta.pmul(represent.apply(stateTime)).map(Floor.FUNCTION);
   }
 
   /** @param stateTime */
   public final void insertRoot(StateTime stateTime) {
     GlobalAssert.that(queue.isEmpty() && domainMap.isEmpty()); // root insertion requires empty planner
-    boolean replaced = insert(convertToKey(stateTime.state()), GlcNodes.createRoot(stateTime, getGoalInterface()));
+    boolean replaced = insert(convertToKey(stateTime), GlcNodes.createRoot(stateTime, getGoalInterface()));
     GlobalAssert.that(!replaced); // root insertion should not replace any other node
   }
 

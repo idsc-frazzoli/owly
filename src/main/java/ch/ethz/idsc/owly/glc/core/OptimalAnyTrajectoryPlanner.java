@@ -79,7 +79,7 @@ public class OptimalAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
       // }
       // ALL Candidates are saved in temporary CandidateList
       CandidatePair nextCandidate = new CandidatePair(node, next);
-      final Tensor domainKey = convertToKey(next.state());
+      final Tensor domainKey = convertToKey(next.stateTime());
       candidatePairQueueMap.insert(domainKey, nextCandidate);
     }
     integratorWatch1.stop();
@@ -213,7 +213,7 @@ public class OptimalAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
     // -- RELABELING:
     int addedNodesToQueue = 0;
     for (GlcNode formerLabel : deleteTreeCollection) { // going through domains
-      Tensor domainKey = convertToKey(formerLabel.state());
+      Tensor domainKey = convertToKey(formerLabel.stateTime());
       // if a bucket exists do Relabeling otherwise not
       if (candidateMap.containsKey(domainKey)) {
         Set<CandidatePair> tempCandidateSet = candidateMap.get(domainKey);
@@ -259,7 +259,7 @@ public class OptimalAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
 
   @Override
   public void obstacleUpdate(TrajectoryRegionQuery newObstacle, Region rechabilityObstacleRegion) {
-    if (newObstacle == this.getObstacleQuery()) // intended: equality of reference
+    if (newObstacle == getObstacleQuery()) // intended: equality of reference
       return;
     if (Objects.isNull(newObstacle)) {
       obstacleUpdate(newObstacle);
@@ -409,7 +409,7 @@ public class OptimalAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
         while (!candidateQueue.isEmpty()) {
           CandidatePair nextBest = candidateQueue.element();
           GlcNode nextBestNode = nextBest.getCandidate();
-          Tensor domainKey = convertToKey(nextBestNode.state());
+          Tensor domainKey = convertToKey(nextBestNode.stateTime());
           GlcNode nextBestParent = nextBest.getOrigin();
           if (Nodes.areConnected(nextBestParent, root)) {
             List<StateTime> connector = getStateIntegrator().trajectory(nextBestParent.stateTime(), nextBestNode.flow());
@@ -512,7 +512,7 @@ public class OptimalAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
                   break; // leaves the Candidate Queue while loop if a better was found
                 }
               } else { // CandidateOrigin is not connected to tree anymore --> Remove this Candidate from Map
-                candidateMap.get(convertToKey(possibleCandidateNode.state())).remove(nextCandidatePair);
+                candidateMap.get(convertToKey(possibleCandidateNode.stateTime())).remove(nextCandidatePair);
               }
             } else {
               break; // if no better Candidates are found leave while of Candidates loop -> Speedgain

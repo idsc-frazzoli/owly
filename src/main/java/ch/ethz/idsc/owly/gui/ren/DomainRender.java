@@ -25,7 +25,7 @@ class DomainRender implements RenderInterface {
 
   DomainRender(Map<Tensor, GlcNode> map, Tensor eta) {
     this.map = map;
-    this.eta_invert = eta.extract(0, 2).map(Scalar::reciprocal);
+    eta_invert = eta.extract(0, 2).map(Scalar::reciprocal);
     int lo = 0;
     int hi = 1;
     ratios = Tensors.of( //

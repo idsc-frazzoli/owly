@@ -11,6 +11,7 @@ import ch.ethz.idsc.owly.glc.core.GoalInterface;
 import ch.ethz.idsc.owly.glc.core.StandardTrajectoryPlanner;
 import ch.ethz.idsc.owly.glc.core.TrajectoryPlanner;
 import ch.ethz.idsc.owly.gui.ani.AbstractCircularEntity;
+import ch.ethz.idsc.owly.math.StateTimeTensorFunction;
 import ch.ethz.idsc.owly.math.flow.Flow;
 import ch.ethz.idsc.owly.math.flow.Integrator;
 import ch.ethz.idsc.owly.math.flow.RungeKutta4Integrator;
@@ -66,7 +67,7 @@ import ch.ethz.idsc.tensor.Tensors;
     // ---
     TrajectoryPlanner trajectoryPlanner = new StandardTrajectoryPlanner( //
         eta, stateIntegrator, controls, EmptyTrajectoryRegionQuery.INSTANCE, goalInterface);
-    trajectoryPlanner.represent = psuWrap::represent;
+    trajectoryPlanner.represent = StateTimeTensorFunction.state(psuWrap::represent);
     return trajectoryPlanner;
   }
 }

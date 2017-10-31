@@ -19,6 +19,7 @@ import ch.ethz.idsc.owly.glc.core.TrajectoryPlanner;
 import ch.ethz.idsc.owly.gui.ani.OwlyGui;
 import ch.ethz.idsc.owly.math.CoordinateWrap;
 import ch.ethz.idsc.owly.math.RotationUtils;
+import ch.ethz.idsc.owly.math.StateTimeTensorFunction;
 import ch.ethz.idsc.owly.math.flow.Flow;
 import ch.ethz.idsc.owly.math.region.PolygonRegion;
 import ch.ethz.idsc.owly.math.region.RegionUnion;
@@ -67,7 +68,7 @@ enum Se2WrapDemo {
     // ---
     TrajectoryPlanner trajectoryPlanner = new StandardTrajectoryPlanner( //
         eta, stateIntegrator, controls, obstacleQuery, se2GoalManager.getGoalInterface());
-    trajectoryPlanner.represent = coordinateWrap::represent;
+    trajectoryPlanner.represent = StateTimeTensorFunction.state(coordinateWrap::represent);
     // ---
     trajectoryPlanner.insertRoot(Tensors.vector(.1, 0, 0));
     return trajectoryPlanner;

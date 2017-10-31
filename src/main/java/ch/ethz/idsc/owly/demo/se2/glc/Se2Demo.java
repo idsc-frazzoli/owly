@@ -19,6 +19,7 @@ import ch.ethz.idsc.owly.glc.core.TrajectoryPlanner;
 import ch.ethz.idsc.owly.gui.ani.OwlyGui;
 import ch.ethz.idsc.owly.math.CoordinateWrap;
 import ch.ethz.idsc.owly.math.RotationUtils;
+import ch.ethz.idsc.owly.math.StateTimeTensorFunction;
 import ch.ethz.idsc.owly.math.flow.Flow;
 import ch.ethz.idsc.owly.math.region.HyperplaneRegion;
 import ch.ethz.idsc.owly.math.region.RegionUnion;
@@ -57,7 +58,7 @@ enum Se2Demo {
     // ---
     trajectoryPlanner.insertRoot(Tensors.vector(0, 0, 0));
     CoordinateWrap coordinateWrap = new Se2Wrap(Tensors.vector(1, 1, 1));
-    trajectoryPlanner.represent = coordinateWrap::represent;
+    trajectoryPlanner.represent = StateTimeTensorFunction.state(coordinateWrap::represent);
     int iters = Expand.maxSteps(trajectoryPlanner, 2000);
     System.out.println(iters);
     Optional<GlcNode> optional = trajectoryPlanner.getBest();

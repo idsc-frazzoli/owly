@@ -12,6 +12,7 @@ import ch.ethz.idsc.owly.glc.core.StandardTrajectoryPlanner;
 import ch.ethz.idsc.owly.glc.core.TrajectoryPlanner;
 import ch.ethz.idsc.owly.gui.ani.OwlyGui;
 import ch.ethz.idsc.owly.math.StateSpaceModel;
+import ch.ethz.idsc.owly.math.StateTimeTensorFunction;
 import ch.ethz.idsc.owly.math.flow.Flow;
 import ch.ethz.idsc.owly.math.flow.RungeKutta45Integrator;
 import ch.ethz.idsc.owly.math.state.EmptyTrajectoryRegionQuery;
@@ -37,7 +38,7 @@ enum LvDemo {
     TrajectoryPlanner trajectoryPlanner = new StandardTrajectoryPlanner( //
         eta, stateIntegrator, controls, EmptyTrajectoryRegionQuery.INSTANCE, goalInterface);
     // ---
-    trajectoryPlanner.represent = Log::of;
+    trajectoryPlanner.represent = StateTimeTensorFunction.state(Log::of);
     trajectoryPlanner.insertRoot(Tensors.vector(2, .1));
     Expand.maxSteps(trajectoryPlanner, 4000);
     OwlyGui.glc(trajectoryPlanner);

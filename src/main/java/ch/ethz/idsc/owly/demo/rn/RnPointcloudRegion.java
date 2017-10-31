@@ -24,10 +24,13 @@ public class RnPointcloudRegion implements Region {
   }
 
   // ---
-  private final NdMap<Void> ndMap;
+  private final Tensor points;
   private final Scalar radius;
+  private final NdMap<Void> ndMap;
 
   private RnPointcloudRegion(Tensor points, Scalar radius) {
+    this.points = points.unmodifiable();
+    this.radius = radius;
     Tensor pt = Transpose.of(points);
     Tensor lbounds = Tensors.vector(i -> pt.get(i).stream().reduce(Min::of).get(), pt.length());
     Tensor ubounds = Tensors.vector(i -> pt.get(i).stream().reduce(Max::of).get(), pt.length());
@@ -37,7 +40,6 @@ public class RnPointcloudRegion implements Region {
     ndMap = new NdTreeMap<>(lbounds, ubounds, 5, 20);
     for (Tensor point : points)
       ndMap.add(point, null);
-    this.radius = radius;
   }
 
   @Override
@@ -47,5 +49,13 @@ public class RnPointcloudRegion implements Region {
     // System.out.println(ndCluster.considered() + " / " + ndMap.size());
     Scalar distance = ndCluster.collection().iterator().next().distance();
     return Scalars.lessEquals(distance, radius);
+  }
+
+  public Tensor points() {
+    return points;
+  }
+
+  public Scalar radius() {
+    return radius;
   }
 }

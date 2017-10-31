@@ -22,6 +22,7 @@ import ch.ethz.idsc.owly.math.region.Region;
 import ch.ethz.idsc.owly.math.state.StateIntegrator;
 import ch.ethz.idsc.owly.math.state.StateTime;
 import ch.ethz.idsc.owly.math.state.TrajectoryRegionQuery;
+import ch.ethz.idsc.tensor.DoubleScalar;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
 
@@ -55,7 +56,8 @@ public abstract class AbstractAnyTrajectoryPlanner extends AbstractTrajectoryPla
    * @return The value,by which the depth limit needs to be increased as of the RootSwitch */
   @Override
   public final int switchRootToState(Tensor state) {
-    GlcNode newRoot = this.getNode(convertToKey(state));
+    // TODO because of appending NaN, ::represent must only consider StateTime::state()
+    GlcNode newRoot = getNode(convertToKey(new StateTime(state, DoubleScalar.INDETERMINATE)));
     int increaseDepthBy = 0;
     // TODO not nice, as we jump from state to startnode
     if (newRoot != null) {
@@ -65,18 +67,18 @@ public abstract class AbstractAnyTrajectoryPlanner extends AbstractTrajectoryPla
       System.out.println("This domain is not labelled yet:");
       System.out.println(state);
       if (!domainMap().isEmpty()) {
-        this.deleteSubtreeOf(getRoot());
-        this.domainMap().clear();
-        this.queue().clear();
+        deleteSubtreeOf(getRoot());
+        domainMap().clear();
+        queue().clear();
       }
-      this.insertRoot(state);
+      insertRoot(state);
     }
     return increaseDepthBy;
   }
 
   protected final void insertNodeInTree(GlcNode parent, GlcNode node) {
     parent.insertEdgeTo(node);
-    final Tensor domainKey = convertToKey(node.state());
+    final Tensor domainKey = convertToKey(node.stateTime());
     final boolean replaced = insert(domainKey, node);
     if (replaced) {
       System.err.println("No formerLabel existed, but sth. was replaced");
@@ -101,7 +103,7 @@ public abstract class AbstractAnyTrajectoryPlanner extends AbstractTrajectoryPla
     queue().removeAll(deleteTreeCollection);
     // // -- DOMAINMAP: Removing Nodes (DeleteTree) from DomainMap
     for (GlcNode node : deleteTreeCollection) {
-      domainMap().remove(convertToKey(node.state()));
+      domainMap().remove(convertToKey(node.stateTime()));
     }
     // boolean test = domainMap().values().removeAll(deleteTreeCollection);
     // if (test)
@@ -242,7 +244,7 @@ public abstract class AbstractAnyTrajectoryPlanner extends AbstractTrajectoryPla
 
   @Override
   public final Optional<GlcNode> existsInTree(StateTime stateTime) {
-    GlcNode label = domainMap().get(convertToKey(stateTime.state()));
+    GlcNode label = domainMap().get(convertToKey(stateTime));
     if (Objects.isNull(label))
       return Optional.empty();
     if (label.stateTime().state().equals(stateTime.state()))

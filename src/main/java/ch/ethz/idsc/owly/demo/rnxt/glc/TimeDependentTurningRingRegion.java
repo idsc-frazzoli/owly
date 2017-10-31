@@ -9,8 +9,6 @@ import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Scalars;
 import ch.ethz.idsc.tensor.Tensor;
-import ch.ethz.idsc.tensor.TensorRuntimeException;
-import ch.ethz.idsc.tensor.alg.Last;
 import ch.ethz.idsc.tensor.alg.VectorQ;
 import ch.ethz.idsc.tensor.red.Norm;
 import ch.ethz.idsc.tensor.sca.ArcTan;
@@ -39,27 +37,23 @@ public class TimeDependentTurningRingRegion implements StateTimeRegion {
     this.center = center;
     this.initialGapAngle = initialGapAngle;
     this.gapSizeAngle = gapSizeAngle;
-    this.lowerRingRadius = ringRadius.subtract(ringThickness.divide(RealScalar.of(2)));
-    this.upperRingRadius = ringRadius.add(ringThickness.divide(RealScalar.of(2)));
+    lowerRingRadius = ringRadius.subtract(ringThickness.divide(RealScalar.of(2)));
+    upperRingRadius = ringRadius.add(ringThickness.divide(RealScalar.of(2)));
   }
 
   @Override
   public boolean isMember(StateTime stateTime) {
-    // consistency check
-    if (!Last.of(stateTime.state()).equals(stateTime.time()))
-      throw TensorRuntimeException.of(stateTime.state(), stateTime.time());
-    // ---
+    Tensor state = stateTime.state();
+    GlobalAssert.that(VectorQ.ofLength(state, 2));
     Scalar time = stateTime.time();
-    Tensor state = stateTime.state().extract(0, 2); // <- asserts that state.length() == 2
     Scalar radius = Norm._2.between(state, center);
     if (Scalars.lessEquals(lowerRingRadius, radius) && Scalars.lessEquals(radius, upperRingRadius)) { // in Obstacle radial
       Scalar upperGapAngle = initialGapAngle.add(gapSizeAngle.divide(RealScalar.of(2)));
       Scalar lowerGapAngle = initialGapAngle.subtract(gapSizeAngle.divide(RealScalar.of(2)));
       Tensor vec1 = state.subtract(center);
       Scalar angle = ArcTan.of(vec1.Get(0), vec1.Get(1)).subtract(turningSpeed.multiply(time));
-      if (Scalars.lessEquals(MOD.of(angle), upperGapAngle) && Scalars.lessEquals(lowerGapAngle, MOD.of(angle)))
-        return false; // checks if in Gap
-      return true; // Otherwise in Ring
+      // checks if in Gap, Otherwise in Ring
+      return !(Scalars.lessEquals(MOD.of(angle), upperGapAngle) && Scalars.lessEquals(lowerGapAngle, MOD.of(angle)));
     }
     return false;
   }
