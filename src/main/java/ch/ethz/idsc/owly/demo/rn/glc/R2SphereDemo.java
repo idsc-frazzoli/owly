@@ -29,8 +29,10 @@ import ch.ethz.idsc.owly.math.state.StateTime;
 import ch.ethz.idsc.owly.math.state.TrajectoryRegionQuery;
 import ch.ethz.idsc.tensor.DoubleScalar;
 import ch.ethz.idsc.tensor.RationalScalar;
+import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
+import ch.ethz.idsc.tensor.alg.Array;
 
 enum R2SphereDemo {
   ;
@@ -46,7 +48,7 @@ enum R2SphereDemo {
     // ---
     TrajectoryPlanner trajectoryPlanner = new StandardTrajectoryPlanner( //
         partitionScale, stateIntegrator, controls, obstacleQuery, goalInterface);
-    trajectoryPlanner.insertRoot(Tensors.vector(0, 0));
+    trajectoryPlanner.insertRoot(new StateTime(Array.zeros(2), RealScalar.ZERO));
     int iters = Expand.steps(trajectoryPlanner, 200);
     GlobalAssert.that(iters == 200);
     Optional<GlcNode> optional = trajectoryPlanner.getBest();

@@ -28,6 +28,7 @@ import ch.ethz.idsc.owly.math.state.StateTime;
 import ch.ethz.idsc.owly.math.state.TrajectoryRegionQuery;
 import ch.ethz.idsc.tensor.DoubleScalar;
 import ch.ethz.idsc.tensor.RationalScalar;
+import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
 
@@ -58,7 +59,7 @@ enum Se2WrapDemoExt {
         eta, stateIntegrator, controls, obstacleQuery, se2WrapGoalManager.getGoalInterface());
     trajectoryPlanner.represent = StateTimeTensorFunction.state(coordinateWrap::represent);
     // ---
-    trajectoryPlanner.insertRoot(Tensors.vector(.1, 0, 0));
+    trajectoryPlanner.insertRoot(new StateTime(Tensors.vector(.1, 0, 0), RealScalar.ZERO));
     int iters = Expand.maxSteps(trajectoryPlanner, 4000);
     System.out.println(iters);
     Optional<GlcNode> optional = trajectoryPlanner.getBest();

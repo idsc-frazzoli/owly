@@ -20,7 +20,6 @@ import ch.ethz.idsc.owly.math.StateTimeTensorFunction;
 import ch.ethz.idsc.owly.math.state.StateTime;
 import ch.ethz.idsc.owly.math.state.StateTimeCollector;
 import ch.ethz.idsc.owly.math.state.TrajectoryRegionQuery;
-import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.sca.Floor;
 
@@ -66,12 +65,6 @@ public abstract class TrajectoryPlanner implements ExpandInterface<GlcNode>, Ser
     GlobalAssert.that(queue.isEmpty() && domainMap.isEmpty()); // root insertion requires empty planner
     boolean replaced = insert(convertToKey(stateTime), GlcNodes.createRoot(stateTime, getGoalInterface()));
     GlobalAssert.that(!replaced); // root insertion should not replace any other node
-  }
-
-  /** this function may be deprecated in the future.
-   * in new applications use {@link #insertRoot(StateTime)} instead */
-  public final void insertRoot(Tensor x) {
-    insertRoot(new StateTime(x, RealScalar.ZERO));
   }
 
   /** @param domain_key

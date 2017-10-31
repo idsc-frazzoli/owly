@@ -172,7 +172,7 @@ import ch.ethz.idsc.tensor.sca.Sqrt;
     if (!rnGoal.isDisjoint(currentStateList)) {
       return new Se2MinTimeEuclideanDistanceHeuristicGoalManager(goal, goalRadius, controls).getGoalInterface();
     }
-    trajectoryPlanner.insertRoot(currentState);
+    trajectoryPlanner.insertRoot(new StateTime(currentState, RealScalar.ZERO));
     // int iters =
     Expand.maxTime(trajectoryPlanner, RealScalar.of(1.5)); // 1.5 [s]
     Optional<GlcNode> optional = trajectoryPlanner.getFinalGoalNode();

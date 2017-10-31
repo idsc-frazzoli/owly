@@ -14,10 +14,13 @@ import ch.ethz.idsc.owly.math.flow.Flow;
 import ch.ethz.idsc.owly.math.state.EmptyTrajectoryRegionQuery;
 import ch.ethz.idsc.owly.math.state.FixedStateIntegrator;
 import ch.ethz.idsc.owly.math.state.StateIntegrator;
+import ch.ethz.idsc.owly.math.state.StateTime;
 import ch.ethz.idsc.tensor.DoubleScalar;
 import ch.ethz.idsc.tensor.RationalScalar;
+import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
+import ch.ethz.idsc.tensor.alg.Array;
 
 enum R2nExpandDemo {
   ;
@@ -29,7 +32,7 @@ enum R2nExpandDemo {
     // ---
     TrajectoryPlanner trajectoryPlanner = new StandardTrajectoryPlanner( //
         eta, stateIntegrator, controls, EmptyTrajectoryRegionQuery.INSTANCE, rnGoal);
-    trajectoryPlanner.insertRoot(Tensors.vector(0, 0));
+    trajectoryPlanner.insertRoot(new StateTime(Array.zeros(2), RealScalar.ZERO));
     OwlyFrame owlyFrame = OwlyGui.start();
     for (int c = 0; c < 100 && owlyFrame.jFrame.isVisible(); ++c) {
       Expand.maxSteps(trajectoryPlanner, 10);

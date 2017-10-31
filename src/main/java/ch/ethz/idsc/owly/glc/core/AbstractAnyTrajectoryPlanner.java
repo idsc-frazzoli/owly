@@ -23,6 +23,7 @@ import ch.ethz.idsc.owly.math.state.StateIntegrator;
 import ch.ethz.idsc.owly.math.state.StateTime;
 import ch.ethz.idsc.owly.math.state.TrajectoryRegionQuery;
 import ch.ethz.idsc.tensor.DoubleScalar;
+import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
 
@@ -71,7 +72,7 @@ public abstract class AbstractAnyTrajectoryPlanner extends AbstractTrajectoryPla
         domainMap().clear();
         queue().clear();
       }
-      insertRoot(state);
+      insertRoot(new StateTime(state, RealScalar.ZERO)); // TODO justify time==0
     }
     return increaseDepthBy;
   }

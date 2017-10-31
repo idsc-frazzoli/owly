@@ -27,6 +27,7 @@ import ch.ethz.idsc.tensor.RationalScalar;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
+import ch.ethz.idsc.tensor.alg.Array;
 
 /** position and velocity control in 1D with friction
  * 
@@ -51,7 +52,7 @@ enum Rice1dDemo {
     TrajectoryPlanner trajectoryPlanner = new StandardTrajectoryPlanner( //
         eta, stateIntegrator, controls, obstacleQuery, rice1Goal);
     // ---
-    trajectoryPlanner.insertRoot(Tensors.vector(0, 0));
+    trajectoryPlanner.insertRoot(new StateTime(Array.zeros(2), RealScalar.ZERO));
     int iters = Expand.maxSteps(trajectoryPlanner, 1000);
     if (900 < iters)
       System.out.println("close to upper bound: " + iters);

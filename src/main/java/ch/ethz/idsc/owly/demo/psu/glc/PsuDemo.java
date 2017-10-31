@@ -28,6 +28,7 @@ import ch.ethz.idsc.tensor.RationalScalar;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
+import ch.ethz.idsc.tensor.alg.Array;
 
 /** Pendulum Swing-up
  * 
@@ -49,7 +50,7 @@ enum PsuDemo {
         eta, stateIntegrator, controls, EmptyTrajectoryRegionQuery.INSTANCE, goalInterface);
     trajectoryPlanner.represent = StateTimeTensorFunction.state(psuWrap::represent);
     // ---
-    trajectoryPlanner.insertRoot(Tensors.vector(0, 0));
+    trajectoryPlanner.insertRoot(new StateTime(Array.zeros(2), RealScalar.ZERO));
     Expand.maxSteps(trajectoryPlanner, 1000);
     return trajectoryPlanner;
   }
@@ -67,7 +68,7 @@ enum PsuDemo {
         eta, stateIntegrator, controls, EmptyTrajectoryRegionQuery.INSTANCE, goalInterface);
     trajectoryPlanner.represent = StateTimeTensorFunction.state(psuWrap::represent);
     // ---
-    trajectoryPlanner.insertRoot(Tensors.vector(0, 0));
+    trajectoryPlanner.insertRoot(new StateTime(Array.zeros(2), RealScalar.ZERO));
     int iters = Expand.maxSteps(trajectoryPlanner, 1000);
     System.out.println(iters);
     return trajectoryPlanner;

@@ -32,6 +32,7 @@ import ch.ethz.idsc.tensor.RationalScalar;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
+import ch.ethz.idsc.tensor.alg.Array;
 
 /** (x,y,theta) */
 enum Se2Demo {
@@ -56,7 +57,7 @@ enum Se2Demo {
     TrajectoryPlanner trajectoryPlanner = new StandardTrajectoryPlanner( //
         eta, stateIntegrator, controls, obstacleQuery, goalInterface);
     // ---
-    trajectoryPlanner.insertRoot(Tensors.vector(0, 0, 0));
+    trajectoryPlanner.insertRoot(new StateTime(Array.zeros(3), RealScalar.ZERO));
     CoordinateWrap coordinateWrap = new Se2Wrap(Tensors.vector(1, 1, 1));
     trajectoryPlanner.represent = StateTimeTensorFunction.state(coordinateWrap::represent);
     int iters = Expand.maxSteps(trajectoryPlanner, 2000);

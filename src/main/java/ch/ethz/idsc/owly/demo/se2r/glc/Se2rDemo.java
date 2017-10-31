@@ -29,6 +29,7 @@ import ch.ethz.idsc.tensor.RationalScalar;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
+import ch.ethz.idsc.tensor.alg.Array;
 
 /** (x,y,theta) */
 enum Se2rDemo {
@@ -52,7 +53,7 @@ enum Se2rDemo {
     TrajectoryPlanner trajectoryPlanner = new StandardTrajectoryPlanner( //
         eta, stateIntegrator, controls, obstacleQuery, goalInterface);
     // ---
-    trajectoryPlanner.insertRoot(Tensors.vector(0, 0, 0));
+    trajectoryPlanner.insertRoot(new StateTime(Array.zeros(3), RealScalar.ZERO));
     int iters = Expand.maxSteps(trajectoryPlanner, 20000);
     System.out.println(iters);
     Optional<GlcNode> optional = trajectoryPlanner.getBest();

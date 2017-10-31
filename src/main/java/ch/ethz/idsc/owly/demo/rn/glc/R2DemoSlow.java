@@ -30,6 +30,7 @@ import ch.ethz.idsc.owly.math.state.StateTime;
 import ch.ethz.idsc.owly.math.state.TrajectoryRegionQuery;
 import ch.ethz.idsc.tensor.DoubleScalar;
 import ch.ethz.idsc.tensor.RationalScalar;
+import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Scalars;
 import ch.ethz.idsc.tensor.Tensor;
@@ -66,7 +67,7 @@ enum R2DemoSlow {
     // ---
     TrajectoryPlanner trajectoryPlanner = new StandardTrajectoryPlanner( //
         eta, stateIntegrator, controls, obstacleQuery, goalInterface);
-    trajectoryPlanner.insertRoot(stateRoot);
+    trajectoryPlanner.insertRoot(new StateTime(stateRoot, RealScalar.ZERO));
     AnimationWriter gsw = AnimationWriter.of(UserHome.Pictures("R2_Slow.gif"), 400);
     OwlyFrame owly = OwlyGui.start();
     for (int i = 0; i < 20; i++) {

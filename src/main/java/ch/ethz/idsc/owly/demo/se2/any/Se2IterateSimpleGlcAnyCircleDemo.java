@@ -77,7 +77,7 @@ class Se2IterateSimpleGlcAnyCircleDemo {
     SimpleAnyTrajectoryPlanner trajectoryPlanner = new SimpleAnyTrajectoryPlanner( //
         parameters.getEta(), stateIntegrator, controls, obstacleQuery, se2GoalManager.getGoalInterface());
     // ---
-    trajectoryPlanner.insertRoot(Tensors.vector(0, 3, 0));
+    trajectoryPlanner.insertRoot(new StateTime(Tensors.vector(0, 3, 0), RealScalar.ZERO));
     int iters = GlcExpand.maxDepth(trajectoryPlanner, parameters.getDepthLimit());
     DebugUtils.nodeAmountCompare(trajectoryPlanner);
     System.out.println("After " + iters + " iterations");

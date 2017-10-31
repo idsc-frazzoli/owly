@@ -18,7 +18,9 @@ import ch.ethz.idsc.owly.math.flow.RungeKutta45Integrator;
 import ch.ethz.idsc.owly.math.state.EmptyTrajectoryRegionQuery;
 import ch.ethz.idsc.owly.math.state.FixedStateIntegrator;
 import ch.ethz.idsc.owly.math.state.StateIntegrator;
+import ch.ethz.idsc.owly.math.state.StateTime;
 import ch.ethz.idsc.tensor.RationalScalar;
+import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
 import ch.ethz.idsc.tensor.sca.Log;
@@ -39,7 +41,7 @@ enum LvDemo {
         eta, stateIntegrator, controls, EmptyTrajectoryRegionQuery.INSTANCE, goalInterface);
     // ---
     trajectoryPlanner.represent = StateTimeTensorFunction.state(Log::of);
-    trajectoryPlanner.insertRoot(Tensors.vector(2, .1));
+    trajectoryPlanner.insertRoot(new StateTime(Tensors.vector(2, .1), RealScalar.ZERO));
     Expand.maxSteps(trajectoryPlanner, 4000);
     OwlyGui.glc(trajectoryPlanner);
   }

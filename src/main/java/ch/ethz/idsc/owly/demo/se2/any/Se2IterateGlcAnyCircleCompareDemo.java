@@ -94,7 +94,7 @@ class Se2IterateGlcAnyCircleCompareDemo {
     {
       StandardTrajectoryPlanner defaultTrajectoryPlanner = new StandardTrajectoryPlanner( //
           parameters.getEta(), stateIntegrator, controls, obstacleQuery, se2GoalManager.getGoalInterface());
-      defaultTrajectoryPlanner.insertRoot(Tensors.vector(0, 3, 0));
+      defaultTrajectoryPlanner.insertRoot(new StateTime(Tensors.vector(0, 3, 0), RealScalar.ZERO));
       iters = GlcExpand.maxDepth(defaultTrajectoryPlanner, parameters.getDepthLimit());
       DebugUtils.nodeAmountCompare(defaultTrajectoryPlanner);
       System.out.println("After " + iters + " iterations");
@@ -138,7 +138,8 @@ class Se2IterateGlcAnyCircleCompareDemo {
       {
         StandardTrajectoryPlanner defaultTrajectoryPlanner = new StandardTrajectoryPlanner( //
             parameters.getEta(), stateIntegrator, controls, obstacleQuery, se2GoalManager2.getGoalInterface());
-        defaultTrajectoryPlanner.insertRoot(newRootState.state());
+        // TODO why not use plan statetime newRootState here !?
+        defaultTrajectoryPlanner.insertRoot(new StateTime(newRootState.state(), RealScalar.ZERO));
         iters = GlcExpand.maxDepth(defaultTrajectoryPlanner, parameters.getDepthLimit());
         timingDatabase.saveIterations(iters, 0);
         System.out.println("After " + iters + " iterations");

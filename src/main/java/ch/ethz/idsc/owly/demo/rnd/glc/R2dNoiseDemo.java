@@ -37,6 +37,7 @@ import ch.ethz.idsc.tensor.Tensors;
 
 enum R2dNoiseDemo {
   ;
+  // TODO demo needs a revision
   public static void main(String[] args) {
     Tensor partitionScale = Tensors.vector(6, 6, 6, 6);
     final Scalar threshold = RealScalar.of(.2);
@@ -53,8 +54,8 @@ enum R2dNoiseDemo {
     TrajectoryPlanner trajectoryPlanner = new StandardTrajectoryPlanner( //
         partitionScale, stateIntegrator, controls, obstacleQuery, goalInterface);
     // Trajectories.s
-    Tensor root_x = Tensors.vector(0, 0, 0, 0);
-    boolean root_free = obstacleQuery.isDisjoint(Collections.singletonList(new StateTime(root_x, RealScalar.ONE)));
+    StateTime root_x = new StateTime(Tensors.vector(0, 0, 0, 0), RealScalar.ZERO);
+    boolean root_free = obstacleQuery.isDisjoint(Collections.singletonList(root_x));
     GlobalAssert.that(root_free);
     trajectoryPlanner.insertRoot(root_x);
     Stopwatch stopwatch = Stopwatch.started();

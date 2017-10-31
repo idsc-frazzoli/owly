@@ -22,6 +22,7 @@ import ch.ethz.idsc.owly.math.flow.RungeKutta45Integrator;
 import ch.ethz.idsc.owly.math.region.ImageRegion;
 import ch.ethz.idsc.owly.math.state.FixedStateIntegrator;
 import ch.ethz.idsc.owly.math.state.StateIntegrator;
+import ch.ethz.idsc.owly.math.state.StateTime;
 import ch.ethz.idsc.owly.math.state.TrajectoryRegionQuery;
 import ch.ethz.idsc.tensor.RationalScalar;
 import ch.ethz.idsc.tensor.RealScalar;
@@ -50,7 +51,7 @@ public enum DeltaHelper {
         Tensors.vector(2.1, 0.3), RealScalar.of(.3));
     TrajectoryPlanner trajectoryPlanner = new StandardTrajectoryPlanner( //
         eta, stateIntegrator, controls, obstacleQuery, goalInterface);
-    trajectoryPlanner.insertRoot(Tensors.vector(8.8, 0.5));
+    trajectoryPlanner.insertRoot(new StateTime(Tensors.vector(8.8, 0.5), RealScalar.ZERO));
     return trajectoryPlanner;
   }
 
@@ -71,7 +72,7 @@ public enum DeltaHelper {
         Tensors.vector(2.1, 0.3), RealScalar.of(.3), controls, ipr.maxNormGradient());
     TrajectoryPlanner trajectoryPlanner = new StandardTrajectoryPlanner( //
         eta, stateIntegrator, controls, obstacleQuery, deltaGoalManager);
-    trajectoryPlanner.insertRoot(Tensors.vector(8.8, 0.5));
+    trajectoryPlanner.insertRoot(new StateTime(Tensors.vector(8.8, 0.5), RealScalar.ZERO));
     return trajectoryPlanner;
   }
 
@@ -113,7 +114,7 @@ public enum DeltaHelper {
     // Tensors.vector(2.1, 0.3), Tensors.vector(.3, .3));
     TrajectoryPlanner trajectoryPlanner = new StandardTrajectoryPlanner( //
         parameters.getEta(), stateIntegrator, controls, obstacleQuery, deltaGoalManager);
-    trajectoryPlanner.insertRoot(Tensors.vector(8.8, 0.5));
+    trajectoryPlanner.insertRoot(new StateTime(Tensors.vector(8.8, 0.5), RealScalar.ZERO));
     return new TrajectoryPlannerContainer(trajectoryPlanner, parameters, stateSpaceModel);
   }
 

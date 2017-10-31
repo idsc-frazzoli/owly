@@ -68,7 +68,7 @@ enum Se2GlcDemo {
         ));
     TrajectoryPlanner trajectoryPlanner = new StandardTrajectoryPlanner( //
         parameters.getEta(), stateIntegrator, controls, obstacleQuery, goalInterface);
-    trajectoryPlanner.insertRoot(Tensors.vector(1, 0, -0.5 * Math.PI));
+    trajectoryPlanner.insertRoot(new StateTime(Tensors.vector(1, 0, -0.5 * Math.PI), RealScalar.ZERO));
     int iters = GlcExpand.maxDepth(trajectoryPlanner, parameters.getDepthLimit());
     // int iters = Expand.maxTime(trajectoryPlanner, RealScalar.of(3));
     System.out.println("After " + iters + " iterations");

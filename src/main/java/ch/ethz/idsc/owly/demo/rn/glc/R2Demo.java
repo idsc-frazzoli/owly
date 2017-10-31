@@ -26,6 +26,7 @@ import ch.ethz.idsc.owly.math.state.StateTime;
 import ch.ethz.idsc.owly.math.state.TrajectoryRegionQuery;
 import ch.ethz.idsc.tensor.DoubleScalar;
 import ch.ethz.idsc.tensor.RationalScalar;
+import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Scalars;
 import ch.ethz.idsc.tensor.Tensor;
@@ -56,7 +57,7 @@ enum R2Demo {
     // ---
     TrajectoryPlanner trajectoryPlanner = new StandardTrajectoryPlanner( //
         eta, stateIntegrator, controls, obstacleQuery, goalInterface);
-    trajectoryPlanner.insertRoot(stateRoot);
+    trajectoryPlanner.insertRoot(new StateTime(stateRoot, RealScalar.ZERO));
     int iters = Expand.maxSteps(trajectoryPlanner, 200);
     System.out.println("iterations " + iters);
     Optional<GlcNode> optional = trajectoryPlanner.getBest();

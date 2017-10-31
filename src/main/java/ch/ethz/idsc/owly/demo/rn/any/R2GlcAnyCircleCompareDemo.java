@@ -140,7 +140,8 @@ enum R2GlcAnyCircleCompareDemo {
         database.startStopwatchFor(0);
         standardTrajectoryPlanner = new StandardTrajectoryPlanner( //
             parameters.getEta(), stateIntegrator, controls, obstacleQuery, rnGoal);
-        standardTrajectoryPlanner.insertRoot(newRootState.state());
+        // TODO why not use plan newRootState statetime here?!
+        standardTrajectoryPlanner.insertRoot(new StateTime(newRootState.state(), RealScalar.ZERO));
         int itersStandard = GlcExpand.maxDepth(standardTrajectoryPlanner, parameters.getDepthLimit());
         database.stopStopwatchFor(0);
         database.saveIterations(itersStandard, 0);

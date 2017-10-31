@@ -70,7 +70,7 @@ enum Se2WrapDemo {
         eta, stateIntegrator, controls, obstacleQuery, se2GoalManager.getGoalInterface());
     trajectoryPlanner.represent = StateTimeTensorFunction.state(coordinateWrap::represent);
     // ---
-    trajectoryPlanner.insertRoot(Tensors.vector(.1, 0, 0));
+    trajectoryPlanner.insertRoot(new StateTime(Tensors.vector(.1, 0, 0), RealScalar.ZERO));
     return trajectoryPlanner;
   }
 
