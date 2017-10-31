@@ -9,8 +9,6 @@ import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Scalars;
 import ch.ethz.idsc.tensor.Tensor;
-import ch.ethz.idsc.tensor.TensorRuntimeException;
-import ch.ethz.idsc.tensor.alg.Last;
 import ch.ethz.idsc.tensor.alg.VectorQ;
 import ch.ethz.idsc.tensor.red.Norm;
 import ch.ethz.idsc.tensor.sca.ArcTan;
@@ -46,8 +44,8 @@ public class TimeDependentTurningRingRegion implements StateTimeRegion {
   @Override
   public boolean isMember(StateTime stateTime) {
     // consistency check
-    if (!Last.of(stateTime.state()).equals(stateTime.time()))
-      throw TensorRuntimeException.of(stateTime.state(), stateTime.time());
+    // if (!Last.of(stateTime.state()).equals(stateTime.time()))
+    // throw TensorRuntimeException.of(stateTime.state(), stateTime.time());
     // ---
     Scalar time = stateTime.time();
     Tensor state = stateTime.state().extract(0, 2); // <- asserts that state.length() == 2

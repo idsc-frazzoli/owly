@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Optional;
 
 import ch.ethz.idsc.owly.demo.rn.R2Parameters;
+import ch.ethz.idsc.owly.demo.rn.RnHeuristicEllipsoidGoalManager;
 import ch.ethz.idsc.owly.glc.adapter.Parameters;
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
 import ch.ethz.idsc.owly.glc.adapter.StateTimeTrajectories;
@@ -45,7 +46,7 @@ enum R2xtEllipsoidGlcDemo {
         parameters.getTrajectorySize());
     Collection<Flow> controls = R2xtControls.createRadial(parameters.getResolutionInt());
     Tensor goal = Tensors.vector(5, 5, 0);
-    RnxtHeuristicEllipsoidGoalManager rnGoal = new RnxtHeuristicEllipsoidGoalManager(//
+    RnHeuristicEllipsoidGoalManager rnGoal = new RnHeuristicEllipsoidGoalManager(//
         goal, Tensors.of(RealScalar.of(0.2), RealScalar.of(0.2), DoubleScalar.POSITIVE_INFINITY));
     // with HeuristicGoalManager only expand 10% of nodes
     // RnxtEllipsoidGoalManager rnGoal = new RnxtEllipsoidGoalManager(//
