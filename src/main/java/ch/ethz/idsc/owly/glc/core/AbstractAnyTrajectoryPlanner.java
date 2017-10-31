@@ -57,7 +57,7 @@ public abstract class AbstractAnyTrajectoryPlanner extends AbstractTrajectoryPla
   @Override
   public final int switchRootToState(Tensor state) {
     // TODO because of appending NaN, ::represent must only consider StateTime::state()
-    GlcNode newRoot = this.getNode(convertToKey(new StateTime(state, DoubleScalar.INDETERMINATE)));
+    GlcNode newRoot = getNode(convertToKey(new StateTime(state, DoubleScalar.INDETERMINATE)));
     int increaseDepthBy = 0;
     // TODO not nice, as we jump from state to startnode
     if (newRoot != null) {
@@ -67,11 +67,11 @@ public abstract class AbstractAnyTrajectoryPlanner extends AbstractTrajectoryPla
       System.out.println("This domain is not labelled yet:");
       System.out.println(state);
       if (!domainMap().isEmpty()) {
-        this.deleteSubtreeOf(getRoot());
-        this.domainMap().clear();
-        this.queue().clear();
+        deleteSubtreeOf(getRoot());
+        domainMap().clear();
+        queue().clear();
       }
-      this.insertRoot(state);
+      insertRoot(state);
     }
     return increaseDepthBy;
   }

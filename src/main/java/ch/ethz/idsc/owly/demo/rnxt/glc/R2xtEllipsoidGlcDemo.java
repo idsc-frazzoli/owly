@@ -2,7 +2,6 @@
 package ch.ethz.idsc.owly.demo.rnxt.glc;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -58,9 +57,6 @@ enum R2xtEllipsoidGlcDemo {
         new EllipsoidRegion(goal.copy().append(RealScalar.ZERO), Tensors.vector(3, 3, 10)));
     // ObstacleEllipsoid around goal, which disappears after 10s
     StateTime root = new StateTime(Tensors.vector(0, 0), RealScalar.ZERO);
-    obstacleQuery.isDisjoint(Collections.singletonList(root));
-    rnGoal.isDisjoint(Collections.singletonList(root));
-    rnGoal.minCostToGoal(root.state());
     // ---
     TrajectoryPlanner trajectoryPlanner = new StandardTrajectoryPlanner( //
         parameters.getEta(), stateIntegrator, controls, obstacleQuery, rnGoal);

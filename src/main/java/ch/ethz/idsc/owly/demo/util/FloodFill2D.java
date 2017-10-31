@@ -33,7 +33,7 @@ public class FloodFill2D {
 
   private FloodFill2D(Set<Tensor> prev, Scalar ttl, Tensor tensor) {
     dimensions = Dimensions.of(tensor);
-    this.array = Array.zeros(dimensions);
+    array = Array.zeros(dimensions);
     this.tensor = tensor;
     {
       next = new HashSet<>();

@@ -25,7 +25,6 @@ import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
 
-/** (x,y,theta) */
 enum Se2rAnimateDemo {
   ;
   public static void main(String[] args) throws Exception {

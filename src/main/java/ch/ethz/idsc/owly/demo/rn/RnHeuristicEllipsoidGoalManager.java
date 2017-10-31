@@ -42,8 +42,8 @@ public class RnHeuristicEllipsoidGoalManager extends SimpleTrajectoryRegionQuery
   public RnHeuristicEllipsoidGoalManager(Tensor center, Tensor radius) {
     super(new TimeInvariantRegion(new EllipsoidRegion(center, radius)));
     int toIndex = center.length();
-    this.rnRadius = radius.extract(0, toIndex);
-    this.rnCenter = center.extract(0, toIndex);
+    rnRadius = radius.extract(0, toIndex);
+    rnCenter = center.extract(0, toIndex);
   }
 
   /** shortest Time Cost */

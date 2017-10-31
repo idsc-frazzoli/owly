@@ -259,7 +259,7 @@ public class OptimalAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
 
   @Override
   public void obstacleUpdate(TrajectoryRegionQuery newObstacle, Region rechabilityObstacleRegion) {
-    if (newObstacle == this.getObstacleQuery()) // intended: equality of reference
+    if (newObstacle == getObstacleQuery()) // intended: equality of reference
       return;
     if (Objects.isNull(newObstacle)) {
       obstacleUpdate(newObstacle);
