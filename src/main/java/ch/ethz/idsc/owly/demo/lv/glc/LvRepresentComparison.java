@@ -13,6 +13,7 @@ import ch.ethz.idsc.owly.glc.core.TrajectoryPlanner;
 import ch.ethz.idsc.owly.gui.ani.OwlyFrame;
 import ch.ethz.idsc.owly.gui.ani.OwlyGui;
 import ch.ethz.idsc.owly.math.StateSpaceModel;
+import ch.ethz.idsc.owly.math.StateTimeTensorFunction;
 import ch.ethz.idsc.owly.math.TensorUnaryOperator;
 import ch.ethz.idsc.owly.math.flow.Flow;
 import ch.ethz.idsc.owly.math.flow.RungeKutta45Integrator;
@@ -39,7 +40,7 @@ enum LvRepresentComparison {
     TrajectoryPlanner trajectoryPlanner = new StandardTrajectoryPlanner( //
         eta, stateIntegrator, controls, EmptyTrajectoryRegionQuery.INSTANCE, goalInterface);
     // ---
-    trajectoryPlanner.represent = represent;
+    trajectoryPlanner.represent = StateTimeTensorFunction.state(represent);
     trajectoryPlanner.insertRoot(Tensors.vector(2, .5));
     Expand.maxSteps(trajectoryPlanner, 4000);
     OwlyFrame owlyFrame = OwlyGui.glc(trajectoryPlanner);

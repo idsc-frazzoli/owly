@@ -17,6 +17,7 @@ import ch.ethz.idsc.owly.glc.core.OptimalAnyTrajectoryPlanner;
 import ch.ethz.idsc.owly.glc.core.TrajectoryPlanner;
 import ch.ethz.idsc.owly.glc.core.TrajectorySample;
 import ch.ethz.idsc.owly.math.CoordinateWrap;
+import ch.ethz.idsc.owly.math.StateTimeTensorFunction;
 import ch.ethz.idsc.owly.math.flow.Flow;
 import ch.ethz.idsc.owly.math.region.EmptyRegion;
 import ch.ethz.idsc.owly.math.region.InvertedRegion;
@@ -128,7 +129,7 @@ public abstract class AbstractAnyEntity extends AbstractEntity {
   public void startLife(Region environmentRegion, Tensor root) {
     TrajectoryRegionQuery trq = initializeObstacle(environmentRegion, root);
     trajectoryPlanner = (OptimalAnyTrajectoryPlanner) createTrajectoryPlanner(trq, root);
-    trajectoryPlanner.represent = getWrap()::represent;
+    trajectoryPlanner.represent = StateTimeTensorFunction.state(getWrap()::represent);
     trajectoryPlanner.switchRootToState(root); // setting start
     thread = new Thread(() -> {
       while (true) {

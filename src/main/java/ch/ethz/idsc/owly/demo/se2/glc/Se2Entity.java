@@ -23,6 +23,7 @@ import ch.ethz.idsc.owly.gui.GeometricLayer;
 import ch.ethz.idsc.owly.gui.ani.AbstractEntity;
 import ch.ethz.idsc.owly.gui.ani.PlannerType;
 import ch.ethz.idsc.owly.math.RotationUtils;
+import ch.ethz.idsc.owly.math.StateTimeTensorFunction;
 import ch.ethz.idsc.owly.math.flow.Flow;
 import ch.ethz.idsc.owly.math.se2.Se2Integrator;
 import ch.ethz.idsc.owly.math.se2.Se2Utils;
@@ -119,7 +120,7 @@ class Se2Entity extends AbstractEntity {
         Se2MinTimeMinShiftExtraCostGoalManager.create(goal, goalRadius, controls, costFunction);
     TrajectoryPlanner trajectoryPlanner = new StandardTrajectoryPlanner( //
         PARTITIONSCALE, stateIntegrator, controls, obstacleQuery, goalInterface);
-    trajectoryPlanner.represent = SE2WRAP::represent;
+    trajectoryPlanner.represent = StateTimeTensorFunction.state(SE2WRAP::represent);
     return trajectoryPlanner;
   }
 

@@ -14,6 +14,7 @@ import ch.ethz.idsc.owly.glc.core.StandardTrajectoryPlanner;
 import ch.ethz.idsc.owly.glc.core.TrajectoryPlanner;
 import ch.ethz.idsc.owly.gui.ani.OwlyGui;
 import ch.ethz.idsc.owly.math.CoordinateWrap;
+import ch.ethz.idsc.owly.math.StateTimeTensorFunction;
 import ch.ethz.idsc.owly.math.flow.EulerIntegrator;
 import ch.ethz.idsc.owly.math.flow.Flow;
 import ch.ethz.idsc.owly.math.state.EmptyTrajectoryRegionQuery;
@@ -41,7 +42,7 @@ enum T2Demo {
     // ---
     TrajectoryPlanner trajectoryPlanner = new StandardTrajectoryPlanner( //
         eta, stateIntegrator, controls, EmptyTrajectoryRegionQuery.INSTANCE, rnGoal.getGoalInterface());
-    trajectoryPlanner.represent = coordinateWrap::represent;
+    trajectoryPlanner.represent = StateTimeTensorFunction.state(coordinateWrap::represent);
     trajectoryPlanner.insertRoot(Tensors.vector(0, 0));
     Expand.maxSteps(trajectoryPlanner, 1400);
     Optional<GlcNode> optional = trajectoryPlanner.getBest();
