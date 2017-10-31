@@ -51,16 +51,16 @@ public abstract class TrajectoryPlanner implements ExpandInterface<GlcNode>, Ser
 
   /** Floor(eta * state) == Floor(state / domain_size)
    * 
-   * @param x state
+   * @param stateTime
    * @return */
-  /* package */ Tensor convertToKey(Tensor x) {
-    return eta.pmul(represent.apply(x)).map(Floor.FUNCTION);
+  /* package */ Tensor convertToKey(StateTime stateTime) {
+    return eta.pmul(represent.apply(stateTime.state())).map(Floor.FUNCTION);
   }
 
   /** @param stateTime */
   public final void insertRoot(StateTime stateTime) {
     GlobalAssert.that(queue.isEmpty() && domainMap.isEmpty()); // root insertion requires empty planner
-    boolean replaced = insert(convertToKey(stateTime.state()), GlcNodes.createRoot(stateTime, getGoalInterface()));
+    boolean replaced = insert(convertToKey(stateTime), GlcNodes.createRoot(stateTime, getGoalInterface()));
     GlobalAssert.that(!replaced); // root insertion should not replace any other node
   }
 
