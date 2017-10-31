@@ -18,6 +18,7 @@ import ch.ethz.idsc.tensor.sca.Sign;
  * @see SphericalRegion */
 public class EllipsoidRegion extends ImplicitFunctionRegion {
   private final Tensor center;
+  private final Tensor radius;
   private final Tensor invert;
 
   /** The components of radius have to be strictly positive.
@@ -32,16 +33,25 @@ public class EllipsoidRegion extends ImplicitFunctionRegion {
   public EllipsoidRegion(Tensor center, Tensor radius) {
     if (center.length() != radius.length())
       throw TensorRuntimeException.of(center, radius);
-    if (radius.stream() // <- assert that radius are strictly positive
-        .map(Scalar.class::cast).anyMatch(Sign::isNegativeOrZero))
+    // assert that radius are strictly positive
+    if (radius.stream().map(Scalar.class::cast).anyMatch(Sign::isNegativeOrZero))
       throw TensorRuntimeException.of(radius);
     // ---
     this.center = center;
+    this.radius = radius;
     invert = radius.map(Scalar::reciprocal);
   }
 
   @Override
   public Scalar evaluate(Tensor tensor) {
     return Norm2Squared.ofVector(tensor.subtract(center).pmul(invert)).subtract(RealScalar.ONE);
+  }
+
+  public Tensor center() {
+    return center.unmodifiable();
+  }
+
+  public Tensor radius() {
+    return radius.unmodifiable();
   }
 }

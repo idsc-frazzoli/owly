@@ -102,7 +102,7 @@ public class DeltaxtGlcDemo implements DemoInterface {
     OwlyFrame owlyFrame = OwlyGui.start();
     owlyFrame.configCoordinateOffset(33, 416);
     owlyFrame.jFrame.setBounds(100, 100, 620, 525);
-    owlyFrame.addBackground(imageRegion);
+    owlyFrame.addRegionRender(imageRegion);
     owlyFrame.addTrajectory(dinghyTrajectory, new Color(224, 168, 0, 224));
     while (!trajectoryPlanner.getBest().isPresent() && owlyFrame.jFrame.isVisible()) {
       GlcExpand.maxSteps(trajectoryPlanner, 30, parameters.getDepthLimit());

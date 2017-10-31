@@ -34,7 +34,7 @@ enum R2InsideCharDemo {
     OwlyFrame owlyFrame = OwlyGui.start();
     owlyFrame.configCoordinateOffset(60, 477);
     owlyFrame.jFrame.setBounds(100, 100, 550, 550);
-    owlyFrame.addBackground(imageRegion);
+    owlyFrame.addRegionRender(imageRegion);
     BoxRandomSample rnUniformSampler = new BoxRandomSample(imageRegion.origin(), imageRegion.range());
     int frame = 0;
     while (frame++ < 20 && owlyFrame.jFrame.isVisible()) {

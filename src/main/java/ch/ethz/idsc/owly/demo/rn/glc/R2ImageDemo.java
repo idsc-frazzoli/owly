@@ -54,6 +54,6 @@ enum R2ImageDemo {
       StateTimeTrajectories.print(trajectory);
     }
     OwlyFrame owlyFrame = OwlyGui.glc(trajectoryPlanner);
-    owlyFrame.addBackground(imageRegion);
+    owlyFrame.addRegionRender(imageRegion);
   }
 }
