@@ -12,6 +12,7 @@ import ch.ethz.idsc.owly.math.StateSpaceModels;
 import ch.ethz.idsc.owly.math.flow.Flow;
 import ch.ethz.idsc.owly.math.state.StateTime;
 import ch.ethz.idsc.tensor.RealScalar;
+import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
 import junit.framework.TestCase;
 
@@ -60,5 +61,13 @@ public class R2EntityTest extends TestCase {
       int index = abstractEntity.indexOfPassedTrajectorySample(trajectory);
       assertEquals(index, 2);
     }
+  }
+
+  public void testTail() {
+    Tensor state = Tensors.vector(0.7, 0);
+    AbstractEntity abstractEntity = new R2Entity(state);
+    StateTime st = abstractEntity.getStateTimeNow();
+    assertEquals(st.state(), state);
+    assertEquals(st.time(), RealScalar.ZERO); // <- specific value == 0 is not strictly required
   }
 }

@@ -18,6 +18,15 @@ import ch.ethz.idsc.tensor.Tensors;
     represent_entity = StateTime::joined;
   }
 
+  // TODO not sure what is a good approach here:
+  private static final Tensor WEIGHT = Tensors.vector(1.0, 1.0, 0.2);
+
+  @Override
+  protected Scalar distance(Tensor x, Tensor y) {
+    Tensor d = x.subtract(y);
+    return d.pmul(WEIGHT).dot(d).Get();
+  }
+
   @Override
   public Scalar delayHint() {
     return RealScalar.of(0.7);
