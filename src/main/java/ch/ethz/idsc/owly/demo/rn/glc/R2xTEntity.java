@@ -29,7 +29,7 @@ import ch.ethz.idsc.tensor.Tensors;
 
   @Override
   public Scalar delayHint() {
-    return RealScalar.of(0.7);
+    return RealScalar.of(1.2);
   }
 
   @Override
