@@ -13,6 +13,7 @@ import ch.ethz.idsc.owly.math.flow.Flow;
 import ch.ethz.idsc.tensor.DoubleScalar;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
+import ch.ethz.idsc.tensor.alg.Array;
 import ch.ethz.idsc.tensor.alg.Range;
 import ch.ethz.idsc.tensor.lie.AngleVector;
 import ch.ethz.idsc.tensor.red.Max;
@@ -39,5 +40,11 @@ public enum R2Controls {
     int length = controls.iterator().next().getU().length();
     GlobalAssert.that(length == 2);
     return controls.stream().map(Flow::getU).map(Norm._2::ofVector).reduce(Max::of).get();
+  }
+
+  // ---
+  public static Flow stayPut(int u_length) {
+    StateSpaceModel stateSpaceModel = SingleIntegratorStateSpaceModel.INSTANCE;
+    return StateSpaceModels.createFlow(stateSpaceModel, Array.zeros(u_length));
   }
 }

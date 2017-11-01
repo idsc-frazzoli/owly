@@ -10,6 +10,7 @@ import ch.ethz.idsc.owly.data.GlobalAssert;
 import ch.ethz.idsc.owly.glc.core.TrajectoryPlanner;
 import ch.ethz.idsc.owly.glc.core.TrajectorySample;
 import ch.ethz.idsc.owly.gui.RenderInterface;
+import ch.ethz.idsc.owly.math.StateTimeTensorFunction;
 import ch.ethz.idsc.owly.math.state.EpisodeIntegrator;
 import ch.ethz.idsc.owly.math.state.StateTime;
 import ch.ethz.idsc.owly.math.state.TrajectoryRegionQuery;
@@ -79,6 +80,9 @@ public abstract class AbstractEntity implements RenderInterface, AnimationInterf
     return relevant.get(relevant.size() - 1).stateTime().state();
   }
 
+  // TODO JAN design preliminary
+  public StateTimeTensorFunction represent_entity = StateTime::state;
+
   /** the return index does not refer to node in the trajectory closest to the entity
    * but rather the index of the node that was already traversed.
    * this ensures that the entity can query the correct flow that leads to the upcoming node
@@ -86,10 +90,10 @@ public abstract class AbstractEntity implements RenderInterface, AnimationInterf
    * @param trajectory
    * @return index of node that has been traversed most recently by entity */
   public final int indexOfPassedTrajectorySample(List<TrajectorySample> trajectory) {
-    final Tensor x = episodeIntegrator.tail().state();
+    final Tensor x = represent_entity.apply(episodeIntegrator.tail());
     Tensor dist = Tensor.of(trajectory.stream() //
         .map(TrajectorySample::stateTime) //
-        .map(StateTime::state) //
+        .map(represent_entity) //
         .map(state -> distance(state, x)));
     int argmin = ArgMin.of(dist);
     // the below 'correction' does not help in tracking

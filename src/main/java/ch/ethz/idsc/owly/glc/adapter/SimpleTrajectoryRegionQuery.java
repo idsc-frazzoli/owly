@@ -13,17 +13,19 @@ import ch.ethz.idsc.owly.math.state.TimeInvariantRegion;
 import ch.ethz.idsc.owly.math.state.TrajectoryRegionQuery;
 
 public class SimpleTrajectoryRegionQuery extends StandardTrajectoryRegionQuery implements StateTimeCollector {
-  /** @param region
+  /** @param region that is queried with tensor = [StateTime::state]
    * @return */
   public static TrajectoryRegionQuery timeInvariant(Region region) {
     return new SimpleTrajectoryRegionQuery(new TimeInvariantRegion(region));
   }
 
+  /** @param region that is queried with tensor = [StateTime::state StateTime::time]
+   * @return */
   public static TrajectoryRegionQuery timeDependent(Region region) {
     return new SimpleTrajectoryRegionQuery(new TimeDependentRegion(region));
   }
 
-  /** @param stateTimeRegion */
+  /** @param stateTimeRegion that is queried with StateTime */
   public SimpleTrajectoryRegionQuery(StateTimeRegion stateTimeRegion) {
     super(stateTimeRegion, new SparseStateTimeRegionMembers());
   }
