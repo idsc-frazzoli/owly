@@ -22,7 +22,7 @@ public class R2ImageAnimationDemo implements DemoInterface {
       owlyAnimationFrame.set(r2Entity);
       ImageRegion imageRegion = R2ImageRegions.inside_gtob();
       owlyAnimationFrame.setObstacleQuery(SimpleTrajectoryRegionQuery.timeInvariant(imageRegion));
-      owlyAnimationFrame.addBackground(imageRegion);
+      owlyAnimationFrame.addRegionRender(imageRegion);
       owlyAnimationFrame.configCoordinateOffset(50, 700);
       owlyAnimationFrame.jFrame.setVisible(true);
     } catch (Exception exception) {

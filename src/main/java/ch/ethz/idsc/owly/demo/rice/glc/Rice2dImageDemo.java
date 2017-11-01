@@ -27,7 +27,7 @@ public class Rice2dImageDemo implements DemoInterface {
     owlyAnimationFrame.set(new Rice2dEntity(mu, Tensors.vector(7, 6, 0, 0), controls));
     owlyAnimationFrame.setObstacleQuery(EmptyTrajectoryRegionQuery.INSTANCE);
     owlyAnimationFrame.setObstacleQuery(obstacleQuery);
-    owlyAnimationFrame.addBackground(imageRegion);
+    owlyAnimationFrame.addRegionRender(imageRegion);
     owlyAnimationFrame.configCoordinateOffset(50, 700);
     owlyAnimationFrame.jFrame.setVisible(true);
   }

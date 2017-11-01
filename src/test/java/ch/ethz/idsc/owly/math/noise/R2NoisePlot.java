@@ -1,9 +1,7 @@
 // code by jph
-package ch.ethz.idsc.owly.demo.rn;
+package ch.ethz.idsc.owly.math.noise;
 
 import ch.ethz.idsc.owly.demo.util.UserHome;
-import ch.ethz.idsc.owly.math.noise.NativeContinuousNoise;
-import ch.ethz.idsc.owly.math.noise.SimplexContinuousNoise;
 import ch.ethz.idsc.tensor.DoubleScalar;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;

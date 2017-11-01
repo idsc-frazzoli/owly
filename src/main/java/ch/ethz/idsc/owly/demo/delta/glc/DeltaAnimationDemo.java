@@ -26,7 +26,7 @@ public class DeltaAnimationDemo implements DemoInterface {
     TrajectoryRegionQuery obstacleQuery = SimpleTrajectoryRegionQuery.timeInvariant(imageRegion);
     owlyAnimationFrame.set(DeltaEntity.createDefault(ipr, Tensors.vector(10, 3.5)));
     owlyAnimationFrame.setObstacleQuery(obstacleQuery);
-    owlyAnimationFrame.addBackground(imageRegion);
+    owlyAnimationFrame.addRegionRender(imageRegion);
     owlyAnimationFrame.jFrame.setVisible(true);
     owlyAnimationFrame.configCoordinateOffset(50, 600);
   }

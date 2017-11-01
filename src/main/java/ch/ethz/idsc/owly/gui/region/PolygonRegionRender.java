@@ -17,7 +17,7 @@ public class PolygonRegionRender implements RenderInterface {
 
   @Override
   public void render(GeometricLayer geometricLayer, Graphics2D graphics) {
-    graphics.setColor(RegionHelper.COLOR);
+    graphics.setColor(RegionRenders.COLOR);
     graphics.fill(geometricLayer.toPath2D(polygon));
   }
 }

@@ -67,7 +67,7 @@ import ch.ethz.idsc.tensor.red.Norm2Squared;
 
   @Override
   public TrajectoryPlanner createTrajectoryPlanner(TrajectoryRegionQuery obstacleQuery, Tensor goal) {
-    Tensor partitionScale = Tensors.vector(8, 8);
+    Tensor partitionScale = eta();
     StateIntegrator stateIntegrator = //
         FixedStateIntegrator.create(EulerIntegrator.INSTANCE, RationalScalar.of(1, 12), 4);
     final Tensor center = goal.extract(0, 2);
@@ -76,5 +76,9 @@ import ch.ethz.idsc.tensor.red.Norm2Squared;
         new RnMinDistExtraCostGoalManager(center, goalRadius, costFunction);
     return new StandardTrajectoryPlanner( //
         partitionScale, stateIntegrator, controls, obstacleQuery, goalInterface);
+  }
+
+  protected Tensor eta() {
+    return Tensors.vector(8, 8);
   }
 }

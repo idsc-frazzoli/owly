@@ -26,7 +26,7 @@ public class RnPointcloudRegionRender implements RenderInterface {
     AffineTransform ori = graphics.getTransform();
     AffineTransform at = Se2Utils.toAffineTransform(geometricLayer.getMatrix());
     graphics.setTransform(at);
-    graphics.setColor(RegionHelper.COLOR);
+    graphics.setColor(RegionRenders.COLOR);
     double rad = 2 * radius.number().doubleValue();
     for (Tensor center : points) {
       Tensor nw = center.map(scalar -> scalar.subtract(radius));

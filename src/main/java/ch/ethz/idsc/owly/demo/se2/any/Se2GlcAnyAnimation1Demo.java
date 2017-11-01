@@ -25,7 +25,7 @@ public class Se2GlcAnyAnimation1Demo implements DemoInterface {
       se2AnyEntity.startLife(environmentRegion, root); // (trq, root);
       owlyAnimationFrame.set(se2AnyEntity);
       owlyAnimationFrame.configCoordinateOffset(50, 700);
-      owlyAnimationFrame.addBackground(environmentRegion);
+      owlyAnimationFrame.addRegionRender(environmentRegion);
       owlyAnimationFrame.jFrame.setBounds(100, 50, 800, 800);
       owlyAnimationFrame.jFrame.setVisible(true);
     } catch (Exception e) {

@@ -1,0 +1,25 @@
+// code by jph
+package ch.ethz.idsc.owly.demo.rn.glc;
+
+import ch.ethz.idsc.owly.demo.rn.R2xTNoiseStateTimeRegion;
+import ch.ethz.idsc.owly.demo.util.DemoInterface;
+import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
+import ch.ethz.idsc.owly.gui.ani.OwlyAnimationFrame;
+import ch.ethz.idsc.owly.math.state.StateTimeRegion;
+import ch.ethz.idsc.tensor.RealScalar;
+import ch.ethz.idsc.tensor.Tensors;
+
+public class R2xTNoiseAnimationDemo implements DemoInterface {
+  @Override
+  public void start() {
+    OwlyAnimationFrame owlyAnimationFrame = new OwlyAnimationFrame();
+    owlyAnimationFrame.set(new R2xTEntity(Tensors.vector(0.2, 0.2)));
+    StateTimeRegion stateTimeRegion = new R2xTNoiseStateTimeRegion(RealScalar.of(0.5));
+    owlyAnimationFrame.setObstacleQuery(new SimpleTrajectoryRegionQuery(stateTimeRegion));
+    owlyAnimationFrame.jFrame.setVisible(true);
+  }
+
+  public static void main(String[] args) {
+    new R2xTNoiseAnimationDemo().start();
+  }
+}

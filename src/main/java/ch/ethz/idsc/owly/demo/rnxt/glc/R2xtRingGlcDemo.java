@@ -48,7 +48,7 @@ enum R2xtRingGlcDemo {
     StateIntegrator stateIntegrator = FixedStateIntegrator.create(EulerIntegrator.INSTANCE, parameters.getdtMax(), //
         parameters.getTrajectorySize());
     Collection<Flow> controls = R2Controls.createRadial(parameters.getResolutionInt());
-    controls.add(RnxTControls.stayPut(2));
+    controls.add(R2Controls.stayPut(2));
     Tensor goal = Tensors.vector(5, 5);
     RnHeuristicEllipsoidGoalManager rnGoal = new RnHeuristicEllipsoidGoalManager(//
         goal, Tensors.of(RealScalar.of(0.2), RealScalar.of(0.2)));

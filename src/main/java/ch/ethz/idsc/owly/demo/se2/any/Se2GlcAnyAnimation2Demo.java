@@ -22,7 +22,7 @@ public class Se2GlcAnyAnimation2Demo implements DemoInterface {
       se2AnyEntity.startLife(imageRegion, root); // (trq, root);
       owlyAnimationFrame.set(se2AnyEntity);
       owlyAnimationFrame.configCoordinateOffset(50, 700);
-      owlyAnimationFrame.addBackground(imageRegion);
+      owlyAnimationFrame.addRegionRender(imageRegion);
       owlyAnimationFrame.jFrame.setBounds(100, 50, 800, 800);
       owlyAnimationFrame.jFrame.setVisible(true);
     } catch (Exception e) {

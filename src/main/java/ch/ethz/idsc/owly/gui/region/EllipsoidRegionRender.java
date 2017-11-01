@@ -27,7 +27,7 @@ public class EllipsoidRegionRender implements RenderInterface {
     AffineTransform at = Se2Utils.toAffineTransform(model2pixel);
     AffineTransform ori = graphics.getTransform();
     graphics.setTransform(at);
-    graphics.setColor(RegionHelper.COLOR);
+    graphics.setColor(RegionRenders.COLOR);
     Tensor nw = center.subtract(radius);
     graphics.fill(new Ellipse2D.Double( //
         nw.Get(0).number().doubleValue(), //

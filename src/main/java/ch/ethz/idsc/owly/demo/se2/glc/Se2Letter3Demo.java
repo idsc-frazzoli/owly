@@ -19,7 +19,7 @@ public class Se2Letter3Demo extends Se2CarDemo {
     se2Entity.obstacleQuery = trq;
     owlyAnimationFrame.set(se2Entity);
     owlyAnimationFrame.setObstacleQuery(trq);
-    owlyAnimationFrame.addBackground(imageRegion);
+    owlyAnimationFrame.addRegionRender(imageRegion);
   }
 
   public static void main(String[] args) throws IOException {

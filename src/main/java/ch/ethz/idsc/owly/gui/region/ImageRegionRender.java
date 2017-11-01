@@ -20,7 +20,7 @@ import ch.ethz.idsc.tensor.mat.IdentityMatrix;
 
 public class ImageRegionRender implements RenderInterface {
   private static final Scalar TFF = RealScalar.of(255);
-  private static final Scalar OBS = RealScalar.of(RegionHelper.RGB);
+  private static final Scalar OBS = RealScalar.of(RegionRenders.RGB);
   // ---
   private final BufferedImage bufferedImage;
   private final Tensor scale;
