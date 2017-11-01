@@ -14,8 +14,8 @@ package ch.ethz.idsc.owly.math.noise;
  * This code was placed in the public domain by its original author,
  * Stefan Gustavson. You may use it as you see fit, but attribution is appreciated. */
 public enum SimplexContinuousNoise implements NativeContinuousNoise {
-  FUNCTION //
-  ;
+  FUNCTION;
+  // ---
   private static final Grad[] GRAD3 = {
       // ---
       new Grad(1, 1, 0), //

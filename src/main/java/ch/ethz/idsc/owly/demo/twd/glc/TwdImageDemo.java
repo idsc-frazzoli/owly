@@ -17,7 +17,7 @@ public class TwdImageDemo implements DemoInterface {
     OwlyAnimationFrame owlyAnimationFrame = new OwlyAnimationFrame();
     owlyAnimationFrame.set(TwdEntity.createDefault(Tensors.vector(6, 6, 0)));
     owlyAnimationFrame.setObstacleQuery(obstacleQuery);
-    owlyAnimationFrame.addBackground(imageRegion);
+    owlyAnimationFrame.addRegionRender(imageRegion);
     owlyAnimationFrame.configCoordinateOffset(50, 700);
     owlyAnimationFrame.jFrame.setVisible(true);
   }

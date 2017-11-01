@@ -30,6 +30,7 @@ import ch.ethz.idsc.owly.gui.ren.ObstacleRender;
 import ch.ethz.idsc.owly.gui.ren.TrajectoryRender;
 import ch.ethz.idsc.owly.gui.ren.TreeRender;
 import ch.ethz.idsc.owly.math.region.ImageRegion;
+import ch.ethz.idsc.owly.math.region.Region;
 import ch.ethz.idsc.owly.math.state.StateTime;
 import ch.ethz.idsc.owly.math.state.TrajectoryRegionQuery;
 import ch.ethz.idsc.owly.rrts.core.RrtsNode;
@@ -187,8 +188,10 @@ public class OwlyAnimationFrame extends TimerFrame {
     this.obstacleQuery = obstacleQuery;
   }
 
-  public void addBackground(ImageRegion imageRegion) {
-    addBackground(new ImageRegionRender(imageRegion));
+  public void addRegionRender(Region region) {
+    // TODO function redundant to OwlyFrame
+    if (region instanceof ImageRegion)
+      addBackground(new ImageRegionRender((ImageRegion) region));
   }
 
   public void addBackground(RenderInterface renderInterface) {
