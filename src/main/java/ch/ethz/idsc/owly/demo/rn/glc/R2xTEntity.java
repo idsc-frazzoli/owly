@@ -1,7 +1,10 @@
 // code by jph
 package ch.ethz.idsc.owly.demo.rn.glc;
 
+import java.util.Collection;
+
 import ch.ethz.idsc.owly.glc.core.TrajectoryPlanner;
+import ch.ethz.idsc.owly.math.flow.Flow;
 import ch.ethz.idsc.owly.math.state.StateTime;
 import ch.ethz.idsc.owly.math.state.TrajectoryRegionQuery;
 import ch.ethz.idsc.tensor.RealScalar;
@@ -42,5 +45,12 @@ import ch.ethz.idsc.tensor.Tensors;
   @Override
   protected Tensor eta() {
     return Tensors.vector(8, 8, 4);
+  }
+
+  @Override
+  Collection<Flow> createControls() {
+    Collection<Flow> collection = super.createControls();
+    // collection.add(R2Controls.stayPut(2)); // <- does not go well with min-dist cost function
+    return collection;
   }
 }

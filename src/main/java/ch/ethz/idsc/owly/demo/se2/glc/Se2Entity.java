@@ -52,8 +52,8 @@ class Se2Entity extends AbstractEntity {
           { -.1, -.07, 1 }, //
           { -.1, +.07, 1 } //
       }).unmodifiable();
-  private static final Se2Wrap SE2WRAP = new Se2Wrap(Tensors.vector(1, 1, 2));
-  private static final Tensor PARTITIONSCALE = Tensors.vector(5, 5, 50 / Math.PI); // 50/pi == 15.9155
+  static final Se2Wrap SE2WRAP = new Se2Wrap(Tensors.vector(1, 1, 2));
+  static final Tensor PARTITIONSCALE = Tensors.vector(5, 5, 50 / Math.PI).unmodifiable(); // 50/pi == 15.9155
   // ---
   static {
     if (!PARTITIONSCALE.get(0).equals(PARTITIONSCALE.get(1)))
@@ -70,7 +70,7 @@ class Se2Entity extends AbstractEntity {
   public TrajectoryRegionQuery obstacleQuery = null;
   // private BufferedImage bufferedImage = null;
 
-  private Se2Entity(Tensor state) {
+  Se2Entity(Tensor state) {
     super(new SimpleEpisodeIntegrator( //
         Se2StateSpaceModel.INSTANCE, //
         Se2Integrator.INSTANCE, //
@@ -119,9 +119,13 @@ class Se2Entity extends AbstractEntity {
         Se2MinTimeMinShiftGoalManager.create(goal, goalRadius, controls) : //
         Se2MinTimeMinShiftExtraCostGoalManager.create(goal, goalRadius, controls, costFunction);
     TrajectoryPlanner trajectoryPlanner = new StandardTrajectoryPlanner( //
-        PARTITIONSCALE, stateIntegrator, controls, obstacleQuery, goalInterface);
+        eta(), stateIntegrator, controls, obstacleQuery, goalInterface);
     trajectoryPlanner.represent = StateTimeTensorFunction.state(SE2WRAP::represent);
     return trajectoryPlanner;
+  }
+
+  protected Tensor eta() {
+    return PARTITIONSCALE;
   }
 
   private boolean obstacleQuery_isDisjoint(StateTime stateTime) {
