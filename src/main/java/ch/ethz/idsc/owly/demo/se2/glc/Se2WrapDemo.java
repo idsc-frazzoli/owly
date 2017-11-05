@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
+import ch.ethz.idsc.owly.demo.se2.Se2CarIntegrator;
 import ch.ethz.idsc.owly.demo.se2.Se2Controls;
 import ch.ethz.idsc.owly.demo.se2.Se2Wrap;
 import ch.ethz.idsc.owly.demo.se2.Se2WrapGoalManager;
@@ -23,7 +24,6 @@ import ch.ethz.idsc.owly.math.StateTimeTensorFunction;
 import ch.ethz.idsc.owly.math.flow.Flow;
 import ch.ethz.idsc.owly.math.region.PolygonRegion;
 import ch.ethz.idsc.owly.math.region.RegionUnion;
-import ch.ethz.idsc.owly.math.se2.Se2Integrator;
 import ch.ethz.idsc.owly.math.state.FixedStateIntegrator;
 import ch.ethz.idsc.owly.math.state.StateIntegrator;
 import ch.ethz.idsc.owly.math.state.StateTime;
@@ -60,7 +60,7 @@ enum Se2WrapDemo {
   static TrajectoryPlanner createPlanner(CoordinateWrap coordinateWrap) {
     Tensor eta = Tensors.vector(3, 3, 50 / Math.PI);
     StateIntegrator stateIntegrator = FixedStateIntegrator.create( //
-        Se2Integrator.INSTANCE, RationalScalar.of(1, 6), 5);
+        Se2CarIntegrator.INSTANCE, RationalScalar.of(1, 6), 5);
     Collection<Flow> controls = Se2Controls.createControls(RotationUtils.DEGREE(45), 6);
     Tensor GOAL = Tensors.vector(-.5, 0, 0);
     Se2WrapGoalManager se2GoalManager = new Se2WrapGoalManager(coordinateWrap, GOAL, RealScalar.of(.25));

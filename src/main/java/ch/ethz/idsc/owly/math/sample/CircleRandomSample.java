@@ -11,6 +11,7 @@ import ch.ethz.idsc.tensor.pdf.Distribution;
 import ch.ethz.idsc.tensor.pdf.RandomVariate;
 import ch.ethz.idsc.tensor.pdf.UniformDistribution;
 import ch.ethz.idsc.tensor.sca.Cos;
+import ch.ethz.idsc.tensor.sca.Sign;
 import ch.ethz.idsc.tensor.sca.Sin;
 import ch.ethz.idsc.tensor.sca.Sqrt;
 
@@ -24,6 +25,7 @@ public class CircleRandomSample implements RandomSampleInterface {
 
   public CircleRandomSample(Tensor center, Scalar radius) {
     GlobalAssert.that(VectorQ.ofLength(center, 2));
+    GlobalAssert.that(Sign.isPositiveOrZero(radius));
     this.center = center;
     this.radius = radius;
   }

@@ -17,8 +17,8 @@ import junit.framework.TestCase;
 
 public class Se2MinTimeMinShiftGoalManagerTest extends TestCase {
   public void testSimple() {
-    Flow flowF = Se2Controls.singleton(RealScalar.of(1), RealScalar.of(+1));
-    Flow flowR = Se2Controls.singleton(RealScalar.of(1), RealScalar.of(-1));
+    Flow flowF = Se2Controls.singleton(RealScalar.of(+1), RealScalar.of(1));
+    Flow flowR = Se2Controls.singleton(RealScalar.of(-1), RealScalar.of(1));
     Collection<Flow> controls = Arrays.asList(flowF, flowR);
     GoalInterface goalInterface = //
         Se2MinTimeMinShiftGoalManager.create(Tensors.vector(10, 0, 0), Tensors.vector(1, 1, 1), controls);

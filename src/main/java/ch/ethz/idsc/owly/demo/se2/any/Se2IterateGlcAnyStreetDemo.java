@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
+import ch.ethz.idsc.owly.demo.se2.Se2CarIntegrator;
 import ch.ethz.idsc.owly.demo.se2.Se2Controls;
 import ch.ethz.idsc.owly.demo.se2.Se2NoHeuristicGoalManager;
 import ch.ethz.idsc.owly.demo.se2.Se2StateSpaceModel;
@@ -23,7 +24,6 @@ import ch.ethz.idsc.owly.math.StateSpaceModel;
 import ch.ethz.idsc.owly.math.flow.Flow;
 import ch.ethz.idsc.owly.math.region.HyperplaneRegion;
 import ch.ethz.idsc.owly.math.region.RegionUnion;
-import ch.ethz.idsc.owly.math.se2.Se2Integrator;
 import ch.ethz.idsc.owly.math.state.FixedStateIntegrator;
 import ch.ethz.idsc.owly.math.state.StateIntegrator;
 import ch.ethz.idsc.owly.math.state.StateTime;
@@ -50,7 +50,7 @@ class Se2IterateGlcAnyStreetDemo {
     Parameters parameters = new Se2Parameters( //
         resolution, timeScale, depthScale, partitionScale, dtMax, maxIter, stateSpaceModel.getLipschitz());
     StateIntegrator stateIntegrator = FixedStateIntegrator.create( //
-        Se2Integrator.INSTANCE, parameters.getdtMax(), parameters.getTrajectorySize());
+        Se2CarIntegrator.INSTANCE, parameters.getdtMax(), parameters.getTrajectorySize());
     // ---
     System.out.println("1/Domainsize=" + parameters.getEta());
     parameters.printResolution();

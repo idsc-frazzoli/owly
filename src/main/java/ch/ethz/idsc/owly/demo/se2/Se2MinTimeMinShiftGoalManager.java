@@ -16,6 +16,7 @@ import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.red.Max;
 import ch.ethz.idsc.tensor.sca.Ramp;
+import ch.ethz.idsc.tensor.sca.Sign;
 
 /** min time cost function with decent heuristic
  * penalizes switching between forwards and backwards driving
@@ -24,6 +25,7 @@ import ch.ethz.idsc.tensor.sca.Ramp;
 @DontModify
 public class Se2MinTimeMinShiftGoalManager extends Se2AbstractGoalManager {
   public static final Scalar SHIFT_PENALTY = RealScalar.of(.4);
+  private static final Scalar ONE_NEGATE = RealScalar.ONE.negate();
 
   public static GoalInterface create(Tensor goal, Tensor radiusVector, Collection<Flow> controls) {
     return new Se2MinTimeMinShiftGoalManager(goal, radiusVector, controls).getGoalInterface();
@@ -42,8 +44,10 @@ public class Se2MinTimeMinShiftGoalManager extends Se2AbstractGoalManager {
   @Override // from CostFunction
   public Scalar costIncrement(GlcNode glcNode, List<StateTime> trajectory, Flow flow) {
     Flow ante = glcNode.flow(); // == null if glcNode is root
-    boolean steady = Objects.nonNull(ante) ? ante.getU().Get(1).equals(flow.getU().Get(1)) : true;
-    Scalar penalty = steady ? RealScalar.ZERO : SHIFT_PENALTY;
+    Scalar penalty = RealScalar.ZERO;
+    if (Objects.nonNull(ante))
+      if (Sign.of(ante.getU().Get(0)).multiply(Sign.of(flow.getU().Get(0))).equals(ONE_NEGATE))
+        penalty = SHIFT_PENALTY;
     return StateTimeTrajectories.timeIncrement(glcNode, trajectory).add(penalty);
   }
 

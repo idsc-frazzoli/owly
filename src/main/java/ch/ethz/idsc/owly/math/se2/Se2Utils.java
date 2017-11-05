@@ -1,8 +1,6 @@
 // code by jph
 package ch.ethz.idsc.owly.math.se2;
 
-import java.awt.geom.AffineTransform;
-
 import ch.ethz.idsc.owly.data.GlobalAssert;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
@@ -42,26 +40,16 @@ public enum Se2Utils {
    * 
    * @param matrix
    * @return */
-  public static Tensor fromSE2Matrix(Tensor matrix) {
+  public static Tensor fromSE2Matrix(Tensor matrix) { // only used in tests
     GlobalAssert.that(SquareMatrixQ.of(matrix));
     return Tensors.of(matrix.Get(0, 2), matrix.Get(1, 2), //
         ArcTan.of(matrix.Get(0, 0), matrix.Get(1, 0))); // arc tan is numerically stable
   }
 
-  public static AffineTransform toAffineTransform(Tensor matrix) {
-    return new AffineTransform( //
-        matrix.Get(0, 0).number().doubleValue(), //
-        matrix.Get(1, 0).number().doubleValue(), //
-        matrix.Get(0, 1).number().doubleValue(), //
-        matrix.Get(1, 1).number().doubleValue(), //
-        matrix.Get(0, 2).number().doubleValue(), //
-        matrix.Get(1, 2).number().doubleValue());
-  }
-
   /** @param g == {px, py, alpha}
    * @param x == {vx, vy, beta}
    * @return g . exp x */
-  public static Tensor combine(Tensor g, Tensor x) {
+  public static Tensor integrate(Tensor g, Tensor x) {
     Scalar al = g.Get(2);
     Scalar be = x.Get(2);
     if (Scalars.isZero(be))
@@ -79,26 +67,24 @@ public enum Se2Utils {
         ra);
   }
 
-  /** function integrates the special case where the y-component of X2
+  /** function integrates the special case where the y-component of x
    * is constrained to equal 0.
    * 
    * @param g == {px, py, alpha}
    * @param x == {vx, 0, beta}
    * @return g . exp x */
-  public static Tensor combine_vy0(Tensor g, Tensor x) {
+  public static Tensor integrate_vy0(Tensor g, Tensor x) {
     Scalar al = g.Get(2);
     Scalar be = x.Get(2);
     if (Scalars.isZero(be))
       return g.extract(0, 2).add(RotationMatrix.of(al).dot(x.extract(0, 2))).append(al);
-    Scalar px = g.Get(0);
-    Scalar py = g.Get(1);
-    Scalar vx = x.Get(0);
     Scalar ra = al.add(be);
-    Scalar cd = Cos.FUNCTION.apply(ra).subtract(Cos.FUNCTION.apply(al));
     Scalar sd = Sin.FUNCTION.apply(ra).subtract(Sin.FUNCTION.apply(al));
+    Scalar cd = Cos.FUNCTION.apply(ra).subtract(Cos.FUNCTION.apply(al));
+    Scalar dv = x.Get(0).divide(be);
     return Tensors.of( //
-        px.add(sd.multiply(vx).divide(be)), // TODO ratio vx/be can be precomputed
-        py.subtract(cd.multiply(vx).divide(be)), //
+        g.Get(0).add(sd.multiply(dv)), //
+        g.Get(1).subtract(cd.multiply(dv)), //
         ra);
   }
 
@@ -106,7 +92,7 @@ public enum Se2Utils {
    * 
    * @param x == {vx, vy, beta}
    * @return vector in SE2 with coordinates of exp x */
-  public static Tensor combine0(Tensor x) {
+  public static Tensor integrate_g0(Tensor x) {
     Scalar be = x.Get(2);
     if (Scalars.isZero(be))
       return x.extract(0, 2).append(RealScalar.ZERO);

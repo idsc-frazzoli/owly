@@ -20,12 +20,12 @@ public enum StateSpaceModels {
     Tensor u_unmodifiable = u.unmodifiable();
     return new Flow() {
       @Override
-      public final Tensor at(Tensor x) {
+      public Tensor at(Tensor x) {
         return stateSpaceModel.f(x, u);
       }
 
       @Override
-      public final Tensor getU() {
+      public Tensor getU() {
         return u_unmodifiable;
       }
       // ---

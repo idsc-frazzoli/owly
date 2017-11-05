@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
+import ch.ethz.idsc.owly.demo.se2.Se2CarIntegrator;
 import ch.ethz.idsc.owly.demo.se2.Se2Controls;
 import ch.ethz.idsc.owly.demo.se2.Se2MinTimeGoalManager;
 import ch.ethz.idsc.owly.demo.se2.Se2Wrap;
@@ -21,7 +22,6 @@ import ch.ethz.idsc.owly.math.CoordinateWrap;
 import ch.ethz.idsc.owly.math.RotationUtils;
 import ch.ethz.idsc.owly.math.StateTimeTensorFunction;
 import ch.ethz.idsc.owly.math.flow.Flow;
-import ch.ethz.idsc.owly.math.se2.Se2Integrator;
 import ch.ethz.idsc.owly.math.state.FixedStateIntegrator;
 import ch.ethz.idsc.owly.math.state.StateIntegrator;
 import ch.ethz.idsc.owly.math.state.StateTime;
@@ -41,7 +41,7 @@ enum Se2WrapDemoExt {
     Tensor eta = Tensors.vector(3, 3, 50 / Math.PI);
     Tensor radiusVector = Tensors.of(DoubleScalar.of(0.2), DoubleScalar.of(0.2), RotationUtils.DEGREE(15));
     StateIntegrator stateIntegrator = FixedStateIntegrator.create( //
-        Se2Integrator.INSTANCE, //
+        Se2CarIntegrator.INSTANCE, //
         RationalScalar.of(1, 6), 5);
     System.out.println("scale=" + eta);
     Collection<Flow> controls = Se2Controls.createControls(RotationUtils.DEGREE(45), 6);

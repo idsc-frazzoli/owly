@@ -5,10 +5,10 @@ import java.awt.Graphics2D;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Ellipse2D;
 
+import ch.ethz.idsc.owly.gui.AffineTransforms;
 import ch.ethz.idsc.owly.gui.GeometricLayer;
 import ch.ethz.idsc.owly.gui.RenderInterface;
 import ch.ethz.idsc.owly.math.region.EllipsoidRegion;
-import ch.ethz.idsc.owly.math.se2.Se2Utils;
 import ch.ethz.idsc.tensor.Tensor;
 
 // TODO the rendering is inaccurate 
@@ -24,7 +24,7 @@ public class EllipsoidRegionRender implements RenderInterface {
     Tensor center = ellipsoidRegion.center().extract(0, 2);
     Tensor radius = ellipsoidRegion.radius().extract(0, 2);
     Tensor model2pixel = geometricLayer.getMatrix();
-    AffineTransform at = Se2Utils.toAffineTransform(model2pixel);
+    AffineTransform at = AffineTransforms.toAffineTransform(model2pixel);
     AffineTransform ori = graphics.getTransform();
     graphics.setTransform(at);
     graphics.setColor(RegionRenders.COLOR);

@@ -6,9 +6,9 @@ import java.awt.geom.AffineTransform;
 import java.awt.geom.Ellipse2D;
 
 import ch.ethz.idsc.owly.demo.rn.RnPointcloudRegion;
+import ch.ethz.idsc.owly.gui.AffineTransforms;
 import ch.ethz.idsc.owly.gui.GeometricLayer;
 import ch.ethz.idsc.owly.gui.RenderInterface;
-import ch.ethz.idsc.owly.math.se2.Se2Utils;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
 
@@ -24,7 +24,7 @@ public class RnPointcloudRegionRender implements RenderInterface {
   @Override
   public void render(GeometricLayer geometricLayer, Graphics2D graphics) {
     AffineTransform ori = graphics.getTransform();
-    AffineTransform at = Se2Utils.toAffineTransform(geometricLayer.getMatrix());
+    AffineTransform at = AffineTransforms.toAffineTransform(geometricLayer.getMatrix());
     graphics.setTransform(at);
     graphics.setColor(RegionRenders.COLOR);
     double rad = 2 * radius.number().doubleValue();

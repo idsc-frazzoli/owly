@@ -2,7 +2,6 @@
 package ch.ethz.idsc.owly.demo.se2;
 
 import ch.ethz.idsc.owly.math.StateSpaceModel;
-import ch.ethz.idsc.owly.math.se2.Se2Integrator;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
@@ -23,22 +22,22 @@ import ch.ethz.idsc.tensor.sca.Sin;
  * since the se2 state space model is parameter free,
  * the access to the model is via a singleton instance
  * 
- * @see Se2Integrator */
+ * @see Se2CarIntegrator */
 public enum Se2StateSpaceModel implements StateSpaceModel {
   INSTANCE;
   // ---
   @Override
   public Tensor f(Tensor x, Tensor u) {
     // x = {px, py, theta}
-    // u = {angular rate, speed}
+    // u = {vx, vy == 0, rate}
     // speed: positive for forward motion, or negative for backward motion
     Scalar angle = x.Get(2);
-    Scalar speed = u.Get(1);
+    Scalar vx = u.Get(0);
     return Tensors.of( //
-        Cos.FUNCTION.apply(angle), // change in px
-        Sin.FUNCTION.apply(angle), // change in py
-        u.Get(0) // change in angle
-    ).multiply(speed); // overall scaling based on signed speed
+        Cos.FUNCTION.apply(angle).multiply(vx), // change in px
+        Sin.FUNCTION.apply(angle).multiply(vx), // change in py
+        u.Get(2) // angular rate
+    );
   }
 
   /** | f(x_1, u) - f(x_2, u) | <= L | x_1 - x_2 | */
