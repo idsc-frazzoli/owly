@@ -85,8 +85,8 @@ public class Se2IntegratorTest extends TestCase {
 
   public void testExpSubstitute() {
     Tensor mat = exp_of(1, 2, .3);
-    Tensor vec = Se2Integrator.combine(Tensors.vector(0, 0, 0), Tensors.vector(1, 2, .3));
-    Tensor v0 = Se2Integrator.combine0(Tensors.vector(1, 2, .3));
+    Tensor vec = Se2Utils.combine(Array.zeros(3), Tensors.vector(1, 2, .3));
+    Tensor v0 = Se2Utils.combine0(Tensors.vector(1, 2, .3));
     assertEquals(vec, v0);
     Tensor alt = Se2Utils.toSE2Matrix(vec);
     assertTrue(Chop._13.close(mat, alt));
