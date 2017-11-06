@@ -8,7 +8,6 @@ import ch.ethz.idsc.tensor.Scalars;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
 import ch.ethz.idsc.tensor.alg.VectorQ;
-import ch.ethz.idsc.tensor.lie.RotationMatrix;
 import ch.ethz.idsc.tensor.mat.SquareMatrixQ;
 import ch.ethz.idsc.tensor.sca.ArcTan;
 import ch.ethz.idsc.tensor.sca.Cos;
@@ -44,48 +43,6 @@ public enum Se2Utils {
     GlobalAssert.that(SquareMatrixQ.of(matrix));
     return Tensors.of(matrix.Get(0, 2), matrix.Get(1, 2), //
         ArcTan.of(matrix.Get(0, 0), matrix.Get(1, 0))); // arc tan is numerically stable
-  }
-
-  /** @param g == {px, py, alpha}
-   * @param x == {vx, vy, beta}
-   * @return g . exp x */
-  public static Tensor integrate(Tensor g, Tensor x) {
-    Scalar al = g.Get(2);
-    Scalar be = x.Get(2);
-    if (Scalars.isZero(be))
-      return g.extract(0, 2).add(RotationMatrix.of(al).dot(x.extract(0, 2))).append(al);
-    Scalar px = g.Get(0);
-    Scalar py = g.Get(1);
-    Scalar vx = x.Get(0);
-    Scalar vy = x.Get(1);
-    Scalar ra = al.add(be);
-    Scalar cd = Cos.FUNCTION.apply(ra).subtract(Cos.FUNCTION.apply(al));
-    Scalar sd = Sin.FUNCTION.apply(ra).subtract(Sin.FUNCTION.apply(al));
-    return Tensors.of( //
-        px.add(sd.multiply(vx).add(cd.multiply(vy)).divide(be)), //
-        py.add(sd.multiply(vy).subtract(cd.multiply(vx)).divide(be)), //
-        ra);
-  }
-
-  /** function integrates the special case where the y-component of x
-   * is constrained to equal 0.
-   * 
-   * @param g == {px, py, alpha}
-   * @param x == {vx, 0, beta}
-   * @return g . exp x */
-  public static Tensor integrate_vy0(Tensor g, Tensor x) {
-    Scalar al = g.Get(2);
-    Scalar be = x.Get(2);
-    if (Scalars.isZero(be))
-      return g.extract(0, 2).add(RotationMatrix.of(al).dot(x.extract(0, 2))).append(al);
-    Scalar ra = al.add(be);
-    Scalar sd = Sin.FUNCTION.apply(ra).subtract(Sin.FUNCTION.apply(al));
-    Scalar cd = Cos.FUNCTION.apply(ra).subtract(Cos.FUNCTION.apply(al));
-    Scalar dv = x.Get(0).divide(be);
-    return Tensors.of( //
-        g.Get(0).add(sd.multiply(dv)), //
-        g.Get(1).subtract(cd.multiply(dv)), //
-        ra);
   }
 
   /** maps a vector x from the Lie-algebra se2 to a vector of the group SE2

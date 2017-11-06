@@ -1,6 +1,7 @@
 // code by jph
 package ch.ethz.idsc.owly.math.se2;
 
+import ch.ethz.idsc.owly.demo.se2.Se2CarIntegrator;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
@@ -28,7 +29,7 @@ public class Se2IntegratorTest extends TestCase {
 
   public void testExpSubstitute() {
     Tensor mat = exp_of(1, 2, .3);
-    Tensor vec = Se2Utils.integrate(Array.zeros(3), Tensors.vector(1, 2, .3));
+    Tensor vec = Se2Integrator.INSTANCE.spin(Array.zeros(3), Tensors.vector(1, 2, .3));
     Tensor v0 = Se2Utils.integrate_g0(Tensors.vector(1, 2, .3));
     assertEquals(vec, v0);
     Tensor alt = Se2Utils.toSE2Matrix(vec);
@@ -39,7 +40,7 @@ public class Se2IntegratorTest extends TestCase {
     for (int index = 0; index < 20; ++index) {
       Tensor rnd = RandomVariate.of(NormalDistribution.standard(), 3);
       Tensor mat = exp_of(rnd.Get(0), rnd.Get(1), rnd.Get(2));
-      Tensor vec = Se2Utils.integrate(Array.zeros(3), rnd);
+      Tensor vec = Se2Integrator.INSTANCE.spin(Array.zeros(3), rnd);
       Tensor v0 = Se2Utils.integrate_g0(rnd);
       assertEquals(vec, v0);
       Tensor alt = Se2Utils.toSE2Matrix(vec);
@@ -52,7 +53,9 @@ public class Se2IntegratorTest extends TestCase {
       Tensor g = RandomVariate.of(NormalDistribution.standard(), 3);
       Tensor x = RandomVariate.of(NormalDistribution.standard(), 3);
       x.set(RealScalar.ZERO, 1);
-      assertTrue(Chop._12.close(Se2Utils.integrate(g, x), Se2Utils.integrate_vy0(g, x)));
+      assertTrue(Chop._12.close( //
+          Se2Integrator.INSTANCE.spin(g, x), //
+          Se2CarIntegrator.INSTANCE.spin(g, x)));
     }
   }
 }
