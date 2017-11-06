@@ -14,15 +14,16 @@ import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
 import ch.ethz.idsc.tensor.alg.Subdivide;
 import ch.ethz.idsc.tensor.red.Max;
-import ch.ethz.idsc.tensor.red.Norm;
+import ch.ethz.idsc.tensor.sca.N;
 
 public enum Se2Controls {
   ;
-  /** @param angle of steering
-   * @param speed, positive for forward, and negative for backward
+  /** @param speed, positive for forward, and negative for backward
+   * @param rate of steering
    * @return */
-  public static Flow singleton(Scalar angle, Scalar speed) {
-    return StateSpaceModels.createFlow(Se2StateSpaceModel.INSTANCE, Tensors.of(angle, speed));
+  public static Flow singleton(Scalar speed, Tensor rate) {
+    return StateSpaceModels.createFlow(Se2StateSpaceModel.INSTANCE, //
+        N.DOUBLE.of(Tensors.of(speed, RealScalar.ZERO, rate.Get().multiply(speed))));
   }
 
   /** @param rate_max maximum turning rate in [rad/s]
@@ -33,15 +34,15 @@ public enum Se2Controls {
       ++num;
     List<Flow> list = new ArrayList<>();
     for (Tensor angle : Subdivide.of(rate_max.negate(), rate_max, num))
-      list.add(singleton((Scalar) angle, RealScalar.ONE));
+      list.add(singleton(RealScalar.ONE, angle));
     return Collections.unmodifiableList(list);
   }
 
   public static Collection<Flow> createControlsForwardAndReverse(Scalar angle_max, int num) {
     List<Flow> list = new ArrayList<>();
     for (Tensor angle : Subdivide.of(angle_max.negate(), angle_max, num)) {
-      list.add(singleton(angle.Get(), RealScalar.ONE));
-      list.add(singleton(angle.Get(), RealScalar.ONE.negate()));
+      list.add(singleton(RealScalar.ONE, angle));
+      list.add(singleton(RealScalar.ONE.negate(), angle));
     }
     return list;
   }
@@ -49,13 +50,12 @@ public enum Se2Controls {
   /** @param controls
    * @return m/s */
   public static Scalar maxSpeed(Collection<Flow> controls) {
-    return controls.stream().map(Flow::getU).map(u -> u.Get(1).abs()).reduce(Max::of).get();
+    return controls.stream().map(Flow::getU).map(u -> u.Get(0).abs()).reduce(Max::of).get();
   }
 
   /** @param controls
    * @return rad/s */
   public static Scalar maxTurning(Collection<Flow> controls) {
-    return Norm.INFINITY.ofVector(Tensor.of(controls.stream().map(Flow::getU).map(u -> u.Get(0)))) //
-        .multiply(maxSpeed(controls));
+    return controls.stream().map(Flow::getU).map(u -> u.Get(2).abs()).reduce(Max::of).get();
   }
 }

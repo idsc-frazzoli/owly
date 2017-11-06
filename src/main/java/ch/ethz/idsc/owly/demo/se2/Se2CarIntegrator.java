@@ -1,9 +1,11 @@
 // code by jph
-package ch.ethz.idsc.owly.math.se2;
+package ch.ethz.idsc.owly.demo.se2;
 
 import ch.ethz.idsc.owly.math.flow.Flow;
 import ch.ethz.idsc.owly.math.flow.Integrator;
 import ch.ethz.idsc.owly.math.flow.LieIntegrator;
+import ch.ethz.idsc.owly.math.flow.RungeKutta45Integrator;
+import ch.ethz.idsc.owly.math.flow.RungeKutta4Integrator;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Scalars;
 import ch.ethz.idsc.tensor.Tensor;
@@ -13,8 +15,14 @@ import ch.ethz.idsc.tensor.sca.Cos;
 import ch.ethz.idsc.tensor.sca.Sin;
 
 /** exact integration of flow using matrix exponential and logarithm.
- * states are encoded in the default coordinates of the se2 lie-algebra. */
-public enum Se2Integrator implements Integrator, LieIntegrator {
+ * states are encoded in the default coordinates of the se2 lie-algebra.
+ * 
+ * Important: u is assumed to be of the form u == {vx, 0, rate}
+ * 
+ * Se2Integrator is approximately
+ * 3x faster than {@link RungeKutta4Integrator}
+ * 11x faster than {@link RungeKutta45Integrator} */
+public enum Se2CarIntegrator implements Integrator, LieIntegrator {
   INSTANCE;
   // ---
   /** Parameter description:
@@ -22,11 +30,15 @@ public enum Se2Integrator implements Integrator, LieIntegrator {
    * h in R */
   @Override
   public Tensor step(Flow flow, Tensor g, Scalar h) {
+    // u is assumed to be of the form u == {vx, 0, rate}
     return spin(g, flow.getU().multiply(h));
   }
 
-  /** @param g == {px, py, alpha}
-   * @param x == {vx, vy, beta}
+  /** function integrates the special case where the y-component of x
+   * is constrained to equal 0.
+   * 
+   * @param g == {px, py, alpha}
+   * @param x == {vx, 0, beta}
    * @return g . exp x */
   @Override
   public Tensor spin(Tensor g, Tensor x) {
@@ -34,16 +46,13 @@ public enum Se2Integrator implements Integrator, LieIntegrator {
     Scalar be = x.Get(2);
     if (Scalars.isZero(be))
       return g.extract(0, 2).add(RotationMatrix.of(al).dot(x.extract(0, 2))).append(al);
-    Scalar px = g.Get(0);
-    Scalar py = g.Get(1);
-    Scalar vx = x.Get(0);
-    Scalar vy = x.Get(1);
     Scalar ra = al.add(be);
-    Scalar cd = Cos.FUNCTION.apply(ra).subtract(Cos.FUNCTION.apply(al));
     Scalar sd = Sin.FUNCTION.apply(ra).subtract(Sin.FUNCTION.apply(al));
+    Scalar cd = Cos.FUNCTION.apply(ra).subtract(Cos.FUNCTION.apply(al));
+    Scalar dv = x.Get(0).divide(be);
     return Tensors.of( //
-        px.add(sd.multiply(vx).add(cd.multiply(vy)).divide(be)), //
-        py.add(sd.multiply(vy).subtract(cd.multiply(vx)).divide(be)), //
+        g.Get(0).add(sd.multiply(dv)), //
+        g.Get(1).subtract(cd.multiply(dv)), //
         ra);
   }
 }

@@ -10,6 +10,7 @@ import java.util.Collections;
 import java.util.Objects;
 
 import ch.ethz.idsc.owly.data.GlobalAssert;
+import ch.ethz.idsc.owly.demo.se2.Se2CarIntegrator;
 import ch.ethz.idsc.owly.demo.se2.Se2Controls;
 import ch.ethz.idsc.owly.demo.se2.Se2MinTimeMinShiftExtraCostGoalManager;
 import ch.ethz.idsc.owly.demo.se2.Se2MinTimeMinShiftGoalManager;
@@ -25,7 +26,6 @@ import ch.ethz.idsc.owly.gui.ani.PlannerType;
 import ch.ethz.idsc.owly.math.RotationUtils;
 import ch.ethz.idsc.owly.math.StateTimeTensorFunction;
 import ch.ethz.idsc.owly.math.flow.Flow;
-import ch.ethz.idsc.owly.math.se2.Se2Integrator;
 import ch.ethz.idsc.owly.math.se2.Se2Utils;
 import ch.ethz.idsc.owly.math.state.FixedStateIntegrator;
 import ch.ethz.idsc.owly.math.state.SimpleEpisodeIntegrator;
@@ -52,8 +52,8 @@ class Se2Entity extends AbstractEntity {
           { -.1, -.07, 1 }, //
           { -.1, +.07, 1 } //
       }).unmodifiable();
-  private static final Se2Wrap SE2WRAP = new Se2Wrap(Tensors.vector(1, 1, 2));
-  private static final Tensor PARTITIONSCALE = Tensors.vector(5, 5, 50 / Math.PI); // 50/pi == 15.9155
+  static final Se2Wrap SE2WRAP = new Se2Wrap(Tensors.vector(1, 1, 2));
+  static final Tensor PARTITIONSCALE = Tensors.vector(5, 5, 50 / Math.PI).unmodifiable(); // 50/pi == 15.9155
   // ---
   static {
     if (!PARTITIONSCALE.get(0).equals(PARTITIONSCALE.get(1)))
@@ -70,10 +70,10 @@ class Se2Entity extends AbstractEntity {
   public TrajectoryRegionQuery obstacleQuery = null;
   // private BufferedImage bufferedImage = null;
 
-  private Se2Entity(Tensor state) {
+  Se2Entity(Tensor state) {
     super(new SimpleEpisodeIntegrator( //
         Se2StateSpaceModel.INSTANCE, //
-        Se2Integrator.INSTANCE, //
+        Se2CarIntegrator.INSTANCE, //
         new StateTime(state, RealScalar.ZERO))); // initial position
     controls = Se2Controls.createControlsForwardAndReverse(RotationUtils.DEGREE(45), 6);
     final Scalar goalRadius_xy = Sqrt.of(RealScalar.of(2)).divide(PARTITIONSCALE.Get(0));
@@ -93,7 +93,7 @@ class Se2Entity extends AbstractEntity {
 
   @Override
   protected Tensor fallbackControl() {
-    return Array.zeros(2).unmodifiable(); // {angle=0, vel=0}
+    return Array.zeros(3).unmodifiable(); // {vx, vy, rate}
   }
 
   @Override
@@ -114,14 +114,18 @@ class Se2Entity extends AbstractEntity {
     GlobalAssert.that(VectorQ.ofLength(goal, 3));
     this.obstacleQuery = obstacleQuery;
     StateIntegrator stateIntegrator = //
-        FixedStateIntegrator.create(Se2Integrator.INSTANCE, RationalScalar.of(1, 10), 4);
+        FixedStateIntegrator.create(Se2CarIntegrator.INSTANCE, RationalScalar.of(1, 10), 4);
     GoalInterface goalInterface = Objects.isNull(costFunction) ? //
         Se2MinTimeMinShiftGoalManager.create(goal, goalRadius, controls) : //
         Se2MinTimeMinShiftExtraCostGoalManager.create(goal, goalRadius, controls, costFunction);
     TrajectoryPlanner trajectoryPlanner = new StandardTrajectoryPlanner( //
-        PARTITIONSCALE, stateIntegrator, controls, obstacleQuery, goalInterface);
+        eta(), stateIntegrator, controls, obstacleQuery, goalInterface);
     trajectoryPlanner.represent = StateTimeTensorFunction.state(SE2WRAP::represent);
     return trajectoryPlanner;
+  }
+
+  protected Tensor eta() {
+    return PARTITIONSCALE;
   }
 
   private boolean obstacleQuery_isDisjoint(StateTime stateTime) {

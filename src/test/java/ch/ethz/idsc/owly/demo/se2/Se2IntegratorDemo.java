@@ -2,14 +2,12 @@
 package ch.ethz.idsc.owly.demo.se2;
 
 import ch.ethz.idsc.owly.data.Stopwatch;
-import ch.ethz.idsc.owly.math.StateSpaceModels;
 import ch.ethz.idsc.owly.math.flow.Flow;
 import ch.ethz.idsc.owly.math.flow.RungeKutta45Integrator;
 import ch.ethz.idsc.owly.math.flow.RungeKutta4Integrator;
-import ch.ethz.idsc.owly.math.se2.Se2Integrator;
+import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
-import ch.ethz.idsc.tensor.Tensors;
 import ch.ethz.idsc.tensor.pdf.NormalDistribution;
 import ch.ethz.idsc.tensor.pdf.RandomVariate;
 
@@ -20,8 +18,7 @@ enum Se2IntegratorDemo {
    * runge4_ 0.108451661
    * runge45 0.37093125200000004 */
   public static void main(String[] args) {
-    Tensor u = Tensors.vector(1.0, 1.0);
-    Flow flow = StateSpaceModels.createFlow(Se2StateSpaceModel.INSTANCE, u);
+    Flow flow = Se2Controls.singleton(RealScalar.ONE, RealScalar.ONE);
     Stopwatch s1 = Stopwatch.stopped();
     Stopwatch s2 = Stopwatch.stopped();
     Stopwatch s3 = Stopwatch.stopped();
@@ -29,7 +26,7 @@ enum Se2IntegratorDemo {
       Tensor x = RandomVariate.of(NormalDistribution.standard(), 3);
       Scalar h = RandomVariate.of(NormalDistribution.standard());
       s1.start();
-      Se2Integrator.INSTANCE.step(flow, x, h);
+      Se2CarIntegrator.INSTANCE.step(flow, x, h);
       s1.stop();
       s2.start();
       RungeKutta4Integrator.INSTANCE.step(flow, x, h);

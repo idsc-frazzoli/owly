@@ -14,6 +14,7 @@ import java.util.Optional;
 import ch.ethz.idsc.owly.demo.rn.EuclideanDistanceDiscoverRegion;
 import ch.ethz.idsc.owly.demo.rn.R2Controls;
 import ch.ethz.idsc.owly.demo.rn.RnMinDistSphericalGoalManager;
+import ch.ethz.idsc.owly.demo.se2.Se2CarIntegrator;
 import ch.ethz.idsc.owly.demo.se2.Se2Controls;
 import ch.ethz.idsc.owly.demo.se2.Se2MinTimeEuclideanDistanceHeuristicGoalManager;
 import ch.ethz.idsc.owly.demo.se2.Se2StateSpaceModel;
@@ -41,7 +42,6 @@ import ch.ethz.idsc.owly.math.region.EllipsoidRegion;
 import ch.ethz.idsc.owly.math.region.EmptyRegion;
 import ch.ethz.idsc.owly.math.region.InvertedRegion;
 import ch.ethz.idsc.owly.math.region.Region;
-import ch.ethz.idsc.owly.math.se2.Se2Integrator;
 import ch.ethz.idsc.owly.math.se2.Se2Utils;
 import ch.ethz.idsc.owly.math.state.FixedStateIntegrator;
 import ch.ethz.idsc.owly.math.state.SimpleEpisodeIntegrator;
@@ -59,8 +59,9 @@ import ch.ethz.idsc.tensor.alg.Array;
 import ch.ethz.idsc.tensor.sca.Sqrt;
 
 /* package */ class Se2AnyEntity extends AbstractAnyEntity {
-  private static final Integrator INTEGRATOR = Se2Integrator.INSTANCE;
-  private static final Tensor FALLBACK_CONTROL = Array.zeros(2).unmodifiable(); // {angle=0, vel=0}
+  private static final Integrator INTEGRATOR = Se2CarIntegrator.INSTANCE;
+  /** {vx=0,vy=0,rate=0} */
+  private static final Tensor FALLBACK_CONTROL = Array.zeros(3).unmodifiable();
   private static final Tensor SHAPE = Tensors.matrixDouble( //
       new double[][] { //
           { .2, +.07, 1 }, //

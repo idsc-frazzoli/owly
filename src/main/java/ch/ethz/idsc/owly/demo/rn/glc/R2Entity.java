@@ -31,8 +31,6 @@ import ch.ethz.idsc.tensor.red.Norm2Squared;
  * 
  * the implementation chooses certain values */
 /* package */ class R2Entity extends AbstractCircularEntity {
-  /** 36 corresponds to 10[Degree] resolution */
-  private final Collection<Flow> controls = R2Controls.createRadial(36);
   /** radius of spherical goal region */
   private final Scalar goalRadius = RealScalar.of(0.2);
 
@@ -75,7 +73,12 @@ import ch.ethz.idsc.tensor.red.Norm2Squared;
         RnMinDistSphericalGoalManager.create(center, goalRadius) : //
         new RnMinDistExtraCostGoalManager(center, goalRadius, costFunction);
     return new StandardTrajectoryPlanner( //
-        partitionScale, stateIntegrator, controls, obstacleQuery, goalInterface);
+        partitionScale, stateIntegrator, createControls(), obstacleQuery, goalInterface);
+  }
+
+  Collection<Flow> createControls() {
+    /** 36 corresponds to 10[Degree] resolution */
+    return R2Controls.createRadial(36);
   }
 
   protected Tensor eta() {

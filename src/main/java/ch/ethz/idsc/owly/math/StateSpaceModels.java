@@ -17,15 +17,16 @@ public enum StateSpaceModels {
    * @param u
    * @return flow defined by stateSpaceModel using control parameter u */
   public static Flow createFlow(StateSpaceModel stateSpaceModel, Tensor u) {
+    Tensor u_unmodifiable = u.unmodifiable();
     return new Flow() {
       @Override
-      public final Tensor at(Tensor x) {
+      public Tensor at(Tensor x) {
         return stateSpaceModel.f(x, u);
       }
 
       @Override
-      public final Tensor getU() {
-        return u.unmodifiable();
+      public Tensor getU() {
+        return u_unmodifiable;
       }
       // ---
       /** FLOW IMPLEMENTATION INTENTIONALLY DOES NOT OVERRIDE hashCode(), and equals(...)

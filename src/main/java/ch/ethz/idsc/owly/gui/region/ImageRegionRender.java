@@ -5,10 +5,10 @@ import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 
 import ch.ethz.idsc.owly.data.GlobalAssert;
+import ch.ethz.idsc.owly.gui.AffineTransforms;
 import ch.ethz.idsc.owly.gui.GeometricLayer;
 import ch.ethz.idsc.owly.gui.RenderInterface;
 import ch.ethz.idsc.owly.math.region.ImageRegion;
-import ch.ethz.idsc.owly.math.se2.Se2Utils;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Scalars;
@@ -48,7 +48,7 @@ public class ImageRegionRender implements RenderInterface {
     translate.set(RealScalar.of(-bufferedImage.getHeight()), 1, 2);
     // GraphicsUtil.setQualityHigh(graphics);
     Tensor matrix = model2pixel.dot(invsc).dot(translate);
-    graphics.drawImage(bufferedImage, Se2Utils.toAffineTransform(matrix), null);
+    graphics.drawImage(bufferedImage, AffineTransforms.toAffineTransform(matrix), null);
     // GraphicsUtil.setQualityDefault(graphics);
   }
 }

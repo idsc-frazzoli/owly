@@ -7,6 +7,7 @@ import java.util.Optional;
 
 import ch.ethz.idsc.owly.demo.rn.R2Controls;
 import ch.ethz.idsc.owly.demo.rn.RnMinDistSphericalGoalManager;
+import ch.ethz.idsc.owly.demo.util.ExamplePolygons;
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
 import ch.ethz.idsc.owly.glc.adapter.StateTimeTrajectories;
 import ch.ethz.idsc.owly.glc.core.Expand;
@@ -40,14 +41,7 @@ enum R2PolygonDemo {
     Collection<Flow> controls = R2Controls.createRadial(20);
     GoalInterface goalInterface = //
         RnMinDistSphericalGoalManager.create(Tensors.vector(5, 5), DoubleScalar.of(.2));
-    Region r1 = new PolygonRegion(Tensors.matrix(new Number[][] { //
-        { 3, 0 }, //
-        { 4, 0 }, //
-        { 4, 6 }, //
-        { 1, 6 }, //
-        { 1, 3 }, //
-        { 3, 3 } //
-    }));
+    Region r1 = new PolygonRegion(ExamplePolygons.BULKY_TOP_LEFT);
     TrajectoryRegionQuery obstacleQuery = SimpleTrajectoryRegionQuery.timeInvariant(r1);
     // ---
     TrajectoryPlanner trajectoryPlanner = new StandardTrajectoryPlanner( //
