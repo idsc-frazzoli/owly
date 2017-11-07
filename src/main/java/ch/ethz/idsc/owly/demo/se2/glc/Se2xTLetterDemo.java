@@ -18,8 +18,6 @@ import ch.ethz.idsc.owly.math.region.Region;
 import ch.ethz.idsc.owly.math.state.StateTime;
 import ch.ethz.idsc.owly.math.state.TrajectoryRegionQuery;
 import ch.ethz.idsc.tensor.RealScalar;
-import ch.ethz.idsc.tensor.Scalar;
-import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
 import ch.ethz.idsc.tensor.sca.Sin;
 
@@ -41,12 +39,8 @@ public class Se2xTLetterDemo implements DemoInterface {
       break;
     }
     case 2: {
-      TranslationFamily shift = new TranslationFamily() {
-        @Override
-        public Tensor translation(Scalar scalar) {
-          return Tensors.of(Sin.FUNCTION.apply(scalar.multiply(RealScalar.of(0.2))), RealScalar.ZERO);
-        }
-      };
+      TranslationFamily shift = new TranslationFamily( //
+          scalar -> Tensors.of(Sin.FUNCTION.apply(scalar.multiply(RealScalar.of(0.2))), RealScalar.ZERO));
       Region<StateTime> region = new R2xTPolygonStateTimeRegion( //
           ExamplePolygons.CORNER_TOP_LEFT, shift, () -> abstractEntity.getStateTimeNow().time());
       abstractEntity.obstacleQuery = new SimpleTrajectoryRegionQuery(region);

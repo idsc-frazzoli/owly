@@ -12,8 +12,6 @@ import ch.ethz.idsc.owly.gui.ani.OwlyAnimationFrame;
 import ch.ethz.idsc.owly.math.region.Region;
 import ch.ethz.idsc.owly.math.state.StateTime;
 import ch.ethz.idsc.tensor.RealScalar;
-import ch.ethz.idsc.tensor.Scalar;
-import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
 import ch.ethz.idsc.tensor.lie.AngleVector;
 import ch.ethz.idsc.tensor.sca.Sin;
@@ -25,18 +23,10 @@ public class R2xTPolygonAnimationDemo implements DemoInterface {
     OwlyAnimationFrame owlyAnimationFrame = new OwlyAnimationFrame();
     AbstractEntity abstractEntity = new R2xTEntity(Tensors.vector(0.2, 0.2));
     owlyAnimationFrame.set(abstractEntity);
-    TranslationFamily shift = new TranslationFamily() {
-      @Override
-      public Tensor translation(Scalar scalar) {
-        return Tensors.of(Sin.FUNCTION.apply(scalar.multiply(RealScalar.of(0.2))), RealScalar.ZERO);
-      }
-    };
-    TranslationFamily circle = new TranslationFamily() {
-      @Override
-      public Tensor translation(Scalar scalar) {
-        return AngleVector.of(scalar.multiply(RealScalar.of(0.2)));
-      }
-    };
+    TranslationFamily shift = new TranslationFamily( //
+        scalar -> Tensors.of(Sin.FUNCTION.apply(scalar.multiply(RealScalar.of(0.2))), RealScalar.ZERO));
+    TranslationFamily circle = new TranslationFamily( //
+        scalar -> AngleVector.of(scalar.multiply(RealScalar.of(0.2))));
     Region<StateTime> stateTimeRegion = new R2xTPolygonStateTimeRegion( //
         ExamplePolygons.CORNER_POINTY, circle, () -> abstractEntity.getStateTimeNow().time());
     owlyAnimationFrame.setObstacleQuery(new SimpleTrajectoryRegionQuery(stateTimeRegion));

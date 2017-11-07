@@ -14,8 +14,6 @@ import ch.ethz.idsc.owly.math.region.Region;
 import ch.ethz.idsc.owly.math.region.RegionUnion;
 import ch.ethz.idsc.owly.math.state.StateTime;
 import ch.ethz.idsc.tensor.RealScalar;
-import ch.ethz.idsc.tensor.Scalar;
-import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
 import ch.ethz.idsc.tensor.lie.AngleVector;
 import ch.ethz.idsc.tensor.sca.Cos;
@@ -27,24 +25,13 @@ public class R2xTEllipsoidsAnimationDemo implements DemoInterface {
     OwlyAnimationFrame owlyAnimationFrame = new OwlyAnimationFrame();
     AbstractEntity abstractEntity = new R2xTEntity(Tensors.vector(1.2, 2));
     owlyAnimationFrame.set(abstractEntity);
-    TranslationFamily shiftx = new TranslationFamily() {
-      @Override
-      public Tensor translation(Scalar scalar) {
-        return Tensors.of(Sin.FUNCTION.apply(scalar.multiply(RealScalar.of(0.2))), RealScalar.ZERO);
-      }
-    };
-    TranslationFamily shifty = new TranslationFamily() {
-      @Override
-      public Tensor translation(Scalar scalar) {
-        return Tensors.of(RealScalar.ZERO, Cos.FUNCTION.apply(scalar.multiply(RealScalar.of(0.27)).multiply(RealScalar.of(2))));
-      }
-    };
-    TranslationFamily circle = new TranslationFamily() {
-      @Override
-      public Tensor translation(Scalar scalar) {
-        return AngleVector.of(scalar.multiply(RealScalar.of(0.2))).multiply(RealScalar.of(2));
-      }
-    };
+    TranslationFamily shiftx = new TranslationFamily( //
+        scalar -> Tensors.of(Sin.FUNCTION.apply(scalar.multiply(RealScalar.of(0.2))), RealScalar.ZERO));
+    TranslationFamily shifty = new TranslationFamily( //
+        scalar -> Tensors.of(RealScalar.ZERO, //
+            Cos.FUNCTION.apply(scalar.multiply(RealScalar.of(0.27)).multiply(RealScalar.of(2)))));
+    TranslationFamily circle = new TranslationFamily( //
+        scalar -> AngleVector.of(scalar.multiply(RealScalar.of(0.2))).multiply(RealScalar.of(2)));
     Region<StateTime> region1 = new R2xTEllipsoidStateTimeRegion( //
         Tensors.vector(.7, 0.9), shiftx, () -> abstractEntity.getStateTimeNow().time());
     Region<StateTime> region2 = new R2xTEllipsoidStateTimeRegion( //
