@@ -2,6 +2,7 @@
 package ch.ethz.idsc.owly.demo.rn;
 
 import java.awt.Graphics2D;
+import java.awt.geom.Path2D;
 import java.util.function.Supplier;
 
 import ch.ethz.idsc.owly.demo.util.BijectionFamily;
@@ -44,8 +45,12 @@ public class R2xTEllipsoidStateTimeRegion implements Region<StateTime>, RenderIn
   @Override
   public void render(GeometricLayer geometricLayer, Graphics2D graphics) {
     Scalar time = supplier.get();
-    graphics.setColor(RegionRenders.COLOR);
     TensorUnaryOperator fwd = bijectionFamily.forward(time);
-    graphics.fill(geometricLayer.toPath2D(Tensor.of(polygon.stream().map(fwd))));
+    Path2D path2D = geometricLayer.toPath2D(Tensor.of(polygon.stream().map(fwd)));
+    graphics.setColor(RegionRenders.COLOR);
+    graphics.fill(path2D);
+    graphics.setColor(RegionRenders.BOUNDARY);
+    path2D.closePath();
+    graphics.draw(path2D);
   }
 }

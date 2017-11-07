@@ -34,4 +34,13 @@ public enum ExamplePolygons {
       { 3, 3 } //
   }).unmodifiable();
   // ---
+  public static final Tensor CORNER_CENTERED = Tensors.matrix(new Number[][] { //
+      { 0, 0 }, //
+      { 0, -1 }, //
+      { 1, -1 }, //
+      { 1, 1 }, //
+      { -1, 1 }, //
+      { -1, 0 } //
+  }).unmodifiable();
+  // ---
 }
