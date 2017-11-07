@@ -1,8 +1,8 @@
 // code by jph
 package ch.ethz.idsc.owly.demo.rnd;
 
-import ch.ethz.idsc.owly.math.region.CompleteRegion;
 import ch.ethz.idsc.owly.math.region.Region;
+import ch.ethz.idsc.owly.math.region.Regions;
 import ch.ethz.idsc.tensor.Tensor;
 
 /** 
@@ -10,7 +10,7 @@ import ch.ethz.idsc.tensor.Tensor;
  */
 public class RndAndRegion implements Region<Tensor> {
   public static Region<Tensor> trivial_1(Region<Tensor> region) {
-    return new RndAndRegion(region, CompleteRegion.INSTANCE);
+    return new RndAndRegion(region, Regions.completeRegion());
   }
 
   // ---

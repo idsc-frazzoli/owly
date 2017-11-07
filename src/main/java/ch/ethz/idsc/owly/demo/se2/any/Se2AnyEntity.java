@@ -39,9 +39,9 @@ import ch.ethz.idsc.owly.math.flow.EulerIntegrator;
 import ch.ethz.idsc.owly.math.flow.Flow;
 import ch.ethz.idsc.owly.math.flow.Integrator;
 import ch.ethz.idsc.owly.math.region.EllipsoidRegion;
-import ch.ethz.idsc.owly.math.region.EmptyRegion;
 import ch.ethz.idsc.owly.math.region.InvertedRegion;
 import ch.ethz.idsc.owly.math.region.Region;
+import ch.ethz.idsc.owly.math.region.Regions;
 import ch.ethz.idsc.owly.math.se2.Se2Utils;
 import ch.ethz.idsc.owly.math.state.FixedStateIntegrator;
 import ch.ethz.idsc.owly.math.state.SimpleEpisodeIntegrator;
@@ -148,7 +148,7 @@ import ch.ethz.idsc.tensor.sca.Sqrt;
 
   @Override
   protected Region<Tensor> createGoalCheckHelp(Tensor goal) {
-    return new InvertedRegion(EmptyRegion.INSTANCE);
+    return new InvertedRegion(Regions.emptyRegion());
   }
 
   protected final GoalInterface createGoalFromR2(Tensor goal) {

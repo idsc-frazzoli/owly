@@ -1,10 +1,10 @@
-// code by jph
 package ch.ethz.idsc.owly.math.region;
 
 import junit.framework.TestCase;
 
-public class EmptyRegionTest extends TestCase {
+public class RegionsTest extends TestCase {
   public void testSimple() {
+    assertTrue(Regions.completeRegion().isMember(null));
     assertFalse(Regions.emptyRegion().isMember(null));
   }
 }

@@ -5,8 +5,8 @@ import ch.ethz.idsc.owly.data.nd.NdCenterInterface;
 import ch.ethz.idsc.owly.data.nd.NdCluster;
 import ch.ethz.idsc.owly.data.nd.NdMap;
 import ch.ethz.idsc.owly.data.nd.NdTreeMap;
-import ch.ethz.idsc.owly.math.region.EmptyRegion;
 import ch.ethz.idsc.owly.math.region.Region;
+import ch.ethz.idsc.owly.math.region.Regions;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Scalars;
 import ch.ethz.idsc.tensor.Tensor;
@@ -20,7 +20,7 @@ public class RnPointcloudRegion implements Region<Tensor> {
    * @param radius
    * @return */
   public static Region<Tensor> of(Tensor points, Scalar radius) {
-    return Tensors.isEmpty(points) ? EmptyRegion.INSTANCE : new RnPointcloudRegion(points, radius);
+    return Tensors.isEmpty(points) ? Regions.emptyRegion() : new RnPointcloudRegion(points, radius);
   }
 
   // ---

@@ -2,7 +2,6 @@
 package ch.ethz.idsc.owly.math.region;
 
 import java.nio.ByteBuffer;
-import java.util.Arrays;
 import java.util.Collection;
 
 /** RegionIntersection is a region that defines membership
@@ -22,13 +21,6 @@ public class RegionIntersection<T> implements Region<T> {
    * @return the intersection of the given regions */
   public static <T> Region<T> wrap(Collection<Region<T>> collection) {
     return new RegionIntersection<T>(collection);
-  }
-
-  /** @param regions to be combined
-   * @return the intersection of the given regions */
-  @SuppressWarnings("unchecked")
-  public static <T> Region<T> of(Region<T>... regions) {
-    return new RegionIntersection<T>(Arrays.asList(regions));
   }
 
   // ---

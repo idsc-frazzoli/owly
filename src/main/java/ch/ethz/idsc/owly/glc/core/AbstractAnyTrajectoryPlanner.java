@@ -16,9 +16,9 @@ import ch.ethz.idsc.owly.glc.adapter.HeuristicQ;
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
 import ch.ethz.idsc.owly.glc.adapter.TrajectoryGoalManager;
 import ch.ethz.idsc.owly.math.flow.Flow;
-import ch.ethz.idsc.owly.math.region.EmptyRegion;
 import ch.ethz.idsc.owly.math.region.InvertedRegion;
 import ch.ethz.idsc.owly.math.region.Region;
+import ch.ethz.idsc.owly.math.region.Regions;
 import ch.ethz.idsc.owly.math.state.StateIntegrator;
 import ch.ethz.idsc.owly.math.state.StateTime;
 import ch.ethz.idsc.owly.math.state.TrajectoryRegionQuery;
@@ -127,7 +127,7 @@ public abstract class AbstractAnyTrajectoryPlanner extends AbstractTrajectoryPla
 
   @Override
   public final boolean changeToGoal(final GoalInterface newGoal) {
-    return changeToGoal(newGoal, new InvertedRegion(EmptyRegion.INSTANCE));
+    return changeToGoal(newGoal, new InvertedRegion(Regions.emptyRegion()));
     // creates always true Region, as a helper =>no change
   }
 

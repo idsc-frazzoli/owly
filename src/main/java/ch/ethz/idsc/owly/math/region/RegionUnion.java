@@ -1,8 +1,7 @@
-// code by jph & jl
+// code by jph and jl
 package ch.ethz.idsc.owly.math.region;
 
 import java.nio.ByteBuffer;
-import java.util.Arrays;
 import java.util.Collection;
 
 /** RegionUnion is a region that defines membership
@@ -20,16 +19,8 @@ public class RegionUnion<T> implements Region<T> {
    * 
    * @param collection collection of Regions
    * @return the combined Regions */
-  // TODO function is misnomer
   public static <T> Region<T> wrap(Collection<Region<T>> collection) {
     return new RegionUnion<T>(collection);
-  }
-
-  /** @param regions to union
-   * @return the union of the given regions */
-  @SuppressWarnings("unchecked")
-  public static <T> Region<T> of(Region<T>... regions) {
-    return new RegionUnion<T>(Arrays.asList(regions));
   }
 
   // ---

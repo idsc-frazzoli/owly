@@ -19,9 +19,9 @@ import ch.ethz.idsc.owly.glc.core.TrajectorySample;
 import ch.ethz.idsc.owly.math.CoordinateWrap;
 import ch.ethz.idsc.owly.math.StateTimeTensorFunction;
 import ch.ethz.idsc.owly.math.flow.Flow;
-import ch.ethz.idsc.owly.math.region.EmptyRegion;
 import ch.ethz.idsc.owly.math.region.InvertedRegion;
 import ch.ethz.idsc.owly.math.region.Region;
+import ch.ethz.idsc.owly.math.region.Regions;
 import ch.ethz.idsc.owly.math.state.EpisodeIntegrator;
 import ch.ethz.idsc.owly.math.state.StateIntegrator;
 import ch.ethz.idsc.owly.math.state.TrajectoryRegionQuery;
@@ -90,7 +90,7 @@ public abstract class AbstractAnyEntity extends AbstractEntity {
    * @param goal Tensor with center location of Goal
    * @return A Region, which includes ALL GLcNodes, which could be followed by a trajectory, leading to the Goal */
   protected Region<Tensor> createGoalCheckHelp(Tensor goal) {
-    return new InvertedRegion(EmptyRegion.INSTANCE);
+    return new InvertedRegion(Regions.emptyRegion());
   }
 
   /** Creates a new ObstacleQuery

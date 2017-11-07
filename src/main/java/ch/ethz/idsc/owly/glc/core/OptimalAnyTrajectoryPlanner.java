@@ -18,9 +18,9 @@ import java.util.stream.Collectors;
 import ch.ethz.idsc.owly.data.tree.Nodes;
 import ch.ethz.idsc.owly.glc.adapter.TrajectoryGoalManager;
 import ch.ethz.idsc.owly.math.flow.Flow;
-import ch.ethz.idsc.owly.math.region.EmptyRegion;
 import ch.ethz.idsc.owly.math.region.InvertedRegion;
 import ch.ethz.idsc.owly.math.region.Region;
+import ch.ethz.idsc.owly.math.region.Regions;
 import ch.ethz.idsc.owly.math.state.StateIntegrator;
 import ch.ethz.idsc.owly.math.state.StateTime;
 import ch.ethz.idsc.owly.math.state.TrajectoryRegionQuery;
@@ -254,7 +254,7 @@ public class OptimalAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
 
   @Override
   public void obstacleUpdate(TrajectoryRegionQuery newObstacle) {
-    obstacleUpdate(newObstacle, new InvertedRegion(EmptyRegion.INSTANCE));
+    obstacleUpdate(newObstacle, new InvertedRegion(Regions.emptyRegion()));
   }
 
   @Override
