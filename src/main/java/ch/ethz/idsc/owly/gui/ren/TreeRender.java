@@ -41,7 +41,7 @@ public class TreeRender implements RenderInterface {
         .summaryStatistics();
     final double min = dss.getMin();
     final double max = dss.getMax();
-    // GraphicsUtil.setQualityDefault(graphics);
+    // dss.getCount(); // TODO JAN don't draw tree beyond a certain node count
     for (StateCostNode node : _collection) {
       double val = node.costFromRoot().number().doubleValue();
       if (!Double.isFinite(val))
@@ -58,10 +58,10 @@ public class TreeRender implements RenderInterface {
         graphics.draw(shape);
       }
     }
-    // GraphicsUtil.setQualityHigh(graphics);
   }
 
   public void setCollection(Collection<? extends StateCostNode> collection) {
     this.collection = collection;
+    // TODO beyond certain point perhaps only precompute convex hull?
   }
 }
