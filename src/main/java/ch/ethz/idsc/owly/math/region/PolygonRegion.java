@@ -6,7 +6,7 @@ import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.sca.N;
 
 /** check if input tensor is inside a polygon */
-public class PolygonRegion implements Region {
+public class PolygonRegion implements TensorRegion {
   private final Tensor polygon;
 
   /** @param polygon is mapped to numeric precision */

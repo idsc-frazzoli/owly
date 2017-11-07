@@ -5,7 +5,7 @@ import ch.ethz.idsc.tensor.Tensor;
 
 /** empty region.
  * no given tensor is a member */
-public enum CompleteRegion implements Region {
+public enum CompleteRegion implements TensorRegion {
   INSTANCE;
   // ---
   @Override

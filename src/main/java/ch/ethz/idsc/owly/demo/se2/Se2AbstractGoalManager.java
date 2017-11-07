@@ -7,7 +7,7 @@ import ch.ethz.idsc.owly.glc.adapter.GoalAdapter;
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
 import ch.ethz.idsc.owly.glc.core.CostFunction;
 import ch.ethz.idsc.owly.glc.core.GoalInterface;
-import ch.ethz.idsc.owly.math.region.Region;
+import ch.ethz.idsc.owly.math.region.TensorRegion;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Scalars;
 import ch.ethz.idsc.tensor.Tensor;
@@ -20,7 +20,7 @@ import ch.ethz.idsc.tensor.sca.Mod;
  * 
  * class defines circle region for (x,y) component and periodic intervals in angular component */
 @DontModify
-public abstract class Se2AbstractGoalManager implements Region, CostFunction {
+public abstract class Se2AbstractGoalManager implements TensorRegion, CostFunction {
   static final Mod PRINCIPAL = Mod.function(2 * Math.PI, -Math.PI);
   // ---
   protected final Tensor center;

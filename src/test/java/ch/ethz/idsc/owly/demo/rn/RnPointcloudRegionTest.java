@@ -1,14 +1,14 @@
 // code by jph 
 package ch.ethz.idsc.owly.demo.rn;
 
-import ch.ethz.idsc.owly.math.region.Region;
+import ch.ethz.idsc.owly.math.region.TensorRegion;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Tensors;
 import junit.framework.TestCase;
 
 public class RnPointcloudRegionTest extends TestCase {
   public void testEmpty() {
-    Region rn = RnPointcloudRegion.of(Tensors.empty(), RealScalar.ONE);
+    TensorRegion rn = RnPointcloudRegion.of(Tensors.empty(), RealScalar.ONE);
     assertFalse(rn.isMember(Tensors.vector(2, 2.5)));
     assertFalse(rn.isMember(Tensors.vector(2, 2)));
     assertFalse(rn.isMember(Tensors.vector(2, 1)));
@@ -16,7 +16,7 @@ public class RnPointcloudRegionTest extends TestCase {
   }
 
   public void testSingle2D() {
-    Region rn = RnPointcloudRegion.of(Tensors.matrix(new Number[][] { { 2, 3 } }), RealScalar.ONE);
+    TensorRegion rn = RnPointcloudRegion.of(Tensors.matrix(new Number[][] { { 2, 3 } }), RealScalar.ONE);
     assertTrue(rn.isMember(Tensors.vector(2, 2.5)));
     assertTrue(rn.isMember(Tensors.vector(2, 2)));
     assertFalse(rn.isMember(Tensors.vector(2, 1)));
@@ -24,7 +24,7 @@ public class RnPointcloudRegionTest extends TestCase {
   }
 
   public void testTwo2D() {
-    Region rn = RnPointcloudRegion.of(Tensors.matrix(new Number[][] { //
+    TensorRegion rn = RnPointcloudRegion.of(Tensors.matrix(new Number[][] { //
         { 2, 3 }, //
         { 7, 1 } //
     }), RealScalar.ONE);

@@ -5,17 +5,17 @@ import java.nio.ByteBuffer;
 import java.util.Arrays;
 import java.util.Collection;
 
-import ch.ethz.idsc.owly.math.region.Region;
+import ch.ethz.idsc.owly.math.region.TensorRegion;
 import ch.ethz.idsc.owly.math.state.StateTime;
 import ch.ethz.idsc.owly.math.state.StateTimeRegion;
 
 /** RegionUnion is a region that defines membership
- * to be member in either of a collection of {@link Region}s
+ * to be member in either of a collection of {@link TensorRegion}s
  * 
  * <p>inspired by
  * <a href="https://reference.wolfram.com/language/ref/RegionUnion.html">RegionUnion</a> */
 public class StateTimeRegionUnion implements StateTimeRegion {
-  /** combines a collection of {@link Region}s into one Region.
+  /** combines a collection of {@link TensorRegion}s into one Region.
    * Membership is defined as membership in any of the regions in the collection.
    * The input collection is not copied but used by reference.
    * Modification to outside collection have effect on this region.

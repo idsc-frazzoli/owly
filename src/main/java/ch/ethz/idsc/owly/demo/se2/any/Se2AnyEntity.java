@@ -41,7 +41,7 @@ import ch.ethz.idsc.owly.math.flow.Integrator;
 import ch.ethz.idsc.owly.math.region.EllipsoidRegion;
 import ch.ethz.idsc.owly.math.region.EmptyRegion;
 import ch.ethz.idsc.owly.math.region.InvertedRegion;
-import ch.ethz.idsc.owly.math.region.Region;
+import ch.ethz.idsc.owly.math.region.TensorRegion;
 import ch.ethz.idsc.owly.math.se2.Se2Utils;
 import ch.ethz.idsc.owly.math.state.FixedStateIntegrator;
 import ch.ethz.idsc.owly.math.state.SimpleEpisodeIntegrator;
@@ -74,7 +74,7 @@ import ch.ethz.idsc.tensor.sca.Sqrt;
   private final Tensor goalRadius;
   private static final Scalar DELAY_HINT = RealScalar.of(1.5);
   private static final Scalar EXPAND_TIME = RealScalar.of(1);
-  private Region environmentRegion;
+  private TensorRegion environmentRegion;
 
   /** @param state initial position of entity */
   public Se2AnyEntity(Tensor state, int resolution) {
@@ -147,7 +147,7 @@ import ch.ethz.idsc.tensor.sca.Sqrt;
   }
 
   @Override
-  protected Region createGoalCheckHelp(Tensor goal) {
+  protected TensorRegion createGoalCheckHelp(Tensor goal) {
     return new InvertedRegion(EmptyRegion.INSTANCE);
   }
 
@@ -179,7 +179,7 @@ import ch.ethz.idsc.tensor.sca.Sqrt;
     Optional<GlcNode> optional = trajectoryPlanner.getFinalGoalNode();
     DebugUtils.heuristicConsistencyCheck(trajectoryPlanner);
     List<StateTime> trajectory = GlcNodes.getPathFromRootTo(optional.get());
-    List<Region> goalRegionsList = new ArrayList<>();
+    List<TensorRegion> goalRegionsList = new ArrayList<>();
     for (StateTime entry : trajectory) {
       Tensor goalTemp = Tensors.of(entry.state().Get(0), entry.state().Get(1), RealScalar.ZERO);
       if (trajectory.indexOf(entry) == trajectory.size() - 1) // if last entry of trajectory
@@ -195,14 +195,14 @@ import ch.ethz.idsc.tensor.sca.Sqrt;
   }
 
   @Override
-  protected TrajectoryRegionQuery initializeObstacle(Region oldEnvironmentRegion, Tensor currentState) {
+  protected TrajectoryRegionQuery initializeObstacle(TensorRegion oldEnvironmentRegion, Tensor currentState) {
     environmentRegion = oldEnvironmentRegion;
     return SimpleTrajectoryRegionQuery.timeInvariant(oldEnvironmentRegion);
     // return updateObstacle(oldEnvironmentRegion, currentState);
   }
 
   @Override
-  protected TrajectoryRegionQuery updateObstacle(Region oldEnvironmentRegion, Tensor currentState) {
+  protected TrajectoryRegionQuery updateObstacle(TensorRegion oldEnvironmentRegion, Tensor currentState) {
     environmentRegion = oldEnvironmentRegion; // environment stays the same
     return SimpleTrajectoryRegionQuery.timeInvariant( //
         EuclideanDistanceDiscoverRegion.of(oldEnvironmentRegion, currentState, RealScalar.of(4.5)));

@@ -1,17 +1,17 @@
 // code by jph
 package ch.ethz.idsc.owly.demo.se2;
 
-import ch.ethz.idsc.owly.math.region.Region;
+import ch.ethz.idsc.owly.math.region.TensorRegion;
 import ch.ethz.idsc.owly.math.se2.Se2Utils;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Tensor;
 
 /** used in se2 animation demo to check if footprint of vehicle intersects with obstacle region */
-public class Se2PointsVsRegion implements Region {
+public class Se2PointsVsRegion implements TensorRegion {
   private final Tensor points;
-  private final Region region;
+  private final TensorRegion region;
 
-  public Se2PointsVsRegion(Tensor points, Region region) {
+  public Se2PointsVsRegion(Tensor points, TensorRegion region) {
     this.points = Tensor.of(points.stream().map(row -> row.append(RealScalar.ONE))).unmodifiable();
     this.region = region;
   }

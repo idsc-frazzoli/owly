@@ -6,7 +6,7 @@ import junit.framework.TestCase;
 
 public class RegionIntersectionTest extends TestCase {
   public void testSimple() {
-    Region intersection = RegionIntersection.of( //
+    TensorRegion intersection = RegionIntersection.of( //
         new EllipsoidRegion(Tensors.vector(-2), Tensors.vector(3)), //
         new EllipsoidRegion(Tensors.vector(+2), Tensors.vector(3)));
     assertTrue(intersection.isMember(Tensors.vector(0)));

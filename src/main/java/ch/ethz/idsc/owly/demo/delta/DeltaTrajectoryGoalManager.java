@@ -8,7 +8,7 @@ import ch.ethz.idsc.owly.glc.adapter.StateTimeTrajectories;
 import ch.ethz.idsc.owly.glc.adapter.TrajectoryGoalManager;
 import ch.ethz.idsc.owly.glc.core.GlcNode;
 import ch.ethz.idsc.owly.math.flow.Flow;
-import ch.ethz.idsc.owly.math.region.Region;
+import ch.ethz.idsc.owly.math.region.TensorRegion;
 import ch.ethz.idsc.owly.math.state.StateTime;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
@@ -24,7 +24,7 @@ public class DeltaTrajectoryGoalManager extends TrajectoryGoalManager {
   private final Scalar maxSpeed;
   private final Scalar timeCostScalingFactor;
 
-  public DeltaTrajectoryGoalManager(List<Region> goalRegions, List<StateTime> heuristicTrajectory, Tensor radius, Scalar maxSpeed,
+  public DeltaTrajectoryGoalManager(List<TensorRegion> goalRegions, List<StateTime> heuristicTrajectory, Tensor radius, Scalar maxSpeed,
       Scalar timeCostScalingFactor) {
     super(goalRegions);
     this.heuristicTrajectory = heuristicTrajectory;
@@ -36,11 +36,11 @@ public class DeltaTrajectoryGoalManager extends TrajectoryGoalManager {
   }
 
   // Constructor with Default value in CostScaling
-  public DeltaTrajectoryGoalManager(List<Region> goalRegions, List<StateTime> heuristicTrajectory, Tensor radius, Scalar maxSpeed) {
+  public DeltaTrajectoryGoalManager(List<TensorRegion> goalRegions, List<StateTime> heuristicTrajectory, Tensor radius, Scalar maxSpeed) {
     this(goalRegions, heuristicTrajectory, radius, maxSpeed, RealScalar.ONE);
   }
 
-  public DeltaTrajectoryGoalManager(List<Region> goalRegions, List<StateTime> heuristicTrajectory, Scalar maxSpeed) {
+  public DeltaTrajectoryGoalManager(List<TensorRegion> goalRegions, List<StateTime> heuristicTrajectory, Scalar maxSpeed) {
     this(goalRegions, heuristicTrajectory, Tensors.vector(0, 0), maxSpeed, RealScalar.ONE);
   }
 

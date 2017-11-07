@@ -8,12 +8,12 @@ import java.util.Collection;
 import ch.ethz.idsc.tensor.Tensor;
 
 /** RegionIntersection is a region that defines membership
- * to be member in all of a collection of {@link Region}s
+ * to be member in all of a collection of {@link TensorRegion}s
  * 
  * <p>inspired by
  * <a href="https://reference.wolfram.com/language/ref/RegionIntersection.html">RegionIntersection</a> */
-public class RegionIntersection implements Region {
-  /** combines a collection of {@link Region}s into one Region.
+public class RegionIntersection implements TensorRegion {
+  /** combines a collection of {@link TensorRegion}s into one Region.
    * Membership is defined as membership in all of the regions in the collection.
    * The input collection is not copied but used by reference.
    * Modification to outside collection have effect on this region.
@@ -22,20 +22,20 @@ public class RegionIntersection implements Region {
    * 
    * @param collection collection of Regions
    * @return the intersection of the given regions */
-  public static Region wrap(Collection<Region> collection) {
+  public static TensorRegion wrap(Collection<TensorRegion> collection) {
     return new RegionIntersection(collection);
   }
 
   /** @param regions to be combined
    * @return the intersection of the given regions */
-  public static Region of(Region... regions) {
+  public static TensorRegion of(TensorRegion... regions) {
     return new RegionIntersection(Arrays.asList(regions));
   }
 
   // ---
-  private final Collection<Region> collection;
+  private final Collection<TensorRegion> collection;
 
-  private RegionIntersection(Collection<Region> collection) {
+  private RegionIntersection(Collection<TensorRegion> collection) {
     this.collection = collection;
   }
 

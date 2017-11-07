@@ -21,7 +21,7 @@ import ch.ethz.idsc.owly.math.SingleIntegratorStateSpaceModel;
 import ch.ethz.idsc.owly.math.flow.EulerIntegrator;
 import ch.ethz.idsc.owly.math.flow.Flow;
 import ch.ethz.idsc.owly.math.region.EllipsoidRegion;
-import ch.ethz.idsc.owly.math.region.Region;
+import ch.ethz.idsc.owly.math.region.TensorRegion;
 import ch.ethz.idsc.owly.math.state.FixedStateIntegrator;
 import ch.ethz.idsc.owly.math.state.SimpleEpisodeIntegrator;
 import ch.ethz.idsc.owly.math.state.StateIntegrator;
@@ -103,7 +103,7 @@ import ch.ethz.idsc.tensor.red.Norm2Squared;
   }
 
   @Override
-  protected Region createGoalCheckHelp(Tensor goal) {
+  protected TensorRegion createGoalCheckHelp(Tensor goal) {
     Tensor r2Goal = goal.extract(0, 2);
     // (GoalRadius + maximalDistance/step) * Securityfactor
     Scalar goalSearchHelperRadius = (goalRadius.add(RealScalar.ONE)).multiply(RealScalar.of(1.5));
@@ -111,13 +111,13 @@ import ch.ethz.idsc.tensor.red.Norm2Squared;
   }
 
   @Override
-  protected TrajectoryRegionQuery updateObstacle(Region environmentRegion, Tensor currentState) {
+  protected TrajectoryRegionQuery updateObstacle(TensorRegion environmentRegion, Tensor currentState) {
     return SimpleTrajectoryRegionQuery.timeInvariant( //
         EuclideanDistanceDiscoverRegion.of(environmentRegion, currentState, RealScalar.of(4)));
   }
 
   @Override
-  protected TrajectoryRegionQuery initializeObstacle(Region region, Tensor currentState) {
+  protected TrajectoryRegionQuery initializeObstacle(TensorRegion region, Tensor currentState) {
     return updateObstacle(region, currentState);
   }
 

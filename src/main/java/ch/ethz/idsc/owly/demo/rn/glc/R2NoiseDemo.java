@@ -23,7 +23,7 @@ import ch.ethz.idsc.owly.gui.ani.OwlyFrame;
 import ch.ethz.idsc.owly.gui.ani.OwlyGui;
 import ch.ethz.idsc.owly.math.flow.EulerIntegrator;
 import ch.ethz.idsc.owly.math.flow.Flow;
-import ch.ethz.idsc.owly.math.region.Region;
+import ch.ethz.idsc.owly.math.region.TensorRegion;
 import ch.ethz.idsc.owly.math.state.FixedStateIntegrator;
 import ch.ethz.idsc.owly.math.state.StateIntegrator;
 import ch.ethz.idsc.owly.math.state.StateTime;
@@ -41,7 +41,7 @@ enum R2NoiseDemo {
   public static void main(String[] args) {
     Tensor partitionScale = Tensors.vector(8, 8);
     final Scalar threshold = RealScalar.of(.1);
-    Region region = new R2NoiseRegion(threshold);
+    TensorRegion region = new R2NoiseRegion(threshold);
     StateIntegrator stateIntegrator = //
         FixedStateIntegrator.create(EulerIntegrator.INSTANCE, RationalScalar.of(1, 12), 4);
     Collection<Flow> controls = R2Controls.createRadial(23);

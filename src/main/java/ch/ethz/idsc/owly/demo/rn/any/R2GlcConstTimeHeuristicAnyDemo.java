@@ -25,7 +25,7 @@ import ch.ethz.idsc.owly.gui.ani.OwlyGui;
 import ch.ethz.idsc.owly.math.flow.EulerIntegrator;
 import ch.ethz.idsc.owly.math.flow.Flow;
 import ch.ethz.idsc.owly.math.region.EllipsoidRegion;
-import ch.ethz.idsc.owly.math.region.Region;
+import ch.ethz.idsc.owly.math.region.TensorRegion;
 import ch.ethz.idsc.owly.math.state.FixedStateIntegrator;
 import ch.ethz.idsc.owly.math.state.StateIntegrator;
 import ch.ethz.idsc.owly.math.state.StateTime;
@@ -57,7 +57,7 @@ enum R2GlcConstTimeHeuristicAnyDemo {
     Collection<Flow> controls = R2Controls.createRadial(parameters.getResolutionInt());
     // Creating Goals
     List<StateTime> precomputedTrajectory = new ArrayList<>();
-    List<Region> goalRegions = new ArrayList<>();
+    List<TensorRegion> goalRegions = new ArrayList<>();
     Tensor radius = Tensors.vector(0.2, 0.2);
     System.out.println("Goalstates: ");
     for (int i = 0; i < 8; i++) {
@@ -67,7 +67,7 @@ enum R2GlcConstTimeHeuristicAnyDemo {
       goalRegions.add(new EllipsoidRegion(goal, radius));
     }
     RnTrajectoryGoalManager rnGoal = new RnTrajectoryGoalManager(goalRegions, precomputedTrajectory, radius);
-    Region region = new R2NoiseRegion(RealScalar.of(.1));
+    TensorRegion region = new R2NoiseRegion(RealScalar.of(.1));
     TrajectoryRegionQuery obstacleQuery = SimpleTrajectoryRegionQuery.timeInvariant(region);
     // TODO JONAS: can remove todo "change back to AnyPlannerInterface"
     AnyPlannerInterface trajectoryPlanner = new OptimalAnyTrajectoryPlanner( //

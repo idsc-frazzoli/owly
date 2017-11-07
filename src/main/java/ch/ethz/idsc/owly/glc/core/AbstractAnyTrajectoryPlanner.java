@@ -18,7 +18,7 @@ import ch.ethz.idsc.owly.glc.adapter.TrajectoryGoalManager;
 import ch.ethz.idsc.owly.math.flow.Flow;
 import ch.ethz.idsc.owly.math.region.EmptyRegion;
 import ch.ethz.idsc.owly.math.region.InvertedRegion;
-import ch.ethz.idsc.owly.math.region.Region;
+import ch.ethz.idsc.owly.math.region.TensorRegion;
 import ch.ethz.idsc.owly.math.state.StateIntegrator;
 import ch.ethz.idsc.owly.math.state.StateTime;
 import ch.ethz.idsc.owly.math.state.TrajectoryRegionQuery;
@@ -132,7 +132,7 @@ public abstract class AbstractAnyTrajectoryPlanner extends AbstractTrajectoryPla
   }
 
   @Override
-  public final boolean changeToGoal(final GoalInterface newGoal, Region goalCheckHelp) {
+  public final boolean changeToGoal(final GoalInterface newGoal, TensorRegion goalCheckHelp) {
     System.out.println("*** GOALSWITCH ***");
     long tictotal = System.nanoTime();
     {
@@ -211,7 +211,7 @@ public abstract class AbstractAnyTrajectoryPlanner extends AbstractTrajectoryPla
   /** Checks the tree in the collection if some Nodes are in the Goal
    * @param goalCheckHelp a Region, which includes ALL Nodes, which could have a leaving trajectory in the Goal
    * @return true if a Node in the Goal was found in this Collection */
-  abstract boolean goalCheckTree(final Region goalCheckHelp);
+  abstract boolean goalCheckTree(final TensorRegion goalCheckHelp);
 
   @Override
   abstract public void obstacleUpdate(TrajectoryRegionQuery newObstacle);
@@ -271,8 +271,8 @@ public abstract class AbstractAnyTrajectoryPlanner extends AbstractTrajectoryPla
   protected final Optional<GlcNode> getFurthestGoalNode() {
     if (!(getGoalInterface() instanceof TrajectoryGoalManager))
       throw new RuntimeException(); // can only run on for TrajectoryGoalManager
-    List<Region> goalRegions = ((TrajectoryGoalManager) getGoalInterface()).getGoalRegionList();
-    ListIterator<Region> iter = goalRegions.listIterator(goalRegions.size());
+    List<TensorRegion> goalRegions = ((TrajectoryGoalManager) getGoalInterface()).getGoalRegionList();
+    ListIterator<TensorRegion> iter = goalRegions.listIterator(goalRegions.size());
     DomainQueue regionQueue = new DomainQueue(); // priority queue over merit of GlcNodes
     while (iter.hasPrevious()) { // goes through all regions from last to first
       TrajectoryRegionQuery strq = SimpleTrajectoryRegionQuery.timeInvariant(iter.previous());// go through Regions from the last to first:

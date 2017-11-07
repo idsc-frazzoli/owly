@@ -28,7 +28,7 @@ import ch.ethz.idsc.owly.math.flow.Flow;
 import ch.ethz.idsc.owly.math.flow.RungeKutta45Integrator;
 import ch.ethz.idsc.owly.math.region.EllipsoidRegion;
 import ch.ethz.idsc.owly.math.region.ImageRegion;
-import ch.ethz.idsc.owly.math.region.Region;
+import ch.ethz.idsc.owly.math.region.TensorRegion;
 import ch.ethz.idsc.owly.math.state.FixedStateIntegrator;
 import ch.ethz.idsc.owly.math.state.StateIntegrator;
 import ch.ethz.idsc.owly.math.state.StateTime;
@@ -76,7 +76,7 @@ public class DeltaxtGlcDemo implements DemoInterface {
         new SimpleTrajectoryRegionQuery(new RxtTimeInvariantRegion( //
             imageRegion));
     // Creating Dinghy trajectory
-    List<Region> goalRegions = new ArrayList<>();
+    List<TensorRegion> goalRegions = new ArrayList<>();
     List<TrajectorySample> dinghyTrajectory = new ArrayList<>();
     Tensor radius = Tensors.vector(0.3, 0.3, 2);
     // Start of dinghy

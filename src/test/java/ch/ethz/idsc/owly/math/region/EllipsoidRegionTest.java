@@ -7,7 +7,7 @@ import junit.framework.TestCase;
 
 public class EllipsoidRegionTest extends TestCase {
   public void testSimple() {
-    Region region = new EllipsoidRegion(Tensors.vector(10, 5), Tensors.vector(1, 1));
+    TensorRegion region = new EllipsoidRegion(Tensors.vector(10, 5), Tensors.vector(1, 1));
     assertTrue(region.isMember(Tensors.vector(10, 5)));
     assertTrue(region.isMember(Tensors.vector(10, 5.5)));
     assertTrue(region.isMember(Tensors.vector(10, 6)));
@@ -15,7 +15,7 @@ public class EllipsoidRegionTest extends TestCase {
   }
 
   public void testSimple2() {
-    Region region = new EllipsoidRegion(Tensors.vector(10, 5), Tensors.vector(2, 2));
+    TensorRegion region = new EllipsoidRegion(Tensors.vector(10, 5), Tensors.vector(2, 2));
     assertTrue(region.isMember(Tensors.vector(10, 5)));
     assertTrue(region.isMember(Tensors.vector(10, 5.5)));
     assertTrue(region.isMember(Tensors.vector(10, 7)));
@@ -26,7 +26,7 @@ public class EllipsoidRegionTest extends TestCase {
   }
 
   public void testEllipsoid() {
-    Region region = new EllipsoidRegion(Tensors.vector(10, 5), Tensors.vector(2, 1));
+    TensorRegion region = new EllipsoidRegion(Tensors.vector(10, 5), Tensors.vector(2, 1));
     assertTrue(region.isMember(Tensors.vector(10, 5)));
     assertTrue(region.isMember(Tensors.vector(10, 5.5)));
     assertFalse(region.isMember(Tensors.vector(10, 7)));

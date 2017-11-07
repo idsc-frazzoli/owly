@@ -14,7 +14,7 @@ import ch.ethz.idsc.tensor.sca.Sign;
  * <li>zero when in contact with the obstacle, and
  * <li>negative when in collision
  * </ul> */
-public abstract class ImplicitFunctionRegion implements Region, ImplicitFunction {
+public abstract class ImplicitFunctionRegion implements TensorRegion, ImplicitFunction {
   @Override
   public final boolean isMember(Tensor tensor) {
     return Sign.isNegativeOrZero(evaluate(tensor));

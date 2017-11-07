@@ -3,10 +3,10 @@ package ch.ethz.idsc.owly.math.region;
 
 import ch.ethz.idsc.tensor.Tensor;
 
-public class InvertedRegion implements Region {
-  private final Region region;
+public class InvertedRegion implements TensorRegion {
+  private final TensorRegion region;
 
-  public InvertedRegion(Region region) {
+  public InvertedRegion(TensorRegion region) {
     this.region = region;
   }
 

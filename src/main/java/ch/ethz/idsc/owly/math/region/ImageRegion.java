@@ -16,7 +16,7 @@ import ch.ethz.idsc.tensor.sca.Floor;
 
 /** only the first two coordinates are tested for membership
  * a location is available if the grayscale value of the pixel equals 0 */
-public class ImageRegion implements Region {
+public class ImageRegion implements TensorRegion {
   private final Tensor image;
   private final List<Integer> dimensions;
   private final Tensor range;

@@ -4,7 +4,7 @@ package ch.ethz.idsc.owly.demo.util;
 import java.util.HashSet;
 import java.util.Set;
 
-import ch.ethz.idsc.owly.math.region.Region;
+import ch.ethz.idsc.owly.math.region.TensorRegion;
 import junit.framework.TestCase;
 import lcm.util.ClassDiscovery;
 import lcm.util.ClassPaths;
@@ -16,7 +16,7 @@ public class DiscoveryTest extends TestCase {
     ClassVisitor classVisitor = new ClassVisitor() {
       @Override
       public void classFound(String jarfile, Class<?> cls) {
-        if (Region.class.isAssignableFrom(cls))
+        if (TensorRegion.class.isAssignableFrom(cls))
           regions.add(cls);
       }
     };

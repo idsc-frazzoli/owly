@@ -1,14 +1,14 @@
 // code by jph
 package ch.ethz.idsc.owly.math.state;
 
-import ch.ethz.idsc.owly.math.region.Region;
+import ch.ethz.idsc.owly.math.region.TensorRegion;
 
 /** StateTimeRegion that depends on time */
 public final class TimeDependentRegion implements StateTimeRegion {
-  private final Region region;
+  private final TensorRegion region;
 
   /** @param region */
-  public TimeDependentRegion(Region region) {
+  public TimeDependentRegion(TensorRegion region) {
     this.region = region;
   }
 

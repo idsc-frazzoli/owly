@@ -7,7 +7,7 @@ import junit.framework.TestCase;
 
 public class SphericalRegionTest extends TestCase {
   public void testSimple() {
-    Region region = new SphericalRegion(Tensors.vector(1, 1), RealScalar.ONE);
+    TensorRegion region = new SphericalRegion(Tensors.vector(1, 1), RealScalar.ONE);
     assertTrue(region.isMember(Tensors.vector(1, 0)));
     assertTrue(region.isMember(Tensors.vector(0, 1)));
     assertFalse(region.isMember(Tensors.vector(2, 0)));
@@ -15,7 +15,7 @@ public class SphericalRegionTest extends TestCase {
   }
 
   public void testPoint() {
-    Region region = new SphericalRegion(Tensors.vector(1, 1), RealScalar.ZERO);
+    TensorRegion region = new SphericalRegion(Tensors.vector(1, 1), RealScalar.ZERO);
     assertTrue(region.isMember(Tensors.vector(1, 1)));
   }
 

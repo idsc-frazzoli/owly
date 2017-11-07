@@ -21,7 +21,7 @@ import ch.ethz.idsc.owly.math.StateTimeTensorFunction;
 import ch.ethz.idsc.owly.math.flow.Flow;
 import ch.ethz.idsc.owly.math.region.EmptyRegion;
 import ch.ethz.idsc.owly.math.region.InvertedRegion;
-import ch.ethz.idsc.owly.math.region.Region;
+import ch.ethz.idsc.owly.math.region.TensorRegion;
 import ch.ethz.idsc.owly.math.state.EpisodeIntegrator;
 import ch.ethz.idsc.owly.math.state.StateIntegrator;
 import ch.ethz.idsc.owly.math.state.TrajectoryRegionQuery;
@@ -89,7 +89,7 @@ public abstract class AbstractAnyEntity extends AbstractEntity {
    * 
    * @param goal Tensor with center location of Goal
    * @return A Region, which includes ALL GLcNodes, which could be followed by a trajectory, leading to the Goal */
-  protected Region createGoalCheckHelp(Tensor goal) {
+  protected TensorRegion createGoalCheckHelp(Tensor goal) {
     return new InvertedRegion(EmptyRegion.INSTANCE);
   }
 
@@ -98,7 +98,7 @@ public abstract class AbstractAnyEntity extends AbstractEntity {
    * @param region the Region of the environment
    * @param currentState the current state of the Entity
    * @return The new TRQ, which is the new Obstacle */
-  protected TrajectoryRegionQuery updateObstacle(Region region, Tensor currentState) {
+  protected TrajectoryRegionQuery updateObstacle(TensorRegion region, Tensor currentState) {
     return null;
   }
 
@@ -126,7 +126,7 @@ public abstract class AbstractAnyEntity extends AbstractEntity {
   public OptimalAnyTrajectoryPlanner trajectoryPlanner;
 
   // TODO SE2wrap remove to somewhere else
-  public void startLife(Region environmentRegion, Tensor root) {
+  public void startLife(TensorRegion environmentRegion, Tensor root) {
     TrajectoryRegionQuery trq = initializeObstacle(environmentRegion, root);
     trajectoryPlanner = (OptimalAnyTrajectoryPlanner) createTrajectoryPlanner(trq, root);
     trajectoryPlanner.represent = StateTimeTensorFunction.state(getWrap()::represent);
@@ -157,7 +157,7 @@ public abstract class AbstractAnyEntity extends AbstractEntity {
           // Goalswitch
           System.out.println("SwitchGoal Requested");
           GoalInterface goalInterface = createGoal(goal);
-          Region goalCheckHelp = createGoalCheckHelp(goal);
+          TensorRegion goalCheckHelp = createGoalCheckHelp(goal);
           // boolean result =
           trajectoryPlanner.changeToGoal(goalInterface, goalCheckHelp); // <- may take a while
           switchGoalRequest = false;
@@ -189,7 +189,7 @@ public abstract class AbstractAnyEntity extends AbstractEntity {
    * @param region
    * @param currentState
    * @return ObstacleQuery */
-  protected TrajectoryRegionQuery initializeObstacle(Region oldEnvironmentRegion, Tensor currentState) {
+  protected TrajectoryRegionQuery initializeObstacle(TensorRegion oldEnvironmentRegion, Tensor currentState) {
     return SimpleTrajectoryRegionQuery.timeInvariant(oldEnvironmentRegion);
   }
 

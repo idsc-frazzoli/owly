@@ -9,7 +9,7 @@ import ch.ethz.idsc.tensor.Tensor;
 /** region is open
  * coordinates on the boundary are inside
  * same convention as {@link ImplicitFunctionRegion} */
-public class BoundedBoxRegion implements Region {
+public class BoundedBoxRegion implements TensorRegion {
   private final Tensor lo;
   private final Tensor hi;
 

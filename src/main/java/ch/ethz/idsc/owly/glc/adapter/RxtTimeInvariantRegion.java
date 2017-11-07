@@ -1,7 +1,7 @@
 // code by jl
 package ch.ethz.idsc.owly.glc.adapter;
 
-import ch.ethz.idsc.owly.math.region.Region;
+import ch.ethz.idsc.owly.math.region.TensorRegion;
 import ch.ethz.idsc.owly.math.state.StateTime;
 import ch.ethz.idsc.owly.math.state.StateTimeRegion;
 import ch.ethz.idsc.tensor.TensorRuntimeException;
@@ -14,9 +14,9 @@ import ch.ethz.idsc.tensor.alg.Last;
  * implementation requires that last entry of StateTime::state is
  * identical to StateTime::time */
 public final class RxtTimeInvariantRegion implements StateTimeRegion {
-  private final Region region;
+  private final TensorRegion region;
 
-  public RxtTimeInvariantRegion(Region region) {
+  public RxtTimeInvariantRegion(TensorRegion region) {
     this.region = region;
   }
 

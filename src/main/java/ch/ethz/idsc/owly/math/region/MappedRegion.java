@@ -5,11 +5,11 @@ import ch.ethz.idsc.owly.math.TensorUnaryOperator;
 import ch.ethz.idsc.tensor.Tensor;
 
 /** member check is carried on the input tensor mapped by the given operator */
-public class MappedRegion implements Region {
-  private final Region region;
+public class MappedRegion implements TensorRegion {
+  private final TensorRegion region;
   private final TensorUnaryOperator function;
 
-  public MappedRegion(Region region, TensorUnaryOperator function) {
+  public MappedRegion(TensorRegion region, TensorUnaryOperator function) {
     this.region = region;
     this.function = function;
   }

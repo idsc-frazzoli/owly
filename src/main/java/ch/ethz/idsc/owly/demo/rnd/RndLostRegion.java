@@ -1,12 +1,12 @@
 // code by jph
 package ch.ethz.idsc.owly.demo.rnd;
 
-import ch.ethz.idsc.owly.math.region.Region;
+import ch.ethz.idsc.owly.math.region.TensorRegion;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.red.Norm;
 import ch.ethz.idsc.tensor.sca.Clip;
 
-public class RndLostRegion implements Region {
+public class RndLostRegion implements TensorRegion {
   private final Clip clip;
 
   /** @param clip */

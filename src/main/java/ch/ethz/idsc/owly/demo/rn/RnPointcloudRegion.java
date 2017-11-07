@@ -6,7 +6,7 @@ import ch.ethz.idsc.owly.data.nd.NdCluster;
 import ch.ethz.idsc.owly.data.nd.NdMap;
 import ch.ethz.idsc.owly.data.nd.NdTreeMap;
 import ch.ethz.idsc.owly.math.region.EmptyRegion;
-import ch.ethz.idsc.owly.math.region.Region;
+import ch.ethz.idsc.owly.math.region.TensorRegion;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Scalars;
 import ch.ethz.idsc.tensor.Tensor;
@@ -15,11 +15,11 @@ import ch.ethz.idsc.tensor.alg.Transpose;
 import ch.ethz.idsc.tensor.red.Max;
 import ch.ethz.idsc.tensor.red.Min;
 
-public class RnPointcloudRegion implements Region {
+public class RnPointcloudRegion implements TensorRegion {
   /** @param points
    * @param radius
    * @return */
-  public static Region of(Tensor points, Scalar radius) {
+  public static TensorRegion of(Tensor points, Scalar radius) {
     return Tensors.isEmpty(points) ? EmptyRegion.INSTANCE : new RnPointcloudRegion(points, radius);
   }
 

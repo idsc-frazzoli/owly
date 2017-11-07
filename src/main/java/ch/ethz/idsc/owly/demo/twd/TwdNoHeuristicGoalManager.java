@@ -6,13 +6,13 @@ import java.util.List;
 import ch.ethz.idsc.owly.glc.adapter.StateTimeTrajectories;
 import ch.ethz.idsc.owly.glc.core.GlcNode;
 import ch.ethz.idsc.owly.math.flow.Flow;
-import ch.ethz.idsc.owly.math.region.Region;
+import ch.ethz.idsc.owly.math.region.TensorRegion;
 import ch.ethz.idsc.owly.math.state.StateTime;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
 
-/** Twd goal region is not elliptic, therefore we implement {@link Region}
+/** Twd goal region is not elliptic, therefore we implement {@link TensorRegion}
  * This class exists to compare and show the effects of a Heuristic in the Se2Model */
 public final class TwdNoHeuristicGoalManager extends TwdAbstractGoalManager {
   /** @param center
