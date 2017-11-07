@@ -60,8 +60,8 @@ enum DeltaGlcConstTimeHeuristicAnyCompareDemo {
     TrajectoryPlannerContainer slowTrajectoryPlannerContainer = DeltaHelper.createGlcAny(RealScalar.of(-0.02), resolution, partitionScale);
     // -- GOALMANAGER
     Iterator<StateTime> iterator = quickTrajectory.iterator();
-    List<Region> goalRegions = new ArrayList<>();
-    List<Region> goalCheckHelpRegions = new ArrayList<>();
+    List<Region<Tensor>> goalRegions = new ArrayList<>();
+    List<Region<Tensor>> goalCheckHelpRegions = new ArrayList<>();
     Tensor radius = Tensors.vector(0.1, 0.1);
     Tensor maxChangePerIterstep = Tensors.vector(1, 1).multiply(slowTrajectoryPlannerContainer.getParameters().getExpandTime()
         .multiply(((DeltaStateSpaceModel) slowTrajectoryPlannerContainer.getStateSpaceModel()).getMaxPossibleChange()));

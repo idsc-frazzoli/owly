@@ -7,11 +7,11 @@ import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Tensor;
 
 /** used in se2 animation demo to check if footprint of vehicle intersects with obstacle region */
-public class Se2PointsVsRegion implements Region {
+public class Se2PointsVsRegion implements Region<Tensor> {
   private final Tensor points;
-  private final Region region;
+  private final Region<Tensor> region;
 
-  public Se2PointsVsRegion(Tensor points, Region region) {
+  public Se2PointsVsRegion(Tensor points, Region<Tensor> region) {
     this.points = Tensor.of(points.stream().map(row -> row.append(RealScalar.ONE))).unmodifiable();
     this.region = region;
   }

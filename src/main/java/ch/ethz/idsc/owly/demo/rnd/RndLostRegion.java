@@ -6,7 +6,7 @@ import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.red.Norm;
 import ch.ethz.idsc.tensor.sca.Clip;
 
-public class RndLostRegion implements Region {
+public class RndLostRegion implements Region<Tensor> {
   private final Clip clip;
 
   /** @param clip */

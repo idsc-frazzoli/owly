@@ -23,7 +23,7 @@ public class Se2TrajectoryGoalManager extends TrajectoryGoalManager {
   private final Scalar radius;
   private final Scalar maxSpeed;
 
-  public Se2TrajectoryGoalManager(List<Region> goalRegions, List<StateTime> heuristicTrajectory, Tensor radius, Collection<Flow> controls) {
+  public Se2TrajectoryGoalManager(List<Region<Tensor>> goalRegions, List<StateTime> heuristicTrajectory, Tensor radius, Collection<Flow> controls) {
     super(goalRegions);
     this.heuristicTrajectory = heuristicTrajectory;
     if (!radius.Get(0).equals(radius.Get(1)))

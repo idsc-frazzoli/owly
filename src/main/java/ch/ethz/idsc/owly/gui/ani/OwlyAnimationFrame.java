@@ -188,7 +188,7 @@ public class OwlyAnimationFrame extends TimerFrame {
     this.obstacleQuery = obstacleQuery;
   }
 
-  public void addRegionRender(Region region) {
+  public void addRegionRender(Region<Tensor> region) {
     // TODO function redundant to OwlyFrame
     if (region instanceof ImageRegion)
       addBackground(new ImageRegionRender((ImageRegion) region));

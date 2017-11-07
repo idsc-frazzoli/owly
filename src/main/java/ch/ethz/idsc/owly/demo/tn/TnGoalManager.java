@@ -22,7 +22,7 @@ import ch.ethz.idsc.tensor.sca.Ramp;
 /** goal region is spherical
  * 
  * objective is minimum path length */
-class TnGoalManager implements Region, CostFunction {
+class TnGoalManager implements Region<Tensor>, CostFunction {
   private final CoordinateWrap tnWarp;
   private final Tensor center;
   private final Scalar radius;

@@ -22,7 +22,7 @@ public class RnTrajectoryGoalManager extends TrajectoryGoalManager {
   private final List<StateTime> heuristicTrajectory;
   private final Scalar radius;
 
-  public RnTrajectoryGoalManager(List<Region> goalRegions, List<StateTime> heuristicTrajectory, Tensor radius) {
+  public RnTrajectoryGoalManager(List<Region<Tensor>> goalRegions, List<StateTime> heuristicTrajectory, Tensor radius) {
     super(goalRegions);
     this.heuristicTrajectory = heuristicTrajectory;
     if (!radius.Get(0).equals(radius.Get(1)))

@@ -2,6 +2,7 @@
 package ch.ethz.idsc.owly.demo.rn.any;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
@@ -61,12 +62,12 @@ enum R2GlcAnyCircleDemo {
     // performance depends on heuristic: zeroHeuristic vs rnGoal
     // Heuristic heuristic = new ZeroHeuristic(); // rnGoal
     TrajectoryRegionQuery obstacleQuery = SimpleTrajectoryRegionQuery.timeInvariant( //
-        RegionUnion.of( //
+        RegionUnion.wrap(Arrays.asList( //
             new EllipsoidRegion(Tensors.vector(0, 0), Tensors.vector(1, 1).multiply(circleRadius).multiply(RealScalar.of(0.5))) //
             , new InvertedRegion(new EllipsoidRegion(Tensors.vector(0, 0), Tensors.vector(1, 1).multiply(circleRadius).multiply(RealScalar.of(2)))) //
             // , RnPointclouds.createRandomRegion(30, Tensors.vector(12, 12), Tensors.vector(0, 0), RealScalar.of(0.6)) //
             , new R2NoiseRegion(RealScalar.of(.2))//
-        ));
+        )));
     // ---
     AnyPlannerInterface trajectoryPlanner = new OptimalAnyTrajectoryPlanner( //
         parameters.getEta(), stateIntegrator, controls, obstacleQuery, rnGoal);
@@ -101,7 +102,7 @@ enum R2GlcAnyCircleDemo {
       GoalInterface rnGoal2 = new RnNoHeuristicCircleGoalManager(goal, goalRadius);
       System.out.println("Switching to Goal:" + goal);
       Scalar goalSearchHelperRadius = goalRadius.add(RealScalar.ONE).multiply(RealScalar.of(2));
-      Region goalSearchHelper = new EllipsoidRegion(goal, Array.of(l -> goalSearchHelperRadius, goal.length()));
+      Region<Tensor> goalSearchHelper = new EllipsoidRegion(goal, Array.of(l -> goalSearchHelperRadius, goal.length()));
       trajectoryPlanner.changeToGoal(rnGoal2, goalSearchHelper);
       // -- EXPANDING
       int iters2 = GlcExpand.maxDepth(trajectoryPlanner, parameters.getDepthLimit());

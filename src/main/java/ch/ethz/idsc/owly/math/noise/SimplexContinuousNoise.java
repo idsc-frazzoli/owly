@@ -73,6 +73,11 @@ public enum SimplexContinuousNoise implements NativeContinuousNoise {
   private static final double F4 = (Math.sqrt(5.0) - 1.0) / 4;
   private static final double G4 = (5.0 - Math.sqrt(5.0)) / 20;
 
+  @Override
+  public double at(double x) {
+    return at(x, 0);
+  }
+
   /** 2D simplex noise
    * 
    * @param xin

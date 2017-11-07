@@ -1,6 +1,7 @@
 // code by jph
 package ch.ethz.idsc.owly.demo.se2.glc;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
@@ -42,7 +43,7 @@ import ch.ethz.idsc.tensor.Tensors;
 enum Se2WrapDemo {
   ;
   static TrajectoryRegionQuery obstacleQuery() {
-    return SimpleTrajectoryRegionQuery.timeInvariant(RegionUnion.of( //
+    return SimpleTrajectoryRegionQuery.timeInvariant(RegionUnion.wrap(Arrays.asList( //
         new PolygonRegion(Tensors.matrixDouble(new double[][] { //
             { 0.633, -0.333 }, { 1.733, 0.517 }, { 1.617, 2.317 }, { 0.483, 3.317 }, //
             { -1.250, 3.167 }, { -1.383, 4.483 }, { 6.350, 4.400 }, { 6.250, -0.950 } //
@@ -54,7 +55,7 @@ enum Se2WrapDemo {
             { -6.933, 0.300 }, { -4.700, 0.250 }, { -4.617, -2.950 }, { 0.433, -3.217 }, //
             { 1.050, -0.300 }, { 1.867, -0.417 }, { 2.150, -5.300 }, { -6.900, -4.900 } //
         })) //
-    ));
+    )));
   }
 
   static TrajectoryPlanner createPlanner(CoordinateWrap coordinateWrap) {

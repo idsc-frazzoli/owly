@@ -12,7 +12,7 @@ public enum Se2PointsVsRegions {
   /** @param x_coords
    * @param region
    * @return */
-  public static Se2PointsVsRegion line(Tensor x_coords, Region region) {
+  public static Se2PointsVsRegion line(Tensor x_coords, Region<Tensor> region) {
     return new Se2PointsVsRegion( //
         Transpose.of(Tensors.of(x_coords, Array.zeros(x_coords.length()))), region);
   }

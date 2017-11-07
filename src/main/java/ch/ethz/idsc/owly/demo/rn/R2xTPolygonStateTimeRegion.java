@@ -2,6 +2,7 @@
 package ch.ethz.idsc.owly.demo.rn;
 
 import java.awt.Graphics2D;
+import java.awt.geom.Path2D;
 import java.util.function.Supplier;
 
 import ch.ethz.idsc.owly.demo.util.BijectionFamily;
@@ -10,14 +11,14 @@ import ch.ethz.idsc.owly.gui.RenderInterface;
 import ch.ethz.idsc.owly.gui.region.RegionRenders;
 import ch.ethz.idsc.owly.math.Polygons;
 import ch.ethz.idsc.owly.math.TensorUnaryOperator;
+import ch.ethz.idsc.owly.math.region.Region;
 import ch.ethz.idsc.owly.math.state.StateTime;
-import ch.ethz.idsc.owly.math.state.StateTimeRegion;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.sca.N;
 
 /** check if input tensor is inside a polygon */
-public class R2xTPolygonStateTimeRegion implements StateTimeRegion, RenderInterface {
+public class R2xTPolygonStateTimeRegion implements Region<StateTime>, RenderInterface {
   private final Tensor polygon;
   private final BijectionFamily bijectionFamily;
   private final Supplier<Scalar> supplier;
@@ -40,8 +41,12 @@ public class R2xTPolygonStateTimeRegion implements StateTimeRegion, RenderInterf
   @Override
   public void render(GeometricLayer geometricLayer, Graphics2D graphics) {
     Scalar time = supplier.get();
-    graphics.setColor(RegionRenders.COLOR);
     TensorUnaryOperator fwd = bijectionFamily.forward(time);
-    graphics.fill(geometricLayer.toPath2D(Tensor.of(polygon.stream().map(fwd))));
+    Path2D path2D = geometricLayer.toPath2D(Tensor.of(polygon.stream().map(fwd)));
+    graphics.setColor(RegionRenders.COLOR);
+    graphics.fill(path2D);
+    graphics.setColor(RegionRenders.BOUNDARY);
+    path2D.closePath();
+    graphics.draw(path2D);
   }
 }

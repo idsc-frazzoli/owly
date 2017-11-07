@@ -41,7 +41,7 @@ enum R2NoiseDemo {
   public static void main(String[] args) {
     Tensor partitionScale = Tensors.vector(8, 8);
     final Scalar threshold = RealScalar.of(.1);
-    Region region = new R2NoiseRegion(threshold);
+    Region<Tensor> region = new R2NoiseRegion(threshold);
     StateIntegrator stateIntegrator = //
         FixedStateIntegrator.create(EulerIntegrator.INSTANCE, RationalScalar.of(1, 12), 4);
     Collection<Flow> controls = R2Controls.createRadial(23);

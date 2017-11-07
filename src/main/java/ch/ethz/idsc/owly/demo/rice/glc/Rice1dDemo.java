@@ -1,6 +1,7 @@
 // code by jph
 package ch.ethz.idsc.owly.demo.rice.glc;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
@@ -43,11 +44,11 @@ enum Rice1dDemo {
     Rice1GoalManager rice1Goal = new Rice1GoalManager(Tensors.vector(6, -.7), Tensors.vector(.4, .3));
     TrajectoryRegionQuery obstacleQuery = //
         SimpleTrajectoryRegionQuery.timeInvariant( //
-            RegionUnion.of( //
+            RegionUnion.wrap(Arrays.asList( //
                 new EllipsoidRegion(Tensors.vector(+3, +1), Tensors.vector(1.75, .75)),
                 // , // speed limit along the way
                 new EllipsoidRegion(Tensors.vector(-2, +0), Tensors.vector(1, 1)) // block to the left
-            ));
+            )));
     // ---
     TrajectoryPlanner trajectoryPlanner = new StandardTrajectoryPlanner( //
         eta, stateIntegrator, controls, obstacleQuery, rice1Goal);

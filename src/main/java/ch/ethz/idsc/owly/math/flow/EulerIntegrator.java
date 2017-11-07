@@ -5,12 +5,16 @@ import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
 
 /** Numerical Recipes 3rd Edition (17.1.1) */
-public enum EulerIntegrator implements Integrator {
+public enum EulerIntegrator implements Integrator, LieIntegrator {
   INSTANCE;
   // ---
-  @Override
+  @Override // from Integrator
   public Tensor step(Flow flow, Tensor x, Scalar h) {
-    Tensor k1 = flow.at(x).multiply(h);
-    return x.add(k1);
+    return spin(x, flow.at(x).multiply(h));
+  }
+
+  @Override // from LieIntegrator
+  public Tensor spin(Tensor g, Tensor x) {
+    return g.add(x);
   }
 }

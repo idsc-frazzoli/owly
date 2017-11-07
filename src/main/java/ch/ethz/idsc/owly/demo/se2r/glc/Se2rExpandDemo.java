@@ -1,6 +1,7 @@
 // code by jph
 package ch.ethz.idsc.owly.demo.se2r.glc;
 
+import java.util.Arrays;
 import java.util.Collection;
 
 import ch.ethz.idsc.owly.demo.se2.Se2CarIntegrator;
@@ -42,10 +43,10 @@ enum Se2rExpandDemo {
         Tensors.vector(-1, -1, Math.PI * 2), //
         Tensors.vector(.1, .1, 0.17), controls);
     TrajectoryRegionQuery obstacleQuery = SimpleTrajectoryRegionQuery.timeInvariant( //
-        RegionUnion.of( //
+        RegionUnion.wrap(Arrays.asList( //
             new HyperplaneRegion(Tensors.vector(0, -1, 0), RealScalar.of(1.5)), //
             new HyperplaneRegion(Tensors.vector(0, +1, 0), RealScalar.of(2.0)) //
-        ));
+        )));
     // ---
     TrajectoryPlanner trajectoryPlanner = new StandardTrajectoryPlanner( //
         eta, stateIntegrator, controls, obstacleQuery, goalInterface);

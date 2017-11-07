@@ -107,6 +107,7 @@ public abstract class TrajectoryPlanner implements ExpandInterface<GlcNode>, Ser
    * @param connector */
   protected synchronized void offerDestination(GlcNode node, List<StateTime> connector) {
     best.put(node, connector);
+    // TODO check if size ever greater than 2
     while (1 < best.size()) // `if` should be sufficient, but `while` to be sure
       best.remove(best.lastKey());
   }

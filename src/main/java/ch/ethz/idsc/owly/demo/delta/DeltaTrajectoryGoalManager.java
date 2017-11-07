@@ -24,7 +24,7 @@ public class DeltaTrajectoryGoalManager extends TrajectoryGoalManager {
   private final Scalar maxSpeed;
   private final Scalar timeCostScalingFactor;
 
-  public DeltaTrajectoryGoalManager(List<Region> goalRegions, List<StateTime> heuristicTrajectory, Tensor radius, Scalar maxSpeed,
+  public DeltaTrajectoryGoalManager(List<Region<Tensor>> goalRegions, List<StateTime> heuristicTrajectory, Tensor radius, Scalar maxSpeed,
       Scalar timeCostScalingFactor) {
     super(goalRegions);
     this.heuristicTrajectory = heuristicTrajectory;
@@ -36,11 +36,11 @@ public class DeltaTrajectoryGoalManager extends TrajectoryGoalManager {
   }
 
   // Constructor with Default value in CostScaling
-  public DeltaTrajectoryGoalManager(List<Region> goalRegions, List<StateTime> heuristicTrajectory, Tensor radius, Scalar maxSpeed) {
+  public DeltaTrajectoryGoalManager(List<Region<Tensor>> goalRegions, List<StateTime> heuristicTrajectory, Tensor radius, Scalar maxSpeed) {
     this(goalRegions, heuristicTrajectory, radius, maxSpeed, RealScalar.ONE);
   }
 
-  public DeltaTrajectoryGoalManager(List<Region> goalRegions, List<StateTime> heuristicTrajectory, Scalar maxSpeed) {
+  public DeltaTrajectoryGoalManager(List<Region<Tensor>> goalRegions, List<StateTime> heuristicTrajectory, Scalar maxSpeed) {
     this(goalRegions, heuristicTrajectory, Tensors.vector(0, 0), maxSpeed, RealScalar.ONE);
   }
 

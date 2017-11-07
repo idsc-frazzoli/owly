@@ -22,7 +22,7 @@ import ch.ethz.idsc.tensor.sca.Ramp;
 /** minimizes driving time (=distance, since unit speed)
  * 
  * {@link Se2WrapGoalManagerExt} works with {@link Se2Wrap} as well as with {@link IdentityWrap} */
-public class Se2WrapGoalManagerExt implements Region, CostFunction {
+public class Se2WrapGoalManagerExt implements Region<Tensor>, CostFunction {
   private final CoordinateWrap coordinateWrap;
   private final Se2AbstractGoalManager goalManager;
 

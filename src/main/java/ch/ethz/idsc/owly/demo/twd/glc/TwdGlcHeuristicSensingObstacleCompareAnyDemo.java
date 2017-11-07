@@ -64,7 +64,7 @@ enum TwdGlcHeuristicSensingObstacleCompareAnyDemo {
     Collection<Flow> controls = TwdControls.createControls(TwdStateSpaceModel.createDefault(), parameters.getResolutionInt());
     // Creating Goals
     Tensor startState = Tensors.vector(0, 0, 0);
-    Region environmentRegion = new R2NoiseRegion(RealScalar.of(0.1));
+    Region<Tensor> environmentRegion = new R2NoiseRegion(RealScalar.of(0.1));
     TrajectoryRegionQuery obstacleQuery = SimpleTrajectoryRegionQuery.timeInvariant( //
         EuclideanDistanceDiscoverRegion.of(environmentRegion, startState, RealScalar.of(4)));
     AnyPlannerInterface anyTrajectoryPlanner = new OptimalAnyTrajectoryPlanner( //

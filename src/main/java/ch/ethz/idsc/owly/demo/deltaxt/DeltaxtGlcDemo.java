@@ -73,10 +73,9 @@ public class DeltaxtGlcDemo implements DemoInterface {
     Tensor obstacleImage = ResourceData.of("/io/delta_free.png"); //
     ImageRegion imageRegion = new ImageRegion(obstacleImage, range, true);
     TrajectoryRegionQuery obstacleQuery = //
-        new SimpleTrajectoryRegionQuery(new RxtTimeInvariantRegion( //
-            imageRegion));
+        new SimpleTrajectoryRegionQuery(new RxtTimeInvariantRegion(imageRegion));
     // Creating Dinghy trajectory
-    List<Region> goalRegions = new ArrayList<>();
+    List<Region<Tensor>> goalRegions = new ArrayList<>();
     List<TrajectorySample> dinghyTrajectory = new ArrayList<>();
     Tensor radius = Tensors.vector(0.3, 0.3, 2);
     // Start of dinghy

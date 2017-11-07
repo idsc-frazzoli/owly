@@ -9,20 +9,21 @@ import ch.ethz.idsc.owly.math.region.Region;
 import ch.ethz.idsc.owly.math.region.RegionUnion;
 import ch.ethz.idsc.owly.math.state.StateTime;
 import ch.ethz.idsc.owly.math.state.TimeInvariantRegion;
+import ch.ethz.idsc.tensor.Tensor;
 
 public abstract class TrajectoryGoalManager extends SimpleTrajectoryRegionQuery implements GoalInterface {
-  private final List<Region> goalRegionList;
+  private final List<Region<Tensor>> goalRegionList;
 
-  public TrajectoryGoalManager(List<Region> goalRegionList) {
+  public TrajectoryGoalManager(List<Region<Tensor>> goalRegionList) {
     super(new TimeInvariantRegion(RegionUnion.wrap(goalRegionList)));
     this.goalRegionList = goalRegionList;
   }
 
-  public final List<Region> getGoalRegionList() {
+  public final List<Region<Tensor>> getGoalRegionList() {
     return goalRegionList;
   }
 
-  public final List<Region> deleteRegionsBefore(Optional<StateTime> furthestState) {
+  public final List<Region<Tensor>> deleteRegionsBefore(Optional<StateTime> furthestState) {
     if (furthestState.isPresent()) {
       int deleteIndex = -1;
       int index = goalRegionList.size();

@@ -20,7 +20,7 @@ import ch.ethz.idsc.tensor.sca.Mod;
  * 
  * class defines circle region for (x,y) component and periodic intervals in angular component */
 @DontModify
-public abstract class Se2AbstractGoalManager implements Region, CostFunction {
+public abstract class Se2AbstractGoalManager implements Region<Tensor>, CostFunction {
   static final Mod PRINCIPAL = Mod.function(2 * Math.PI, -Math.PI);
   // ---
   protected final Tensor center;

@@ -27,7 +27,7 @@ public interface AnyPlannerInterface extends ExpandInterface<GlcNode> {
    * @param newGoal, new Goalmanager
    * @param goalCheckHelp, which includes all Nodes, which could have a trajectory in the Goal
    * @return boolean, true if Goal was already found in oldTree */
-  boolean changeToGoal(GoalInterface newGoal, Region goalCheckHelp);
+  boolean changeToGoal(GoalInterface newGoal, Region<Tensor> goalCheckHelp);
 
   /** Changes the Goal of the current planner:
    * rechecks the tree if Goal was found and expanding is needed, updates Merit of Nodes in Queue, relabels domains
@@ -44,7 +44,7 @@ public interface AnyPlannerInterface extends ExpandInterface<GlcNode> {
    * 
    * @param newObstacle the new Query for the new Obstacle Information
    * @param possibleNewObstacleRegion Region, in which ALL Nodes are, which could have a trajectory where sth. changed */
-  void obstacleUpdate(TrajectoryRegionQuery newObstacle, Region possibleNewObstacleRegion);
+  void obstacleUpdate(TrajectoryRegionQuery newObstacle, Region<Tensor> possibleNewObstacleRegion);
 
   /** @return the StateTime Trajectory to the best Goal, or if no goal was found NULL */
   List<StateTime> trajectoryToBest();

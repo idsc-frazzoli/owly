@@ -2,8 +2,13 @@
 package ch.ethz.idsc.owly.math.noise;
 
 public enum PerlinContinuousNoise implements NativeContinuousNoise {
-  FUNCTION //
-  ;
+  FUNCTION;
+  // ---
+  @Override
+  public double at(double x) {
+    return at(x, 0, 0);
+  }
+
   @Override
   public double at(double x, double y) {
     return at(x, y, 0);

@@ -15,7 +15,7 @@ public enum RnPointclouds {
    * @param offset of area, in which they are created
    * @param radius of each obstacle
    * @return region with random points as obstacles */
-  public static Region createRandomRegion(int num, Tensor offset, Tensor width, Scalar radius) {
+  public static Region<Tensor> createRandomRegion(int num, Tensor offset, Tensor width, Scalar radius) {
     RandomSampleInterface randomSampleInterface = new BoxRandomSample(offset, offset.add(width));
     return RnPointcloudRegion.of(RandomSample.of(randomSampleInterface, num), radius);
   }

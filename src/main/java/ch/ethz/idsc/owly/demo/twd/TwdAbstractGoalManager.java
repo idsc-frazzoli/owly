@@ -10,7 +10,7 @@ import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Scalars;
 import ch.ethz.idsc.tensor.Tensor;
 
-public abstract class TwdAbstractGoalManager implements Region, CostFunction {
+public abstract class TwdAbstractGoalManager implements Region<Tensor>, CostFunction {
   final Tensor center;
   final Scalar tolerance_xy;
   final Scalar tolerance_angle;

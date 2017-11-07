@@ -14,7 +14,7 @@ public class ImageRegionTest extends TestCase {
   public void testSimple() {
     Tensor image = ResourceData.of("/io/delta_free.png");
     assertEquals(Dimensions.of(image), Arrays.asList(128, 179));
-    Region region = new ImageRegion(image, Tensors.vector(179, 128), false);
+    Region<Tensor> region = new ImageRegion(image, Tensors.vector(179, 128), false);
     for (int x = 0; x < 179; ++x)
       for (int y = 0; y < 128; ++y) {
         assertEquals( //

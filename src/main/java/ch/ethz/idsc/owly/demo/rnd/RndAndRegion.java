@@ -1,23 +1,23 @@
 // code by jph
 package ch.ethz.idsc.owly.demo.rnd;
 
-import ch.ethz.idsc.owly.math.region.CompleteRegion;
 import ch.ethz.idsc.owly.math.region.Region;
+import ch.ethz.idsc.owly.math.region.Regions;
 import ch.ethz.idsc.tensor.Tensor;
 
 /** 
  * 
  */
-public class RndAndRegion implements Region {
-  public static Region trivial_1(Region region) {
-    return new RndAndRegion(region, CompleteRegion.INSTANCE);
+public class RndAndRegion implements Region<Tensor> {
+  public static Region<Tensor> trivial_1(Region<Tensor> region) {
+    return new RndAndRegion(region, Regions.completeRegion());
   }
 
   // ---
-  private final Region region1;
-  private final Region region2;
+  private final Region<Tensor> region1;
+  private final Region<Tensor> region2;
 
-  private RndAndRegion(Region region1, Region region2) {
+  private RndAndRegion(Region<Tensor> region1, Region<Tensor> region2) {
     this.region1 = region1;
     this.region2 = region2;
   }

@@ -10,10 +10,11 @@ import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
 import ch.ethz.idsc.owly.gui.ani.OwlyAnimationFrame;
 import ch.ethz.idsc.owly.math.region.Region;
 import ch.ethz.idsc.owly.math.state.TrajectoryRegionQuery;
+import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
 
 public abstract class Se2CarDemo implements DemoInterface {
-  static TrajectoryRegionQuery createCarQuery(Region region) {
+  static TrajectoryRegionQuery createCarQuery(Region<Tensor> region) {
     Se2PointsVsRegion se2PointsVsRegion = Se2PointsVsRegions.line(Tensors.vector(.2, .1, 0, -.1), region);
     return SimpleTrajectoryRegionQuery.timeInvariant(se2PointsVsRegion);
   }

@@ -33,6 +33,7 @@ import ch.ethz.idsc.owly.math.region.PolygonRegion;
 import ch.ethz.idsc.owly.math.region.Region;
 import ch.ethz.idsc.owly.rrts.core.RrtsNode;
 import ch.ethz.idsc.owly.rrts.core.TransitionRegionQuery;
+import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.io.Serialization;
 
 public class OwlyFrame extends BaseFrame {
@@ -151,7 +152,7 @@ public class OwlyFrame extends BaseFrame {
     }
   }
 
-  public void addRegionRender(Region region) {
+  public void addRegionRender(Region<Tensor> region) {
     if (region instanceof ImageRegion)
       addBackground(new ImageRegionRender((ImageRegion) region));
     if (region instanceof EllipsoidRegion)

@@ -1,6 +1,7 @@
 // code by jl
 package ch.ethz.idsc.owly.demo.se2.any;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
@@ -71,12 +72,12 @@ class Se2IterateGlcAnyCircleWrapDemo {
         coordinateWrap, //
         se2GoalManager);
     TrajectoryRegionQuery obstacleQuery = SimpleTrajectoryRegionQuery.timeInvariant( //
-        RegionUnion.of( //
+        RegionUnion.wrap(Arrays.asList( //
             new EllipsoidRegion(Tensors.vector(0, 0, 0), Tensors.vector(1, 1, Double.POSITIVE_INFINITY)), //
             new InvertedRegion(new EllipsoidRegion(Tensors.vector(0, 0, 0), Tensors.vector(5, 5, Double.POSITIVE_INFINITY))), //
             new HyperplaneRegion(Tensors.vector(0, -1, 0), RealScalar.of(4)), //
             new HyperplaneRegion(Tensors.vector(0, +1, 0), RealScalar.of(4)) //
-        ));
+        )));
     // ---
     Scalar tic = RealScalar.of(System.nanoTime());
     AnyPlannerInterface trajectoryPlanner = new OptimalAnyTrajectoryPlanner( //

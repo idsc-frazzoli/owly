@@ -5,6 +5,6 @@ import junit.framework.TestCase;
 
 public class EmptyRegionTest extends TestCase {
   public void testSimple() {
-    assertFalse(EmptyRegion.INSTANCE.isMember(null));
+    assertFalse(Regions.emptyRegion().isMember(null));
   }
 }

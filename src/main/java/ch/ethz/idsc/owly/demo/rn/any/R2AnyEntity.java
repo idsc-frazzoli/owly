@@ -103,7 +103,7 @@ import ch.ethz.idsc.tensor.red.Norm2Squared;
   }
 
   @Override
-  protected Region createGoalCheckHelp(Tensor goal) {
+  protected Region<Tensor> createGoalCheckHelp(Tensor goal) {
     Tensor r2Goal = goal.extract(0, 2);
     // (GoalRadius + maximalDistance/step) * Securityfactor
     Scalar goalSearchHelperRadius = (goalRadius.add(RealScalar.ONE)).multiply(RealScalar.of(1.5));
@@ -111,13 +111,13 @@ import ch.ethz.idsc.tensor.red.Norm2Squared;
   }
 
   @Override
-  protected TrajectoryRegionQuery updateObstacle(Region environmentRegion, Tensor currentState) {
+  protected TrajectoryRegionQuery updateObstacle(Region<Tensor> environmentRegion, Tensor currentState) {
     return SimpleTrajectoryRegionQuery.timeInvariant( //
         EuclideanDistanceDiscoverRegion.of(environmentRegion, currentState, RealScalar.of(4)));
   }
 
   @Override
-  protected TrajectoryRegionQuery initializeObstacle(Region region, Tensor currentState) {
+  protected TrajectoryRegionQuery initializeObstacle(Region<Tensor> region, Tensor currentState) {
     return updateObstacle(region, currentState);
   }
 

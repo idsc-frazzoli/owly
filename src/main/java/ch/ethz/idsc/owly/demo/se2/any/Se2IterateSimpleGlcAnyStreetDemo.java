@@ -1,6 +1,7 @@
 // code by jl
 package ch.ethz.idsc.owly.demo.se2.any;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
@@ -57,10 +58,10 @@ class Se2IterateSimpleGlcAnyStreetDemo {
     Se2NoHeuristicGoalManager se2GoalManager = new Se2NoHeuristicGoalManager(//
         Tensors.vector(-7, 0, 0), radiusVector);
     TrajectoryRegionQuery obstacleQuery = SimpleTrajectoryRegionQuery.timeInvariant( //
-        RegionUnion.of( //
+        RegionUnion.wrap(Arrays.asList( //
             new HyperplaneRegion(Tensors.vector(0, -1, 0), RealScalar.of(5)), //
             new HyperplaneRegion(Tensors.vector(0, +1, 0), RealScalar.of(5)) //
-        ));
+        )));
     // ---
     long tic = System.nanoTime();
     AnyPlannerInterface trajectoryPlanner = new SimpleAnyTrajectoryPlanner( //

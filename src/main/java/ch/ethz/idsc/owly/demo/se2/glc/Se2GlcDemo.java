@@ -1,6 +1,7 @@
 // code by jl
 package ch.ethz.idsc.owly.demo.se2.glc;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
@@ -62,10 +63,10 @@ enum Se2GlcDemo {
         Tensors.vector(0.1, 0.1, 10 / 180 * Math.PI), //
         controls);
     TrajectoryRegionQuery obstacleQuery = SimpleTrajectoryRegionQuery.timeInvariant( //
-        RegionUnion.of( //
+        RegionUnion.wrap(Arrays.asList( //
             new HyperplaneRegion(Tensors.vector(0, -1, 0), RealScalar.of(1.5)), //
             new HyperplaneRegion(Tensors.vector(0, +1, 0), RealScalar.of(1.5)) //
-        ));
+        )));
     TrajectoryPlanner trajectoryPlanner = new StandardTrajectoryPlanner( //
         parameters.getEta(), stateIntegrator, controls, obstacleQuery, goalInterface);
     trajectoryPlanner.insertRoot(new StateTime(Tensors.vector(1, 0, -0.5 * Math.PI), RealScalar.ZERO));

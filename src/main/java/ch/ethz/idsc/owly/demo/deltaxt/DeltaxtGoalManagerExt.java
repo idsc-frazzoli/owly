@@ -34,7 +34,7 @@ public class DeltaxtGoalManagerExt extends SimpleTrajectoryRegionQuery implement
     this.radius = radius;
   }
 
-  public DeltaxtGoalManagerExt(Region region, Tensor center, Tensor radius, Scalar maxSpeed) {
+  public DeltaxtGoalManagerExt(Region<Tensor> region, Tensor center, Tensor radius, Scalar maxSpeed) {
     super(new TimeInvariantRegion(region));
     this.center = center;
     this.maxSpeed = maxSpeed;

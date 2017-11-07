@@ -1,6 +1,7 @@
 // code by jl
 package ch.ethz.idsc.owly.demo.twd.glc;
 
+import java.util.Arrays;
 import java.util.Collection;
 
 import ch.ethz.idsc.owly.demo.twd.TwdControls;
@@ -53,10 +54,10 @@ enum TwdGlcDemo {
         stateSpaceModel, parameters.getResolutionInt());
     // --
     TrajectoryRegionQuery obstacleQuery = SimpleTrajectoryRegionQuery.timeInvariant( //
-        RegionUnion.of( //
+        RegionUnion.wrap(Arrays.asList( //
             new HyperplaneRegion(Tensors.vector(0, -1, 0), RealScalar.of(4)), //
             new HyperplaneRegion(Tensors.vector(0, +1, 0), RealScalar.of(3)) //
-        ));
+        )));
     // --
     Tensor goalCenter = Tensors.vector(2, -2, -1 * Math.PI);
     // TwdDefaultGoalManager goalManager = new TwdDefaultGoalManager(goalCenter, radiusVector);

@@ -1,6 +1,7 @@
 // code by jph
 package ch.ethz.idsc.owly.demo.rn.glc;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
@@ -52,7 +53,9 @@ enum R2DemoSlow {
 
   static TrajectoryPlanner simpleR2Circle() throws Exception {
     return simple(SimpleTrajectoryRegionQuery.timeInvariant( //
-        RegionUnion.of(new EllipsoidRegion(Tensors.vector(-1, 0), Tensors.vector(2, 2)))));
+        RegionUnion.wrap(Arrays.asList( //
+            // TODO add more regions
+            new EllipsoidRegion(Tensors.vector(-1, 0), Tensors.vector(2, 2))))));
   }
 
   private static TrajectoryPlanner simple(TrajectoryRegionQuery obstacleQuery) throws Exception {

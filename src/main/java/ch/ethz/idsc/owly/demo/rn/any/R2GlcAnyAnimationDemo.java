@@ -17,7 +17,7 @@ public class R2GlcAnyAnimationDemo implements DemoInterface {
     Tensor root = Tensors.vector(0.2, 0.2);
     R2AnyEntity r2AnyEntity = new R2AnyEntity(root, 18);
     r2AnyEntity.trajectoryPlannerCallback = owlyAnimationFrame.trajectoryPlannerCallback;
-    Region obstacleRegion = new R2NoiseRegion(RealScalar.of(0.1));
+    Region<Tensor> obstacleRegion = new R2NoiseRegion(RealScalar.of(0.1));
     r2AnyEntity.startLife(obstacleRegion, root); // (trq, root);
     owlyAnimationFrame.set(r2AnyEntity);
     owlyAnimationFrame.jFrame.setVisible(true);

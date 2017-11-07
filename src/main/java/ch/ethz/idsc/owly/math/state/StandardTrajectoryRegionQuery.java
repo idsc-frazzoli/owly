@@ -3,12 +3,14 @@ package ch.ethz.idsc.owly.math.state;
 
 import java.util.List;
 
+import ch.ethz.idsc.owly.math.region.Region;
+
 public abstract class StandardTrajectoryRegionQuery extends AbstractTrajectoryRegionQuery {
-  private final StateTimeRegion stateTimeRegion;
+  private final Region<StateTime> region;
   private final StateTimeRegionCallback stateTimeRegionCallback;
 
-  public StandardTrajectoryRegionQuery(StateTimeRegion stateTimeRegion, StateTimeRegionCallback stateTimeRegionCallback) {
-    this.stateTimeRegion = stateTimeRegion;
+  public StandardTrajectoryRegionQuery(Region<StateTime> region, StateTimeRegionCallback stateTimeRegionCallback) {
+    this.region = region;
     this.stateTimeRegionCallback = stateTimeRegionCallback;
   }
 
@@ -17,7 +19,7 @@ public abstract class StandardTrajectoryRegionQuery extends AbstractTrajectoryRe
     int index = -1;
     for (StateTime stateTime : trajectory) {
       ++index;
-      if (stateTimeRegion.isMember(stateTime)) {
+      if (region.isMember(stateTime)) {
         stateTimeRegionCallback.notify_isMember(stateTime);
         return index;
       }

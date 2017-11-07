@@ -5,6 +5,6 @@ import junit.framework.TestCase;
 
 public class InvertedRegionTest extends TestCase {
   public void testSimple() {
-    assertTrue(new InvertedRegion(EmptyRegion.INSTANCE).isMember(null));
+    assertTrue(new InvertedRegion(Regions.emptyRegion()).isMember(null));
   }
 }

@@ -1,6 +1,7 @@
 // code by jph
 package ch.ethz.idsc.owly.demo.rn.glc;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
@@ -39,10 +40,10 @@ enum R2GoalTest {
     Collection<Flow> controls = R2Controls.createRadial(20);
     GoalInterface goalInterface = RnMinDistSphericalGoalManager.create(Tensors.vector(5, 0), DoubleScalar.of(0.5));
     TrajectoryRegionQuery obstacleQuery = SimpleTrajectoryRegionQuery.timeInvariant( //
-        RegionUnion.of( //
+        RegionUnion.wrap(Arrays.asList( //
             new EllipsoidRegion(Tensors.vector(3, 3), Tensors.vector(2, 2)), //
             new EllipsoidRegion(Tensors.vector(2.5, 0), Tensors.vector(2, 1.5)) //
-        ));
+        )));
     // ---
     TrajectoryPlanner trajectoryPlanner = new StandardTrajectoryPlanner( //
         partitionScale, stateIntegrator, controls, obstacleQuery, goalInterface);

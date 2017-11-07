@@ -21,7 +21,7 @@ import ch.ethz.idsc.tensor.sca.Ramp;
 /** minimizes driving time (=distance, since unit speed)
  * 
  * {@link Se2WrapGoalManager} works with {@link Se2Wrap} as well as with {@link TnIdentityWrap} */
-public class Se2WrapGoalManager implements Region, CostFunction {
+public class Se2WrapGoalManager implements Region<Tensor>, CostFunction {
   private final CoordinateWrap coordinateWrap;
   private final Tensor center;
   private final Scalar radius;

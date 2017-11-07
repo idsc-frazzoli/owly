@@ -41,7 +41,7 @@ enum R2PolygonDemo {
     Collection<Flow> controls = R2Controls.createRadial(20);
     GoalInterface goalInterface = //
         RnMinDistSphericalGoalManager.create(Tensors.vector(5, 5), DoubleScalar.of(.2));
-    Region r1 = new PolygonRegion(ExamplePolygons.BULKY_TOP_LEFT);
+    Region<Tensor> r1 = new PolygonRegion(ExamplePolygons.BULKY_TOP_LEFT);
     TrajectoryRegionQuery obstacleQuery = SimpleTrajectoryRegionQuery.timeInvariant(r1);
     // ---
     TrajectoryPlanner trajectoryPlanner = new StandardTrajectoryPlanner( //

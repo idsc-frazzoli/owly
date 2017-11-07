@@ -7,16 +7,16 @@ import ch.ethz.idsc.tensor.Tensor;
 /** 
  * 
  */
-public class RndOrRegion implements Region {
-  public static Region common(Region region) {
+public class RndOrRegion implements Region<Tensor> {
+  public static Region<Tensor> common(Region<Tensor> region) {
     return new RndOrRegion(region, region);
   }
 
   // ---
-  private final Region region1;
-  private final Region region2;
+  private final Region<Tensor> region1;
+  private final Region<Tensor> region2;
 
-  private RndOrRegion(Region region1, Region region2) {
+  private RndOrRegion(Region<Tensor> region1, Region<Tensor> region2) {
     this.region1 = region1;
     this.region2 = region2;
   }

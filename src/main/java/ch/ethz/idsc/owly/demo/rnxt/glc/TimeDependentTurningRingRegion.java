@@ -3,8 +3,8 @@ package ch.ethz.idsc.owly.demo.rnxt.glc;
 
 import ch.ethz.idsc.owly.data.GlobalAssert;
 import ch.ethz.idsc.owly.math.RotationUtils;
+import ch.ethz.idsc.owly.math.region.Region;
 import ch.ethz.idsc.owly.math.state.StateTime;
-import ch.ethz.idsc.owly.math.state.StateTimeRegion;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Scalars;
@@ -15,7 +15,7 @@ import ch.ethz.idsc.tensor.sca.ArcTan;
 import ch.ethz.idsc.tensor.sca.Mod;
 
 /** evaluate does not correspond to Euclidean distance */
-public class TimeDependentTurningRingRegion implements StateTimeRegion {
+public class TimeDependentTurningRingRegion implements Region<StateTime> {
   private static Mod MOD = Mod.function(2 * Math.PI, -Math.PI);
   // ---
   private final Tensor center;

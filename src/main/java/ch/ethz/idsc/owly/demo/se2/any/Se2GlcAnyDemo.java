@@ -1,6 +1,7 @@
 // code by jph and jl
 package ch.ethz.idsc.owly.demo.se2.any;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
@@ -56,10 +57,10 @@ class Se2GlcAnyDemo {
         Tensors.vector(0, 1, Math.PI), //
         Tensors.vector(0.1, 0.1, 0.1 * Math.PI));
     TrajectoryRegionQuery obstacleQuery = SimpleTrajectoryRegionQuery.timeInvariant( //
-        RegionUnion.of( //
+        RegionUnion.wrap(Arrays.asList( //
             new HyperplaneRegion(Tensors.vector(0, -1, 0), RealScalar.of(1.5)), //
             new HyperplaneRegion(Tensors.vector(0, +1, 0), RealScalar.of(4.5)) //
-        ));
+        )));
     // ---
     long tic = System.nanoTime();
     AnyPlannerInterface trajectoryPlanner = new OptimalAnyTrajectoryPlanner( //

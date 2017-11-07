@@ -69,7 +69,7 @@ enum Se2GlcHeuristicSensingObstacleCompareAnyDemo {
     // Creating Goals
     Tensor startState = Tensors.vector(0, 0, 0);
     // TODO
-    Region environmentRegion = new R2NoiseRegion(RealScalar.of(0.5));
+    Region<Tensor> environmentRegion = new R2NoiseRegion(RealScalar.of(0.5));
     TrajectoryRegionQuery obstacleQuery = SimpleTrajectoryRegionQuery.timeInvariant( //
         EuclideanDistanceDiscoverRegion.of(environmentRegion, startState, sensingRadius));
     // TODO JONAS: can remove todo "change back to AnyPlannerInterface"

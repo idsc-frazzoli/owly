@@ -5,6 +5,10 @@ package ch.ethz.idsc.owly.math.noise;
  * with input of double type */
 public interface NativeContinuousNoise {
   /** @param x
+   * @return value in the interval [-1, 1] that varies smoothly with x, y */
+  double at(double x);
+
+  /** @param x
    * @param y
    * @return value in the interval [-1, 1] that varies smoothly with x, y */
   double at(double x, double y);
