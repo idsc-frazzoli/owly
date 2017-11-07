@@ -1,19 +1,19 @@
 // code by jph
 package ch.ethz.idsc.owly.demo.util;
 
-import ch.ethz.idsc.owly.math.ScalarTensorFunction;
+import java.util.function.Function;
+
 import ch.ethz.idsc.owly.math.TensorUnaryOperator;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
 
 /** the term "family" conveys the meaning that the translation
  * depends on a single parameter, for instance time */
-public final class TranslationFamily implements BijectionFamily {
-  private final ScalarTensorFunction function;
+public final class Se2Family implements BijectionFamily {
+  private final Function<Scalar, Tensor> function;
 
-  /** @param function maps a scalar to a vector in R^n */
-  public TranslationFamily(ScalarTensorFunction function) {
-    this.function = function;
+  public Se2Family(Function<Scalar, Tensor> translation) {
+    this.function = translation;
   }
 
   @Override

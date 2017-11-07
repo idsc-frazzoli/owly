@@ -20,7 +20,7 @@ public enum Se2Integrator implements Integrator, LieIntegrator {
   /** Parameter description:
    * g in SE2
    * h in R */
-  @Override
+  @Override // from Integrator
   public Tensor step(Flow flow, Tensor g, Scalar h) {
     return spin(g, flow.getU().multiply(h));
   }
@@ -28,7 +28,7 @@ public enum Se2Integrator implements Integrator, LieIntegrator {
   /** @param g == {px, py, alpha}
    * @param x == {vx, vy, beta}
    * @return g . exp x */
-  @Override
+  @Override // from LieIntegrator
   public Tensor spin(Tensor g, Tensor x) {
     Scalar al = g.Get(2);
     Scalar be = x.Get(2);

@@ -28,6 +28,11 @@ public class LayeredContinuousNoise implements NativeContinuousNoise {
   }
 
   @Override
+  public double at(double x) {
+    return at(x, 0);
+  }
+
+  @Override
   public double at(double x, double y) {
     return IntStream.range(0, magnitude.length).parallel() //
         .mapToDouble(index -> magnitude[index] * nativeContinuousNoise.at( //
