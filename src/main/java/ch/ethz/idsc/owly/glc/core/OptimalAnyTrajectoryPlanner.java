@@ -20,7 +20,7 @@ import ch.ethz.idsc.owly.glc.adapter.TrajectoryGoalManager;
 import ch.ethz.idsc.owly.math.flow.Flow;
 import ch.ethz.idsc.owly.math.region.EmptyRegion;
 import ch.ethz.idsc.owly.math.region.InvertedRegion;
-import ch.ethz.idsc.owly.math.region.TensorRegion;
+import ch.ethz.idsc.owly.math.region.Region;
 import ch.ethz.idsc.owly.math.state.StateIntegrator;
 import ch.ethz.idsc.owly.math.state.StateTime;
 import ch.ethz.idsc.owly.math.state.TrajectoryRegionQuery;
@@ -258,7 +258,7 @@ public class OptimalAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
   }
 
   @Override
-  public void obstacleUpdate(TrajectoryRegionQuery newObstacle, TensorRegion rechabilityObstacleRegion) {
+  public void obstacleUpdate(TrajectoryRegionQuery newObstacle, Region<Tensor> rechabilityObstacleRegion) {
     if (newObstacle == getObstacleQuery()) // intended: equality of reference
       return;
     if (Objects.isNull(newObstacle)) {
@@ -541,7 +541,7 @@ public class OptimalAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
   }
 
   @Override
-  protected final boolean goalCheckTree(final TensorRegion possibleGoalNodesRegion) {
+  protected final boolean goalCheckTree(final Region<Tensor> possibleGoalNodesRegion) {
     final Collection<GlcNode> treeCollection = Nodes.ofSubtree(getRoot());
     // Smart way: uses 15% -> 30% of the time of normal implementation
     // Smart way: uses 30% -> 40% of the time of parallel implementation

@@ -21,7 +21,7 @@ import ch.ethz.idsc.owly.gui.ani.OwlyFrame;
 import ch.ethz.idsc.owly.gui.ani.OwlyGui;
 import ch.ethz.idsc.owly.math.flow.EulerIntegrator;
 import ch.ethz.idsc.owly.math.flow.Flow;
-import ch.ethz.idsc.owly.math.region.TensorRegion;
+import ch.ethz.idsc.owly.math.region.Region;
 import ch.ethz.idsc.owly.math.state.FixedStateIntegrator;
 import ch.ethz.idsc.owly.math.state.StateIntegrator;
 import ch.ethz.idsc.owly.math.state.StateTime;
@@ -49,7 +49,7 @@ enum TwdGlcNoiseDemo {
         resolution, timeScale, depthScale, partitionScale, dtMax, maxIter, stateSpaceModel.getLipschitz());
     parameters.printResolution();
     System.out.println("DomainSize: 1/Eta: " + parameters.getEta().map(n -> RealScalar.ONE.divide(n)));
-    TensorRegion region = new R2NoiseRegion(RealScalar.of(.1));
+    Region<Tensor> region = new R2NoiseRegion(RealScalar.of(.1));
     StateIntegrator stateIntegrator = //
         FixedStateIntegrator.create(EulerIntegrator.INSTANCE, parameters.getdtMax(), parameters.getTrajectorySize());
     // Controls

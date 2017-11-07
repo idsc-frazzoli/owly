@@ -11,7 +11,7 @@ import ch.ethz.idsc.owly.glc.core.GlcNode;
 import ch.ethz.idsc.owly.glc.core.GoalInterface;
 import ch.ethz.idsc.owly.math.CoordinateWrap;
 import ch.ethz.idsc.owly.math.flow.Flow;
-import ch.ethz.idsc.owly.math.region.TensorRegion;
+import ch.ethz.idsc.owly.math.region.Region;
 import ch.ethz.idsc.owly.math.state.StateTime;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Scalars;
@@ -22,7 +22,7 @@ import ch.ethz.idsc.tensor.sca.Ramp;
 /** minimizes driving time (=distance, since unit speed)
  * 
  * {@link Se2WrapGoalManagerExt} works with {@link Se2Wrap} as well as with {@link IdentityWrap} */
-public class Se2WrapGoalManagerExt implements TensorRegion, CostFunction {
+public class Se2WrapGoalManagerExt implements Region<Tensor>, CostFunction {
   private final CoordinateWrap coordinateWrap;
   private final Se2AbstractGoalManager goalManager;
 

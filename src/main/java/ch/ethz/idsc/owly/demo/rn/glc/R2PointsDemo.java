@@ -20,7 +20,7 @@ import ch.ethz.idsc.owly.gui.ani.OwlyFrame;
 import ch.ethz.idsc.owly.gui.ani.OwlyGui;
 import ch.ethz.idsc.owly.math.flow.EulerIntegrator;
 import ch.ethz.idsc.owly.math.flow.Flow;
-import ch.ethz.idsc.owly.math.region.TensorRegion;
+import ch.ethz.idsc.owly.math.region.Region;
 import ch.ethz.idsc.owly.math.state.FixedStateIntegrator;
 import ch.ethz.idsc.owly.math.state.StateIntegrator;
 import ch.ethz.idsc.owly.math.state.StateTime;
@@ -39,7 +39,7 @@ enum R2PointsDemo {
     Collection<Flow> controls = R2Controls.createRadial(20);
     GoalInterface goalInterface = //
         RnMinDistSphericalGoalManager.create(Tensors.vector(5, 5), DoubleScalar.of(.2));
-    TensorRegion r1 = RnPointclouds.createRandomRegion(10, Tensors.vector(0, 0), Tensors.vector(4, 4), RealScalar.of(0.6));
+    Region<Tensor> r1 = RnPointclouds.createRandomRegion(10, Tensors.vector(0, 0), Tensors.vector(4, 4), RealScalar.of(0.6));
     TrajectoryRegionQuery obstacleQuery = SimpleTrajectoryRegionQuery.timeInvariant(r1);
     // ---
     TrajectoryPlanner trajectoryPlanner = new StandardTrajectoryPlanner( //

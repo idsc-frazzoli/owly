@@ -11,7 +11,7 @@ import ch.ethz.idsc.owly.glc.core.GlcNode;
 import ch.ethz.idsc.owly.glc.core.GoalInterface;
 import ch.ethz.idsc.owly.math.CoordinateWrap;
 import ch.ethz.idsc.owly.math.flow.Flow;
-import ch.ethz.idsc.owly.math.region.TensorRegion;
+import ch.ethz.idsc.owly.math.region.Region;
 import ch.ethz.idsc.owly.math.state.StateTime;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Scalars;
@@ -22,7 +22,7 @@ import ch.ethz.idsc.tensor.sca.Ramp;
 /** goal region is spherical
  * 
  * objective is minimum path length */
-class TnGoalManager implements TensorRegion, CostFunction {
+class TnGoalManager implements Region<Tensor>, CostFunction {
   private final CoordinateWrap tnWarp;
   private final Tensor center;
   private final Scalar radius;

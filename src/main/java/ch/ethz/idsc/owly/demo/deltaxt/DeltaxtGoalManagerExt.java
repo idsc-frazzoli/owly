@@ -9,7 +9,7 @@ import ch.ethz.idsc.owly.glc.core.GlcNode;
 import ch.ethz.idsc.owly.glc.core.GoalInterface;
 import ch.ethz.idsc.owly.math.flow.Flow;
 import ch.ethz.idsc.owly.math.region.EllipsoidRegion;
-import ch.ethz.idsc.owly.math.region.TensorRegion;
+import ch.ethz.idsc.owly.math.region.Region;
 import ch.ethz.idsc.owly.math.state.StateTime;
 import ch.ethz.idsc.owly.math.state.TimeInvariantRegion;
 import ch.ethz.idsc.tensor.Scalar;
@@ -34,7 +34,7 @@ public class DeltaxtGoalManagerExt extends SimpleTrajectoryRegionQuery implement
     this.radius = radius;
   }
 
-  public DeltaxtGoalManagerExt(TensorRegion region, Tensor center, Tensor radius, Scalar maxSpeed) {
+  public DeltaxtGoalManagerExt(Region<Tensor> region, Tensor center, Tensor radius, Scalar maxSpeed) {
     super(new TimeInvariantRegion(region));
     this.center = center;
     this.maxSpeed = maxSpeed;

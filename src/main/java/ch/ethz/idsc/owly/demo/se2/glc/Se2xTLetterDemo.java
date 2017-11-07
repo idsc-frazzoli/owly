@@ -14,7 +14,8 @@ import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
 import ch.ethz.idsc.owly.gui.RenderInterface;
 import ch.ethz.idsc.owly.gui.ani.OwlyAnimationFrame;
 import ch.ethz.idsc.owly.math.region.ImageRegion;
-import ch.ethz.idsc.owly.math.state.StateTimeRegion;
+import ch.ethz.idsc.owly.math.region.Region;
+import ch.ethz.idsc.owly.math.state.StateTime;
 import ch.ethz.idsc.owly.math.state.TrajectoryRegionQuery;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
@@ -46,7 +47,7 @@ public class Se2xTLetterDemo implements DemoInterface {
           return Tensors.of(Sin.FUNCTION.apply(scalar.multiply(RealScalar.of(0.2))), RealScalar.ZERO);
         }
       };
-      StateTimeRegion stateTimeRegion = new R2xTPolygonStateTimeRegion( //
+      Region<StateTime> stateTimeRegion = new R2xTPolygonStateTimeRegion( //
           ExamplePolygons.CORNER_TOP_LEFT, shift, () -> abstractEntity.getStateTimeNow().time());
       abstractEntity.obstacleQuery = new SimpleTrajectoryRegionQuery(stateTimeRegion);
       owlyAnimationFrame.setObstacleQuery(abstractEntity.obstacleQuery);

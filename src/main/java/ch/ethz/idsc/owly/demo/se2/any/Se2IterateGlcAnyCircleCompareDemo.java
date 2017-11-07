@@ -2,6 +2,7 @@
 package ch.ethz.idsc.owly.demo.se2.any;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
@@ -65,12 +66,12 @@ class Se2IterateGlcAnyCircleCompareDemo {
     Se2AbstractGoalManager se2GoalManager = new Se2MinCurvatureGoalManager( //
         Tensors.vector(3, 0, 1.5 * Math.PI), radiusVector);
     TrajectoryRegionQuery obstacleQuery = SimpleTrajectoryRegionQuery.timeInvariant( //
-        RegionUnion.of( //
+        RegionUnion.wrap(Arrays.asList( //
             new EllipsoidRegion(Tensors.vector(0, 0, 0), Tensors.vector(1, 1, Double.POSITIVE_INFINITY)), //
             new InvertedRegion(new EllipsoidRegion(Tensors.vector(0, 0, 0), Tensors.vector(5, 5, Double.POSITIVE_INFINITY))), //
             new HyperplaneRegion(Tensors.vector(0, -1, 0), RealScalar.of(4)), //
             new HyperplaneRegion(Tensors.vector(0, +1, 0), RealScalar.of(4)) //
-        ));
+        )));
     List<Tensor> goalList = new ArrayList<>();
     goalList.add(Tensors.vector(0, -3, Math.PI));// South
     goalList.add(Tensors.vector(-3, 0, 0.5 * Math.PI));// West

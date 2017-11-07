@@ -20,7 +20,7 @@ import ch.ethz.idsc.owly.glc.core.TrajectoryPlanner;
 import ch.ethz.idsc.owly.gui.ani.OwlyFrame;
 import ch.ethz.idsc.owly.gui.ani.OwlyGui;
 import ch.ethz.idsc.owly.math.region.EllipsoidRegion;
-import ch.ethz.idsc.owly.math.region.TensorRegion;
+import ch.ethz.idsc.owly.math.region.Region;
 import ch.ethz.idsc.owly.math.state.StateTime;
 import ch.ethz.idsc.tensor.DoubleScalar;
 import ch.ethz.idsc.tensor.RationalScalar;
@@ -60,8 +60,8 @@ enum DeltaGlcConstTimeHeuristicAnyCompareDemo {
     TrajectoryPlannerContainer slowTrajectoryPlannerContainer = DeltaHelper.createGlcAny(RealScalar.of(-0.02), resolution, partitionScale);
     // -- GOALMANAGER
     Iterator<StateTime> iterator = quickTrajectory.iterator();
-    List<TensorRegion> goalRegions = new ArrayList<>();
-    List<TensorRegion> goalCheckHelpRegions = new ArrayList<>();
+    List<Region<Tensor>> goalRegions = new ArrayList<>();
+    List<Region<Tensor>> goalCheckHelpRegions = new ArrayList<>();
     Tensor radius = Tensors.vector(0.1, 0.1);
     Tensor maxChangePerIterstep = Tensors.vector(1, 1).multiply(slowTrajectoryPlannerContainer.getParameters().getExpandTime()
         .multiply(((DeltaStateSpaceModel) slowTrajectoryPlannerContainer.getStateSpaceModel()).getMaxPossibleChange()));

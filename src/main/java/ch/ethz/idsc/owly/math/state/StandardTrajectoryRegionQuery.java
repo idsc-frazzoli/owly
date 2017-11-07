@@ -3,11 +3,13 @@ package ch.ethz.idsc.owly.math.state;
 
 import java.util.List;
 
+import ch.ethz.idsc.owly.math.region.Region;
+
 public abstract class StandardTrajectoryRegionQuery extends AbstractTrajectoryRegionQuery {
-  private final StateTimeRegion stateTimeRegion;
+  private final Region<StateTime> stateTimeRegion;
   private final StateTimeRegionCallback stateTimeRegionCallback;
 
-  public StandardTrajectoryRegionQuery(StateTimeRegion stateTimeRegion, StateTimeRegionCallback stateTimeRegionCallback) {
+  public StandardTrajectoryRegionQuery(Region<StateTime> stateTimeRegion, StateTimeRegionCallback stateTimeRegionCallback) {
     this.stateTimeRegion = stateTimeRegion;
     this.stateTimeRegionCallback = stateTimeRegionCallback;
   }

@@ -2,6 +2,7 @@
 package ch.ethz.idsc.owly.demo.rn.any;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
@@ -27,8 +28,8 @@ import ch.ethz.idsc.owly.math.flow.EulerIntegrator;
 import ch.ethz.idsc.owly.math.flow.Flow;
 import ch.ethz.idsc.owly.math.region.EllipsoidRegion;
 import ch.ethz.idsc.owly.math.region.InvertedRegion;
+import ch.ethz.idsc.owly.math.region.Region;
 import ch.ethz.idsc.owly.math.region.RegionUnion;
-import ch.ethz.idsc.owly.math.region.TensorRegion;
 import ch.ethz.idsc.owly.math.state.FixedStateIntegrator;
 import ch.ethz.idsc.owly.math.state.StateIntegrator;
 import ch.ethz.idsc.owly.math.state.StateTime;
@@ -68,12 +69,12 @@ enum R2GlcAnyCircleCompareDemo {
     // performance depends on heuristic: zeroHeuristic vs rnGoal
     // Heuristic heuristic = new ZeroHeuristic(); // rnGoal
     TrajectoryRegionQuery obstacleQuery = SimpleTrajectoryRegionQuery.timeInvariant( //
-        RegionUnion.of( //
+        RegionUnion.wrap(Arrays.asList( //
             new EllipsoidRegion(Tensors.vector(0, 0), Tensors.vector(1, 1).multiply(circleRadius).multiply(RealScalar.of(0.5))) //
             , new InvertedRegion(new EllipsoidRegion(Tensors.vector(0, 0), Tensors.vector(1, 1).multiply(circleRadius).multiply(RealScalar.of(2)))) //
             // , RnPointclouds.createRandomRegion(30, Tensors.vector(12, 12), Tensors.vector(0, 0), RealScalar.of(0.6)) //
             , new R2NoiseRegion(RealScalar.of(.2)) //
-        ));
+        )));
     // ANYPLANNER
     AnyPlannerInterface anyTrajectoryPlanner = new OptimalAnyTrajectoryPlanner( //
         parameters.getEta(), stateIntegrator, controls, obstacleQuery, rnGoal);
@@ -124,7 +125,7 @@ enum R2GlcAnyCircleCompareDemo {
       rnGoal = new RnNoHeuristicCircleGoalManager(goal, goalRadius);
       // System.out.println("Switching to Goal:" + goal);
       Scalar goalSearchHelperRadius = goalRadius.add(RealScalar.ONE).multiply(RealScalar.of(2));
-      TensorRegion goalSearchHelper = new EllipsoidRegion(goal, Array.of(l -> goalSearchHelperRadius, goal.length()));
+      Region<Tensor> goalSearchHelper = new EllipsoidRegion(goal, Array.of(l -> goalSearchHelperRadius, goal.length()));
       anyTrajectoryPlanner.changeToGoal(rnGoal, goalSearchHelper);
       // -- EXPANDING
       int itersAny = GlcExpand.maxDepth(anyTrajectoryPlanner, parameters.getDepthLimit());

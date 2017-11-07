@@ -1,12 +1,13 @@
 // code by jph
 package ch.ethz.idsc.owly.math.region;
 
+import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
 import junit.framework.TestCase;
 
 public class BoundedBoxRegionTest extends TestCase {
   public void testSimple() {
-    TensorRegion r = new BoundedBoxRegion(Tensors.vector(10, 5), Tensors.vector(2, 5));
+    Region<Tensor> r = new BoundedBoxRegion(Tensors.vector(10, 5), Tensors.vector(2, 5));
     assertTrue(r.isMember(Tensors.vector(10, 5)));
     assertTrue(r.isMember(Tensors.vector(10, 9)));
     assertTrue(r.isMember(Tensors.vector(11, 9)));

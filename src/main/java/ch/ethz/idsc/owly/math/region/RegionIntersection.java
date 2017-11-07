@@ -5,14 +5,12 @@ import java.nio.ByteBuffer;
 import java.util.Arrays;
 import java.util.Collection;
 
-import ch.ethz.idsc.tensor.Tensor;
-
 /** RegionIntersection is a region that defines membership
  * to be member in all of a collection of {@link TensorRegion}s
  * 
  * <p>inspired by
  * <a href="https://reference.wolfram.com/language/ref/RegionIntersection.html">RegionIntersection</a> */
-public class RegionIntersection implements TensorRegion {
+public class RegionIntersection<T> implements Region<T> {
   /** combines a collection of {@link TensorRegion}s into one Region.
    * Membership is defined as membership in all of the regions in the collection.
    * The input collection is not copied but used by reference.
@@ -22,25 +20,26 @@ public class RegionIntersection implements TensorRegion {
    * 
    * @param collection collection of Regions
    * @return the intersection of the given regions */
-  public static TensorRegion wrap(Collection<TensorRegion> collection) {
-    return new RegionIntersection(collection);
+  public static <T> Region<T> wrap(Collection<Region<T>> collection) {
+    return new RegionIntersection<T>(collection);
   }
 
   /** @param regions to be combined
    * @return the intersection of the given regions */
-  public static TensorRegion of(TensorRegion... regions) {
-    return new RegionIntersection(Arrays.asList(regions));
+  @SuppressWarnings("unchecked")
+  public static <T> Region<T> of(Region<T>... regions) {
+    return new RegionIntersection<T>(Arrays.asList(regions));
   }
 
   // ---
-  private final Collection<TensorRegion> collection;
+  private final Collection<Region<T>> collection;
 
-  private RegionIntersection(Collection<TensorRegion> collection) {
+  private RegionIntersection(Collection<Region<T>> collection) {
     this.collection = collection;
   }
 
   @Override
-  public boolean isMember(Tensor tensor) {
+  public boolean isMember(T tensor) {
     return collection.stream().allMatch(region -> region.isMember(tensor));
   }
 }

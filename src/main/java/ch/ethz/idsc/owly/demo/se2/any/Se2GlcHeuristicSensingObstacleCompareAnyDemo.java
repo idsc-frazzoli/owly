@@ -32,8 +32,8 @@ import ch.ethz.idsc.owly.math.RotationUtils;
 import ch.ethz.idsc.owly.math.StateSpaceModel;
 import ch.ethz.idsc.owly.math.flow.EulerIntegrator;
 import ch.ethz.idsc.owly.math.flow.Flow;
+import ch.ethz.idsc.owly.math.region.Region;
 import ch.ethz.idsc.owly.math.region.SphericalRegion;
-import ch.ethz.idsc.owly.math.region.TensorRegion;
 import ch.ethz.idsc.owly.math.state.FixedStateIntegrator;
 import ch.ethz.idsc.owly.math.state.StateIntegrator;
 import ch.ethz.idsc.owly.math.state.StateTime;
@@ -69,7 +69,7 @@ enum Se2GlcHeuristicSensingObstacleCompareAnyDemo {
     // Creating Goals
     Tensor startState = Tensors.vector(0, 0, 0);
     // TODO
-    TensorRegion environmentRegion = new R2NoiseRegion(RealScalar.of(0.5));
+    Region<Tensor> environmentRegion = new R2NoiseRegion(RealScalar.of(0.5));
     TrajectoryRegionQuery obstacleQuery = SimpleTrajectoryRegionQuery.timeInvariant( //
         EuclideanDistanceDiscoverRegion.of(environmentRegion, startState, sensingRadius));
     // TODO JONAS: can remove todo "change back to AnyPlannerInterface"

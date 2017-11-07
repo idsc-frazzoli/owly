@@ -9,7 +9,6 @@ import ch.ethz.idsc.owly.glc.core.GlcNode;
 import ch.ethz.idsc.owly.glc.core.GoalInterface;
 import ch.ethz.idsc.owly.math.flow.Flow;
 import ch.ethz.idsc.owly.math.region.BoundedBoxRegion;
-import ch.ethz.idsc.owly.math.region.RegionUnion;
 import ch.ethz.idsc.owly.math.state.StateTime;
 import ch.ethz.idsc.owly.math.state.TimeInvariantRegion;
 import ch.ethz.idsc.tensor.RealScalar;
@@ -19,7 +18,7 @@ import ch.ethz.idsc.tensor.Tensor;
 // x == [d v a w]
 class IpGoalManager extends SimpleTrajectoryRegionQuery implements GoalInterface {
   public IpGoalManager(Tensor center, Tensor radius) {
-    super(new TimeInvariantRegion(RegionUnion.of(new BoundedBoxRegion(center, radius))));
+    super(new TimeInvariantRegion(new BoundedBoxRegion(center, radius)));
   }
 
   @Override

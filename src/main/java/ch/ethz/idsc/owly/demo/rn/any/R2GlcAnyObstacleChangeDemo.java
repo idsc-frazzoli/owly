@@ -1,6 +1,7 @@
 // code by jl
 package ch.ethz.idsc.owly.demo.rn.any;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
@@ -55,12 +56,12 @@ enum R2GlcAnyObstacleChangeDemo {
     // performance depends on heuristic: zeroHeuristic vs rnGoal
     // Heuristic heuristic = new ZeroHeuristic(); // rnGoal
     TrajectoryRegionQuery obstacleQuery1 = SimpleTrajectoryRegionQuery.timeInvariant( //
-        RegionUnion.of( //
+        RegionUnion.wrap(Arrays.asList( //
             new EllipsoidRegion(Tensors.vector(0, 0), Tensors.vector(3, 3))//
             , new InvertedRegion(new EllipsoidRegion(Tensors.vector(0, 0), Tensors.vector(8, 8)))
             // , RnPointclouds.createRandomRegion(30, Tensors.vector(12, 12), Tensors.vector(0, 0), RealScalar.of(0.6)) //
             , new R2NoiseRegion(RealScalar.of(.2)) //
-        ));
+        )));
     // --
     AnyPlannerInterface trajectoryPlanner = new OptimalAnyTrajectoryPlanner( //
         parameters.getEta(), stateIntegrator, controls, obstacleQuery1, rnGoal);
@@ -73,12 +74,12 @@ enum R2GlcAnyObstacleChangeDemo {
     owlyFrame.jFrame.setBounds(0, 0, 800, 800);
     owlyFrame.setGlc((TrajectoryPlanner) trajectoryPlanner);
     TrajectoryRegionQuery obstacleQuery2 = SimpleTrajectoryRegionQuery.timeInvariant( //
-        RegionUnion.of( //
+        RegionUnion.wrap(Arrays.asList( //
             // new EllipsoidRegion(Tensors.vector(0, 0), Tensors.vector(3, 3)),//
             new InvertedRegion(new EllipsoidRegion(Tensors.vector(0, 0), Tensors.vector(8, 8))),
             // RnPointclouds.createRandomRegion(30, Tensors.vector(12, 12), Tensors.vector(0, 0), RealScalar.of(0.6)), //
             new R2NoiseRegion(RealScalar.of(.2)) //
-        ));
+        )));
     trajectoryPlanner.obstacleUpdate(obstacleQuery2);
     owlyFrame.setGlc((TrajectoryPlanner) trajectoryPlanner);
     GlcExpand.constTime(trajectoryPlanner, RealScalar.of(1.5), parameters.getDepthLimit());

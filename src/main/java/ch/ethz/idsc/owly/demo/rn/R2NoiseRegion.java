@@ -4,7 +4,7 @@ package ch.ethz.idsc.owly.demo.rn;
 import ch.ethz.idsc.owly.math.noise.ContinuousNoise;
 import ch.ethz.idsc.owly.math.noise.ContinuousNoiseUtils;
 import ch.ethz.idsc.owly.math.noise.SimplexContinuousNoise;
-import ch.ethz.idsc.owly.math.region.TensorRegion;
+import ch.ethz.idsc.owly.math.region.Region;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Scalars;
 import ch.ethz.idsc.tensor.Tensor;
@@ -15,7 +15,7 @@ import ch.ethz.idsc.tensor.Tensor;
  * https://de.wikipedia.org/wiki/Simplex_Noise
  * 
  * membership in the region for coordinates (x,y) that evaluate the noise function above a given threshold. */
-public class R2NoiseRegion implements TensorRegion {
+public class R2NoiseRegion implements Region<Tensor> {
   private static final ContinuousNoise CONTINUOUS_NOISE = //
       ContinuousNoiseUtils.wrap2D(SimplexContinuousNoise.FUNCTION);
   // ---

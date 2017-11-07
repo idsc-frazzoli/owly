@@ -29,8 +29,8 @@ import ch.ethz.idsc.owly.gui.ani.OwlyFrame;
 import ch.ethz.idsc.owly.gui.ani.OwlyGui;
 import ch.ethz.idsc.owly.math.flow.EulerIntegrator;
 import ch.ethz.idsc.owly.math.flow.Flow;
+import ch.ethz.idsc.owly.math.region.Region;
 import ch.ethz.idsc.owly.math.region.SphericalRegion;
-import ch.ethz.idsc.owly.math.region.TensorRegion;
 import ch.ethz.idsc.owly.math.state.FixedStateIntegrator;
 import ch.ethz.idsc.owly.math.state.StateIntegrator;
 import ch.ethz.idsc.owly.math.state.StateTime;
@@ -64,7 +64,7 @@ enum TwdGlcHeuristicSensingObstacleCompareAnyDemo {
     Collection<Flow> controls = TwdControls.createControls(TwdStateSpaceModel.createDefault(), parameters.getResolutionInt());
     // Creating Goals
     Tensor startState = Tensors.vector(0, 0, 0);
-    TensorRegion environmentRegion = new R2NoiseRegion(RealScalar.of(0.1));
+    Region<Tensor> environmentRegion = new R2NoiseRegion(RealScalar.of(0.1));
     TrajectoryRegionQuery obstacleQuery = SimpleTrajectoryRegionQuery.timeInvariant( //
         EuclideanDistanceDiscoverRegion.of(environmentRegion, startState, RealScalar.of(4)));
     AnyPlannerInterface anyTrajectoryPlanner = new OptimalAnyTrajectoryPlanner( //

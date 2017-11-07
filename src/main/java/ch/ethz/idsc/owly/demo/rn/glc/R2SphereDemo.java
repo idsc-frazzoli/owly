@@ -1,6 +1,7 @@
 // code by jph
 package ch.ethz.idsc.owly.demo.rn.glc;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
@@ -21,8 +22,8 @@ import ch.ethz.idsc.owly.gui.ani.OwlyGui;
 import ch.ethz.idsc.owly.math.flow.EulerIntegrator;
 import ch.ethz.idsc.owly.math.flow.Flow;
 import ch.ethz.idsc.owly.math.region.EllipsoidRegion;
+import ch.ethz.idsc.owly.math.region.Region;
 import ch.ethz.idsc.owly.math.region.RegionUnion;
-import ch.ethz.idsc.owly.math.region.TensorRegion;
 import ch.ethz.idsc.owly.math.state.FixedStateIntegrator;
 import ch.ethz.idsc.owly.math.state.StateIntegrator;
 import ch.ethz.idsc.owly.math.state.StateTime;
@@ -42,9 +43,10 @@ enum R2SphereDemo {
     Collection<Flow> controls = R2Controls.createRadial(20);
     GoalInterface goalInterface = //
         RnMinDistSphericalGoalManager.create(Tensors.vector(5, 0), DoubleScalar.of(0.5));
-    TensorRegion r1 = new EllipsoidRegion(Tensors.vector(3, 3), Tensors.vector(2, 2));
-    TensorRegion r2 = new EllipsoidRegion(Tensors.vector(2.5, 0), Tensors.vector(2, 1.5));
-    TrajectoryRegionQuery obstacleQuery = SimpleTrajectoryRegionQuery.timeInvariant(RegionUnion.of(r1, r2));
+    Region<Tensor> r1 = new EllipsoidRegion(Tensors.vector(3, 3), Tensors.vector(2, 2));
+    Region<Tensor> r2 = new EllipsoidRegion(Tensors.vector(2.5, 0), Tensors.vector(2, 1.5));
+    TrajectoryRegionQuery obstacleQuery = SimpleTrajectoryRegionQuery.timeInvariant( //
+        RegionUnion.wrap(Arrays.asList(r1, r2)));
     // ---
     TrajectoryPlanner trajectoryPlanner = new StandardTrajectoryPlanner( //
         partitionScale, stateIntegrator, controls, obstacleQuery, goalInterface);

@@ -21,7 +21,7 @@ import ch.ethz.idsc.owly.gui.ani.OwlyGui;
 import ch.ethz.idsc.owly.math.flow.EulerIntegrator;
 import ch.ethz.idsc.owly.math.flow.Flow;
 import ch.ethz.idsc.owly.math.region.PolygonRegion;
-import ch.ethz.idsc.owly.math.region.TensorRegion;
+import ch.ethz.idsc.owly.math.region.Region;
 import ch.ethz.idsc.owly.math.state.FixedStateIntegrator;
 import ch.ethz.idsc.owly.math.state.StateIntegrator;
 import ch.ethz.idsc.owly.math.state.StateTime;
@@ -41,7 +41,7 @@ enum R2PolygonDemo {
     Collection<Flow> controls = R2Controls.createRadial(20);
     GoalInterface goalInterface = //
         RnMinDistSphericalGoalManager.create(Tensors.vector(5, 5), DoubleScalar.of(.2));
-    TensorRegion r1 = new PolygonRegion(ExamplePolygons.BULKY_TOP_LEFT);
+    Region<Tensor> r1 = new PolygonRegion(ExamplePolygons.BULKY_TOP_LEFT);
     TrajectoryRegionQuery obstacleQuery = SimpleTrajectoryRegionQuery.timeInvariant(r1);
     // ---
     TrajectoryPlanner trajectoryPlanner = new StandardTrajectoryPlanner( //

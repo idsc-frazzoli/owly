@@ -1,10 +1,12 @@
 // code by jl
 package ch.ethz.idsc.owly.demo.rn;
 
+import java.util.Arrays;
+
 import ch.ethz.idsc.owly.math.region.EllipsoidRegion;
+import ch.ethz.idsc.owly.math.region.Region;
 import ch.ethz.idsc.owly.math.region.RegionIntersection;
 import ch.ethz.idsc.owly.math.region.SphericalRegion;
-import ch.ethz.idsc.owly.math.region.TensorRegion;
 import ch.ethz.idsc.tensor.DoubleScalar;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
@@ -16,10 +18,12 @@ public enum EuclideanDistanceDiscoverRegion {
    * @param origin
    * @param distance
    * @return */
-  public static TensorRegion of(TensorRegion region, Tensor origin, Scalar distance) {
+  public static Region<Tensor> of(Region<Tensor> region, Tensor origin, Scalar distance) {
     if (origin.length() == 3)
       // TODO Enhance to any statespace in the assumption that the first 2 are x and y
-      return RegionIntersection.of(new EllipsoidRegion(origin, Tensors.of(distance, distance, DoubleScalar.POSITIVE_INFINITY)), region);
-    return RegionIntersection.of(new SphericalRegion(origin, distance), region);
+      return RegionIntersection.wrap(Arrays.asList( //
+          new EllipsoidRegion(origin, Tensors.of(distance, distance, DoubleScalar.POSITIVE_INFINITY)), region));
+    return RegionIntersection.wrap(Arrays.asList( //
+        new SphericalRegion(origin, distance), region));
   }
 }

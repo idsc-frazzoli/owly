@@ -1,6 +1,7 @@
 // code by jph
 package ch.ethz.idsc.owly.demo.ip;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
@@ -46,10 +47,10 @@ class IpDemo {
     TrajectoryRegionQuery obstacleQuery =
         // new EmptyTrajectoryRegionQuery();
         SimpleTrajectoryRegionQuery.timeInvariant( //
-            RegionUnion.of( //
+            RegionUnion.wrap(Arrays.asList( //
                 new FreeBoundedIntervalRegion(0, RealScalar.of(-1), RealScalar.of(+3)), // ,
                 new FreeBoundedIntervalRegion(2, RealScalar.of(-2), RealScalar.of(+2)) // ,
-            ));
+            )));
     // ---
     TrajectoryPlanner trajectoryPlanner = new StandardTrajectoryPlanner( //
         eta, stateIntegrator, controls, obstacleQuery, ipGoalManager);

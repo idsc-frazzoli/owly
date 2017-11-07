@@ -10,8 +10,8 @@ import ch.ethz.idsc.owly.gui.RenderInterface;
 import ch.ethz.idsc.owly.gui.region.RegionRenders;
 import ch.ethz.idsc.owly.math.RegularPolygon;
 import ch.ethz.idsc.owly.math.TensorUnaryOperator;
+import ch.ethz.idsc.owly.math.region.Region;
 import ch.ethz.idsc.owly.math.state.StateTime;
-import ch.ethz.idsc.owly.math.state.StateTimeRegion;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Scalars;
@@ -19,7 +19,7 @@ import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.red.Norm2Squared;
 
 /** check if input tensor is inside a polygon */
-public class R2xTEllipsoidStateTimeRegion implements StateTimeRegion, RenderInterface {
+public class R2xTEllipsoidStateTimeRegion implements Region<StateTime>, RenderInterface {
   private final Tensor invert;
   private final Tensor polygon;
   private final BijectionFamily bijectionFamily;

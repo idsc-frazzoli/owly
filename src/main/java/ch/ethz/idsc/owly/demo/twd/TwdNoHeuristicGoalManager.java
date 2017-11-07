@@ -6,7 +6,6 @@ import java.util.List;
 import ch.ethz.idsc.owly.glc.adapter.StateTimeTrajectories;
 import ch.ethz.idsc.owly.glc.core.GlcNode;
 import ch.ethz.idsc.owly.math.flow.Flow;
-import ch.ethz.idsc.owly.math.region.TensorRegion;
 import ch.ethz.idsc.owly.math.state.StateTime;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;

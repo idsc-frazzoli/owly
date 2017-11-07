@@ -13,7 +13,7 @@ import ch.ethz.idsc.owly.glc.adapter.TrajectoryGoalManager;
 import ch.ethz.idsc.owly.math.flow.Flow;
 import ch.ethz.idsc.owly.math.region.EmptyRegion;
 import ch.ethz.idsc.owly.math.region.InvertedRegion;
-import ch.ethz.idsc.owly.math.region.TensorRegion;
+import ch.ethz.idsc.owly.math.region.Region;
 import ch.ethz.idsc.owly.math.state.StateIntegrator;
 import ch.ethz.idsc.owly.math.state.StateTime;
 import ch.ethz.idsc.owly.math.state.TrajectoryRegionQuery;
@@ -135,7 +135,7 @@ public class SimpleAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
 
   /** Only checking the Nodes of the tree, not the trajectory */
   @Override
-  boolean goalCheckTree(final TensorRegion goalCheckTree) {
+  boolean goalCheckTree(final Region<Tensor> goalCheckTree) {
     final Collection<GlcNode> treeCollection = Nodes.ofSubtree(getRoot());
     treeCollection.parallelStream().forEach(node -> {
       if (!getGoalInterface().isDisjoint(Arrays.asList(node.stateTime())))
@@ -150,7 +150,7 @@ public class SimpleAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
   }
 
   @Override
-  public void obstacleUpdate(TrajectoryRegionQuery newObstacle, TensorRegion possibleNewObstacleRegion) {
+  public void obstacleUpdate(TrajectoryRegionQuery newObstacle, Region<Tensor> possibleNewObstacleRegion) {
     throw new RuntimeException(); // TODO implement
   }
 }

@@ -8,7 +8,8 @@ import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
 import ch.ethz.idsc.owly.gui.RenderInterface;
 import ch.ethz.idsc.owly.gui.ani.AbstractEntity;
 import ch.ethz.idsc.owly.gui.ani.OwlyAnimationFrame;
-import ch.ethz.idsc.owly.math.state.StateTimeRegion;
+import ch.ethz.idsc.owly.math.region.Region;
+import ch.ethz.idsc.owly.math.state.StateTime;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
@@ -35,7 +36,7 @@ public class R2xTEllipsoidAnimationDemo implements DemoInterface {
         return AngleVector.of(scalar.multiply(RealScalar.of(0.2)));
       }
     };
-    StateTimeRegion stateTimeRegion = new R2xTEllipsoidStateTimeRegion( //
+    Region<StateTime> stateTimeRegion = new R2xTEllipsoidStateTimeRegion( //
         Tensors.vector(.8, 1.2), circle, () -> abstractEntity.getStateTimeNow().time());
     owlyAnimationFrame.setObstacleQuery(new SimpleTrajectoryRegionQuery(stateTimeRegion));
     owlyAnimationFrame.addBackground((RenderInterface) stateTimeRegion);

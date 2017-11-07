@@ -9,7 +9,7 @@ import ch.ethz.idsc.owly.glc.adapter.StateTimeTrajectories;
 import ch.ethz.idsc.owly.glc.adapter.TrajectoryGoalManager;
 import ch.ethz.idsc.owly.glc.core.GlcNode;
 import ch.ethz.idsc.owly.math.flow.Flow;
-import ch.ethz.idsc.owly.math.region.TensorRegion;
+import ch.ethz.idsc.owly.math.region.Region;
 import ch.ethz.idsc.owly.math.state.StateTime;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
@@ -23,7 +23,7 @@ public class Se2TrajectoryGoalManager extends TrajectoryGoalManager {
   private final Scalar radius;
   private final Scalar maxSpeed;
 
-  public Se2TrajectoryGoalManager(List<TensorRegion> goalRegions, List<StateTime> heuristicTrajectory, Tensor radius, Collection<Flow> controls) {
+  public Se2TrajectoryGoalManager(List<Region<Tensor>> goalRegions, List<StateTime> heuristicTrajectory, Tensor radius, Collection<Flow> controls) {
     super(goalRegions);
     this.heuristicTrajectory = heuristicTrajectory;
     if (!radius.Get(0).equals(radius.Get(1)))
