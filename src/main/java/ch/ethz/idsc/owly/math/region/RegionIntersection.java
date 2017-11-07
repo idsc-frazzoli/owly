@@ -5,12 +5,12 @@ import java.nio.ByteBuffer;
 import java.util.Collection;
 
 /** RegionIntersection is a region that defines membership
- * to be member in all of a collection of {@link TensorRegion}s
+ * to be member in all of a collection of {@link Region}s
  * 
  * <p>inspired by
  * <a href="https://reference.wolfram.com/language/ref/RegionIntersection.html">RegionIntersection</a> */
 public class RegionIntersection<T> implements Region<T> {
-  /** combines a collection of {@link TensorRegion}s into one Region.
+  /** combines a collection of {@link Region}s into one Region.
    * Membership is defined as membership in all of the regions in the collection.
    * The input collection is not copied but used by reference.
    * Modification to outside collection have effect on this region.

@@ -25,9 +25,9 @@ public class SimpleTrajectoryRegionQuery extends StandardTrajectoryRegionQuery i
     return new SimpleTrajectoryRegionQuery(new TimeDependentRegion(region));
   }
 
-  /** @param stateTimeRegion that is queried with StateTime */
-  public SimpleTrajectoryRegionQuery(Region<StateTime> stateTimeRegion) {
-    super(stateTimeRegion, new SparseStateTimeRegionMembers());
+  /** @param region that is queried with StateTime */
+  public SimpleTrajectoryRegionQuery(Region<StateTime> region) {
+    super(region, new SparseStateTimeRegionMembers());
   }
 
   /** Region members, which were found in Region

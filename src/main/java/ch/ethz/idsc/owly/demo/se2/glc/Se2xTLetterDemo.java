@@ -47,12 +47,12 @@ public class Se2xTLetterDemo implements DemoInterface {
           return Tensors.of(Sin.FUNCTION.apply(scalar.multiply(RealScalar.of(0.2))), RealScalar.ZERO);
         }
       };
-      Region<StateTime> stateTimeRegion = new R2xTPolygonStateTimeRegion( //
+      Region<StateTime> region = new R2xTPolygonStateTimeRegion( //
           ExamplePolygons.CORNER_TOP_LEFT, shift, () -> abstractEntity.getStateTimeNow().time());
-      abstractEntity.obstacleQuery = new SimpleTrajectoryRegionQuery(stateTimeRegion);
+      abstractEntity.obstacleQuery = new SimpleTrajectoryRegionQuery(region);
       owlyAnimationFrame.setObstacleQuery(abstractEntity.obstacleQuery);
       // owlyAnimationFrame.addRegionRender(imageRegion);
-      owlyAnimationFrame.addBackground((RenderInterface) stateTimeRegion);
+      owlyAnimationFrame.addBackground((RenderInterface) region);
       break;
     }
     }

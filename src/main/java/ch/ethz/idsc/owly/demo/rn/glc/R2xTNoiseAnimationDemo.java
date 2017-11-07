@@ -15,8 +15,8 @@ public class R2xTNoiseAnimationDemo implements DemoInterface {
   public void start() {
     OwlyAnimationFrame owlyAnimationFrame = new OwlyAnimationFrame();
     owlyAnimationFrame.set(new R2xTEntity(Tensors.vector(0.2, 0.2)));
-    Region<StateTime> stateTimeRegion = new R2xTNoiseStateTimeRegion(RealScalar.of(0.5));
-    owlyAnimationFrame.setObstacleQuery(new SimpleTrajectoryRegionQuery(stateTimeRegion));
+    Region<StateTime> region = new R2xTNoiseStateTimeRegion(RealScalar.of(0.5));
+    owlyAnimationFrame.setObstacleQuery(new SimpleTrajectoryRegionQuery(region));
     owlyAnimationFrame.jFrame.setVisible(true);
   }
 
