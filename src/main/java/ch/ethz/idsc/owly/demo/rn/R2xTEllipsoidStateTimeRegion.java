@@ -9,7 +9,7 @@ import ch.ethz.idsc.owly.demo.util.BijectionFamily;
 import ch.ethz.idsc.owly.gui.GeometricLayer;
 import ch.ethz.idsc.owly.gui.RenderInterface;
 import ch.ethz.idsc.owly.gui.region.RegionRenders;
-import ch.ethz.idsc.owly.math.RegularPolygon;
+import ch.ethz.idsc.owly.math.CirclePoints;
 import ch.ethz.idsc.owly.math.TensorUnaryOperator;
 import ch.ethz.idsc.owly.math.region.Region;
 import ch.ethz.idsc.owly.math.state.StateTime;
@@ -21,6 +21,8 @@ import ch.ethz.idsc.tensor.red.Norm2Squared;
 
 /** check if input tensor is inside a polygon */
 public class R2xTEllipsoidStateTimeRegion implements Region<StateTime>, RenderInterface {
+  private static final int RESOLUTION = 22;
+  // ---
   private final Tensor invert;
   private final Tensor polygon;
   private final BijectionFamily bijectionFamily;
@@ -31,7 +33,7 @@ public class R2xTEllipsoidStateTimeRegion implements Region<StateTime>, RenderIn
     invert = radius.map(Scalar::reciprocal);
     this.bijectionFamily = bijectionFamily;
     this.supplier = supplier;
-    polygon = RegularPolygon.elliptic(22, radius.Get(0), radius.Get(1));
+    polygon = CirclePoints.elliptic(RESOLUTION, radius.Get(0), radius.Get(1));
   }
 
   @Override

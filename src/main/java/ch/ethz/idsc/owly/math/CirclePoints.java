@@ -9,11 +9,16 @@ import ch.ethz.idsc.tensor.alg.Drop;
 import ch.ethz.idsc.tensor.alg.Subdivide;
 import ch.ethz.idsc.tensor.lie.AngleVector;
 
-/** inspired by
- * <a href="https://reference.wolfram.com/language/ref/RegularPolygon.html">RegularPolygon</a> */
-public enum RegularPolygon {
+/** implementation is not consistent with Mathematica
+ * 
+ * <p>inspired by
+ * <a href="https://reference.wolfram.com/language/ref/CirclePoints.html">CirclePoints</a> */
+public enum CirclePoints {
   ;
-  /** @param n
+  /** the first coordinate is always {1, 0}.
+   * the orientation of the points is counter-clockwise.
+   * 
+   * @param n
    * @return n x 2 matrix with evenly spaced points on the unit-circle */
   public static Tensor of(int n) {
     Tensor polygon = Tensors.empty();

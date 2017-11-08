@@ -19,6 +19,7 @@ import ch.ethz.idsc.owly.gui.ani.OwlyGui;
 import ch.ethz.idsc.owly.math.flow.Flow;
 import ch.ethz.idsc.owly.math.flow.MidpointIntegrator;
 import ch.ethz.idsc.owly.math.region.EllipsoidRegion;
+import ch.ethz.idsc.owly.math.region.Region;
 import ch.ethz.idsc.owly.math.region.RegionUnion;
 import ch.ethz.idsc.owly.math.state.FixedStateIntegrator;
 import ch.ethz.idsc.owly.math.state.StateIntegrator;
@@ -42,12 +43,13 @@ enum Rice1dDemo {
         MidpointIntegrator.INSTANCE, RationalScalar.of(1, 8), 5);
     Collection<Flow> controls = Rice2Controls.create1d(RealScalar.of(-0.5), 15); //
     Rice1GoalManager rice1Goal = new Rice1GoalManager(Tensors.vector(6, -.7), Tensors.vector(.4, .3));
+    Region<Tensor> region1 = new EllipsoidRegion(Tensors.vector(+3, +1), Tensors.vector(1.75, .75));
+    Region<Tensor> region2 = new EllipsoidRegion(Tensors.vector(-2, +0), Tensors.vector(1, 1));
     TrajectoryRegionQuery obstacleQuery = //
         SimpleTrajectoryRegionQuery.timeInvariant( //
             RegionUnion.wrap(Arrays.asList( //
-                new EllipsoidRegion(Tensors.vector(+3, +1), Tensors.vector(1.75, .75)),
-                // , // speed limit along the way
-                new EllipsoidRegion(Tensors.vector(-2, +0), Tensors.vector(1, 1)) // block to the left
+                region1, // speed limit along the way
+                region2 // block to the left
             )));
     // ---
     TrajectoryPlanner trajectoryPlanner = new StandardTrajectoryPlanner( //
