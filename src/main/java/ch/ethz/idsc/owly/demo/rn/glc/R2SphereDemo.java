@@ -43,10 +43,10 @@ enum R2SphereDemo {
     Collection<Flow> controls = R2Controls.createRadial(20);
     GoalInterface goalInterface = //
         RnMinDistSphericalGoalManager.create(Tensors.vector(5, 0), DoubleScalar.of(0.5));
-    Region<Tensor> r1 = new EllipsoidRegion(Tensors.vector(3, 3), Tensors.vector(2, 2));
-    Region<Tensor> r2 = new EllipsoidRegion(Tensors.vector(2.5, 0), Tensors.vector(2, 1.5));
+    Region<Tensor> region1 = new EllipsoidRegion(Tensors.vector(3, 3), Tensors.vector(2, 2));
+    Region<Tensor> region2 = new EllipsoidRegion(Tensors.vector(2.5, 0), Tensors.vector(2, 1.5));
     TrajectoryRegionQuery obstacleQuery = SimpleTrajectoryRegionQuery.timeInvariant( //
-        RegionUnion.wrap(Arrays.asList(r1, r2)));
+        RegionUnion.wrap(Arrays.asList(region1, region2)));
     // ---
     TrajectoryPlanner trajectoryPlanner = new StandardTrajectoryPlanner( //
         partitionScale, stateIntegrator, controls, obstacleQuery, goalInterface);
@@ -59,7 +59,7 @@ enum R2SphereDemo {
       StateTimeTrajectories.print(trajectory);
     }
     OwlyFrame owlyFrame = OwlyGui.glc(trajectoryPlanner);
-    owlyFrame.addRegionRender(r1);
-    owlyFrame.addRegionRender(r2);
+    owlyFrame.addRegionRender(region1);
+    owlyFrame.addRegionRender(region2);
   }
 }

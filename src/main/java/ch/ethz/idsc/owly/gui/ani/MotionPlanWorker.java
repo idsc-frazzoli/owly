@@ -10,6 +10,7 @@ import ch.ethz.idsc.owly.glc.core.TrajectorySample;
 import ch.ethz.idsc.owly.math.state.StateTime;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
+import ch.ethz.idsc.tensor.qty.Quantity;
 import ch.ethz.idsc.tensor.sca.Round;
 
 // EXPERIMENTAL API not finalized
@@ -36,7 +37,7 @@ public class MotionPlanWorker {
         Expand.maxSteps(trajectoryPlanner, 5000, () -> isRelevant); // magic const
         if (isRelevant) {
           Scalar duration = RealScalar.of(stopwatch.display_seconds());
-          System.out.println("planning: " + duration.map(Round._3) + " [sec]");
+          System.out.println("planning: " + Quantity.of((Scalar) duration.map(Round._3), "s"));
           trajectoryPlannerCallback.expandResult(head, trajectoryPlanner);
         }
       }

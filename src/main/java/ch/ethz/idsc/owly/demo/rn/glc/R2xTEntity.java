@@ -7,7 +7,6 @@ import ch.ethz.idsc.owly.glc.core.TrajectoryPlanner;
 import ch.ethz.idsc.owly.math.flow.Flow;
 import ch.ethz.idsc.owly.math.state.StateTime;
 import ch.ethz.idsc.owly.math.state.TrajectoryRegionQuery;
-import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
@@ -16,9 +15,12 @@ import ch.ethz.idsc.tensor.Tensors;
  * 
  */
 /* package */ class R2xTEntity extends R2Entity {
-  public R2xTEntity(Tensor state) {
+  private final Scalar delay;
+
+  public R2xTEntity(Tensor state, Scalar delay) {
     super(state);
     represent_entity = StateTime::joined;
+    this.delay = delay;
   }
 
   // TODO not sure what is a good approach here:
@@ -32,7 +34,7 @@ import ch.ethz.idsc.tensor.Tensors;
 
   @Override
   public Scalar delayHint() {
-    return RealScalar.of(0.8);
+    return delay;
   }
 
   @Override

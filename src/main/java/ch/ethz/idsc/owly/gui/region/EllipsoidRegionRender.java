@@ -2,38 +2,33 @@
 package ch.ethz.idsc.owly.gui.region;
 
 import java.awt.Graphics2D;
-import java.awt.geom.AffineTransform;
-import java.awt.geom.Ellipse2D;
+import java.awt.geom.Path2D;
 
-import ch.ethz.idsc.owly.gui.AffineTransforms;
 import ch.ethz.idsc.owly.gui.GeometricLayer;
 import ch.ethz.idsc.owly.gui.RenderInterface;
+import ch.ethz.idsc.owly.math.CirclePoints;
 import ch.ethz.idsc.owly.math.region.EllipsoidRegion;
 import ch.ethz.idsc.tensor.Tensor;
 
-// TODO the rendering is inaccurate 
 public class EllipsoidRegionRender implements RenderInterface {
-  private final EllipsoidRegion ellipsoidRegion;
+  private static final int RESOLUTION = 22;
+  // ---
+  private final Tensor polygon;
 
   public EllipsoidRegionRender(EllipsoidRegion ellipsoidRegion) {
-    this.ellipsoidRegion = ellipsoidRegion;
+    Tensor center = ellipsoidRegion.center();
+    Tensor radius = ellipsoidRegion.radius();
+    polygon = Tensor.of(CirclePoints.elliptic(RESOLUTION, radius.Get(0), radius.Get(1)) //
+        .stream().map(row -> row.add(center)));
   }
 
   @Override
   public void render(GeometricLayer geometricLayer, Graphics2D graphics) {
-    Tensor center = ellipsoidRegion.center().extract(0, 2);
-    Tensor radius = ellipsoidRegion.radius().extract(0, 2);
-    Tensor model2pixel = geometricLayer.getMatrix();
-    AffineTransform at = AffineTransforms.toAffineTransform(model2pixel);
-    AffineTransform ori = graphics.getTransform();
-    graphics.setTransform(at);
+    Path2D path2D = geometricLayer.toPath2D(polygon);
     graphics.setColor(RegionRenders.COLOR);
-    Tensor nw = center.subtract(radius);
-    graphics.fill(new Ellipse2D.Double( //
-        nw.Get(0).number().doubleValue(), //
-        nw.Get(1).number().doubleValue(), //
-        2 * radius.Get(0).number().doubleValue(), //
-        2 * radius.Get(1).number().doubleValue()));
-    graphics.setTransform(ori);
+    graphics.fill(path2D);
+    graphics.setColor(RegionRenders.BOUNDARY);
+    path2D.closePath();
+    graphics.draw(path2D);
   }
 }

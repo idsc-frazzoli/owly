@@ -36,7 +36,7 @@ public class R2xTEllipsoidsAnimationDemo implements DemoInterface {
   @Override
   public void start() {
     OwlyAnimationFrame owlyAnimationFrame = new OwlyAnimationFrame();
-    AbstractEntity abstractEntity = new R2xTEntity(Tensors.vector(1.2, 2));
+    AbstractEntity abstractEntity = new R2xTEntity(Tensors.vector(1.2, 2), RealScalar.of(0.4));
     owlyAnimationFrame.set(abstractEntity);
     // ---
     BijectionFamily shiftx = new TranslationFamily( //

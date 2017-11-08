@@ -34,6 +34,7 @@ import ch.ethz.idsc.tensor.Tensors;
 enum R2xtEllipsoidGlcDemo {
   ;
   public static void main(String[] args) {
+    // TODO remove time from state and make use of StateTime::time instead...
     RationalScalar resolution = (RationalScalar) RealScalar.of(8);
     Tensor partitionScale = Tensors.vector(25, 25, 64);
     Scalar timeScale = RealScalar.of(6);
