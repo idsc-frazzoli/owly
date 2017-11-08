@@ -154,7 +154,7 @@ class Se2Entity extends AbstractEntity {
     }
     {
       Color color = new Color(0, 128, 255, 192);
-      StateTime stateTime = new StateTime(geometricLayer.getMouseSe2State(), RealScalar.ZERO);
+      StateTime stateTime = new StateTime(geometricLayer.getMouseSe2State(), getStateTimeNow().time());
       if (!obstacleQuery_isDisjoint(stateTime))
         color = new Color(255, 96, 96, 128);
       geometricLayer.pushMatrix(geometricLayer.getMouseSe2Matrix());
