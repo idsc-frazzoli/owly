@@ -36,21 +36,21 @@ The separate repository [owly3d](https://github.com/idsc-frazzoli/owly3d) implem
 
 ### GLC
 
-Rice2
+Rice2: 4-dimensional state space + time
 
 ![rice2dentity_1510227502495](https://user-images.githubusercontent.com/4012178/32603926-dd317aea-c54b-11e7-97ab-82df23b52fa5.gif)
+
+---
+
+SE2: 3-dimensional state space
+
+![se2entity_1510232282788](https://user-images.githubusercontent.com/4012178/32606961-813b05a6-c557-11e7-804c-83b1c5e94a6f.gif)
 
 ---
 
 Pendulum Swing Up
 
 ![owly_psu1](https://user-images.githubusercontent.com/4012178/27012135-8979aae6-4eca-11e7-815e-95dd9b9ee0ea.png)
-
----
-
-SE(2)
-
-![se2](https://cloud.githubusercontent.com/assets/4012178/25422502/5b00be4e-2a61-11e7-8798-08fcd8f44658.png)
 
 ---
 

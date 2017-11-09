@@ -52,7 +52,7 @@ import ch.ethz.idsc.tensor.Tensors;
 // EXPERIMENTAL API not finalized 
 public class OwlyAnimationFrame extends TimerFrame {
   private static final Dimension RECORDING = new Dimension(400, 400);
-  private static final int MARGIN = 170;
+  private static final int MARGIN = 100; // 170;
   // ---
   private final EtaRender etaRender = new EtaRender(Tensors.empty());
   private final TrajectoryRender trajectoryRender = new TrajectoryRender();
@@ -87,7 +87,6 @@ public class OwlyAnimationFrame extends TimerFrame {
       timer.schedule(timerTask, 100, 20);
     }
     {
-      // jToggleButtonRecord.setIcon(RecordingIcon.standard());
       jToggleButtonRecord.addActionListener(new ActionListener() {
         TimerTask timerTask;
 
@@ -125,9 +124,8 @@ public class OwlyAnimationFrame extends TimerFrame {
               }
             };
             timer.schedule(timerTask, 100, 100);
-          } else {
+          } else
             timerTask.cancel();
-          }
         }
       });
       jToolBar.add(jToggleButtonRecord);
