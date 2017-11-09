@@ -13,7 +13,7 @@ import ch.ethz.idsc.tensor.io.AnimationWriter;
 enum ExportAnimation {
   ;
   public static void main(String[] args) throws Exception {
-    String name = "Rice2dEntity_1510227502495";
+    String name = "Se2Entity_1510232282788";
     File directory = UserHome.Pictures(name);
     AnimationWriter animationWriter = AnimationWriter.of(UserHome.Pictures(name + ".gif"), 100);
     List<File> list = Stream.of(directory.listFiles()) //
@@ -22,7 +22,6 @@ enum ExportAnimation {
         .collect(Collectors.toList());
     for (File file : list) {
       System.out.println(file);
-      // Tensor tensor = Import.of(file);
       animationWriter.append(ImageIO.read(file));
     }
     animationWriter.close();
