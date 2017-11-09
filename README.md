@@ -38,7 +38,18 @@ The separate repository [owly3d](https://github.com/idsc-frazzoli/owly3d) implem
 
 Rice2: 4-dimensional state space + time
 
+<table>
+<tr>
+<td>
+
 ![rice2dentity_1510227502495](https://user-images.githubusercontent.com/4012178/32603926-dd317aea-c54b-11e7-97ab-82df23b52fa5.gif)
+
+<td>
+
+![rice2dentity_1510234462100](https://user-images.githubusercontent.com/4012178/32608146-b6106d1c-c55b-11e7-918d-e0a1d1c8e400.gif)
+
+</tr>
+</table>
 
 ---
 
