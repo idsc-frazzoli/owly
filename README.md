@@ -36,6 +36,12 @@ The separate repository [owly3d](https://github.com/idsc-frazzoli/owly3d) implem
 
 ### GLC
 
+Rice2
+
+![rice2dentity_1510227502495](https://user-images.githubusercontent.com/4012178/32603926-dd317aea-c54b-11e7-97ab-82df23b52fa5.gif)
+
+---
+
 Pendulum Swing Up
 
 ![owly_psu1](https://user-images.githubusercontent.com/4012178/27012135-8979aae6-4eca-11e7-815e-95dd9b9ee0ea.png)

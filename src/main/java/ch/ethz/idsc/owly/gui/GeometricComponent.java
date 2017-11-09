@@ -200,4 +200,9 @@ public final class GeometricComponent {
   private Tensor toModel(Point point) {
     return LinearSolve.of(model2pixel, Tensors.vector(point.x, point.y, 1)).extract(0, 2);
   }
+
+  public Point toPixel(Tensor model) {
+    Tensor vector = model2pixel.dot(model.extract(0, 2).append(RealScalar.ONE));
+    return new Point(vector.Get(0).number().intValue(), vector.Get(1).number().intValue());
+  }
 }

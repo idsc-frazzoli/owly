@@ -22,7 +22,7 @@ import ch.ethz.idsc.tensor.Tensors;
 
 /** base class for {@link OwlyFrame} and {@link OwlyAnimationFrame} */
 public class BaseFrame {
-  private static final String IMAGE_FORMAT = "png";
+  protected static final String IMAGE_FORMAT = "png";
   // ---
   public final JFrame jFrame = new JFrame();
   private final JPanel jPanel = new JPanel(new BorderLayout());
@@ -51,6 +51,7 @@ public class BaseFrame {
       });
       jToolBar.add(jButton);
     }
+    jToolBar.addSeparator();
     jPanel.add(jToolBar, BorderLayout.NORTH);
     jPanel.add(geometricComponent.jComponent, BorderLayout.CENTER);
     jPanel.add(jStatusLabel, BorderLayout.SOUTH);
@@ -59,10 +60,10 @@ public class BaseFrame {
 
   public final BufferedImage offscreen() {
     Dimension dimension = geometricComponent.jComponent.getSize();
-    BufferedImage myBufferedImage = //
+    BufferedImage bufferedImage = //
         new BufferedImage(dimension.width, dimension.height, BufferedImage.TYPE_INT_ARGB);
-    geometricComponent.render(myBufferedImage.createGraphics(), dimension);
-    return myBufferedImage;
+    geometricComponent.render(bufferedImage.createGraphics(), dimension);
+    return bufferedImage;
   }
 
   public final void configCoordinateOffset(int px, int py) {
