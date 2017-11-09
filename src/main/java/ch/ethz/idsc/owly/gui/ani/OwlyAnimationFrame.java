@@ -1,9 +1,15 @@
 // code by jph
 package ch.ethz.idsc.owly.gui.ani;
 
+import java.awt.Dimension;
+import java.awt.Point;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
+import java.awt.image.BufferedImage;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
@@ -12,9 +18,13 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.TimerTask;
 
+import javax.imageio.ImageIO;
+import javax.swing.JToggleButton;
+
 import ch.ethz.idsc.owly.data.GlobalAssert;
 import ch.ethz.idsc.owly.data.TimeKeeper;
 import ch.ethz.idsc.owly.data.tree.Nodes;
+import ch.ethz.idsc.owly.demo.util.UserHome;
 import ch.ethz.idsc.owly.glc.adapter.Trajectories;
 import ch.ethz.idsc.owly.glc.core.GlcNode;
 import ch.ethz.idsc.owly.glc.core.GlcNodes;
@@ -41,6 +51,9 @@ import ch.ethz.idsc.tensor.Tensors;
 
 // EXPERIMENTAL API not finalized 
 public class OwlyAnimationFrame extends TimerFrame {
+  private static final Dimension RECORDING = new Dimension(400, 400);
+  private static final int MARGIN = 170;
+  // ---
   private final EtaRender etaRender = new EtaRender(Tensors.empty());
   private final TrajectoryRender trajectoryRender = new TrajectoryRender();
   private final ObstacleRender obstacleRender = new ObstacleRender(null);
@@ -52,12 +65,13 @@ public class OwlyAnimationFrame extends TimerFrame {
   /** the obstacle query is set in {@link #setObstacleQuery(TrajectoryRegionQuery)}
    * it is intentionally set to null here lest the application forget */
   private TrajectoryRegionQuery obstacleQuery = null;
+  private final JToggleButton jToggleButtonRecord = new JToggleButton("record");
 
   public OwlyAnimationFrame() {
     geometricComponent.addRenderInterface(GridRender.INSTANCE);
     geometricComponent.addRenderInterface(etaRender);
     geometricComponent.addRenderInterface(trajectoryRender);
-    geometricComponent.addRenderInterface(obstacleRender);
+    // geometricComponent.addRenderInterface(obstacleRender); // TODO check
     geometricComponent.addRenderInterface(goalRender);
     geometricComponent.addRenderInterface(treeRender);
     { // periodic task for integration
@@ -71,6 +85,52 @@ public class OwlyAnimationFrame extends TimerFrame {
         }
       };
       timer.schedule(timerTask, 100, 20);
+    }
+    {
+      // jToggleButtonRecord.setIcon(RecordingIcon.standard());
+      jToggleButtonRecord.addActionListener(new ActionListener() {
+        TimerTask timerTask;
+
+        @Override
+        public void actionPerformed(ActionEvent event) {
+          boolean selected = jToggleButtonRecord.isSelected();
+          if (selected) {
+            AbstractEntity abstractEntity = (AbstractEntity) controllable;
+            File directory = UserHome.Pictures(abstractEntity.getClass().getSimpleName() + "_" + System.currentTimeMillis());
+            directory.mkdir();
+            GlobalAssert.that(directory.isDirectory());
+            timerTask = new TimerTask() {
+              int count = 0;
+              Point point = null;
+
+              @Override
+              public void run() {
+                BufferedImage offscreen = offscreen();
+                StateTime stateTime = abstractEntity.getStateTimeNow();
+                Point now = geometricComponent.toPixel(stateTime.state());
+                if (Objects.isNull(point) || MARGIN < PointUtil.inftyNorm(point, now))
+                  point = now;
+                Dimension dimension = RECORDING;
+                BufferedImage bufferedImage = //
+                    new BufferedImage(dimension.width, dimension.height, BufferedImage.TYPE_INT_ARGB);
+                bufferedImage.getGraphics().drawImage(offscreen, //
+                    dimension.width / 2 - point.x, //
+                    dimension.height / 2 - point.y, null);
+                try {
+                  ImageIO.write(bufferedImage, IMAGE_FORMAT, new File(directory, //
+                      String.format("owly_%05d.%s", count++, IMAGE_FORMAT)));
+                } catch (Exception exception) {
+                  exception.printStackTrace();
+                }
+              }
+            };
+            timer.schedule(timerTask, 100, 100);
+          } else {
+            timerTask.cancel();
+          }
+        }
+      });
+      jToolBar.add(jToggleButtonRecord);
     }
     // ---
     geometricComponent.jComponent.addMouseListener(new MouseAdapter() {

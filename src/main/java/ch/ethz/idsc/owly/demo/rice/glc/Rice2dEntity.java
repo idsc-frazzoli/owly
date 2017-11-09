@@ -35,6 +35,7 @@ import ch.ethz.idsc.tensor.red.Norm2Squared;
   private static final Integrator INTEGRATOR = MidpointIntegrator.INSTANCE;
   // ---
   private final Collection<Flow> controls;
+  public Scalar delayHint = RealScalar.ONE;
 
   /** @param state initial position of entity */
   public Rice2dEntity(Scalar mu, Tensor state, Collection<Flow> controls) {
@@ -55,7 +56,7 @@ import ch.ethz.idsc.tensor.red.Norm2Squared;
 
   @Override
   public Scalar delayHint() {
-    return RealScalar.ONE;
+    return delayHint;
   }
 
   @Override
