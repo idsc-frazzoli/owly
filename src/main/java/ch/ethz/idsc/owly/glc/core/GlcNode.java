@@ -29,6 +29,7 @@ public interface GlcNode extends StateCostNode {
   /** @return flow between parent and this node. if this node is root, flow == null */
   Flow flow();
 
+  /** @return coordinate in space-time of node */
   StateTime stateTime();
 
   /** @return cost from root plus min cost to goal */

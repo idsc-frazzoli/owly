@@ -13,7 +13,6 @@ import ch.ethz.idsc.owly.demo.delta.ImageGradient;
 import ch.ethz.idsc.owly.demo.util.DemoInterface;
 import ch.ethz.idsc.owly.demo.util.UserHome;
 import ch.ethz.idsc.owly.glc.adapter.Parameters;
-import ch.ethz.idsc.owly.glc.adapter.RxtTimeInvariantRegion;
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
 import ch.ethz.idsc.owly.glc.adapter.Trajectories;
 import ch.ethz.idsc.owly.glc.core.DebugUtils;
@@ -45,6 +44,7 @@ import ch.ethz.idsc.tensor.io.ResourceData;
 
 public class DeltaxtGlcDemo implements DemoInterface {
   ;
+  @SuppressWarnings("deprecation")
   @Override
   public void start() {
     // SETUP

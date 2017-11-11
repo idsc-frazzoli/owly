@@ -13,7 +13,7 @@ import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.mat.DiagonalMatrix;
 import ch.ethz.idsc.tensor.mat.IdentityMatrix;
 
-public class ImageRegionRender implements RenderInterface {
+class ImageRegionRender implements RenderInterface {
   private final BufferedImage bufferedImage;
   private final Tensor invsc;
 

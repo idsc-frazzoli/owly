@@ -68,11 +68,11 @@ enum Se2GlcHeuristicSensingObstacleCompareAnyDemo {
     Collection<Flow> controls = Se2Controls.createControls(RotationUtils.DEGREE(45), parameters.getResolutionInt());
     // Creating Goals
     Tensor startState = Tensors.vector(0, 0, 0);
-    // TODO
+    // TODO JONAS
     Region<Tensor> environmentRegion = new R2NoiseRegion(RealScalar.of(0.5));
     TrajectoryRegionQuery obstacleQuery = SimpleTrajectoryRegionQuery.timeInvariant( //
         EuclideanDistanceDiscoverRegion.of(environmentRegion, startState, sensingRadius));
-    // TODO JONAS: can remove todo "change back to AnyPlannerInterface"
+    // TODO JONAS can remove todo "change back to AnyPlannerInterface"
     AnyPlannerInterface anyTrajectoryPlanner = new OptimalAnyTrajectoryPlanner( //
         parameters.getEta(), stateIntegrator, controls, obstacleQuery, se2Goal);
     anyTrajectoryPlanner.switchRootToState(startState);

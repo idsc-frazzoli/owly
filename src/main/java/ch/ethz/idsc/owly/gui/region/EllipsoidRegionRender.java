@@ -10,7 +10,7 @@ import ch.ethz.idsc.owly.math.CirclePoints;
 import ch.ethz.idsc.owly.math.region.EllipsoidRegion;
 import ch.ethz.idsc.tensor.Tensor;
 
-public class EllipsoidRegionRender implements RenderInterface {
+class EllipsoidRegionRender implements RenderInterface {
   private static final int RESOLUTION = 22;
   // ---
   private final Tensor polygon;

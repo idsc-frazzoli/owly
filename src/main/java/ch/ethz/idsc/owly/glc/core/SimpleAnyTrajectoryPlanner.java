@@ -129,8 +129,8 @@ public class SimpleAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
   }
 
   @Override
-  /** Nothing needs to be done, as Optimality is not kept */
   void relabelingDomains() {
+    // nothing needs to be done, as Optimality is not kept
   }
 
   /** Only checking the Nodes of the tree, not the trajectory */
@@ -151,6 +151,6 @@ public class SimpleAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
 
   @Override
   public void obstacleUpdate(TrajectoryRegionQuery newObstacle, Region<Tensor> possibleNewObstacleRegion) {
-    throw new RuntimeException(); // TODO implement
+    throw new RuntimeException(); // TODO JONAS implement
   }
 }

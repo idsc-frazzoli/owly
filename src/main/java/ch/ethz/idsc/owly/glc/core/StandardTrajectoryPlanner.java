@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
+import java.util.Optional;
 
 import ch.ethz.idsc.owly.data.GlobalAssert;
 import ch.ethz.idsc.owly.math.flow.Flow;
@@ -101,6 +102,11 @@ public class StandardTrajectoryPlanner extends AbstractTrajectoryPlanner {
         domainQueue.remove();
       }
     }
+  }
+
+  @Override
+  protected Optional<GlcNode> getFurthestGoalNode() {
+    throw new UnsupportedOperationException();
   }
 
   @Override

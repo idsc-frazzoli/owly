@@ -3,7 +3,6 @@ package ch.ethz.idsc.owly.glc.core;
 
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 
 import ch.ethz.idsc.owly.data.GlobalAssert;
 import ch.ethz.idsc.owly.data.Stopwatch;
@@ -60,13 +59,8 @@ import ch.ethz.idsc.tensor.Tensor;
     this.obstacleQuery = obstacleQuery;
   }
 
-  @Override
-  protected Optional<GlcNode> getFurthestGoalNode() {
-    return Optional.empty();
-  }
-
   public void printTimes() {
-    System.out.println("Times for the Default Planner");
+    System.out.println("Times for " + getClass().getSimpleName());
     System.out.println("Integrator took: " + integratorWatch.display_seconds());
     System.out.println("processing C took: " + processCWatch.display_seconds());
     integratorWatch = Stopwatch.stopped();

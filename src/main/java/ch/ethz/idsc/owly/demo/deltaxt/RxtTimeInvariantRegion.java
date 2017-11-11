@@ -1,5 +1,5 @@
 // code by jl
-package ch.ethz.idsc.owly.glc.adapter;
+package ch.ethz.idsc.owly.demo.deltaxt;
 
 import ch.ethz.idsc.owly.math.region.Region;
 import ch.ethz.idsc.owly.math.state.StateTime;
@@ -13,8 +13,8 @@ import ch.ethz.idsc.tensor.alg.Last;
  * 
  * implementation requires that last entry of StateTime::state is
  * identical to StateTime::time */
-// @Deprecated // TODO JONAS/JAN time should not be part of state() but stateTime::time()
-public final class RxtTimeInvariantRegion implements Region<StateTime> {
+@Deprecated
+class RxtTimeInvariantRegion implements Region<StateTime> {
   private final Region<Tensor> region;
 
   public RxtTimeInvariantRegion(Region<Tensor> region) {
