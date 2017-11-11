@@ -20,8 +20,8 @@ public class DeltaControlsTest extends TestCase {
     Scalar maxNormGradient = imageGradient.maxNormGradient();
     // System.out.println(maxNormGradient);
     assertTrue(Sign.isPositive(maxNormGradient));
-    StateSpaceModel stateSpaceModel = new DeltaStateSpaceModel(imageGradient, null);
     Scalar amp = RealScalar.of(2);
+    StateSpaceModel stateSpaceModel = new DeltaStateSpaceModel(imageGradient, amp);
     Collection<Flow> controls = DeltaControls.createControls(stateSpaceModel, amp, 20);
     Scalar max = DeltaControls.maxSpeed(controls);
     assertTrue(Chop._12.close(max, amp));

@@ -3,23 +3,27 @@ package ch.ethz.idsc.owly.demo.delta.glc;
 
 import java.util.Collection;
 
+import ch.ethz.idsc.owly.demo.delta.DeltaAltStateSpaceModel;
 import ch.ethz.idsc.owly.demo.delta.DeltaControls;
 import ch.ethz.idsc.owly.demo.delta.DeltaHeuristicGoalManager;
-import ch.ethz.idsc.owly.demo.delta.DeltaMinTimeGoalManager;
-import ch.ethz.idsc.owly.demo.delta.DeltaNoHeuristicGoalManager;
 import ch.ethz.idsc.owly.demo.delta.DeltaParameters;
-import ch.ethz.idsc.owly.demo.delta.DeltaStateSpaceModel;
 import ch.ethz.idsc.owly.demo.delta.ImageGradient;
+import ch.ethz.idsc.owly.demo.util.VectorFields;
 import ch.ethz.idsc.owly.glc.adapter.Parameters;
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
 import ch.ethz.idsc.owly.glc.adapter.TrajectoryPlannerContainer;
-import ch.ethz.idsc.owly.glc.core.GoalInterface;
 import ch.ethz.idsc.owly.glc.core.OptimalAnyTrajectoryPlanner;
 import ch.ethz.idsc.owly.glc.core.StandardTrajectoryPlanner;
 import ch.ethz.idsc.owly.glc.core.TrajectoryPlanner;
+import ch.ethz.idsc.owly.gui.ren.VectorFieldRender;
+import ch.ethz.idsc.owly.math.StateSpaceModel;
 import ch.ethz.idsc.owly.math.flow.Flow;
 import ch.ethz.idsc.owly.math.flow.RungeKutta45Integrator;
 import ch.ethz.idsc.owly.math.region.ImageRegion;
+import ch.ethz.idsc.owly.math.region.Region;
+import ch.ethz.idsc.owly.math.sample.BoxRandomSample;
+import ch.ethz.idsc.owly.math.sample.RandomSample;
+import ch.ethz.idsc.owly.math.sample.RandomSampleInterface;
 import ch.ethz.idsc.owly.math.state.FixedStateIntegrator;
 import ch.ethz.idsc.owly.math.state.StateIntegrator;
 import ch.ethz.idsc.owly.math.state.StateTime;
@@ -34,48 +38,6 @@ import ch.ethz.idsc.tensor.io.ResourceData;
 public enum DeltaHelper {
   ;
   // ---
-  // don't change this function, make a separate function if necessary
-  public static TrajectoryPlanner createDefault(Scalar amp) throws Exception {
-    Tensor eta = Tensors.vector(8, 8);
-    StateIntegrator stateIntegrator = FixedStateIntegrator.create( //
-        RungeKutta45Integrator.INSTANCE, RationalScalar.of(1, 10), 4);
-    Tensor range = Tensors.vector(9, 6.5);
-    ImageGradient ipr = new ImageGradient(ResourceData.of("/io/delta_uxy.png"), range, amp);
-    Scalar maxInput = RealScalar.ONE;
-    Collection<Flow> controls = DeltaControls.createControls( //
-        new DeltaStateSpaceModel(ipr, maxInput), maxInput, 25);
-    Tensor obstacleImage = ResourceData.of("/io/delta_free.png"); //
-    TrajectoryRegionQuery obstacleQuery = //
-        SimpleTrajectoryRegionQuery.timeInvariant(new ImageRegion(obstacleImage, range, true));
-    GoalInterface goalInterface = DeltaNoHeuristicGoalManager.create( //
-        Tensors.vector(2.1, 0.3), RealScalar.of(.3));
-    TrajectoryPlanner trajectoryPlanner = new StandardTrajectoryPlanner( //
-        eta, stateIntegrator, controls, obstacleQuery, goalInterface);
-    trajectoryPlanner.insertRoot(new StateTime(Tensors.vector(8.8, 0.5), RealScalar.ZERO));
-    return trajectoryPlanner;
-  }
-
-  // don't change this function, make a separate function if necessary
-  public static TrajectoryPlanner createMinTimeDefault(Scalar amp) throws Exception {
-    Tensor eta = Tensors.vector(8, 8);
-    StateIntegrator stateIntegrator = FixedStateIntegrator.create( //
-        RungeKutta45Integrator.INSTANCE, RationalScalar.of(1, 10), 4);
-    Tensor range = Tensors.vector(9, 6.5);
-    ImageGradient ipr = new ImageGradient(ResourceData.of("/io/delta_uxy.png"), range, amp);
-    Scalar maxInput = RealScalar.ONE;
-    Collection<Flow> controls = DeltaControls.createControls( //
-        new DeltaStateSpaceModel(ipr, maxInput), maxInput, 25);
-    Tensor obstacleImage = ResourceData.of("/io/delta_free.png"); //
-    TrajectoryRegionQuery obstacleQuery = //
-        SimpleTrajectoryRegionQuery.timeInvariant(new ImageRegion(obstacleImage, range, true));
-    DeltaMinTimeGoalManager deltaGoalManager = new DeltaMinTimeGoalManager( //
-        Tensors.vector(2.1, 0.3), RealScalar.of(.3), controls, ipr.maxNormGradient());
-    TrajectoryPlanner trajectoryPlanner = new StandardTrajectoryPlanner( //
-        eta, stateIntegrator, controls, obstacleQuery, deltaGoalManager);
-    trajectoryPlanner.insertRoot(new StateTime(Tensors.vector(8.8, 0.5), RealScalar.ZERO));
-    return trajectoryPlanner;
-  }
-
   static TrajectoryPlannerContainer createGlc(Scalar gradientAmp, RationalScalar resolution, Tensor partitionScale) throws Exception {
     Tensor goal = Tensors.vector(2.9, 2.4);
     return createGlcToGoal(gradientAmp, resolution, partitionScale, goal);
@@ -96,7 +58,7 @@ public enum DeltaHelper {
     Tensor range = Tensors.vector(9, 6.5);
     ImageGradient ipr = new ImageGradient(ResourceData.of("/io/delta_uxy.png"), range, gradientAmp); // -.25 .5
     Scalar maxInput = RealScalar.of(0.1);
-    DeltaStateSpaceModel stateSpaceModel = new DeltaStateSpaceModel(ipr, maxInput);
+    DeltaAltStateSpaceModel stateSpaceModel = new DeltaAltStateSpaceModel(ipr, maxInput);
     System.out.println("MaxGradient of field is: " + ipr.maxNormGradient());
     Collection<Flow> controls = DeltaControls.createControls( //
         stateSpaceModel, maxInput, resolution.number().intValue());
@@ -127,7 +89,7 @@ public enum DeltaHelper {
     Tensor range = Tensors.vector(9, 6.5);
     ImageGradient ipr = new ImageGradient(ResourceData.of("/io/delta_uxy.png"), range, gradientAmp); // -.25 .5
     Scalar maxInput = RealScalar.of(0.1);
-    DeltaStateSpaceModel stateSpaceModel = new DeltaStateSpaceModel(ipr, maxInput);
+    DeltaAltStateSpaceModel stateSpaceModel = new DeltaAltStateSpaceModel(ipr, maxInput);
     System.out.println("MaxGradient of field is: " + ipr.maxNormGradient());
     Collection<Flow> controls = DeltaControls.createControls( //
         stateSpaceModel, maxInput, resolution.number().intValue());
@@ -147,5 +109,14 @@ public enum DeltaHelper {
         deltaGoalManager);
     trajectoryPlanner.switchRootToState((Tensors.vector(8.8, 0.5)));
     return new TrajectoryPlannerContainer(trajectoryPlanner, parameters, stateSpaceModel);
+  }
+
+  public static VectorFieldRender vectorFieldRender(StateSpaceModel stateSpaceModel, Tensor range, Region<Tensor> region, Scalar factor) {
+    VectorFieldRender vectorFieldRender = new VectorFieldRender();
+    RandomSampleInterface sampler = new BoxRandomSample(Tensors.vector(0, 0), range);
+    Tensor points = Tensor.of(RandomSample.of(sampler, 1000).stream().filter(p -> !region.isMember(p)));
+    vectorFieldRender.uv_pairs = //
+        VectorFields.of(stateSpaceModel, points, DeltaEntity.FALLBACK_CONTROL, factor);
+    return vectorFieldRender;
   }
 }

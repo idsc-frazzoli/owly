@@ -18,6 +18,10 @@ import ch.ethz.idsc.tensor.sca.Chop;
 
 public enum DeltaControls {
   ;
+  /** @param stateSpaceModel
+   * @param amp
+   * @param num
+   * @return */
   public static Collection<Flow> createControls(StateSpaceModel stateSpaceModel, Scalar amp, int num) {
     Collection<Flow> collection = new ArrayList<>();
     for (Tensor angle : Range.of(0, num).multiply(DoubleScalar.of(2 * Math.PI / num))) {
@@ -30,9 +34,6 @@ public enum DeltaControls {
   /** @param controls
    * @return */
   public static Scalar maxSpeed(Collection<Flow> controls) {
-    return controls.stream() //
-        .map(Flow::getU) //
-        .map(Norm._2::ofVector) //
-        .reduce(Max::of).get();
+    return controls.stream().map(Flow::getU).map(Norm._2::ofVector).reduce(Max::of).get();
   }
 }

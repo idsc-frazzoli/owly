@@ -1,24 +1,20 @@
-// code by jph and jl
+// code by jl
 package ch.ethz.idsc.owly.demo.delta;
 
 import ch.ethz.idsc.owly.data.GlobalAssert;
 import ch.ethz.idsc.owly.math.StateSpaceModel;
+import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.sca.Sign;
 
-/** TODO see below:
- * this example shows that the lipschitz constant depends on the f(x,u)
- * as well as the set of which the u's are drawn from.
- * that means, the lipschitz function should not be part of StateSpaceModel
- * but a new object that combines these 2 concepts, i.e. a collection of flows */
-public class DeltaStateSpaceModel implements StateSpaceModel {
+public class DeltaAltStateSpaceModel implements StateSpaceModel {
   private final ImageGradient imageGradient;
   private final Scalar maxInput;
 
   /** @param imageGradient
    * @param maxInput positive */
-  public DeltaStateSpaceModel(ImageGradient imageGradient, Scalar maxInput) {
+  public DeltaAltStateSpaceModel(ImageGradient imageGradient, Scalar maxInput) {
     GlobalAssert.that(Sign.isPositive(maxInput));
     this.imageGradient = imageGradient;
     this.maxInput = maxInput;
@@ -31,6 +27,15 @@ public class DeltaStateSpaceModel implements StateSpaceModel {
 
   @Override
   public Scalar getLipschitz() {
+    // maxNorm is very big--> therefore eta with R^(1+LF) is huge? real lipschitz?
+    Scalar n = RealScalar.of(4); // dimensions of StateSpace + Dimensions of InputSpace
+    // lipschitz constant on vector-valued function from:
+    // TODO JAN check link
+    // https://math.stackexchange.com/questions/1132078/proof-that-a-vector-valued-function-is-lipschitz-continuous-on-a-closed-rectangl
+    return getMaxPossibleChange().multiply(n);
+  }
+
+  public Scalar getMaxPossibleChange() {
     return imageGradient.maxNormGradient().add(maxInput);
   }
 }

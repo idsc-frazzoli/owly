@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Optional;
 
 import ch.ethz.idsc.owly.data.Stopwatch;
-import ch.ethz.idsc.owly.demo.delta.DeltaStateSpaceModel;
+import ch.ethz.idsc.owly.demo.delta.DeltaAltStateSpaceModel;
 import ch.ethz.idsc.owly.demo.delta.DeltaTrajectoryGoalManager;
 import ch.ethz.idsc.owly.glc.adapter.HeuristicQ;
 import ch.ethz.idsc.owly.glc.adapter.RunCompare;
@@ -66,7 +66,7 @@ enum DeltaGlcConstTimeHeuristicAnyDemo {
     List<Region<Tensor>> goalCheckHelpRegions = new ArrayList<>();
     Tensor radius = Tensors.vector(0.1, 0.1);
     Tensor maxChangePerIterstep = Tensors.vector(1, 1).multiply(slowTrajectoryPlannerContainer.getParameters().getExpandTime()
-        .multiply(((DeltaStateSpaceModel) slowTrajectoryPlannerContainer.getStateSpaceModel()).getMaxPossibleChange()));
+        .multiply(((DeltaAltStateSpaceModel) slowTrajectoryPlannerContainer.getStateSpaceModel()).getMaxPossibleChange()));
     Tensor GoalCheckHelpRadius = radius.add(maxChangePerIterstep);
     while (iterator.hasNext()) {
       StateTime next = iterator.next();
@@ -74,7 +74,7 @@ enum DeltaGlcConstTimeHeuristicAnyDemo {
       goalCheckHelpRegions.add(new EllipsoidRegion(next.state(), GoalCheckHelpRadius));
     }
     DeltaTrajectoryGoalManager trajectoryGoalManager = new DeltaTrajectoryGoalManager(goalRegions, quickTrajectory, radius, //
-        ((DeltaStateSpaceModel) slowTrajectoryPlannerContainer.getStateSpaceModel()).getMaxPossibleChange());
+        ((DeltaAltStateSpaceModel) slowTrajectoryPlannerContainer.getStateSpaceModel()).getMaxPossibleChange());
     ((OptimalAnyTrajectoryPlanner) slowTrajectoryPlannerContainer.getTrajectoryPlanner()).changeToGoal(trajectoryGoalManager);
     OwlyFrame owlyFrame = OwlyGui.start();
     owlyFrame.configCoordinateOffset(33, 416);

@@ -1,7 +1,6 @@
 // code by jph
 package ch.ethz.idsc.owly.demo.delta;
 
-import java.util.Collection;
 import java.util.List;
 
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
@@ -28,12 +27,12 @@ public class DeltaMinTimeGoalManager extends SimpleTrajectoryRegionQuery impleme
    * @param radius
    * @param controls
    * @param maxNormGradient */
-  public DeltaMinTimeGoalManager( //
-      Tensor center, Scalar radius, Collection<Flow> controls, Scalar maxNormGradient) {
+  public DeltaMinTimeGoalManager(Tensor center, Scalar radius, Scalar maxMove) {
     super(new TimeInvariantRegion(new SphericalRegion(center, radius)));
     this.center = center;
     this.radius = radius;
-    maxMove = DeltaControls.maxSpeed(controls).add(maxNormGradient);
+    // TODO this is/should be lipschitz constant of DeltaStateSpaceModel
+    this.maxMove = maxMove;
   }
 
   @Override
