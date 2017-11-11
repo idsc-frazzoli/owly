@@ -66,7 +66,7 @@ public enum DemoLauncher {
     jFrame.setContentPane(new JScrollPane(jComponent, //
         JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, //
         JScrollPane.HORIZONTAL_SCROLLBAR_NEVER));
-    jFrame.setBounds(1200, 100, 250, 40 + demos.size() * BUTTON_HEIGHT);
+    jFrame.setBounds(1200, 100, 250, Math.min(40 + demos.size() * BUTTON_HEIGHT, 800));
     jFrame.setVisible(true);
   }
 }

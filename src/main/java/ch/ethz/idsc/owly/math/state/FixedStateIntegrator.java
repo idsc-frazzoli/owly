@@ -36,7 +36,7 @@ public class FixedStateIntegrator implements StateIntegrator {
     this.trajectorySize = trajectorySize;
   }
 
-  @Override
+  @Override // from StateIntegrator
   public List<StateTime> trajectory(StateTime stateTime, Flow flow) {
     final List<StateTime> trajectory = new ArrayList<>();
     StateTime prev = stateTime;

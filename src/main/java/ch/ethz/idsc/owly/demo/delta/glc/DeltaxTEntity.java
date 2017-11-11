@@ -6,7 +6,6 @@ import ch.ethz.idsc.owly.glc.core.StandardTrajectoryPlanner;
 import ch.ethz.idsc.owly.glc.core.TrajectoryPlanner;
 import ch.ethz.idsc.owly.math.state.StateTime;
 import ch.ethz.idsc.owly.math.state.TrajectoryRegionQuery;
-import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
 
@@ -14,15 +13,6 @@ import ch.ethz.idsc.tensor.Tensors;
 /* package */ class DeltaxTEntity extends DeltaEntity {
   public DeltaxTEntity(ImageGradient imageGradient, Tensor state) {
     super(imageGradient, state);
-    represent_entity = StateTime::joined;
-  }
-
-  private static final Tensor WEIGHT = Tensors.vector(1.0, 1.0, 0.2);
-
-  @Override
-  protected Scalar distance(Tensor x, Tensor y) {
-    Tensor d = x.subtract(y);
-    return d.pmul(WEIGHT).dot(d).Get();
   }
 
   @Override

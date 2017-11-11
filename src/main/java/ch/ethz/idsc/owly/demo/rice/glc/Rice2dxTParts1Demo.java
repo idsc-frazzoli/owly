@@ -8,10 +8,7 @@ import ch.ethz.idsc.owly.demo.rice.Rice2Controls;
 import ch.ethz.idsc.owly.demo.rn.R2xTEllipsoidStateTimeRegion;
 import ch.ethz.idsc.owly.demo.rn.R2xTPolygonStateTimeRegion;
 import ch.ethz.idsc.owly.demo.rn.glc.R2xTEllipsoidsAnimationDemo;
-import ch.ethz.idsc.owly.demo.util.BijectionFamily;
 import ch.ethz.idsc.owly.demo.util.DemoInterface;
-import ch.ethz.idsc.owly.demo.util.So2Family;
-import ch.ethz.idsc.owly.demo.util.TranslationFamily;
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
 import ch.ethz.idsc.owly.gui.RenderInterface;
 import ch.ethz.idsc.owly.gui.ani.OwlyAnimationFrame;
@@ -21,6 +18,9 @@ import ch.ethz.idsc.owly.math.flow.Flow;
 import ch.ethz.idsc.owly.math.noise.SimplexContinuousNoise;
 import ch.ethz.idsc.owly.math.region.Region;
 import ch.ethz.idsc.owly.math.region.RegionUnion;
+import ch.ethz.idsc.owly.math.se2.BijectionFamily;
+import ch.ethz.idsc.owly.math.se2.So2Family;
+import ch.ethz.idsc.owly.math.se2.TranslationFamily;
 import ch.ethz.idsc.owly.math.state.StateTime;
 import ch.ethz.idsc.owly.math.state.TrajectoryRegionQuery;
 import ch.ethz.idsc.tensor.RealScalar;
@@ -52,8 +52,7 @@ public class Rice2dxTParts1Demo implements DemoInterface {
     Region<StateTime> region3 = new R2xTPolygonStateTimeRegion( //
         polygon, rigid2, () -> abstractEntity.getStateTimeNow().time());
     TrajectoryRegionQuery trq = new SimpleTrajectoryRegionQuery( //
-        RegionUnion.wrap(Arrays.asList( //
-            region1, region2, region3)));
+        RegionUnion.wrap(Arrays.asList(region1, region2, region3)));
     // abstractEntity.obstacleQuery = trq;
     owlyAnimationFrame.setObstacleQuery(trq);
     // owlyAnimationFrame.addRegionRender(imageRegion);
