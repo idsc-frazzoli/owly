@@ -32,15 +32,11 @@ import ch.ethz.idsc.owly.glc.core.TrajectoryPlanner;
 import ch.ethz.idsc.owly.glc.core.TrajectorySample;
 import ch.ethz.idsc.owly.gui.RenderInterface;
 import ch.ethz.idsc.owly.gui.TimerFrame;
-import ch.ethz.idsc.owly.gui.region.ImageRegionRender;
 import ch.ethz.idsc.owly.gui.ren.EtaRender;
 import ch.ethz.idsc.owly.gui.ren.GoalRender;
 import ch.ethz.idsc.owly.gui.ren.GridRender;
-import ch.ethz.idsc.owly.gui.ren.ObstacleRender;
 import ch.ethz.idsc.owly.gui.ren.TrajectoryRender;
 import ch.ethz.idsc.owly.gui.ren.TreeRender;
-import ch.ethz.idsc.owly.math.region.ImageRegion;
-import ch.ethz.idsc.owly.math.region.Region;
 import ch.ethz.idsc.owly.math.state.StateTime;
 import ch.ethz.idsc.owly.math.state.TrajectoryRegionQuery;
 import ch.ethz.idsc.owly.rrts.core.RrtsNode;
@@ -49,14 +45,12 @@ import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
 
-// EXPERIMENTAL API not finalized 
 public class OwlyAnimationFrame extends TimerFrame {
   private static final Dimension RECORDING = new Dimension(400, 400);
   private static final int MARGIN = 100; // 170;
   // ---
   private final EtaRender etaRender = new EtaRender(Tensors.empty());
   private final TrajectoryRender trajectoryRender = new TrajectoryRender();
-  private final ObstacleRender obstacleRender = new ObstacleRender(null);
   private final GoalRender goalRender = new GoalRender(null);
   private final TreeRender treeRender = new TreeRender(null);
   private final List<AnimationInterface> animationInterfaces = new LinkedList<>();
@@ -71,7 +65,6 @@ public class OwlyAnimationFrame extends TimerFrame {
     geometricComponent.addRenderInterface(GridRender.INSTANCE);
     geometricComponent.addRenderInterface(etaRender);
     geometricComponent.addRenderInterface(trajectoryRender);
-    // geometricComponent.addRenderInterface(obstacleRender); // TODO check
     geometricComponent.addRenderInterface(goalRender);
     geometricComponent.addRenderInterface(treeRender);
     { // periodic task for integration
@@ -209,7 +202,6 @@ public class OwlyAnimationFrame extends TimerFrame {
       } else {
         System.err.println("NO TRAJECTORY BETWEEN ROOT TO GOAL");
       }
-      obstacleRender.fromStateTimeCollector(trajectoryPlanner.getObstacleQuery());
       goalRender.fromStateTimeCollector(trajectoryPlanner.getGoalInterface());
       treeRender.setCollection(new ArrayList<>(trajectoryPlanner.getDomainMap().values()));
       // no repaint
@@ -224,7 +216,6 @@ public class OwlyAnimationFrame extends TimerFrame {
         abstractEntity.setTrajectory(trajectory);
       }
       trajectoryRender.setTrajectory(trajectory);
-      obstacleRender.fromStateTimeCollector(rrtsPlanner.getObstacleQuery());
       if (rrtsPlanner.getBest().isPresent()) {
         RrtsNode root = Nodes.rootFrom(rrtsPlanner.getBest().get());
         Collection<RrtsNode> collection = Nodes.ofSubtree(root);
@@ -246,12 +237,7 @@ public class OwlyAnimationFrame extends TimerFrame {
     this.obstacleQuery = obstacleQuery;
   }
 
-  public void addRegionRender(Region<Tensor> region) {
-    // TODO function redundant to OwlyFrame
-    if (region instanceof ImageRegion)
-      addBackground(new ImageRegionRender((ImageRegion) region));
-  }
-
+  /** @param renderInterface */
   public void addBackground(RenderInterface renderInterface) {
     geometricComponent.addRenderInterfaceBackground(renderInterface);
   }

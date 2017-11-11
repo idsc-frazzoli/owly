@@ -11,6 +11,7 @@ import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
 import ch.ethz.idsc.owly.gui.RenderInterface;
 import ch.ethz.idsc.owly.gui.ani.AbstractEntity;
 import ch.ethz.idsc.owly.gui.ani.OwlyAnimationFrame;
+import ch.ethz.idsc.owly.gui.region.RegionRenders;
 import ch.ethz.idsc.owly.math.StateSpaceModel;
 import ch.ethz.idsc.owly.math.StateSpaceModels;
 import ch.ethz.idsc.owly.math.flow.Flow;
@@ -57,7 +58,7 @@ public class DeltaxTAnimationDemo implements DemoInterface {
         RegionUnion.wrap(Arrays.asList(new TimeInvariantRegion(imageRegion), region1, region2)));
     owlyAnimationFrame.set(abstractEntity);
     owlyAnimationFrame.setObstacleQuery(obstacleQuery);
-    owlyAnimationFrame.addRegionRender(imageRegion);
+    owlyAnimationFrame.addBackground(RegionRenders.create(imageRegion));
     owlyAnimationFrame.addBackground((RenderInterface) region1);
     owlyAnimationFrame.addBackground((RenderInterface) region2);
     owlyAnimationFrame.addBackground(DeltaHelper.vectorFieldRender(stateSpaceModel, range, imageRegion, RealScalar.of(0.5)));

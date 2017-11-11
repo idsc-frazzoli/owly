@@ -5,6 +5,7 @@ import ch.ethz.idsc.owly.demo.rn.R2ImageRegions;
 import ch.ethz.idsc.owly.demo.util.DemoInterface;
 import ch.ethz.idsc.owly.demo.util.ImageRegions;
 import ch.ethz.idsc.owly.gui.ani.OwlyAnimationFrame;
+import ch.ethz.idsc.owly.gui.region.RegionRenders;
 import ch.ethz.idsc.owly.math.region.ImageRegion;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
@@ -25,7 +26,7 @@ public class Se2GlcAnyAnimation1Demo implements DemoInterface {
       se2AnyEntity.startLife(environmentRegion, root); // (trq, root);
       owlyAnimationFrame.set(se2AnyEntity);
       owlyAnimationFrame.configCoordinateOffset(50, 700);
-      owlyAnimationFrame.addRegionRender(environmentRegion);
+      owlyAnimationFrame.addBackground(RegionRenders.create(environmentRegion));
       owlyAnimationFrame.jFrame.setBounds(100, 50, 800, 800);
       owlyAnimationFrame.jFrame.setVisible(true);
     } catch (Exception e) {

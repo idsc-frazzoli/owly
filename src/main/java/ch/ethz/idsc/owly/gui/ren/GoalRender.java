@@ -4,6 +4,7 @@ package ch.ethz.idsc.owly.gui.ren;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.geom.Ellipse2D;
+import java.awt.geom.Path2D;
 import java.awt.geom.Point2D;
 import java.util.Collection;
 import java.util.Collections;
@@ -18,8 +19,8 @@ import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.opt.ConvexHull;
 
 public class GoalRender implements RenderInterface {
-  // TODO JONAS/JAN reenable drawing of complex hull with option to disable
-  public static final boolean CONVEX = false;
+  public static final boolean CONVEX = true;
+  public static final Color COLOR = new Color(224, 168, 0, 128);
   // ---
   private Collection<StateTime> collection;
 
@@ -34,14 +35,16 @@ public class GoalRender implements RenderInterface {
     if (CONVEX) { // draw convex hull of goal points
       Tensor points = Tensor.of(collection.stream().map(StateTime::state).map(x -> x.extract(0, 2)));
       if (2 < points.length()) {
-        graphics.setColor(new Color(224, 168, 0, 128));
-        graphics.fill(geometricLayer.toPath2D(ConvexHull.of(points)));
+        graphics.setColor(COLOR);
+        Path2D path2D = geometricLayer.toPath2D(ConvexHull.of(points));
+        path2D.closePath();
+        graphics.draw(path2D);
       }
     }
     { // draw discovered points
       double radius = 9;
       double offset = -radius * 0.5;
-      graphics.setColor(new Color(224, 168, 0, 224));
+      graphics.setColor(COLOR);
       for (StateTime stateTime : collection) {
         Point2D point2d = geometricLayer.toPoint2D(stateTime.state());
         graphics.draw(new Ellipse2D.Double(point2d.getX() + offset, point2d.getY() + offset, radius, radius));

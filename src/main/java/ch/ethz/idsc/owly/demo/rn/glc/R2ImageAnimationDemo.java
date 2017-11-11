@@ -7,6 +7,7 @@ import ch.ethz.idsc.owly.demo.rn.R2ImageRegions;
 import ch.ethz.idsc.owly.demo.util.DemoInterface;
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
 import ch.ethz.idsc.owly.gui.ani.OwlyAnimationFrame;
+import ch.ethz.idsc.owly.gui.region.RegionRenders;
 import ch.ethz.idsc.owly.math.region.ImageRegion;
 import ch.ethz.idsc.tensor.Tensors;
 
@@ -22,7 +23,7 @@ public class R2ImageAnimationDemo implements DemoInterface {
       owlyAnimationFrame.set(r2Entity);
       ImageRegion imageRegion = R2ImageRegions.inside_gtob();
       owlyAnimationFrame.setObstacleQuery(SimpleTrajectoryRegionQuery.timeInvariant(imageRegion));
-      owlyAnimationFrame.addRegionRender(imageRegion);
+      owlyAnimationFrame.addBackground(RegionRenders.create(imageRegion));
       owlyAnimationFrame.configCoordinateOffset(50, 700);
       owlyAnimationFrame.jFrame.setVisible(true);
     } catch (Exception exception) {

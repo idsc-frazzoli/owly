@@ -15,6 +15,7 @@ import ch.ethz.idsc.owly.demo.util.ExamplePolygons;
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
 import ch.ethz.idsc.owly.gui.RenderInterface;
 import ch.ethz.idsc.owly.gui.ani.OwlyAnimationFrame;
+import ch.ethz.idsc.owly.gui.region.RegionRenders;
 import ch.ethz.idsc.owly.math.ScalarTensorFunction;
 import ch.ethz.idsc.owly.math.noise.SimplexContinuousNoise;
 import ch.ethz.idsc.owly.math.region.ImageRegion;
@@ -43,7 +44,7 @@ public class Se2xTLetterDemo implements DemoInterface {
       TrajectoryRegionQuery trq = SimpleTrajectoryRegionQuery.timeInvariant(se2PointsVsRegion);
       abstractEntity.obstacleQuery = trq;
       owlyAnimationFrame.setObstacleQuery(trq);
-      owlyAnimationFrame.addRegionRender(imageRegion);
+      owlyAnimationFrame.addBackground(RegionRenders.create(imageRegion));
       break;
     }
     case 2: {
@@ -78,7 +79,7 @@ public class Se2xTLetterDemo implements DemoInterface {
           )));
       abstractEntity.obstacleQuery = trq;
       owlyAnimationFrame.setObstacleQuery(trq);
-      owlyAnimationFrame.addRegionRender(imageRegion);
+      owlyAnimationFrame.addBackground(RegionRenders.create(imageRegion));
       owlyAnimationFrame.addBackground((RenderInterface) region1);
       owlyAnimationFrame.addBackground((RenderInterface) region2);
       break;

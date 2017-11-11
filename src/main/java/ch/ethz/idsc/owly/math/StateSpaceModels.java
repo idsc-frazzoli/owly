@@ -17,11 +17,11 @@ public enum StateSpaceModels {
    * @param u
    * @return flow defined by stateSpaceModel using control parameter u */
   public static Flow createFlow(StateSpaceModel stateSpaceModel, Tensor u) {
-    Tensor u_unmodifiable = u.unmodifiable();
+    Tensor u_unmodifiable = u.copy().unmodifiable();
     return new Flow() {
       @Override
       public Tensor at(Tensor x) {
-        return stateSpaceModel.f(x, u);
+        return stateSpaceModel.f(x, u_unmodifiable);
       }
 
       @Override

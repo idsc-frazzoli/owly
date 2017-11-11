@@ -7,6 +7,7 @@ import ch.ethz.idsc.owly.demo.rn.RnTransitionSpace;
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
 import ch.ethz.idsc.owly.gui.ani.OwlyFrame;
 import ch.ethz.idsc.owly.gui.ani.OwlyGui;
+import ch.ethz.idsc.owly.gui.region.RegionRenders;
 import ch.ethz.idsc.owly.math.region.ImageRegion;
 import ch.ethz.idsc.owly.math.sample.BoxRandomSample;
 import ch.ethz.idsc.owly.rrts.adapter.LengthCostFunction;
@@ -34,7 +35,7 @@ enum R2OutsideCharDemo {
     OwlyFrame owlyFrame = OwlyGui.start();
     owlyFrame.configCoordinateOffset(60, 477);
     owlyFrame.jFrame.setBounds(100, 100, 550, 550);
-    owlyFrame.addRegionRender(imageRegion);
+    owlyFrame.addBackground(RegionRenders.create(imageRegion));
     BoxRandomSample rnUniformSampler = new BoxRandomSample(Tensors.vector(0, 0), imageRegion.range());
     int frame = 0;
     while (frame++ < 20 && owlyFrame.jFrame.isVisible()) {
