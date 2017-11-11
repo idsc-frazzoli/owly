@@ -20,7 +20,7 @@ public class Rice2dImageDemo implements DemoInterface {
   @Override
   public void start() {
     OwlyAnimationFrame owlyAnimationFrame = new OwlyAnimationFrame();
-    Scalar mu = RealScalar.of(-.5);
+    Scalar mu = RealScalar.of(-0.5);
     Collection<Flow> controls = Rice2Controls.create2d(mu, 1, 15);
     ImageRegion imageRegion = R2ImageRegions.inside_gtob();
     TrajectoryRegionQuery obstacleQuery = SimpleTrajectoryRegionQuery.timeInvariant(imageRegion);

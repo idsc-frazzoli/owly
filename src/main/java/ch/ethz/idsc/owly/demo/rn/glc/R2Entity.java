@@ -48,7 +48,7 @@ import ch.ethz.idsc.tensor.red.Norm2Squared;
   }
 
   @Override
-  protected Tensor fallbackControl() {
+  protected final Tensor fallbackControl() {
     return Tensors.vectorDouble(0, 0).unmodifiable();
   }
 

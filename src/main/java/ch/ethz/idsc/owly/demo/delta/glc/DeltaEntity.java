@@ -16,7 +16,6 @@ import ch.ethz.idsc.owly.math.StateSpaceModel;
 import ch.ethz.idsc.owly.math.flow.EulerIntegrator;
 import ch.ethz.idsc.owly.math.flow.Flow;
 import ch.ethz.idsc.owly.math.flow.RungeKutta45Integrator;
-import ch.ethz.idsc.owly.math.state.EpisodeIntegrator;
 import ch.ethz.idsc.owly.math.state.FixedStateIntegrator;
 import ch.ethz.idsc.owly.math.state.SimpleEpisodeIntegrator;
 import ch.ethz.idsc.owly.math.state.StateIntegrator;
@@ -45,16 +44,11 @@ import ch.ethz.idsc.tensor.sca.Chop;
     return new DeltaStateSpaceModel(imageGradient, U_NORM);
   }
 
-  public static DeltaEntity createDefault(ImageGradient imageGradient, Tensor state) {
-    EpisodeIntegrator episodeIntegrator = new SimpleEpisodeIntegrator( //
-        model(imageGradient), EulerIntegrator.INSTANCE, new StateTime(state, RealScalar.ZERO));
-    return new DeltaEntity(episodeIntegrator, imageGradient, state);
-  }
-
+  /***************************************************/
   private final ImageGradient imageGradient;
 
-  public DeltaEntity(EpisodeIntegrator episodeIntegrator, ImageGradient imageGradient, Tensor state) {
-    super(episodeIntegrator);
+  public DeltaEntity(ImageGradient imageGradient, Tensor state) {
+    super(new SimpleEpisodeIntegrator(model(imageGradient), EulerIntegrator.INSTANCE, new StateTime(state, RealScalar.ZERO)));
     this.imageGradient = imageGradient;
   }
 
@@ -64,7 +58,7 @@ import ch.ethz.idsc.tensor.sca.Chop;
   }
 
   @Override
-  protected Tensor fallbackControl() {
+  protected final Tensor fallbackControl() {
     return FALLBACK_CONTROL;
   }
 
@@ -75,7 +69,7 @@ import ch.ethz.idsc.tensor.sca.Chop;
 
   @Override
   public TrajectoryPlanner createTrajectoryPlanner(TrajectoryRegionQuery obstacleQuery, Tensor goal) {
-    Tensor eta = Tensors.vector(5, 5);
+    Tensor eta = eta();
     StateIntegrator stateIntegrator = FixedStateIntegrator.create( //
         RungeKutta45Integrator.INSTANCE, RationalScalar.of(1, 10), 4);
     Collection<Flow> controls = DeltaControls.createControls( //
@@ -87,5 +81,9 @@ import ch.ethz.idsc.tensor.sca.Chop;
         goal.extract(0, 2), RealScalar.of(.3), maxMove);
     return new StandardTrajectoryPlanner( //
         eta, stateIntegrator, controls, obstacleQuery, goalInterface);
+  }
+
+  protected Tensor eta() {
+    return Tensors.vector(5, 5).unmodifiable();
   }
 }

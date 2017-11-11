@@ -45,6 +45,8 @@ import ch.ethz.idsc.tensor.sca.Sqrt;
 /** several magic constants are hard-coded in the implementation.
  * that means, the functionality does not apply to all examples universally. */
 class Se2Entity extends AbstractEntity {
+  public static final Tensor FALLBACK_CONTROL = Array.zeros(3).unmodifiable(); // {vx, vy, rate}
+  // ---
   private static final Tensor SHAPE = Tensors.matrixDouble( //
       new double[][] { //
           { .2, +.07, 1 }, //
@@ -92,8 +94,8 @@ class Se2Entity extends AbstractEntity {
   }
 
   @Override
-  protected Tensor fallbackControl() {
-    return Array.zeros(3).unmodifiable(); // {vx, vy, rate}
+  protected final Tensor fallbackControl() {
+    return FALLBACK_CONTROL; // {vx, vy, rate}
   }
 
   @Override

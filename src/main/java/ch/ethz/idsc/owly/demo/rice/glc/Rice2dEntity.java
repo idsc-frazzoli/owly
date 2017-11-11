@@ -55,7 +55,7 @@ import ch.ethz.idsc.tensor.red.Norm2Squared;
   }
 
   @Override
-  public Scalar delayHint() {
+  public final Scalar delayHint() {
     return delayHint;
   }
 

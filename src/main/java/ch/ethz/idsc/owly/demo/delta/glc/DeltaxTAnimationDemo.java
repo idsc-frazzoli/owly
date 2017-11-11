@@ -14,7 +14,7 @@ import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
 import ch.ethz.idsc.tensor.io.ResourceData;
 
-public class DeltaAnimationDemo implements DemoInterface {
+public class DeltaxTAnimationDemo implements DemoInterface {
   @Override
   public void start() {
     OwlyAnimationFrame owlyAnimationFrame = new OwlyAnimationFrame();
@@ -25,7 +25,7 @@ public class DeltaAnimationDemo implements DemoInterface {
     Tensor obstacleImage = ResourceData.of("/io/delta_free.png"); //
     ImageRegion imageRegion = new ImageRegion(obstacleImage, range, true);
     TrajectoryRegionQuery obstacleQuery = SimpleTrajectoryRegionQuery.timeInvariant(imageRegion);
-    owlyAnimationFrame.set(new DeltaEntity(imageGradient, Tensors.vector(10, 3.5)));
+    owlyAnimationFrame.set(new DeltaxTEntity(imageGradient, Tensors.vector(10, 3.5)));
     owlyAnimationFrame.setObstacleQuery(obstacleQuery);
     StateSpaceModel stateSpaceModel = DeltaEntity.model(imageGradient);
     owlyAnimationFrame.addRegionRender(imageRegion);
@@ -35,6 +35,6 @@ public class DeltaAnimationDemo implements DemoInterface {
   }
 
   public static void main(String[] args) throws Exception {
-    new DeltaAnimationDemo().start();
+    new DeltaxTAnimationDemo().start();
   }
 }

@@ -10,7 +10,9 @@ import ch.ethz.idsc.tensor.TensorRuntimeException;
 import ch.ethz.idsc.tensor.Tensors;
 import ch.ethz.idsc.tensor.alg.Join;
 
-public class DeltaxtStateSpaceModel implements StateSpaceModel {
+// TODO should be obsolete
+//@Deprecated
+class DeltaxtStateSpaceModel implements StateSpaceModel {
   private static final Tensor AFFINE_ONE = Tensors.vector(1);
   private final ImageGradient imageGradient;
   private final Scalar maxInput;
