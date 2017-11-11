@@ -53,10 +53,10 @@ enum R2GlcAnyDemo {
     // TrajectoryRegionQuery obstacleQuery = new SimpleTrajectoryRegionQuery( //
     // new TimeInvariantRegion(new R2Bubbles()));
     // ---
-    AnyPlannerInterface trajectoryPlanner = new OptimalAnyTrajectoryPlanner( //
+    AnyPlannerInterface anyPlannerInterface = new OptimalAnyTrajectoryPlanner( //
         parameters.getEta(), stateIntegrator, controls, obstacleQuery, rnGoal);
-    trajectoryPlanner.switchRootToState(Tensors.vector(0, 0));
-    GlcExpand.maxDepth(trajectoryPlanner, parameters.getDepthLimit());
+    anyPlannerInterface.switchRootToState(Tensors.vector(0, 0));
+    GlcExpand.maxDepth(anyPlannerInterface, parameters.getDepthLimit());
     OwlyFrame owlyFrame = OwlyGui.start();
     Tensor goal = Tensors.vector(6, 6);
     for (int iter = 0; iter < 20; iter++) {
@@ -65,25 +65,25 @@ enum R2GlcAnyDemo {
       goal.set(Mod.function(5), 0);
       goal.set(Mod.function(5), 1);
       GoalInterface rnGoal2 = RnMinDistSphericalGoalManager.create(goal, DoubleScalar.of(.25));
-      List<StateTime> trajectory = trajectoryPlanner.trajectoryToBest();
+      List<StateTime> trajectory = anyPlannerInterface.trajectoryToBest();
       if (trajectory != null) {
         StateTime newRootState = trajectory.get(trajectory.size() > 1 ? 1 : 0);
         // ---
-        int increment = trajectoryPlanner.switchRootToState(newRootState.state());
+        int increment = anyPlannerInterface.switchRootToState(newRootState.state());
         parameters.increaseDepthLimit(increment);
       } else {
         throw new RuntimeException();
       }
       System.out.println("Switching to Goal:" + goal);
-      trajectoryPlanner.changeToGoal(rnGoal2);
-      int iters2 = GlcExpand.maxDepth(trajectoryPlanner, parameters.getDepthLimit());
+      anyPlannerInterface.changeToGoal(rnGoal2);
+      int iters2 = GlcExpand.maxDepth(anyPlannerInterface, parameters.getDepthLimit());
       // ---
       long toc = System.nanoTime();
       StateTimeTrajectories.print(trajectory);
       System.out.println((toc - tic) * 1e-9 + " Seconds needed to replan");
       System.out.println("After root switch needed " + iters2 + " iterations");
       System.out.println("*****Finished*****");
-      owlyFrame.setGlc((TrajectoryPlanner) trajectoryPlanner);
+      owlyFrame.setGlc((TrajectoryPlanner) anyPlannerInterface);
       // owlyFrame.configCoordinateOffset(150 - iter * 30, 450 + iter * 30);
       if (!owlyFrame.jFrame.isVisible())
         break;

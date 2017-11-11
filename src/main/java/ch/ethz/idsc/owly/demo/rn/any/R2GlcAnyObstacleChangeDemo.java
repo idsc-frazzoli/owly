@@ -63,16 +63,16 @@ enum R2GlcAnyObstacleChangeDemo {
             , new R2NoiseRegion(RealScalar.of(.2)) //
         )));
     // --
-    AnyPlannerInterface trajectoryPlanner = new OptimalAnyTrajectoryPlanner( //
+    AnyPlannerInterface anyPlannerInterface = new OptimalAnyTrajectoryPlanner( //
         parameters.getEta(), stateIntegrator, controls, obstacleQuery1, rnGoal);
-    trajectoryPlanner.switchRootToState(Tensors.vector(0, 6));
-    GlcExpand.maxDepth(trajectoryPlanner, parameters.getDepthLimit());
-    List<StateTime> trajectory = trajectoryPlanner.trajectoryToBest();
+    anyPlannerInterface.switchRootToState(Tensors.vector(0, 6));
+    GlcExpand.maxDepth(anyPlannerInterface, parameters.getDepthLimit());
+    List<StateTime> trajectory = anyPlannerInterface.trajectoryToBest();
     StateTimeTrajectories.print(trajectory);
     OwlyFrame owlyFrame = OwlyGui.start();
     owlyFrame.configCoordinateOffset(400, 400);
     owlyFrame.jFrame.setBounds(0, 0, 800, 800);
-    owlyFrame.setGlc((TrajectoryPlanner) trajectoryPlanner);
+    owlyFrame.setGlc((TrajectoryPlanner) anyPlannerInterface);
     TrajectoryRegionQuery obstacleQuery2 = SimpleTrajectoryRegionQuery.timeInvariant( //
         RegionUnion.wrap(Arrays.asList( //
             // new EllipsoidRegion(Tensors.vector(0, 0), Tensors.vector(3, 3)),//
@@ -80,9 +80,9 @@ enum R2GlcAnyObstacleChangeDemo {
             // RnPointclouds.createRandomRegion(30, Tensors.vector(12, 12), Tensors.vector(0, 0), RealScalar.of(0.6)), //
             new R2NoiseRegion(RealScalar.of(.2)) //
         )));
-    trajectoryPlanner.obstacleUpdate(obstacleQuery2);
-    owlyFrame.setGlc((TrajectoryPlanner) trajectoryPlanner);
-    GlcExpand.constTime(trajectoryPlanner, RealScalar.of(1.5), parameters.getDepthLimit());
-    owlyFrame.setGlc((TrajectoryPlanner) trajectoryPlanner);
+    anyPlannerInterface.obstacleUpdate(obstacleQuery2);
+    owlyFrame.setGlc((TrajectoryPlanner) anyPlannerInterface);
+    GlcExpand.constTime(anyPlannerInterface, RealScalar.of(1.5), parameters.getDepthLimit());
+    owlyFrame.setGlc((TrajectoryPlanner) anyPlannerInterface);
   }
 }

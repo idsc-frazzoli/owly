@@ -43,6 +43,7 @@ public class R2xtEllipsoidGoalManagerTest extends TestCase {
     }
   }
 
+  @SuppressWarnings("deprecation")
   public void testMinCostToGoal2() {
     // GoalManager without Heuristic: Therefore minCostToGoal always ZERO
     RnxtEllipsoidGoalManager rnGoal = new RnxtEllipsoidGoalManager(//
@@ -62,6 +63,7 @@ public class R2xtEllipsoidGoalManagerTest extends TestCase {
     assertEquals(incr, RealScalar.of(8));
   }
 
+  @SuppressWarnings("deprecation")
   public void testCostIncrement2() {
     GlcNode root = GlcNodes.createRoot(new StateTime(Tensors.vector(2, 2, 0), RealScalar.ZERO), x -> RealScalar.ZERO);
     RnxtEllipsoidGoalManager rnGoal = new RnxtEllipsoidGoalManager( //

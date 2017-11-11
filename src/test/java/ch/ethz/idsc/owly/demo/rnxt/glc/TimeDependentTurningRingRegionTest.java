@@ -1,7 +1,6 @@
 // code by jl
-package ch.ethz.idsc.owly.math.region;
+package ch.ethz.idsc.owly.demo.rnxt.glc;
 
-import ch.ethz.idsc.owly.demo.rnxt.glc.TimeDependentTurningRingRegion;
 import ch.ethz.idsc.owly.math.RotationUtils;
 import ch.ethz.idsc.owly.math.state.StateTime;
 import ch.ethz.idsc.tensor.RealScalar;

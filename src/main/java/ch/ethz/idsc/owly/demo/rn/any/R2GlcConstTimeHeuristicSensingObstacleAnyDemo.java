@@ -61,39 +61,38 @@ enum R2GlcConstTimeHeuristicSensingObstacleAnyDemo {
     Region<Tensor> environmentRegion = new R2NoiseRegion(RealScalar.of(0.1));
     TrajectoryRegionQuery obstacleQuery = SimpleTrajectoryRegionQuery.timeInvariant( //
         EuclideanDistanceDiscoverRegion.of(environmentRegion, startState, RealScalar.of(4)));
-    // TODO JONAS: can remove todo "change back to AnyPlannerInterface"
-    AnyPlannerInterface trajectoryPlanner = new OptimalAnyTrajectoryPlanner( //
+    AnyPlannerInterface anyPlannerInterface = new OptimalAnyTrajectoryPlanner( //
         parameters.getEta(), stateIntegrator, controls, obstacleQuery, rnGoal);
-    trajectoryPlanner.switchRootToState(startState);
-    GlcExpand.constTime(trajectoryPlanner, runTime, parameters.getDepthLimit());
+    anyPlannerInterface.switchRootToState(startState);
+    GlcExpand.constTime(anyPlannerInterface, runTime, parameters.getDepthLimit());
     // --
-    Optional<GlcNode> finalGoalNode = trajectoryPlanner.getFinalGoalNode();
+    Optional<GlcNode> finalGoalNode = anyPlannerInterface.getFinalGoalNode();
     List<StateTime> trajectory = GlcNodes.getPathFromRootTo(finalGoalNode.get());
     StateTimeTrajectories.print(trajectory);
     OwlyFrame owlyFrame = OwlyGui.start();
     owlyFrame.configCoordinateOffset(400, 400);
     owlyFrame.jFrame.setBounds(0, 0, 800, 800);
-    owlyFrame.setGlc((TrajectoryPlanner) trajectoryPlanner);
+    owlyFrame.setGlc((TrajectoryPlanner) anyPlannerInterface);
     // -- Anytime loop
     for (int i = 0; i < 10; i++) {
       // while (!finalGoalFound) {
       Thread.sleep(1);
       long tic = System.nanoTime();
       // -- ROOTCHANGE
-      finalGoalNode = trajectoryPlanner.getFinalGoalNode();
+      finalGoalNode = anyPlannerInterface.getFinalGoalNode();
       if (finalGoalNode.isPresent())
         trajectory = GlcNodes.getPathFromRootTo(finalGoalNode.get());
       System.out.println("trajectorys size: " + trajectory.size());
       if (trajectory.size() > 5) {
         //
         StateTime newRootState = trajectory.get(trajectory.size() > 3 ? 3 : 0);
-        int increment = trajectoryPlanner.switchRootToState(newRootState.state());
+        int increment = anyPlannerInterface.switchRootToState(newRootState.state());
         parameters.increaseDepthLimit(increment);
       }
       // -- OBSTACLE CHANGE
       TrajectoryRegionQuery newObstacleQuery = SimpleTrajectoryRegionQuery.timeInvariant( //
           EuclideanDistanceDiscoverRegion.of(environmentRegion, trajectory.get(0).state(), RealScalar.of(4)));
-      trajectoryPlanner.obstacleUpdate(newObstacleQuery, new SphericalRegion(trajectory.get(0).state(), RealScalar.of(4).add(RealScalar.ONE)));
+      anyPlannerInterface.obstacleUpdate(newObstacleQuery, new SphericalRegion(trajectory.get(0).state(), RealScalar.of(4).add(RealScalar.ONE)));
       // // -- GOALCHANGE
       // ticTemp = tic;
       // Optional<StateTime> furthestState = trajectoryPlanner.getFurthestGoalState(rnGoal.getGoalRegionList());
@@ -113,8 +112,8 @@ enum R2GlcConstTimeHeuristicSensingObstacleAnyDemo {
       // tocTemp = System.nanoTime();
       // System.out.println("Goalchange took: " + (tocTemp - ticTemp) * 1e-9 + "s");
       // -- EXPANDING
-      int expandIter = GlcExpand.constTime(trajectoryPlanner, runTime, parameters.getDepthLimit());
-      owlyFrame.setGlc((TrajectoryPlanner) trajectoryPlanner);
+      int expandIter = GlcExpand.constTime(anyPlannerInterface, runTime, parameters.getDepthLimit());
+      owlyFrame.setGlc((TrajectoryPlanner) anyPlannerInterface);
       // check if furthest Goal is already in last Region in List
       trajectory = GlcNodes.getPathFromRootTo(finalGoalNode.get());
       // --
@@ -122,7 +121,7 @@ enum R2GlcConstTimeHeuristicSensingObstacleAnyDemo {
       System.out.println((toc - tic) * 1e-9 + " Seconds needed to replan");
       System.out.println("After goal switch needed " + expandIter + " iterations");
       System.out.println("*****Finished*****");
-      DebugUtils.heuristicConsistencyCheck((TrajectoryPlanner) trajectoryPlanner);
+      DebugUtils.heuristicConsistencyCheck((TrajectoryPlanner) anyPlannerInterface);
       if (!owlyFrame.jFrame.isVisible() || expandIter < 1)
         break;
     }

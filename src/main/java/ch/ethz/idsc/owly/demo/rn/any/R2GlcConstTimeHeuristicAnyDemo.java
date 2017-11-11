@@ -69,20 +69,19 @@ enum R2GlcConstTimeHeuristicAnyDemo {
     RnTrajectoryGoalManager rnGoal = new RnTrajectoryGoalManager(goalRegions, precomputedTrajectory, radius);
     Region<Tensor> region = new R2NoiseRegion(RealScalar.of(.1));
     TrajectoryRegionQuery obstacleQuery = SimpleTrajectoryRegionQuery.timeInvariant(region);
-    // TODO JONAS: can remove todo "change back to AnyPlannerInterface"
-    AnyPlannerInterface trajectoryPlanner = new OptimalAnyTrajectoryPlanner( //
+    AnyPlannerInterface anyPlannerInterface = new OptimalAnyTrajectoryPlanner( //
         parameters.getEta(), stateIntegrator, controls, obstacleQuery, rnGoal);
     Tensor startState = Tensors.vector(-3, 0);
-    trajectoryPlanner.switchRootToState(startState);
-    GlcExpand.constTime(trajectoryPlanner, runTime, parameters.getDepthLimit());
+    anyPlannerInterface.switchRootToState(startState);
+    GlcExpand.constTime(anyPlannerInterface, runTime, parameters.getDepthLimit());
     // --
-    Optional<GlcNode> finalGoalNode = trajectoryPlanner.getFinalGoalNode();
+    Optional<GlcNode> finalGoalNode = anyPlannerInterface.getFinalGoalNode();
     List<StateTime> trajectory = GlcNodes.getPathFromRootTo(finalGoalNode.get());
     StateTimeTrajectories.print(trajectory);
     OwlyFrame owlyFrame = OwlyGui.start();
     owlyFrame.configCoordinateOffset(400, 400);
     owlyFrame.jFrame.setBounds(0, 0, 800, 800);
-    owlyFrame.setGlc((TrajectoryPlanner) trajectoryPlanner);
+    owlyFrame.setGlc((TrajectoryPlanner) anyPlannerInterface);
     // -- Anytime loop
     boolean finalGoalFound = false;
     while (!finalGoalFound) {
@@ -90,21 +89,21 @@ enum R2GlcConstTimeHeuristicAnyDemo {
       long tic = System.nanoTime();
       // -- ROOTCHANGE
       long ticTemp = System.nanoTime();
-      finalGoalNode = trajectoryPlanner.getFinalGoalNode();
+      finalGoalNode = anyPlannerInterface.getFinalGoalNode();
       if (finalGoalNode.isPresent())
         trajectory = GlcNodes.getPathFromRootTo(finalGoalNode.get());
       System.out.println("trajectorys size: " + trajectory.size());
       if (trajectory.size() > 5) {
         //
         StateTime newRootState = trajectory.get(trajectory.size() > 3 ? 3 : 0);
-        int increment = trajectoryPlanner.switchRootToState(newRootState.state());
+        int increment = anyPlannerInterface.switchRootToState(newRootState.state());
         parameters.increaseDepthLimit(increment);
       }
       long tocTemp = System.nanoTime();
       System.out.println("Rootchange took: " + (tocTemp - ticTemp) * 1e-9 + "s");
       // -- GOALCHANGE
       ticTemp = tic;
-      Optional<StateTime> furthestState = trajectoryPlanner.getFurthestGoalState();
+      Optional<StateTime> furthestState = anyPlannerInterface.getFurthestGoalState();
       if (furthestState.isPresent()) {
         if (rnGoal.getGoalRegionList().get(rnGoal.getGoalRegionList().size() - 1).isMember(furthestState.get().state())) {
           System.out.println("***Last Goal was found***");
@@ -115,26 +114,26 @@ enum R2GlcConstTimeHeuristicAnyDemo {
       // only change goal if we are not at the end yet
       // creates new RegionUnin form Regionlist and puts Heuristic to next Goal in RegionList
       rnGoal = new RnTrajectoryGoalManager(rnGoal.deleteRegionsBefore(furthestState), precomputedTrajectory, radius);
-      trajectoryPlanner.changeToGoal(rnGoal);
+      anyPlannerInterface.changeToGoal(rnGoal);
       if (rnGoal.getGoalRegionList().size() < 2)
         System.err.println("changed to single region goal --> Last Change");
       tocTemp = System.nanoTime();
       System.out.println("Goalchange took: " + (tocTemp - ticTemp) * 1e-9 + "s");
       // -- EXPANDING
       ticTemp = System.nanoTime();
-      int expandIter = GlcExpand.constTime(trajectoryPlanner, runTime, parameters.getDepthLimit());
-      furthestState = trajectoryPlanner.getFurthestGoalState();
+      int expandIter = GlcExpand.constTime(anyPlannerInterface, runTime, parameters.getDepthLimit());
+      furthestState = anyPlannerInterface.getFurthestGoalState();
       // check if furthest Goal is already in last Region in List
       trajectory = GlcNodes.getPathFromRootTo(finalGoalNode.get());
       tocTemp = System.nanoTime();
       System.out.println("Expanding took: " + (tocTemp - ticTemp) * 1e-9 + "s");
       // --
       long toc = System.nanoTime();
-      owlyFrame.setGlc((TrajectoryPlanner) trajectoryPlanner);
+      owlyFrame.setGlc((TrajectoryPlanner) anyPlannerInterface);
       System.out.println((toc - tic) * 1e-9 + " Seconds needed to replan");
       System.out.println("After goal switch needed " + expandIter + " iterations");
       System.out.println("*****Finished*****");
-      DebugUtils.heuristicConsistencyCheck((TrajectoryPlanner) trajectoryPlanner);
+      DebugUtils.heuristicConsistencyCheck((TrajectoryPlanner) anyPlannerInterface);
       if (!owlyFrame.jFrame.isVisible() || expandIter < 1)
         break;
     }

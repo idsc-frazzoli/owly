@@ -74,16 +74,16 @@ class Se2IterateGlcAnyCircleDemo {
         )));
     // ---
     Scalar tic = RealScalar.of(System.nanoTime());
-    AnyPlannerInterface trajectoryPlanner = new OptimalAnyTrajectoryPlanner( //
+    AnyPlannerInterface anyPlannerInterface = new OptimalAnyTrajectoryPlanner( //
         parameters.getEta(), stateIntegrator, controls, obstacleQuery, se2GoalManager.getGoalInterface());
     // ---
-    trajectoryPlanner.switchRootToState(Tensors.vector(0, 3, 0));
-    int iters = GlcExpand.maxDepth(trajectoryPlanner, parameters.getDepthLimit());
+    anyPlannerInterface.switchRootToState(Tensors.vector(0, 3, 0));
+    int iters = GlcExpand.maxDepth(anyPlannerInterface, parameters.getDepthLimit());
     System.out.println("After " + iters + " iterations");
     Scalar toc = RealScalar.of(System.nanoTime());
     System.out.println(toc.subtract(tic).multiply(RealScalar.of(1e-9)) + " Seconds needed to plan");
     OwlyFrame owlyFrame = OwlyGui.start();
-    owlyFrame.setGlc((TrajectoryPlanner) trajectoryPlanner);
+    owlyFrame.setGlc((TrajectoryPlanner) anyPlannerInterface);
     // ---
     int iter = 1;
     Scalar timeSum = RealScalar.of(0);
@@ -94,22 +94,22 @@ class Se2IterateGlcAnyCircleDemo {
       Thread.sleep(1000);
       tic = RealScalar.of(System.nanoTime());
       // --
-      List<StateTime> trajectory = trajectoryPlanner.trajectoryToBest();
+      List<StateTime> trajectory = anyPlannerInterface.trajectoryToBest();
       if (trajectory != null) {
         StateTime newRootState = trajectory.get(trajectory.size() > 5 ? 5 : 0);
-        int increment = trajectoryPlanner.switchRootToState(newRootState.state());
+        int increment = anyPlannerInterface.switchRootToState(newRootState.state());
         parameters.increaseDepthLimit(increment);
       } else {
         throw new RuntimeException();
       }
-      owlyFrame.setGlc((TrajectoryPlanner) trajectoryPlanner);
+      owlyFrame.setGlc((TrajectoryPlanner) anyPlannerInterface);
       Thread.sleep(delay.number().intValue() / 2);
-      goalFound = Se2CircleAnyGoalSwitch.switchToNextCircularGoal((AbstractAnyTrajectoryPlanner) trajectoryPlanner, iter);
+      goalFound = Se2CircleAnyGoalSwitch.switchToNextCircularGoal((AbstractAnyTrajectoryPlanner) anyPlannerInterface, iter);
       iter++;
       Thread.sleep(delay.number().intValue() / 2);
       // --
       if (!goalFound)
-        expandIter = GlcExpand.maxDepth(trajectoryPlanner, parameters.getDepthLimit());
+        expandIter = GlcExpand.maxDepth(anyPlannerInterface, parameters.getDepthLimit());
       // ---
       toc = RealScalar.of(System.nanoTime());
       StateTimeTrajectories.print(trajectory);
@@ -118,8 +118,8 @@ class Se2IterateGlcAnyCircleDemo {
       System.out.println("After root switch needed " + expandIter + " iterations");
       System.out.println("*****Finished*****");
       System.out.println("");
-      DebugUtils.nodeAmountCompare((TrajectoryPlanner) trajectoryPlanner);
-      owlyFrame.setGlc((TrajectoryPlanner) trajectoryPlanner);
+      DebugUtils.nodeAmountCompare((TrajectoryPlanner) anyPlannerInterface);
+      owlyFrame.setGlc((TrajectoryPlanner) anyPlannerInterface);
       // owlyFrame.configCoordinateOffset(432, 273);
     }
   }
