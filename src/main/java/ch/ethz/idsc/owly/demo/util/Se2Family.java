@@ -9,7 +9,7 @@ import ch.ethz.idsc.tensor.lie.RotationMatrix;
 
 /** the term "family" conveys the meaning that the rigid transformation
  * depends on a single parameter, for instance time */
-public final class Se2Family implements BijectionFamily {
+public class Se2Family implements BijectionFamily { // TODO
   private final ScalarTensorFunction function;
 
   public Se2Family(ScalarTensorFunction function) {

@@ -70,6 +70,20 @@ public enum R2ImageRegions {
     return charImage;
   }
 
+  public static CharImage inside_roundabout() {
+    CharImage charImage = CharImage.fillWhite(new Dimension(236, 180));
+    charImage.setFont(new Font(Font.DIALOG, Font.BOLD, 400));
+    charImage.draw('a', new Point(-20, 200));
+    return charImage;
+  }
+
+  private static final Tensor CIRC_RANGE = Tensors.vector(3, 4);
+
+  public static ImageRegion inside_circ() {
+    CharImage charImage = inside_roundabout();
+    return transpose(charImage.bufferedImage(), CIRC_RANGE, false);
+  }
+
   private static final Tensor GTOB_RANGE = Tensors.vector(12, 12);
 
   public static ImageRegion inside_gtob() {

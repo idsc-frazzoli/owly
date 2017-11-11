@@ -21,8 +21,8 @@ public class ImageRegionRender implements RenderInterface {
     bufferedImage = RegionRenders.image(imageRegion.image());
     Tensor scale = imageRegion.scale();
     invsc = DiagonalMatrix.of( //
-        +1 / scale.Get(0).number().doubleValue(), //
-        -1 / scale.Get(1).number().doubleValue(), 1);
+        scale.Get(0).reciprocal().number().doubleValue(), //
+        -scale.Get(1).reciprocal().number().doubleValue(), 1);
   }
 
   @Override

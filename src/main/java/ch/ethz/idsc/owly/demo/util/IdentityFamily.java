@@ -1,0 +1,28 @@
+// code by jph
+package ch.ethz.idsc.owly.demo.util;
+
+import ch.ethz.idsc.owly.math.TensorUnaryOperator;
+import ch.ethz.idsc.tensor.Scalar;
+import ch.ethz.idsc.tensor.Tensor;
+import ch.ethz.idsc.tensor.mat.IdentityMatrix;
+
+public enum IdentityFamily implements RigidFamily {
+  INSTANCE;
+  private static final Tensor MATRIX = IdentityMatrix.of(3).unmodifiable();
+
+  // ---
+  @Override
+  public TensorUnaryOperator inverse(Scalar scalar) {
+    return t -> t;
+  }
+
+  @Override
+  public TensorUnaryOperator forward(Scalar scalar) {
+    return t -> t;
+  }
+
+  @Override
+  public Tensor forward_se2(Scalar scalar) {
+    return MATRIX;
+  }
+}
