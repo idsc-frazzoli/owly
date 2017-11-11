@@ -1,9 +1,11 @@
 // code by jph
 package ch.ethz.idsc.owly.gui.ren;
 
+import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Shape;
 import java.awt.geom.Line2D;
+import java.awt.geom.Path2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.util.Collection;
@@ -14,6 +16,8 @@ import ch.ethz.idsc.owly.data.tree.StateCostNode;
 import ch.ethz.idsc.owly.gui.GeometricLayer;
 import ch.ethz.idsc.owly.gui.RenderInterface;
 import ch.ethz.idsc.tensor.Scalar;
+import ch.ethz.idsc.tensor.Tensor;
+import ch.ethz.idsc.tensor.opt.ConvexHull;
 
 /** renders the edges between nodes
  * 
@@ -21,11 +25,13 @@ import ch.ethz.idsc.tensor.Scalar;
 public class TreeRender implements RenderInterface {
   private static final int NODE_WIDTH = 2;
   private static final int NODE_BOUND = 3000;
+  private static final Color CONVEXHULL = new Color(192, 192, 0, 64);
   // ---
   private Collection<? extends StateCostNode> collection;
+  private Tensor polygon;
 
   public TreeRender(Collection<? extends StateCostNode> collection) {
-    this.collection = collection;
+    setCollection(collection);
   }
 
   @Override
@@ -61,11 +67,17 @@ public class TreeRender implements RenderInterface {
           graphics.draw(shape);
         }
       }
+    else if (Objects.nonNull(polygon)) {
+      graphics.setColor(CONVEXHULL);
+      Path2D path2D = geometricLayer.toPath2D(polygon);
+      path2D.closePath();
+      graphics.draw(path2D);
+    }
   }
 
   public void setCollection(Collection<? extends StateCostNode> collection) {
     this.collection = collection;
-    // ConvexHull.of(tensor);
-    // TODO beyond certain point perhaps only precompute convex hull?
+    polygon = Objects.nonNull(collection) ? ConvexHull.of(Tensor.of( //
+        collection.stream().map(StateCostNode::state).map(tensor -> tensor.extract(0, 2)))) : null;
   }
 }
