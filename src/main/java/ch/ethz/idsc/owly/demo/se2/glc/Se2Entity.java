@@ -5,17 +5,20 @@ import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 import java.util.Objects;
 
 import ch.ethz.idsc.owly.data.GlobalAssert;
 import ch.ethz.idsc.owly.demo.se2.Se2CarIntegrator;
 import ch.ethz.idsc.owly.demo.se2.Se2Controls;
-import ch.ethz.idsc.owly.demo.se2.Se2MinTimeMinShiftExtraCostGoalManager;
-import ch.ethz.idsc.owly.demo.se2.Se2MinTimeMinShiftGoalManager;
+import ch.ethz.idsc.owly.demo.se2.Se2MinShiftCostFunction;
+import ch.ethz.idsc.owly.demo.se2.Se2MinTimeGoalManager;
 import ch.ethz.idsc.owly.demo.se2.Se2StateSpaceModel;
 import ch.ethz.idsc.owly.demo.se2.Se2Wrap;
+import ch.ethz.idsc.owly.glc.adapter.MultiCostGoalAdapter;
 import ch.ethz.idsc.owly.glc.core.CostFunction;
 import ch.ethz.idsc.owly.glc.core.GoalInterface;
 import ch.ethz.idsc.owly.glc.core.StandardTrajectoryPlanner;
@@ -118,9 +121,14 @@ class Se2Entity extends AbstractEntity {
     this.obstacleQuery = obstacleQuery;
     StateIntegrator stateIntegrator = //
         FixedStateIntegrator.create(Se2CarIntegrator.INSTANCE, RationalScalar.of(1, 10), 4);
-    GoalInterface goalInterface = Objects.isNull(costFunction) ? //
-        Se2MinTimeMinShiftGoalManager.create(goal, goalRadius, controls, SHIFT_PENALTY) : //
-        Se2MinTimeMinShiftExtraCostGoalManager.create(goal, goalRadius, controls, SHIFT_PENALTY, costFunction);
+    // ---
+    GoalInterface _goalInterface = Se2MinTimeGoalManager.create(goal, goalRadius, controls);
+    List<CostFunction> list = new ArrayList<>();
+    list.add(_goalInterface);
+    list.add(new Se2MinShiftCostFunction(SHIFT_PENALTY));
+    if (Objects.nonNull(costFunction))
+      list.add(costFunction);
+    GoalInterface goalInterface = new MultiCostGoalAdapter(_goalInterface, list);
     TrajectoryPlanner trajectoryPlanner = new StandardTrajectoryPlanner( //
         eta(), stateIntegrator, controls, obstacleQuery, goalInterface);
     trajectoryPlanner.represent = StateTimeTensorFunction.state(SE2WRAP::represent);
