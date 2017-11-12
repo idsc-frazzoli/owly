@@ -77,7 +77,7 @@ import ch.ethz.idsc.tensor.sca.Chop;
     Scalar u_norm = DeltaControls.maxSpeed(controls);
     GlobalAssert.that(Chop._10.close(u_norm, U_NORM));
     Scalar maxMove = DeltaControls.maxSpeed(controls).add(imageGradient.maxNormGradient());
-    GoalInterface goalInterface = new DeltaMinTimeGoalManager( //
+    GoalInterface goalInterface = DeltaMinTimeGoalManager.create( //
         goal.extract(0, 2), RealScalar.of(.3), maxMove);
     return new StandardTrajectoryPlanner( //
         eta, stateIntegrator, controls, obstacleQuery, goalInterface);

@@ -14,11 +14,15 @@ import ch.ethz.idsc.owly.glc.adapter.StateTimeTrajectories;
 import ch.ethz.idsc.owly.glc.core.Expand;
 import ch.ethz.idsc.owly.glc.core.GlcNode;
 import ch.ethz.idsc.owly.glc.core.GlcNodes;
+import ch.ethz.idsc.owly.glc.core.GoalInterface;
 import ch.ethz.idsc.owly.glc.core.StandardTrajectoryPlanner;
 import ch.ethz.idsc.owly.glc.core.TrajectoryPlanner;
+import ch.ethz.idsc.owly.gui.ani.OwlyFrame;
 import ch.ethz.idsc.owly.gui.ani.OwlyGui;
+import ch.ethz.idsc.owly.gui.region.RegionRenders;
 import ch.ethz.idsc.owly.math.flow.Flow;
 import ch.ethz.idsc.owly.math.flow.MidpointIntegrator;
+import ch.ethz.idsc.owly.math.region.EllipsoidRegion;
 import ch.ethz.idsc.owly.math.region.HyperplaneRegion;
 import ch.ethz.idsc.owly.math.region.RegionUnion;
 import ch.ethz.idsc.owly.math.state.FixedStateIntegrator;
@@ -39,8 +43,8 @@ enum Rice2dDemo {
     StateIntegrator stateIntegrator = FixedStateIntegrator.create( //
         MidpointIntegrator.INSTANCE, RationalScalar.of(1, 2), 5);
     Collection<Flow> controls = Rice2Controls.create2d(RealScalar.of(-.5), 1, 15);
-    Rice2GoalManager rice2Goal = new Rice2GoalManager( //
-        Tensors.vector(3, 3, -1, 0), Tensors.vector(.5, .5, .4, .4));
+    EllipsoidRegion ellipsoidRegion = new EllipsoidRegion(Tensors.vector(3, 3, -1, 0), Tensors.vector(.5, .5, .4, .4));
+    GoalInterface goalInterface = new Rice2GoalManager(ellipsoidRegion);
     TrajectoryRegionQuery obstacleQuery = //
         SimpleTrajectoryRegionQuery.timeInvariant( //
             RegionUnion.wrap(Arrays.asList( //
@@ -51,7 +55,7 @@ enum Rice2dDemo {
             )));
     // ---
     TrajectoryPlanner trajectoryPlanner = new StandardTrajectoryPlanner( //
-        eta, stateIntegrator, controls, obstacleQuery, rice2Goal);
+        eta, stateIntegrator, controls, obstacleQuery, goalInterface);
     // ---
     trajectoryPlanner.insertRoot(new StateTime(Tensors.vector(0.1, 0.1, 0, 0), RealScalar.ZERO));
     Stopwatch stopwatch = Stopwatch.started();
@@ -64,6 +68,7 @@ enum Rice2dDemo {
       List<StateTime> trajectory = GlcNodes.getPathFromRootTo(optional.get());
       StateTimeTrajectories.print(trajectory);
     }
-    OwlyGui.glc(trajectoryPlanner);
+    OwlyFrame owlyFrame = OwlyGui.glc(trajectoryPlanner);
+    owlyFrame.addBackground(RegionRenders.create(ellipsoidRegion));
   }
 }

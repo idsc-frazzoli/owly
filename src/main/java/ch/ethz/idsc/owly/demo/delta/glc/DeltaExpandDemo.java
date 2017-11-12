@@ -52,6 +52,7 @@ enum DeltaExpandDemo {
     Tensor obstacleImage = ResourceData.of("/io/delta_free.png"); //
     Region<Tensor> region = new ImageRegion(obstacleImage, range, true);
     TrajectoryRegionQuery obstacleQuery = SimpleTrajectoryRegionQuery.timeInvariant(region);
+    // TODO not clear why NO HEURISTIC is used
     GoalInterface goalInterface = DeltaNoHeuristicGoalManager.create( //
         Tensors.vector(2.1, 0.3), RealScalar.of(.3));
     TrajectoryPlanner trajectoryPlanner = new StandardTrajectoryPlanner( //

@@ -18,10 +18,14 @@ import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.alg.VectorQ;
 
 public class LvGoalInterface extends SimpleTrajectoryRegionQuery implements GoalInterface {
+  public static GoalInterface create(Tensor center, Tensor radius) {
+    return new LvGoalInterface(new EllipsoidRegion(center, radius));
+  }
+
   // TODO euclidean distance used in ellipsoid should be replaced by logarithmic distance
-  public LvGoalInterface(Tensor center, Tensor radius) {
-    super(new TimeInvariantRegion(new EllipsoidRegion(center, radius)));
-    GlobalAssert.that(VectorQ.ofLength(center, 2));
+  public LvGoalInterface(EllipsoidRegion ellipsoidRegion) {
+    super(new TimeInvariantRegion(ellipsoidRegion));
+    GlobalAssert.that(VectorQ.ofLength(ellipsoidRegion.center(), 2));
   }
 
   @Override

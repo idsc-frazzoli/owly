@@ -1,8 +1,9 @@
 // code by jl
-package ch.ethz.idsc.owly.demo.se2;
+package ch.ethz.idsc.owly.demo.se2.any;
 
 import java.util.List;
 
+import ch.ethz.idsc.owly.demo.se2.Se2AbstractGoalManager;
 import ch.ethz.idsc.owly.glc.adapter.StateTimeTrajectories;
 import ch.ethz.idsc.owly.glc.core.GlcNode;
 import ch.ethz.idsc.owly.math.flow.Flow;
@@ -14,10 +15,7 @@ import ch.ethz.idsc.tensor.red.Max;
 import ch.ethz.idsc.tensor.sca.Power;
 import ch.ethz.idsc.tensor.sca.Ramp;
 
-/**
- * 
- */
-public final class Se2MinCurvatureGoalManager extends Se2AbstractGoalManager {
+/* package */ class Se2MinCurvatureGoalManager extends Se2AbstractGoalManager {
   public Se2MinCurvatureGoalManager(Tensor center, Tensor radiusVector) {
     super(center, radiusVector);
   }

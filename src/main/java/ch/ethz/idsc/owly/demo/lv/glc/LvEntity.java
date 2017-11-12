@@ -58,8 +58,7 @@ import ch.ethz.idsc.tensor.red.Norm2Squared;
     Tensor partitionScale = Tensors.vector(8, 8);
     StateIntegrator stateIntegrator = //
         FixedStateIntegrator.create(INTEGRATOR, RationalScalar.of(1, 12), 4);
-    GoalInterface goalInterface = //
-        new LvGoalInterface(goal.extract(0, 2), Tensors.vector(.2, .2));
+    GoalInterface goalInterface = LvGoalInterface.create(goal.extract(0, 2), Tensors.vector(.2, .2));
     return new StandardTrajectoryPlanner( //
         partitionScale, stateIntegrator, controls, obstacleQuery, goalInterface);
   }

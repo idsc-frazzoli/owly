@@ -4,6 +4,7 @@ package ch.ethz.idsc.owly.demo.delta;
 import java.util.Collection;
 
 import ch.ethz.idsc.owly.glc.adapter.HeuristicQ;
+import ch.ethz.idsc.owly.glc.core.GoalInterface;
 import ch.ethz.idsc.owly.math.StateSpaceModel;
 import ch.ethz.idsc.owly.math.flow.Flow;
 import ch.ethz.idsc.tensor.RealScalar;
@@ -28,7 +29,7 @@ public class DeltaMinTimeGoalManagerTest extends TestCase {
     Scalar maxMove = DeltaControls.maxSpeed(controls).add(imageGradient.maxNormGradient());
     // System.out.println(maxMove);
     assertTrue(Chop._10.close(maxMove, stateSpaceModel.getLipschitz()));
-    DeltaMinTimeGoalManager dmtgm = new DeltaMinTimeGoalManager(Tensors.vector(1, 1), RealScalar.ONE, maxMove);
+    GoalInterface dmtgm = DeltaMinTimeGoalManager.create(Tensors.vector(1, 1), RealScalar.ONE, maxMove);
     assertTrue(HeuristicQ.of(dmtgm));
   }
 }

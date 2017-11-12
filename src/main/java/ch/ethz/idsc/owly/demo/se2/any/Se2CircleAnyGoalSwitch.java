@@ -4,7 +4,6 @@ package ch.ethz.idsc.owly.demo.se2.any;
 import java.util.ArrayList;
 import java.util.List;
 
-import ch.ethz.idsc.owly.demo.se2.Se2MinCurvatureGoalManager;
 import ch.ethz.idsc.owly.demo.se2.Se2NoHeuristicGoalManager;
 import ch.ethz.idsc.owly.glc.adapter.Parameters;
 import ch.ethz.idsc.owly.glc.core.AbstractAnyTrajectoryPlanner;

@@ -14,7 +14,7 @@ public abstract class StandardTrajectoryRegionQuery extends AbstractTrajectoryRe
     this.stateTimeRegionCallback = stateTimeRegionCallback;
   }
 
-  @Override
+  @Override // from TrajectoryRegionQuery
   public final int firstMember(List<StateTime> trajectory) {
     int index = -1;
     for (StateTime stateTime : trajectory) {

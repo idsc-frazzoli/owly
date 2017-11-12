@@ -4,6 +4,7 @@ package ch.ethz.idsc.owly.gui.region;
 import java.awt.Graphics2D;
 import java.awt.geom.Path2D;
 
+import ch.ethz.idsc.owly.data.GlobalAssert;
 import ch.ethz.idsc.owly.gui.GeometricLayer;
 import ch.ethz.idsc.owly.gui.RenderInterface;
 import ch.ethz.idsc.owly.math.CirclePoints;
@@ -18,13 +19,13 @@ class EllipseRegionRender implements RenderInterface {
    * @return */
   static RenderInterface of(EllipsoidRegion ellipsoidRegion) {
     Tensor radius = ellipsoidRegion.radius();
-    return new EllipseRegionRender(ellipsoidRegion.center(), radius.Get(0), radius.Get(1));
+    return new EllipseRegionRender(ellipsoidRegion.center().extract(0, 2), radius.Get(0), radius.Get(1));
   }
 
   /** @param ellipsoidRegion
    * @return */
   static RenderInterface of(SphericalRegion ellipsoidRegion) {
-    return new EllipseRegionRender(ellipsoidRegion.center(), ellipsoidRegion.radius(), ellipsoidRegion.radius());
+    return new EllipseRegionRender(ellipsoidRegion.center().extract(0, 2), ellipsoidRegion.radius(), ellipsoidRegion.radius());
   }
 
   // ---
@@ -33,6 +34,7 @@ class EllipseRegionRender implements RenderInterface {
   private final Tensor polygon;
 
   private EllipseRegionRender(Tensor center, Scalar radiusX, Scalar radiusY) {
+    GlobalAssert.that(center.length() == 2);
     polygon = Tensor.of(CirclePoints.elliptic(RESOLUTION, radiusX, radiusY) //
         .stream().map(row -> row.add(center)));
   }

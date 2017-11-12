@@ -58,7 +58,7 @@ import ch.ethz.idsc.tensor.red.Norm2Squared;
     Tensor partitionScale = Tensors.vector(8, 8);
     StateIntegrator stateIntegrator = //
         FixedStateIntegrator.create(INTEGRATOR, RationalScalar.of(1, 12), 4);
-    GoalInterface goalInterface = new Rice1GoalManager(goal.extract(0, 2), Tensors.vector(.2, .3));
+    GoalInterface goalInterface = Rice1GoalManager.create(goal.extract(0, 2), Tensors.vector(.2, .3));
     return new StandardTrajectoryPlanner( //
         partitionScale, stateIntegrator, controls, obstacleQuery, goalInterface);
   }

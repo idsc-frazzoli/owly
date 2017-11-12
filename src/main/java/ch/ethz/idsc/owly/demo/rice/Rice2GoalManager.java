@@ -18,12 +18,18 @@ import ch.ethz.idsc.tensor.red.Norm;
 import ch.ethz.idsc.tensor.sca.Ramp;
 
 public class Rice2GoalManager extends SimpleTrajectoryRegionQuery implements GoalInterface {
+  public static GoalInterface create(Tensor center, Tensor radius) {
+    return new Rice2GoalManager(new EllipsoidRegion(center, radius));
+  }
+
+  // ---
   private final Tensor center;
   private final Scalar radius;
 
-  public Rice2GoalManager(Tensor center, Tensor radius) {
-    super(new TimeInvariantRegion(new EllipsoidRegion(center, radius)));
-    this.center = center;
+  public Rice2GoalManager(EllipsoidRegion ellipsoidRegion) {
+    super(new TimeInvariantRegion(ellipsoidRegion));
+    center = ellipsoidRegion.center();
+    Tensor radius = ellipsoidRegion.radius();
     if (!radius.Get(0).equals(radius.Get(1)))
       throw TensorRuntimeException.of(radius); // x-y radius have to be equal
     this.radius = radius.Get(0);
