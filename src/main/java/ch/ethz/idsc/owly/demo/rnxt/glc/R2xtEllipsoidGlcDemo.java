@@ -13,9 +13,12 @@ import ch.ethz.idsc.owly.glc.adapter.StateTimeTrajectories;
 import ch.ethz.idsc.owly.glc.core.Expand;
 import ch.ethz.idsc.owly.glc.core.GlcNode;
 import ch.ethz.idsc.owly.glc.core.GlcNodes;
+import ch.ethz.idsc.owly.glc.core.GoalInterface;
 import ch.ethz.idsc.owly.glc.core.StandardTrajectoryPlanner;
 import ch.ethz.idsc.owly.glc.core.TrajectoryPlanner;
+import ch.ethz.idsc.owly.gui.ani.OwlyFrame;
 import ch.ethz.idsc.owly.gui.ani.OwlyGui;
+import ch.ethz.idsc.owly.gui.region.RegionRenders;
 import ch.ethz.idsc.owly.math.StateTimeTensorFunction;
 import ch.ethz.idsc.owly.math.flow.EulerIntegrator;
 import ch.ethz.idsc.owly.math.flow.Flow;
@@ -33,7 +36,6 @@ import ch.ethz.idsc.tensor.Tensors;
 enum R2xtEllipsoidGlcDemo {
   ;
   public static void main(String[] args) {
-    // TODO remove time from state and make use of StateTime::time instead...
     RationalScalar resolution = (RationalScalar) RealScalar.of(8);
     Tensor partitionScale = Tensors.vector(25, 25, 64);
     Scalar timeScale = RealScalar.of(6);
@@ -47,11 +49,9 @@ enum R2xtEllipsoidGlcDemo {
         EulerIntegrator.INSTANCE, parameters.getdtMax(), parameters.getTrajectorySize());
     Collection<Flow> controls = R2Controls.createRadial(parameters.getResolutionInt());
     Tensor goal = Tensors.vector(5, 5);
-    RnHeuristicEllipsoidGoalManager rnGoal = new RnHeuristicEllipsoidGoalManager(//
-        goal, Tensors.of(RealScalar.of(0.2), RealScalar.of(0.2)));
+    EllipsoidRegion ellipsoidRegion = new EllipsoidRegion(goal, Tensors.vector(0.2, 0.2));
+    GoalInterface goalInterface = new RnHeuristicEllipsoidGoalManager(ellipsoidRegion);
     // with HeuristicGoalManager only expand 10% of nodes
-    // RnxtEllipsoidGoalManager rnGoal = new RnxtEllipsoidGoalManager(//
-    // goal, Tensors.of(RealScalar.of(0.2), RealScalar.of(0.2), DoubleScalar.POSITIVE_INFINITY));
     // GoalRegion at x:5, y= 5 and all time
     TrajectoryRegionQuery obstacleQuery = SimpleTrajectoryRegionQuery.timeDependent( //
         new EllipsoidRegion(goal.copy().append(RealScalar.ZERO), Tensors.vector(3, 3, 10)));
@@ -59,7 +59,7 @@ enum R2xtEllipsoidGlcDemo {
     StateTime root = new StateTime(Tensors.vector(0, 0), RealScalar.ZERO);
     // ---
     TrajectoryPlanner trajectoryPlanner = new StandardTrajectoryPlanner( //
-        parameters.getEta(), stateIntegrator, controls, obstacleQuery, rnGoal);
+        parameters.getEta(), stateIntegrator, controls, obstacleQuery, goalInterface);
     trajectoryPlanner.represent = StateTimeTensorFunction.withTime();
     trajectoryPlanner.insertRoot(root);
     int iters = Expand.maxSteps(trajectoryPlanner, maxIter);
@@ -69,6 +69,8 @@ enum R2xtEllipsoidGlcDemo {
       List<StateTime> trajectory = GlcNodes.getPathFromRootTo(optional.get());
       StateTimeTrajectories.print(trajectory);
     }
-    OwlyGui.glc(trajectoryPlanner);
+    OwlyFrame owlyFrame = OwlyGui.glc(trajectoryPlanner);
+    owlyFrame.addBackground(RegionRenders.create(ellipsoidRegion));
+    owlyFrame.configCoordinateOffset(250, 500);
   }
 }

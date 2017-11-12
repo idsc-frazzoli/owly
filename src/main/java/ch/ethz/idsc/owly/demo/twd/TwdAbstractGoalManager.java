@@ -24,7 +24,7 @@ public abstract class TwdAbstractGoalManager implements Region<Tensor>, CostFunc
     this.tolerance_angle = tolerance_angle;
   }
 
-  @Override
+  @Override // from Region
   public final boolean isMember(Tensor tensor) {
     boolean status = true;
     status &= Scalars.lessEquals(TwdStateSpaceModel.errorPosition(tensor, center), tolerance_xy);

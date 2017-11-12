@@ -22,28 +22,29 @@ import ch.ethz.idsc.tensor.sca.Ramp;
  * path length is measured in Euclidean distance
  * Heuristic is minimum Time along Euclidean distance */
 /* package */ class RnHeuristicEllipsoidGoalManager extends SimpleTrajectoryRegionQuery implements GoalInterface {
-  private final Tensor rnCenter;
-  private final Tensor rnRadius;
-
   /** constructor creates a spherical region in R^n with given center and radius.
    * distance measure is Euclidean distance, if radius(i) = infinity => cylinder
    * 
    * @param center vector with length == n
    * @param radius positive */
-  public RnHeuristicEllipsoidGoalManager(Tensor center, Scalar radius) {
-    this(center, Array.of(l -> radius, center.length()));
+  public static GoalInterface create(Tensor center, Scalar radius) {
+    return new RnHeuristicEllipsoidGoalManager(new EllipsoidRegion( //
+        center, Array.of(l -> radius, center.length())));
   }
+
+  // ---
+  private final Tensor center;
+  private final Tensor radius;
 
   /** constructor creates a ellipsoid region in R^n x T with given center and radius.
    * distance measure is Euclidean distance, if radius(i) = infinity => cylinder
    * 
    * @param center vector with length == n
    * @param radius vector with length == n & positive in all entries */
-  public RnHeuristicEllipsoidGoalManager(Tensor center, Tensor radius) {
-    super(new TimeInvariantRegion(new EllipsoidRegion(center, radius)));
-    int toIndex = center.length();
-    rnRadius = radius.extract(0, toIndex);
-    rnCenter = center.extract(0, toIndex);
+  public RnHeuristicEllipsoidGoalManager(EllipsoidRegion ellipsoidRegion) {
+    super(new TimeInvariantRegion(ellipsoidRegion));
+    center = ellipsoidRegion.center();
+    radius = ellipsoidRegion.radius();
   }
 
   /** shortest Time Cost */
@@ -64,10 +65,10 @@ import ch.ethz.idsc.tensor.sca.Ramp;
   public Scalar minCostToGoal(Tensor x) {
     // FIXME the formula is probably conceptually wrong:
     // we don't need distance in along a certain direction but overall shortest distance regardless of direction
-    Tensor rnVector = x.subtract(rnCenter);
-    Scalar root = Hypot.BIFUNCTION.apply(rnRadius.Get(0).multiply(rnVector.Get(1)), rnRadius.Get(1).multiply(rnVector.Get(0)));
+    Tensor rnVector = x.subtract(center);
+    Scalar root = Hypot.BIFUNCTION.apply(radius.Get(0).multiply(rnVector.Get(1)), radius.Get(1).multiply(rnVector.Get(0)));
     // ---
-    Scalar specificRadius = rnRadius.Get(0).multiply(rnRadius.Get(1)).multiply(Norm._2.between(x, rnCenter)).divide(root);
-    return Ramp.of(Norm._2.between(x, rnCenter).subtract(specificRadius)); // <- do not change
+    Scalar specificRadius = radius.Get(0).multiply(radius.Get(1)).multiply(Norm._2.between(x, center)).divide(root);
+    return Ramp.of(Norm._2.between(x, center).subtract(specificRadius)); // <- do not change
   }
 }

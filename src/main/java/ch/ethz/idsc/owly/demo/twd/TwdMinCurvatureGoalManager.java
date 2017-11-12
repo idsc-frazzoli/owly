@@ -35,7 +35,7 @@ public class TwdMinCurvatureGoalManager extends TwdAbstractGoalManager {
   }
 
   // TODO only valid for assumption of maxSpeed = 1
-  @Override
+  @Override // from HeuristicFunction
   public Scalar minCostToGoal(Tensor x) {
     return Ramp.of(TwdStateSpaceModel.errorPosition(x, center).subtract(tolerance_xy));
   }

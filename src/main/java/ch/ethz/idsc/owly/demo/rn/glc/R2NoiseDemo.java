@@ -40,6 +40,8 @@ import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
 import ch.ethz.idsc.tensor.alg.Array;
 
+/** expands: 1491
+ * computation time: 0.876993604 */
 enum R2NoiseDemo {
   ;
   public static void main(String[] args) {
