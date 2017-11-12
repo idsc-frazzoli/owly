@@ -21,28 +21,24 @@ public class DeltaMinTimeGoalManager extends SimpleTrajectoryRegionQuery impleme
     return new DeltaMinTimeGoalManager(new SphericalRegion(center, radius), maxMove);
   }
 
+  // ---
   private final SphericalRegion sphericalRegion;
-  /** unit of maxMove is speed, e.g. [m/s] */
-  private final Scalar maxMove;
+  /** unit of maxSpeed is velocity, e.g. [m/s] */
+  private final Scalar maxSpeed;
 
-  public DeltaMinTimeGoalManager(SphericalRegion sphericalRegion, Scalar maxMove) {
+  public DeltaMinTimeGoalManager(SphericalRegion sphericalRegion, Scalar maxSpeed) {
     super(new TimeInvariantRegion(sphericalRegion));
     this.sphericalRegion = sphericalRegion;
-    // this.center = center;
-    // this.radius = radius;
-    // TODO this is/should be lipschitz constant of DeltaStateSpaceModel
-    this.maxMove = maxMove;
+    this.maxSpeed = maxSpeed;
   }
 
-  @Override
+  @Override // from CostIncrementFunction
   public Scalar costIncrement(GlcNode glcNode, List<StateTime> trajectory, Flow flow) {
-    // unit [s]
-    return StateTimeTrajectories.timeIncrement(glcNode.stateTime(), trajectory);
+    return StateTimeTrajectories.timeIncrement(glcNode.stateTime(), trajectory); // unit [s]
   }
 
-  @Override
+  @Override // from HeuristicFunction
   public Scalar minCostToGoal(Tensor x) {
-    // unit [m] / [m/s] simplifies to [s]
-    return Ramp.of(sphericalRegion.evaluate(x).divide(maxMove));
+    return Ramp.of(sphericalRegion.evaluate(x).divide(maxSpeed)); // unit [m] / [m/s] simplifies to [s]
   }
 }

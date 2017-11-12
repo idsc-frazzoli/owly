@@ -19,8 +19,8 @@ public class Se2PointsVsRegion implements Region<Tensor> {
    * @return true if any of the points subject to the given transformation are in region */
   @Override
   public boolean isMember(Tensor tensor) {
-    Se2Bijection se2Transformation = new Se2Bijection(tensor);
-    return points.stream().map(se2Transformation.forward()).anyMatch(region::isMember);
+    Se2Bijection se2Bijection = new Se2Bijection(tensor);
+    return points.stream().map(se2Bijection.forward()).anyMatch(region::isMember);
   }
 
   public Tensor points() {

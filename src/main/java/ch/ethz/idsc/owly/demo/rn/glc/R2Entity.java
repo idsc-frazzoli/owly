@@ -1,12 +1,14 @@
 // code by jph
 package ch.ethz.idsc.owly.demo.rn.glc;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.Objects;
 
 import ch.ethz.idsc.owly.demo.rn.R2Controls;
-import ch.ethz.idsc.owly.demo.rn.RnMinDistExtraCostGoalManager;
 import ch.ethz.idsc.owly.demo.rn.RnMinDistSphericalGoalManager;
+import ch.ethz.idsc.owly.glc.adapter.MultiCostGoalAdapter;
 import ch.ethz.idsc.owly.glc.core.CostFunction;
 import ch.ethz.idsc.owly.glc.core.GoalInterface;
 import ch.ethz.idsc.owly.glc.core.StandardTrajectoryPlanner;
@@ -69,9 +71,12 @@ import ch.ethz.idsc.tensor.red.Norm2Squared;
     StateIntegrator stateIntegrator = //
         FixedStateIntegrator.create(EulerIntegrator.INSTANCE, RationalScalar.of(1, 12), 4);
     final Tensor center = goal.extract(0, 2);
-    GoalInterface goalInterface = Objects.isNull(costFunction) ? //
-        RnMinDistSphericalGoalManager.create(center, goalRadius) : //
-        RnMinDistExtraCostGoalManager.create(center, goalRadius, costFunction);
+    GoalInterface _goalInterface = RnMinDistSphericalGoalManager.create(center, goalRadius);
+    List<CostFunction> list = new ArrayList<>();
+    list.add(_goalInterface);
+    if (Objects.nonNull(costFunction))
+      list.add(costFunction);
+    GoalInterface goalInterface = new MultiCostGoalAdapter(_goalInterface, list);
     return new StandardTrajectoryPlanner( //
         partitionScale, stateIntegrator, createControls(), obstacleQuery, goalInterface);
   }
