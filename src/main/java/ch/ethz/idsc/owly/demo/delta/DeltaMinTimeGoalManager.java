@@ -25,10 +25,6 @@ public class DeltaMinTimeGoalManager extends SimpleTrajectoryRegionQuery impleme
   /** unit of maxMove is speed, e.g. [m/s] */
   private final Scalar maxMove;
 
-  /** @param center
-   * @param radius
-   * @param controls
-   * @param maxNormGradient */
   public DeltaMinTimeGoalManager(SphericalRegion sphericalRegion, Scalar maxMove) {
     super(new TimeInvariantRegion(sphericalRegion));
     this.sphericalRegion = sphericalRegion;

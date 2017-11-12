@@ -25,17 +25,17 @@ public final class Se2MinDistCurvGoalManager extends Se2AbstractGoalManager {
     maxSpeed = Se2Controls.maxSpeed(controls);
   }
 
-  @Override // Cost function
+  @Override // from CostIncrementFunction
   public Scalar costIncrement(GlcNode glcNode, List<StateTime> trajectory, Flow flow) {
     // Cost increases with time and input length
     // TODO currently all Se2models only change angle, no amplitude changes
     // integrate(||u||²+1,t)
-    return RealScalar.ONE.add(Norm2Squared.ofVector(flow.getU()))//
+    return RealScalar.ONE.add(Norm2Squared.ofVector(flow.getU())) //
         .multiply(StateTimeTrajectories.timeIncrement(glcNode, trajectory));
   }
 
-  @Override // Heuristic function
+  @Override // from HeuristicFunction
   public Scalar minCostToGoal(Tensor tensor) {
-    return Ramp.of(d_xy(tensor).subtract(radiusSpace()).divide(maxSpeed)); // Euclidean distance
+    return Ramp.of(d_xy(tensor).divide(maxSpeed)); // Euclidean distance
   }
 }

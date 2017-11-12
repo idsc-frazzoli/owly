@@ -12,25 +12,7 @@ import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
 import junit.framework.TestCase;
 
-public class Se2GoalManagerTest extends TestCase {
-  public void testDefault() {
-    Se2NoHeuristicGoalManager se2DefaultGoalManager = new Se2NoHeuristicGoalManager(//
-        Tensors.vector(0, 0, Math.PI), //
-        Tensors.vector(0.1, 0.1, 0.1 * Math.PI));
-    assertFalse(HeuristicQ.of(se2DefaultGoalManager.getGoalInterface()));
-    assertEquals(se2DefaultGoalManager.minCostToGoal(Tensors.vector(0, 0, 1.1 * Math.PI)), RealScalar.ZERO);
-    assertEquals(se2DefaultGoalManager.minCostToGoal(Tensors.vector(2, 0, 2 * Math.PI)), RealScalar.ZERO);
-    assertEquals(se2DefaultGoalManager.minCostToGoal(Tensors.vector(0, 2, -2 * Math.PI)), RealScalar.ZERO);
-    assertEquals(se2DefaultGoalManager.minCostToGoal(Tensors.vector(0, 0, 0 * Math.PI)), RealScalar.ZERO);
-    // --
-    assertTrue(se2DefaultGoalManager.isMember(Tensors.vector(0.05, -0.05, Math.PI * 0.95)));
-    assertTrue(se2DefaultGoalManager.isMember(Tensors.vector(0.0, 0.0, Math.PI)));
-    assertTrue(se2DefaultGoalManager.isMember(Tensors.vector(0.0, 0.0, 3 * Math.PI)));
-    // --
-    assertFalse(se2DefaultGoalManager.isMember(Tensors.vector(2, 2, Math.PI)));
-    assertFalse(se2DefaultGoalManager.isMember(Tensors.vector(0, 0, 0)));
-  }
-
+public class Se2MinDistCurvGoalManagerTest extends TestCase {
   public void testMinDist() {
     Tensor radiusVector = Tensors.of(DoubleScalar.of(0.1), DoubleScalar.of(0.1), RealScalar.of(Math.PI * 0.1));
     Collection<Flow> controls = Se2Controls.createControlsForwardAndReverse(RealScalar.of(0.2), 10);

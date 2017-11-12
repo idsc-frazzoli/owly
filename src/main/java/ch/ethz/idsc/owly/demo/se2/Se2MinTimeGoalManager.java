@@ -43,9 +43,6 @@ public final class Se2MinTimeGoalManager extends Se2AbstractGoalManager {
 
   @Override // from HeuristicFunction
   public Scalar minCostToGoal(Tensor tensor) {
-    return Ramp.of(Max.of( //
-        d_xy(tensor).subtract(radiusSpace()).divide(maxSpeed), //
-        d_angle(tensor).subtract(radiusAngle()).divide(maxTurning) //
-    ));
+    return Ramp.of(Max.of(d_xy(tensor).divide(maxSpeed), d_angle(tensor).divide(maxTurning)));
   }
 }
