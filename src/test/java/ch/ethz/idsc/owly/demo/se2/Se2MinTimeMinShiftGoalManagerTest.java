@@ -20,8 +20,9 @@ public class Se2MinTimeMinShiftGoalManagerTest extends TestCase {
     Flow flowF = Se2Controls.singleton(RealScalar.of(+1), RealScalar.of(1));
     Flow flowR = Se2Controls.singleton(RealScalar.of(-1), RealScalar.of(1));
     Collection<Flow> controls = Arrays.asList(flowF, flowR);
+    Scalar SHIFT_PENALTY = RealScalar.of(.625);
     GoalInterface goalInterface = //
-        Se2MinTimeMinShiftGoalManager.create(Tensors.vector(10, 0, 0), Tensors.vector(1, 1, 1), controls);
+        Se2MinTimeMinShiftGoalManager.create(Tensors.vector(10, 0, 0), Tensors.vector(1, 1, 1), controls, SHIFT_PENALTY);
     GlcNode root = GlcNodes.createRoot(new StateTime(Tensors.vector(0, 0, 0), RealScalar.ZERO), goalInterface);
     StateTime cstime = new StateTime(Tensors.vector(1, 0, 0), RealScalar.ONE);
     Scalar cost1 = goalInterface.costIncrement(root, Collections.singletonList(cstime), flowR);
@@ -29,7 +30,7 @@ public class Se2MinTimeMinShiftGoalManagerTest extends TestCase {
     root.insertEdgeTo(child);
     {
       Scalar cost = goalInterface.costIncrement(child, Collections.singletonList(cstime), flowF);
-      assertEquals(cost, Se2MinTimeMinShiftGoalManager.SHIFT_PENALTY);
+      assertEquals(cost, SHIFT_PENALTY);
     }
     {
       Scalar cost = goalInterface.costIncrement(child, Collections.singletonList(cstime), flowR);

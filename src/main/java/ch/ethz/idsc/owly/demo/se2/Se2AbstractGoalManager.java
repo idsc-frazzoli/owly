@@ -22,7 +22,7 @@ import ch.ethz.idsc.tensor.alg.VectorQ;
 public abstract class Se2AbstractGoalManager implements Region<Tensor>, CostFunction {
   private final SphericalRegion sphericalRegion;
   private final So2Region so2Region;
-  protected final Tensor center;
+  protected final Tensor center; // TODO variable no good
   protected final Tensor radiusVector;
 
   /** @param center of region with coordinates (x, y, theta)

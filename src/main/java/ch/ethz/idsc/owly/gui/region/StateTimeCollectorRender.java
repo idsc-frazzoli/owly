@@ -29,7 +29,7 @@ class StateTimeCollectorRender implements RenderInterface {
         graphics.fillRect((int) point2d.getX(), (int) point2d.getY(), SIZE, SIZE);
       }
     } catch (Exception exception) {
-      // concurrent
+      // concurrent modification
     }
   }
 }

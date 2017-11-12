@@ -15,15 +15,15 @@ import ch.ethz.idsc.tensor.Tensor;
 /** superimpose cost from image onto normal cost */
 // TODO JAN code is redundant to R2..., use MultiCostFunction etc.
 public class Se2MinTimeMinShiftExtraCostGoalManager extends Se2MinTimeMinShiftGoalManager {
-  public static GoalInterface create(Tensor goal, Tensor radiusVector, Collection<Flow> controls, CostFunction costFunction) {
-    return new Se2MinTimeMinShiftExtraCostGoalManager(goal, radiusVector, controls, costFunction).getGoalInterface();
+  public static GoalInterface create(Tensor goal, Tensor radiusVector, Collection<Flow> controls, Scalar shiftPenalty, CostFunction costFunction) {
+    return new Se2MinTimeMinShiftExtraCostGoalManager(goal, radiusVector, controls, shiftPenalty, costFunction).getGoalInterface();
   }
 
   // ---
   private final CostFunction costFunction;
 
-  public Se2MinTimeMinShiftExtraCostGoalManager(Tensor goal, Tensor radiusVector, Collection<Flow> controls, CostFunction costFunction) {
-    super(goal, radiusVector, controls);
+  public Se2MinTimeMinShiftExtraCostGoalManager(Tensor goal, Tensor radiusVector, Collection<Flow> controls, Scalar shiftPenalty, CostFunction costFunction) {
+    super(goal, radiusVector, controls, shiftPenalty);
     this.costFunction = costFunction;
   }
 

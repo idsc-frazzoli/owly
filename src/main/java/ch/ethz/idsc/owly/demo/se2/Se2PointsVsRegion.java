@@ -2,8 +2,7 @@
 package ch.ethz.idsc.owly.demo.se2;
 
 import ch.ethz.idsc.owly.math.region.Region;
-import ch.ethz.idsc.owly.math.se2.Se2Utils;
-import ch.ethz.idsc.tensor.RealScalar;
+import ch.ethz.idsc.owly.math.se2.Se2Bijection;
 import ch.ethz.idsc.tensor.Tensor;
 
 /** used in se2 animation demo to check if footprint of vehicle intersects with obstacle region */
@@ -12,7 +11,7 @@ public class Se2PointsVsRegion implements Region<Tensor> {
   private final Region<Tensor> region;
 
   public Se2PointsVsRegion(Tensor points, Region<Tensor> region) {
-    this.points = Tensor.of(points.stream().map(row -> row.append(RealScalar.ONE))).unmodifiable();
+    this.points = points.copy().unmodifiable();
     this.region = region;
   }
 
@@ -20,10 +19,8 @@ public class Se2PointsVsRegion implements Region<Tensor> {
    * @return true if any of the points subject to the given transformation are in region */
   @Override
   public boolean isMember(Tensor tensor) {
-    Tensor matrix = Se2Utils.toSE2Matrix(tensor);
-    return points.stream() //
-        .map(point -> matrix.dot(point)) //
-        .anyMatch(region::isMember);
+    Se2Bijection se2Transformation = new Se2Bijection(tensor);
+    return points.stream().map(se2Transformation.forward()).anyMatch(region::isMember);
   }
 
   public Tensor points() {

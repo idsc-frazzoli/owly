@@ -32,17 +32,17 @@ public class Se2WrapGoalManagerExt implements Region<Tensor>, CostFunction {
     this.goalManager = goalManager;
   }
 
-  @Override
+  @Override // from CostIncrementFunction
   public Scalar costIncrement(GlcNode node, List<StateTime> trajectory, Flow flow) {
     return goalManager.costIncrement(node, trajectory, flow);
   }
 
-  @Override
+  @Override // from HeuristicFunction
   public Scalar minCostToGoal(Tensor x) {
     return Ramp.of(coordinateWrap.distance(x, goalManager.center).subtract(goalManager.radiusSpace()));
   }
 
-  @Override
+  @Override // from Region
   public boolean isMember(Tensor x) {
     return Scalars.isZero(Ramp.of( //
         coordinateWrap.distance(x, goalManager.center).subtract( //

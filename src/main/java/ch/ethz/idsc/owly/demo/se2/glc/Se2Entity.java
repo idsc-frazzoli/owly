@@ -46,6 +46,7 @@ import ch.ethz.idsc.tensor.sca.Sqrt;
  * that means, the functionality does not apply to all examples universally. */
 class Se2Entity extends AbstractEntity {
   public static final Tensor FALLBACK_CONTROL = Array.zeros(3).unmodifiable(); // {vx, vy, rate}
+  public static final Scalar SHIFT_PENALTY = RealScalar.of(0.4);
   // ---
   private static final Tensor SHAPE = Tensors.matrixDouble( //
       new double[][] { //
@@ -118,8 +119,8 @@ class Se2Entity extends AbstractEntity {
     StateIntegrator stateIntegrator = //
         FixedStateIntegrator.create(Se2CarIntegrator.INSTANCE, RationalScalar.of(1, 10), 4);
     GoalInterface goalInterface = Objects.isNull(costFunction) ? //
-        Se2MinTimeMinShiftGoalManager.create(goal, goalRadius, controls) : //
-        Se2MinTimeMinShiftExtraCostGoalManager.create(goal, goalRadius, controls, costFunction);
+        Se2MinTimeMinShiftGoalManager.create(goal, goalRadius, controls, SHIFT_PENALTY) : //
+        Se2MinTimeMinShiftExtraCostGoalManager.create(goal, goalRadius, controls, SHIFT_PENALTY, costFunction);
     TrajectoryPlanner trajectoryPlanner = new StandardTrajectoryPlanner( //
         eta(), stateIntegrator, controls, obstacleQuery, goalInterface);
     trajectoryPlanner.represent = StateTimeTensorFunction.state(SE2WRAP::represent);

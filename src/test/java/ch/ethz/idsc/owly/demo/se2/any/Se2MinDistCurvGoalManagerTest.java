@@ -1,8 +1,11 @@
 // code by jl
-package ch.ethz.idsc.owly.demo.se2;
+package ch.ethz.idsc.owly.demo.se2.any;
 
 import java.util.Collection;
 
+import ch.ethz.idsc.owly.demo.se2.Se2Controls;
+import ch.ethz.idsc.owly.demo.se2.Se2Wrap;
+import ch.ethz.idsc.owly.demo.se2.Se2WrapGoalManagerExt;
 import ch.ethz.idsc.owly.glc.adapter.HeuristicQ;
 import ch.ethz.idsc.owly.math.CoordinateWrap;
 import ch.ethz.idsc.owly.math.flow.Flow;

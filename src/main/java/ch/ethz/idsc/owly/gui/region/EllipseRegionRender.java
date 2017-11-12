@@ -22,10 +22,10 @@ class EllipseRegionRender implements RenderInterface {
     return new EllipseRegionRender(ellipsoidRegion.center().extract(0, 2), radius.Get(0), radius.Get(1));
   }
 
-  /** @param ellipsoidRegion
+  /** @param sphericalRegion
    * @return */
-  static RenderInterface of(SphericalRegion ellipsoidRegion) {
-    return new EllipseRegionRender(ellipsoidRegion.center().extract(0, 2), ellipsoidRegion.radius(), ellipsoidRegion.radius());
+  static RenderInterface of(SphericalRegion sphericalRegion) {
+    return new EllipseRegionRender(sphericalRegion.center().extract(0, 2), sphericalRegion.radius(), sphericalRegion.radius());
   }
 
   // ---

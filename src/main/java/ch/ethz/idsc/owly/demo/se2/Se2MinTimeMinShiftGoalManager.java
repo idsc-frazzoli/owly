@@ -24,21 +24,24 @@ import ch.ethz.idsc.tensor.sca.Sign;
  * The cost does not account for curvature. */
 @DontModify
 public class Se2MinTimeMinShiftGoalManager extends Se2AbstractGoalManager {
-  public static final Scalar SHIFT_PENALTY = RealScalar.of(.4);
   private static final Scalar ONE_NEGATE = RealScalar.ONE.negate();
+  // ---
+  //
 
-  public static GoalInterface create(Tensor goal, Tensor radiusVector, Collection<Flow> controls) {
-    return new Se2MinTimeMinShiftGoalManager(goal, radiusVector, controls).getGoalInterface();
+  public static GoalInterface create(Tensor goal, Tensor radiusVector, Collection<Flow> controls, Scalar shiftPenalty) {
+    return new Se2MinTimeMinShiftGoalManager(goal, radiusVector, controls, shiftPenalty).getGoalInterface();
   }
 
   // ---
   private final Scalar maxSpeed;
   private final Scalar maxTurning;
+  private final Scalar shiftPenalty;
 
-  Se2MinTimeMinShiftGoalManager(Tensor goal, Tensor radiusVector, Collection<Flow> controls) {
+  Se2MinTimeMinShiftGoalManager(Tensor goal, Tensor radiusVector, Collection<Flow> controls, Scalar shiftPenalty) {
     super(goal, radiusVector);
     maxSpeed = Se2Controls.maxSpeed(controls);
     maxTurning = Se2Controls.maxTurning(controls);
+    this.shiftPenalty = shiftPenalty;
   }
 
   @Override // from CostFunction
@@ -47,7 +50,7 @@ public class Se2MinTimeMinShiftGoalManager extends Se2AbstractGoalManager {
     Scalar penalty = RealScalar.ZERO;
     if (Objects.nonNull(ante))
       if (Sign.of(ante.getU().Get(0)).multiply(Sign.of(flow.getU().Get(0))).equals(ONE_NEGATE))
-        penalty = SHIFT_PENALTY;
+        penalty = shiftPenalty;
     return StateTimeTrajectories.timeIncrement(glcNode, trajectory).add(penalty);
   }
 
