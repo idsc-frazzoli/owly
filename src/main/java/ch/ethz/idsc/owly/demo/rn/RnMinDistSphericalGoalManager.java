@@ -40,12 +40,12 @@ public class RnMinDistSphericalGoalManager extends SimpleTrajectoryRegionQuery i
     this.sphericalRegion = sphericalRegion;
   }
 
-  @Override
+  @Override // from CostIncrementFunction
   public Scalar costIncrement(GlcNode glcNode, List<StateTime> trajectory, Flow flow) {
     return Norm._2.between(glcNode.stateTime().state(), Lists.getLast(trajectory).state());
   }
 
-  @Override
+  @Override // from HeuristicFunction
   public Scalar minCostToGoal(Tensor x) {
     // max(0, ||x - center|| - radius)
     return Ramp.of(sphericalRegion.evaluate(x));

@@ -20,18 +20,21 @@ import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.mat.DiagonalMatrix;
 import ch.ethz.idsc.tensor.mat.IdentityMatrix;
 
-/** check if input tensor is inside a polygon */
+/** for images only rigid transformations are allowed */
 public class R2xTImageStateTimeRegion implements Region<StateTime>, RenderInterface {
   private final ImageRegion imageRegion;
+  private final BufferedImage bufferedImage;
   private final RigidFamily rigidFamily;
   private final Supplier<Scalar> supplier;
-  private final BufferedImage bufferedImage;
   private final Tensor invsc;
 
-  public R2xTImageStateTimeRegion(ImageRegion imageRegion, RigidFamily bijectionFamily, Supplier<Scalar> supplier) {
+  /** @param imageRegion
+   * @param rigidFamily
+   * @param supplier */
+  public R2xTImageStateTimeRegion(ImageRegion imageRegion, RigidFamily rigidFamily, Supplier<Scalar> supplier) {
     this.imageRegion = imageRegion;
     bufferedImage = RegionRenders.image(imageRegion.image());
-    this.rigidFamily = bijectionFamily;
+    this.rigidFamily = rigidFamily;
     this.supplier = supplier;
     Tensor scale = imageRegion.scale();
     invsc = DiagonalMatrix.of( //
@@ -39,7 +42,7 @@ public class R2xTImageStateTimeRegion implements Region<StateTime>, RenderInterf
         -scale.Get(1).reciprocal().number().doubleValue(), 1);
   }
 
-  @Override
+  @Override // from Region
   public boolean isMember(StateTime stateTime) {
     Tensor state = stateTime.state().extract(0, 2);
     Scalar time = stateTime.time();
@@ -47,14 +50,14 @@ public class R2xTImageStateTimeRegion implements Region<StateTime>, RenderInterf
     return imageRegion.isMember(rev.apply(state));
   }
 
-  @Override
+  @Override // from RenderInterface
   public void render(GeometricLayer geometricLayer, Graphics2D graphics) {
     Scalar time = supplier.get();
-    Tensor fwd = rigidFamily.forward_se2(time);
+    Tensor forward = rigidFamily.forward_se2(time);
     Tensor model2pixel = geometricLayer.getMatrix();
     Tensor translate = IdentityMatrix.of(3);
     translate.set(RealScalar.of(-bufferedImage.getHeight()), 1, 2);
-    Tensor matrix = model2pixel.dot(fwd).dot(invsc).dot(translate);
+    Tensor matrix = model2pixel.dot(forward).dot(invsc).dot(translate);
     graphics.drawImage(bufferedImage, AffineTransforms.toAffineTransform(matrix), null);
   }
 }

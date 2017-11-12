@@ -15,10 +15,15 @@ import ch.ethz.idsc.tensor.Tensor;
 /** superimpose cost from image onto normal cost */
 // TODO use MultiCostFunction
 public class RnMinDistExtraCostGoalManager extends RnMinDistSphericalGoalManager implements GoalInterface {
+  public static GoalInterface create(Tensor center, Scalar radius, CostFunction costFunction) {
+    return new RnMinDistExtraCostGoalManager(new SphericalRegion(center, radius), costFunction);
+  }
+
+  // ---
   private final CostFunction costFunction;
 
-  public RnMinDistExtraCostGoalManager(Tensor center, Scalar radius, CostFunction costFunction) {
-    super(new SphericalRegion(center, radius));
+  public RnMinDistExtraCostGoalManager(SphericalRegion sphericalRegion, CostFunction costFunction) {
+    super(sphericalRegion);
     this.costFunction = costFunction;
   }
 

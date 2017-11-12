@@ -3,7 +3,6 @@ package ch.ethz.idsc.owly.demo.rnxt.glc;
 
 import java.util.Collections;
 
-import ch.ethz.idsc.owly.demo.rn.RnHeuristicEllipsoidGoalManager;
 import ch.ethz.idsc.owly.glc.adapter.HeuristicQ;
 import ch.ethz.idsc.owly.glc.core.GlcNode;
 import ch.ethz.idsc.owly.glc.core.GlcNodes;

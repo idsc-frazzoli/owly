@@ -31,7 +31,7 @@ public class Se2Family implements RigidFamily {
     this.function = function;
   }
 
-  @Override
+  @Override // from BijectionFamily
   public TensorUnaryOperator forward(Scalar scalar) {
     Tensor xya = function.apply(scalar); // {px, py, angle}
     Tensor matrix = RotationMatrix.of(xya.Get(2));
@@ -39,7 +39,7 @@ public class Se2Family implements RigidFamily {
     return tensor -> matrix.dot(tensor).add(offset);
   }
 
-  @Override
+  @Override // from BijectionFamily
   public TensorUnaryOperator inverse(Scalar scalar) {
     Tensor xya = function.apply(scalar); // {px, py, angle}
     Tensor matrix = RotationMatrix.of(xya.Get(2).negate());
@@ -47,7 +47,7 @@ public class Se2Family implements RigidFamily {
     return tensor -> matrix.dot(tensor.subtract(offset));
   }
 
-  @Override
+  @Override // from RigidFamily
   public Tensor forward_se2(Scalar scalar) {
     Tensor xya = function.apply(scalar); // {px, py, angle}
     Scalar angle = xya.Get(2);

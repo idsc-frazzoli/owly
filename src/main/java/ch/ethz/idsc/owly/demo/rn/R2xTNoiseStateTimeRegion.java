@@ -25,7 +25,7 @@ public class R2xTNoiseStateTimeRegion implements Region<StateTime> {
     this.threshold = threshold;
   }
 
-  @Override
+  @Override // from Region
   public boolean isMember(StateTime stateTime) {
     Tensor tensor = stateTime.state().extract(0, 2).append(stateTime.time());
     return Scalars.lessThan(threshold, CONTINUOUS_NOISE.apply(tensor));

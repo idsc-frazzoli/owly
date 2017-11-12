@@ -23,13 +23,16 @@ public class R2xTPolygonStateTimeRegion implements Region<StateTime>, RenderInte
   private final BijectionFamily bijectionFamily;
   private final Supplier<Scalar> supplier;
 
+  /** @param polygon
+   * @param bijectionFamily
+   * @param supplier */
   public R2xTPolygonStateTimeRegion(Tensor polygon, BijectionFamily bijectionFamily, Supplier<Scalar> supplier) {
     this.polygon = N.DOUBLE.of(polygon);
     this.bijectionFamily = bijectionFamily;
     this.supplier = supplier;
   }
 
-  @Override
+  @Override // from Region
   public boolean isMember(StateTime stateTime) {
     Tensor state = stateTime.state().extract(0, 2);
     Scalar time = stateTime.time();
@@ -37,11 +40,11 @@ public class R2xTPolygonStateTimeRegion implements Region<StateTime>, RenderInte
     return Polygons.isInside(polygon, rev.apply(state));
   }
 
-  @Override
+  @Override // from RenderInterface
   public void render(GeometricLayer geometricLayer, Graphics2D graphics) {
     Scalar time = supplier.get();
-    TensorUnaryOperator fwd = bijectionFamily.forward(time);
-    Path2D path2D = geometricLayer.toPath2D(Tensor.of(polygon.stream().map(fwd)));
+    TensorUnaryOperator forward = bijectionFamily.forward(time);
+    Path2D path2D = geometricLayer.toPath2D(Tensor.of(polygon.stream().map(forward)));
     graphics.setColor(RegionRenders.COLOR);
     graphics.fill(path2D);
     graphics.setColor(RegionRenders.BOUNDARY);

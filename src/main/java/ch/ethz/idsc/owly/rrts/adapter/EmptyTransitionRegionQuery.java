@@ -7,7 +7,7 @@ import ch.ethz.idsc.owly.rrts.core.TransitionRegionQuery;
 public enum EmptyTransitionRegionQuery implements TransitionRegionQuery {
   INSTANCE;
   // ---
-  @Override
+  @Override // from TransitionRegionQuery
   public boolean isDisjoint(Transition transition) {
     return true;
   }

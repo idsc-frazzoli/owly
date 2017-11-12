@@ -8,6 +8,7 @@ import ch.ethz.idsc.tensor.mat.IdentityMatrix;
 
 public enum IdentityFamily implements RigidFamily {
   INSTANCE;
+  // ---
   private static final Tensor MATRIX = IdentityMatrix.of(3).unmodifiable();
 
   // ---

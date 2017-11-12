@@ -9,19 +9,19 @@ import ch.ethz.idsc.tensor.mat.IdentityMatrix;
 /** the term "family" conveys the meaning that the translation
  * depends on a single parameter, for instance time */
 public abstract class TranslationFamily implements RigidFamily {
-  @Override
+  @Override // from BijectionFamily
   public final TensorUnaryOperator forward(Scalar scalar) {
     Tensor offset = function_apply(scalar);
     return tensor -> tensor.add(offset);
   }
 
-  @Override
+  @Override // from BijectionFamily
   public final TensorUnaryOperator inverse(Scalar scalar) {
     Tensor offset = function_apply(scalar);
     return tensor -> tensor.subtract(offset);
   }
 
-  @Override
+  @Override // from RigidFamily
   public final Tensor forward_se2(Scalar scalar) {
     Tensor offset = function_apply(scalar);
     Tensor matrix = IdentityMatrix.of(3);

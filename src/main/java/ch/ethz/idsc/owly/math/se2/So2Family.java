@@ -20,21 +20,21 @@ public class So2Family implements RigidFamily {
     this.function = function;
   }
 
-  @Override
+  @Override // from BijectionFamily
   public TensorUnaryOperator forward(Scalar scalar) {
     Scalar angle = function.apply(scalar);
     Tensor matrix = RotationMatrix.of(angle);
     return tensor -> matrix.dot(tensor);
   }
 
-  @Override
+  @Override // from BijectionFamily
   public TensorUnaryOperator inverse(Scalar scalar) {
     Scalar angle = function.apply(scalar);
     Tensor matrix = RotationMatrix.of(angle.negate());
     return tensor -> matrix.dot(tensor);
   }
 
-  @Override
+  @Override // from RigidFamily
   public Tensor forward_se2(Scalar scalar) {
     Scalar angle = function.apply(scalar);
     Scalar cos = Cos.FUNCTION.apply(angle);
