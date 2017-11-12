@@ -23,7 +23,6 @@ public class R2xTPolygonStateTimeRegion implements Region<StateTime>, RenderInte
   private final BijectionFamily bijectionFamily;
   private final Supplier<Scalar> supplier;
 
-  // TODO JAN design with time provider is not final...
   public R2xTPolygonStateTimeRegion(Tensor polygon, BijectionFamily bijectionFamily, Supplier<Scalar> supplier) {
     this.polygon = N.DOUBLE.of(polygon);
     this.bijectionFamily = bijectionFamily;

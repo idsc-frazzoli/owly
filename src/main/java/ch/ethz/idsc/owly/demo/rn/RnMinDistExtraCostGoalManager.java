@@ -7,6 +7,7 @@ import ch.ethz.idsc.owly.glc.core.CostFunction;
 import ch.ethz.idsc.owly.glc.core.GlcNode;
 import ch.ethz.idsc.owly.glc.core.GoalInterface;
 import ch.ethz.idsc.owly.math.flow.Flow;
+import ch.ethz.idsc.owly.math.region.SphericalRegion;
 import ch.ethz.idsc.owly.math.state.StateTime;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
@@ -17,7 +18,7 @@ public class RnMinDistExtraCostGoalManager extends RnMinDistSphericalGoalManager
   private final CostFunction costFunction;
 
   public RnMinDistExtraCostGoalManager(Tensor center, Scalar radius, CostFunction costFunction) {
-    super(center, radius);
+    super(new SphericalRegion(center, radius));
     this.costFunction = costFunction;
   }
 

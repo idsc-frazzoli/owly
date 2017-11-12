@@ -6,6 +6,7 @@ import java.util.Collections;
 import ch.ethz.idsc.owly.glc.adapter.HeuristicQ;
 import ch.ethz.idsc.owly.glc.core.GlcNode;
 import ch.ethz.idsc.owly.glc.core.GoalInterface;
+import ch.ethz.idsc.owly.math.region.SphericalRegion;
 import ch.ethz.idsc.owly.math.state.StateTime;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
@@ -19,6 +20,12 @@ public class RnMinDistSphericalGoalManagerTest extends TestCase {
     assertTrue(HeuristicQ.of(goalInterface));
   }
 
+  public void testHeuristic2() {
+    SphericalRegion sphericalRegion = new SphericalRegion(Tensors.vector(5, 0), RealScalar.of(2));
+    GoalInterface goalInterface = new RnMinDistSphericalGoalManager(sphericalRegion);
+    assertTrue(HeuristicQ.of(goalInterface));
+  }
+
   public void testMinCost() {
     GoalInterface goalInterface = //
         RnMinDistSphericalGoalManager.create(Tensors.vector(5, 3), RealScalar.of(2));
@@ -27,10 +34,18 @@ public class RnMinDistSphericalGoalManagerTest extends TestCase {
     assertEquals(goalInterface.minCostToGoal(Tensors.vector(5, 0)), RealScalar.of(1));
   }
 
+  public void testMinCost2() {
+    SphericalRegion sphericalRegion = new SphericalRegion(Tensors.vector(5, 3), RealScalar.of(2));
+    GoalInterface goalInterface = new RnMinDistSphericalGoalManager(sphericalRegion);
+    assertEquals(goalInterface.minCostToGoal(Tensors.vector(0, 3)), RealScalar.of(3));
+    assertEquals(goalInterface.minCostToGoal(Tensors.vector(5, 1)), RealScalar.of(0));
+    assertEquals(goalInterface.minCostToGoal(Tensors.vector(5, 0)), RealScalar.of(1));
+  }
+
   public void testCostIncr() {
     GlcNode glcNode = GlcNode.of(null, new StateTime(Tensors.vector(10, 3), RealScalar.ZERO), RealScalar.ZERO, RealScalar.ZERO);
-    GoalInterface goalInterface = //
-        RnMinDistSphericalGoalManager.create(Tensors.vector(5, 3), RealScalar.of(2));
+    SphericalRegion sphericalRegion = new SphericalRegion(Tensors.vector(5, 3), RealScalar.of(2));
+    GoalInterface goalInterface = new RnMinDistSphericalGoalManager(sphericalRegion);
     Scalar increment = goalInterface.costIncrement( //
         glcNode, //
         Collections.singletonList(new StateTime(Tensors.vector(13, 7), RealScalar.ZERO)), //

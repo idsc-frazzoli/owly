@@ -11,6 +11,7 @@ import ch.ethz.idsc.owly.math.region.EllipsoidRegion;
 import ch.ethz.idsc.owly.math.region.ImageRegion;
 import ch.ethz.idsc.owly.math.region.PolygonRegion;
 import ch.ethz.idsc.owly.math.region.Region;
+import ch.ethz.idsc.owly.math.region.SphericalRegion;
 import ch.ethz.idsc.owly.math.state.StateTimeCollector;
 import ch.ethz.idsc.owly.math.state.TrajectoryRegionQuery;
 import ch.ethz.idsc.tensor.RealScalar;
@@ -46,7 +47,9 @@ public enum RegionRenders {
     if (region instanceof ImageRegion)
       return new ImageRegionRender((ImageRegion) region);
     if (region instanceof EllipsoidRegion)
-      return new EllipsoidRegionRender((EllipsoidRegion) region);
+      return EllipseRegionRender.of((EllipsoidRegion) region);
+    if (region instanceof SphericalRegion)
+      return EllipseRegionRender.of((SphericalRegion) region);
     if (region instanceof PolygonRegion)
       return new PolygonRegionRender((PolygonRegion) region);
     if (region instanceof RnPointcloudRegion)

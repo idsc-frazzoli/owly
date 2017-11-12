@@ -28,7 +28,6 @@ public class R2xTEllipsoidStateTimeRegion implements Region<StateTime>, RenderIn
   private final BijectionFamily bijectionFamily;
   private final Supplier<Scalar> supplier;
 
-  // TODO JAN design with time provider is not final...
   public R2xTEllipsoidStateTimeRegion(Tensor radius, BijectionFamily bijectionFamily, Supplier<Scalar> supplier) {
     invert = radius.map(Scalar::reciprocal);
     this.bijectionFamily = bijectionFamily;

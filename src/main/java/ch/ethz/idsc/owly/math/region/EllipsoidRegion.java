@@ -37,12 +37,12 @@ public class EllipsoidRegion extends ImplicitFunctionRegion {
     if (radius.stream().map(Scalar.class::cast).anyMatch(Sign::isNegativeOrZero))
       throw TensorRuntimeException.of(radius);
     // ---
-    this.center = center;
-    this.radius = radius;
+    this.center = center.copy();
+    this.radius = radius.copy();
     invert = radius.map(Scalar::reciprocal);
   }
 
-  @Override
+  @Override // from ImplicitFunction
   public Scalar evaluate(Tensor tensor) {
     return Norm2Squared.ofVector(tensor.subtract(center).pmul(invert)).subtract(RealScalar.ONE);
   }

@@ -1,0 +1,49 @@
+// code by jph
+package ch.ethz.idsc.owly.gui.region;
+
+import java.awt.Graphics2D;
+import java.awt.geom.Path2D;
+
+import ch.ethz.idsc.owly.gui.GeometricLayer;
+import ch.ethz.idsc.owly.gui.RenderInterface;
+import ch.ethz.idsc.owly.math.CirclePoints;
+import ch.ethz.idsc.owly.math.region.EllipsoidRegion;
+import ch.ethz.idsc.owly.math.region.SphericalRegion;
+import ch.ethz.idsc.tensor.Scalar;
+import ch.ethz.idsc.tensor.Tensor;
+
+/** visualize planar ellipse */
+class EllipseRegionRender implements RenderInterface {
+  /** @param ellipsoidRegion
+   * @return */
+  static RenderInterface of(EllipsoidRegion ellipsoidRegion) {
+    Tensor radius = ellipsoidRegion.radius();
+    return new EllipseRegionRender(ellipsoidRegion.center(), radius.Get(0), radius.Get(1));
+  }
+
+  /** @param ellipsoidRegion
+   * @return */
+  static RenderInterface of(SphericalRegion ellipsoidRegion) {
+    return new EllipseRegionRender(ellipsoidRegion.center(), ellipsoidRegion.radius(), ellipsoidRegion.radius());
+  }
+
+  // ---
+  private static final int RESOLUTION = 22;
+  // ---
+  private final Tensor polygon;
+
+  private EllipseRegionRender(Tensor center, Scalar radiusX, Scalar radiusY) {
+    polygon = Tensor.of(CirclePoints.elliptic(RESOLUTION, radiusX, radiusY) //
+        .stream().map(row -> row.add(center)));
+  }
+
+  @Override
+  public void render(GeometricLayer geometricLayer, Graphics2D graphics) {
+    Path2D path2D = geometricLayer.toPath2D(polygon);
+    graphics.setColor(RegionRenders.COLOR);
+    graphics.fill(path2D);
+    graphics.setColor(RegionRenders.BOUNDARY);
+    path2D.closePath();
+    graphics.draw(path2D);
+  }
+}

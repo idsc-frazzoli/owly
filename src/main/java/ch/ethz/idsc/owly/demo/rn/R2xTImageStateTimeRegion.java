@@ -28,7 +28,6 @@ public class R2xTImageStateTimeRegion implements Region<StateTime>, RenderInterf
   private final BufferedImage bufferedImage;
   private final Tensor invsc;
 
-  // TODO JAN design with time provider is not final...
   public R2xTImageStateTimeRegion(ImageRegion imageRegion, RigidFamily bijectionFamily, Supplier<Scalar> supplier) {
     this.imageRegion = imageRegion;
     bufferedImage = RegionRenders.image(imageRegion.image());

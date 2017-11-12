@@ -32,13 +32,21 @@ public class SphericalRegion extends ImplicitFunctionRegion {
   public SphericalRegion(Tensor center, Scalar radius) {
     VectorQ.elseThrow(center);
     GlobalAssert.that(Sign.isPositiveOrZero(radius));
-    this.center = center;
+    this.center = center.copy();
     this.radius = radius;
   }
 
-  @Override
+  @Override // from ImplicitFunction
   public Scalar evaluate(Tensor x) {
     // ||x - center|| - radius
-    return Norm._2.between(x, center).subtract(radius);
+    return Norm._2.between(x, center).subtract(radius); // result may be negative
+  }
+
+  public Tensor center() {
+    return center.unmodifiable();
+  }
+
+  public Scalar radius() {
+    return radius;
   }
 }
