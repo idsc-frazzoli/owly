@@ -76,11 +76,11 @@ enum R2GlcAnyCircleCompareDemo {
             , new R2NoiseRegion(RealScalar.of(.2)) //
         )));
     // ANYPLANNER
-    AnyPlannerInterface anyTrajectoryPlanner = new OptimalAnyTrajectoryPlanner( //
+    AnyPlannerInterface anyPlannerInterface = new OptimalAnyTrajectoryPlanner( //
         parameters.getEta(), stateIntegrator, controls, obstacleQuery, rnGoal);
-    anyTrajectoryPlanner.switchRootToState(Tensors.vector(0, 1).multiply(circleRadius));
-    GlcExpand.maxDepth(anyTrajectoryPlanner, parameters.getDepthLimit());
-    List<StateTime> anyTrajectory = anyTrajectoryPlanner.trajectoryToBest();
+    anyPlannerInterface.switchRootToState(Tensors.vector(0, 1).multiply(circleRadius));
+    GlcExpand.maxDepth(anyPlannerInterface, parameters.getDepthLimit());
+    List<StateTime> anyTrajectory = anyPlannerInterface.trajectoryToBest();
     // StateTimeTrajectories.print(trajectory);
     // AnimationWriter gsw = AnimationWriter.of(UserHome.Pictures("R2_Circle_Gif.gif"), 250);
     OwlyFrame owlyAnyFrame = OwlyGui.start();
@@ -110,7 +110,7 @@ enum R2GlcAnyCircleCompareDemo {
         switchingRoot = true;
         // --
         newRootState = anyTrajectory.get(anyTrajectory.size() > 5 ? 5 : 0);
-        int increment = anyTrajectoryPlanner.switchRootToState(newRootState.state());
+        int increment = anyPlannerInterface.switchRootToState(newRootState.state());
         parameters.increaseDepthLimit(increment);
       }
       // -- GOALCHANGE
@@ -126,14 +126,14 @@ enum R2GlcAnyCircleCompareDemo {
       // System.out.println("Switching to Goal:" + goal);
       Scalar goalSearchHelperRadius = goalRadius.add(RealScalar.ONE).multiply(RealScalar.of(2));
       Region<Tensor> goalSearchHelper = new EllipsoidRegion(goal, Array.of(l -> goalSearchHelperRadius, goal.length()));
-      anyTrajectoryPlanner.changeToGoal(rnGoal, goalSearchHelper);
+      anyPlannerInterface.changeToGoal(rnGoal, goalSearchHelper);
       // -- EXPANDING
-      int itersAny = GlcExpand.maxDepth(anyTrajectoryPlanner, parameters.getDepthLimit());
+      int itersAny = GlcExpand.maxDepth(anyPlannerInterface, parameters.getDepthLimit());
       database.saveIterations(itersAny, 1);
-      anyTrajectory = anyTrajectoryPlanner.trajectoryToBest();
+      anyTrajectory = anyPlannerInterface.trajectoryToBest();
       database.stopStopwatchFor(1);
       if (activateGui)
-        owlyAnyFrame.setGlc((TrajectoryPlanner) anyTrajectoryPlanner);
+        owlyAnyFrame.setGlc((TrajectoryPlanner) anyPlannerInterface);
       // gsw.append(owlyFrame.offscreen());
       // --
       // Standard:
@@ -148,7 +148,7 @@ enum R2GlcAnyCircleCompareDemo {
         database.saveIterations(itersStandard, 0);
         if (activateGui)
           owlyStandardFrame.setGlc((TrajectoryPlanner) standardTrajectoryPlanner);
-        Scalar anyCost = ((AbstractAnyTrajectoryPlanner) anyTrajectoryPlanner).getTrajectoryCost();
+        Scalar anyCost = ((AbstractAnyTrajectoryPlanner) anyPlannerInterface).getTrajectoryCost();
         database.saveCost(anyCost, 1);
         Scalar staCost = standardTrajectoryPlanner.getBest().get().costFromRoot();
         database.saveCost(staCost, 0);

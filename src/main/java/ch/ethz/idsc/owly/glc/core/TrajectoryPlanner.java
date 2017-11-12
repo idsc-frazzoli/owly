@@ -107,9 +107,11 @@ public abstract class TrajectoryPlanner implements ExpandInterface<GlcNode>, Ser
    * @param connector */
   protected synchronized void offerDestination(GlcNode node, List<StateTime> connector) {
     best.put(node, connector);
-    // TODO check if size ever greater than 2
-    while (1 < best.size()) // `if` should be sufficient, but `while` to be sure
+    // `if` should be sufficient, `while` to be sure
+    if (1 < best.size()) {
       best.remove(best.lastKey());
+      GlobalAssert.that(best.size() == 1);
+    }
   }
 
   @Override // from ExpandInterface
@@ -198,8 +200,6 @@ public abstract class TrajectoryPlanner implements ExpandInterface<GlcNode>, Ser
     throw new RuntimeException();
   }
 
-  // TODO assuming that no TrajectoryGoalManager is used in standardplanner.
-  // Does this make sense?
   /** @return Returns the Node, which belongs to the furthest StateTime in the GoalRegion,
    * Furthest is determined by the merit of the Node at the end of its trajectory */
   protected abstract Optional<GlcNode> getFurthestGoalNode();

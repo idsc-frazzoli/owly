@@ -25,6 +25,8 @@ import ch.ethz.idsc.tensor.Tensors;
 import ch.ethz.idsc.tensor.red.Norm2Squared;
 
 /* package */ class Rice1dEntity extends AbstractCircularEntity {
+  public static final Tensor FALLBACK_CONTROL = Tensors.vectorDouble(0).unmodifiable();
+  // ---
   private static final Integrator INTEGRATOR = RungeKutta4Integrator.INSTANCE;
   // ---
   private final Collection<Flow> controls;
@@ -42,8 +44,8 @@ import ch.ethz.idsc.tensor.red.Norm2Squared;
   }
 
   @Override
-  protected Tensor fallbackControl() {
-    return Tensors.vector(0).unmodifiable();
+  protected final Tensor fallbackControl() {
+    return FALLBACK_CONTROL;
   }
 
   @Override
@@ -56,7 +58,7 @@ import ch.ethz.idsc.tensor.red.Norm2Squared;
     Tensor partitionScale = Tensors.vector(8, 8);
     StateIntegrator stateIntegrator = //
         FixedStateIntegrator.create(INTEGRATOR, RationalScalar.of(1, 12), 4);
-    GoalInterface goalInterface = new Rice1GoalManager(goal.extract(0, 2), Tensors.vector(.2, .3));
+    GoalInterface goalInterface = Rice1GoalManager.create(goal.extract(0, 2), Tensors.vector(.2, .3));
     return new StandardTrajectoryPlanner( //
         partitionScale, stateIntegrator, controls, obstacleQuery, goalInterface);
   }

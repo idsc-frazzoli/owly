@@ -5,7 +5,9 @@ import ch.ethz.idsc.owly.demo.rn.R2NoiseRegion;
 import ch.ethz.idsc.owly.demo.util.DemoInterface;
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
 import ch.ethz.idsc.owly.gui.ani.OwlyAnimationFrame;
+import ch.ethz.idsc.owly.gui.region.RegionRenders;
 import ch.ethz.idsc.owly.math.region.Region;
+import ch.ethz.idsc.owly.math.state.TrajectoryRegionQuery;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
@@ -16,7 +18,9 @@ public class R2NoiseAnimationDemo implements DemoInterface {
     OwlyAnimationFrame owlyAnimationFrame = new OwlyAnimationFrame();
     owlyAnimationFrame.set(new R2Entity(Tensors.vector(0.2, 0.2)));
     Region<Tensor> region = new R2NoiseRegion(RealScalar.of(0.2));
-    owlyAnimationFrame.setObstacleQuery(SimpleTrajectoryRegionQuery.timeInvariant(region));
+    TrajectoryRegionQuery trajectoryRegionQuery = SimpleTrajectoryRegionQuery.timeInvariant(region);
+    owlyAnimationFrame.setObstacleQuery(trajectoryRegionQuery);
+    owlyAnimationFrame.addBackground(RegionRenders.create(trajectoryRegionQuery));
     owlyAnimationFrame.jFrame.setVisible(true);
   }
 

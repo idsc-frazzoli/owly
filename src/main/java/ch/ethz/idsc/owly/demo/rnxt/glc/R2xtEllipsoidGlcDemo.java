@@ -7,7 +7,6 @@ import java.util.Optional;
 
 import ch.ethz.idsc.owly.demo.rn.R2Controls;
 import ch.ethz.idsc.owly.demo.rn.R2Parameters;
-import ch.ethz.idsc.owly.demo.rn.RnHeuristicEllipsoidGoalManager;
 import ch.ethz.idsc.owly.glc.adapter.Parameters;
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
 import ch.ethz.idsc.owly.glc.adapter.StateTimeTrajectories;
@@ -44,8 +43,8 @@ enum R2xtEllipsoidGlcDemo {
     Scalar lipschitz = RealScalar.ONE;
     Parameters parameters = new R2Parameters(resolution, timeScale, depthScale, partitionScale, dtMax, maxIter, lipschitz);
     System.out.println("1/DomainSize: " + parameters.getEta());
-    StateIntegrator stateIntegrator = FixedStateIntegrator.create(EulerIntegrator.INSTANCE, parameters.getdtMax(), //
-        parameters.getTrajectorySize());
+    StateIntegrator stateIntegrator = FixedStateIntegrator.create( //
+        EulerIntegrator.INSTANCE, parameters.getdtMax(), parameters.getTrajectorySize());
     Collection<Flow> controls = R2Controls.createRadial(parameters.getResolutionInt());
     Tensor goal = Tensors.vector(5, 5);
     RnHeuristicEllipsoidGoalManager rnGoal = new RnHeuristicEllipsoidGoalManager(//

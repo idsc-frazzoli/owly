@@ -30,12 +30,12 @@ public class R2NoiseCostFunction implements CostFunction {
     this.treshold = treshold;
   }
 
-  @Override
+  @Override // from HeuristicFunction
   public Scalar minCostToGoal(Tensor tensor) {
     return RealScalar.ZERO;
   }
 
-  @Override
+  @Override // from CostIncrementFunction
   public Scalar costIncrement(GlcNode glcNode, List<StateTime> trajectory, Flow flow) {
     Tensor cost = Tensor.of(trajectory.stream().map(StateTime::state).map(this::pointCost));
     Tensor dts = Trajectories.deltaTimes(glcNode, trajectory);

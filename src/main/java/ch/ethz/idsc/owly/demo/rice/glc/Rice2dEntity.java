@@ -55,7 +55,7 @@ import ch.ethz.idsc.tensor.red.Norm2Squared;
   }
 
   @Override
-  public Scalar delayHint() {
+  public final Scalar delayHint() {
     return delayHint;
   }
 
@@ -65,8 +65,7 @@ import ch.ethz.idsc.tensor.red.Norm2Squared;
     StateIntegrator stateIntegrator = //
         FixedStateIntegrator.create(INTEGRATOR, RationalScalar.of(1, 12), 4);
     Tensor center = Join.of(goal.extract(0, 2), AngleVector.of(goal.Get(2)).multiply(RealScalar.of(.8)));
-    GoalInterface goalInterface = new Rice2GoalManager( //
-        center, Tensors.vector(.5, .5, .4, .4));
+    GoalInterface goalInterface = Rice2GoalManager.create(center, Tensors.vector(.5, .5, .4, .4));
     return new StandardTrajectoryPlanner( //
         partitionScale, stateIntegrator, controls, obstacleQuery, goalInterface);
   }

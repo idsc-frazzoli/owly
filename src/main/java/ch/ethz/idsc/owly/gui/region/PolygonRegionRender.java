@@ -8,7 +8,7 @@ import ch.ethz.idsc.owly.gui.RenderInterface;
 import ch.ethz.idsc.owly.math.region.PolygonRegion;
 import ch.ethz.idsc.tensor.Tensor;
 
-public class PolygonRegionRender implements RenderInterface {
+class PolygonRegionRender implements RenderInterface {
   private final Tensor polygon;
 
   public PolygonRegionRender(PolygonRegion polygonRegion) {

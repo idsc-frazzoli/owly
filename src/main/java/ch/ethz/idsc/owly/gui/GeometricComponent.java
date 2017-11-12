@@ -108,8 +108,8 @@ public final class GeometricComponent {
             int dy = now.y - down.y;
             // ---
             Dimension dimension = jComponent.getSize();
-            Scalar a1 = ArcTan.of(RealScalar.of(now.x - dimension.width / 2), RealScalar.of(now.y - dimension.height / 2));
-            Scalar a2 = ArcTan.of(RealScalar.of(down.x - dimension.width / 2), RealScalar.of(down.y - dimension.height / 2));
+            Scalar a1 = ArcTan.of(now.x - dimension.width / 2, now.y - dimension.height / 2);
+            Scalar a2 = ArcTan.of(down.x - dimension.width / 2, down.y - dimension.height / 2);
             // ---
             down = now;
             final int mods = mouseEvent.getModifiersEx();

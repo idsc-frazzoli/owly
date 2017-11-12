@@ -60,7 +60,7 @@ public abstract class AbstractAnyTrajectoryPlanner extends AbstractTrajectoryPla
     // TODO because of appending NaN, ::represent must only consider StateTime::state()
     GlcNode newRoot = getNode(convertToKey(new StateTime(state, DoubleScalar.INDETERMINATE)));
     int increaseDepthBy = 0;
-    // TODO not nice, as we jump from state to startnode
+    // TODO JONAS not nice, as we jump from state to startnode
     if (newRoot != null) {
       increaseDepthBy = switchRootToNode(newRoot);
     } else {
@@ -72,7 +72,7 @@ public abstract class AbstractAnyTrajectoryPlanner extends AbstractTrajectoryPla
         domainMap().clear();
         queue().clear();
       }
-      insertRoot(new StateTime(state, RealScalar.ZERO)); // TODO justify time==0
+      insertRoot(new StateTime(state, RealScalar.ZERO)); // TODO JONAS justify time==0
     }
     return increaseDepthBy;
   }
@@ -103,20 +103,19 @@ public abstract class AbstractAnyTrajectoryPlanner extends AbstractTrajectoryPla
     // // removal from queue might lead to non convergence to optimal Solution, when R is increased
     queue().removeAll(deleteTreeCollection);
     // // -- DOMAINMAP: Removing Nodes (DeleteTree) from DomainMap
-    for (GlcNode node : deleteTreeCollection) {
+    for (GlcNode node : deleteTreeCollection)
       domainMap().remove(convertToKey(node.stateTime()));
-    }
     // boolean test = domainMap().values().removeAll(deleteTreeCollection);
     // if (test)
     // throw new RuntimeException();
     // -- EDGE: Removing Edges between Nodes in DeleteTree
-    // TODO edge removal of all nodes needed?
+    // TODO JONAS edge removal of all nodes needed?
     // better for garbage collector, otherwise child<->parent pair might keep itself in existence
     // Minimum needed:
     // baseRoot.parent().removeEdgeTo(baseRoot);
     // oldRoot has no parent, therefore is skipped
     deleteTreeCollection.remove(baseNode);
-    // TODO make parallel? If parallel, run in below exceptions
+    // if parallel, run in below exceptions
     deleteTreeCollection.stream().forEach(tempNode -> tempNode.parent().removeEdgeTo(tempNode));
     deleteTreeCollection.add(baseNode);
     subTreeDeleterWatch.stop();

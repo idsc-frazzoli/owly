@@ -19,6 +19,7 @@ import ch.ethz.idsc.owly.glc.core.StandardTrajectoryPlanner;
 import ch.ethz.idsc.owly.glc.core.TrajectoryPlanner;
 import ch.ethz.idsc.owly.gui.ani.OwlyFrame;
 import ch.ethz.idsc.owly.gui.ani.OwlyGui;
+import ch.ethz.idsc.owly.gui.region.RegionRenders;
 import ch.ethz.idsc.owly.math.RotationUtils;
 import ch.ethz.idsc.owly.math.flow.Flow;
 import ch.ethz.idsc.owly.math.region.ImageRegion;
@@ -54,7 +55,7 @@ enum Se2rImageDemo {
     OwlyFrame owlyFrame = OwlyGui.start();
     owlyFrame.configCoordinateOffset(100, 550);
     owlyFrame.jFrame.setBounds(100, 100, 700, 700);
-    owlyFrame.addRegionRender(imageRegion);
+    owlyFrame.addBackground(RegionRenders.create(imageRegion));
     while (!trajectoryPlanner.getBest().isPresent() && owlyFrame.jFrame.isVisible()) {
       Expand.maxSteps(trajectoryPlanner, 1000);
       owlyFrame.setGlc(trajectoryPlanner);

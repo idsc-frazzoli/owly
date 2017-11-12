@@ -8,10 +8,8 @@ import ch.ethz.idsc.owly.demo.rice.Rice2Controls;
 import ch.ethz.idsc.owly.demo.rn.R2xTEllipsoidStateTimeRegion;
 import ch.ethz.idsc.owly.demo.rn.R2xTPolygonStateTimeRegion;
 import ch.ethz.idsc.owly.demo.rn.glc.R2xTEllipsoidsAnimationDemo;
-import ch.ethz.idsc.owly.demo.util.BijectionFamily;
 import ch.ethz.idsc.owly.demo.util.DemoInterface;
-import ch.ethz.idsc.owly.demo.util.So2Family;
-import ch.ethz.idsc.owly.demo.util.TranslationFamily;
+import ch.ethz.idsc.owly.demo.util.SimpleTranslationFamily;
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
 import ch.ethz.idsc.owly.gui.RenderInterface;
 import ch.ethz.idsc.owly.gui.ani.OwlyAnimationFrame;
@@ -21,6 +19,8 @@ import ch.ethz.idsc.owly.math.flow.Flow;
 import ch.ethz.idsc.owly.math.noise.SimplexContinuousNoise;
 import ch.ethz.idsc.owly.math.region.Region;
 import ch.ethz.idsc.owly.math.region.RegionUnion;
+import ch.ethz.idsc.owly.math.se2.BijectionFamily;
+import ch.ethz.idsc.owly.math.se2.So2Family;
 import ch.ethz.idsc.owly.math.state.StateTime;
 import ch.ethz.idsc.owly.math.state.TrajectoryRegionQuery;
 import ch.ethz.idsc.tensor.RealScalar;
@@ -39,11 +39,11 @@ public class Rice2dxTParts1Demo implements DemoInterface {
     owlyAnimationFrame.set(abstractEntity);
     // ---
     ScalarTensorFunction stf1 = R2xTEllipsoidsAnimationDemo.wrap1DTensor(SimplexContinuousNoise.FUNCTION, Tensors.vector(4, 2), 0.03, 2.5);
-    BijectionFamily noise1 = new TranslationFamily(stf1);
+    BijectionFamily noise1 = new SimpleTranslationFamily(stf1);
     Region<StateTime> region1 = new R2xTEllipsoidStateTimeRegion( //
         Tensors.vector(0.4, 0.5), noise1, () -> abstractEntity.getStateTimeNow().time());
     ScalarTensorFunction stf2 = R2xTEllipsoidsAnimationDemo.wrap1DTensor(SimplexContinuousNoise.FUNCTION, Tensors.vector(1, 3), 0.03, 2.5);
-    BijectionFamily noise2 = new TranslationFamily(stf2);
+    BijectionFamily noise2 = new SimpleTranslationFamily(stf2);
     Region<StateTime> region2 = new R2xTEllipsoidStateTimeRegion( //
         Tensors.vector(0.5, 0.6), noise2, () -> abstractEntity.getStateTimeNow().time());
     // ---
@@ -52,8 +52,7 @@ public class Rice2dxTParts1Demo implements DemoInterface {
     Region<StateTime> region3 = new R2xTPolygonStateTimeRegion( //
         polygon, rigid2, () -> abstractEntity.getStateTimeNow().time());
     TrajectoryRegionQuery trq = new SimpleTrajectoryRegionQuery( //
-        RegionUnion.wrap(Arrays.asList( //
-            region1, region2, region3)));
+        RegionUnion.wrap(Arrays.asList(region1, region2, region3)));
     // abstractEntity.obstacleQuery = trq;
     owlyAnimationFrame.setObstacleQuery(trq);
     // owlyAnimationFrame.addRegionRender(imageRegion);

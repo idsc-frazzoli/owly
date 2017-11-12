@@ -1,8 +1,9 @@
 // code by jph and jl
-package ch.ethz.idsc.owly.demo.se2;
+package ch.ethz.idsc.owly.demo.se2.any;
 
 import java.util.List;
 
+import ch.ethz.idsc.owly.demo.se2.Se2AbstractGoalManager;
 import ch.ethz.idsc.owly.glc.adapter.StateTimeTrajectories;
 import ch.ethz.idsc.owly.glc.core.GlcNode;
 import ch.ethz.idsc.owly.math.flow.Flow;
@@ -15,7 +16,7 @@ import ch.ethz.idsc.tensor.Tensor;
 /** Se2 goal region is not elliptic, therefore we implement {@link Region}
  * This class exists to compare and show the effects of a Heuristic in the Se2Model
  * bapaden phd thesis: (6.4.10) */
-public final class Se2NoHeuristicGoalManager extends Se2AbstractGoalManager {
+/* package */ class Se2NoHeuristicGoalManager extends Se2AbstractGoalManager {
   /** @param center
    * @param radiusVector with 3 entries the first 2 of which have to be identical */
   public Se2NoHeuristicGoalManager(Tensor center, Tensor radiusVector) {

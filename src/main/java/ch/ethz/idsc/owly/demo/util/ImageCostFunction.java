@@ -24,6 +24,8 @@ import ch.ethz.idsc.tensor.sca.Floor;
  * weighted according to the traverse time */
 // TODO indicate clearly which classes flip along y-axis!
 public class ImageCostFunction implements CostFunction {
+  private static final Tensor ORIGIN = Array.zeros(2).unmodifiable();
+  // ---
   private final Tensor image;
   private final List<Integer> dimensions;
   private final Tensor range;
@@ -82,6 +84,6 @@ public class ImageCostFunction implements CostFunction {
   }
 
   public Tensor origin() {
-    return Array.zeros(2);
+    return ORIGIN;
   }
 }

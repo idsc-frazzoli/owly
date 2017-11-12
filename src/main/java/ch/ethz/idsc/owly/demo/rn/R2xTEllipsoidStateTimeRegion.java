@@ -5,13 +5,13 @@ import java.awt.Graphics2D;
 import java.awt.geom.Path2D;
 import java.util.function.Supplier;
 
-import ch.ethz.idsc.owly.demo.util.BijectionFamily;
 import ch.ethz.idsc.owly.gui.GeometricLayer;
 import ch.ethz.idsc.owly.gui.RenderInterface;
 import ch.ethz.idsc.owly.gui.region.RegionRenders;
 import ch.ethz.idsc.owly.math.CirclePoints;
 import ch.ethz.idsc.owly.math.TensorUnaryOperator;
 import ch.ethz.idsc.owly.math.region.Region;
+import ch.ethz.idsc.owly.math.se2.BijectionFamily;
 import ch.ethz.idsc.owly.math.state.StateTime;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
@@ -21,6 +21,7 @@ import ch.ethz.idsc.tensor.red.Norm2Squared;
 
 /** check if input tensor is inside a polygon */
 public class R2xTEllipsoidStateTimeRegion implements Region<StateTime>, RenderInterface {
+  /** number of samples to visualize ellipsoid */
   private static final int RESOLUTION = 22;
   // ---
   private final Tensor invert;
@@ -28,7 +29,9 @@ public class R2xTEllipsoidStateTimeRegion implements Region<StateTime>, RenderIn
   private final BijectionFamily bijectionFamily;
   private final Supplier<Scalar> supplier;
 
-  // TODO JAN design with time provider is not final...
+  /** @param radius encodes principle axis of ellipsoid region
+   * @param bijectionFamily with origin at center of ellipsoid region
+   * @param supplier for parameter to evaluate bijectionFamily */
   public R2xTEllipsoidStateTimeRegion(Tensor radius, BijectionFamily bijectionFamily, Supplier<Scalar> supplier) {
     invert = radius.map(Scalar::reciprocal);
     this.bijectionFamily = bijectionFamily;
@@ -36,7 +39,7 @@ public class R2xTEllipsoidStateTimeRegion implements Region<StateTime>, RenderIn
     polygon = CirclePoints.elliptic(RESOLUTION, radius.Get(0), radius.Get(1));
   }
 
-  @Override
+  @Override // from Region
   public boolean isMember(StateTime stateTime) {
     Tensor state = stateTime.state().extract(0, invert.length());
     Scalar time = stateTime.time();
@@ -44,7 +47,7 @@ public class R2xTEllipsoidStateTimeRegion implements Region<StateTime>, RenderIn
     return Scalars.lessEquals(Norm2Squared.ofVector(rev.apply(state).pmul(invert)), RealScalar.ONE);
   }
 
-  @Override
+  @Override // from RenderInterface
   public void render(GeometricLayer geometricLayer, Graphics2D graphics) {
     Scalar time = supplier.get();
     TensorUnaryOperator fwd = bijectionFamily.forward(time);

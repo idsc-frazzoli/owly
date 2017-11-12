@@ -13,7 +13,6 @@ import ch.ethz.idsc.owly.demo.delta.ImageGradient;
 import ch.ethz.idsc.owly.demo.util.DemoInterface;
 import ch.ethz.idsc.owly.demo.util.UserHome;
 import ch.ethz.idsc.owly.glc.adapter.Parameters;
-import ch.ethz.idsc.owly.glc.adapter.RxtTimeInvariantRegion;
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
 import ch.ethz.idsc.owly.glc.adapter.Trajectories;
 import ch.ethz.idsc.owly.glc.core.DebugUtils;
@@ -23,6 +22,7 @@ import ch.ethz.idsc.owly.glc.core.TrajectoryPlanner;
 import ch.ethz.idsc.owly.glc.core.TrajectorySample;
 import ch.ethz.idsc.owly.gui.ani.OwlyFrame;
 import ch.ethz.idsc.owly.gui.ani.OwlyGui;
+import ch.ethz.idsc.owly.gui.region.RegionRenders;
 import ch.ethz.idsc.owly.math.StateSpaceModels;
 import ch.ethz.idsc.owly.math.flow.Flow;
 import ch.ethz.idsc.owly.math.flow.RungeKutta45Integrator;
@@ -44,6 +44,7 @@ import ch.ethz.idsc.tensor.io.ResourceData;
 
 public class DeltaxtGlcDemo implements DemoInterface {
   ;
+  @SuppressWarnings("deprecation")
   @Override
   public void start() {
     // SETUP
@@ -101,7 +102,7 @@ public class DeltaxtGlcDemo implements DemoInterface {
     OwlyFrame owlyFrame = OwlyGui.start();
     owlyFrame.configCoordinateOffset(33, 416);
     owlyFrame.jFrame.setBounds(100, 100, 620, 525);
-    owlyFrame.addRegionRender(imageRegion);
+    owlyFrame.addBackground(RegionRenders.create(imageRegion));
     owlyFrame.addTrajectory(dinghyTrajectory, new Color(224, 168, 0, 224));
     while (!trajectoryPlanner.getBest().isPresent() && owlyFrame.jFrame.isVisible()) {
       GlcExpand.maxSteps(trajectoryPlanner, 30, parameters.getDepthLimit());

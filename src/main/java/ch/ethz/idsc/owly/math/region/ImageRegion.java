@@ -17,8 +17,11 @@ import ch.ethz.idsc.tensor.sca.Floor;
 /** only the first two coordinates are tested for membership
  * a location is available if the grayscale value of the pixel equals 0 */
 public class ImageRegion implements Region<Tensor> {
+  private static final Tensor ORIGIN = Array.zeros(2).unmodifiable();
+  // ---
   private final Tensor image;
-  private final List<Integer> dimensions;
+  private final int dim0;
+  private final int dim1;
   private final Tensor range;
   private final Tensor scale;
   private final boolean outside;
@@ -31,10 +34,12 @@ public class ImageRegion implements Region<Tensor> {
     GlobalAssert.that(MatrixQ.of(image));
     GlobalAssert.that(VectorQ.ofLength(range, 2));
     this.image = image;
-    dimensions = Dimensions.of(image);
-    max_y = dimensions.get(0) - 1;
+    List<Integer> dimensions = Dimensions.of(image);
+    dim0 = dimensions.get(0);
+    dim1 = dimensions.get(1);
+    max_y = dim0 - 1;
     this.range = range;
-    scale = Tensors.vector(dimensions.get(1), dimensions.get(0)).pmul(range.map(Scalar::reciprocal));
+    scale = Tensors.vector(dim1, dim0).pmul(range.map(Scalar::reciprocal));
     this.outside = outside;
   }
 
@@ -44,9 +49,9 @@ public class ImageRegion implements Region<Tensor> {
       tensor = tensor.extract(0, 2);
     Tensor pixel = Floor.of(tensor.pmul(scale));
     int pix = pixel.Get(0).number().intValue();
-    if (0 <= pix && pix < dimensions.get(1)) {
+    if (0 <= pix && pix < dim1) {
       int piy = max_y - pixel.Get(1).number().intValue();
-      if (0 <= piy && piy < dimensions.get(0))
+      if (0 <= piy && piy < dim0)
         return Scalars.nonZero(image.Get(piy, pix));
     }
     return outside;
@@ -65,6 +70,6 @@ public class ImageRegion implements Region<Tensor> {
   }
 
   public Tensor origin() {
-    return Array.zeros(2);
+    return ORIGIN;
   }
 }

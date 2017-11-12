@@ -1,37 +1,21 @@
 // code by jl
-package ch.ethz.idsc.owly.demo.se2;
+package ch.ethz.idsc.owly.demo.se2.any;
 
 import java.util.Collection;
 
+import ch.ethz.idsc.owly.demo.se2.Se2Controls;
+import ch.ethz.idsc.owly.demo.se2.Se2Wrap;
+import ch.ethz.idsc.owly.demo.se2.Se2WrapGoalManagerExt;
 import ch.ethz.idsc.owly.glc.adapter.HeuristicQ;
 import ch.ethz.idsc.owly.math.CoordinateWrap;
 import ch.ethz.idsc.owly.math.flow.Flow;
 import ch.ethz.idsc.tensor.DoubleScalar;
 import ch.ethz.idsc.tensor.RealScalar;
-import ch.ethz.idsc.tensor.Scalars;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
 import junit.framework.TestCase;
 
-public class Se2GoalManagerTest extends TestCase {
-  public void testDefault() {
-    Se2NoHeuristicGoalManager se2DefaultGoalManager = new Se2NoHeuristicGoalManager(//
-        Tensors.vector(0, 0, Math.PI), //
-        Tensors.vector(0.1, 0.1, 0.1 * Math.PI));
-    assertFalse(HeuristicQ.of(se2DefaultGoalManager.getGoalInterface()));
-    assertEquals(se2DefaultGoalManager.minCostToGoal(Tensors.vector(0, 0, 1.1 * Math.PI)), RealScalar.ZERO);
-    assertEquals(se2DefaultGoalManager.minCostToGoal(Tensors.vector(2, 0, 2 * Math.PI)), RealScalar.ZERO);
-    assertEquals(se2DefaultGoalManager.minCostToGoal(Tensors.vector(0, 2, -2 * Math.PI)), RealScalar.ZERO);
-    assertEquals(se2DefaultGoalManager.minCostToGoal(Tensors.vector(0, 0, 0 * Math.PI)), RealScalar.ZERO);
-    // --
-    assertTrue(se2DefaultGoalManager.isMember(Tensors.vector(0.05, -0.05, Math.PI * 0.95)));
-    assertTrue(se2DefaultGoalManager.isMember(Tensors.vector(0.0, 0.0, Math.PI)));
-    assertTrue(se2DefaultGoalManager.isMember(Tensors.vector(0.0, 0.0, 3 * Math.PI)));
-    // --
-    assertFalse(se2DefaultGoalManager.isMember(Tensors.vector(2, 2, Math.PI)));
-    assertFalse(se2DefaultGoalManager.isMember(Tensors.vector(0, 0, 0)));
-  }
-
+public class Se2MinDistCurvGoalManagerTest extends TestCase {
   public void testMinDist() {
     Tensor radiusVector = Tensors.of(DoubleScalar.of(0.1), DoubleScalar.of(0.1), RealScalar.of(Math.PI * 0.1));
     Collection<Flow> controls = Se2Controls.createControlsForwardAndReverse(RealScalar.of(0.2), 10);
@@ -51,30 +35,6 @@ public class Se2GoalManagerTest extends TestCase {
     // --
     assertFalse(se2MinDistGoalManager.isMember(Tensors.vector(2, 2, Math.PI)));
     assertFalse(se2MinDistGoalManager.isMember(Tensors.vector(0, 0, 0)));
-  }
-
-  public void testMinCurvature() {
-    Tensor radiusVector = Tensors.of(DoubleScalar.of(0.1), DoubleScalar.of(0.1), RealScalar.of(Math.PI * 0.1));
-    Se2MinCurvatureGoalManager se2MinCurvatureGoalManager = new Se2MinCurvatureGoalManager(//
-        Tensors.vector(0, 0, Math.PI), radiusVector);
-    assertTrue(HeuristicQ.of(se2MinCurvatureGoalManager.getGoalInterface()));
-    assertEquals(se2MinCurvatureGoalManager.minCostToGoal(Tensors.vector(0, 0, 1.09 * Math.PI)), RealScalar.ZERO);
-    assertEquals(se2MinCurvatureGoalManager.minCostToGoal(Tensors.vector(0.05, 0.05, 3 * Math.PI)), RealScalar.ZERO);
-    assertEquals(se2MinCurvatureGoalManager.minCostToGoal(Tensors.vector(1.1, 0, 1.1 * Math.PI)), RealScalar.ONE);
-    assertEquals(se2MinCurvatureGoalManager.minCostToGoal(Tensors.vector(0, 1.1, 1.1 * Math.PI)), RealScalar.ONE);
-    assertEquals(se2MinCurvatureGoalManager.minCostToGoal(Tensors.vector(-1.1, 0, 1.1 * Math.PI)), RealScalar.ONE);
-    assertEquals(se2MinCurvatureGoalManager.minCostToGoal(Tensors.vector(0, -1.1, 1.1 * Math.PI)), RealScalar.ONE);
-    assertTrue(Scalars.lessThan(RealScalar.ZERO, //
-        se2MinCurvatureGoalManager.minCostToGoal(Tensors.vector(0, 0, 1.5 * Math.PI))));
-    assertTrue(Scalars.lessThan(RealScalar.ZERO, //
-        se2MinCurvatureGoalManager.minCostToGoal(Tensors.vector(0, 0, -1.5 * Math.PI))));
-    // --
-    assertTrue(se2MinCurvatureGoalManager.isMember(Tensors.vector(0.05, -0.05, Math.PI * 0.95)));
-    assertTrue(se2MinCurvatureGoalManager.isMember(Tensors.vector(0.0, 0.0, Math.PI)));
-    assertTrue(se2MinCurvatureGoalManager.isMember(Tensors.vector(0.0, 0.0, 3 * Math.PI)));
-    // --
-    assertFalse(se2MinCurvatureGoalManager.isMember(Tensors.vector(2, 2, Math.PI)));
-    assertFalse(se2MinCurvatureGoalManager.isMember(Tensors.vector(0, 0, 0)));
   }
 
   public void testWrapExt() {

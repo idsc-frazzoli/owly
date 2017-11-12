@@ -5,17 +5,20 @@ import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 import java.util.Objects;
 
 import ch.ethz.idsc.owly.data.GlobalAssert;
 import ch.ethz.idsc.owly.demo.se2.Se2CarIntegrator;
 import ch.ethz.idsc.owly.demo.se2.Se2Controls;
-import ch.ethz.idsc.owly.demo.se2.Se2MinTimeMinShiftExtraCostGoalManager;
-import ch.ethz.idsc.owly.demo.se2.Se2MinTimeMinShiftGoalManager;
+import ch.ethz.idsc.owly.demo.se2.Se2MinShiftCostFunction;
+import ch.ethz.idsc.owly.demo.se2.Se2MinTimeGoalManager;
 import ch.ethz.idsc.owly.demo.se2.Se2StateSpaceModel;
 import ch.ethz.idsc.owly.demo.se2.Se2Wrap;
+import ch.ethz.idsc.owly.glc.adapter.MultiCostGoalAdapter;
 import ch.ethz.idsc.owly.glc.core.CostFunction;
 import ch.ethz.idsc.owly.glc.core.GoalInterface;
 import ch.ethz.idsc.owly.glc.core.StandardTrajectoryPlanner;
@@ -45,6 +48,9 @@ import ch.ethz.idsc.tensor.sca.Sqrt;
 /** several magic constants are hard-coded in the implementation.
  * that means, the functionality does not apply to all examples universally. */
 class Se2Entity extends AbstractEntity {
+  public static final Tensor FALLBACK_CONTROL = Array.zeros(3).unmodifiable(); // {vx, vy, rate}
+  public static final Scalar SHIFT_PENALTY = RealScalar.of(0.4);
+  // ---
   private static final Tensor SHAPE = Tensors.matrixDouble( //
       new double[][] { //
           { .2, +.07, 1 }, //
@@ -92,8 +98,8 @@ class Se2Entity extends AbstractEntity {
   }
 
   @Override
-  protected Tensor fallbackControl() {
-    return Array.zeros(3).unmodifiable(); // {vx, vy, rate}
+  protected final Tensor fallbackControl() {
+    return FALLBACK_CONTROL; // {vx, vy, rate}
   }
 
   @Override
@@ -115,9 +121,14 @@ class Se2Entity extends AbstractEntity {
     this.obstacleQuery = obstacleQuery;
     StateIntegrator stateIntegrator = //
         FixedStateIntegrator.create(Se2CarIntegrator.INSTANCE, RationalScalar.of(1, 10), 4);
-    GoalInterface goalInterface = Objects.isNull(costFunction) ? //
-        Se2MinTimeMinShiftGoalManager.create(goal, goalRadius, controls) : //
-        Se2MinTimeMinShiftExtraCostGoalManager.create(goal, goalRadius, controls, costFunction);
+    // ---
+    GoalInterface _goalInterface = Se2MinTimeGoalManager.create(goal, goalRadius, controls);
+    List<CostFunction> list = new ArrayList<>();
+    list.add(_goalInterface);
+    list.add(new Se2MinShiftCostFunction(SHIFT_PENALTY));
+    if (Objects.nonNull(costFunction))
+      list.add(costFunction);
+    GoalInterface goalInterface = new MultiCostGoalAdapter(_goalInterface, list);
     TrajectoryPlanner trajectoryPlanner = new StandardTrajectoryPlanner( //
         eta(), stateIntegrator, controls, obstacleQuery, goalInterface);
     trajectoryPlanner.represent = StateTimeTensorFunction.state(SE2WRAP::represent);

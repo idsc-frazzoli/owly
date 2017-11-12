@@ -265,7 +265,7 @@ public class OptimalAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
       obstacleUpdate(newObstacle);
       return;
     }
-    // TODO detect if no obstacles have moved --> do not check for collision
+    // TODO JONAS detect if no obstacles have moved --> do not check for collision
     long tictotal = System.nanoTime();
     System.out.println("*** OBSTACLE UPDATE ***");
     long tic = System.nanoTime();
@@ -274,7 +274,7 @@ public class OptimalAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
     int oldDomainMapSize = domainMap().size();
     @SuppressWarnings("unused")
     int oldCandidateMapSize = candidateMap.size();
-    // TODO JONAS: What to do if root in collision
+    // TODO JONAS What to do if root in collision
     // DomainMap, over which it is iterated
     Map<Tensor, GlcNode> iterableDomainMap = new HashMap<Tensor, GlcNode>(domainMap());
     // only iterate through domains which are in the reachability Region, connectivity between nodes is useless,

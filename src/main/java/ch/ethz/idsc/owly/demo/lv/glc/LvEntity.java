@@ -25,6 +25,8 @@ import ch.ethz.idsc.tensor.Tensors;
 import ch.ethz.idsc.tensor.red.Norm2Squared;
 
 /* package */ class LvEntity extends AbstractCircularEntity {
+  public static final Tensor FALLBACK_CONTROL = Tensors.vectorDouble(0).unmodifiable();
+  // ---
   private static final Integrator INTEGRATOR = RungeKutta45Integrator.INSTANCE;
   // ---
   private final Collection<Flow> controls;
@@ -43,7 +45,7 @@ import ch.ethz.idsc.tensor.red.Norm2Squared;
 
   @Override
   protected Tensor fallbackControl() {
-    return Tensors.vector(0).unmodifiable();
+    return FALLBACK_CONTROL;
   }
 
   @Override
@@ -56,8 +58,7 @@ import ch.ethz.idsc.tensor.red.Norm2Squared;
     Tensor partitionScale = Tensors.vector(8, 8);
     StateIntegrator stateIntegrator = //
         FixedStateIntegrator.create(INTEGRATOR, RationalScalar.of(1, 12), 4);
-    GoalInterface goalInterface = //
-        new LvGoalInterface(goal.extract(0, 2), Tensors.vector(.2, .2));
+    GoalInterface goalInterface = LvGoalInterface.create(goal.extract(0, 2), Tensors.vector(.2, .2));
     return new StandardTrajectoryPlanner( //
         partitionScale, stateIntegrator, controls, obstacleQuery, goalInterface);
   }

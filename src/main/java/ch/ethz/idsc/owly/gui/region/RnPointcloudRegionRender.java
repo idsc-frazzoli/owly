@@ -11,7 +11,7 @@ import ch.ethz.idsc.owly.math.CirclePoints;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
 
-public class RnPointcloudRegionRender implements RenderInterface {
+class RnPointcloudRegionRender implements RenderInterface {
   private static final int RESOLUTION = 16;
   // ---
   private final Tensor points;

@@ -3,7 +3,6 @@ package ch.ethz.idsc.owly.demo.rn;
 
 import java.util.List;
 
-import ch.ethz.idsc.owly.data.GlobalAssert;
 import ch.ethz.idsc.owly.data.Lists;
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
 import ch.ethz.idsc.owly.glc.core.GlcNode;
@@ -16,7 +15,6 @@ import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.red.Norm;
 import ch.ethz.idsc.tensor.sca.Ramp;
-import ch.ethz.idsc.tensor.sca.Sign;
 
 /** objective is minimum path length
  * path length is measured in Euclidean distance using Norm._2::ofVector
@@ -30,30 +28,26 @@ public class RnMinDistSphericalGoalManager extends SimpleTrajectoryRegionQuery i
    * @param center vector with length == n
    * @param radius positive */
   public static GoalInterface create(Tensor center, Scalar radius) {
-    return new RnMinDistSphericalGoalManager(center, radius);
+    return new RnMinDistSphericalGoalManager(new SphericalRegion(center, radius));
   }
   // ---
 
-  private final Tensor center;
-  private final Scalar radius;
+  private final SphericalRegion sphericalRegion;
 
-  /** @param center vector with length == n
-   * @param radius positive */
-  /* package */ RnMinDistSphericalGoalManager(Tensor center, Scalar radius) {
-    super(new TimeInvariantRegion(new SphericalRegion(center, radius)));
-    GlobalAssert.that(Sign.isPositive(radius));
-    this.center = center;
-    this.radius = radius;
+  /** @param sphericalRegion */
+  public RnMinDistSphericalGoalManager(SphericalRegion sphericalRegion) {
+    super(new TimeInvariantRegion(sphericalRegion));
+    this.sphericalRegion = sphericalRegion;
   }
 
-  @Override
+  @Override // from CostIncrementFunction
   public Scalar costIncrement(GlcNode glcNode, List<StateTime> trajectory, Flow flow) {
     return Norm._2.between(glcNode.stateTime().state(), Lists.getLast(trajectory).state());
   }
 
-  @Override
+  @Override // from HeuristicFunction
   public Scalar minCostToGoal(Tensor x) {
     // max(0, ||x - center|| - radius)
-    return Ramp.of(Norm._2.between(x, center).subtract(radius));
+    return Ramp.of(sphericalRegion.evaluate(x));
   }
 }

@@ -20,7 +20,7 @@ import ch.ethz.idsc.tensor.sca.Power;
 import ch.ethz.idsc.tensor.sca.Ramp;
 import ch.ethz.idsc.tensor.sca.Sqrt;
 
-public class DeltaxtGoalManagerExt extends SimpleTrajectoryRegionQuery implements GoalInterface {
+class DeltaxtGoalManagerExt extends SimpleTrajectoryRegionQuery implements GoalInterface {
   private final Tensor center;
   private final Tensor radius;
   private final Scalar maxSpeed;

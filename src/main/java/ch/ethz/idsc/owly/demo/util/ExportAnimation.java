@@ -1,4 +1,5 @@
-package ch.ethz.idsc.owly.demo.util.jph;
+// code by jph
+package ch.ethz.idsc.owly.demo.util;
 
 import java.io.File;
 import java.util.List;
@@ -7,13 +8,12 @@ import java.util.stream.Stream;
 
 import javax.imageio.ImageIO;
 
-import ch.ethz.idsc.owly.demo.util.UserHome;
 import ch.ethz.idsc.tensor.io.AnimationWriter;
 
 enum ExportAnimation {
   ;
   public static void main(String[] args) throws Exception {
-    String name = "Rice2dEntity_1510234462100";
+    String name = "MODIY FILENAME LOCALLY BUT DO NOT COMMIT THIS CODE";
     File directory = UserHome.Pictures(name);
     AnimationWriter animationWriter = AnimationWriter.of(UserHome.Pictures(name + ".gif"), 100);
     List<File> list = Stream.of(directory.listFiles()) //

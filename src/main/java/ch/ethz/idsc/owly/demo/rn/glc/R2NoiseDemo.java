@@ -21,9 +21,11 @@ import ch.ethz.idsc.owly.glc.core.StandardTrajectoryPlanner;
 import ch.ethz.idsc.owly.glc.core.TrajectoryPlanner;
 import ch.ethz.idsc.owly.gui.ani.OwlyFrame;
 import ch.ethz.idsc.owly.gui.ani.OwlyGui;
+import ch.ethz.idsc.owly.gui.region.RegionRenders;
 import ch.ethz.idsc.owly.math.flow.EulerIntegrator;
 import ch.ethz.idsc.owly.math.flow.Flow;
 import ch.ethz.idsc.owly.math.region.Region;
+import ch.ethz.idsc.owly.math.region.SphericalRegion;
 import ch.ethz.idsc.owly.math.state.FixedStateIntegrator;
 import ch.ethz.idsc.owly.math.state.StateIntegrator;
 import ch.ethz.idsc.owly.math.state.StateTime;
@@ -48,9 +50,8 @@ enum R2NoiseDemo {
     final Tensor center = Tensors.vector(10, 0);
     final Scalar radius = DoubleScalar.of(.2);
     CostFunction costFunction = new R2NoiseCostFunction(threshold.subtract(RealScalar.of(.3)));
-    GoalInterface goalInterface = //
-        new RnMinDistExtraCostGoalManager(center, radius, costFunction);
-    // RnMinDistSphericalGoalManager.create(center, radius);
+    SphericalRegion sphericalRegion = new SphericalRegion(center, radius);
+    GoalInterface goalInterface = new RnMinDistExtraCostGoalManager(sphericalRegion, costFunction);
     TrajectoryRegionQuery obstacleQuery = SimpleTrajectoryRegionQuery.timeInvariant(region);
     // ---
     TrajectoryPlanner trajectoryPlanner = new StandardTrajectoryPlanner( //
@@ -65,6 +66,7 @@ enum R2NoiseDemo {
       StateTimeTrajectories.print(trajectory);
     }
     OwlyFrame owlyFrame = OwlyGui.glc(trajectoryPlanner);
+    owlyFrame.addBackground(RegionRenders.create(sphericalRegion));
     owlyFrame.configCoordinateOffset(100, 300);
   }
 }

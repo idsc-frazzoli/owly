@@ -20,7 +20,8 @@ import ch.ethz.idsc.tensor.sca.Ramp;
 
 /** objective is minimum path length
  * path length is measured in Euclidean distance */
-public class RnxtEllipsoidGoalManager extends SimpleTrajectoryRegionQuery implements GoalInterface {
+@Deprecated // TODO class is not used, candidate for deletion
+class RnxtEllipsoidGoalManager extends SimpleTrajectoryRegionQuery implements GoalInterface {
   // protected when used in subclasses
   /** constructor creates a spherical region in R^n x T with given center and radius.
    * distance measure is Euclidean distance, if radius(i) = infinity => cylinder

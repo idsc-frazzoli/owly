@@ -27,7 +27,7 @@ public class BoundedEpisodeIntegrator extends AbstractEpisodeIntegrator {
     this.maxStep = maxStep;
   }
 
-  @Override
+  @Override // from AbstractEpisodeIntegrator
   protected List<StateTime> move(Flow flow, Scalar period) {
     Scalar steps = Ceiling.of(period.divide(maxStep));
     return FixedStateIntegrator.create( //

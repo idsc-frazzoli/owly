@@ -19,9 +19,11 @@ import ch.ethz.idsc.owly.glc.core.StandardTrajectoryPlanner;
 import ch.ethz.idsc.owly.glc.core.TrajectoryPlanner;
 import ch.ethz.idsc.owly.gui.ani.OwlyFrame;
 import ch.ethz.idsc.owly.gui.ani.OwlyGui;
+import ch.ethz.idsc.owly.gui.region.RegionRenders;
 import ch.ethz.idsc.owly.math.flow.EulerIntegrator;
 import ch.ethz.idsc.owly.math.flow.Flow;
 import ch.ethz.idsc.owly.math.region.ImageRegion;
+import ch.ethz.idsc.owly.math.region.SphericalRegion;
 import ch.ethz.idsc.owly.math.state.FixedStateIntegrator;
 import ch.ethz.idsc.owly.math.state.StateIntegrator;
 import ch.ethz.idsc.owly.math.state.StateTime;
@@ -40,8 +42,8 @@ enum R2ImageDemo {
     ImageRegion imageRegion = ImageRegions.loadFromRepository("/io/track0_100.png", Tensors.vector(10, 10), false);
     StateIntegrator stateIntegrator = FixedStateIntegrator.create(EulerIntegrator.INSTANCE, RationalScalar.of(1, 8), 4);
     Collection<Flow> controls = R2Controls.createRadial(23);
-    GoalInterface goalInterface = //
-        RnMinDistSphericalGoalManager.create(Tensors.vector(5, 10), DoubleScalar.of(.2));
+    SphericalRegion sphericalRegion = new SphericalRegion(Tensors.vector(5, 10), DoubleScalar.of(.2));
+    GoalInterface goalInterface = new RnMinDistSphericalGoalManager(sphericalRegion);
     TrajectoryRegionQuery obstacleQuery = SimpleTrajectoryRegionQuery.timeInvariant(imageRegion);
     // ---
     TrajectoryPlanner trajectoryPlanner = new StandardTrajectoryPlanner( //
@@ -56,6 +58,7 @@ enum R2ImageDemo {
       StateTimeTrajectories.print(trajectory);
     }
     OwlyFrame owlyFrame = OwlyGui.glc(trajectoryPlanner);
-    owlyFrame.addRegionRender(imageRegion);
+    owlyFrame.addBackground(RegionRenders.create(imageRegion));
+    owlyFrame.addBackground(RegionRenders.create(sphericalRegion));
   }
 }

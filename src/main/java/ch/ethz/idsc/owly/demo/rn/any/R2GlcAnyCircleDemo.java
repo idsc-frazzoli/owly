@@ -69,17 +69,17 @@ enum R2GlcAnyCircleDemo {
             , new R2NoiseRegion(RealScalar.of(.2))//
         )));
     // ---
-    AnyPlannerInterface trajectoryPlanner = new OptimalAnyTrajectoryPlanner( //
+    AnyPlannerInterface anyPlannerInterface = new OptimalAnyTrajectoryPlanner( //
         parameters.getEta(), stateIntegrator, controls, obstacleQuery, rnGoal);
-    trajectoryPlanner.switchRootToState(Tensors.vector(0, 1).multiply(circleRadius));
-    GlcExpand.maxDepth(trajectoryPlanner, parameters.getDepthLimit());
-    List<StateTime> trajectory = trajectoryPlanner.trajectoryToBest();
+    anyPlannerInterface.switchRootToState(Tensors.vector(0, 1).multiply(circleRadius));
+    GlcExpand.maxDepth(anyPlannerInterface, parameters.getDepthLimit());
+    List<StateTime> trajectory = anyPlannerInterface.trajectoryToBest();
     // StateTimeTrajectories.print(trajectory);
     // AnimationWriter gsw = AnimationWriter.of(UserHome.Pictures("R2_Circle_Gif.gif"), 250);
     OwlyFrame owlyFrame = OwlyGui.start();
     owlyFrame.configCoordinateOffset(400, 400);
     owlyFrame.jFrame.setBounds(0, 0, 800, 800);
-    owlyFrame.setGlc((TrajectoryPlanner) trajectoryPlanner);
+    owlyFrame.setGlc((TrajectoryPlanner) anyPlannerInterface);
     for (int iter = 1; iter < 100; iter++) {
       Thread.sleep(100);
       // -- ROOTCHANGE
@@ -87,7 +87,7 @@ enum R2GlcAnyCircleDemo {
       if (trajectory.size() > 0) {
         // --
         StateTime newRootState = trajectory.get(trajectory.size() > 5 ? 5 : 0);
-        int increment = trajectoryPlanner.switchRootToState(newRootState.state());
+        int increment = anyPlannerInterface.switchRootToState(newRootState.state());
         parameters.increaseDepthLimit(increment);
       }
       // -- GOALCHANGE
@@ -103,11 +103,11 @@ enum R2GlcAnyCircleDemo {
       System.out.println("Switching to Goal:" + goal);
       Scalar goalSearchHelperRadius = goalRadius.add(RealScalar.ONE).multiply(RealScalar.of(2));
       Region<Tensor> goalSearchHelper = new EllipsoidRegion(goal, Array.of(l -> goalSearchHelperRadius, goal.length()));
-      trajectoryPlanner.changeToGoal(rnGoal2, goalSearchHelper);
+      anyPlannerInterface.changeToGoal(rnGoal2, goalSearchHelper);
       // -- EXPANDING
-      int iters2 = GlcExpand.maxDepth(trajectoryPlanner, parameters.getDepthLimit());
-      trajectory = trajectoryPlanner.trajectoryToBest();
-      owlyFrame.setGlc((TrajectoryPlanner) trajectoryPlanner);
+      int iters2 = GlcExpand.maxDepth(anyPlannerInterface, parameters.getDepthLimit());
+      trajectory = anyPlannerInterface.trajectoryToBest();
+      owlyFrame.setGlc((TrajectoryPlanner) anyPlannerInterface);
       // StateTimeTrajectories.print(trajectory);
       // gsw.append(owlyFrame.offscreen());
       // --

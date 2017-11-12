@@ -10,11 +10,14 @@ import ch.ethz.idsc.owly.glc.core.Expand;
 import ch.ethz.idsc.owly.glc.core.GoalInterface;
 import ch.ethz.idsc.owly.glc.core.StandardTrajectoryPlanner;
 import ch.ethz.idsc.owly.glc.core.TrajectoryPlanner;
+import ch.ethz.idsc.owly.gui.ani.OwlyFrame;
 import ch.ethz.idsc.owly.gui.ani.OwlyGui;
+import ch.ethz.idsc.owly.gui.region.RegionRenders;
 import ch.ethz.idsc.owly.math.StateSpaceModel;
 import ch.ethz.idsc.owly.math.StateTimeTensorFunction;
 import ch.ethz.idsc.owly.math.flow.Flow;
 import ch.ethz.idsc.owly.math.flow.RungeKutta45Integrator;
+import ch.ethz.idsc.owly.math.region.EllipsoidRegion;
 import ch.ethz.idsc.owly.math.state.EmptyTrajectoryRegionQuery;
 import ch.ethz.idsc.owly.math.state.FixedStateIntegrator;
 import ch.ethz.idsc.owly.math.state.StateIntegrator;
@@ -35,7 +38,8 @@ enum LvDemo {
         RungeKutta45Integrator.INSTANCE, RationalScalar.of(1, 30), 4);
     StateSpaceModel stateSpaceModel = LvStateSpaceModel.of(1, 2);
     Collection<Flow> controls = LvControls.create(stateSpaceModel, 2);
-    GoalInterface goalInterface = new LvGoalInterface(Tensors.vector(2, 1), Tensors.vector(.1, .1));
+    EllipsoidRegion ellipsoidRegion = new EllipsoidRegion(Tensors.vector(2, 1), Tensors.vector(.1, .1));
+    GoalInterface goalInterface = new LvGoalInterface(ellipsoidRegion);
     // ---
     TrajectoryPlanner trajectoryPlanner = new StandardTrajectoryPlanner( //
         eta, stateIntegrator, controls, EmptyTrajectoryRegionQuery.INSTANCE, goalInterface);
@@ -43,6 +47,7 @@ enum LvDemo {
     trajectoryPlanner.represent = StateTimeTensorFunction.state(Log::of);
     trajectoryPlanner.insertRoot(new StateTime(Tensors.vector(2, .1), RealScalar.ZERO));
     Expand.maxSteps(trajectoryPlanner, 4000);
-    OwlyGui.glc(trajectoryPlanner);
+    OwlyFrame owlyFrame = OwlyGui.glc(trajectoryPlanner);
+    owlyFrame.addBackground(RegionRenders.create(ellipsoidRegion));
   }
 }

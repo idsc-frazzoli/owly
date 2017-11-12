@@ -15,7 +15,7 @@ import ch.ethz.idsc.tensor.sca.ArcTan;
 import ch.ethz.idsc.tensor.sca.Mod;
 
 /** evaluate does not correspond to Euclidean distance */
-public class TimeDependentTurningRingRegion implements Region<StateTime> {
+class TimeDependentTurningRingRegion implements Region<StateTime> {
   private static Mod MOD = Mod.function(2 * Math.PI, -Math.PI);
   // ---
   private final Tensor center;

@@ -18,10 +18,12 @@ import ch.ethz.idsc.owly.glc.core.StandardTrajectoryPlanner;
 import ch.ethz.idsc.owly.glc.core.TrajectoryPlanner;
 import ch.ethz.idsc.owly.gui.ani.OwlyFrame;
 import ch.ethz.idsc.owly.gui.ani.OwlyGui;
+import ch.ethz.idsc.owly.gui.region.RegionRenders;
 import ch.ethz.idsc.owly.math.flow.EulerIntegrator;
 import ch.ethz.idsc.owly.math.flow.Flow;
 import ch.ethz.idsc.owly.math.region.PolygonRegion;
 import ch.ethz.idsc.owly.math.region.Region;
+import ch.ethz.idsc.owly.math.region.SphericalRegion;
 import ch.ethz.idsc.owly.math.state.FixedStateIntegrator;
 import ch.ethz.idsc.owly.math.state.StateIntegrator;
 import ch.ethz.idsc.owly.math.state.StateTime;
@@ -39,10 +41,10 @@ enum R2PolygonDemo {
     Tensor partitionScale = Tensors.vector(5, 5);
     StateIntegrator stateIntegrator = FixedStateIntegrator.create(EulerIntegrator.INSTANCE, RationalScalar.of(1, 8), 4);
     Collection<Flow> controls = R2Controls.createRadial(20);
-    GoalInterface goalInterface = //
-        RnMinDistSphericalGoalManager.create(Tensors.vector(5, 5), DoubleScalar.of(.2));
-    Region<Tensor> r1 = new PolygonRegion(ExamplePolygons.BULKY_TOP_LEFT);
-    TrajectoryRegionQuery obstacleQuery = SimpleTrajectoryRegionQuery.timeInvariant(r1);
+    SphericalRegion sphericalRegion = new SphericalRegion(Tensors.vector(5, 5), DoubleScalar.of(.2));
+    GoalInterface goalInterface = new RnMinDistSphericalGoalManager(sphericalRegion);
+    Region<Tensor> region = new PolygonRegion(ExamplePolygons.BULKY_TOP_LEFT);
+    TrajectoryRegionQuery obstacleQuery = SimpleTrajectoryRegionQuery.timeInvariant(region);
     // ---
     TrajectoryPlanner trajectoryPlanner = new StandardTrajectoryPlanner( //
         partitionScale, stateIntegrator, controls, obstacleQuery, goalInterface);
@@ -55,6 +57,7 @@ enum R2PolygonDemo {
       StateTimeTrajectories.print(trajectory);
     }
     OwlyFrame owlyFrame = OwlyGui.glc(trajectoryPlanner);
-    owlyFrame.addRegionRender(r1);
+    owlyFrame.addBackground(RegionRenders.create(region));
+    owlyFrame.addBackground(RegionRenders.create(sphericalRegion));
   }
 }

@@ -1,5 +1,5 @@
 // code by jph and jl
-package ch.ethz.idsc.owly.demo.rn;
+package ch.ethz.idsc.owly.demo.rnxt.glc;
 
 import java.util.List;
 
@@ -21,7 +21,7 @@ import ch.ethz.idsc.tensor.sca.Ramp;
 /** objective is minimum time
  * path length is measured in Euclidean distance
  * Heuristic is minimum Time along Euclidean distance */
-public class RnHeuristicEllipsoidGoalManager extends SimpleTrajectoryRegionQuery implements GoalInterface {
+/* package */ class RnHeuristicEllipsoidGoalManager extends SimpleTrajectoryRegionQuery implements GoalInterface {
   private final Tensor rnCenter;
   private final Tensor rnRadius;
 
@@ -38,7 +38,7 @@ public class RnHeuristicEllipsoidGoalManager extends SimpleTrajectoryRegionQuery
    * distance measure is Euclidean distance, if radius(i) = infinity => cylinder
    * 
    * @param center vector with length == n
-   * @param radius vector with length == n & positive in all entrys */
+   * @param radius vector with length == n & positive in all entries */
   public RnHeuristicEllipsoidGoalManager(Tensor center, Tensor radius) {
     super(new TimeInvariantRegion(new EllipsoidRegion(center, radius)));
     int toIndex = center.length();
@@ -60,7 +60,7 @@ public class RnHeuristicEllipsoidGoalManager extends SimpleTrajectoryRegionQuery
    * a*b * ||v||
    * ---------------
    * sqrt(a²y² + b²x²) */
-  @Override
+  @Override // from HeuristicFunction
   public Scalar minCostToGoal(Tensor x) {
     // FIXME the formula is probably conceptually wrong:
     // we don't need distance in along a certain direction but overall shortest distance regardless of direction

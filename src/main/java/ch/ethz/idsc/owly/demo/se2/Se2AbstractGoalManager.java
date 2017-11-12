@@ -8,12 +8,11 @@ import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
 import ch.ethz.idsc.owly.glc.core.CostFunction;
 import ch.ethz.idsc.owly.glc.core.GoalInterface;
 import ch.ethz.idsc.owly.math.region.Region;
+import ch.ethz.idsc.owly.math.region.So2Region;
+import ch.ethz.idsc.owly.math.region.SphericalRegion;
 import ch.ethz.idsc.tensor.Scalar;
-import ch.ethz.idsc.tensor.Scalars;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.alg.VectorQ;
-import ch.ethz.idsc.tensor.red.Norm;
-import ch.ethz.idsc.tensor.sca.Mod;
 
 /** suggested base class for se2 goal managers.
  * all implemented methods in this layer are final.
@@ -21,17 +20,19 @@ import ch.ethz.idsc.tensor.sca.Mod;
  * class defines circle region for (x,y) component and periodic intervals in angular component */
 @DontModify
 public abstract class Se2AbstractGoalManager implements Region<Tensor>, CostFunction {
-  static final Mod PRINCIPAL = Mod.function(2 * Math.PI, -Math.PI);
-  // ---
-  protected final Tensor center;
+  private final SphericalRegion sphericalRegion;
+  private final So2Region so2Region;
+  protected final Tensor center; // TODO variable no good
   protected final Tensor radiusVector;
 
   /** @param center of region with coordinates (x, y, theta)
    * @param radiusVector with 3 entries the first 2 of which have to be identical */
-  public Se2AbstractGoalManager(Tensor center, Tensor radiusVector) {
+  protected Se2AbstractGoalManager(Tensor center, Tensor radiusVector) {
     GlobalAssert.that(radiusVector.get(0).equals(radiusVector.get(1)));
     GlobalAssert.that(VectorQ.ofLength(center, 3));
     GlobalAssert.that(VectorQ.ofLength(radiusVector, 3));
+    sphericalRegion = new SphericalRegion(center.extract(0, 2), radiusVector.Get(0));
+    so2Region = new So2Region(center.Get(2), radiusVector.Get(2));
     this.center = center.unmodifiable();
     this.radiusVector = radiusVector.unmodifiable();
   }
@@ -40,26 +41,21 @@ public abstract class Se2AbstractGoalManager implements Region<Tensor>, CostFunc
     return radiusVector.Get(0);
   }
 
-  protected final Scalar radiusAngle() {
-    return radiusVector.Get(2);
-  }
-
+  /** @param tensor == {px, py, angle}
+   * @return signed distance of {px, py} from spherical region */
   protected final Scalar d_xy(Tensor tensor) {
-    Tensor cur_xy = tensor.extract(0, 2);
-    return Norm._2.between(cur_xy, center.extract(0, 2));
+    return sphericalRegion.evaluate(tensor.extract(0, 2));
   }
 
+  /** @param tensor == {px, py, angle}
+   * @return signed distance of angle from so2region */
   protected final Scalar d_angle(Tensor tensor) {
-    Scalar cur_angle = tensor.Get(2);
-    return PRINCIPAL.apply(cur_angle.subtract(center.Get(2))).abs();
+    return so2Region.evaluate(tensor.get(2));
   }
 
-  @Override
+  @Override // from Region
   public final boolean isMember(Tensor tensor) {
-    boolean status = true;
-    status &= Scalars.lessEquals(d_xy(tensor), radiusSpace());
-    status &= Scalars.lessEquals(d_angle(tensor), radiusAngle());
-    return status;
+    return sphericalRegion.isMember(tensor.extract(0, 2)) && so2Region.isMember(tensor.get(2));
   }
 
   public final GoalInterface getGoalInterface() {

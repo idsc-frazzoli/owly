@@ -48,7 +48,7 @@ import ch.ethz.idsc.tensor.red.Norm2Squared;
   }
 
   @Override
-  protected Tensor fallbackControl() {
+  protected final Tensor fallbackControl() {
     return Tensors.vectorDouble(0, 0).unmodifiable();
   }
 
@@ -71,7 +71,7 @@ import ch.ethz.idsc.tensor.red.Norm2Squared;
     final Tensor center = goal.extract(0, 2);
     GoalInterface goalInterface = Objects.isNull(costFunction) ? //
         RnMinDistSphericalGoalManager.create(center, goalRadius) : //
-        new RnMinDistExtraCostGoalManager(center, goalRadius, costFunction);
+        RnMinDistExtraCostGoalManager.create(center, goalRadius, costFunction);
     return new StandardTrajectoryPlanner( //
         partitionScale, stateIntegrator, createControls(), obstacleQuery, goalInterface);
   }

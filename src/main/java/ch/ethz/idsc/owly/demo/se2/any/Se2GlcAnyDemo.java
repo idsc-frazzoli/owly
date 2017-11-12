@@ -7,7 +7,6 @@ import java.util.List;
 
 import ch.ethz.idsc.owly.demo.se2.Se2CarIntegrator;
 import ch.ethz.idsc.owly.demo.se2.Se2Controls;
-import ch.ethz.idsc.owly.demo.se2.Se2NoHeuristicGoalManager;
 import ch.ethz.idsc.owly.demo.se2.Se2StateSpaceModel;
 import ch.ethz.idsc.owly.demo.se2.glc.Se2Parameters;
 import ch.ethz.idsc.owly.glc.adapter.Parameters;
@@ -63,16 +62,16 @@ class Se2GlcAnyDemo {
         )));
     // ---
     long tic = System.nanoTime();
-    AnyPlannerInterface trajectoryPlanner = new OptimalAnyTrajectoryPlanner( //
+    AnyPlannerInterface anyPlannerInterface = new OptimalAnyTrajectoryPlanner( //
         parameters.getEta(), stateIntegrator, controls, obstacleQuery, se2GoalManager.getGoalInterface());
     // ---
-    trajectoryPlanner.switchRootToState(Tensors.vector(0, 0, 0));
-    int iters = GlcExpand.maxDepth(trajectoryPlanner, parameters.getDepthLimit());
+    anyPlannerInterface.switchRootToState(Tensors.vector(0, 0, 0));
+    int iters = GlcExpand.maxDepth(anyPlannerInterface, parameters.getDepthLimit());
     System.out.println("After " + iters + " iterations");
-    List<StateTime> trajectory = trajectoryPlanner.trajectoryToBest();
+    List<StateTime> trajectory = anyPlannerInterface.trajectoryToBest();
     long toc = System.nanoTime();
     System.out.println((toc - tic) * 1e-9 + " Seconds needed to plan");
-    OwlyGui.glc((TrajectoryPlanner) trajectoryPlanner);
+    OwlyGui.glc((TrajectoryPlanner) anyPlannerInterface);
     tic = System.nanoTime();
     // --
     Se2NoHeuristicGoalManager se2GoalManager2 = new Se2NoHeuristicGoalManager(//
@@ -86,13 +85,13 @@ class Se2GlcAnyDemo {
       throw new RuntimeException();
     }
     // ---
-    trajectoryPlanner.switchRootToState(newRootState.state());
-    trajectoryPlanner.changeToGoal(se2GoalManager2.getGoalInterface());
-    int iters2 = GlcExpand.maxDepth(trajectoryPlanner, parameters.getDepthLimit());
+    anyPlannerInterface.switchRootToState(newRootState.state());
+    anyPlannerInterface.changeToGoal(se2GoalManager2.getGoalInterface());
+    int iters2 = GlcExpand.maxDepth(anyPlannerInterface, parameters.getDepthLimit());
     // ---
     toc = System.nanoTime();
     System.out.println((toc - tic) * 1e-9 + " Seconds needed to replan");
     System.out.println("After root switch needed " + iters2 + " iterations");
-    OwlyGui.glc((TrajectoryPlanner) trajectoryPlanner);
+    OwlyGui.glc((TrajectoryPlanner) anyPlannerInterface);
   }
 }

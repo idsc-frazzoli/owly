@@ -14,12 +14,12 @@ public abstract class AbstractTransition implements Transition {
     this.end = end.unmodifiable();
   }
 
-  @Override
+  @Override // from Transition
   public final Tensor start() {
     return start;
   }
 
-  @Override
+  @Override // from Transition
   public final Tensor end() {
     return end;
   }

@@ -33,7 +33,7 @@ abstract class AbstractEpisodeIntegrator implements EpisodeIntegrator {
   }
 
   @Override
-  public StateTime tail() {
+  public final StateTime tail() {
     return stateTime;
   }
 }

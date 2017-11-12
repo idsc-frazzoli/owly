@@ -3,7 +3,6 @@ package ch.ethz.idsc.owly.demo.rnxt.glc;
 
 import java.util.Collections;
 
-import ch.ethz.idsc.owly.demo.rn.RnHeuristicEllipsoidGoalManager;
 import ch.ethz.idsc.owly.glc.adapter.HeuristicQ;
 import ch.ethz.idsc.owly.glc.core.GlcNode;
 import ch.ethz.idsc.owly.glc.core.GlcNodes;
@@ -43,6 +42,7 @@ public class R2xtEllipsoidGoalManagerTest extends TestCase {
     }
   }
 
+  @SuppressWarnings("deprecation")
   public void testMinCostToGoal2() {
     // GoalManager without Heuristic: Therefore minCostToGoal always ZERO
     RnxtEllipsoidGoalManager rnGoal = new RnxtEllipsoidGoalManager(//
@@ -62,6 +62,7 @@ public class R2xtEllipsoidGoalManagerTest extends TestCase {
     assertEquals(incr, RealScalar.of(8));
   }
 
+  @SuppressWarnings("deprecation")
   public void testCostIncrement2() {
     GlcNode root = GlcNodes.createRoot(new StateTime(Tensors.vector(2, 2, 0), RealScalar.ZERO), x -> RealScalar.ZERO);
     RnxtEllipsoidGoalManager rnGoal = new RnxtEllipsoidGoalManager( //

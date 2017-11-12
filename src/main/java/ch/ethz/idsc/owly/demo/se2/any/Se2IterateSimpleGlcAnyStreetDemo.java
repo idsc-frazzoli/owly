@@ -7,7 +7,6 @@ import java.util.List;
 
 import ch.ethz.idsc.owly.demo.se2.Se2CarIntegrator;
 import ch.ethz.idsc.owly.demo.se2.Se2Controls;
-import ch.ethz.idsc.owly.demo.se2.Se2NoHeuristicGoalManager;
 import ch.ethz.idsc.owly.demo.se2.Se2StateSpaceModel;
 import ch.ethz.idsc.owly.demo.se2.glc.Se2Parameters;
 import ch.ethz.idsc.owly.glc.adapter.Parameters;
@@ -64,16 +63,16 @@ class Se2IterateSimpleGlcAnyStreetDemo {
         )));
     // ---
     long tic = System.nanoTime();
-    AnyPlannerInterface trajectoryPlanner = new SimpleAnyTrajectoryPlanner( //
+    AnyPlannerInterface anyPlannerInterface = new SimpleAnyTrajectoryPlanner( //
         parameters.getEta(), stateIntegrator, controls, obstacleQuery, se2GoalManager.getGoalInterface());
     // ---
-    trajectoryPlanner.switchRootToState(Tensors.vector(-10, 0, 0));
-    int iters = GlcExpand.maxDepth(trajectoryPlanner, parameters.getDepthLimit());
+    anyPlannerInterface.switchRootToState(Tensors.vector(-10, 0, 0));
+    int iters = GlcExpand.maxDepth(anyPlannerInterface, parameters.getDepthLimit());
     System.out.println("After " + iters + " iterations");
     long toc = System.nanoTime();
     System.out.println((toc - tic) * 1e-9 + " Seconds needed to plan");
     OwlyFrame owlyFrame = OwlyGui.start();
-    owlyFrame.setGlc((TrajectoryPlanner) trajectoryPlanner);
+    owlyFrame.setGlc((TrajectoryPlanner) anyPlannerInterface);
     // ---
     // --
     for (int iter = 0; iter < 100; iter++) {
@@ -83,22 +82,22 @@ class Se2IterateSimpleGlcAnyStreetDemo {
       // sawtooth trajectory for goals
       Se2NoHeuristicGoalManager se2GoalManager2 = new Se2NoHeuristicGoalManager(//
           Tensors.vector(-7 + iter, index, 0), radiusVector);
-      List<StateTime> trajectory = trajectoryPlanner.trajectoryToBest();
+      List<StateTime> trajectory = anyPlannerInterface.trajectoryToBest();
       if (trajectory != null) {
         StateTime newRootState = trajectory.get(trajectory.size() > 2 ? 2 : 0);
-        trajectoryPlanner.switchRootToState(newRootState.state());
+        anyPlannerInterface.switchRootToState(newRootState.state());
       } else {
         throw new RuntimeException();
       }
       // --
-      trajectoryPlanner.changeToGoal(se2GoalManager2.getGoalInterface());
-      int iters2 = GlcExpand.maxDepth(trajectoryPlanner, parameters.getDepthLimit());
+      anyPlannerInterface.changeToGoal(se2GoalManager2.getGoalInterface());
+      int iters2 = GlcExpand.maxDepth(anyPlannerInterface, parameters.getDepthLimit());
       // ---
       toc = System.nanoTime();
       System.out.println((toc - tic) * 1e-9 + " Seconds needed to replan");
       System.out.println("After root switch needed " + iters2 + " iterations");
       System.out.println("*****Finished*****");
-      owlyFrame.setGlc((TrajectoryPlanner) trajectoryPlanner);
+      owlyFrame.setGlc((TrajectoryPlanner) anyPlannerInterface);
       // owlyFrame.configCoordinateOffset(432, 273);
     }
   }

@@ -16,7 +16,6 @@ import ch.ethz.idsc.owly.demo.rn.R2Controls;
 import ch.ethz.idsc.owly.demo.rn.RnMinDistSphericalGoalManager;
 import ch.ethz.idsc.owly.demo.se2.Se2CarIntegrator;
 import ch.ethz.idsc.owly.demo.se2.Se2Controls;
-import ch.ethz.idsc.owly.demo.se2.Se2MinTimeEuclideanDistanceHeuristicGoalManager;
 import ch.ethz.idsc.owly.demo.se2.Se2StateSpaceModel;
 import ch.ethz.idsc.owly.demo.se2.Se2TrajectoryGoalManager;
 import ch.ethz.idsc.owly.demo.se2.Se2Wrap;

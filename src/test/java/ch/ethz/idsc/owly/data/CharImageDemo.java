@@ -15,14 +15,10 @@ enum CharImageDemo {
   ;
   // demo
   public static void main(String[] args) throws IOException {
-    CharImage charImage = CharImage.fillWhite(new Dimension(640, 640));
+    CharImage charImage = CharImage.fillWhite(new Dimension(236, 180));
     charImage.setFont(new Font(Font.DIALOG, Font.BOLD, 400));
-    charImage.draw('G', new Point(0, 310));
-    charImage.draw('T', new Point(280, 323));
-    charImage.draw('I', new Point(480, 323));
-    charImage.draw('O', new Point(20, 560));
-    charImage.draw('B', new Point(280, 580));
+    charImage.draw('a', new Point(-20, 200));
     BufferedImage bufferedImage = charImage.bufferedImage();
-    ImageIO.write(bufferedImage, "png", UserHome.Pictures("letter.png"));
+    ImageIO.write(bufferedImage, "png", UserHome.Pictures("circdots.png"));
   }
 }
