@@ -6,7 +6,7 @@ import java.util.Arrays;
 import ch.ethz.idsc.owly.demo.delta.ImageGradient;
 import ch.ethz.idsc.owly.demo.rn.R2xTEllipsoidStateTimeRegion;
 import ch.ethz.idsc.owly.demo.util.DemoInterface;
-import ch.ethz.idsc.owly.demo.util.TrajectoryFamilies;
+import ch.ethz.idsc.owly.demo.util.TrajectoryTranslationFamily;
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
 import ch.ethz.idsc.owly.gui.RenderInterface;
 import ch.ethz.idsc.owly.gui.ani.AbstractEntity;
@@ -19,6 +19,7 @@ import ch.ethz.idsc.owly.math.flow.RungeKutta45Integrator;
 import ch.ethz.idsc.owly.math.region.ImageRegion;
 import ch.ethz.idsc.owly.math.region.Region;
 import ch.ethz.idsc.owly.math.region.RegionUnion;
+import ch.ethz.idsc.owly.math.se2.RigidFamily;
 import ch.ethz.idsc.owly.math.state.FixedStateIntegrator;
 import ch.ethz.idsc.owly.math.state.StateIntegrator;
 import ch.ethz.idsc.owly.math.state.StateTime;
@@ -47,11 +48,11 @@ public class DeltaxTAnimationDemo implements DemoInterface {
     StateIntegrator stateIntegrator = FixedStateIntegrator.create( //
         RungeKutta45Integrator.INSTANCE, RationalScalar.of(1, 10), 120 * 10);
     Flow flow = StateSpaceModels.createFlow(stateSpaceModel, DeltaEntity.FALLBACK_CONTROL);
+    RigidFamily rigidFamily = TrajectoryTranslationFamily.create(stateIntegrator, new StateTime(Tensors.vector(2, 1.5), RealScalar.ZERO), flow);
     Region<StateTime> region1 = new R2xTEllipsoidStateTimeRegion(Tensors.vector(.4, .4), //
-        TrajectoryFamilies.create(stateIntegrator, new StateTime(Tensors.vector(2, 1.5), RealScalar.ZERO), flow), //
-        () -> abstractEntity.getStateTimeNow().time());
+        rigidFamily, () -> abstractEntity.getStateTimeNow().time());
     Region<StateTime> region2 = new R2xTEllipsoidStateTimeRegion(Tensors.vector(.5, .5), //
-        TrajectoryFamilies.create(stateIntegrator, new StateTime(Tensors.vector(6, 6), RealScalar.ZERO), flow), //
+        TrajectoryTranslationFamily.create(stateIntegrator, new StateTime(Tensors.vector(6, 6), RealScalar.ZERO), flow), //
         () -> abstractEntity.getStateTimeNow().time());
     // ---
     TrajectoryRegionQuery obstacleQuery = new SimpleTrajectoryRegionQuery( //

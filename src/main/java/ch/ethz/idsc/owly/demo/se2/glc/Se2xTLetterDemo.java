@@ -12,6 +12,7 @@ import ch.ethz.idsc.owly.demo.se2.Se2PointsVsRegion;
 import ch.ethz.idsc.owly.demo.se2.Se2PointsVsRegions;
 import ch.ethz.idsc.owly.demo.util.DemoInterface;
 import ch.ethz.idsc.owly.demo.util.ExamplePolygons;
+import ch.ethz.idsc.owly.demo.util.SimpleTranslationFamily;
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
 import ch.ethz.idsc.owly.gui.RenderInterface;
 import ch.ethz.idsc.owly.gui.ani.OwlyAnimationFrame;
@@ -22,7 +23,6 @@ import ch.ethz.idsc.owly.math.region.ImageRegion;
 import ch.ethz.idsc.owly.math.region.Region;
 import ch.ethz.idsc.owly.math.region.RegionUnion;
 import ch.ethz.idsc.owly.math.se2.BijectionFamily;
-import ch.ethz.idsc.owly.math.se2.TranslationFamily;
 import ch.ethz.idsc.owly.math.state.StateTime;
 import ch.ethz.idsc.owly.math.state.TimeInvariantRegion;
 import ch.ethz.idsc.owly.math.state.TrajectoryRegionQuery;
@@ -48,7 +48,7 @@ public class Se2xTLetterDemo implements DemoInterface {
       break;
     }
     case 2: {
-      BijectionFamily shift = new TranslationFamily( //
+      BijectionFamily shift = new SimpleTranslationFamily( //
           scalar -> Tensors.of(Sin.FUNCTION.apply(scalar.multiply(RealScalar.of(0.2))), RealScalar.ZERO));
       Region<StateTime> region = new R2xTPolygonStateTimeRegion( //
           ExamplePolygons.CORNER_TOP_LEFT, shift, () -> abstractEntity.getStateTimeNow().time());
@@ -63,12 +63,12 @@ public class Se2xTLetterDemo implements DemoInterface {
       Se2PointsVsRegion se2PointsVsRegion = Se2PointsVsRegions.line(Tensors.vector(.2, .1, 0, -.1), imageRegion);
       // ---
       ScalarTensorFunction stf1 = R2xTEllipsoidsAnimationDemo.wrap1DTensor(SimplexContinuousNoise.FUNCTION, Tensors.vector(0, 2), 0.03, 6.3);
-      BijectionFamily noise1 = new TranslationFamily( //
+      BijectionFamily noise1 = new SimpleTranslationFamily( //
           s -> Tensors.vector(6, 6).add(stf1.apply(s)));
       Region<StateTime> region1 = new R2xTEllipsoidStateTimeRegion( //
           Tensors.vector(0.6, 0.8), noise1, () -> abstractEntity.getStateTimeNow().time());
       ScalarTensorFunction stf2 = R2xTEllipsoidsAnimationDemo.wrap1DTensor(SimplexContinuousNoise.FUNCTION, Tensors.vector(1, 3), 0.03, 6.3);
-      BijectionFamily noise2 = new TranslationFamily( //
+      BijectionFamily noise2 = new SimpleTranslationFamily( //
           s -> Tensors.vector(6, 6).add(stf2.apply(s)));
       Region<StateTime> region2 = new R2xTEllipsoidStateTimeRegion( //
           Tensors.vector(0.8, 0.6), noise2, () -> abstractEntity.getStateTimeNow().time());

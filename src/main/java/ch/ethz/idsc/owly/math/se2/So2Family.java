@@ -11,7 +11,7 @@ import ch.ethz.idsc.tensor.sca.Cos;
 import ch.ethz.idsc.tensor.sca.ScalarUnaryOperator;
 import ch.ethz.idsc.tensor.sca.Sin;
 
-/** the term "family" conveys the meaning that the rigid transformation
+/** the term "family" conveys the meaning that the rotation
  * depends on a single parameter, for instance time */
 public class So2Family implements RigidFamily {
   private final ScalarUnaryOperator function;

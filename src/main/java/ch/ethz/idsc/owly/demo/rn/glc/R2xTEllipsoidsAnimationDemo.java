@@ -5,6 +5,7 @@ import java.util.Arrays;
 
 import ch.ethz.idsc.owly.demo.rn.R2xTEllipsoidStateTimeRegion;
 import ch.ethz.idsc.owly.demo.util.DemoInterface;
+import ch.ethz.idsc.owly.demo.util.SimpleTranslationFamily;
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
 import ch.ethz.idsc.owly.gui.RenderInterface;
 import ch.ethz.idsc.owly.gui.ani.AbstractEntity;
@@ -16,7 +17,6 @@ import ch.ethz.idsc.owly.math.region.Region;
 import ch.ethz.idsc.owly.math.region.RegionUnion;
 import ch.ethz.idsc.owly.math.se2.BijectionFamily;
 import ch.ethz.idsc.owly.math.se2.Se2Family;
-import ch.ethz.idsc.owly.math.se2.TranslationFamily;
 import ch.ethz.idsc.owly.math.state.StateTime;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
@@ -39,14 +39,14 @@ public class R2xTEllipsoidsAnimationDemo implements DemoInterface {
     AbstractEntity abstractEntity = new R2xTEntity(Tensors.vector(1.2, 2), RealScalar.of(0.6));
     owlyAnimationFrame.set(abstractEntity);
     // ---
-    BijectionFamily shiftx = new TranslationFamily( //
+    BijectionFamily shiftx = new SimpleTranslationFamily( //
         scalar -> Tensors.of(Sin.FUNCTION.apply(scalar.multiply(RealScalar.of(0.2))), RealScalar.ZERO));
-    BijectionFamily shifty = new TranslationFamily( //
+    BijectionFamily shifty = new SimpleTranslationFamily( //
         scalar -> Tensors.of(RealScalar.ZERO, //
             Cos.FUNCTION.apply(scalar.multiply(RealScalar.of(0.27)).multiply(RealScalar.of(2)))));
-    BijectionFamily circle = new TranslationFamily( //
+    BijectionFamily circle = new SimpleTranslationFamily( //
         scalar -> AngleVector.of(scalar.multiply(RealScalar.of(0.2))).multiply(RealScalar.of(2)));
-    BijectionFamily noise = new TranslationFamily( //
+    BijectionFamily noise = new SimpleTranslationFamily( //
         R2xTEllipsoidsAnimationDemo.wrap1DTensor(SimplexContinuousNoise.FUNCTION, Tensors.vector(0, 2), 0.1, 1.3));
     BijectionFamily rigidm = new Se2Family( //
         R2xTEllipsoidsAnimationDemo.wrap1DTensor(SimplexContinuousNoise.FUNCTION, Tensors.vector(5, 9, 4), 0.1, 2.0));
