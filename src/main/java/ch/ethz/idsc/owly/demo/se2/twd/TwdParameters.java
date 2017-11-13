@@ -1,5 +1,5 @@
 // code by jl
-package ch.ethz.idsc.owly.demo.twd.glc;
+package ch.ethz.idsc.owly.demo.se2.twd;
 
 import ch.ethz.idsc.owly.glc.adapter.DefaultParameters;
 import ch.ethz.idsc.tensor.RealScalar;

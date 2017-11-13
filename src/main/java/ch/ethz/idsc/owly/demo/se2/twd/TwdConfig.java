@@ -1,5 +1,5 @@
 // code by jl
-package ch.ethz.idsc.owly.demo.twd;
+package ch.ethz.idsc.owly.demo.se2.twd;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -16,10 +16,9 @@ import ch.ethz.idsc.tensor.Tensors;
 import ch.ethz.idsc.tensor.alg.Subdivide;
 import ch.ethz.idsc.tensor.sca.N;
 
-/** two wheel drive
- * implementation of eqs (13.16)
- * http://planning.cs.uiuc.edu/node659.html
- *
+/** two wheel drive embedded as robot in se2 with capability to turn on the spot
+ * Example: duckie bots
+ * 
  * ^ +y
  * |
  * WL speedL

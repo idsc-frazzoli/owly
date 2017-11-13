@@ -1,5 +1,5 @@
 // code by jph
-package ch.ethz.idsc.owly.demo.twd;
+package ch.ethz.idsc.owly.demo.se2.twd;
 
 import java.util.Collection;
 
