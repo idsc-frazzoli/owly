@@ -5,7 +5,7 @@ import ch.ethz.idsc.owly.math.flow.Flow;
 import ch.ethz.idsc.tensor.Tensor;
 
 /** utility functions related to {@link StateSpaceModel} */
-// TODO JAN since this class depends on Flow, the current location is not ideal
+// LONGTERM class depends on Flow, the current location is not ideal
 // ... consider moving to ch.ethz.idsc.owly.math.state ?
 public enum StateSpaceModels {
   ;

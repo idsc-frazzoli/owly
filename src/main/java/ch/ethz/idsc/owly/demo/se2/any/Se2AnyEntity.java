@@ -14,8 +14,8 @@ import java.util.Optional;
 import ch.ethz.idsc.owly.demo.rn.EuclideanDistanceDiscoverRegion;
 import ch.ethz.idsc.owly.demo.rn.R2Controls;
 import ch.ethz.idsc.owly.demo.rn.RnMinDistSphericalGoalManager;
+import ch.ethz.idsc.owly.demo.se2.CarConfig;
 import ch.ethz.idsc.owly.demo.se2.Se2CarIntegrator;
-import ch.ethz.idsc.owly.demo.se2.Se2Controls;
 import ch.ethz.idsc.owly.demo.se2.Se2StateSpaceModel;
 import ch.ethz.idsc.owly.demo.se2.Se2TrajectoryGoalManager;
 import ch.ethz.idsc.owly.demo.se2.Se2Wrap;
@@ -87,7 +87,7 @@ import ch.ethz.idsc.tensor.sca.Sqrt;
             RationalScalar.of(1, 6), // dtMax
             2000, // maxIter
             Se2StateSpaceModel.INSTANCE.getLipschitz()), // Lipschitz
-        Se2Controls.createControlsForwardAndReverse(RotationUtils.DEGREE(60), resolution), //
+        new CarConfig(RotationUtils.DEGREE(60)).createControlsForwardAndReverse(resolution), //
         // ---
         new SimpleEpisodeIntegrator( //
             Se2StateSpaceModel.INSTANCE, //

@@ -2,11 +2,11 @@
 package ch.ethz.idsc.owly.demo.rn.glc;
 
 import java.util.Collection;
-import java.util.Objects;
+import java.util.LinkedList;
 
 import ch.ethz.idsc.owly.demo.rn.R2Controls;
-import ch.ethz.idsc.owly.demo.rn.RnMinDistExtraCostGoalManager;
 import ch.ethz.idsc.owly.demo.rn.RnMinDistSphericalGoalManager;
+import ch.ethz.idsc.owly.glc.adapter.MultiCostGoalAdapter;
 import ch.ethz.idsc.owly.glc.core.CostFunction;
 import ch.ethz.idsc.owly.glc.core.GoalInterface;
 import ch.ethz.idsc.owly.glc.core.StandardTrajectoryPlanner;
@@ -33,6 +33,8 @@ import ch.ethz.idsc.tensor.red.Norm2Squared;
 /* package */ class R2Entity extends AbstractCircularEntity {
   /** radius of spherical goal region */
   private final Scalar goalRadius = RealScalar.of(0.2);
+  /** extra cost functions, for instance to prevent cutting corners */
+  public final Collection<CostFunction> extraCosts = new LinkedList<>();
 
   /** @param state initial position of entity */
   public R2Entity(Tensor state) {
@@ -60,18 +62,14 @@ import ch.ethz.idsc.tensor.red.Norm2Squared;
     return RealScalar.of(0.5);
   }
 
-  // TODO JAN design is despicable
-  public CostFunction costFunction = null;
-
   @Override
   public TrajectoryPlanner createTrajectoryPlanner(TrajectoryRegionQuery obstacleQuery, Tensor goal) {
     Tensor partitionScale = eta();
     StateIntegrator stateIntegrator = //
         FixedStateIntegrator.create(EulerIntegrator.INSTANCE, RationalScalar.of(1, 12), 4);
     final Tensor center = goal.extract(0, 2);
-    GoalInterface goalInterface = Objects.isNull(costFunction) ? //
-        RnMinDistSphericalGoalManager.create(center, goalRadius) : //
-        RnMinDistExtraCostGoalManager.create(center, goalRadius, costFunction);
+    GoalInterface goalInterface = //
+        MultiCostGoalAdapter.of(RnMinDistSphericalGoalManager.create(center, goalRadius), extraCosts);
     return new StandardTrajectoryPlanner( //
         partitionScale, stateIntegrator, createControls(), obstacleQuery, goalInterface);
   }

@@ -5,8 +5,8 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
+import ch.ethz.idsc.owly.demo.se2.CarConfig;
 import ch.ethz.idsc.owly.demo.se2.Se2CarIntegrator;
-import ch.ethz.idsc.owly.demo.se2.Se2Controls;
 import ch.ethz.idsc.owly.demo.se2.Se2MinTimeGoalManager;
 import ch.ethz.idsc.owly.demo.se2.Se2Wrap;
 import ch.ethz.idsc.owly.demo.se2.Se2WrapGoalManagerExt;
@@ -44,7 +44,8 @@ enum Se2WrapDemoExt {
         Se2CarIntegrator.INSTANCE, //
         RationalScalar.of(1, 6), 5);
     System.out.println("scale=" + eta);
-    Collection<Flow> controls = Se2Controls.createControls(RotationUtils.DEGREE(45), 6);
+    CarConfig carConfig = new CarConfig(RotationUtils.DEGREE(45));
+    Collection<Flow> controls = carConfig.createControls(6);
     final CoordinateWrap identity = IdentityWrap.INSTANCE;
     CoordinateWrap coordinateWrap;
     coordinateWrap = new Se2Wrap(Tensors.vector(1, 1, 1));
@@ -59,7 +60,7 @@ enum Se2WrapDemoExt {
         eta, stateIntegrator, controls, obstacleQuery, se2WrapGoalManager.getGoalInterface());
     trajectoryPlanner.represent = StateTimeTensorFunction.state(coordinateWrap::represent);
     // ---
-    trajectoryPlanner.insertRoot(new StateTime(Tensors.vector(.1, 0, 0), RealScalar.ZERO));
+    trajectoryPlanner.insertRoot(new StateTime(Tensors.vector(0.1, 0, 0), RealScalar.ZERO));
     int iters = Expand.maxSteps(trajectoryPlanner, 4000);
     System.out.println(iters);
     Optional<GlcNode> optional = trajectoryPlanner.getBest();

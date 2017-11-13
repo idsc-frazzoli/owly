@@ -1,20 +1,22 @@
 // code by jl
-package ch.ethz.idsc.owly.demo.twd.glc;
+package ch.ethz.idsc.owly.demo.se2.twd;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
 import ch.ethz.idsc.owly.demo.rn.R2NoiseRegion;
-import ch.ethz.idsc.owly.demo.twd.TwdControls;
-import ch.ethz.idsc.owly.demo.twd.TwdMinCurvatureGoalManager;
-import ch.ethz.idsc.owly.demo.twd.TwdStateSpaceModel;
+import ch.ethz.idsc.owly.demo.se2.Se2LateralAcceleration;
+import ch.ethz.idsc.owly.demo.se2.Se2MinTimeGoalManager;
+import ch.ethz.idsc.owly.glc.adapter.MultiCostGoalAdapter;
 import ch.ethz.idsc.owly.glc.adapter.Parameters;
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
 import ch.ethz.idsc.owly.glc.adapter.StateTimeTrajectories;
 import ch.ethz.idsc.owly.glc.core.GlcExpand;
 import ch.ethz.idsc.owly.glc.core.GlcNode;
 import ch.ethz.idsc.owly.glc.core.GlcNodes;
+import ch.ethz.idsc.owly.glc.core.GoalInterface;
 import ch.ethz.idsc.owly.glc.core.StandardTrajectoryPlanner;
 import ch.ethz.idsc.owly.glc.core.TrajectoryPlanner;
 import ch.ethz.idsc.owly.gui.ani.OwlyFrame;
@@ -42,33 +44,30 @@ enum TwdGlcNoiseDemo {
     Tensor partitionScale = Tensors.vector(5, 5, 2 * Math.PI / 360 * 10);
     Scalar dtMax = RationalScalar.of(1, 10);
     int maxIter = 2000;
-    Scalar wheelDistance = RealScalar.of(0.2);
-    Scalar wheelRadius = RealScalar.of(0.05);
-    TwdStateSpaceModel stateSpaceModel = new TwdStateSpaceModel(wheelRadius, wheelDistance);
     Parameters parameters = new TwdParameters( //
-        resolution, timeScale, depthScale, partitionScale, dtMax, maxIter, stateSpaceModel.getLipschitz());
+        resolution, timeScale, depthScale, partitionScale, dtMax, maxIter, RealScalar.ONE); // TODO check lipschitz
     parameters.printResolution();
     System.out.println("DomainSize: 1/Eta: " + parameters.getEta().map(n -> RealScalar.ONE.divide(n)));
-    Region<Tensor> region = new R2NoiseRegion(RealScalar.of(.1));
+    Region<Tensor> region = new R2NoiseRegion(RealScalar.of(0.1));
     StateIntegrator stateIntegrator = //
         FixedStateIntegrator.create(EulerIntegrator.INSTANCE, parameters.getdtMax(), parameters.getTrajectorySize());
     // Controls
-    Collection<Flow> controls = TwdControls.createControls2(//
-        stateSpaceModel, parameters.getResolutionInt());
+    TwdConfig twdControls = new TwdConfig(RealScalar.ONE, RealScalar.ONE);
+    Collection<Flow> controls = twdControls.createControls2(parameters.getResolutionInt());
     // GoalRegion
     Tensor goalCenter = Tensors.vector(5.5, 0, -1 * Math.PI);
-    // Tensor radiusVector = Tensors.vector(0.2, 0.2, 2 * Math.PI / 360 * 50);
-    TwdMinCurvatureGoalManager twdGoal = //
-        new TwdMinCurvatureGoalManager(goalCenter, RealScalar.of(0.2), RealScalar.of(50 * Math.PI / 180));
-    // new TwdMinCurvatureGoalManager(goalCenter, radiusVector);
+    Tensor radiusVector = Tensors.vector(0.2, 0.2, 50 * Math.PI / 180);
+    GoalInterface goalInterface = MultiCostGoalAdapter.of( //
+        new Se2MinTimeGoalManager(goalCenter, radiusVector, controls).getGoalInterface(), //
+        Arrays.asList(Se2LateralAcceleration.COSTFUNCTION));
     // ObstacleRegion
     TrajectoryRegionQuery obstacleQuery = SimpleTrajectoryRegionQuery.timeInvariant(region);
     // Planner init
     TrajectoryPlanner trajectoryPlanner = new StandardTrajectoryPlanner( //
-        partitionScale, stateIntegrator, controls, obstacleQuery, twdGoal.getGoalInterface());
+        partitionScale, stateIntegrator, controls, obstacleQuery, goalInterface);
     trajectoryPlanner.insertRoot(new StateTime(Array.zeros(3), RealScalar.ZERO));
     OwlyFrame owlyFrame = OwlyGui.start();
-    owlyFrame.configCoordinateOffset(33, 416);
+    owlyFrame.configCoordinateOffset(200, 300);
     owlyFrame.jFrame.setBounds(100, 100, 620, 475);
     owlyFrame.setGlc(trajectoryPlanner);
     // Planning

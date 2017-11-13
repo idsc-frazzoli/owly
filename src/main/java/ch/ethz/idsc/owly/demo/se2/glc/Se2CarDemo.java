@@ -15,7 +15,7 @@ import ch.ethz.idsc.tensor.Tensors;
 
 public abstract class Se2CarDemo implements DemoInterface {
   static TrajectoryRegionQuery createCarQuery(Region<Tensor> region) {
-    Se2PointsVsRegion se2PointsVsRegion = Se2PointsVsRegions.line(Tensors.vector(.2, .1, 0, -.1), region);
+    Se2PointsVsRegion se2PointsVsRegion = Se2PointsVsRegions.line(Tensors.vector(0.2, 0.1, 0, -0.1), region);
     return SimpleTrajectoryRegionQuery.timeInvariant(se2PointsVsRegion);
   }
 

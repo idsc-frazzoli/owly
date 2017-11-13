@@ -4,7 +4,7 @@ package ch.ethz.idsc.owly.demo.delta.glc;
 import java.util.Collection;
 
 import ch.ethz.idsc.owly.demo.delta.DeltaControls;
-import ch.ethz.idsc.owly.demo.delta.DeltaNoHeuristicGoalManager;
+import ch.ethz.idsc.owly.demo.delta.DeltaMinTimeGoalManager;
 import ch.ethz.idsc.owly.demo.delta.DeltaStateSpaceModel;
 import ch.ethz.idsc.owly.demo.delta.ImageGradient;
 import ch.ethz.idsc.owly.demo.util.UserHome;
@@ -21,6 +21,7 @@ import ch.ethz.idsc.owly.math.flow.Flow;
 import ch.ethz.idsc.owly.math.flow.RungeKutta45Integrator;
 import ch.ethz.idsc.owly.math.region.ImageRegion;
 import ch.ethz.idsc.owly.math.region.Region;
+import ch.ethz.idsc.owly.math.region.SphericalRegion;
 import ch.ethz.idsc.owly.math.state.FixedStateIntegrator;
 import ch.ethz.idsc.owly.math.state.StateIntegrator;
 import ch.ethz.idsc.owly.math.state.StateTime;
@@ -39,7 +40,7 @@ import ch.ethz.idsc.tensor.io.ResourceData;
 enum DeltaExpandDemo {
   ;
   public static void main(String[] args) throws Exception {
-    Scalar amp = RealScalar.of(.5); // -.25 .5
+    Scalar amp = RealScalar.of(0.5); // -.25 .5
     // ---
     Tensor eta = Tensors.vector(8, 8);
     StateIntegrator stateIntegrator = FixedStateIntegrator.create( //
@@ -52,15 +53,16 @@ enum DeltaExpandDemo {
     Tensor obstacleImage = ResourceData.of("/io/delta_free.png"); //
     Region<Tensor> region = new ImageRegion(obstacleImage, range, true);
     TrajectoryRegionQuery obstacleQuery = SimpleTrajectoryRegionQuery.timeInvariant(region);
-    // TODO not clear why NO HEURISTIC is used
-    GoalInterface goalInterface = DeltaNoHeuristicGoalManager.create( //
-        Tensors.vector(2.1, 0.3), RealScalar.of(.3));
+    Scalar maxMove = stateSpaceModel.getLipschitz();
+    SphericalRegion sphericalRegion = new SphericalRegion(Tensors.vector(2.1, 0.3), RealScalar.of(.3));
+    GoalInterface goalInterface = new DeltaMinTimeGoalManager(sphericalRegion, maxMove);
     TrajectoryPlanner trajectoryPlanner = new StandardTrajectoryPlanner( //
         eta, stateIntegrator, controls, obstacleQuery, goalInterface);
     trajectoryPlanner.insertRoot(new StateTime(Tensors.vector(8.8, 0.5), RealScalar.ZERO));
     // ---
     OwlyFrame owlyFrame = OwlyGui.start();
     owlyFrame.addBackground(RegionRenders.create(region));
+    owlyFrame.addBackground(RegionRenders.create(sphericalRegion));
     owlyFrame.addBackground(DeltaHelper.vectorFieldRender(stateSpaceModel, range, region, RealScalar.of(0.05)));
     owlyFrame.configCoordinateOffset(33, 416);
     owlyFrame.jFrame.setBounds(100, 100, 620, 475);

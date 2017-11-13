@@ -22,7 +22,8 @@ import junit.framework.TestCase;
 
 public class Se2ControlsTest extends TestCase {
   public void testSimple() {
-    Collection<Flow> controls = Se2Controls.createControls(RotationUtils.DEGREE(45), 6);
+    CarConfig carConfig = new CarConfig(RotationUtils.DEGREE(45));
+    Collection<Flow> controls = carConfig.createControls(6);
     Scalar maxSpeed = Se2Controls.maxSpeed(controls);
     assertTrue(Chop._13.close(maxSpeed, RealScalar.ONE));
     Scalar maxTurn = Se2Controls.maxTurning(controls);
@@ -33,7 +34,7 @@ public class Se2ControlsTest extends TestCase {
   public void testMaxRate() {
     List<Flow> list = new ArrayList<>();
     for (Tensor angle : Subdivide.of(RealScalar.of(-.1), RealScalar.of(.3), 5))
-      list.add(Se2Controls.singleton(RealScalar.of(2), angle));
+      list.add(CarConfig.singleton(RealScalar.of(2), angle));
     Scalar maxR = Se2Controls.maxTurning(list);
     assertEquals(maxR, RealScalar.of(.6));
   }
@@ -41,7 +42,7 @@ public class Se2ControlsTest extends TestCase {
   public void testMaxRate2() {
     List<Flow> list = new ArrayList<>();
     for (Tensor angle : Subdivide.of(RealScalar.of(-.3), RealScalar.of(.1), 5))
-      list.add(Se2Controls.singleton(RealScalar.of(2), angle));
+      list.add(CarConfig.singleton(RealScalar.of(2), angle));
     Scalar maxR = Se2Controls.maxTurning(list);
     assertEquals(maxR, RealScalar.of(.6));
   }
@@ -49,7 +50,7 @@ public class Se2ControlsTest extends TestCase {
   public void testUnits() {
     final Scalar ms = Quantity.of(2, "m*s^-1");
     final Scalar mr = Scalars.fromString("3[rad*m^-1]");
-    Flow flow = Se2Controls.singleton(ms, mr);
+    Flow flow = CarConfig.singleton(ms, mr);
     assertEquals(Units.of(flow.getU().Get(2)), Unit.of("rad*s^-1"));
     // System.out.println(flow.getU());
     Collection<Flow> controls = Collections.singleton(flow);

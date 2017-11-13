@@ -1,6 +1,7 @@
 // code by jph
 package ch.ethz.idsc.owly.demo.rn.glc;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
@@ -9,10 +10,10 @@ import ch.ethz.idsc.owly.data.Stopwatch;
 import ch.ethz.idsc.owly.demo.rn.R2Controls;
 import ch.ethz.idsc.owly.demo.rn.R2NoiseCostFunction;
 import ch.ethz.idsc.owly.demo.rn.R2NoiseRegion;
-import ch.ethz.idsc.owly.demo.rn.RnMinDistExtraCostGoalManager;
+import ch.ethz.idsc.owly.demo.rn.RnMinDistSphericalGoalManager;
+import ch.ethz.idsc.owly.glc.adapter.MultiCostGoalAdapter;
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
 import ch.ethz.idsc.owly.glc.adapter.StateTimeTrajectories;
-import ch.ethz.idsc.owly.glc.core.CostFunction;
 import ch.ethz.idsc.owly.glc.core.Expand;
 import ch.ethz.idsc.owly.glc.core.GlcNode;
 import ch.ethz.idsc.owly.glc.core.GlcNodes;
@@ -38,20 +39,23 @@ import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
 import ch.ethz.idsc.tensor.alg.Array;
 
+/** expands: 1491
+ * computation time: 0.876993604 */
 enum R2NoiseDemo {
   ;
   public static void main(String[] args) {
     Tensor partitionScale = Tensors.vector(8, 8);
-    final Scalar threshold = RealScalar.of(.1);
+    final Scalar threshold = RealScalar.of(0.1);
     Region<Tensor> region = new R2NoiseRegion(threshold);
     StateIntegrator stateIntegrator = //
         FixedStateIntegrator.create(EulerIntegrator.INSTANCE, RationalScalar.of(1, 12), 4);
     Collection<Flow> controls = R2Controls.createRadial(23);
     final Tensor center = Tensors.vector(10, 0);
-    final Scalar radius = DoubleScalar.of(.2);
-    CostFunction costFunction = new R2NoiseCostFunction(threshold.subtract(RealScalar.of(.3)));
+    final Scalar radius = DoubleScalar.of(0.2);
     SphericalRegion sphericalRegion = new SphericalRegion(center, radius);
-    GoalInterface goalInterface = new RnMinDistExtraCostGoalManager(sphericalRegion, costFunction);
+    GoalInterface goalInterface = MultiCostGoalAdapter.of( //
+        new RnMinDistSphericalGoalManager(sphericalRegion), //
+        Arrays.asList(new R2NoiseCostFunction(threshold.subtract(RealScalar.of(0.3)))));
     TrajectoryRegionQuery obstacleQuery = SimpleTrajectoryRegionQuery.timeInvariant(region);
     // ---
     TrajectoryPlanner trajectoryPlanner = new StandardTrajectoryPlanner( //

@@ -57,10 +57,9 @@ enum DeltaDemo {
     Region<Tensor> region = new ImageRegion(obstacleImage, range, true);
     TrajectoryRegionQuery obstacleQuery = //
         SimpleTrajectoryRegionQuery.timeInvariant(region);
-    Scalar maxMove = DeltaControls.maxSpeed(controls).add(imageGradient.maxNormGradient());
-    SphericalRegion sphericalRegion = new SphericalRegion(Tensors.vector(2.1, 0.3), RealScalar.of(.3));
-    GoalInterface goalInterface = new DeltaMinTimeGoalManager( //
-        sphericalRegion, maxMove);
+    Scalar maxMove = stateSpaceModel.getLipschitz();
+    SphericalRegion sphericalRegion = new SphericalRegion(Tensors.vector(2.1, 0.3), RealScalar.of(0.3));
+    GoalInterface goalInterface = new DeltaMinTimeGoalManager(sphericalRegion, maxMove);
     TrajectoryPlanner trajectoryPlanner = new StandardTrajectoryPlanner( //
         eta, stateIntegrator, controls, obstacleQuery, goalInterface);
     trajectoryPlanner.insertRoot(new StateTime(Tensors.vector(8.8, 0.5), RealScalar.ZERO));

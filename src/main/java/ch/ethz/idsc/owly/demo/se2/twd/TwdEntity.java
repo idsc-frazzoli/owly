@@ -1,19 +1,23 @@
 // code by jph
-package ch.ethz.idsc.owly.demo.twd.glc;
+package ch.ethz.idsc.owly.demo.se2.twd;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Objects;
 
 import ch.ethz.idsc.owly.data.GlobalAssert;
+import ch.ethz.idsc.owly.demo.se2.Se2CarIntegrator;
+import ch.ethz.idsc.owly.demo.se2.Se2LateralAcceleration;
+import ch.ethz.idsc.owly.demo.se2.Se2MinTimeGoalManager;
+import ch.ethz.idsc.owly.demo.se2.Se2StateSpaceModel;
 import ch.ethz.idsc.owly.demo.se2.Se2Wrap;
-import ch.ethz.idsc.owly.demo.twd.TwdControls;
-import ch.ethz.idsc.owly.demo.twd.TwdMinCurvatureGoalManager;
-import ch.ethz.idsc.owly.demo.twd.TwdStateSpaceModel;
+import ch.ethz.idsc.owly.glc.adapter.MultiCostGoalAdapter;
+import ch.ethz.idsc.owly.glc.core.GoalInterface;
 import ch.ethz.idsc.owly.glc.core.StandardTrajectoryPlanner;
 import ch.ethz.idsc.owly.glc.core.TrajectoryPlanner;
 import ch.ethz.idsc.owly.gui.GeometricLayer;
@@ -21,8 +25,6 @@ import ch.ethz.idsc.owly.gui.ani.AbstractEntity;
 import ch.ethz.idsc.owly.gui.ani.PlannerType;
 import ch.ethz.idsc.owly.math.StateTimeTensorFunction;
 import ch.ethz.idsc.owly.math.flow.Flow;
-import ch.ethz.idsc.owly.math.flow.Integrator;
-import ch.ethz.idsc.owly.math.flow.MidpointIntegrator;
 import ch.ethz.idsc.owly.math.se2.Se2Utils;
 import ch.ethz.idsc.owly.math.state.FixedStateIntegrator;
 import ch.ethz.idsc.owly.math.state.SimpleEpisodeIntegrator;
@@ -35,10 +37,12 @@ import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.TensorRuntimeException;
 import ch.ethz.idsc.tensor.Tensors;
+import ch.ethz.idsc.tensor.alg.Array;
 import ch.ethz.idsc.tensor.alg.VectorQ;
 import ch.ethz.idsc.tensor.sca.Sqrt;
 
 /* package */ class TwdEntity extends AbstractEntity {
+  public static final Tensor FALLBACK_CONTROL = Array.zeros(3).unmodifiable();
   // triangle
   private static final Tensor SHAPE = Tensors.matrixDouble( //
       new double[][] { { .3, 0, 1 }, { -.1, -.1, 1 }, { -.1, +.1, 1 } }).unmodifiable();
@@ -51,23 +55,22 @@ import ch.ethz.idsc.tensor.sca.Sqrt;
   }
 
   public static TwdEntity createDefault(Tensor state) {
-    return new TwdEntity(TwdStateSpaceModel.createDefault(), MidpointIntegrator.INSTANCE, state);
+    TwdConfig twdControls = new TwdConfig(RealScalar.ONE, RealScalar.ONE);
+    return new TwdEntity(twdControls, state);
   }
 
   // ---
-  final Integrator integrator;
   final Collection<Flow> controls;
   final Scalar goalRadius_xy;
   final Scalar goalRadius_theta;
   TrajectoryRegionQuery obstacleQuery = null;
 
-  public TwdEntity(TwdStateSpaceModel twdStateSpaceModel, Integrator integrator, Tensor state) {
+  public TwdEntity(TwdConfig twdControls, Tensor state) {
     super(new SimpleEpisodeIntegrator( //
-        twdStateSpaceModel, //
-        integrator, //
+        Se2StateSpaceModel.INSTANCE, //
+        Se2CarIntegrator.INSTANCE, //
         new StateTime(state, RealScalar.ZERO))); // initial position
-    this.integrator = integrator;
-    controls = TwdControls.createControls(twdStateSpaceModel, 8);
+    controls = twdControls.createControls(8);
     goalRadius_xy = Sqrt.of(RealScalar.of(2)).divide(PARTITIONSCALE.Get(0));
     goalRadius_theta = Sqrt.of(RealScalar.of(2)).divide(PARTITIONSCALE.Get(2));
   }
@@ -79,7 +82,7 @@ import ch.ethz.idsc.tensor.sca.Sqrt;
 
   @Override
   protected Tensor fallbackControl() {
-    return Tensors.vector(0, 0).unmodifiable();
+    return FALLBACK_CONTROL;
   }
 
   @Override
@@ -98,13 +101,13 @@ import ch.ethz.idsc.tensor.sca.Sqrt;
     // obstacleQuery = EmptyTrajectoryRegionQuery.INSTANCE; // <- for testing
     this.obstacleQuery = obstacleQuery;
     StateIntegrator stateIntegrator = //
-        FixedStateIntegrator.create(integrator, RationalScalar.of(1, 10), 4);
-    // TwdMinTimeGoalManager twdMinTimeGoalManager = //
-    // new TwdMinTimeGoalManager(Tensors.of(goal.Get(0), goal.Get(1), RealScalar.ZERO), goalRadius_xy, RealScalar.of(Math.PI));
-    TwdMinCurvatureGoalManager twdMinCurvatureGoalManager = //
-        new TwdMinCurvatureGoalManager(goal, goalRadius_xy, goalRadius_theta);
+        FixedStateIntegrator.create(Se2CarIntegrator.INSTANCE, RationalScalar.of(1, 10), 4);
+    Tensor radiusVector = Tensors.of(goalRadius_xy, goalRadius_xy, goalRadius_theta);
+    GoalInterface goalInterface = MultiCostGoalAdapter.of( //
+        new Se2MinTimeGoalManager(goal, radiusVector, controls).getGoalInterface(), //
+        Arrays.asList(Se2LateralAcceleration.COSTFUNCTION));
     TrajectoryPlanner trajectoryPlanner = new StandardTrajectoryPlanner( //
-        PARTITIONSCALE, stateIntegrator, controls, obstacleQuery, twdMinCurvatureGoalManager.getGoalInterface());
+        PARTITIONSCALE, stateIntegrator, controls, obstacleQuery, goalInterface);
     trajectoryPlanner.represent = StateTimeTensorFunction.state(SE2WRAP::represent);
     return trajectoryPlanner;
   }

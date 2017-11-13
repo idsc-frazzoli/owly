@@ -5,17 +5,16 @@ import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.List;
+import java.util.LinkedList;
 import java.util.Objects;
 
 import ch.ethz.idsc.owly.data.GlobalAssert;
+import ch.ethz.idsc.owly.demo.se2.CarConfig;
 import ch.ethz.idsc.owly.demo.se2.Se2CarIntegrator;
-import ch.ethz.idsc.owly.demo.se2.Se2Controls;
-import ch.ethz.idsc.owly.demo.se2.Se2MinShiftCostFunction;
 import ch.ethz.idsc.owly.demo.se2.Se2MinTimeGoalManager;
+import ch.ethz.idsc.owly.demo.se2.Se2ShiftCostFunction;
 import ch.ethz.idsc.owly.demo.se2.Se2StateSpaceModel;
 import ch.ethz.idsc.owly.demo.se2.Se2Wrap;
 import ch.ethz.idsc.owly.glc.adapter.MultiCostGoalAdapter;
@@ -74,6 +73,10 @@ class Se2Entity extends AbstractEntity {
   private final Collection<Flow> controls;
   private final Tensor goalRadius;
   public TrajectoryRegionQuery obstacleQuery = null;
+  /** extra cost functions, for instance
+   * 1) to prevent cutting corners
+   * 2) to penalize switching gears */
+  public final Collection<CostFunction> extraCosts = new LinkedList<>();
   // private BufferedImage bufferedImage = null;
 
   Se2Entity(Tensor state) {
@@ -81,10 +84,12 @@ class Se2Entity extends AbstractEntity {
         Se2StateSpaceModel.INSTANCE, //
         Se2CarIntegrator.INSTANCE, //
         new StateTime(state, RealScalar.ZERO))); // initial position
-    controls = Se2Controls.createControlsForwardAndReverse(RotationUtils.DEGREE(45), 6);
+    CarConfig carConfig = new CarConfig(RotationUtils.DEGREE(45));
+    controls = carConfig.createControlsForwardAndReverse(6);
     final Scalar goalRadius_xy = Sqrt.of(RealScalar.of(2)).divide(PARTITIONSCALE.Get(0));
     final Scalar goalRadius_theta = Sqrt.of(RealScalar.of(2)).divide(PARTITIONSCALE.Get(2));
     goalRadius = Tensors.of(goalRadius_xy, goalRadius_xy, goalRadius_theta);
+    extraCosts.add(new Se2ShiftCostFunction(SHIFT_PENALTY));
     // try {
     // bufferedImage = ImageIO.read(UserHome.Pictures("car_green.png"));
     // } catch (Exception exception) {
@@ -112,23 +117,14 @@ class Se2Entity extends AbstractEntity {
     return PlannerType.STANDARD;
   }
 
-  // TODO JAN design is despicable
-  public CostFunction costFunction = null;
-
   @Override
   public TrajectoryPlanner createTrajectoryPlanner(TrajectoryRegionQuery obstacleQuery, Tensor goal) {
     GlobalAssert.that(VectorQ.ofLength(goal, 3));
     this.obstacleQuery = obstacleQuery;
     StateIntegrator stateIntegrator = //
         FixedStateIntegrator.create(Se2CarIntegrator.INSTANCE, RationalScalar.of(1, 10), 4);
-    // ---
-    GoalInterface _goalInterface = Se2MinTimeGoalManager.create(goal, goalRadius, controls);
-    List<CostFunction> list = new ArrayList<>();
-    list.add(_goalInterface);
-    list.add(new Se2MinShiftCostFunction(SHIFT_PENALTY));
-    if (Objects.nonNull(costFunction))
-      list.add(costFunction);
-    GoalInterface goalInterface = new MultiCostGoalAdapter(_goalInterface, list);
+    GoalInterface goalInterface = //
+        MultiCostGoalAdapter.of(Se2MinTimeGoalManager.create(goal, goalRadius, controls), extraCosts);
     TrajectoryPlanner trajectoryPlanner = new StandardTrajectoryPlanner( //
         eta(), stateIntegrator, controls, obstacleQuery, goalInterface);
     trajectoryPlanner.represent = StateTimeTensorFunction.state(SE2WRAP::represent);

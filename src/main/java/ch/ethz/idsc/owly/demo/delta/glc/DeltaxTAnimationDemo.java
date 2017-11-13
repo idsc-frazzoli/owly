@@ -49,9 +49,9 @@ public class DeltaxTAnimationDemo implements DemoInterface {
         RungeKutta45Integrator.INSTANCE, RationalScalar.of(1, 10), 120 * 10);
     Flow flow = StateSpaceModels.createFlow(stateSpaceModel, DeltaEntity.FALLBACK_CONTROL);
     RigidFamily rigidFamily = TrajectoryTranslationFamily.create(stateIntegrator, new StateTime(Tensors.vector(2, 1.5), RealScalar.ZERO), flow);
-    Region<StateTime> region1 = new R2xTEllipsoidStateTimeRegion(Tensors.vector(.4, .4), //
+    Region<StateTime> region1 = new R2xTEllipsoidStateTimeRegion(Tensors.vector(0.4, 0.4), //
         rigidFamily, () -> abstractEntity.getStateTimeNow().time());
-    Region<StateTime> region2 = new R2xTEllipsoidStateTimeRegion(Tensors.vector(.5, .5), //
+    Region<StateTime> region2 = new R2xTEllipsoidStateTimeRegion(Tensors.vector(0.5, 0.5), //
         TrajectoryTranslationFamily.create(stateIntegrator, new StateTime(Tensors.vector(6, 6), RealScalar.ZERO), flow), //
         () -> abstractEntity.getStateTimeNow().time());
     // ---

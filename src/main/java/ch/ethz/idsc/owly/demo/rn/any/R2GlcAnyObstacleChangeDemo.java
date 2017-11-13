@@ -45,7 +45,7 @@ enum R2GlcAnyObstacleChangeDemo {
     int maxIter = 2000;
     Scalar lipschitz = RealScalar.ONE;
     Tensor goal = Tensors.vector(0, -7);
-    Scalar goalRadius = DoubleScalar.of(.25);
+    Scalar goalRadius = DoubleScalar.of(0.25);
     System.out.println("Goal is: " + goal);
     Parameters parameters = new R2Parameters( //
         resolution, timeScale, depthScale, partitionScale, dtMax, maxIter, lipschitz);
@@ -60,7 +60,7 @@ enum R2GlcAnyObstacleChangeDemo {
             new EllipsoidRegion(Tensors.vector(0, 0), Tensors.vector(3, 3))//
             , new InvertedRegion(new EllipsoidRegion(Tensors.vector(0, 0), Tensors.vector(8, 8)))
             // , RnPointclouds.createRandomRegion(30, Tensors.vector(12, 12), Tensors.vector(0, 0), RealScalar.of(0.6)) //
-            , new R2NoiseRegion(RealScalar.of(.2)) //
+            , new R2NoiseRegion(RealScalar.of(0.2)) //
         )));
     // --
     AnyPlannerInterface anyPlannerInterface = new OptimalAnyTrajectoryPlanner( //
@@ -78,7 +78,7 @@ enum R2GlcAnyObstacleChangeDemo {
             // new EllipsoidRegion(Tensors.vector(0, 0), Tensors.vector(3, 3)),//
             new InvertedRegion(new EllipsoidRegion(Tensors.vector(0, 0), Tensors.vector(8, 8))),
             // RnPointclouds.createRandomRegion(30, Tensors.vector(12, 12), Tensors.vector(0, 0), RealScalar.of(0.6)), //
-            new R2NoiseRegion(RealScalar.of(.2)) //
+            new R2NoiseRegion(RealScalar.of(0.2)) //
         )));
     anyPlannerInterface.obstacleUpdate(obstacleQuery2);
     owlyFrame.setGlc((TrajectoryPlanner) anyPlannerInterface);

@@ -1,6 +1,8 @@
 // code by jph
 package ch.ethz.idsc.owly.glc.adapter;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import ch.ethz.idsc.owly.glc.core.CostFunction;
@@ -11,30 +13,42 @@ import ch.ethz.idsc.owly.math.state.StateTime;
 import ch.ethz.idsc.owly.math.state.TrajectoryRegionQuery;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
-import ch.ethz.idsc.tensor.red.Max;
 
 /** combines multiple cost functions */
 public class MultiCostGoalAdapter implements GoalInterface {
-  private final TrajectoryRegionQuery trajectoryRegionQuery;
-  private final List<CostFunction> list;
+  /** @param goalInterface
+   * @param collection
+   * @return */
+  public static GoalInterface of(GoalInterface goalInterface, Collection<CostFunction> collection) {
+    if (collection.isEmpty())
+      return goalInterface;
+    List<CostFunction> list = new ArrayList<>(1 + collection.size());
+    list.add(goalInterface);
+    list.addAll(collection);
+    return new MultiCostGoalAdapter(goalInterface, list);
+  }
 
-  public MultiCostGoalAdapter(TrajectoryRegionQuery trajectoryRegionQuery, List<CostFunction> list) {
+  // ---
+  private final TrajectoryRegionQuery trajectoryRegionQuery;
+  private final Collection<CostFunction> collection;
+
+  private MultiCostGoalAdapter(TrajectoryRegionQuery trajectoryRegionQuery, Collection<CostFunction> collection) {
     this.trajectoryRegionQuery = trajectoryRegionQuery;
-    this.list = list;
+    this.collection = collection;
   }
 
   @Override // from CostIncrementFunction
   public Scalar costIncrement(GlcNode glcNode, List<StateTime> trajectory, Flow flow) {
-    return list.stream() //
+    return collection.stream() //
         .map(costFunction -> costFunction.costIncrement(glcNode, trajectory, flow)) //
         .reduce(Scalar::add).get();
   }
 
   @Override // from HeuristicFunction
   public Scalar minCostToGoal(Tensor x) {
-    return list.stream() //
+    return collection.stream() //
         .map(costFunction -> costFunction.minCostToGoal(x)) //
-        .reduce(Max::of).get();
+        .reduce(Scalar::add).get();
   }
 
   @Override // from TrajectoryRegionQuery

@@ -3,7 +3,7 @@ package ch.ethz.idsc.owly.demo.se2.any;
 
 import java.util.Collection;
 
-import ch.ethz.idsc.owly.demo.se2.Se2Controls;
+import ch.ethz.idsc.owly.demo.se2.CarConfig;
 import ch.ethz.idsc.owly.demo.se2.Se2Wrap;
 import ch.ethz.idsc.owly.demo.se2.Se2WrapGoalManagerExt;
 import ch.ethz.idsc.owly.glc.adapter.HeuristicQ;
@@ -18,7 +18,8 @@ import junit.framework.TestCase;
 public class Se2MinDistCurvGoalManagerTest extends TestCase {
   public void testMinDist() {
     Tensor radiusVector = Tensors.of(DoubleScalar.of(0.1), DoubleScalar.of(0.1), RealScalar.of(Math.PI * 0.1));
-    Collection<Flow> controls = Se2Controls.createControlsForwardAndReverse(RealScalar.of(0.2), 10);
+    CarConfig carConfig = new CarConfig(RealScalar.of(0.2));
+    Collection<Flow> controls = carConfig.createControlsForwardAndReverse(10);
     Se2MinDistCurvGoalManager se2MinDistGoalManager = new Se2MinDistCurvGoalManager(//
         Tensors.vector(0, 0, Math.PI), radiusVector, controls);
     assertTrue(HeuristicQ.of(se2MinDistGoalManager.getGoalInterface()));
@@ -39,7 +40,8 @@ public class Se2MinDistCurvGoalManagerTest extends TestCase {
 
   public void testWrapExt() {
     Tensor radiusVector = Tensors.of(DoubleScalar.of(0.1), DoubleScalar.of(0.1), RealScalar.of(Math.PI * 0.1));
-    Collection<Flow> controls = Se2Controls.createControlsForwardAndReverse(RealScalar.of(0.2), 10);
+    CarConfig carConfig = new CarConfig(RealScalar.of(0.2));
+    Collection<Flow> controls = carConfig.createControlsForwardAndReverse(10);
     Se2MinDistCurvGoalManager se2MinDistGoalManager = new Se2MinDistCurvGoalManager(//
         Tensors.vector(0, 0, Math.PI), radiusVector, controls);
     CoordinateWrap se2Wrap = new Se2Wrap(Tensors.vector(1, 1, 1));

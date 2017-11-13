@@ -19,7 +19,7 @@ enum TreeColor {
   public final ColorLookup edgeColor;
 
   private TreeColor(double node_alpha, double edge_alpha) {
-    nodeColor = ColorLookup.hsluv_lightness(.50, node_alpha);
-    edgeColor = ColorLookup.hsluv_lightness(.65, edge_alpha);
+    nodeColor = ColorLookup.hsluv_lightness(0.50, node_alpha);
+    edgeColor = ColorLookup.hsluv_lightness(0.65, edge_alpha);
   }
 }

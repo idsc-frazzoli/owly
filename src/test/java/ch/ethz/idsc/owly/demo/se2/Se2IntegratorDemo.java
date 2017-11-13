@@ -5,6 +5,7 @@ import ch.ethz.idsc.owly.data.Stopwatch;
 import ch.ethz.idsc.owly.math.flow.Flow;
 import ch.ethz.idsc.owly.math.flow.RungeKutta45Integrator;
 import ch.ethz.idsc.owly.math.flow.RungeKutta4Integrator;
+import ch.ethz.idsc.owly.math.se2.Se2Integrator;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
@@ -18,8 +19,9 @@ enum Se2IntegratorDemo {
    * runge4_ 0.108451661
    * runge45 0.37093125200000004 */
   public static void main(String[] args) {
-    Flow flow = Se2Controls.singleton(RealScalar.ONE, RealScalar.ONE);
+    Flow flow = CarConfig.singleton(RealScalar.ONE, RealScalar.ONE);
     Stopwatch s1 = Stopwatch.stopped();
+    Stopwatch s4 = Stopwatch.stopped();
     Stopwatch s2 = Stopwatch.stopped();
     Stopwatch s3 = Stopwatch.stopped();
     for (int count = 0; count < 10000; ++count) {
@@ -28,6 +30,9 @@ enum Se2IntegratorDemo {
       s1.start();
       Se2CarIntegrator.INSTANCE.step(flow, x, h);
       s1.stop();
+      s4.start();
+      Se2Integrator.INSTANCE.step(flow, x, h);
+      s4.stop();
       s2.start();
       RungeKutta4Integrator.INSTANCE.step(flow, x, h);
       s2.stop();
@@ -35,7 +40,8 @@ enum Se2IntegratorDemo {
       RungeKutta45Integrator.INSTANCE.step(flow, x, h);
       s3.stop();
     }
-    System.out.println("se2_int " + s1.display_seconds());
+    System.out.println("car_int " + s1.display_seconds());
+    System.out.println("se2_int " + s4.display_seconds());
     System.out.println("runge4_ " + s2.display_seconds());
     System.out.println("runge45 " + s3.display_seconds());
   }

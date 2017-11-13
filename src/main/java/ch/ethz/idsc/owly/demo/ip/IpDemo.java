@@ -36,14 +36,14 @@ class IpDemo {
     StateIntegrator stateIntegrator = FixedStateIntegrator.create( //
         MidpointIntegrator.INSTANCE, RationalScalar.of(1, 12), 5);
     StateSpaceModel stateSpaceModel = new IpStateSpaceModel( //
-        RealScalar.of(.3), // M
-        RealScalar.of(.2), // m
-        RealScalar.of(.5), // l
+        RealScalar.of(0.3), // M
+        RealScalar.of(0.2), // m
+        RealScalar.of(0.5), // l
         RealScalar.of(1)); // g;
     Collection<Flow> controls = IpControls.createControls(stateSpaceModel, 2, 10);
     IpGoalManager ipGoalManager = new IpGoalManager( //
         Tensors.vector(2, 0, 0, 0), //
-        Tensors.vector(.1, .1, 1, 1));
+        Tensors.vector(0.1, 0.1, 1, 1));
     TrajectoryRegionQuery obstacleQuery =
         // new EmptyTrajectoryRegionQuery();
         SimpleTrajectoryRegionQuery.timeInvariant( //

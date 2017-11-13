@@ -6,8 +6,8 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
+import ch.ethz.idsc.owly.demo.se2.CarConfig;
 import ch.ethz.idsc.owly.demo.se2.Se2CarIntegrator;
-import ch.ethz.idsc.owly.demo.se2.Se2Controls;
 import ch.ethz.idsc.owly.demo.se2.Se2MinTimeGoalManager;
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
 import ch.ethz.idsc.owly.glc.adapter.StateTimeTrajectories;
@@ -39,11 +39,12 @@ enum Se2rDemo {
     Tensor eta = Tensors.vector(6, 6, 50 / Math.PI);
     StateIntegrator stateIntegrator = FixedStateIntegrator.create( //
         Se2CarIntegrator.INSTANCE, RationalScalar.of(1, 6), 5);
-    Collection<Flow> controls = Se2Controls.createControlsForwardAndReverse(RotationUtils.DEGREE(45), 6);
+    CarConfig carConfig = new CarConfig(RotationUtils.DEGREE(45));
+    Collection<Flow> controls = carConfig.createControlsForwardAndReverse(6);
     // place holder for parameter class
     GoalInterface goalInterface = Se2MinTimeGoalManager.create( //
         Tensors.vector(-1, -1, Math.PI * 2), //
-        Tensors.vector(.1, .1, .17), //
+        Tensors.vector(0.1, 0.1, 0.17), //
         controls);
     TrajectoryRegionQuery obstacleQuery = SimpleTrajectoryRegionQuery.timeInvariant( //
         RegionUnion.wrap(Arrays.asList( //

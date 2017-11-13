@@ -19,6 +19,7 @@ import ch.ethz.idsc.owly.glc.core.TrajectoryPlanner;
 import ch.ethz.idsc.owly.gui.ani.OwlyGui;
 import ch.ethz.idsc.owly.math.flow.EulerIntegrator;
 import ch.ethz.idsc.owly.math.flow.Flow;
+import ch.ethz.idsc.owly.math.region.SphericalRegion;
 import ch.ethz.idsc.owly.math.state.EmptyTrajectoryRegionQuery;
 import ch.ethz.idsc.owly.math.state.FixedStateIntegrator;
 import ch.ethz.idsc.owly.math.state.StateIntegrator;
@@ -48,12 +49,13 @@ enum R2Demo {
   private static TrajectoryPlanner simple(TrajectoryRegionQuery obstacleQuery) {
     final Tensor stateRoot = Tensors.vector(-2, -2);
     final Tensor stateGoal = Tensors.vector(2, 2);
-    final Scalar radius = DoubleScalar.of(.25);
+    final Scalar radius = DoubleScalar.of(0.25);
     // ---
     Tensor eta = Tensors.vector(8, 8);
     StateIntegrator stateIntegrator = FixedStateIntegrator.create(EulerIntegrator.INSTANCE, RationalScalar.of(1, 5), 5);
     Collection<Flow> controls = R2Controls.createRadial(36);
-    GoalInterface goalInterface = RnMinDistSphericalGoalManager.create(stateGoal, radius);
+    SphericalRegion sphericalRegion = new SphericalRegion(stateGoal, radius);
+    GoalInterface goalInterface = new RnMinDistSphericalGoalManager(sphericalRegion);
     // ---
     TrajectoryPlanner trajectoryPlanner = new StandardTrajectoryPlanner( //
         eta, stateIntegrator, controls, obstacleQuery, goalInterface);

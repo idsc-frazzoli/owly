@@ -1,5 +1,5 @@
 // code by jl
-package ch.ethz.idsc.owly.demo.twd.glc;
+package ch.ethz.idsc.owly.demo.se2.twd;
 
 import ch.ethz.idsc.owly.glc.adapter.DefaultParameters;
 import ch.ethz.idsc.tensor.RealScalar;
@@ -8,7 +8,7 @@ import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.sca.Log;
 import ch.ethz.idsc.tensor.sca.Power;
 
-public class TwdParameters extends DefaultParameters {
+/* package */ class TwdParameters extends DefaultParameters {
   public TwdParameters( //
       Scalar resolution, Scalar timeScale, Scalar depthScale, Tensor partitionScale, Scalar dtMax, int maxIter, //
       Scalar lipschitz) {

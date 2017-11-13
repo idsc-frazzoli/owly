@@ -5,8 +5,8 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
+import ch.ethz.idsc.owly.demo.se2.CarConfig;
 import ch.ethz.idsc.owly.demo.se2.Se2CarIntegrator;
-import ch.ethz.idsc.owly.demo.se2.Se2Controls;
 import ch.ethz.idsc.owly.demo.se2.Se2StateSpaceModel;
 import ch.ethz.idsc.owly.demo.se2.Se2Wrap;
 import ch.ethz.idsc.owly.demo.se2.Se2WrapGoalManagerExt;
@@ -64,7 +64,8 @@ class Se2IterateGlcAnyCircleWrapDemo {
         Se2CarIntegrator.INSTANCE, parameters.getdtMax(), parameters.getTrajectorySize());
     // ---
     parameters.printResolution();
-    Collection<Flow> controls = Se2Controls.createControls(RotationUtils.DEGREE(45), parameters.getResolutionInt());
+    CarConfig carConfig = new CarConfig(RotationUtils.DEGREE(45));
+    Collection<Flow> controls = carConfig.createControls(parameters.getResolutionInt());
     CoordinateWrap coordinateWrap = new Se2Wrap(Tensors.vector(1, 1, 1));
     Se2MinCurvatureGoalManager se2GoalManager = new Se2MinCurvatureGoalManager(goal, radiusVector);
     Se2WrapGoalManagerExt se2WrapGoalManagerExt = new Se2WrapGoalManagerExt( //

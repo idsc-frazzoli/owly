@@ -40,7 +40,7 @@ public class Se2xTLetterDemo implements DemoInterface {
     switch (3) {
     case 1: {
       ImageRegion imageRegion = R2ImageRegions.inside_gtob();
-      Se2PointsVsRegion se2PointsVsRegion = Se2PointsVsRegions.line(Tensors.vector(.2, .1, 0, -.1), imageRegion);
+      Se2PointsVsRegion se2PointsVsRegion = Se2PointsVsRegions.line(Tensors.vector(0.2, 0.1, 0, -0.1), imageRegion);
       TrajectoryRegionQuery trq = SimpleTrajectoryRegionQuery.timeInvariant(se2PointsVsRegion);
       abstractEntity.obstacleQuery = trq;
       owlyAnimationFrame.setObstacleQuery(trq);
@@ -60,7 +60,7 @@ public class Se2xTLetterDemo implements DemoInterface {
     }
     case 3: {
       ImageRegion imageRegion = R2ImageRegions.inside_gtob();
-      Se2PointsVsRegion se2PointsVsRegion = Se2PointsVsRegions.line(Tensors.vector(.2, .1, 0, -.1), imageRegion);
+      Se2PointsVsRegion se2PointsVsRegion = Se2PointsVsRegions.line(Tensors.vector(0.2, 0.1, 0, -0.1), imageRegion);
       // ---
       ScalarTensorFunction stf1 = R2xTEllipsoidsAnimationDemo.wrap1DTensor(SimplexContinuousNoise.FUNCTION, Tensors.vector(0, 2), 0.03, 6.3);
       BijectionFamily noise1 = new SimpleTranslationFamily( //

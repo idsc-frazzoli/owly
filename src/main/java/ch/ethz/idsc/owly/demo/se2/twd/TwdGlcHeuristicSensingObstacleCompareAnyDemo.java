@@ -1,5 +1,5 @@
 // code by jl
-package ch.ethz.idsc.owly.demo.twd.glc;
+package ch.ethz.idsc.owly.demo.se2.twd;
 
 import java.util.Collection;
 import java.util.List;
@@ -7,9 +7,7 @@ import java.util.Optional;
 
 import ch.ethz.idsc.owly.demo.rn.EuclideanDistanceDiscoverRegion;
 import ch.ethz.idsc.owly.demo.rn.R2NoiseRegion;
-import ch.ethz.idsc.owly.demo.twd.TwdControls;
-import ch.ethz.idsc.owly.demo.twd.TwdMinTimeGoalManager;
-import ch.ethz.idsc.owly.demo.twd.TwdStateSpaceModel;
+import ch.ethz.idsc.owly.demo.se2.Se2MinTimeGoalManager;
 import ch.ethz.idsc.owly.glc.adapter.HeuristicQ;
 import ch.ethz.idsc.owly.glc.adapter.Parameters;
 import ch.ethz.idsc.owly.glc.adapter.RunCompare;
@@ -44,6 +42,8 @@ import ch.ethz.idsc.tensor.Tensors;
 
 enum TwdGlcHeuristicSensingObstacleCompareAnyDemo {
   ;
+  public static final TwdConfig TWDCONFIG = new TwdConfig(RealScalar.ONE, RealScalar.ONE);
+
   private static void _run(Scalar resolution, GoalInterface twdGoal, boolean rechabilityRegion, Scalar sensingRadius) throws Exception {
     boolean heuristic = HeuristicQ.of(twdGoal);
     System.out.println("RUN R=" + resolution + (heuristic ? "H" : "noH") //
@@ -60,8 +60,7 @@ enum TwdGlcHeuristicSensingObstacleCompareAnyDemo {
         parameters.getTrajectorySize());
     parameters.printResolution();
     System.out.println("DomainSize: 1/Eta: " + parameters.getEta().map(n -> RealScalar.ONE.divide(n)));
-    TwdStateSpaceModel.createDefault();
-    Collection<Flow> controls = TwdControls.createControls(TwdStateSpaceModel.createDefault(), parameters.getResolutionInt());
+    Collection<Flow> controls = TWDCONFIG.createControls(parameters.getResolutionInt());
     // Creating Goals
     Tensor startState = Tensors.vector(0, 0, 0);
     Region<Tensor> environmentRegion = new R2NoiseRegion(RealScalar.of(0.1));
@@ -152,7 +151,10 @@ enum TwdGlcHeuristicSensingObstacleCompareAnyDemo {
   public static void main(String[] args) throws Exception {
     GoalInterface[] values = new GoalInterface[] { //
         // new TwdMinCurvatureGoalManager(Tensors.vector(13, 13, 0), RealScalar.of(0.3), RealScalar.of(1)).getGoalInterface()
-        new TwdMinTimeGoalManager(Tensors.vector(13, 13, 0), RealScalar.of(0.3), RealScalar.of(1)).getGoalInterface()
+        new Se2MinTimeGoalManager(Tensors.vector(13, 13, 0), Tensors.vector(0.3, 0.3, 1), //
+            // let's hope the controls lead to the right results
+            TWDCONFIG.createControls(8)).getGoalInterface() //
+        // new TwdMinTimeGoalManager(Tensors.vector(13, 13, 0), RealScalar.of(0.3), RealScalar.of(1)).getGoalInterface()
         // new TwdNoHeuristicGoalManager(Tensors.vector(6, 6, 0), Tensors.vector(0.3, 0.3, 1)).getGoalInterface() //
     };
     for (GoalInterface twdGoal : values) {

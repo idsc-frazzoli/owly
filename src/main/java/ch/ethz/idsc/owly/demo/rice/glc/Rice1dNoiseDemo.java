@@ -28,7 +28,7 @@ public class Rice1dNoiseDemo implements DemoInterface {
     Scalar mu = RealScalar.ZERO;
     Collection<Flow> controls = Rice2Controls.create1d(mu, 15);
     owlyAnimationFrame.set(new Rice1dEntity(mu, Tensors.vector(0, 0), controls));
-    Region<Tensor> region = new R2NoiseRegion(RealScalar.of(.5));
+    Region<Tensor> region = new R2NoiseRegion(RealScalar.of(0.5));
     owlyAnimationFrame.setObstacleQuery(SimpleTrajectoryRegionQuery.timeInvariant(region));
     // ---
     Tensor range = Tensors.vector(6, 1);
@@ -36,7 +36,7 @@ public class Rice1dNoiseDemo implements DemoInterface {
     RandomSampleInterface sampler = new BoxRandomSample(range.negate(), range);
     Tensor points = Tensor.of(RandomSample.of(sampler, 1000).stream());
     vectorFieldRender.uv_pairs = //
-        VectorFields.of(Rice2StateSpaceModel.of(mu), points, Rice1dEntity.FALLBACK_CONTROL, RealScalar.of(.2));
+        VectorFields.of(Rice2StateSpaceModel.of(mu), points, Rice1dEntity.FALLBACK_CONTROL, RealScalar.of(0.2));
     owlyAnimationFrame.addBackground(vectorFieldRender);
     // ---
     owlyAnimationFrame.jFrame.setVisible(true);

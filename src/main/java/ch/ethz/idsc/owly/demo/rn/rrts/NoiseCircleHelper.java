@@ -38,7 +38,7 @@ class NoiseCircleHelper {
   public NoiseCircleHelper(TransitionRegionQuery obstacleQuery, StateTime tail, Tensor goal) {
     this.tail = tail;
     Tensor orig = tail.state();
-    Scalar radius = Norm._2.between(goal, orig).multiply(RealScalar.of(.5)).add(RealScalar.ONE);
+    Scalar radius = Norm._2.between(goal, orig).multiply(RealScalar.of(0.5)).add(RealScalar.ONE);
     final Tensor center = Mean.of(Tensors.of(orig, goal));
     Tensor min = center.map(s -> s.subtract(radius));
     Tensor max = center.map(s -> s.add(radius));
@@ -51,7 +51,7 @@ class NoiseCircleHelper {
     Rrts rrts = new DefaultRrts(rnts, nc, obstacleQuery, LengthCostFunction.IDENTITY);
     root = rrts.insertAsNode(orig, 5).get();
     RandomSampleInterface spaceSampler = new CircleRandomSample(center, radius);
-    RandomSampleInterface goalSampler = new CircleRandomSample(goal, RealScalar.of(.5));
+    RandomSampleInterface goalSampler = new CircleRandomSample(goal, RealScalar.of(0.5));
     rrtsPlanner = new RrtsPlanner(rrts, spaceSampler, goalSampler);
   }
 
@@ -66,7 +66,7 @@ class NoiseCircleHelper {
       RrtsNode best = rrtsPlanner.getBest().get();
       List<RrtsNode> sequence = Nodes.listFromRoot(best);
       // magic const
-      trajectory = RnFlowTrajectory.createTrajectory(rnts, sequence, tail.time(), RealScalar.of(.1));
+      trajectory = RnFlowTrajectory.createTrajectory(rnts, sequence, tail.time(), RealScalar.of(0.1));
     }
   }
 }

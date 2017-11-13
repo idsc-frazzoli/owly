@@ -33,7 +33,7 @@ public class LvAnimationDemo implements DemoInterface {
     RandomSampleInterface sampler = new BoxRandomSample(Tensors.vector(0, 0), range);
     Tensor points = Tensor.of(RandomSample.of(sampler, 1000).stream());
     vectorFieldRender.uv_pairs = //
-        VectorFields.of(stateSpaceModel, points, LvEntity.FALLBACK_CONTROL, RealScalar.of(.04));
+        VectorFields.of(stateSpaceModel, points, LvEntity.FALLBACK_CONTROL, RealScalar.of(0.04));
     owlyAnimationFrame.addBackground(vectorFieldRender);
     // ---
     owlyAnimationFrame.jFrame.setVisible(true);

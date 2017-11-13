@@ -16,6 +16,7 @@ import ch.ethz.idsc.owly.math.state.StateTime;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Tensors;
 
+/** the obstacle region in the demo is the outside of a rotating letter 'a' */
 public class R2xTImageAnimationDemo implements DemoInterface {
   @Override
   public void start() {
@@ -23,13 +24,14 @@ public class R2xTImageAnimationDemo implements DemoInterface {
     AbstractEntity abstractEntity = new R2xTEntity(Tensors.vector(1.5, 2), RealScalar.of(1.5));
     owlyAnimationFrame.set(abstractEntity);
     // ---
-    RigidFamily rigid1 = Se2Family.rotationAround(Tensors.vectorDouble(1.5, 2), time -> time.multiply(RealScalar.of(.1)));
+    RigidFamily rigidFamily = Se2Family.rotationAround( //
+        Tensors.vectorDouble(1.5, 2), time -> time.multiply(RealScalar.of(0.1)));
     ImageRegion imageRegion = R2ImageRegions.inside_circ();
-    Region<StateTime> region1 = new R2xTImageStateTimeRegion( //
-        imageRegion, rigid1, () -> abstractEntity.getStateTimeNow().time());
+    Region<StateTime> region = new R2xTImageStateTimeRegion( //
+        imageRegion, rigidFamily, () -> abstractEntity.getStateTimeNow().time());
     // ---
-    owlyAnimationFrame.setObstacleQuery(new SimpleTrajectoryRegionQuery(region1));
-    owlyAnimationFrame.addBackground((RenderInterface) region1);
+    owlyAnimationFrame.setObstacleQuery(new SimpleTrajectoryRegionQuery(region));
+    owlyAnimationFrame.addBackground((RenderInterface) region);
     owlyAnimationFrame.configCoordinateOffset(200, 400);
     owlyAnimationFrame.jFrame.setVisible(true);
   }

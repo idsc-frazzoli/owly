@@ -67,7 +67,7 @@ enum R2GlcConstTimeHeuristicAnyDemo {
       goalRegions.add(new EllipsoidRegion(goal, radius));
     }
     RnTrajectoryGoalManager rnGoal = new RnTrajectoryGoalManager(goalRegions, precomputedTrajectory, radius);
-    Region<Tensor> region = new R2NoiseRegion(RealScalar.of(.1));
+    Region<Tensor> region = new R2NoiseRegion(RealScalar.of(0.1));
     TrajectoryRegionQuery obstacleQuery = SimpleTrajectoryRegionQuery.timeInvariant(region);
     AnyPlannerInterface anyPlannerInterface = new OptimalAnyTrajectoryPlanner( //
         parameters.getEta(), stateIntegrator, controls, obstacleQuery, rnGoal);

@@ -37,7 +37,7 @@ enum T2Demo {
     CoordinateWrap coordinateWrap;
     coordinateWrap = new TnWrap(Tensors.vector(5, 7));
     // coordinateWrap = new IdentityWrap();
-    TnGoalManager rnGoal = new TnGoalManager(coordinateWrap, Tensors.vector(4, 6), RealScalar.of(.25));
+    TnGoalManager rnGoal = new TnGoalManager(coordinateWrap, Tensors.vector(4, 6), RealScalar.of(0.25));
     // performance depends on heuristic: zeroHeuristic vs rnGoal
     // Heuristic heuristic = new ZeroHeuristic(); // rnGoal
     // ---
