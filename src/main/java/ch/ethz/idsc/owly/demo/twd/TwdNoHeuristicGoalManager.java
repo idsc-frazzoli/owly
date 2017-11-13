@@ -14,7 +14,7 @@ import ch.ethz.idsc.tensor.Tensor;
 
 /** Twd goal region is not elliptic, therefore we implement {@link Region}
  * This class exists to compare and show the effects of a Heuristic in the Se2Model */
-public final class TwdNoHeuristicGoalManager extends TwdAbstractGoalManager {
+/* package */ class TwdNoHeuristicGoalManager extends TwdAbstractGoalManager {
   /** @param center
    * @param radiusVector with 3 entries the first 2 of which have to be identical */
   public TwdNoHeuristicGoalManager(Tensor center, Tensor radiusVector) {

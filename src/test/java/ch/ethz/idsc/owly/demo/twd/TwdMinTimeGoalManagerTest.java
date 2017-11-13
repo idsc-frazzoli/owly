@@ -1,6 +1,7 @@
 // code by jph
 package ch.ethz.idsc.owly.demo.twd;
 
+import ch.ethz.idsc.owly.demo.twd.glc.TwdMinTimeGoalManager;
 import ch.ethz.idsc.owly.glc.adapter.HeuristicQ;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;

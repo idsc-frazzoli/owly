@@ -28,15 +28,15 @@ public class TwdMinCurvatureGoalManager extends TwdAbstractGoalManager {
     StateTime from = node.stateTime();
     StateTime end = trajectory.get(trajectory.size() - 1);
     // J(x,u) = (1+(delta(theta)/delta(position))²) * Ts
-    Scalar angledef = TwdStateSpaceModel.errorRotation(end.state(), from.state());
+    Scalar angledef = TwdHelper.errorRotation(end.state(), from.state());
     return RealScalar.ONE.add(AbsSquared.FUNCTION.apply(angledef) //
-        .divide(TwdStateSpaceModel.errorPosition(from.state(), end.state()).add(RealScalar.ONE)))// if turnign on the place
+        .divide(TwdHelper.errorPosition(from.state(), end.state()).add(RealScalar.ONE)))// if turnign on the place
         .multiply(StateTimeTrajectories.timeIncrement(from, trajectory));
   }
 
   // TODO only valid for assumption of maxSpeed = 1
   @Override // from HeuristicFunction
   public Scalar minCostToGoal(Tensor x) {
-    return Ramp.of(TwdStateSpaceModel.errorPosition(x, center).subtract(tolerance_xy));
+    return Ramp.of(TwdHelper.errorPosition(x, center).subtract(tolerance_xy));
   }
 }

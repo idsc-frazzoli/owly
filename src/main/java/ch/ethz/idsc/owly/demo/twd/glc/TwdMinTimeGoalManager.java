@@ -1,8 +1,10 @@
 // code by jph and jl
-package ch.ethz.idsc.owly.demo.twd;
+package ch.ethz.idsc.owly.demo.twd.glc;
 
 import java.util.List;
 
+import ch.ethz.idsc.owly.demo.twd.TwdAbstractGoalManager;
+import ch.ethz.idsc.owly.demo.twd.TwdHelper;
 import ch.ethz.idsc.owly.glc.adapter.StateTimeTrajectories;
 import ch.ethz.idsc.owly.glc.core.GlcNode;
 import ch.ethz.idsc.owly.math.flow.Flow;
@@ -17,15 +19,15 @@ public class TwdMinTimeGoalManager extends TwdAbstractGoalManager {
     super(center, tolerance_xy, tolerance_angle);
   }
 
-  @Override // from CostFunction
+  @Override // from CostIncrementFunction
   public Scalar costIncrement(GlcNode node, List<StateTime> trajectory, Flow flow) {
     StateTime from = node.stateTime();
     return StateTimeTrajectories.timeIncrement(from, trajectory);
   }
 
   // TODO only valid for assumption of maxSpeed = 1
-  @Override // from CostFunction
+  @Override // from HeuristicFunction
   public Scalar minCostToGoal(Tensor x) {
-    return Ramp.of(TwdStateSpaceModel.errorPosition(x, center).subtract(tolerance_xy));
+    return Ramp.of(TwdHelper.errorPosition(x, center).subtract(tolerance_xy));
   }
 }

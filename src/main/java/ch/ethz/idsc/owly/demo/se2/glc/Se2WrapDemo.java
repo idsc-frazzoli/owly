@@ -9,7 +9,6 @@ import java.util.Optional;
 import ch.ethz.idsc.owly.demo.se2.Se2CarIntegrator;
 import ch.ethz.idsc.owly.demo.se2.Se2Controls;
 import ch.ethz.idsc.owly.demo.se2.Se2Wrap;
-import ch.ethz.idsc.owly.demo.se2.Se2WrapGoalManager;
 import ch.ethz.idsc.owly.glc.adapter.IdentityWrap;
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
 import ch.ethz.idsc.owly.glc.adapter.StateTimeTrajectories;

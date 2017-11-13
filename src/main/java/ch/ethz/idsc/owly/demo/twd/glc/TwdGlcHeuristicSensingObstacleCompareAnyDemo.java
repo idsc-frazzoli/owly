@@ -7,9 +7,7 @@ import java.util.Optional;
 
 import ch.ethz.idsc.owly.demo.rn.EuclideanDistanceDiscoverRegion;
 import ch.ethz.idsc.owly.demo.rn.R2NoiseRegion;
-import ch.ethz.idsc.owly.demo.twd.TwdControls;
-import ch.ethz.idsc.owly.demo.twd.TwdMinTimeGoalManager;
-import ch.ethz.idsc.owly.demo.twd.TwdStateSpaceModel;
+import ch.ethz.idsc.owly.demo.twd.TwdConfig;
 import ch.ethz.idsc.owly.glc.adapter.HeuristicQ;
 import ch.ethz.idsc.owly.glc.adapter.Parameters;
 import ch.ethz.idsc.owly.glc.adapter.RunCompare;
@@ -60,8 +58,8 @@ enum TwdGlcHeuristicSensingObstacleCompareAnyDemo {
         parameters.getTrajectorySize());
     parameters.printResolution();
     System.out.println("DomainSize: 1/Eta: " + parameters.getEta().map(n -> RealScalar.ONE.divide(n)));
-    TwdStateSpaceModel.createDefault();
-    Collection<Flow> controls = TwdControls.createControls(TwdStateSpaceModel.createDefault(), parameters.getResolutionInt());
+    TwdConfig twdControls = new TwdConfig(RealScalar.ONE, RealScalar.ONE);
+    Collection<Flow> controls = twdControls.createControls(parameters.getResolutionInt());
     // Creating Goals
     Tensor startState = Tensors.vector(0, 0, 0);
     Region<Tensor> environmentRegion = new R2NoiseRegion(RealScalar.of(0.1));

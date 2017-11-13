@@ -11,8 +11,8 @@ import ch.ethz.idsc.tensor.Scalars;
 import ch.ethz.idsc.tensor.Tensor;
 
 public abstract class TwdAbstractGoalManager implements Region<Tensor>, CostFunction {
-  final Tensor center;
-  final Scalar tolerance_xy;
+  protected final Tensor center;
+  protected final Scalar tolerance_xy;
   final Scalar tolerance_angle;
 
   /** @param center {goal_x, goal_y, goal_theta}
@@ -27,8 +27,8 @@ public abstract class TwdAbstractGoalManager implements Region<Tensor>, CostFunc
   @Override // from Region
   public final boolean isMember(Tensor tensor) {
     boolean status = true;
-    status &= Scalars.lessEquals(TwdStateSpaceModel.errorPosition(tensor, center), tolerance_xy);
-    status &= Scalars.lessEquals(TwdStateSpaceModel.errorRotation(tensor, center), tolerance_angle);
+    status &= Scalars.lessEquals(TwdHelper.errorPosition(tensor, center), tolerance_xy);
+    status &= Scalars.lessEquals(TwdHelper.errorRotation(tensor, center), tolerance_angle);
     return status;
   }
 

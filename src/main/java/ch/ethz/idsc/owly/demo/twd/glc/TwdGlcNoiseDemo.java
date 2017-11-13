@@ -6,9 +6,8 @@ import java.util.List;
 import java.util.Optional;
 
 import ch.ethz.idsc.owly.demo.rn.R2NoiseRegion;
-import ch.ethz.idsc.owly.demo.twd.TwdControls;
+import ch.ethz.idsc.owly.demo.twd.TwdConfig;
 import ch.ethz.idsc.owly.demo.twd.TwdMinCurvatureGoalManager;
-import ch.ethz.idsc.owly.demo.twd.TwdStateSpaceModel;
 import ch.ethz.idsc.owly.glc.adapter.Parameters;
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
 import ch.ethz.idsc.owly.glc.adapter.StateTimeTrajectories;
@@ -42,19 +41,21 @@ enum TwdGlcNoiseDemo {
     Tensor partitionScale = Tensors.vector(5, 5, 2 * Math.PI / 360 * 10);
     Scalar dtMax = RationalScalar.of(1, 10);
     int maxIter = 2000;
-    Scalar wheelDistance = RealScalar.of(0.2);
-    Scalar wheelRadius = RealScalar.of(0.05);
-    TwdStateSpaceModel stateSpaceModel = new TwdStateSpaceModel(wheelRadius, wheelDistance);
+    // Scalar wheelDistance = RealScalar.of(0.2);
+    // Scalar wheelRadius = RealScalar.of(0.05);
+    // TwdStateSpaceModel stateSpaceModel = new TwdStateSpaceModel(wheelRadius, wheelDistance);
     Parameters parameters = new TwdParameters( //
-        resolution, timeScale, depthScale, partitionScale, dtMax, maxIter, stateSpaceModel.getLipschitz());
+        resolution, timeScale, depthScale, partitionScale, dtMax, maxIter, RealScalar.ONE
+    // stateSpaceModel.getLipschitz()
+    );
     parameters.printResolution();
     System.out.println("DomainSize: 1/Eta: " + parameters.getEta().map(n -> RealScalar.ONE.divide(n)));
     Region<Tensor> region = new R2NoiseRegion(RealScalar.of(0.1));
     StateIntegrator stateIntegrator = //
         FixedStateIntegrator.create(EulerIntegrator.INSTANCE, parameters.getdtMax(), parameters.getTrajectorySize());
     // Controls
-    Collection<Flow> controls = TwdControls.createControls2(//
-        stateSpaceModel, parameters.getResolutionInt());
+    TwdConfig twdControls = new TwdConfig(RealScalar.ONE, RealScalar.ONE);
+    Collection<Flow> controls = twdControls.createControls2(parameters.getResolutionInt());
     // GoalRegion
     Tensor goalCenter = Tensors.vector(5.5, 0, -1 * Math.PI);
     // Tensor radiusVector = Tensors.vector(0.2, 0.2, 2 * Math.PI / 360 * 50);
