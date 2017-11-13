@@ -24,12 +24,20 @@ public enum Se2LateralAcceleration implements CostFunction {
   /** Curvature is changed angle over distance covered */
   @Override // from CostIncrementFunction
   public Scalar costIncrement(GlcNode glcNode, List<StateTime> trajectory, Flow flow) {
-    Scalar dt = StateTimeTrajectories.timeIncrement(glcNode, trajectory);
-    return AbsSquared.FUNCTION.apply(flow.getU().Get(2)).multiply(dt);
+    return cost(flow.getU(), StateTimeTrajectories.timeIncrement(glcNode, trajectory));
   }
 
   @Override // from HeuristicFunction
   public Scalar minCostToGoal(Tensor x) {
     return RealScalar.ZERO;
+  }
+
+  /** for testing purpose
+   * 
+   * @param u for instance {2.5[m*s^-1], 0.0, 1.0[rad*s^-1]}
+   * @param dt for instance 0.5[s]
+   * @return quantity with unit [rad^2*s^-1] */
+  public static Scalar cost(Tensor u, Scalar dt) {
+    return AbsSquared.FUNCTION.apply(u.Get(2)).multiply(dt);
   }
 }

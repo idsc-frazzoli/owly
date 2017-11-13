@@ -57,7 +57,7 @@ enum Se2GlcDemo {
     System.out.println("scale=" + parameters.getEta());
     parameters.printResolution();
     // Se2Controls uses Se2StateSpaceModel
-    CarConfig carConfig = new CarConfig(RotationUtils.DEGREE(45));
+    CarConfig carConfig = new CarConfig(RealScalar.ONE, RotationUtils.DEGREE(45));
     Collection<Flow> controls = carConfig.createControls(parameters.getResolutionInt());
     GoalInterface goalInterface = Se2MinTimeGoalManager.create( //
         Tensors.vector(0, 1, Math.PI), //

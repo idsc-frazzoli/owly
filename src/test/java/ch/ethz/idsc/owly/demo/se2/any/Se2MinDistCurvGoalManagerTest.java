@@ -18,7 +18,7 @@ import junit.framework.TestCase;
 public class Se2MinDistCurvGoalManagerTest extends TestCase {
   public void testMinDist() {
     Tensor radiusVector = Tensors.of(DoubleScalar.of(0.1), DoubleScalar.of(0.1), RealScalar.of(Math.PI * 0.1));
-    CarConfig carConfig = new CarConfig(RealScalar.of(0.2));
+    CarConfig carConfig = new CarConfig(RealScalar.ONE, RealScalar.of(0.2));
     Collection<Flow> controls = carConfig.createControlsForwardAndReverse(10);
     Se2MinDistCurvGoalManager se2MinDistGoalManager = new Se2MinDistCurvGoalManager(//
         Tensors.vector(0, 0, Math.PI), radiusVector, controls);
@@ -40,7 +40,7 @@ public class Se2MinDistCurvGoalManagerTest extends TestCase {
 
   public void testWrapExt() {
     Tensor radiusVector = Tensors.of(DoubleScalar.of(0.1), DoubleScalar.of(0.1), RealScalar.of(Math.PI * 0.1));
-    CarConfig carConfig = new CarConfig(RealScalar.of(0.2));
+    CarConfig carConfig = new CarConfig(RealScalar.ONE, RealScalar.of(0.2));
     Collection<Flow> controls = carConfig.createControlsForwardAndReverse(10);
     Se2MinDistCurvGoalManager se2MinDistGoalManager = new Se2MinDistCurvGoalManager(//
         Tensors.vector(0, 0, Math.PI), radiusVector, controls);

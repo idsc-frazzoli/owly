@@ -63,7 +63,7 @@ enum Se2GlcHeuristicSensingObstacleCompareAnyDemo {
         parameters.getTrajectorySize());
     parameters.printResolution();
     System.out.println("DomainSize: 1/Eta: " + parameters.getEta().map(n -> RealScalar.ONE.divide(n)));
-    CarConfig carConfig = new CarConfig(RotationUtils.DEGREE(45));
+    CarConfig carConfig = new CarConfig(RealScalar.ONE, RotationUtils.DEGREE(45));
     Collection<Flow> controls = carConfig.createControls(parameters.getResolutionInt());
     // Creating Goals
     Tensor startState = Tensors.vector(0, 0, 0);
@@ -163,7 +163,7 @@ enum Se2GlcHeuristicSensingObstacleCompareAnyDemo {
   }
 
   public static void main(String[] args) throws Exception {
-    CarConfig carConfig = new CarConfig(RotationUtils.DEGREE(45));
+    CarConfig carConfig = new CarConfig(RealScalar.ONE, RotationUtils.DEGREE(45));
     Collection<Flow> controls = carConfig.createControls(11);
     Tensor goal = Tensors.vector(11, 11, 0);
     GoalInterface[] values = new GoalInterface[] { //

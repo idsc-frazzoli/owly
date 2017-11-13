@@ -16,9 +16,14 @@ import ch.ethz.idsc.tensor.alg.Subdivide;
 import ch.ethz.idsc.tensor.sca.N;
 
 public class CarConfig {
+  private final Scalar speed;
   private final Scalar rate_max;
 
-  public CarConfig(Scalar rate_max) {
+  /** @param speed with unit [m*s^-1]
+   * @param rate_max with unit [rad*m^-1], i.e. the amount of
+   * rotation [rad] performed per distance [m^-1] */
+  public CarConfig(Scalar speed, Scalar rate_max) {
+    this.speed = speed;
     this.rate_max = rate_max;
   }
 
@@ -27,7 +32,7 @@ public class CarConfig {
    * @return flow with u == {speed[m*s^-1], 0.0, (rate*speed)[rad*s^-1]} */
   /* package for testing */ static Flow singleton(Scalar speed, Tensor rate) {
     return StateSpaceModels.createFlow(Se2StateSpaceModel.INSTANCE, //
-        N.DOUBLE.of(Tensors.of(speed, RealScalar.ZERO, rate.Get().multiply(speed))));
+        N.DOUBLE.of(Tensors.of(speed, RealScalar.ZERO, rate.multiply(speed))));
   }
 
   /** @param rate_max maximum turning rate in [rad/m]
@@ -38,15 +43,15 @@ public class CarConfig {
       ++num;
     List<Flow> list = new ArrayList<>();
     for (Tensor rate : Subdivide.of(rate_max.negate(), rate_max, num))
-      list.add(singleton(RealScalar.ONE, rate));
+      list.add(singleton(speed, rate));
     return Collections.unmodifiableList(list);
   }
 
   public Collection<Flow> createControlsForwardAndReverse(int num) {
     List<Flow> list = new ArrayList<>();
     for (Tensor angle : Subdivide.of(rate_max.negate(), rate_max, num)) {
-      list.add(singleton(RealScalar.ONE, angle));
-      list.add(singleton(RealScalar.ONE.negate(), angle));
+      list.add(singleton(speed, angle));
+      list.add(singleton(speed.negate(), angle));
     }
     return list;
   }

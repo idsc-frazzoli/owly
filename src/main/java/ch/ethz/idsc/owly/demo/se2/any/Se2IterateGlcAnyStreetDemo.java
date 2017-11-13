@@ -54,7 +54,7 @@ class Se2IterateGlcAnyStreetDemo {
     // ---
     System.out.println("1/Domainsize=" + parameters.getEta());
     parameters.printResolution();
-    CarConfig carConfig = new CarConfig(RotationUtils.DEGREE(45));
+    CarConfig carConfig = new CarConfig(RealScalar.ONE, RotationUtils.DEGREE(45));
     Collection<Flow> controls = carConfig.createControls(6);
     Se2NoHeuristicGoalManager se2GoalManager = new Se2NoHeuristicGoalManager(Tensors.vector(-7, 0, 0), radiusVector);
     TrajectoryRegionQuery obstacleQuery = SimpleTrajectoryRegionQuery.timeInvariant( //

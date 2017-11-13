@@ -84,7 +84,7 @@ class Se2Entity extends AbstractEntity {
         Se2StateSpaceModel.INSTANCE, //
         Se2CarIntegrator.INSTANCE, //
         new StateTime(state, RealScalar.ZERO))); // initial position
-    CarConfig carConfig = new CarConfig(RotationUtils.DEGREE(45));
+    CarConfig carConfig = new CarConfig(RealScalar.ONE, RotationUtils.DEGREE(45));
     controls = carConfig.createControlsForwardAndReverse(6);
     final Scalar goalRadius_xy = Sqrt.of(RealScalar.of(2)).divide(PARTITIONSCALE.Get(0));
     final Scalar goalRadius_theta = Sqrt.of(RealScalar.of(2)).divide(PARTITIONSCALE.Get(2));

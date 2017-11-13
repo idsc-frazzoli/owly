@@ -64,7 +64,7 @@ class Se2IterateGlcAnyCircleWrapDemo {
         Se2CarIntegrator.INSTANCE, parameters.getdtMax(), parameters.getTrajectorySize());
     // ---
     parameters.printResolution();
-    CarConfig carConfig = new CarConfig(RotationUtils.DEGREE(45));
+    CarConfig carConfig = new CarConfig(RealScalar.ONE, RotationUtils.DEGREE(45));
     Collection<Flow> controls = carConfig.createControls(parameters.getResolutionInt());
     CoordinateWrap coordinateWrap = new Se2Wrap(Tensors.vector(1, 1, 1));
     Se2MinCurvatureGoalManager se2GoalManager = new Se2MinCurvatureGoalManager(goal, radiusVector);

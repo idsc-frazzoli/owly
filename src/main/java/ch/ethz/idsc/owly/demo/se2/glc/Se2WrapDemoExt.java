@@ -44,7 +44,7 @@ enum Se2WrapDemoExt {
         Se2CarIntegrator.INSTANCE, //
         RationalScalar.of(1, 6), 5);
     System.out.println("scale=" + eta);
-    CarConfig carConfig = new CarConfig(RotationUtils.DEGREE(45));
+    CarConfig carConfig = new CarConfig(RealScalar.ONE, RotationUtils.DEGREE(45));
     Collection<Flow> controls = carConfig.createControls(6);
     final CoordinateWrap identity = IdentityWrap.INSTANCE;
     CoordinateWrap coordinateWrap;
