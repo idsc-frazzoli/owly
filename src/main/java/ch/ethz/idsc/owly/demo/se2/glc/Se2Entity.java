@@ -13,8 +13,8 @@ import java.util.Objects;
 import ch.ethz.idsc.owly.data.GlobalAssert;
 import ch.ethz.idsc.owly.demo.se2.CarConfig;
 import ch.ethz.idsc.owly.demo.se2.Se2CarIntegrator;
-import ch.ethz.idsc.owly.demo.se2.Se2MinShiftCostFunction;
 import ch.ethz.idsc.owly.demo.se2.Se2MinTimeGoalManager;
+import ch.ethz.idsc.owly.demo.se2.Se2ShiftCostFunction;
 import ch.ethz.idsc.owly.demo.se2.Se2StateSpaceModel;
 import ch.ethz.idsc.owly.demo.se2.Se2Wrap;
 import ch.ethz.idsc.owly.glc.adapter.MultiCostGoalAdapter;
@@ -89,7 +89,7 @@ class Se2Entity extends AbstractEntity {
     final Scalar goalRadius_xy = Sqrt.of(RealScalar.of(2)).divide(PARTITIONSCALE.Get(0));
     final Scalar goalRadius_theta = Sqrt.of(RealScalar.of(2)).divide(PARTITIONSCALE.Get(2));
     goalRadius = Tensors.of(goalRadius_xy, goalRadius_xy, goalRadius_theta);
-    extraCosts.add(new Se2MinShiftCostFunction(SHIFT_PENALTY));
+    extraCosts.add(new Se2ShiftCostFunction(SHIFT_PENALTY));
     // try {
     // bufferedImage = ImageIO.read(UserHome.Pictures("car_green.png"));
     // } catch (Exception exception) {

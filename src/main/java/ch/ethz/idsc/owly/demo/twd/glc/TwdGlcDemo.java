@@ -4,11 +4,14 @@ package ch.ethz.idsc.owly.demo.twd.glc;
 import java.util.Arrays;
 import java.util.Collection;
 
+import ch.ethz.idsc.owly.demo.se2.Se2LateralAcceleration;
+import ch.ethz.idsc.owly.demo.se2.Se2MinTimeGoalManager;
 import ch.ethz.idsc.owly.demo.twd.TwdConfig;
-import ch.ethz.idsc.owly.demo.twd.TwdMinCurvatureGoalManager;
+import ch.ethz.idsc.owly.glc.adapter.MultiCostGoalAdapter;
 import ch.ethz.idsc.owly.glc.adapter.Parameters;
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
 import ch.ethz.idsc.owly.glc.core.GlcExpand;
+import ch.ethz.idsc.owly.glc.core.GoalInterface;
 import ch.ethz.idsc.owly.glc.core.StandardTrajectoryPlanner;
 import ch.ethz.idsc.owly.glc.core.TrajectoryPlanner;
 import ch.ethz.idsc.owly.gui.ani.OwlyFrame;
@@ -56,14 +59,15 @@ enum TwdGlcDemo {
         )));
     // ---
     Tensor goalCenter = Tensors.vector(2, -2, -1 * Math.PI);
-    TwdMinCurvatureGoalManager goalManager = //
-        new TwdMinCurvatureGoalManager(goalCenter, RealScalar.of(0.5), RealScalar.of(50 * Math.PI / 180));
+    GoalInterface goalInterface = MultiCostGoalAdapter.of( //
+        new Se2MinTimeGoalManager(goalCenter, Tensors.vector(0.5, 0.5, 50 * Math.PI / 180), controls).getGoalInterface(), //
+        Arrays.asList(Se2LateralAcceleration.COSTFUNCTION));
     // ---
     TrajectoryPlanner trajectoryPlanner = new StandardTrajectoryPlanner(parameters.getEta(), //
-        stateIntegrator, controls, obstacleQuery, goalManager.getGoalInterface());
+        stateIntegrator, controls, obstacleQuery, goalInterface);
     trajectoryPlanner.insertRoot(new StateTime(Tensors.vector(0, 0, 0.5 * Math.PI), RealScalar.ZERO));
     OwlyFrame owlyFrame = OwlyGui.start();
-    owlyFrame.configCoordinateOffset(33, 416);
+    owlyFrame.configCoordinateOffset(200, 300);
     owlyFrame.jFrame.setBounds(100, 100, 620, 475);
     while (!trajectoryPlanner.getBest().isPresent() && owlyFrame.jFrame.isVisible()) {
       GlcExpand.maxSteps(trajectoryPlanner, 30, parameters.getDepthLimit());
