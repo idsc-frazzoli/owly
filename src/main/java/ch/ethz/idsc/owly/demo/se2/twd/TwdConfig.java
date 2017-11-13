@@ -34,6 +34,8 @@ public class TwdConfig {
   private final Scalar maxSpeed;
   private final Scalar halfWidth;
 
+  /** @param maxSpeed [m*s^-1]
+   * @param halfWidth [m*rad^-1] */
   public TwdConfig(Scalar maxSpeed, Scalar halfWidth) {
     this.maxSpeed = maxSpeed;
     this.halfWidth = halfWidth;

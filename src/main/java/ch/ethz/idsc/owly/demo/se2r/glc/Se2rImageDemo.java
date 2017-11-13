@@ -42,7 +42,7 @@ enum Se2rImageDemo {
     Tensor partitionScale = Tensors.vector(3, 3, 50 / Math.PI);
     StateIntegrator stateIntegrator = FixedStateIntegrator.create( //
         Se2CarIntegrator.INSTANCE, RationalScalar.of(1, 6), 5);
-    CarConfig carConfig = new CarConfig(RotationUtils.DEGREE(45));
+    CarConfig carConfig = new CarConfig(RealScalar.ONE, RotationUtils.DEGREE(45));
     Collection<Flow> controls = carConfig.createControlsForwardAndReverse(6);
     GoalInterface goalInterface = Se2MinTimeGoalManager.create( //
         Tensors.vector(4.0, 5.6, 0), //

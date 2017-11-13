@@ -61,7 +61,7 @@ class Se2IterateGlcAnyCircleCompareDemo {
     // ---
     System.out.println("1/Domainsize=" + parameters.getEta());
     parameters.printResolution();
-    CarConfig carConfig = new CarConfig(RotationUtils.DEGREE(45));
+    CarConfig carConfig = new CarConfig(RealScalar.ONE, RotationUtils.DEGREE(45));
     Collection<Flow> controls = carConfig.createControls(parameters.getResolutionInt());
     Se2AbstractGoalManager se2GoalManager = new Se2MinCurvatureGoalManager( //
         Tensors.vector(3, 0, 1.5 * Math.PI), radiusVector);

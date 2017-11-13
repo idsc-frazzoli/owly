@@ -26,19 +26,21 @@ public class TwdConfigTest extends TestCase {
 
   public void testUnit() {
     Scalar ms = Quantity.of(3, "m*s^-1");
-    Scalar sa = Quantity.of(0.567, "m");
+    Scalar sa = Quantity.of(0.567, "m*rad^-1");
     TwdConfig twdConfig = new TwdConfig(ms, sa);
     Collection<Flow> controls = twdConfig.createControls(8);
+    // System.out.println(controls.iterator().next().getU());
     Scalar maxSpeed = Se2Controls.maxSpeed(controls);
     assertEquals(maxSpeed, ms);
+    assertEquals(Units.of(maxSpeed), Unit.of("m*s^-1"));
     Scalar maxTurng = Se2Controls.maxTurning(controls);
-    assertEquals(Units.of(maxTurng), Unit.of("s^-1"));
+    assertEquals(Units.of(maxTurng), Unit.of("rad*s^-1"));
     assertEquals(maxTurng, ms.divide(sa));
   }
 
   public void testNoDuplicates() {
     Scalar ms = Quantity.of(3, "m*s^-1");
-    Scalar sa = Quantity.of(0.567, "m");
+    Scalar sa = Quantity.of(0.567, "m*rad^-1");
     TwdConfig twdConfig = new TwdConfig(ms, sa);
     for (int res = 3; res <= 8; ++res) {
       Collection<Flow> controls = twdConfig.createControls(res);

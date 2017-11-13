@@ -22,7 +22,7 @@ import junit.framework.TestCase;
 
 public class Se2ControlsTest extends TestCase {
   public void testSimple() {
-    CarConfig carConfig = new CarConfig(RotationUtils.DEGREE(45));
+    CarConfig carConfig = new CarConfig(RealScalar.ONE, RotationUtils.DEGREE(45));
     Collection<Flow> controls = carConfig.createControls(6);
     Scalar maxSpeed = Se2Controls.maxSpeed(controls);
     assertTrue(Chop._13.close(maxSpeed, RealScalar.ONE));
@@ -56,6 +56,7 @@ public class Se2ControlsTest extends TestCase {
     Collection<Flow> controls = Collections.singleton(flow);
     Scalar maxSpeed = Se2Controls.maxSpeed(controls);
     assertEquals(maxSpeed, ms.abs());
+    assertEquals(Units.of(maxSpeed), Unit.of("m*s^-1"));
     Scalar maxTurning = Se2Controls.maxTurning(controls);
     assertEquals(Units.of(maxTurning), Unit.of("rad*s^-1"));
     assertEquals(maxTurning, Quantity.of(6, "rad*s^-1"));

@@ -44,7 +44,7 @@ enum Se2Demo {
     StateIntegrator stateIntegrator = FixedStateIntegrator.create( //
         Se2CarIntegrator.INSTANCE, RationalScalar.of(1, 6), 5);
     System.out.println("scale=" + eta);
-    CarConfig carConfig = new CarConfig(RotationUtils.DEGREE(35));
+    CarConfig carConfig = new CarConfig(RealScalar.ONE, RotationUtils.DEGREE(35));
     Collection<Flow> controls = carConfig.createControls(10);
     GoalInterface goalInterface = Se2MinTimeGoalManager.create( //
         Tensors.vector(2, 1, Math.PI * -1), //

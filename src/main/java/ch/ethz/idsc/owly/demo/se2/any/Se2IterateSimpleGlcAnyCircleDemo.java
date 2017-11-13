@@ -63,7 +63,7 @@ class Se2IterateSimpleGlcAnyCircleDemo {
     System.out.println("1/Domainsize=" + parameters.getEta());
     parameters.printResolution();
     // Se2Controls uses Se2StateSpaceModel
-    CarConfig carConfig = new CarConfig(RotationUtils.DEGREE(45));
+    CarConfig carConfig = new CarConfig(RealScalar.ONE, RotationUtils.DEGREE(45));
     Collection<Flow> controls = carConfig.createControls(parameters.getResolutionInt());
     Se2NoHeuristicGoalManager se2GoalManager = new Se2NoHeuristicGoalManager(goal, radiusVector);
     TrajectoryRegionQuery obstacleQuery = SimpleTrajectoryRegionQuery.timeInvariant( //

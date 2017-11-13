@@ -87,7 +87,7 @@ import ch.ethz.idsc.tensor.sca.Sqrt;
             RationalScalar.of(1, 6), // dtMax
             2000, // maxIter
             Se2StateSpaceModel.INSTANCE.getLipschitz()), // Lipschitz
-        new CarConfig(RotationUtils.DEGREE(60)).createControlsForwardAndReverse(resolution), //
+        new CarConfig(RealScalar.ONE, RotationUtils.DEGREE(60)).createControlsForwardAndReverse(resolution), //
         // ---
         new SimpleEpisodeIntegrator( //
             Se2StateSpaceModel.INSTANCE, //
