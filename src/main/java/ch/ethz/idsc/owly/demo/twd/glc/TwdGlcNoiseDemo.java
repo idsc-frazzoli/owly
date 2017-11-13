@@ -41,13 +41,8 @@ enum TwdGlcNoiseDemo {
     Tensor partitionScale = Tensors.vector(5, 5, 2 * Math.PI / 360 * 10);
     Scalar dtMax = RationalScalar.of(1, 10);
     int maxIter = 2000;
-    // Scalar wheelDistance = RealScalar.of(0.2);
-    // Scalar wheelRadius = RealScalar.of(0.05);
-    // TwdStateSpaceModel stateSpaceModel = new TwdStateSpaceModel(wheelRadius, wheelDistance);
     Parameters parameters = new TwdParameters( //
-        resolution, timeScale, depthScale, partitionScale, dtMax, maxIter, RealScalar.ONE
-    // stateSpaceModel.getLipschitz()
-    );
+        resolution, timeScale, depthScale, partitionScale, dtMax, maxIter, RealScalar.ONE); // TODO check lipschitz
     parameters.printResolution();
     System.out.println("DomainSize: 1/Eta: " + parameters.getEta().map(n -> RealScalar.ONE.divide(n)));
     Region<Tensor> region = new R2NoiseRegion(RealScalar.of(0.1));

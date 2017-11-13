@@ -11,10 +11,11 @@ import java.util.Objects;
 
 import ch.ethz.idsc.owly.data.GlobalAssert;
 import ch.ethz.idsc.owly.demo.se2.Se2CarIntegrator;
+import ch.ethz.idsc.owly.demo.se2.Se2MinTimeGoalManager;
 import ch.ethz.idsc.owly.demo.se2.Se2StateSpaceModel;
 import ch.ethz.idsc.owly.demo.se2.Se2Wrap;
 import ch.ethz.idsc.owly.demo.twd.TwdConfig;
-import ch.ethz.idsc.owly.demo.twd.TwdMinCurvatureGoalManager;
+import ch.ethz.idsc.owly.glc.core.GoalInterface;
 import ch.ethz.idsc.owly.glc.core.StandardTrajectoryPlanner;
 import ch.ethz.idsc.owly.glc.core.TrajectoryPlanner;
 import ch.ethz.idsc.owly.gui.GeometricLayer;
@@ -101,10 +102,13 @@ import ch.ethz.idsc.tensor.sca.Sqrt;
         FixedStateIntegrator.create(Se2CarIntegrator.INSTANCE, RationalScalar.of(1, 10), 4);
     // TwdMinTimeGoalManager twdMinTimeGoalManager = //
     // new TwdMinTimeGoalManager(Tensors.of(goal.Get(0), goal.Get(1), RealScalar.ZERO), goalRadius_xy, RealScalar.of(Math.PI));
-    TwdMinCurvatureGoalManager twdMinCurvatureGoalManager = //
-        new TwdMinCurvatureGoalManager(goal, goalRadius_xy, goalRadius_theta);
+    // TwdMinCurvatureGoalManager twdMinCurvatureGoalManager = //
+    // new TwdMinCurvatureGoalManager(goal, goalRadius_xy, goalRadius_theta);
+    GoalInterface goalInterface =
+        // Se2MinTimeGoalManager se2MinTimeGoalManager = //
+        new Se2MinTimeGoalManager(goal, Tensors.of(goalRadius_xy, goalRadius_xy, goalRadius_theta), controls).getGoalInterface();
     TrajectoryPlanner trajectoryPlanner = new StandardTrajectoryPlanner( //
-        PARTITIONSCALE, stateIntegrator, controls, obstacleQuery, twdMinCurvatureGoalManager.getGoalInterface());
+        PARTITIONSCALE, stateIntegrator, controls, obstacleQuery, goalInterface);
     trajectoryPlanner.represent = StateTimeTensorFunction.state(SE2WRAP::represent);
     return trajectoryPlanner;
   }

@@ -38,13 +38,8 @@ enum TwdGlcDemo {
     Tensor partitionScale = Tensors.vector(5, 5, 2 * Math.PI / 360 * 20);
     Scalar dtMax = RationalScalar.of(1, 10);
     int maxIter = 2000;
-    // Scalar wheelDistance = RealScalar.of(0.2);
-    // Scalar wheelRadius = RealScalar.of(0.05);
-    // TwdStateSpaceModel stateSpaceModel = new TwdStateSpaceModel(wheelRadius, wheelDistance);
     Parameters parameters = new TwdParameters( //
-        resolution, timeScale, depthScale, partitionScale, dtMax, maxIter,
-        // stateSpaceModel.getLipschitz()
-        RealScalar.ONE);
+        resolution, timeScale, depthScale, partitionScale, dtMax, maxIter, RealScalar.ONE); // TODO check lipschitz
     parameters.printResolution();
     System.out.println("DomainSize: 1/Eta: " + parameters.getEta().map(n -> RealScalar.ONE.divide(n)));
     // ---
@@ -61,7 +56,6 @@ enum TwdGlcDemo {
         )));
     // ---
     Tensor goalCenter = Tensors.vector(2, -2, -1 * Math.PI);
-    // TwdDefaultGoalManager goalManager = new TwdDefaultGoalManager(goalCenter, radiusVector);
     TwdMinCurvatureGoalManager goalManager = //
         new TwdMinCurvatureGoalManager(goalCenter, RealScalar.of(0.5), RealScalar.of(50 * Math.PI / 180));
     // ---

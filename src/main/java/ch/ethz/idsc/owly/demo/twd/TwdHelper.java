@@ -6,11 +6,10 @@ import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.red.Norm;
 import ch.ethz.idsc.tensor.sca.Mod;
 
-public enum TwdHelper {
+/* package */ enum TwdHelper {
   ;
   private static final Mod PRINCIPAL = Mod.function(2 * Math.PI, -Math.PI);
 
-  /***************************************************/
   /** one application of the function is as a heuristic
    * 
    * @param state1 = {px1, py1, theta1}
