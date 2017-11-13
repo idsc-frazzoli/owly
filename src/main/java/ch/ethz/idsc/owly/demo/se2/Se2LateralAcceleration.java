@@ -3,6 +3,7 @@ package ch.ethz.idsc.owly.demo.se2;
 
 import java.util.List;
 
+import ch.ethz.idsc.owly.glc.adapter.StateTimeTrajectories;
 import ch.ethz.idsc.owly.glc.core.CostFunction;
 import ch.ethz.idsc.owly.glc.core.GlcNode;
 import ch.ethz.idsc.owly.math.flow.Flow;
@@ -22,8 +23,9 @@ public enum Se2LateralAcceleration implements CostFunction {
   // ---
   /** Curvature is changed angle over distance covered */
   @Override // from CostIncrementFunction
-  public Scalar costIncrement(GlcNode node, List<StateTime> trajectory, Flow flow) {
-    return AbsSquared.FUNCTION.apply(flow.getU().Get(2));
+  public Scalar costIncrement(GlcNode glcNode, List<StateTime> trajectory, Flow flow) {
+    Scalar dt = StateTimeTrajectories.timeIncrement(glcNode, trajectory);
+    return AbsSquared.FUNCTION.apply(flow.getU().Get(2)).multiply(dt);
   }
 
   @Override // from HeuristicFunction

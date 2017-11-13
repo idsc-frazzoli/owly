@@ -44,7 +44,12 @@ public class Se2IntegratorTest extends TestCase {
       Tensor v0 = Se2Utils.integrate_g0(rnd);
       assertEquals(vec, v0);
       Tensor alt = Se2Utils.toSE2Matrix(vec);
-      assertTrue(Chop._13.close(mat, alt));
+      boolean close = Chop._11.close(mat, alt);
+      if (!close) {
+        System.out.println(alt);
+        System.out.println(mat);
+      }
+      assertTrue(close);
     }
   }
 
