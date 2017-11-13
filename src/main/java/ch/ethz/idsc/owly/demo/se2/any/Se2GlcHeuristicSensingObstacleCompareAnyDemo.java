@@ -7,7 +7,7 @@ import java.util.Optional;
 
 import ch.ethz.idsc.owly.demo.rn.EuclideanDistanceDiscoverRegion;
 import ch.ethz.idsc.owly.demo.rn.R2NoiseRegion;
-import ch.ethz.idsc.owly.demo.se2.Se2Controls;
+import ch.ethz.idsc.owly.demo.se2.CarConfig;
 import ch.ethz.idsc.owly.demo.se2.Se2StateSpaceModel;
 import ch.ethz.idsc.owly.demo.se2.glc.Se2Parameters;
 import ch.ethz.idsc.owly.glc.adapter.HeuristicQ;
@@ -63,7 +63,8 @@ enum Se2GlcHeuristicSensingObstacleCompareAnyDemo {
         parameters.getTrajectorySize());
     parameters.printResolution();
     System.out.println("DomainSize: 1/Eta: " + parameters.getEta().map(n -> RealScalar.ONE.divide(n)));
-    Collection<Flow> controls = Se2Controls.createControls(RotationUtils.DEGREE(45), parameters.getResolutionInt());
+    CarConfig carConfig = new CarConfig(RotationUtils.DEGREE(45));
+    Collection<Flow> controls = carConfig.createControls(parameters.getResolutionInt());
     // Creating Goals
     Tensor startState = Tensors.vector(0, 0, 0);
     Region<Tensor> environmentRegion = new R2NoiseRegion(RealScalar.of(0.5));
@@ -162,7 +163,8 @@ enum Se2GlcHeuristicSensingObstacleCompareAnyDemo {
   }
 
   public static void main(String[] args) throws Exception {
-    Collection<Flow> controls = Se2Controls.createControls(RotationUtils.DEGREE(45), 11);
+    CarConfig carConfig = new CarConfig(RotationUtils.DEGREE(45));
+    Collection<Flow> controls = carConfig.createControls(11);
     Tensor goal = Tensors.vector(11, 11, 0);
     GoalInterface[] values = new GoalInterface[] { //
         new Se2MinTimeEuclideanDistanceHeuristicGoalManager(goal, Tensors.vector(0.5, 0.5, 0.8), controls).getGoalInterface(),

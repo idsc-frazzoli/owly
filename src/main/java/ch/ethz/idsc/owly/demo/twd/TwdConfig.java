@@ -81,7 +81,7 @@ public class TwdConfig {
   // // max|wl|= max|wr| = 1
   // return list;
   // }
-  // TODO check!
+  // TODO document what this does
   public Collection<Flow> createControls2(int num) {
     int numSqr = num;
     Scalar wheelspeed_max = RealScalar.ONE;
