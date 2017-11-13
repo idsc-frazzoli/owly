@@ -40,7 +40,7 @@ import ch.ethz.idsc.tensor.io.ResourceData;
 enum DeltaExpandDemo {
   ;
   public static void main(String[] args) throws Exception {
-    Scalar amp = RealScalar.of(.5); // -.25 .5
+    Scalar amp = RealScalar.of(0.5); // -.25 .5
     // ---
     Tensor eta = Tensors.vector(8, 8);
     StateIntegrator stateIntegrator = FixedStateIntegrator.create( //

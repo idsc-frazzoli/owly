@@ -28,7 +28,7 @@ enum R2InsideCharDemo {
     RnTransitionSpace rnss = new RnTransitionSpace();
     RrtsNodeCollection nc = new RnNodeCollection(imageRegion.origin(), imageRegion.range());
     TransitionRegionQuery trq = new SampledTransitionRegionQuery( //
-        SimpleTrajectoryRegionQuery.timeInvariant(imageRegion), RealScalar.of(.1));
+        SimpleTrajectoryRegionQuery.timeInvariant(imageRegion), RealScalar.of(0.1));
     // ---
     Rrts rrts = new DefaultRrts(rnss, nc, trq, LengthCostFunction.IDENTITY);
     RrtsNode root = rrts.insertAsNode(start, 5).get();

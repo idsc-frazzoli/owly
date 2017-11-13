@@ -36,7 +36,7 @@ import ch.ethz.idsc.tensor.sca.Chop;
   private static final Scalar DELAY_HINT = RealScalar.of(2);
   // ---
   /** the constants define the control */
-  private static final Scalar U_NORM = RealScalar.of(.6);
+  private static final Scalar U_NORM = RealScalar.of(0.6);
   /** resolution of radial controls */
   private static final int U_SIZE = 15;
 

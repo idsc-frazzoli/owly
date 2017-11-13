@@ -38,14 +38,14 @@ enum LvDemo {
         RungeKutta45Integrator.INSTANCE, RationalScalar.of(1, 30), 4);
     StateSpaceModel stateSpaceModel = LvStateSpaceModel.of(1, 2);
     Collection<Flow> controls = LvControls.create(stateSpaceModel, 2);
-    EllipsoidRegion ellipsoidRegion = new EllipsoidRegion(Tensors.vector(2, 1), Tensors.vector(.1, .1));
+    EllipsoidRegion ellipsoidRegion = new EllipsoidRegion(Tensors.vector(2, 1), Tensors.vector(0.1, 0.1));
     GoalInterface goalInterface = new LvGoalInterface(ellipsoidRegion);
     // ---
     TrajectoryPlanner trajectoryPlanner = new StandardTrajectoryPlanner( //
         eta, stateIntegrator, controls, EmptyTrajectoryRegionQuery.INSTANCE, goalInterface);
     // ---
     trajectoryPlanner.represent = StateTimeTensorFunction.state(Log::of);
-    trajectoryPlanner.insertRoot(new StateTime(Tensors.vector(2, .1), RealScalar.ZERO));
+    trajectoryPlanner.insertRoot(new StateTime(Tensors.vector(2, 0.1), RealScalar.ZERO));
     Expand.maxSteps(trajectoryPlanner, 4000);
     OwlyFrame owlyFrame = OwlyGui.glc(trajectoryPlanner);
     owlyFrame.addBackground(RegionRenders.create(ellipsoidRegion));

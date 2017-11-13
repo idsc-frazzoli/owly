@@ -35,7 +35,7 @@ public class Rice2dxTGearDemo implements DemoInterface {
     owlyAnimationFrame.set(abstractEntity);
     Tensor polygon = CogPoints.of(4, RealScalar.of(1.0), RealScalar.of(0.3));
     // ---
-    BijectionFamily rigid2 = new So2Family(s -> s.multiply(RealScalar.of(.25)));
+    BijectionFamily rigid2 = new So2Family(s -> s.multiply(RealScalar.of(0.25)));
     Region<StateTime> cog0 = new R2xTPolygonStateTimeRegion( //
         polygon, rigid2, () -> abstractEntity.getStateTimeNow().time());
     // ---
@@ -45,7 +45,7 @@ public class Rice2dxTGearDemo implements DemoInterface {
         polygon, rigid3, () -> abstractEntity.getStateTimeNow().time());
     // ---
     BijectionFamily rigid1 = new Se2Family(s -> Tensors.of( //
-        RealScalar.of(1.7 * 2), RealScalar.ZERO, s.multiply(RealScalar.of(.25))));
+        RealScalar.of(1.7 * 2), RealScalar.ZERO, s.multiply(RealScalar.of(0.25))));
     Region<StateTime> cog2 = new R2xTPolygonStateTimeRegion( //
         polygon, rigid1, () -> abstractEntity.getStateTimeNow().time());
     TrajectoryRegionQuery trq = new SimpleTrajectoryRegionQuery( //

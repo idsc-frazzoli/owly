@@ -20,11 +20,11 @@ import ch.ethz.idsc.tensor.Tensors;
             { 1, 6 }, //
             { 1, 3 }, //
             { 3, 3 } //
-        }))), RealScalar.of(.1));
+        }))), RealScalar.of(0.1));
   }
 
   public static TransitionRegionQuery noise1() {
     return new SampledTransitionRegionQuery(SimpleTrajectoryRegionQuery.timeInvariant( //
-        new R2NoiseRegion(RealScalar.of(.4))), RealScalar.of(.1));
+        new R2NoiseRegion(RealScalar.of(0.4))), RealScalar.of(0.1));
   }
 }

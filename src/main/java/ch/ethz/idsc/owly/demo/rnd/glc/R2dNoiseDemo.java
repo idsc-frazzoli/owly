@@ -40,13 +40,13 @@ enum R2dNoiseDemo {
   // TODO demo needs a revision
   public static void main(String[] args) {
     Tensor partitionScale = Tensors.vector(6, 6, 6, 6);
-    final Scalar threshold = RealScalar.of(.2);
+    final Scalar threshold = RealScalar.of(0.2);
     Region<Tensor> region = RndOrRegion.common(new R2NoiseRegion(threshold));
     StateIntegrator stateIntegrator = //
         FixedStateIntegrator.create(EulerIntegrator.INSTANCE, RationalScalar.of(1, 8), 3);
     Collection<Flow> controls = R2dControls.createRadial(5);
     final Tensor center = Tensors.vector(3, 0);
-    final Scalar radius = DoubleScalar.of(.2);
+    final Scalar radius = DoubleScalar.of(0.2);
     GoalInterface goalInterface = //
         new RndMinDistSphericalGoalManager(center, radius);
     TrajectoryRegionQuery obstacleQuery = SimpleTrajectoryRegionQuery.timeInvariant(region);

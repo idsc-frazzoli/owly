@@ -64,8 +64,8 @@ import ch.ethz.idsc.tensor.red.Norm2Squared;
     Tensor partitionScale = Tensors.vector(3, 3, 6, 6);
     StateIntegrator stateIntegrator = //
         FixedStateIntegrator.create(INTEGRATOR, RationalScalar.of(1, 12), 4);
-    Tensor center = Join.of(goal.extract(0, 2), AngleVector.of(goal.Get(2)).multiply(RealScalar.of(.8)));
-    GoalInterface goalInterface = Rice2GoalManager.create(center, Tensors.vector(.5, .5, .4, .4));
+    Tensor center = Join.of(goal.extract(0, 2), AngleVector.of(goal.Get(2)).multiply(RealScalar.of(0.8)));
+    GoalInterface goalInterface = Rice2GoalManager.create(center, Tensors.vector(0.5, 0.5, 0.4, 0.4));
     return new StandardTrajectoryPlanner( //
         partitionScale, stateIntegrator, controls, obstacleQuery, goalInterface);
   }

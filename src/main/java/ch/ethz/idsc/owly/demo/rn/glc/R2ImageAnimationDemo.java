@@ -19,7 +19,7 @@ public class R2ImageAnimationDemo implements DemoInterface {
     try {
       OwlyAnimationFrame owlyAnimationFrame = new OwlyAnimationFrame();
       R2Entity r2Entity = new R2Entity(Tensors.vector(7, 6));
-      r2Entity.costFunction = R2ImageRegions.imageCost_gtob();
+      r2Entity.extraCosts.add(R2ImageRegions.imageCost_gtob());
       owlyAnimationFrame.set(r2Entity);
       ImageRegion imageRegion = R2ImageRegions.inside_gtob();
       owlyAnimationFrame.setObstacleQuery(SimpleTrajectoryRegionQuery.timeInvariant(imageRegion));

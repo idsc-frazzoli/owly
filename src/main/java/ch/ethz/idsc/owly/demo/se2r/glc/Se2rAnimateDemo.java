@@ -38,7 +38,7 @@ enum Se2rAnimateDemo {
     // place holder for parameter class
     GoalInterface goalInterface = Se2MinTimeGoalManager.create( //
         Tensors.vector(-1, -1, Math.PI * 2), //
-        Tensors.vector(.1, .1, 0.17), controls);
+        Tensors.vector(0.1, 0.1, 0.17), controls);
     TrajectoryRegionQuery obstacleQuery = SimpleTrajectoryRegionQuery.timeInvariant( //
         RegionUnion.wrap(Arrays.asList( //
             new HyperplaneRegion(Tensors.vector(0, -1, 0), RealScalar.of(1.5)), //

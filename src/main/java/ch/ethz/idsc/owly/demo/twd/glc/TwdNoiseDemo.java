@@ -15,7 +15,7 @@ public class TwdNoiseDemo implements DemoInterface {
   public void start() {
     OwlyAnimationFrame owlyAnimationFrame = new OwlyAnimationFrame();
     owlyAnimationFrame.set(TwdEntity.createDefault(Tensors.vector(0, 0, 0)));
-    Region<Tensor> region = new R2NoiseRegion(RealScalar.of(.1));
+    Region<Tensor> region = new R2NoiseRegion(RealScalar.of(0.1));
     owlyAnimationFrame.setObstacleQuery(SimpleTrajectoryRegionQuery.timeInvariant(region));
     owlyAnimationFrame.jFrame.setVisible(true);
   }

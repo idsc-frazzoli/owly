@@ -49,7 +49,7 @@ enum TwdGlcNoiseDemo {
         resolution, timeScale, depthScale, partitionScale, dtMax, maxIter, stateSpaceModel.getLipschitz());
     parameters.printResolution();
     System.out.println("DomainSize: 1/Eta: " + parameters.getEta().map(n -> RealScalar.ONE.divide(n)));
-    Region<Tensor> region = new R2NoiseRegion(RealScalar.of(.1));
+    Region<Tensor> region = new R2NoiseRegion(RealScalar.of(0.1));
     StateIntegrator stateIntegrator = //
         FixedStateIntegrator.create(EulerIntegrator.INSTANCE, parameters.getdtMax(), parameters.getTrajectorySize());
     // Controls

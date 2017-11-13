@@ -14,7 +14,7 @@ public class Se2Letter3Demo extends Se2CarDemo {
   @Override
   void configure(OwlyAnimationFrame owlyAnimationFrame) throws IOException {
     Se2Entity se2Entity = Se2Entity.createDefault(Tensors.vector(6, 6, 1));
-    se2Entity.costFunction = R2ImageRegions.imageCost_gtob();
+    se2Entity.extraCosts.add(R2ImageRegions.imageCost_gtob());
     ImageRegion imageRegion = R2ImageRegions.inside_gtob();
     TrajectoryRegionQuery trq = createCarQuery(imageRegion);
     se2Entity.obstacleQuery = trq;

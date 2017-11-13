@@ -45,7 +45,7 @@ enum Se2rImageDemo {
     Collection<Flow> controls = Se2Controls.createControlsForwardAndReverse(RotationUtils.DEGREE(45), 6);
     GoalInterface goalInterface = Se2MinTimeGoalManager.create( //
         Tensors.vector(4.0, 5.6, 0), //
-        Tensors.vector(.1, .1, .17), controls);
+        Tensors.vector(0.1, 0.1, 0.17), controls);
     TrajectoryRegionQuery obstacleQuery = SimpleTrajectoryRegionQuery.timeInvariant(imageRegion);
     // ---
     TrajectoryPlanner trajectoryPlanner = new StandardTrajectoryPlanner( //

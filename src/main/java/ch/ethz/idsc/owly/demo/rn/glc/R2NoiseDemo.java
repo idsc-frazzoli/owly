@@ -14,7 +14,6 @@ import ch.ethz.idsc.owly.demo.rn.RnMinDistSphericalGoalManager;
 import ch.ethz.idsc.owly.glc.adapter.MultiCostGoalAdapter;
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
 import ch.ethz.idsc.owly.glc.adapter.StateTimeTrajectories;
-import ch.ethz.idsc.owly.glc.core.CostFunction;
 import ch.ethz.idsc.owly.glc.core.Expand;
 import ch.ethz.idsc.owly.glc.core.GlcNode;
 import ch.ethz.idsc.owly.glc.core.GlcNodes;
@@ -46,18 +45,17 @@ enum R2NoiseDemo {
   ;
   public static void main(String[] args) {
     Tensor partitionScale = Tensors.vector(8, 8);
-    final Scalar threshold = RealScalar.of(.1);
+    final Scalar threshold = RealScalar.of(0.1);
     Region<Tensor> region = new R2NoiseRegion(threshold);
     StateIntegrator stateIntegrator = //
         FixedStateIntegrator.create(EulerIntegrator.INSTANCE, RationalScalar.of(1, 12), 4);
     Collection<Flow> controls = R2Controls.createRadial(23);
     final Tensor center = Tensors.vector(10, 0);
-    final Scalar radius = DoubleScalar.of(.2);
+    final Scalar radius = DoubleScalar.of(0.2);
     SphericalRegion sphericalRegion = new SphericalRegion(center, radius);
-    GoalInterface _goalInterface = new RnMinDistSphericalGoalManager(sphericalRegion);
-    List<CostFunction> list = Arrays.asList( //
-        _goalInterface, new R2NoiseCostFunction(threshold.subtract(RealScalar.of(.3))));
-    GoalInterface goalInterface = new MultiCostGoalAdapter(_goalInterface, list);
+    GoalInterface goalInterface = MultiCostGoalAdapter.of( //
+        new RnMinDistSphericalGoalManager(sphericalRegion), //
+        Arrays.asList(new R2NoiseCostFunction(threshold.subtract(RealScalar.of(0.3)))));
     TrajectoryRegionQuery obstacleQuery = SimpleTrajectoryRegionQuery.timeInvariant(region);
     // ---
     TrajectoryPlanner trajectoryPlanner = new StandardTrajectoryPlanner( //

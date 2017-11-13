@@ -25,7 +25,7 @@ public class R2xTImageAnimationDemo implements DemoInterface {
     owlyAnimationFrame.set(abstractEntity);
     // ---
     RigidFamily rigidFamily = Se2Family.rotationAround( //
-        Tensors.vectorDouble(1.5, 2), time -> time.multiply(RealScalar.of(.1)));
+        Tensors.vectorDouble(1.5, 2), time -> time.multiply(RealScalar.of(0.1)));
     ImageRegion imageRegion = R2ImageRegions.inside_circ();
     Region<StateTime> region = new R2xTImageStateTimeRegion( //
         imageRegion, rigidFamily, () -> abstractEntity.getStateTimeNow().time());

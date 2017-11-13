@@ -43,8 +43,8 @@ enum Rice1dDemo {
     StateIntegrator stateIntegrator = FixedStateIntegrator.create( //
         MidpointIntegrator.INSTANCE, RationalScalar.of(1, 8), 5);
     Collection<Flow> controls = Rice2Controls.create1d(RealScalar.of(-0.5), 15); //
-    GoalInterface goalInterface = Rice1GoalManager.create(Tensors.vector(6, -.7), Tensors.vector(.4, .3));
-    Region<Tensor> region1 = new EllipsoidRegion(Tensors.vector(+3, +1), Tensors.vector(1.75, .75));
+    GoalInterface goalInterface = Rice1GoalManager.create(Tensors.vector(6, -.7), Tensors.vector(0.4, 0.3));
+    Region<Tensor> region1 = new EllipsoidRegion(Tensors.vector(+3, +1), Tensors.vector(1.75, 0.75));
     Region<Tensor> region2 = new EllipsoidRegion(Tensors.vector(-2, +0), Tensors.vector(1, 1));
     TrajectoryRegionQuery obstacleQuery = //
         SimpleTrajectoryRegionQuery.timeInvariant( //

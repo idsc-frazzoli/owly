@@ -23,7 +23,7 @@ import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
 
 public class TrajectoryRender implements RenderInterface {
-  private static Scalar U_SCALE = RealScalar.of(.33);
+  private static Scalar U_SCALE = RealScalar.of(0.33);
 
   public static RenderInterface of(TrajectoryPlanner trajectoryPlanner) {
     TrajectoryRender trajectoryRender = new TrajectoryRender();

@@ -46,7 +46,7 @@ enum R2GlcAnyDemo {
     StateIntegrator stateIntegrator = FixedStateIntegrator.create(EulerIntegrator.INSTANCE, parameters.getdtMax(), //
         parameters.getTrajectorySize());
     Collection<Flow> controls = R2Controls.createRadial(parameters.getResolutionInt());
-    GoalInterface rnGoal = RnMinDistSphericalGoalManager.create(Tensors.vector(5, 5), DoubleScalar.of(.25));
+    GoalInterface rnGoal = RnMinDistSphericalGoalManager.create(Tensors.vector(5, 5), DoubleScalar.of(0.25));
     // performance depends on heuristic: zeroHeuristic vs rnGoal
     // Heuristic heuristic = new ZeroHeuristic(); // rnGoal
     TrajectoryRegionQuery obstacleQuery = EmptyTrajectoryRegionQuery.INSTANCE;
@@ -64,7 +64,7 @@ enum R2GlcAnyDemo {
       goal = goal.add(Tensors.vector(1, 1));
       goal.set(Mod.function(5), 0);
       goal.set(Mod.function(5), 1);
-      GoalInterface rnGoal2 = RnMinDistSphericalGoalManager.create(goal, DoubleScalar.of(.25));
+      GoalInterface rnGoal2 = RnMinDistSphericalGoalManager.create(goal, DoubleScalar.of(0.25));
       List<StateTime> trajectory = anyPlannerInterface.trajectoryToBest();
       if (trajectory != null) {
         StateTime newRootState = trajectory.get(trajectory.size() > 1 ? 1 : 0);

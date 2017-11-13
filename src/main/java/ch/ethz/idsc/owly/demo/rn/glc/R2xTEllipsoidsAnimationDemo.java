@@ -52,11 +52,11 @@ public class R2xTEllipsoidsAnimationDemo implements DemoInterface {
         R2xTEllipsoidsAnimationDemo.wrap1DTensor(SimplexContinuousNoise.FUNCTION, Tensors.vector(5, 9, 4), 0.1, 2.0));
     // ---
     Region<StateTime> region1 = new R2xTEllipsoidStateTimeRegion( //
-        Tensors.vector(.7, 0.9), circle, () -> abstractEntity.getStateTimeNow().time());
+        Tensors.vector(0.7, 0.9), circle, () -> abstractEntity.getStateTimeNow().time());
     Region<StateTime> region2 = new R2xTEllipsoidStateTimeRegion( //
-        Tensors.vector(.8, .5), rigidm, () -> abstractEntity.getStateTimeNow().time());
+        Tensors.vector(0.8, 0.5), rigidm, () -> abstractEntity.getStateTimeNow().time());
     Region<StateTime> region3 = new R2xTEllipsoidStateTimeRegion( //
-        Tensors.vector(.6, .6), noise, () -> abstractEntity.getStateTimeNow().time());
+        Tensors.vector(0.6, 0.6), noise, () -> abstractEntity.getStateTimeNow().time());
     Region<StateTime> union = RegionUnion.wrap(Arrays.asList(region1, region2, region3));
     owlyAnimationFrame.setObstacleQuery(new SimpleTrajectoryRegionQuery(union));
     owlyAnimationFrame.addBackground((RenderInterface) region1);

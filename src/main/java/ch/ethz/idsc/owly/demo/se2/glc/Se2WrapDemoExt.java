@@ -59,7 +59,7 @@ enum Se2WrapDemoExt {
         eta, stateIntegrator, controls, obstacleQuery, se2WrapGoalManager.getGoalInterface());
     trajectoryPlanner.represent = StateTimeTensorFunction.state(coordinateWrap::represent);
     // ---
-    trajectoryPlanner.insertRoot(new StateTime(Tensors.vector(.1, 0, 0), RealScalar.ZERO));
+    trajectoryPlanner.insertRoot(new StateTime(Tensors.vector(0.1, 0, 0), RealScalar.ZERO));
     int iters = Expand.maxSteps(trajectoryPlanner, 4000);
     System.out.println(iters);
     Optional<GlcNode> optional = trajectoryPlanner.getBest();

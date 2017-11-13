@@ -64,14 +64,14 @@ enum Se2WrapDemo {
         Se2CarIntegrator.INSTANCE, RationalScalar.of(1, 6), 5);
     Collection<Flow> controls = Se2Controls.createControls(RotationUtils.DEGREE(45), 6);
     Tensor GOAL = Tensors.vector(-.5, 0, 0);
-    Se2WrapGoalManager se2GoalManager = new Se2WrapGoalManager(coordinateWrap, GOAL, RealScalar.of(.25));
+    Se2WrapGoalManager se2GoalManager = new Se2WrapGoalManager(coordinateWrap, GOAL, RealScalar.of(0.25));
     TrajectoryRegionQuery obstacleQuery = obstacleQuery();
     // ---
     TrajectoryPlanner trajectoryPlanner = new StandardTrajectoryPlanner( //
         eta, stateIntegrator, controls, obstacleQuery, se2GoalManager.getGoalInterface());
     trajectoryPlanner.represent = StateTimeTensorFunction.state(coordinateWrap::represent);
     // ---
-    trajectoryPlanner.insertRoot(new StateTime(Tensors.vector(.1, 0, 0), RealScalar.ZERO));
+    trajectoryPlanner.insertRoot(new StateTime(Tensors.vector(0.1, 0, 0), RealScalar.ZERO));
     return trajectoryPlanner;
   }
 

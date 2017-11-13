@@ -32,8 +32,8 @@ public class R2xTPolygonAnimationDemo implements DemoInterface {
     // ---
     BijectionFamily rigid1 = new Se2Family( //
         scalar -> Tensors.of( //
-            Cos.FUNCTION.apply(scalar.multiply(RealScalar.of(.1))).multiply(RealScalar.of(2.0)), //
-            Sin.FUNCTION.apply(scalar.multiply(RealScalar.of(.1))).multiply(RealScalar.of(2.0)), //
+            Cos.FUNCTION.apply(scalar.multiply(RealScalar.of(0.1))).multiply(RealScalar.of(2.0)), //
+            Sin.FUNCTION.apply(scalar.multiply(RealScalar.of(0.1))).multiply(RealScalar.of(2.0)), //
             scalar.multiply(RealScalar.of(0.15))));
     Region<StateTime> region1 = new R2xTPolygonStateTimeRegion( //
         ExamplePolygons.CORNER_CENTERED, rigid1, () -> abstractEntity.getStateTimeNow().time());

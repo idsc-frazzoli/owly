@@ -71,7 +71,7 @@ public enum DeltaHelper {
     TrajectoryRegionQuery obstacleQuery = //
         SimpleTrajectoryRegionQuery.timeInvariant(new ImageRegion(obstacleImage, range, true));
     DeltaHeuristicGoalManager deltaGoalManager = new DeltaHeuristicGoalManager( //
-        goal, Tensors.vector(.3, .3), stateSpaceModel.getMaxPossibleChange());
+        goal, Tensors.vector(0.3, 0.3), stateSpaceModel.getMaxPossibleChange());
     // DeltaGoalManager deltaGoalManager = new DeltaGoalManager( //
     // Tensors.vector(2.1, 0.3), Tensors.vector(.3, .3));
     TrajectoryPlanner trajectoryPlanner = new StandardTrajectoryPlanner( //
@@ -102,7 +102,7 @@ public enum DeltaHelper {
     TrajectoryRegionQuery obstacleQuery = //
         SimpleTrajectoryRegionQuery.timeInvariant(new ImageRegion(obstacleImage, range, true));
     DeltaHeuristicGoalManager deltaGoalManager = new DeltaHeuristicGoalManager( //
-        Tensors.vector(2.9, 2.4), Tensors.vector(.3, .3), stateSpaceModel.getMaxPossibleChange());
+        Tensors.vector(2.9, 2.4), Tensors.vector(0.3, 0.3), stateSpaceModel.getMaxPossibleChange());
     // DeltaGoalManager deltaGoalManager = new DeltaGoalManager( //
     // Tensors.vector(2.1, 0.3), Tensors.vector(.3, .3));
     OptimalAnyTrajectoryPlanner trajectoryPlanner = new OptimalAnyTrajectoryPlanner(parameters.getEta(), stateIntegrator, controls, obstacleQuery,
