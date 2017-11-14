@@ -8,9 +8,13 @@ import ch.ethz.idsc.tensor.TensorRuntimeException;
 import ch.ethz.idsc.tensor.sca.Exp;
 import ch.ethz.idsc.tensor.sca.Sign;
 
-/** Single Integrator with friction
+/** Important:
+ * The use of {@link Duncan1StateSpaceModel} is preferred and
+ * supports the use of units.
  * 
- * implementation for n-dimensional velocity */
+ * <p>Rice1StateSpaceModel is a single Integrator with friction.
+ * Rice1StateSpaceModel is unit less.
+ * The implementation for n-dimensional velocity */
 public class Rice1StateSpaceModel implements StateSpaceModel {
   public static StateSpaceModel of(Scalar mu) {
     return new Rice1StateSpaceModel(Exp.of(mu));
