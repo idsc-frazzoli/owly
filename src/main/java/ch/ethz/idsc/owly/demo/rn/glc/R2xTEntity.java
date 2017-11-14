@@ -51,8 +51,9 @@ import ch.ethz.idsc.tensor.Tensors;
 
   @Override
   Collection<Flow> createControls() {
+    /** 36 corresponds to 10[Degree] resolution */
     Collection<Flow> collection = super.createControls();
-    // collection.add(R2Controls.stayPut(2)); // <- does not go well with min-dist cost function
+    collection.add(r2Config.stayPut()); // <- does not go well with min-dist cost function
     return collection;
   }
 }

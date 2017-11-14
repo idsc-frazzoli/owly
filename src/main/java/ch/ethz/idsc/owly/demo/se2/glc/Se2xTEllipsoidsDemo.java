@@ -24,7 +24,7 @@ public class Se2xTEllipsoidsDemo implements DemoInterface {
   @Override
   public void start() {
     OwlyAnimationFrame owlyAnimationFrame = new OwlyAnimationFrame();
-    Se2xTEntity abstractEntity = new Se2xTEntity(Tensors.vector(0, 0, 1));
+    CarxTEntity abstractEntity = new CarxTEntity(Tensors.vector(0, 0, 1));
     owlyAnimationFrame.set(abstractEntity);
     // ---
     ScalarTensorFunction stf1 = R2xTEllipsoidsAnimationDemo.wrap1DTensor(SimplexContinuousNoise.FUNCTION, Tensors.vector(0, 2), 0.05, 2.3);

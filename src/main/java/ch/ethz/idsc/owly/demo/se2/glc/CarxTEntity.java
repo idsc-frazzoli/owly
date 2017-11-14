@@ -11,8 +11,8 @@ import ch.ethz.idsc.tensor.Tensor;
 
 /** several magic constants are hard-coded in the implementation.
  * that means, the functionality does not apply to all examples universally. */
-class Se2xTEntity extends Se2Entity implements StateTimeTensorFunction {
-  Se2xTEntity(Tensor state) {
+class CarxTEntity extends CarEntity implements StateTimeTensorFunction {
+  CarxTEntity(Tensor state) {
     super(state); // initial position
     represent_entity = StateTime::joined;
   }
@@ -20,7 +20,6 @@ class Se2xTEntity extends Se2Entity implements StateTimeTensorFunction {
   @Override
   protected Scalar distance(Tensor x, Tensor y) {
     return SE2WRAP.distance(x.extract(0, 3), y.extract(0, 3));
-    // throw TensorRuntimeException.of(x, y);
   }
 
   @Override
@@ -31,12 +30,11 @@ class Se2xTEntity extends Se2Entity implements StateTimeTensorFunction {
   @Override
   public TrajectoryPlanner createTrajectoryPlanner(TrajectoryRegionQuery obstacleQuery, Tensor goal) {
     TrajectoryPlanner trajectoryPlanner = super.createTrajectoryPlanner(obstacleQuery, goal);
-    // trajectoryPlanner.represent = StateTimeTensorFunction.state(SE2WRAP::represent);
-    trajectoryPlanner.represent = this::apply;
+    trajectoryPlanner.represent = this::apply; // TODO design no good since no members are required
     return trajectoryPlanner;
   }
 
-  @Override
+  @Override // from StateTimeTensorFunction
   public Tensor apply(StateTime stateTime) {
     return SE2WRAP.represent(stateTime.state()).copy().append(stateTime.time());
   }
