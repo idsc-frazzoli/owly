@@ -67,7 +67,7 @@ public class TwdConfig {
     return list;
   }
 
-  /** @param wheelspeeds_max the maximum absolute values for the rotationalspeed of each wheel.
+  /** @param wheelspeeds_max the maximum absolute values for the rotational speed of each wheel.
    * @param num resolution
    * @return list of Flows */
   // public static Collection<Flow> createControls1(TwdStateSpaceModel stateSpaceModel, int num) {

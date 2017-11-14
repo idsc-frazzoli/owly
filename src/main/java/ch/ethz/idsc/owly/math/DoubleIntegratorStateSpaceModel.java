@@ -19,7 +19,7 @@ public enum DoubleIntegratorStateSpaceModel implements StateSpaceModel {
   /** f((p, v), u) == (v, u) */
   @Override
   public Tensor f(Tensor x, Tensor u) {
-    if (x.length() != u.length() * 2) // TODO << 1
+    if (x.length() != u.length() << 1)
       throw TensorRuntimeException.of(x, u);
     Tensor v = x.extract(u.length(), x.length());
     return Join.of(v, u);

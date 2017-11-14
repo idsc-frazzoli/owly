@@ -21,6 +21,12 @@ import ch.ethz.idsc.tensor.sca.Ramp;
 // DO NOT MODIFY THIS CLASS SINCE THE FUNCTIONALITY IS USED IN MANY DEMOS
 @DontModify
 public final class Se2MinTimeGoalManager extends Se2AbstractGoalManager {
+  /** the use of {@link #create(Tensor, Tensor, Collection)}
+   * is preferred over the constructor
+   * 
+   * @param goal {px, py, angle}
+   * @param radiusVector {dist_radius, dist_radius, dist_angle}
+   * @param controls */
   public static GoalInterface create(Tensor goal, Tensor radiusVector, Collection<Flow> controls) {
     return new Se2MinTimeGoalManager(goal, radiusVector, controls).getGoalInterface();
   }
@@ -29,7 +35,6 @@ public final class Se2MinTimeGoalManager extends Se2AbstractGoalManager {
   private final Scalar maxSpeed;
   private final Scalar maxTurning;
 
-  // AVOID USING THE CONSTRUCTOR, USE FUNCTION create() INSTEAD
   public Se2MinTimeGoalManager(Tensor goal, Tensor radiusVector, Collection<Flow> controls) {
     super(goal, radiusVector);
     maxSpeed = Se2Controls.maxSpeed(controls);

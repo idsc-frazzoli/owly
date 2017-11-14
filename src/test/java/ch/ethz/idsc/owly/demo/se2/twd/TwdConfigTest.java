@@ -51,4 +51,11 @@ public class TwdConfigTest extends TestCase {
       }
     }
   }
+
+  public void testSize() {
+    TwdConfig twdConfig = new TwdConfig(RealScalar.of(3), RealScalar.of(0.567));
+    assertEquals(twdConfig.createControls(5).size(), 20);
+    assertEquals(twdConfig.createControls(7).size(), 28);
+    assertEquals(twdConfig.createControls(8).size(), 32);
+  }
 }
