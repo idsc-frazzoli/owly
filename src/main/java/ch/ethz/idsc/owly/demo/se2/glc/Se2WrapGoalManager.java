@@ -52,6 +52,6 @@ import ch.ethz.idsc.tensor.sca.Ramp;
   }
 
   public GoalInterface getGoalInterface() {
-    return new GoalAdapter(this, SimpleTrajectoryRegionQuery.timeInvariant(this));
+    return new GoalAdapter(SimpleTrajectoryRegionQuery.timeInvariant(this), this);
   }
 }

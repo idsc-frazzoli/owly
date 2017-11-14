@@ -14,7 +14,9 @@ import ch.ethz.idsc.owly.math.state.TrajectoryRegionQuery;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
 
-/** combines multiple cost functions */
+/** combines multiple cost functions
+ * 
+ * @see GoalAdapter */
 public class MultiCostGoalAdapter implements GoalInterface {
   /** @param goalInterface
    * @param collection
@@ -37,6 +39,16 @@ public class MultiCostGoalAdapter implements GoalInterface {
     this.collection = collection;
   }
 
+  @Override // from TrajectoryRegionQuery
+  public int firstMember(List<StateTime> trajectory) {
+    return trajectoryRegionQuery.firstMember(trajectory);
+  }
+
+  @Override // from TrajectoryRegionQuery
+  public boolean isDisjoint(List<StateTime> trajectory) {
+    return trajectoryRegionQuery.isDisjoint(trajectory);
+  }
+
   @Override // from CostIncrementFunction
   public Scalar costIncrement(GlcNode glcNode, List<StateTime> trajectory, Flow flow) {
     return collection.stream() //
@@ -49,15 +61,5 @@ public class MultiCostGoalAdapter implements GoalInterface {
     return collection.stream() //
         .map(costFunction -> costFunction.minCostToGoal(x)) //
         .reduce(Scalar::add).get();
-  }
-
-  @Override // from TrajectoryRegionQuery
-  public int firstMember(List<StateTime> trajectory) {
-    return trajectoryRegionQuery.firstMember(trajectory);
-  }
-
-  @Override // from TrajectoryRegionQuery
-  public boolean isDisjoint(List<StateTime> trajectory) {
-    return trajectoryRegionQuery.isDisjoint(trajectory);
   }
 }

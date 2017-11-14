@@ -15,22 +15,12 @@ import ch.ethz.idsc.tensor.Tensor;
 /** class bundles the capabilities of a given
  * cost function and trajectory region query */
 public class GoalAdapter implements GoalInterface {
-  private final CostFunction costFunction;
   private final TrajectoryRegionQuery trajectoryRegionQuery;
+  private final CostFunction costFunction;
 
-  public GoalAdapter(CostFunction costFunction, TrajectoryRegionQuery trajectoryRegionQuery) {
-    this.costFunction = costFunction;
+  public GoalAdapter(TrajectoryRegionQuery trajectoryRegionQuery, CostFunction costFunction) {
     this.trajectoryRegionQuery = trajectoryRegionQuery;
-  }
-
-  @Override // from CostFunction
-  public Scalar costIncrement(GlcNode node, List<StateTime> trajectory, Flow flow) {
-    return costFunction.costIncrement(node, trajectory, flow);
-  }
-
-  @Override // from CostFunction
-  public Scalar minCostToGoal(Tensor x) {
-    return costFunction.minCostToGoal(x);
+    this.costFunction = costFunction;
   }
 
   @Override // from TrajectoryRegionQuery
@@ -41,5 +31,15 @@ public class GoalAdapter implements GoalInterface {
   @Override // from TrajectoryRegionQuery
   public boolean isDisjoint(List<StateTime> trajectory) {
     return trajectoryRegionQuery.isDisjoint(trajectory);
+  }
+
+  @Override // from CostFunction
+  public Scalar costIncrement(GlcNode node, List<StateTime> trajectory, Flow flow) {
+    return costFunction.costIncrement(node, trajectory, flow);
+  }
+
+  @Override // from CostFunction
+  public Scalar minCostToGoal(Tensor x) {
+    return costFunction.minCostToGoal(x);
   }
 }
