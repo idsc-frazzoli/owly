@@ -34,7 +34,7 @@ public class Se2xTLetterDemo implements DemoInterface {
   @Override
   public void start() {
     OwlyAnimationFrame owlyAnimationFrame = new OwlyAnimationFrame();
-    Se2xTEntity abstractEntity = new Se2xTEntity(Tensors.vector(6, 6, 1));
+    CarxTEntity abstractEntity = new CarxTEntity(Tensors.vector(6, 6, 1));
     owlyAnimationFrame.set(abstractEntity);
     // ---
     switch (3) {

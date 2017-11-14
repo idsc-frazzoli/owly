@@ -4,8 +4,8 @@ package ch.ethz.idsc.owly.demo.rn.glc;
 import java.util.Collection;
 import java.util.LinkedList;
 
-import ch.ethz.idsc.owly.demo.rn.R2Controls;
-import ch.ethz.idsc.owly.demo.rn.RnMinDistSphericalGoalManager;
+import ch.ethz.idsc.owly.demo.rn.R2Config;
+import ch.ethz.idsc.owly.demo.rn.RnMinTimeGoalManager;
 import ch.ethz.idsc.owly.glc.adapter.MultiCostGoalAdapter;
 import ch.ethz.idsc.owly.glc.core.CostFunction;
 import ch.ethz.idsc.owly.glc.core.GoalInterface;
@@ -31,10 +31,9 @@ import ch.ethz.idsc.tensor.red.Norm2Squared;
  * 
  * the implementation chooses certain values */
 /* package */ class R2Entity extends AbstractCircularEntity {
-  /** radius of spherical goal region */
-  private final Scalar goalRadius = RealScalar.of(0.2);
   /** extra cost functions, for instance to prevent cutting corners */
   public final Collection<CostFunction> extraCosts = new LinkedList<>();
+  protected final R2Config r2Config = new R2Config(RealScalar.ONE);
 
   /** @param state initial position of entity */
   public R2Entity(Tensor state) {
@@ -68,15 +67,19 @@ import ch.ethz.idsc.tensor.red.Norm2Squared;
     StateIntegrator stateIntegrator = //
         FixedStateIntegrator.create(EulerIntegrator.INSTANCE, RationalScalar.of(1, 12), 4);
     final Tensor center = goal.extract(0, 2);
-    GoalInterface goalInterface = //
-        MultiCostGoalAdapter.of(RnMinDistSphericalGoalManager.create(center, goalRadius), extraCosts);
+    Collection<Flow> controls = createControls();
+    Scalar goalRadius = RealScalar.of(Math.sqrt(2.0)).divide(partitionScale.Get(0)); // TODO should depend on eta!
+    System.out.println(goalRadius);
+    GoalInterface goalInterface = MultiCostGoalAdapter.of( //
+        RnMinTimeGoalManager.create(center, goalRadius, controls), //
+        extraCosts);
     return new StandardTrajectoryPlanner( //
-        partitionScale, stateIntegrator, createControls(), obstacleQuery, goalInterface);
+        partitionScale, stateIntegrator, controls, obstacleQuery, goalInterface);
   }
 
   Collection<Flow> createControls() {
     /** 36 corresponds to 10[Degree] resolution */
-    return R2Controls.createRadial(36);
+    return r2Config.createRadial(36);
   }
 
   protected Tensor eta() {

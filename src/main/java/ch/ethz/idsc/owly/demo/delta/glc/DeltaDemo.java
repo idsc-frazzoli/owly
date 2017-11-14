@@ -51,13 +51,13 @@ enum DeltaDemo {
     Tensor range = Tensors.vector(9, 6.5);
     ImageGradient imageGradient = ImageGradient.linear(ResourceData.of("/io/delta_uxy.png"), range, amp);
     Scalar maxInput = RealScalar.ONE;
-    StateSpaceModel stateSpaceModel = new DeltaStateSpaceModel(imageGradient, maxInput);
+    StateSpaceModel stateSpaceModel = new DeltaStateSpaceModel(imageGradient);
     Collection<Flow> controls = DeltaControls.createControls(stateSpaceModel, maxInput, 25);
     Tensor obstacleImage = ResourceData.of("/io/delta_free.png"); //
     Region<Tensor> region = new ImageRegion(obstacleImage, range, true);
     TrajectoryRegionQuery obstacleQuery = //
         SimpleTrajectoryRegionQuery.timeInvariant(region);
-    Scalar maxMove = stateSpaceModel.getLipschitz();
+    Scalar maxMove = stateSpaceModel.getLipschitz().add(maxInput);
     SphericalRegion sphericalRegion = new SphericalRegion(Tensors.vector(2.1, 0.3), RealScalar.of(0.3));
     GoalInterface goalInterface = new DeltaMinTimeGoalManager(sphericalRegion, maxMove);
     TrajectoryPlanner trajectoryPlanner = new StandardTrajectoryPlanner( //

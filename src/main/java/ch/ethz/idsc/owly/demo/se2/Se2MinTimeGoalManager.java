@@ -30,8 +30,8 @@ public final class Se2MinTimeGoalManager extends Se2AbstractGoalManager {
   public static GoalInterface create(Tensor goal, Tensor radiusVector, Collection<Flow> controls) {
     return new Se2MinTimeGoalManager(goal, radiusVector, controls).getGoalInterface();
   }
-
   // ---
+
   private final Scalar maxSpeed;
   private final Scalar maxTurning;
 

@@ -1,27 +1,19 @@
 // code by jph and jl
 package ch.ethz.idsc.owly.demo.delta;
 
-import ch.ethz.idsc.owly.data.GlobalAssert;
 import ch.ethz.idsc.owly.math.StateSpaceModel;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
-import ch.ethz.idsc.tensor.sca.Sign;
 
-/** TODO see below:
- * this example shows that the lipschitz constant depends on the f(x,u)
- * as well as the set of which the u's are drawn from.
- * that means, the lipschitz function should not be part of StateSpaceModel
- * but a new object that combines these 2 concepts, i.e. a collection of flows */
+/** an upper bound of the speed of an entity in the river delta is
+ * imageGradient.maxNormGradient() + |u_max| */
 public class DeltaStateSpaceModel implements StateSpaceModel {
   private final ImageGradient imageGradient;
-  private final Scalar maxInput;
 
   /** @param imageGradient
    * @param maxInput positive */
-  public DeltaStateSpaceModel(ImageGradient imageGradient, Scalar maxInput) {
-    GlobalAssert.that(Sign.isPositive(maxInput));
+  public DeltaStateSpaceModel(ImageGradient imageGradient) {
     this.imageGradient = imageGradient;
-    this.maxInput = maxInput;
   }
 
   @Override
@@ -29,8 +21,9 @@ public class DeltaStateSpaceModel implements StateSpaceModel {
     return imageGradient.rotate(x).add(u);
   }
 
+  /** | f(x_1, u) - f(x_2, u) | <= L | x_1 - x_2 | */
   @Override
   public Scalar getLipschitz() {
-    return imageGradient.maxNormGradient().add(maxInput);
+    return imageGradient.maxNormGradient(); // DO NOT CHANGE
   }
 }

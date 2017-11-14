@@ -10,129 +10,31 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.Objects;
 
-import ch.ethz.idsc.owly.data.GlobalAssert;
-import ch.ethz.idsc.owly.demo.se2.CarConfig;
-import ch.ethz.idsc.owly.demo.se2.Se2CarIntegrator;
-import ch.ethz.idsc.owly.demo.se2.Se2MinTimeGoalManager;
-import ch.ethz.idsc.owly.demo.se2.Se2ShiftCostFunction;
-import ch.ethz.idsc.owly.demo.se2.Se2StateSpaceModel;
-import ch.ethz.idsc.owly.demo.se2.Se2Wrap;
-import ch.ethz.idsc.owly.glc.adapter.MultiCostGoalAdapter;
 import ch.ethz.idsc.owly.glc.core.CostFunction;
-import ch.ethz.idsc.owly.glc.core.GoalInterface;
-import ch.ethz.idsc.owly.glc.core.StandardTrajectoryPlanner;
-import ch.ethz.idsc.owly.glc.core.TrajectoryPlanner;
 import ch.ethz.idsc.owly.gui.GeometricLayer;
 import ch.ethz.idsc.owly.gui.ani.AbstractEntity;
-import ch.ethz.idsc.owly.gui.ani.PlannerType;
-import ch.ethz.idsc.owly.math.RotationUtils;
-import ch.ethz.idsc.owly.math.StateTimeTensorFunction;
-import ch.ethz.idsc.owly.math.flow.Flow;
 import ch.ethz.idsc.owly.math.se2.Se2Utils;
-import ch.ethz.idsc.owly.math.state.FixedStateIntegrator;
-import ch.ethz.idsc.owly.math.state.SimpleEpisodeIntegrator;
-import ch.ethz.idsc.owly.math.state.StateIntegrator;
+import ch.ethz.idsc.owly.math.state.EpisodeIntegrator;
 import ch.ethz.idsc.owly.math.state.StateTime;
 import ch.ethz.idsc.owly.math.state.TrajectoryRegionQuery;
-import ch.ethz.idsc.tensor.RationalScalar;
-import ch.ethz.idsc.tensor.RealScalar;
-import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
-import ch.ethz.idsc.tensor.TensorRuntimeException;
-import ch.ethz.idsc.tensor.Tensors;
 import ch.ethz.idsc.tensor.alg.Array;
-import ch.ethz.idsc.tensor.alg.VectorQ;
-import ch.ethz.idsc.tensor.sca.Sqrt;
+import ch.ethz.idsc.tensor.sca.N;
 
 /** several magic constants are hard-coded in the implementation.
  * that means, the functionality does not apply to all examples universally. */
-class Se2Entity extends AbstractEntity {
-  public static final Tensor FALLBACK_CONTROL = Array.zeros(3).unmodifiable(); // {vx, vy, rate}
-  public static final Scalar SHIFT_PENALTY = RealScalar.of(0.4);
-  // ---
-  private static final Tensor SHAPE = Tensors.matrixDouble( //
-      new double[][] { //
-          { .2, +.07, 1 }, //
-          { .2, -.07, 1 }, //
-          { -.1, -.07, 1 }, //
-          { -.1, +.07, 1 } //
-      }).unmodifiable();
-  static final Se2Wrap SE2WRAP = new Se2Wrap(Tensors.vector(1, 1, 2));
-  static final Tensor PARTITIONSCALE = Tensors.vector(5, 5, 50 / Math.PI).unmodifiable(); // 50/pi == 15.9155
-  // ---
-  static {
-    if (!PARTITIONSCALE.get(0).equals(PARTITIONSCALE.get(1)))
-      throw TensorRuntimeException.of(PARTITIONSCALE);
-  }
-
-  public static Se2Entity createDefault(Tensor state) {
-    return new Se2Entity(state);
-  }
-
-  // ---
-  private final Collection<Flow> controls;
-  private final Tensor goalRadius;
-  public TrajectoryRegionQuery obstacleQuery = null;
-  /** extra cost functions, for instance
-   * 1) to prevent cutting corners
-   * 2) to penalize switching gears */
+public abstract class Se2Entity extends AbstractEntity {
+  public static final Tensor FALLBACK_CONTROL = N.DOUBLE.of(Array.zeros(3)).unmodifiable();
   public final Collection<CostFunction> extraCosts = new LinkedList<>();
-  // private BufferedImage bufferedImage = null;
+  public TrajectoryRegionQuery obstacleQuery = null;
 
-  Se2Entity(Tensor state) {
-    super(new SimpleEpisodeIntegrator( //
-        Se2StateSpaceModel.INSTANCE, //
-        Se2CarIntegrator.INSTANCE, //
-        new StateTime(state, RealScalar.ZERO))); // initial position
-    CarConfig carConfig = new CarConfig(RealScalar.ONE, RotationUtils.DEGREE(45));
-    controls = carConfig.createControlsForwardAndReverse(6);
-    final Scalar goalRadius_xy = Sqrt.of(RealScalar.of(2)).divide(PARTITIONSCALE.Get(0));
-    final Scalar goalRadius_theta = Sqrt.of(RealScalar.of(2)).divide(PARTITIONSCALE.Get(2));
-    goalRadius = Tensors.of(goalRadius_xy, goalRadius_xy, goalRadius_theta);
-    extraCosts.add(new Se2ShiftCostFunction(SHIFT_PENALTY));
-    // try {
-    // bufferedImage = ImageIO.read(UserHome.Pictures("car_green.png"));
-    // } catch (Exception exception) {
-    // exception.printStackTrace();
-    // }
-  }
-
-  @Override
-  protected Scalar distance(Tensor x, Tensor y) {
-    return SE2WRAP.distance(x, y);
+  public Se2Entity(EpisodeIntegrator episodeIntegrator) {
+    super(episodeIntegrator);
   }
 
   @Override
   protected final Tensor fallbackControl() {
-    return FALLBACK_CONTROL; // {vx, vy, rate}
-  }
-
-  @Override
-  public Scalar delayHint() {
-    return RealScalar.of(1.5);
-  }
-
-  @Override
-  public PlannerType getPlannerType() {
-    return PlannerType.STANDARD;
-  }
-
-  @Override
-  public TrajectoryPlanner createTrajectoryPlanner(TrajectoryRegionQuery obstacleQuery, Tensor goal) {
-    GlobalAssert.that(VectorQ.ofLength(goal, 3));
-    this.obstacleQuery = obstacleQuery;
-    StateIntegrator stateIntegrator = //
-        FixedStateIntegrator.create(Se2CarIntegrator.INSTANCE, RationalScalar.of(1, 10), 4);
-    GoalInterface goalInterface = //
-        MultiCostGoalAdapter.of(Se2MinTimeGoalManager.create(goal, goalRadius, controls), extraCosts);
-    TrajectoryPlanner trajectoryPlanner = new StandardTrajectoryPlanner( //
-        eta(), stateIntegrator, controls, obstacleQuery, goalInterface);
-    trajectoryPlanner.represent = StateTimeTensorFunction.state(SE2WRAP::represent);
-    return trajectoryPlanner;
-  }
-
-  protected Tensor eta() {
-    return PARTITIONSCALE;
+    return FALLBACK_CONTROL;
   }
 
   private boolean obstacleQuery_isDisjoint(StateTime stateTime) {
@@ -141,16 +43,18 @@ class Se2Entity extends AbstractEntity {
     return true;
   }
 
+  protected abstract Tensor shape();
+
   @Override
-  public void render(GeometricLayer geometricLayer, Graphics2D graphics) {
+  public final void render(GeometricLayer geometricLayer, Graphics2D graphics) {
     { // indicate current position
       final StateTime stateTime = getStateTimeNow();
-      Color color = new Color(64, 64, 64, 128);
-      if (!obstacleQuery_isDisjoint(stateTime))
-        color = new Color(255, 64, 64, 128);
+      Color color = obstacleQuery_isDisjoint(stateTime) //
+          ? new Color(64, 64, 64, 128)
+          : new Color(255, 64, 64, 128);
       geometricLayer.pushMatrix(Se2Utils.toSE2Matrix(stateTime.state()));
       graphics.setColor(color);
-      graphics.fill(geometricLayer.toPath2D(SHAPE));
+      graphics.fill(geometricLayer.toPath2D(shape()));
       geometricLayer.popMatrix();
     }
     { // indicate position delay[s] into the future
@@ -159,26 +63,15 @@ class Se2Entity extends AbstractEntity {
       graphics.setColor(new Color(255, 128, 64, 192));
       graphics.fill(new Rectangle2D.Double(point.getX() - 2, point.getY() - 2, 5, 5));
     }
-    {
+    { // draw mouse
       Color color = new Color(0, 128, 255, 192);
       StateTime stateTime = new StateTime(geometricLayer.getMouseSe2State(), getStateTimeNow().time());
       if (!obstacleQuery_isDisjoint(stateTime))
         color = new Color(255, 96, 96, 128);
       geometricLayer.pushMatrix(geometricLayer.getMouseSe2Matrix());
       graphics.setColor(color);
-      graphics.fill(geometricLayer.toPath2D(SHAPE));
+      graphics.fill(geometricLayer.toPath2D(shape()));
       geometricLayer.popMatrix();
     }
-    // {
-    // Tensor model2pixel = owlyLayer.model2pixel();
-    // Tensor translate = IdentityMatrix.of(3);
-    // translate.set(RealScalar.of(-30), 0, 2); // pixel of rear axle
-    // translate.set(RealScalar.of(-32), 1, 2); // image width/2
-    // Tensor image = DiagonalMatrix.of(.005, .005, 1);
-    // Tensor m = model2pixel.dot(owlyLayer.getMouseSe2Matrix()).dot(image).dot(translate);
-    // GraphicsUtil.setQualityHigh(graphics);
-    // graphics.drawImage(bufferedImage, at, null);
-    // GraphicsUtil.setQualityDefault(graphics);
-    // }
   }
 }

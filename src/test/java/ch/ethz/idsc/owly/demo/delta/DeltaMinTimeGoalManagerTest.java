@@ -22,13 +22,13 @@ public class DeltaMinTimeGoalManagerTest extends TestCase {
     Scalar maxNormGradient = imageGradient.maxNormGradient();
     assertTrue(Scalars.lessThan(RealScalar.ZERO, maxNormGradient));
     Scalar amp = RealScalar.of(2);
-    StateSpaceModel stateSpaceModel = new DeltaStateSpaceModel(imageGradient, amp);
+    StateSpaceModel stateSpaceModel = new DeltaStateSpaceModel(imageGradient);
     Collection<Flow> controls = DeltaControls.createControls(stateSpaceModel, amp, 20);
     assertTrue(Chop._10.close(DeltaControls.maxSpeed(controls), amp));
     // System.out.println(stateSpaceModel.getLipschitz());
     Scalar maxMove = DeltaControls.maxSpeed(controls).add(imageGradient.maxNormGradient());
     // System.out.println(maxMove);
-    assertTrue(Chop._10.close(maxMove, stateSpaceModel.getLipschitz()));
+    assertTrue(Chop._10.close(maxMove, stateSpaceModel.getLipschitz().add(amp)));
     GoalInterface dmtgm = DeltaMinTimeGoalManager.create(Tensors.vector(1, 1), RealScalar.ONE, maxMove);
     assertTrue(HeuristicQ.of(dmtgm));
   }

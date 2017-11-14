@@ -30,7 +30,6 @@ public class DeltaAltStateSpaceModel implements StateSpaceModel {
     // maxNorm is very big--> therefore eta with R^(1+LF) is huge? real lipschitz?
     Scalar n = RealScalar.of(4); // dimensions of StateSpace + Dimensions of InputSpace
     // lipschitz constant on vector-valued function from:
-    // TODO JAN check link
     // https://math.stackexchange.com/questions/1132078/proof-that-a-vector-valued-function-is-lipschitz-continuous-on-a-closed-rectangl
     return getMaxPossibleChange().multiply(n);
   }

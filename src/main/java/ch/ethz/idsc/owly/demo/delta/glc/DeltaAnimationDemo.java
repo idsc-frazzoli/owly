@@ -1,6 +1,7 @@
 // code by jph
 package ch.ethz.idsc.owly.demo.delta.glc;
 
+import ch.ethz.idsc.owly.demo.delta.DeltaStateSpaceModel;
 import ch.ethz.idsc.owly.demo.delta.ImageGradient;
 import ch.ethz.idsc.owly.demo.util.DemoInterface;
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
@@ -28,7 +29,7 @@ public class DeltaAnimationDemo implements DemoInterface {
     TrajectoryRegionQuery obstacleQuery = SimpleTrajectoryRegionQuery.timeInvariant(imageRegion);
     owlyAnimationFrame.set(new DeltaEntity(imageGradient, Tensors.vector(10, 3.5)));
     owlyAnimationFrame.setObstacleQuery(obstacleQuery);
-    StateSpaceModel stateSpaceModel = DeltaEntity.model(imageGradient);
+    StateSpaceModel stateSpaceModel = new DeltaStateSpaceModel(imageGradient);
     owlyAnimationFrame.addBackground(RegionRenders.create(imageRegion));
     owlyAnimationFrame.addBackground(DeltaHelper.vectorFieldRender(stateSpaceModel, range, imageRegion, RealScalar.of(0.5)));
     owlyAnimationFrame.jFrame.setVisible(true);
