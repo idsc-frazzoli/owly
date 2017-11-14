@@ -14,6 +14,9 @@ import ch.ethz.idsc.tensor.sca.Sign;
 
 /** Double Integrator with friction
  * 
+ * Rice2StateSpaceModel is unit less.
+ * When the use of units is required use {@link Duncan2StateSpaceModel}.
+ * 
  * implementation for n-dimensional position and velocity */
 public class Rice2StateSpaceModel implements StateSpaceModel {
   public static StateSpaceModel of(Scalar mu) {
