@@ -15,6 +15,7 @@ import ch.ethz.idsc.tensor.red.Max;
 import ch.ethz.idsc.tensor.sca.Power;
 import ch.ethz.idsc.tensor.sca.Ramp;
 
+// TODO JONAS use Se2MinTimeGoalManager + Se2LateralAcceleration.CostFunction
 /* package */ class Se2MinCurvatureGoalManager extends Se2AbstractGoalManager {
   public Se2MinCurvatureGoalManager(Tensor center, Tensor radiusVector) {
     super(center, radiusVector);

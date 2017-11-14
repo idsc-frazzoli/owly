@@ -17,6 +17,7 @@ import ch.ethz.idsc.tensor.sca.Ramp;
 /** Nonholonomic Wheeled Robot
  * 
  * bapaden phd thesis: (5.5.13) */
+// TODO JONAS use Se2MinTimeGoalManager instead
 /* package */ class Se2MinTimeEuclideanDistanceHeuristicGoalManager extends Se2AbstractGoalManager {
   private final Scalar maxSpeed;
 
