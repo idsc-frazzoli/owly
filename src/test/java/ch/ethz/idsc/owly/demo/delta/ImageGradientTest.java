@@ -19,12 +19,12 @@ public class ImageGradientTest extends TestCase {
     final Tensor image = ResourceData.of("/io/delta_uxy.png");
     assertEquals(Dimensions.of(image), Arrays.asList(128, 179));
     {
-      ImageGradient ig = new ImageGradient(image, range, RealScalar.of(.5)); // -.25 .5
+      ImageGradient ig = ImageGradient.linear(image, range, RealScalar.of(.5));
       res = ig.rotate(Tensors.vector(2, 3));
       max = ig.maxNormGradient();
     }
     {
-      ImageGradient ig = new ImageGradient(image, range, RealScalar.ONE); // -.25 .5
+      ImageGradient ig = ImageGradient.linear(image, range, RealScalar.ONE);
       Tensor cmp = ig.rotate(Tensors.vector(2, 3));
       assertEquals(cmp, res.multiply(RealScalar.of(2)));
       assertEquals(ig.maxNormGradient(), max.multiply(RealScalar.of(2)));

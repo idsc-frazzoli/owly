@@ -13,7 +13,7 @@ import ch.ethz.idsc.tensor.alg.Last;
  * 
  * implementation requires that last entry of StateTime::state is
  * identical to StateTime::time */
-@Deprecated
+// @Deprecated
 class RxtTimeInvariantRegion implements Region<StateTime> {
   private final Region<Tensor> region;
 

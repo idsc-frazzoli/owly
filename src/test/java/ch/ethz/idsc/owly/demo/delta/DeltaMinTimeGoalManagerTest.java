@@ -17,8 +17,8 @@ import junit.framework.TestCase;
 
 public class DeltaMinTimeGoalManagerTest extends TestCase {
   public void testSimple() {
-    ImageGradient imageGradient = //
-        new ImageGradient(ResourceData.of("/io/delta_uxy.png"), Tensors.vector(10, 10), RealScalar.of(.1));
+    ImageGradient imageGradient = ImageGradient.linear( //
+        ResourceData.of("/io/delta_uxy.png"), Tensors.vector(10, 10), RealScalar.of(.1));
     Scalar maxNormGradient = imageGradient.maxNormGradient();
     assertTrue(Scalars.lessThan(RealScalar.ZERO, maxNormGradient));
     Scalar amp = RealScalar.of(2);

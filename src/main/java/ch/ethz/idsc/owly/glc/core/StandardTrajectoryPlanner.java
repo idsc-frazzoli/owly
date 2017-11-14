@@ -106,7 +106,9 @@ public class StandardTrajectoryPlanner extends AbstractTrajectoryPlanner {
 
   @Override
   protected Optional<GlcNode> getFurthestGoalNode() {
-    throw new UnsupportedOperationException();
+    // TODO JONAS operation is not defined for standard planner, but some demos (deltaxt...) use it !!!
+    // throw new UnsupportedOperationException();
+    return Optional.empty();
   }
 
   @Override

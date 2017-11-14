@@ -1,19 +1,16 @@
 // code by jph & jl
 package ch.ethz.idsc.owly.demo.deltaxt;
 
+import ch.ethz.idsc.owly.data.GlobalAssert;
 import ch.ethz.idsc.owly.demo.delta.ImageGradient;
 import ch.ethz.idsc.owly.math.StateSpaceModel;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
-import ch.ethz.idsc.tensor.TensorRuntimeException;
-import ch.ethz.idsc.tensor.Tensors;
-import ch.ethz.idsc.tensor.alg.Join;
 
 // TODO should be obsolete
 //@Deprecated
 class DeltaxtStateSpaceModel implements StateSpaceModel {
-  private static final Tensor AFFINE_ONE = Tensors.vector(1);
   private final ImageGradient imageGradient;
   private final Scalar maxInput;
 
@@ -24,11 +21,8 @@ class DeltaxtStateSpaceModel implements StateSpaceModel {
 
   @Override
   public Tensor f(Tensor x, Tensor u) {
-    int toIndex = x.length() - 1;
-    if (toIndex != 2)
-      throw TensorRuntimeException.of(x, u);
-    Tensor fxy = imageGradient.rotate(x.extract(0, toIndex));
-    return Join.of(fxy.add(u), AFFINE_ONE);
+    GlobalAssert.that(x.length() == 3);
+    return imageGradient.rotate(x.extract(0, 2)).add(u).append(RealScalar.ONE);
   }
 
   @Override

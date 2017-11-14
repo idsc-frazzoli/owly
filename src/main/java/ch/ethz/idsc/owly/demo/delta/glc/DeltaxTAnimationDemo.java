@@ -39,7 +39,7 @@ public class DeltaxTAnimationDemo implements DemoInterface {
     // ---
     Scalar amp = RealScalar.of(-.05);
     Tensor range = Tensors.vector(12.6, 9.1).unmodifiable();
-    ImageGradient imageGradient = new ImageGradient(ResourceData.of("/io/delta_uxy.png"), range, amp);
+    ImageGradient imageGradient = ImageGradient.linear(ResourceData.of("/io/delta_uxy.png"), range, amp);
     StateSpaceModel stateSpaceModel = DeltaEntity.model(imageGradient);
     Tensor obstacleImage = ResourceData.of("/io/delta_free.png");
     ImageRegion imageRegion = new ImageRegion(obstacleImage, range, true);
