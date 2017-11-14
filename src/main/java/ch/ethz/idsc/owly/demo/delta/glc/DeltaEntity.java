@@ -39,16 +39,14 @@ import ch.ethz.idsc.tensor.sca.Chop;
   private static final Scalar U_NORM = RealScalar.of(0.6);
   /** resolution of radial controls */
   private static final int U_SIZE = 15;
-
-  public static StateSpaceModel model(ImageGradient imageGradient) {
-    return new DeltaStateSpaceModel(imageGradient, U_NORM);
-  }
-
   /***************************************************/
   private final ImageGradient imageGradient;
 
   public DeltaEntity(ImageGradient imageGradient, Tensor state) {
-    super(new SimpleEpisodeIntegrator(model(imageGradient), EulerIntegrator.INSTANCE, new StateTime(state, RealScalar.ZERO)));
+    super(new SimpleEpisodeIntegrator( //
+        new DeltaStateSpaceModel(imageGradient), //
+        EulerIntegrator.INSTANCE, //
+        new StateTime(state, RealScalar.ZERO)));
     this.imageGradient = imageGradient;
   }
 
@@ -72,11 +70,12 @@ import ch.ethz.idsc.tensor.sca.Chop;
     Tensor eta = eta();
     StateIntegrator stateIntegrator = FixedStateIntegrator.create( //
         RungeKutta45Integrator.INSTANCE, RationalScalar.of(1, 10), 4);
+    StateSpaceModel stateSpaceModel = new DeltaStateSpaceModel(imageGradient);
     Collection<Flow> controls = DeltaControls.createControls( //
-        new DeltaStateSpaceModel(imageGradient, U_NORM), U_NORM, U_SIZE);
+        stateSpaceModel, U_NORM, U_SIZE);
     Scalar u_norm = DeltaControls.maxSpeed(controls);
     GlobalAssert.that(Chop._10.close(u_norm, U_NORM));
-    Scalar maxMove = DeltaControls.maxSpeed(controls).add(imageGradient.maxNormGradient());
+    Scalar maxMove = stateSpaceModel.getLipschitz().add(u_norm);
     GoalInterface goalInterface = DeltaMinTimeGoalManager.create( //
         goal.extract(0, 2), RealScalar.of(.3), maxMove);
     return new StandardTrajectoryPlanner( //

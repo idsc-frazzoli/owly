@@ -4,6 +4,7 @@ package ch.ethz.idsc.owly.demo.delta.glc;
 import java.util.Arrays;
 import java.util.function.Supplier;
 
+import ch.ethz.idsc.owly.demo.delta.DeltaStateSpaceModel;
 import ch.ethz.idsc.owly.demo.delta.ImageGradient;
 import ch.ethz.idsc.owly.demo.rn.R2xTEllipsoidStateTimeRegion;
 import ch.ethz.idsc.owly.demo.util.DemoInterface;
@@ -44,7 +45,7 @@ public class DeltaxTAnimationDemo implements DemoInterface {
     Supplier<Scalar> supplier = () -> abstractEntity.getStateTimeNow().time();
     // ---
     ImageGradient imageGradient_slow = ImageGradient.nearest(image, range, amp);
-    StateSpaceModel stateSpaceModel = DeltaEntity.model(imageGradient_slow);
+    StateSpaceModel stateSpaceModel = new DeltaStateSpaceModel(imageGradient_slow);
     Flow flow = StateSpaceModels.createFlow(stateSpaceModel, DeltaEntity.FALLBACK_CONTROL);
     Region<StateTime> region1 = create(RealScalar.of(0.4), Tensors.vector(2, 1.5), flow, supplier);
     Region<StateTime> region2 = create(RealScalar.of(0.5), Tensors.vector(6, 6), flow, supplier);

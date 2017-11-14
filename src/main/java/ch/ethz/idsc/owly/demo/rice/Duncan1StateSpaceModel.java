@@ -8,8 +8,10 @@ import ch.ethz.idsc.tensor.TensorRuntimeException;
 import ch.ethz.idsc.tensor.sca.Sign;
 
 /** Single Integrator with friction
+ * implementation for n-dimensional velocity
  * 
- * implementation for n-dimensional velocity */
+ * The state x (typically velocity) is bounded by "u_max / lambda"
+ * where u_max is the maximum control (typically acceleration). */
 public class Duncan1StateSpaceModel implements StateSpaceModel {
   private final Scalar lambda;
 
@@ -29,6 +31,6 @@ public class Duncan1StateSpaceModel implements StateSpaceModel {
   /** | f(x_1, u) - f(x_2, u) | <= L | x_1 - x_2 | */
   @Override
   public Scalar getLipschitz() {
-    return lambda; // TODO probably wrong
+    return lambda;
   }
 }
