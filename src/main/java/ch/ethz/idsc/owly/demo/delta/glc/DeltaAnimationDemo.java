@@ -22,7 +22,7 @@ public class DeltaAnimationDemo implements DemoInterface {
     // ---
     Scalar amp = RealScalar.of(-.05);
     Tensor range = Tensors.vector(12.6, 9.1).unmodifiable();
-    ImageGradient imageGradient = new ImageGradient(ResourceData.of("/io/delta_uxy.png"), range, amp);
+    ImageGradient imageGradient = ImageGradient.nearest(ResourceData.of("/io/delta_uxy.png"), range, amp);
     Tensor obstacleImage = ResourceData.of("/io/delta_free.png"); //
     ImageRegion imageRegion = new ImageRegion(obstacleImage, range, true);
     TrajectoryRegionQuery obstacleQuery = SimpleTrajectoryRegionQuery.timeInvariant(imageRegion);

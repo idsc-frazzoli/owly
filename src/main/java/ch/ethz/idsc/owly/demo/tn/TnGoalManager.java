@@ -50,6 +50,6 @@ class TnGoalManager implements Region<Tensor>, CostFunction {
   }
 
   public GoalInterface getGoalInterface() {
-    return new GoalAdapter(this, SimpleTrajectoryRegionQuery.timeInvariant(this));
+    return new GoalAdapter(SimpleTrajectoryRegionQuery.timeInvariant(this), this);
   }
 }

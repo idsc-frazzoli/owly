@@ -21,7 +21,9 @@ import ch.ethz.idsc.tensor.sca.Sign;
 public class PsuGoalManager implements Region<Tensor>, CostFunction {
   public static GoalInterface of(CoordinateWrap coordinateWrap, Tensor center, Tensor radius) {
     PsuGoalManager psuGoalManager = new PsuGoalManager(coordinateWrap, center, radius);
-    return new GoalAdapter(psuGoalManager, SimpleTrajectoryRegionQuery.timeInvariant(psuGoalManager));
+    return new GoalAdapter( //
+        SimpleTrajectoryRegionQuery.timeInvariant(psuGoalManager), //
+        psuGoalManager);
   }
 
   // ---

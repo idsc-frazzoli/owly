@@ -151,9 +151,9 @@ enum TwdGlcHeuristicSensingObstacleCompareAnyDemo {
   public static void main(String[] args) throws Exception {
     GoalInterface[] values = new GoalInterface[] { //
         // new TwdMinCurvatureGoalManager(Tensors.vector(13, 13, 0), RealScalar.of(0.3), RealScalar.of(1)).getGoalInterface()
-        new Se2MinTimeGoalManager(Tensors.vector(13, 13, 0), Tensors.vector(0.3, 0.3, 1), //
+        Se2MinTimeGoalManager.create(Tensors.vector(13, 13, 0), Tensors.vector(0.3, 0.3, 1), //
             // let's hope the controls lead to the right results
-            TWDCONFIG.createControls(8)).getGoalInterface() //
+            TWDCONFIG.createControls(8)) //
         // new TwdMinTimeGoalManager(Tensors.vector(13, 13, 0), RealScalar.of(0.3), RealScalar.of(1)).getGoalInterface()
         // new TwdNoHeuristicGoalManager(Tensors.vector(6, 6, 0), Tensors.vector(0.3, 0.3, 1)).getGoalInterface() //
     };

@@ -58,7 +58,7 @@ enum TwdGlcNoiseDemo {
     Tensor goalCenter = Tensors.vector(5.5, 0, -1 * Math.PI);
     Tensor radiusVector = Tensors.vector(0.2, 0.2, 50 * Math.PI / 180);
     GoalInterface goalInterface = MultiCostGoalAdapter.of( //
-        new Se2MinTimeGoalManager(goalCenter, radiusVector, controls).getGoalInterface(), //
+        Se2MinTimeGoalManager.create(goalCenter, radiusVector, controls), //
         Arrays.asList(Se2LateralAcceleration.COSTFUNCTION));
     // ObstacleRegion
     TrajectoryRegionQuery obstacleQuery = SimpleTrajectoryRegionQuery.timeInvariant(region);

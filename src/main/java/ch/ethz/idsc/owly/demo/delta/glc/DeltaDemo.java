@@ -49,7 +49,7 @@ enum DeltaDemo {
     StateIntegrator stateIntegrator = FixedStateIntegrator.create( //
         RungeKutta45Integrator.INSTANCE, RationalScalar.of(1, 10), 4);
     Tensor range = Tensors.vector(9, 6.5);
-    ImageGradient imageGradient = new ImageGradient(ResourceData.of("/io/delta_uxy.png"), range, amp);
+    ImageGradient imageGradient = ImageGradient.linear(ResourceData.of("/io/delta_uxy.png"), range, amp);
     Scalar maxInput = RealScalar.ONE;
     StateSpaceModel stateSpaceModel = new DeltaStateSpaceModel(imageGradient, maxInput);
     Collection<Flow> controls = DeltaControls.createControls(stateSpaceModel, maxInput, 25);

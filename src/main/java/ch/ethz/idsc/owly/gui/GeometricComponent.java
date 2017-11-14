@@ -25,7 +25,6 @@ import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
 import ch.ethz.idsc.tensor.alg.Array;
-import ch.ethz.idsc.tensor.alg.Join;
 import ch.ethz.idsc.tensor.mat.DiagonalMatrix;
 import ch.ethz.idsc.tensor.mat.LinearSolve;
 import ch.ethz.idsc.tensor.sca.ArcTan;
@@ -189,7 +188,7 @@ public final class GeometricComponent {
   private GeometricLayer createLayer() {
     return new GeometricLayer( //
         model2pixel, //
-        Join.of(mouseLocation, Tensors.of(RealScalar.of(mouseWheel * WHEEL_ANGLE))));
+        mouseLocation.copy().append(RealScalar.of(mouseWheel * WHEEL_ANGLE)));
   }
 
   /** transforms point in pixel space to coordinates of model space

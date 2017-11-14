@@ -59,6 +59,6 @@ public abstract class Se2AbstractGoalManager implements Region<Tensor>, CostFunc
   }
 
   public final GoalInterface getGoalInterface() {
-    return new GoalAdapter(this, SimpleTrajectoryRegionQuery.timeInvariant(this));
+    return new GoalAdapter(SimpleTrajectoryRegionQuery.timeInvariant(this), this);
   }
 }

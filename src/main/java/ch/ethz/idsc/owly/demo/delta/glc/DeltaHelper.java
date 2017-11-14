@@ -56,7 +56,7 @@ public enum DeltaHelper {
     Scalar dtMax = RationalScalar.of(1, 6);
     int maxIter = 2000;
     Tensor range = Tensors.vector(9, 6.5);
-    ImageGradient ipr = new ImageGradient(ResourceData.of("/io/delta_uxy.png"), range, gradientAmp); // -.25 .5
+    ImageGradient ipr = ImageGradient.linear(ResourceData.of("/io/delta_uxy.png"), range, gradientAmp);
     Scalar maxInput = RealScalar.of(0.1);
     DeltaAltStateSpaceModel stateSpaceModel = new DeltaAltStateSpaceModel(ipr, maxInput);
     System.out.println("MaxGradient of field is: " + ipr.maxNormGradient());
@@ -87,7 +87,7 @@ public enum DeltaHelper {
     Scalar dtMax = RationalScalar.of(1, 6);
     int maxIter = 2000;
     Tensor range = Tensors.vector(9, 6.5);
-    ImageGradient ipr = new ImageGradient(ResourceData.of("/io/delta_uxy.png"), range, gradientAmp); // -.25 .5
+    ImageGradient ipr = ImageGradient.linear(ResourceData.of("/io/delta_uxy.png"), range, gradientAmp);
     Scalar maxInput = RealScalar.of(0.1);
     DeltaAltStateSpaceModel stateSpaceModel = new DeltaAltStateSpaceModel(ipr, maxInput);
     System.out.println("MaxGradient of field is: " + ipr.maxNormGradient());

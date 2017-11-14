@@ -10,7 +10,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Objects;
 
-import ch.ethz.idsc.owly.data.GlobalAssert;
 import ch.ethz.idsc.owly.demo.se2.Se2CarIntegrator;
 import ch.ethz.idsc.owly.demo.se2.Se2LateralAcceleration;
 import ch.ethz.idsc.owly.demo.se2.Se2MinTimeGoalManager;
@@ -38,7 +37,6 @@ import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.TensorRuntimeException;
 import ch.ethz.idsc.tensor.Tensors;
 import ch.ethz.idsc.tensor.alg.Array;
-import ch.ethz.idsc.tensor.alg.VectorQ;
 import ch.ethz.idsc.tensor.sca.Sqrt;
 
 /* package */ class TwdEntity extends AbstractEntity {
@@ -47,7 +45,7 @@ import ch.ethz.idsc.tensor.sca.Sqrt;
   private static final Tensor SHAPE = Tensors.matrixDouble( //
       new double[][] { { .3, 0, 1 }, { -.1, -.1, 1 }, { -.1, +.1, 1 } }).unmodifiable();
   private static final Se2Wrap SE2WRAP = new Se2Wrap(Tensors.vector(1, 1, 2));
-  private static final Tensor PARTITIONSCALE = Tensors.vector(4, 4, 50 / Math.PI); // 50/pi == 15.9155
+  private static final Tensor PARTITIONSCALE = Tensors.vector(6, 6, 50 / Math.PI); // 50/pi == 15.9155
   // ---
   static {
     if (!PARTITIONSCALE.get(0).equals(PARTITIONSCALE.get(1)))
@@ -70,7 +68,7 @@ import ch.ethz.idsc.tensor.sca.Sqrt;
         Se2StateSpaceModel.INSTANCE, //
         Se2CarIntegrator.INSTANCE, //
         new StateTime(state, RealScalar.ZERO))); // initial position
-    controls = twdControls.createControls(8);
+    controls = twdControls.createControls(4);
     goalRadius_xy = Sqrt.of(RealScalar.of(2)).divide(PARTITIONSCALE.Get(0));
     goalRadius_theta = Sqrt.of(RealScalar.of(2)).divide(PARTITIONSCALE.Get(2));
   }
@@ -97,14 +95,12 @@ import ch.ethz.idsc.tensor.sca.Sqrt;
 
   @Override
   public TrajectoryPlanner createTrajectoryPlanner(TrajectoryRegionQuery obstacleQuery, Tensor goal) {
-    GlobalAssert.that(VectorQ.ofLength(goal, 3));
-    // obstacleQuery = EmptyTrajectoryRegionQuery.INSTANCE; // <- for testing
     this.obstacleQuery = obstacleQuery;
     StateIntegrator stateIntegrator = //
         FixedStateIntegrator.create(Se2CarIntegrator.INSTANCE, RationalScalar.of(1, 10), 4);
     Tensor radiusVector = Tensors.of(goalRadius_xy, goalRadius_xy, goalRadius_theta);
     GoalInterface goalInterface = MultiCostGoalAdapter.of( //
-        new Se2MinTimeGoalManager(goal, radiusVector, controls).getGoalInterface(), //
+        Se2MinTimeGoalManager.create(goal, radiusVector, controls), //
         Arrays.asList(Se2LateralAcceleration.COSTFUNCTION));
     TrajectoryPlanner trajectoryPlanner = new StandardTrajectoryPlanner( //
         PARTITIONSCALE, stateIntegrator, controls, obstacleQuery, goalInterface);

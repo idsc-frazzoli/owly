@@ -59,7 +59,7 @@ enum TwdGlcDemo {
     // ---
     Tensor goalCenter = Tensors.vector(2, -2, -1 * Math.PI);
     GoalInterface goalInterface = MultiCostGoalAdapter.of( //
-        new Se2MinTimeGoalManager(goalCenter, Tensors.vector(0.5, 0.5, 50 * Math.PI / 180), controls).getGoalInterface(), //
+        Se2MinTimeGoalManager.create(goalCenter, Tensors.vector(0.5, 0.5, 50 * Math.PI / 180), controls), //
         Arrays.asList(Se2LateralAcceleration.COSTFUNCTION));
     // ---
     TrajectoryPlanner trajectoryPlanner = new StandardTrajectoryPlanner(parameters.getEta(), //

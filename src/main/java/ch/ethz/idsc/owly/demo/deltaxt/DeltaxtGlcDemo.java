@@ -44,7 +44,6 @@ import ch.ethz.idsc.tensor.io.ResourceData;
 
 public class DeltaxtGlcDemo implements DemoInterface {
   ;
-  @SuppressWarnings("deprecation")
   @Override
   public void start() {
     // SETUP
@@ -61,7 +60,7 @@ public class DeltaxtGlcDemo implements DemoInterface {
     } catch (Exception exception) {
       exception.printStackTrace();
     }
-    ImageGradient ipr = new ImageGradient(ResourceData.of("/io/delta_uxy.png"), range, RealScalar.of(-0.1)); // -.25 .5
+    ImageGradient ipr = ImageGradient.linear(ResourceData.of("/io/delta_uxy.png"), range, RealScalar.of(-0.1));
     Scalar maxInput = RealScalar.ONE;
     DeltaxtStateSpaceModel stateSpaceModel = new DeltaxtStateSpaceModel(ipr, maxInput);
     Collection<Flow> controls = DeltaControls.createControls( //
