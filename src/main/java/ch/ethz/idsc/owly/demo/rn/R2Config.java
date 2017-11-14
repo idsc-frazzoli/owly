@@ -38,8 +38,8 @@ public class R2Config {
     return list;
   }
 
-  public Flow stayPut(int u_length) {
+  public Flow stayPut() {
     StateSpaceModel stateSpaceModel = SingleIntegratorStateSpaceModel.INSTANCE;
-    return StateSpaceModels.createFlow(stateSpaceModel, Array.zeros(u_length));
+    return StateSpaceModels.createFlow(stateSpaceModel, Array.zeros(2));
   }
 }

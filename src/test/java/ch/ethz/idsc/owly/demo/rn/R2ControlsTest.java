@@ -27,7 +27,7 @@ public class R2ControlsTest extends TestCase {
     int n = 10;
     R2Config r2Config = new R2Config(RealScalar.ONE);
     Collection<Flow> controls = r2Config.createRadial(n);
-    Scalar maxSpeed = R2Controls.maxSpeed(controls);
+    Scalar maxSpeed = RnControls.maxSpeed(controls);
     assertTrue(Chop._14.close(maxSpeed, RealScalar.ONE));
   }
 

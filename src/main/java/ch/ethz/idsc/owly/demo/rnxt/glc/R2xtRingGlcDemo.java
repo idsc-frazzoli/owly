@@ -52,7 +52,7 @@ enum R2xtRingGlcDemo {
         parameters.getTrajectorySize());
     R2Config r2Config = new R2Config(RealScalar.ONE);
     Collection<Flow> controls = r2Config.createRadial(parameters.getResolutionInt());
-    controls.add(r2Config.stayPut(2));
+    controls.add(r2Config.stayPut());
     Tensor goal = Tensors.vector(5, 5);
     EllipsoidRegion ellipsoidRegion = new EllipsoidRegion(goal, Tensors.vector(0.2, 0.2));
     GoalInterface goalInterface = new RnHeuristicEllipsoidGoalManager(ellipsoidRegion);

@@ -1,11 +1,12 @@
 // code by jph and jl
 package ch.ethz.idsc.owly.demo.rn;
 
+import java.util.Collection;
 import java.util.List;
 
 import ch.ethz.idsc.owly.data.DontModify;
-import ch.ethz.idsc.owly.data.Lists;
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
+import ch.ethz.idsc.owly.glc.adapter.StateTimeTrajectories;
 import ch.ethz.idsc.owly.glc.core.GlcNode;
 import ch.ethz.idsc.owly.glc.core.GoalInterface;
 import ch.ethz.idsc.owly.math.flow.Flow;
@@ -14,47 +15,46 @@ import ch.ethz.idsc.owly.math.state.StateTime;
 import ch.ethz.idsc.owly.math.state.TimeInvariantRegion;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
-import ch.ethz.idsc.tensor.red.Norm;
 import ch.ethz.idsc.tensor.sca.Ramp;
 
-/** objective is minimum path length.
- * path length is measured in Euclidean distance using Norm._2::ofVector.
- * the distance is independent from the max speed.
+/** objective is minimum time.
  * 
- * <p>The distance cost function is unsuitable for entities that are capable
+ * <p>The distance cost function is suitable for entities that are capable
  * and may need to linger in one spot (u == {0, 0}) because in that case
- * the cost == distance traveled evaluates to 0.
+ * the cost == distance traveled evaluates a non-zero, positive value.
  * 
- * @see SphericalRegion */
+ * <p>The goal region underlying the target area as well as the heuristic is
+ * {@link SphericalRegion}. */
 @DontModify
-public class RnMinDistSphericalGoalManager extends SimpleTrajectoryRegionQuery implements GoalInterface {
+public class RnMinTimeGoalManager extends SimpleTrajectoryRegionQuery implements GoalInterface {
   /** creates a spherical region in R^n with given center and radius.
-   * min distance to goal is measured in Euclidean distance.
-   * the distance is independent from the max speed.
    * 
    * @param center vector with length == n
-   * @param radius positive */
-  public static GoalInterface create(Tensor center, Scalar radius) {
-    return new RnMinDistSphericalGoalManager(new SphericalRegion(center, radius));
+   * @param radius positive
+   * @param controls */
+  public static GoalInterface create(Tensor center, Scalar radius, Collection<Flow> controls) {
+    return new RnMinTimeGoalManager(new SphericalRegion(center, radius), controls);
   }
   // ---
 
   private final SphericalRegion sphericalRegion;
+  private final Scalar maxSpeed;
 
   /** @param sphericalRegion */
-  public RnMinDistSphericalGoalManager(SphericalRegion sphericalRegion) {
+  public RnMinTimeGoalManager(SphericalRegion sphericalRegion, Collection<Flow> controls) {
     super(new TimeInvariantRegion(sphericalRegion));
     this.sphericalRegion = sphericalRegion;
+    maxSpeed = RnControls.maxSpeed(controls);
   }
 
   @Override // from CostIncrementFunction
   public Scalar costIncrement(GlcNode glcNode, List<StateTime> trajectory, Flow flow) {
-    return Norm._2.between(glcNode.stateTime().state(), Lists.getLast(trajectory).state()); // ||x_prev - x_next||
+    return StateTimeTrajectories.timeIncrement(glcNode, trajectory);
   }
 
   @Override // from HeuristicFunction
   public Scalar minCostToGoal(Tensor x) {
-    // max(0, ||x - center|| - radius)
-    return Ramp.of(sphericalRegion.evaluate(x));
+    // max(0, ||x - center|| - radius) / maxSpeed
+    return Ramp.of(sphericalRegion.evaluate(x).divide(maxSpeed));
   }
 }
