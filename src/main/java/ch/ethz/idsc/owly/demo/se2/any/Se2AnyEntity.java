@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.Optional;
 
 import ch.ethz.idsc.owly.demo.rn.EuclideanDistanceDiscoverRegion;
-import ch.ethz.idsc.owly.demo.rn.R2Controls;
+import ch.ethz.idsc.owly.demo.rn.R2Config;
 import ch.ethz.idsc.owly.demo.rn.RnMinDistSphericalGoalManager;
 import ch.ethz.idsc.owly.demo.se2.CarConfig;
 import ch.ethz.idsc.owly.demo.se2.Se2CarIntegrator;
@@ -158,7 +158,8 @@ import ch.ethz.idsc.tensor.sca.Sqrt;
     // ---
     Tensor eta = Tensors.vector(8, 8);
     StateIntegrator stateIntegratorR2 = FixedStateIntegrator.create(EulerIntegrator.INSTANCE, RationalScalar.of(1, 5), 5);
-    Collection<Flow> controlsR2 = R2Controls.createRadial(10);
+    R2Config r2Config = new R2Config(RealScalar.ONE);
+    Collection<Flow> controlsR2 = r2Config.createRadial(10);
     // TODO JONAS extract R2planner from Se2AnyEntity
     GoalInterface rnGoal = RnMinDistSphericalGoalManager.create(r2goal, goalRadius.Get(0));
     // ---

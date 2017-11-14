@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Optional;
 
 import ch.ethz.idsc.owly.demo.rn.R2Bubbles;
-import ch.ethz.idsc.owly.demo.rn.R2Controls;
+import ch.ethz.idsc.owly.demo.rn.R2Config;
 import ch.ethz.idsc.owly.demo.rn.RnMinDistSphericalGoalManager;
 import ch.ethz.idsc.owly.demo.util.UserHome;
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
@@ -63,7 +63,8 @@ enum R2DemoSlow {
     // ---
     Tensor eta = Tensors.vector(1.5, 1.5);
     StateIntegrator stateIntegrator = FixedStateIntegrator.create(EulerIntegrator.INSTANCE, RationalScalar.of(1, 5), 5);
-    Collection<Flow> controls = R2Controls.createRadial(6);
+    R2Config r2Config = new R2Config(RealScalar.ONE);
+    Collection<Flow> controls = r2Config.createRadial(6);
     SphericalRegion sphericalRegion = new SphericalRegion(stateGoal, radius);
     GoalInterface goalInterface = new RnMinDistSphericalGoalManager(sphericalRegion);
     // ---

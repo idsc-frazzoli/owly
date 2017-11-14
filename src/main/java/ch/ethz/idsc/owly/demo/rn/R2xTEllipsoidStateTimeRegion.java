@@ -19,7 +19,7 @@ import ch.ethz.idsc.tensor.Scalars;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.red.Norm2Squared;
 
-/** check if input tensor is inside a polygon */
+/** ellipsoid region that is moving with respect to time */
 public class R2xTEllipsoidStateTimeRegion implements Region<StateTime>, RenderInterface {
   /** number of samples to visualize ellipsoid */
   private static final int RESOLUTION = 22;

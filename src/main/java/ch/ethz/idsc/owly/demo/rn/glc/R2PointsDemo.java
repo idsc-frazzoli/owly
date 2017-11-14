@@ -5,7 +5,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
-import ch.ethz.idsc.owly.demo.rn.R2Controls;
+import ch.ethz.idsc.owly.demo.rn.R2Config;
 import ch.ethz.idsc.owly.demo.rn.RnMinDistSphericalGoalManager;
 import ch.ethz.idsc.owly.demo.rn.RnPointclouds;
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
@@ -38,7 +38,8 @@ enum R2PointsDemo {
   public static void main(String[] args) {
     Tensor partitionScale = Tensors.vector(5, 5);
     StateIntegrator stateIntegrator = FixedStateIntegrator.create(EulerIntegrator.INSTANCE, RationalScalar.of(1, 8), 4);
-    Collection<Flow> controls = R2Controls.createRadial(20);
+    R2Config r2Config = new R2Config(RealScalar.ONE);
+    Collection<Flow> controls = r2Config.createRadial(20);
     SphericalRegion sphericalRegion = new SphericalRegion(Tensors.vector(5, 5), DoubleScalar.of(0.2));
     GoalInterface goalInterface = new RnMinDistSphericalGoalManager(sphericalRegion);
     Region<Tensor> region = RnPointclouds.createRandomRegion(10, Tensors.vector(0, 0), Tensors.vector(4, 4), RealScalar.of(0.6));

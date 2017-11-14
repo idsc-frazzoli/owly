@@ -5,7 +5,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
-import ch.ethz.idsc.owly.demo.rn.R2Controls;
+import ch.ethz.idsc.owly.demo.rn.R2Config;
 import ch.ethz.idsc.owly.demo.rn.R2NoiseRegion;
 import ch.ethz.idsc.owly.demo.rn.R2Parameters;
 import ch.ethz.idsc.owly.demo.rn.RnNoHeuristicCircleGoalManager;
@@ -51,7 +51,8 @@ enum R2GlcAnyObstacleChangeDemo {
         resolution, timeScale, depthScale, partitionScale, dtMax, maxIter, lipschitz);
     StateIntegrator stateIntegrator = FixedStateIntegrator.create(EulerIntegrator.INSTANCE, parameters.getdtMax(), //
         parameters.getTrajectorySize());
-    Collection<Flow> controls = R2Controls.createRadial(parameters.getResolutionInt()); // max (grad(F)) ==1
+    R2Config r2Config = new R2Config(RealScalar.ONE);
+    Collection<Flow> controls = r2Config.createRadial(parameters.getResolutionInt()); // max (grad(F)) ==1
     RnNoHeuristicCircleGoalManager rnGoal = new RnNoHeuristicCircleGoalManager(goal, goalRadius);
     // performance depends on heuristic: zeroHeuristic vs rnGoal
     // Heuristic heuristic = new ZeroHeuristic(); // rnGoal

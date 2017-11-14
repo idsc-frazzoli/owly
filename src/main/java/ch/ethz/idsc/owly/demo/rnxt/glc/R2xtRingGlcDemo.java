@@ -5,7 +5,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
-import ch.ethz.idsc.owly.demo.rn.R2Controls;
+import ch.ethz.idsc.owly.demo.rn.R2Config;
 import ch.ethz.idsc.owly.demo.rn.R2Parameters;
 import ch.ethz.idsc.owly.glc.adapter.Parameters;
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
@@ -50,8 +50,9 @@ enum R2xtRingGlcDemo {
     System.out.println("1/DomainSize: " + parameters.getEta());
     StateIntegrator stateIntegrator = FixedStateIntegrator.create(EulerIntegrator.INSTANCE, parameters.getdtMax(), //
         parameters.getTrajectorySize());
-    Collection<Flow> controls = R2Controls.createRadial(parameters.getResolutionInt());
-    controls.add(R2Controls.stayPut(2));
+    R2Config r2Config = new R2Config(RealScalar.ONE);
+    Collection<Flow> controls = r2Config.createRadial(parameters.getResolutionInt());
+    controls.add(r2Config.stayPut(2));
     Tensor goal = Tensors.vector(5, 5);
     EllipsoidRegion ellipsoidRegion = new EllipsoidRegion(goal, Tensors.vector(0.2, 0.2));
     GoalInterface goalInterface = new RnHeuristicEllipsoidGoalManager(ellipsoidRegion);

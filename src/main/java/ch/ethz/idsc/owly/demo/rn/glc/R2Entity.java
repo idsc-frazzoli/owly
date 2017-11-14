@@ -4,7 +4,7 @@ package ch.ethz.idsc.owly.demo.rn.glc;
 import java.util.Collection;
 import java.util.LinkedList;
 
-import ch.ethz.idsc.owly.demo.rn.R2Controls;
+import ch.ethz.idsc.owly.demo.rn.R2Config;
 import ch.ethz.idsc.owly.demo.rn.RnMinDistSphericalGoalManager;
 import ch.ethz.idsc.owly.glc.adapter.MultiCostGoalAdapter;
 import ch.ethz.idsc.owly.glc.core.CostFunction;
@@ -76,7 +76,8 @@ import ch.ethz.idsc.tensor.red.Norm2Squared;
 
   Collection<Flow> createControls() {
     /** 36 corresponds to 10[Degree] resolution */
-    return R2Controls.createRadial(36);
+    R2Config r2Config = new R2Config(RealScalar.ONE);
+    return r2Config.createRadial(36);
   }
 
   protected Tensor eta() {

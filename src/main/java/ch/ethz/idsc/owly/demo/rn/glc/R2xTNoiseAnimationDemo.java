@@ -10,6 +10,7 @@ import ch.ethz.idsc.owly.math.state.StateTime;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Tensors;
 
+// TODO the visualization of the demo is poor
 public class R2xTNoiseAnimationDemo implements DemoInterface {
   @Override
   public void start() {

@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Optional;
 
 import ch.ethz.idsc.owly.demo.rn.EuclideanDistanceDiscoverRegion;
-import ch.ethz.idsc.owly.demo.rn.R2Controls;
+import ch.ethz.idsc.owly.demo.rn.R2Config;
 import ch.ethz.idsc.owly.demo.rn.R2NoiseRegion;
 import ch.ethz.idsc.owly.demo.rn.R2Parameters;
 import ch.ethz.idsc.owly.demo.rn.RnMinDistSphericalGoalManager;
@@ -60,7 +60,8 @@ enum R2GlcHeuristicSensingObstacleCompareAnyDemo {
         parameters.getTrajectorySize());
     parameters.printResolution();
     System.out.println("DomainSize: 1/Eta: " + parameters.getEta().map(n -> RealScalar.ONE.divide(n)));
-    Collection<Flow> controls = R2Controls.createRadial(parameters.getResolutionInt());
+    R2Config r2Config = new R2Config(RealScalar.ONE);
+    Collection<Flow> controls = r2Config.createRadial(parameters.getResolutionInt());
     // Creating Goals
     Tensor startState = Tensors.vector(-3, 0);
     Region<Tensor> environmentRegion = new R2NoiseRegion(RealScalar.of(0.1));
