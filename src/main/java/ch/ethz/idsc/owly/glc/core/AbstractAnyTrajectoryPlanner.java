@@ -255,12 +255,8 @@ public abstract class AbstractAnyTrajectoryPlanner extends AbstractTrajectoryPla
   @Override
   public final Optional<StateTime> getFurthestGoalState() {
     Optional<GlcNode> key = getFurthestGoalNode();
-    if (key.isPresent()) {
-      List<StateTime> bestTrajectory = best.get(key.get());
-      int index = getGoalInterface().firstMember(bestTrajectory);
-      if (index >= 0)
-        return Optional.ofNullable(bestTrajectory.get(index));
-    }
+    if (key.isPresent())
+      return getGoalInterface().firstMember(best.get(key.get()));
     return Optional.empty();
   }
 
@@ -277,7 +273,8 @@ public abstract class AbstractAnyTrajectoryPlanner extends AbstractTrajectoryPla
       TrajectoryRegionQuery strq = SimpleTrajectoryRegionQuery.timeInvariant(iter.previous());// go through Regions from the last to first:
       for (GlcNode tempBest : best.keySet()) {
         List<StateTime> trajectory = best.get(tempBest);
-        if (strq.firstMember(trajectory) >= 0)
+        Optional<StateTime> optional = strq.firstMember(trajectory);
+        if (optional.isPresent())
           regionQueue.add(tempBest); // saves members in PQ
       }
       if (!regionQueue.isEmpty())

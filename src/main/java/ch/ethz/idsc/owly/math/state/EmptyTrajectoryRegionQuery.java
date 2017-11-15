@@ -2,6 +2,7 @@
 package ch.ethz.idsc.owly.math.state;
 
 import java.util.List;
+import java.util.Optional;
 
 /** instance encodes an empty trajectory region
  * 
@@ -10,8 +11,8 @@ public enum EmptyTrajectoryRegionQuery implements TrajectoryRegionQuery {
   INSTANCE;
   // ---
   @Override
-  public int firstMember(List<StateTime> trajectory) {
-    return NOMATCH;
+  public Optional<StateTime> firstMember(List<StateTime> trajectory) {
+    return Optional.empty();
   }
 
   @Override

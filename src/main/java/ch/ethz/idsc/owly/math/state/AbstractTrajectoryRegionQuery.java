@@ -7,6 +7,6 @@ import java.util.List;
 public abstract class AbstractTrajectoryRegionQuery implements TrajectoryRegionQuery {
   @Override
   public final boolean isDisjoint(List<StateTime> trajectory) {
-    return NOMATCH == firstMember(trajectory);
+    return !firstMember(trajectory).isPresent();
   }
 }
