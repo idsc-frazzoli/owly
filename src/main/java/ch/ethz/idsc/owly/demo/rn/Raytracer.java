@@ -31,6 +31,7 @@ public class Raytracer {
   public Optional<StateTime> firstMember(Tensor origin, Tensor direction) {
     Flow flow = StateSpaceModels.createFlow(SingleIntegratorStateSpaceModel.INSTANCE, direction);
     // TODO magic const
+    // TODO JAN integrate only until collision
     List<StateTime> trajectory = stateIntegrator.trajectory(new StateTime(origin, RealScalar.ZERO), flow);
     return trajectoryRegionQuery.firstMember(trajectory);
   }

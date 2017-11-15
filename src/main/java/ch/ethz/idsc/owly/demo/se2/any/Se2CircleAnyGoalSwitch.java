@@ -1,9 +1,6 @@
 // code by jl
 package ch.ethz.idsc.owly.demo.se2.any;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import ch.ethz.idsc.owly.glc.adapter.Parameters;
 import ch.ethz.idsc.owly.glc.core.AbstractAnyTrajectoryPlanner;
 import ch.ethz.idsc.owly.math.RotationUtils;
@@ -23,19 +20,15 @@ enum Se2CircleAnyGoalSwitch {
   }
 
   public static boolean switchToNextCircularGoal(AbstractAnyTrajectoryPlanner trajectoryPlanner, int iter, Parameters parameters) {
-    List<StateTime> goalStateList = new ArrayList<>();
     Scalar stepsPerCircle = RealScalar.of(4);
     Scalar circleRadius = RealScalar.of(3);
     Tensor goal = null;
     Tensor radiusVector = Tensors.of(DoubleScalar.of(0.2), DoubleScalar.of(0.2), RotationUtils.DEGREE(15));
     do {
-      goalStateList.clear();
       Scalar goalAngle = RealScalar.of(2 * Math.PI).divide(stepsPerCircle).multiply(RealScalar.of(iter)).negate();
       goal = Tensors.of(Cos.of(goalAngle).multiply(circleRadius), //
           Sin.of(goalAngle).multiply(circleRadius), goalAngle.subtract(RealScalar.of(Math.PI * 0.5)));
-      StateTime goalState = new StateTime(goal, RealScalar.ZERO);
-      goalStateList.add(goalState);
-    } while (!trajectoryPlanner.getObstacleQuery().isDisjoint(goalStateList));
+    } while (trajectoryPlanner.getObstacleQuery().isMember(new StateTime(goal, RealScalar.ZERO)));
     Se2MinCurvatureGoalManager se2GoalManager = new Se2MinCurvatureGoalManager(goal, radiusVector);
     if (parameters != null) { // changeGoal can be conducted quicker, due to GoalHint
       Tensor maxChange = Tensors.of(RealScalar.ONE, RealScalar.ONE, RotationUtils.DEGREE(45));

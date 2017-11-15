@@ -8,6 +8,7 @@ import ch.ethz.idsc.owly.data.GlobalAssert;
 import ch.ethz.idsc.owly.data.Stopwatch;
 import ch.ethz.idsc.owly.data.tree.Nodes;
 import ch.ethz.idsc.owly.math.state.StateIntegrator;
+import ch.ethz.idsc.owly.math.state.StateTime;
 import ch.ethz.idsc.owly.math.state.TrajectoryRegionQuery;
 import ch.ethz.idsc.tensor.Tensor;
 
@@ -57,6 +58,10 @@ import ch.ethz.idsc.tensor.Tensor;
 
   protected final void setObstacleQuery(TrajectoryRegionQuery obstacleQuery) {
     this.obstacleQuery = obstacleQuery;
+  }
+
+  protected final boolean isInsideGoal(List<StateTime> trajectory) {
+    return goalInterface.firstMember(trajectory).isPresent();
   }
 
   public void printTimes() {

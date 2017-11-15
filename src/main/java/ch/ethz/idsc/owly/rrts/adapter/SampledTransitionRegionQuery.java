@@ -25,7 +25,7 @@ public class SampledTransitionRegionQuery implements TransitionRegionQuery, Stat
   @Override
   public boolean isDisjoint(Transition transition) {
     List<StateTime> list = transition.sampled(RealScalar.ZERO, RealScalar.ZERO, dt);
-    return trajectoryRegionQuery.isDisjoint(list);
+    return !trajectoryRegionQuery.firstMember(list).isPresent();
   }
 
   @Override

@@ -7,7 +7,6 @@ import java.awt.Shape;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.LinkedList;
 import java.util.Objects;
 import java.util.Optional;
@@ -46,8 +45,7 @@ public abstract class Se2Entity extends AbstractEntity {
   }
 
   private boolean obstacleQuery_isDisjoint(StateTime stateTime) {
-    return Objects.isNull(obstacleQuery) //
-        || obstacleQuery.isDisjoint(Collections.singletonList(stateTime));
+    return Objects.isNull(obstacleQuery) || !obstacleQuery.isMember(stateTime);
   }
 
   protected abstract Tensor eta();

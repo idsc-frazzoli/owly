@@ -64,7 +64,7 @@ public class SimpleAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
           if (Objects.nonNull(formerLabel)) {
             if (Scalars.lessThan(next.merit(), formerLabel.merit())) {
               // collision check only if new node is better
-              if (getObstacleQuery().isDisjoint(connectors.get(next))) {// better node not collision
+              if (!getObstacleQuery().firstMember(connectors.get(next)).isPresent()) {// better node not collision
                 // remove former Label from QUEUE
                 final Collection<GlcNode> subDeleteTree = deleteSubtreeOf(formerLabel);
                 if (subDeleteTree.size() > 1)
@@ -72,17 +72,17 @@ public class SimpleAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
                 // formerLabel disconnecting
                 formerLabel.parent().removeEdgeTo(formerLabel);
                 insertNodeInTree(nextParent, next);
-                if (!getGoalInterface().isDisjoint(connectors.get(next)))
+                if (isInsideGoal(connectors.get(next)))
                   offerDestination(next, connectors.get(next));
                 candidateQueue.remove();
                 break;
               }
             }
           } else {
-            if (getObstacleQuery().isDisjoint(connectors.get(next))) {
+            if (!getObstacleQuery().firstMember(connectors.get(next)).isPresent()) {
               nextParent.insertEdgeTo(next);
               insert(domain_key, next);
-              if (!getGoalInterface().isDisjoint(connectors.get(next)))
+              if (isInsideGoal(connectors.get(next)))
                 offerDestination(next, connectors.get(next));
               candidateQueue.remove();
               break;
@@ -138,7 +138,7 @@ public class SimpleAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
   boolean goalCheckTree(final Region<Tensor> goalCheckTree) {
     final Collection<GlcNode> treeCollection = Nodes.ofSubtree(getRoot());
     treeCollection.parallelStream().forEach(node -> {
-      if (!getGoalInterface().isDisjoint(Arrays.asList(node.stateTime())))
+      if (getGoalInterface().isMember(node.stateTime()))
         offerDestination(node, Arrays.asList(node.stateTime()));
     });
     return getBest().isPresent();

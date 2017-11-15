@@ -12,7 +12,7 @@ public interface TrajectoryRegionQuery extends Serializable {
    * or Optional.empty() if no state-time in trajectory is member of region */
   Optional<StateTime> firstMember(List<StateTime> trajectory);
 
-  /** @param trajectory
-   * @return true if no members of trajectory are in region, else false */
-  boolean isDisjoint(List<StateTime> trajectory);
+  /** @param stateTime
+   * @return true if given state-time is inside region */
+  boolean isMember(StateTime stateTime);
 }

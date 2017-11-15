@@ -22,13 +22,13 @@ public class TrajectoriesTest extends TestCase {
     trajectory.add(new StateTime(Tensors.vector(0, 5), RealScalar.ZERO));
     trajectory.add(new StateTime(Tensors.vector(5, 5), RealScalar.ZERO));
     assertFalse(goalQuery.firstMember(trajectory).isPresent());
-    assertTrue(goalQuery.isDisjoint(trajectory));
+    assertTrue(!goalQuery.firstMember(trajectory).isPresent());
     // ---
     StateTime term = new StateTime(Tensors.vector(10, 5), RealScalar.ZERO);
     trajectory.add(term);
     assertTrue(goalQuery.firstMember(trajectory).isPresent());
     assertEquals(goalQuery.firstMember(trajectory).get(), term);
-    assertFalse(goalQuery.isDisjoint(trajectory));
+    assertFalse(!goalQuery.firstMember(trajectory).isPresent());
   }
 
   public void testDeltatime() {
