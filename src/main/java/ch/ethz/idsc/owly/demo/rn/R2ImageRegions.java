@@ -59,6 +59,16 @@ public enum R2ImageRegions {
     return transpose(charImage.bufferedImage(), Tensors.vector(20, 10), false);
   }
 
+  public static ImageRegion inside_0f5c_2182() {
+    CharImage charImage = CharImage.fillWhite(new Dimension(320, 640));
+    charImage.setFont(new Font(Font.DIALOG, Font.PLAIN, 600));
+    charImage.draw('\u0f5c', new Point(20, 560));
+    charImage.setFont(new Font(Font.DIALOG, Font.PLAIN, 270));
+    charImage.draw('\u2182', new Point(-5, 230));
+    charImage.draw('\u2182', new Point(-5, 420));
+    return transpose(charImage.bufferedImage(), Tensors.vector(20, 10), false);
+  }
+
   public static CharImage inside_gtob_charImage() {
     CharImage charImage = CharImage.fillWhite(new Dimension(640, 640));
     charImage.setFont(new Font(Font.DIALOG, Font.BOLD, 400));

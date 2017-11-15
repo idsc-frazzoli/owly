@@ -4,6 +4,7 @@ package ch.ethz.idsc.owly.demo.se2.glc;
 import java.io.IOException;
 
 import ch.ethz.idsc.owly.demo.rn.R2ImageRegions;
+import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
 import ch.ethz.idsc.owly.gui.ani.OwlyAnimationFrame;
 import ch.ethz.idsc.owly.gui.region.RegionRenders;
 import ch.ethz.idsc.owly.math.region.ImageRegion;
@@ -18,6 +19,7 @@ public class Se2Letter3Demo extends Se2CarDemo {
     ImageRegion imageRegion = R2ImageRegions.inside_gtob();
     TrajectoryRegionQuery trq = createCarQuery(imageRegion);
     se2Entity.obstacleQuery = trq;
+    se2Entity.raytraceQuery = SimpleTrajectoryRegionQuery.timeInvariant(imageRegion);
     owlyAnimationFrame.set(se2Entity);
     owlyAnimationFrame.setObstacleQuery(trq);
     owlyAnimationFrame.addBackground(RegionRenders.create(imageRegion));
