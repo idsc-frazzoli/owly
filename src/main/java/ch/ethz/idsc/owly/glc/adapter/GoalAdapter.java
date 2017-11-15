@@ -2,6 +2,7 @@
 package ch.ethz.idsc.owly.glc.adapter;
 
 import java.util.List;
+import java.util.Optional;
 
 import ch.ethz.idsc.owly.glc.core.CostFunction;
 import ch.ethz.idsc.owly.glc.core.GlcNode;
@@ -24,7 +25,7 @@ public class GoalAdapter implements GoalInterface {
   }
 
   @Override // from TrajectoryRegionQuery
-  public int firstMember(List<StateTime> trajectory) {
+  public Optional<StateTime> firstMember(List<StateTime> trajectory) {
     return trajectoryRegionQuery.firstMember(trajectory);
   }
 

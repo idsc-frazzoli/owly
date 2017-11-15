@@ -3,13 +3,16 @@ package ch.ethz.idsc.owly.demo.se2.glc;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
+import java.awt.Shape;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.Objects;
+import java.util.Optional;
 
+import ch.ethz.idsc.owly.demo.rn.Raytracer;
 import ch.ethz.idsc.owly.glc.core.CostFunction;
 import ch.ethz.idsc.owly.gui.GeometricLayer;
 import ch.ethz.idsc.owly.gui.ani.AbstractEntity;
@@ -17,8 +20,12 @@ import ch.ethz.idsc.owly.math.se2.Se2Utils;
 import ch.ethz.idsc.owly.math.state.EpisodeIntegrator;
 import ch.ethz.idsc.owly.math.state.StateTime;
 import ch.ethz.idsc.owly.math.state.TrajectoryRegionQuery;
+import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Tensor;
+import ch.ethz.idsc.tensor.Tensors;
 import ch.ethz.idsc.tensor.alg.Array;
+import ch.ethz.idsc.tensor.alg.Subdivide;
+import ch.ethz.idsc.tensor.lie.AngleVector;
 import ch.ethz.idsc.tensor.sca.N;
 
 /** several magic constants are hard-coded in the implementation.
@@ -27,6 +34,7 @@ public abstract class Se2Entity extends AbstractEntity {
   public static final Tensor FALLBACK_CONTROL = N.DOUBLE.of(Array.zeros(3)).unmodifiable();
   public final Collection<CostFunction> extraCosts = new LinkedList<>();
   public TrajectoryRegionQuery obstacleQuery = null;
+  public TrajectoryRegionQuery raytraceQuery = null;
 
   public Se2Entity(EpisodeIntegrator episodeIntegrator) {
     super(episodeIntegrator);
@@ -38,10 +46,11 @@ public abstract class Se2Entity extends AbstractEntity {
   }
 
   private boolean obstacleQuery_isDisjoint(StateTime stateTime) {
-    if (Objects.nonNull(obstacleQuery))
-      return obstacleQuery.isDisjoint(Collections.singletonList(stateTime));
-    return true;
+    return Objects.isNull(obstacleQuery) //
+        || obstacleQuery.isDisjoint(Collections.singletonList(stateTime));
   }
+
+  protected abstract Tensor eta();
 
   protected abstract Tensor shape();
 
@@ -62,6 +71,23 @@ public abstract class Se2Entity extends AbstractEntity {
       Point2D point = geometricLayer.toPoint2D(state);
       graphics.setColor(new Color(255, 128, 64, 192));
       graphics.fill(new Rectangle2D.Double(point.getX() - 2, point.getY() - 2, 5, 5));
+    }
+    if (Objects.nonNull(raytraceQuery)) {
+      StateTime stateTime = getStateTimeNow();
+      Raytracer lidarRaytrace = new Raytracer(raytraceQuery);
+      Tensor xya = stateTime.state();
+      // geometricLayer.getMouseSe2State();
+      graphics.setColor(new Color(255, 0, 0, 32));
+      for (Tensor angle : Subdivide.of(-Math.PI / 2, +Math.PI / 2, 20)) {
+        Tensor origin = xya.extract(0, 2).add(AngleVector.of(xya.Get(2)).multiply(RealScalar.of(.1)));
+        Optional<StateTime> optional = //
+            lidarRaytrace.firstMember(origin, AngleVector.of(xya.Get(2).add(angle)));
+        if (optional.isPresent()) {
+          Tensor collision = optional.get().state();
+          Shape line = geometricLayer.toPath2D(Tensors.of(origin, collision));
+          graphics.draw(line);
+        }
+      }
     }
     { // draw mouse
       Color color = new Color(0, 128, 255, 192);

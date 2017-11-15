@@ -68,7 +68,7 @@ import ch.ethz.idsc.tensor.red.Norm2Squared;
         FixedStateIntegrator.create(EulerIntegrator.INSTANCE, RationalScalar.of(1, 12), 4);
     final Tensor center = goal.extract(0, 2);
     Collection<Flow> controls = createControls();
-    Scalar goalRadius = RealScalar.of(Math.sqrt(2.0)).divide(partitionScale.Get(0)); // TODO should depend on eta!
+    Scalar goalRadius = RealScalar.of(Math.sqrt(2.0)).divide(partitionScale.Get(0));
     System.out.println(goalRadius);
     GoalInterface goalInterface = MultiCostGoalAdapter.of( //
         RnMinTimeGoalManager.create(center, goalRadius, controls), //

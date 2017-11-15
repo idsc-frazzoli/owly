@@ -21,11 +21,13 @@ public class TrajectoriesTest extends TestCase {
     List<StateTime> trajectory = new ArrayList<>();
     trajectory.add(new StateTime(Tensors.vector(0, 5), RealScalar.ZERO));
     trajectory.add(new StateTime(Tensors.vector(5, 5), RealScalar.ZERO));
-    assertEquals(goalQuery.firstMember(trajectory), -1);
+    assertFalse(goalQuery.firstMember(trajectory).isPresent());
     assertTrue(goalQuery.isDisjoint(trajectory));
     // ---
-    trajectory.add(new StateTime(Tensors.vector(10, 5), RealScalar.ZERO));
-    assertEquals(goalQuery.firstMember(trajectory), 2);
+    StateTime term = new StateTime(Tensors.vector(10, 5), RealScalar.ZERO);
+    trajectory.add(term);
+    assertTrue(goalQuery.firstMember(trajectory).isPresent());
+    assertEquals(goalQuery.firstMember(trajectory).get(), term);
     assertFalse(goalQuery.isDisjoint(trajectory));
   }
 

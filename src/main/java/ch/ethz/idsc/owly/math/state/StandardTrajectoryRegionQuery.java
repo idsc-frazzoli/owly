@@ -2,6 +2,7 @@
 package ch.ethz.idsc.owly.math.state;
 
 import java.util.List;
+import java.util.Optional;
 
 import ch.ethz.idsc.owly.math.region.Region;
 
@@ -15,16 +16,13 @@ public abstract class StandardTrajectoryRegionQuery extends AbstractTrajectoryRe
   }
 
   @Override // from TrajectoryRegionQuery
-  public final int firstMember(List<StateTime> trajectory) {
-    int index = -1;
-    for (StateTime stateTime : trajectory) {
-      ++index;
+  public final Optional<StateTime> firstMember(List<StateTime> trajectory) {
+    for (StateTime stateTime : trajectory)
       if (region.isMember(stateTime)) {
         stateTimeRegionCallback.notify_isMember(stateTime);
-        return index;
+        return Optional.of(stateTime);
       }
-    }
-    return NOMATCH;
+    return Optional.empty();
   }
 
   public StateTimeRegionCallback getStateTimeRegionCallback() {

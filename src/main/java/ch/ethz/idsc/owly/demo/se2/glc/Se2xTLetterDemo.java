@@ -78,6 +78,7 @@ public class Se2xTLetterDemo implements DemoInterface {
               region1, region2 //
           )));
       abstractEntity.obstacleQuery = trq;
+      abstractEntity.raytraceQuery = SimpleTrajectoryRegionQuery.timeInvariant(imageRegion);
       owlyAnimationFrame.setObstacleQuery(trq);
       owlyAnimationFrame.addBackground(RegionRenders.create(imageRegion));
       owlyAnimationFrame.addBackground((RenderInterface) region1);

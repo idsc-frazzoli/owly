@@ -2,12 +2,12 @@
 package ch.ethz.idsc.owly.glc.adapter;
 
 import java.util.List;
+import java.util.Optional;
 
 import ch.ethz.idsc.owly.glc.core.GlcNode;
 import ch.ethz.idsc.owly.glc.core.GoalInterface;
 import ch.ethz.idsc.owly.math.flow.Flow;
 import ch.ethz.idsc.owly.math.state.StateTime;
-import ch.ethz.idsc.owly.math.state.TrajectoryRegionQuery;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
@@ -31,8 +31,8 @@ public enum EmptyGoalInterface implements GoalInterface {
   }
 
   @Override
-  public int firstMember(List<StateTime> trajectory) {
-    return TrajectoryRegionQuery.NOMATCH;
+  public Optional<StateTime> firstMember(List<StateTime> trajectory) {
+    return Optional.empty();
   }
 
   @Override

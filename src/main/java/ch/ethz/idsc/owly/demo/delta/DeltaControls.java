@@ -16,6 +16,7 @@ import ch.ethz.idsc.tensor.red.Max;
 import ch.ethz.idsc.tensor.red.Norm;
 import ch.ethz.idsc.tensor.sca.Chop;
 
+// TODO use delta config
 public enum DeltaControls {
   ;
   /** @param stateSpaceModel

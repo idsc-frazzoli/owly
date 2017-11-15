@@ -3,15 +3,14 @@ package ch.ethz.idsc.owly.math.state;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.Optional;
 
 /** performs trajectory containment query */
 public interface TrajectoryRegionQuery extends Serializable {
-  static final int NOMATCH = -1;
-
   /** @param trajectory
-   * @return index of first {@link StateTime} element of trajectory that is in region
-   * or -1 if no such element exists */
-  int firstMember(List<StateTime> trajectory);
+   * @return first {@link StateTime} along trajectory that lies inside this region,
+   * or Optional.empty() if no state-time in trajectory is member of region */
+  Optional<StateTime> firstMember(List<StateTime> trajectory);
 
   /** @param trajectory
    * @return true if no members of trajectory are in region, else false */

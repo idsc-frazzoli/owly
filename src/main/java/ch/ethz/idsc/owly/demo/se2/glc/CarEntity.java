@@ -99,6 +99,7 @@ class CarEntity extends Se2Entity {
     return trajectoryPlanner;
   }
 
+  @Override
   protected Tensor eta() {
     return PARTITIONSCALE;
   }

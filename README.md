@@ -55,7 +55,22 @@ Rice2: 4-dimensional state space + time
 
 SE2: 3-dimensional state space
 
+<table>
+<tr>
+<td>
+
+Car
+
 ![se2entity_1510232282788](https://user-images.githubusercontent.com/4012178/32606961-813b05a6-c557-11e7-804c-83b1c5e94a6f.gif)
+
+<td>
+
+Two-wheel drive (with Lidar simulator)
+
+![twdentity_1510751358909](https://user-images.githubusercontent.com/4012178/32838106-2d88fa2c-ca10-11e7-9c2a-68b34b1717cc.gif)
+
+</tr>
+</table>
 
 ---
 

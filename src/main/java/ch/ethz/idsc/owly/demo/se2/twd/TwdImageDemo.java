@@ -13,10 +13,12 @@ import ch.ethz.idsc.tensor.Tensors;
 public class TwdImageDemo implements DemoInterface {
   @Override
   public void start() {
-    ImageRegion imageRegion = R2ImageRegions.inside_gtob();
+    ImageRegion imageRegion = R2ImageRegions.inside_0f5c_2182();
     TrajectoryRegionQuery obstacleQuery = SimpleTrajectoryRegionQuery.timeInvariant(imageRegion);
     OwlyAnimationFrame owlyAnimationFrame = new OwlyAnimationFrame();
-    owlyAnimationFrame.set(TwdEntity.createDefault(Tensors.vector(6, 6, 0)));
+    TwdEntity twdEntity = TwdEntity.createDefault(Tensors.vector(7, 5, 0));
+    twdEntity.raytraceQuery = SimpleTrajectoryRegionQuery.timeInvariant(imageRegion);
+    owlyAnimationFrame.set(twdEntity);
     owlyAnimationFrame.setObstacleQuery(obstacleQuery);
     owlyAnimationFrame.addBackground(RegionRenders.create(imageRegion));
     owlyAnimationFrame.configCoordinateOffset(50, 700);

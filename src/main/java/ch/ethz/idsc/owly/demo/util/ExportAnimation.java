@@ -14,6 +14,7 @@ enum ExportAnimation {
   ;
   public static void main(String[] args) throws Exception {
     String name = "MODIY FILENAME LOCALLY BUT DO NOT COMMIT THIS CODE";
+    name = "...";
     File directory = UserHome.Pictures(name);
     AnimationWriter animationWriter = AnimationWriter.of(UserHome.Pictures(name + ".gif"), 100);
     List<File> list = Stream.of(directory.listFiles()) //
