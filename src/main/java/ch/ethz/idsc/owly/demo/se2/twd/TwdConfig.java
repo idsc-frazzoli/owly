@@ -67,21 +67,6 @@ public class TwdConfig {
     return list;
   }
 
-  /** @param wheelspeeds_max the maximum absolute values for the rotational speed of each wheel.
-   * @param num resolution
-   * @return list of Flows */
-  // public static Collection<Flow> createControls1(TwdStateSpaceModel stateSpaceModel, int num) {
-  // int numSqr = num;
-  // Scalar wheelspeed_max = RealScalar.ONE;
-  // List<Flow> list = new ArrayList<>();
-  // for (Tensor wl : Subdivide.of(wheelspeed_max.negate(), wheelspeed_max, numSqr)) {
-  // for (Tensor wr : Subdivide.of(wheelspeed_max.negate(), wheelspeed_max, numSqr)) {
-  // list.add(StateSpaceModels.createFlow(stateSpaceModel, Tensors.of(wl, wr)));
-  // }
-  // }
-  // // max|wl|= max|wr| = 1
-  // return list;
-  // }
   // TODO document what this does
   public Collection<Flow> createControls2(int num) {
     int numSqr = num;

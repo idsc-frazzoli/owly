@@ -32,12 +32,14 @@ import ch.ethz.idsc.tensor.sca.Sqrt;
   // triangle
   private static final Tensor SHAPE = Tensors.matrixDouble( //
       new double[][] { { .3, 0, 1 }, { -.1, -.1, 1 }, { -.1, +.1, 1 } }).unmodifiable();
-  private static final Se2Wrap SE2WRAP = new Se2Wrap(Tensors.vector(1, 1, 2));
+  private static final Se2Wrap SE2WRAP = new Se2Wrap(Tensors.vectorDouble(1, 1, 2));
   private static final Tensor PARTITIONSCALE = Tensors.vector(6, 6, 50 / Math.PI); // 50/pi == 15.9155
 
   public static TwdEntity createDefault(Tensor state) {
     TwdConfig twdControls = new TwdConfig(RealScalar.ONE, RealScalar.ONE);
-    return new TwdEntity(twdControls, state);
+    TwdEntity twdEntity = new TwdEntity(twdControls, state);
+    twdEntity.extraCosts.add(Se2LateralAcceleration.COSTFUNCTION);
+    return twdEntity;
   }
 
   // ---
@@ -45,15 +47,16 @@ import ch.ethz.idsc.tensor.sca.Sqrt;
   final Scalar goalRadius_xy;
   final Scalar goalRadius_theta;
 
-  public TwdEntity(TwdConfig twdControls, Tensor state) {
+  protected TwdEntity(TwdConfig twdConfig, Tensor state) {
     super(new SimpleEpisodeIntegrator( //
         Se2StateSpaceModel.INSTANCE, //
         Se2CarIntegrator.INSTANCE, //
         new StateTime(state, RealScalar.ZERO))); // initial position
-    controls = twdControls.createControls(4);
-    goalRadius_xy = Sqrt.of(RealScalar.of(2)).divide(PARTITIONSCALE.Get(0));
-    goalRadius_theta = Sqrt.of(RealScalar.of(2)).divide(PARTITIONSCALE.Get(2));
-    extraCosts.add(Se2LateralAcceleration.COSTFUNCTION);
+    controls = twdConfig.createControls(4);
+    Tensor eta = eta();
+    System.out.println("ETA = " + eta);
+    goalRadius_xy = Sqrt.of(RealScalar.of(2)).divide(eta.Get(0));
+    goalRadius_theta = Sqrt.of(RealScalar.of(2)).divide(eta.Get(2));
   }
 
   @Override
@@ -81,9 +84,14 @@ import ch.ethz.idsc.tensor.sca.Sqrt;
         Se2MinTimeGoalManager.create(goal, radiusVector, controls), //
         extraCosts);
     TrajectoryPlanner trajectoryPlanner = new StandardTrajectoryPlanner( //
-        PARTITIONSCALE, stateIntegrator, controls, obstacleQuery, goalInterface);
+        eta(), stateIntegrator, controls, obstacleQuery, goalInterface);
     trajectoryPlanner.represent = StateTimeTensorFunction.state(SE2WRAP::represent);
     return trajectoryPlanner;
+  }
+
+  @Override
+  protected Tensor eta() {
+    return PARTITIONSCALE;
   }
 
   @Override

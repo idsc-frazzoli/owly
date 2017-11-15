@@ -38,10 +38,11 @@ public abstract class Se2Entity extends AbstractEntity {
   }
 
   private boolean obstacleQuery_isDisjoint(StateTime stateTime) {
-    if (Objects.nonNull(obstacleQuery))
-      return obstacleQuery.isDisjoint(Collections.singletonList(stateTime));
-    return true;
+    return Objects.isNull(obstacleQuery) //
+        || obstacleQuery.isDisjoint(Collections.singletonList(stateTime));
   }
+
+  protected abstract Tensor eta();
 
   protected abstract Tensor shape();
 

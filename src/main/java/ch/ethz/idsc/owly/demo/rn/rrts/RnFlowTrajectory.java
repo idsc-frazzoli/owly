@@ -16,7 +16,6 @@ import ch.ethz.idsc.owly.rrts.core.TransitionSpace;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
 
-// TODO API not finalized, needs interfaces!
 // TODO consistency check
 public class RnFlowTrajectory {
   public static Flow between(StateTime orig, StateTime dest) {
