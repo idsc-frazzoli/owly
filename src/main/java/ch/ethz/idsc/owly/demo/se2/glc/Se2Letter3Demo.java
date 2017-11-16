@@ -4,11 +4,14 @@ package ch.ethz.idsc.owly.demo.se2.glc;
 import java.io.IOException;
 
 import ch.ethz.idsc.owly.demo.rn.R2ImageRegions;
+import ch.ethz.idsc.owly.demo.util.CameraEmulator;
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
+import ch.ethz.idsc.owly.gui.RenderInterface;
 import ch.ethz.idsc.owly.gui.ani.OwlyAnimationFrame;
 import ch.ethz.idsc.owly.gui.region.RegionRenders;
 import ch.ethz.idsc.owly.math.region.ImageRegion;
 import ch.ethz.idsc.owly.math.state.TrajectoryRegionQuery;
+import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Tensors;
 
 public class Se2Letter3Demo extends Se2CarDemo {
@@ -23,6 +26,9 @@ public class Se2Letter3Demo extends Se2CarDemo {
     owlyAnimationFrame.set(se2Entity);
     owlyAnimationFrame.setObstacleQuery(trq);
     owlyAnimationFrame.addBackground(RegionRenders.create(imageRegion));
+    RenderInterface renderInterface = new CameraEmulator( //
+        48, RealScalar.of(10), () -> se2Entity.getStateTimeNow(), se2Entity.raytraceQuery);
+    owlyAnimationFrame.addBackground(renderInterface);
   }
 
   public static void main(String[] args) throws IOException {

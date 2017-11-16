@@ -24,7 +24,7 @@ import ch.ethz.idsc.tensor.opt.ConvexHull;
  * the edges are drawn as straight lines with the color of the cost to root */
 public class TreeRender implements RenderInterface {
   private static final int NODE_WIDTH = 2;
-  private static final int NODE_BOUND = 3000;
+  private static final int NODE_BOUND = 2500;
   private static final Color CONVEXHULL = new Color(192, 192, 0, 64);
   // ---
   private Collection<? extends StateCostNode> collection;

@@ -39,6 +39,7 @@ class CarEntity extends Se2Entity {
   private static final Tensor SHAPE = Tensors.matrixDouble( //
       new double[][] { //
           { .2, +.07, 1 }, //
+          { .25, +.0, 1 }, //
           { .2, -.07, 1 }, //
           { -.1, -.07, 1 }, //
           { -.1, +.07, 1 } //

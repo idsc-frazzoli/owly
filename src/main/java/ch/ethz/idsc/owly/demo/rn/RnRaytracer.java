@@ -11,15 +11,19 @@ import ch.ethz.idsc.owly.math.state.FixedStateIntegrator;
 import ch.ethz.idsc.owly.math.state.StateTime;
 import ch.ethz.idsc.owly.math.state.TrajectoryRegionQuery;
 import ch.ethz.idsc.tensor.RealScalar;
+import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
 
 public class RnRaytracer {
-  private final FixedStateIntegrator stateIntegrator = // TODO magic const
-      FixedStateIntegrator.create(EulerIntegrator.INSTANCE, RealScalar.of(.1), 100);
+  private final FixedStateIntegrator stateIntegrator;
   private final TrajectoryRegionQuery trajectoryRegionQuery;
+  private final Scalar raySpeed;
 
-  public RnRaytracer(TrajectoryRegionQuery trajectoryRegionQuery) {
+  public RnRaytracer(TrajectoryRegionQuery trajectoryRegionQuery, Scalar raySpeed) {
+    stateIntegrator = // TODO magic const
+        FixedStateIntegrator.create(EulerIntegrator.INSTANCE, RealScalar.of(.05).divide(raySpeed), 200);
     this.trajectoryRegionQuery = trajectoryRegionQuery;
+    this.raySpeed = raySpeed;
   }
 
   /** @param trajectoryRegionQuery
@@ -27,7 +31,7 @@ public class RnRaytracer {
    * @param direction
    * @return */
   public Optional<StateTime> firstMember(StateTime stateTime, Tensor direction) {
-    Flow flow = StateSpaceModels.createFlow(SingleIntegratorStateSpaceModel.INSTANCE, direction);
+    Flow flow = StateSpaceModels.createFlow(SingleIntegratorStateSpaceModel.INSTANCE, direction.multiply(raySpeed));
     return stateIntegrator.firstMember(stateTime, flow, trajectoryRegionQuery);
   }
 }

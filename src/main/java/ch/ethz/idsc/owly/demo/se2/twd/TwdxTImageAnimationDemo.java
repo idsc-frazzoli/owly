@@ -3,16 +3,17 @@ package ch.ethz.idsc.owly.demo.se2.twd;
 
 import ch.ethz.idsc.owly.demo.rn.R2ImageRegions;
 import ch.ethz.idsc.owly.demo.rn.R2xTImageStateTimeRegion;
+import ch.ethz.idsc.owly.demo.util.CameraEmulator;
 import ch.ethz.idsc.owly.demo.util.DemoInterface;
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
 import ch.ethz.idsc.owly.gui.RenderInterface;
-import ch.ethz.idsc.owly.gui.ani.AbstractEntity;
 import ch.ethz.idsc.owly.gui.ani.OwlyAnimationFrame;
 import ch.ethz.idsc.owly.math.region.ImageRegion;
 import ch.ethz.idsc.owly.math.region.Region;
 import ch.ethz.idsc.owly.math.se2.RigidFamily;
 import ch.ethz.idsc.owly.math.se2.Se2Family;
 import ch.ethz.idsc.owly.math.state.StateTime;
+import ch.ethz.idsc.owly.math.state.TrajectoryRegionQuery;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Tensors;
 
@@ -22,17 +23,22 @@ public class TwdxTImageAnimationDemo implements DemoInterface {
   public void start() {
     OwlyAnimationFrame owlyAnimationFrame = new OwlyAnimationFrame();
     TwdConfig twdConfig = new TwdConfig(RealScalar.of(1.2), RealScalar.of(.5));
-    AbstractEntity abstractEntity = new TwdxTEntity(twdConfig, Tensors.vector(-1, -1, 1.0));
-    owlyAnimationFrame.set(abstractEntity);
+    TwdxTEntity twdxTEntity = new TwdxTEntity(twdConfig, Tensors.vector(-1, -1, 1.0));
+    owlyAnimationFrame.set(twdxTEntity);
     // ---
     RigidFamily rigidFamily = Se2Family.rotationAround( //
         Tensors.vectorDouble(1.5, 2), time -> time.multiply(RealScalar.of(0.1)));
     ImageRegion imageRegion = R2ImageRegions.inside_circ();
     Region<StateTime> region = new R2xTImageStateTimeRegion( //
-        imageRegion, rigidFamily, () -> abstractEntity.getStateTimeNow().time());
+        imageRegion, rigidFamily, () -> twdxTEntity.getStateTimeNow().time());
     // ---
-    owlyAnimationFrame.setObstacleQuery(new SimpleTrajectoryRegionQuery(region));
+    TrajectoryRegionQuery trq = new SimpleTrajectoryRegionQuery(region);
+    twdxTEntity.raytraceQuery = trq;
+    RenderInterface renderInterface = new CameraEmulator( //
+        48, RealScalar.of(10), () -> twdxTEntity.getStateTimeNow(), trq);
+    owlyAnimationFrame.setObstacleQuery(trq);
     owlyAnimationFrame.addBackground((RenderInterface) region);
+    owlyAnimationFrame.addBackground(renderInterface);
     owlyAnimationFrame.configCoordinateOffset(200, 400);
     owlyAnimationFrame.jFrame.setVisible(true);
   }
