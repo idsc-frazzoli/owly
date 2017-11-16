@@ -34,7 +34,6 @@ public class TwdxTImageAnimationDemo implements DemoInterface {
         imageRegion, rigidFamily, () -> twdxTEntity.getStateTimeNow().time());
     // ---
     TrajectoryRegionQuery trq = new SimpleTrajectoryRegionQuery(region);
-    twdxTEntity.raytraceQuery = trq;
     {
       RenderInterface renderInterface = new CameraEmulator( //
           48, RealScalar.of(10), () -> twdxTEntity.getStateTimeNow(), trq);

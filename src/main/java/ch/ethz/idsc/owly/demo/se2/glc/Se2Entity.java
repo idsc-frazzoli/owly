@@ -26,7 +26,6 @@ public abstract class Se2Entity extends AbstractEntity {
   public static final Tensor FALLBACK_CONTROL = N.DOUBLE.of(Array.zeros(3)).unmodifiable();
   public final Collection<CostFunction> extraCosts = new LinkedList<>();
   public TrajectoryRegionQuery obstacleQuery = null;
-  public TrajectoryRegionQuery raytraceQuery = null;
 
   public Se2Entity(EpisodeIntegrator episodeIntegrator) {
     super(episodeIntegrator);

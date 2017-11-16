@@ -23,18 +23,18 @@ public class Se2Letter3Demo extends Se2CarDemo {
     ImageRegion imageRegion = R2ImageRegions.inside_gtob();
     TrajectoryRegionQuery trq = createCarQuery(imageRegion);
     se2Entity.obstacleQuery = trq;
-    se2Entity.raytraceQuery = SimpleTrajectoryRegionQuery.timeInvariant(imageRegion);
+    TrajectoryRegionQuery ray = SimpleTrajectoryRegionQuery.timeInvariant(imageRegion);
     owlyAnimationFrame.set(se2Entity);
     owlyAnimationFrame.setObstacleQuery(trq);
     owlyAnimationFrame.addBackground(RegionRenders.create(imageRegion));
     {
       RenderInterface renderInterface = new CameraEmulator( //
-          48, RealScalar.of(10), () -> se2Entity.getStateTimeNow(), se2Entity.raytraceQuery);
+          48, RealScalar.of(10), () -> se2Entity.getStateTimeNow(), ray);
       owlyAnimationFrame.addBackground(renderInterface);
     }
     {
       RenderInterface renderInterface = new LidarEmulator( //
-          129, RealScalar.of(10), () -> se2Entity.getStateTimeNow(), se2Entity.raytraceQuery);
+          129, RealScalar.of(10), () -> se2Entity.getStateTimeNow(), ray);
       owlyAnimationFrame.addBackground(renderInterface);
     }
   }

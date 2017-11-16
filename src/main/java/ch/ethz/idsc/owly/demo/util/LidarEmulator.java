@@ -90,12 +90,13 @@ public class LidarEmulator implements RenderInterface {
   @Override
   public void render(GeometricLayer geometricLayer, Graphics2D graphics) {
     {
+      // TODO scale so that range limit == image height
       Tensor range = detectRange();
       graphics.setColor(new Color(224, 224, 255, 128));
       graphics.fillRect(0, 200, range.length(), 100);
       graphics.setColor(Color.RED);
       for (int index = 0; index < range.length(); ++index)
-        graphics.fillRect(index, (int) (300 - range.Get(index).number().doubleValue() * 10), 1, 2);
+        graphics.fillRect(index, (int) (300 - range.Get(index).number().doubleValue() * 20), 1, 2);
     }
     // {
     // Path2D path2D = geometricLayer.toPath2D(polygon);
