@@ -21,7 +21,7 @@ public class RnRaytracer {
 
   public RnRaytracer(TrajectoryRegionQuery trajectoryRegionQuery, Scalar raySpeed) {
     stateIntegrator = // TODO magic const
-        FixedStateIntegrator.create(EulerIntegrator.INSTANCE, RealScalar.of(.05).divide(raySpeed), 200);
+        FixedStateIntegrator.create(EulerIntegrator.INSTANCE, RealScalar.of(.05).divide(raySpeed), 20 * 5);
     this.trajectoryRegionQuery = trajectoryRegionQuery;
     this.raySpeed = raySpeed;
   }

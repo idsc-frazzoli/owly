@@ -5,6 +5,7 @@ import java.io.IOException;
 
 import ch.ethz.idsc.owly.demo.rn.R2ImageRegions;
 import ch.ethz.idsc.owly.demo.util.CameraEmulator;
+import ch.ethz.idsc.owly.demo.util.LidarEmulator;
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
 import ch.ethz.idsc.owly.gui.RenderInterface;
 import ch.ethz.idsc.owly.gui.ani.OwlyAnimationFrame;
@@ -26,9 +27,16 @@ public class Se2Letter3Demo extends Se2CarDemo {
     owlyAnimationFrame.set(se2Entity);
     owlyAnimationFrame.setObstacleQuery(trq);
     owlyAnimationFrame.addBackground(RegionRenders.create(imageRegion));
-    RenderInterface renderInterface = new CameraEmulator( //
-        48, RealScalar.of(10), () -> se2Entity.getStateTimeNow(), se2Entity.raytraceQuery);
-    owlyAnimationFrame.addBackground(renderInterface);
+    {
+      RenderInterface renderInterface = new CameraEmulator( //
+          48, RealScalar.of(10), () -> se2Entity.getStateTimeNow(), se2Entity.raytraceQuery);
+      owlyAnimationFrame.addBackground(renderInterface);
+    }
+    {
+      RenderInterface renderInterface = new LidarEmulator( //
+          129, RealScalar.of(10), () -> se2Entity.getStateTimeNow(), se2Entity.raytraceQuery);
+      owlyAnimationFrame.addBackground(renderInterface);
+    }
   }
 
   public static void main(String[] args) throws IOException {

@@ -5,6 +5,7 @@ import ch.ethz.idsc.owly.demo.rn.R2ImageRegions;
 import ch.ethz.idsc.owly.demo.rn.R2xTImageStateTimeRegion;
 import ch.ethz.idsc.owly.demo.util.CameraEmulator;
 import ch.ethz.idsc.owly.demo.util.DemoInterface;
+import ch.ethz.idsc.owly.demo.util.LidarEmulator;
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
 import ch.ethz.idsc.owly.gui.RenderInterface;
 import ch.ethz.idsc.owly.gui.ani.OwlyAnimationFrame;
@@ -34,11 +35,18 @@ public class TwdxTImageAnimationDemo implements DemoInterface {
     // ---
     TrajectoryRegionQuery trq = new SimpleTrajectoryRegionQuery(region);
     twdxTEntity.raytraceQuery = trq;
-    RenderInterface renderInterface = new CameraEmulator( //
-        48, RealScalar.of(10), () -> twdxTEntity.getStateTimeNow(), trq);
+    {
+      RenderInterface renderInterface = new CameraEmulator( //
+          48, RealScalar.of(10), () -> twdxTEntity.getStateTimeNow(), trq);
+      owlyAnimationFrame.addBackground(renderInterface);
+    }
+    {
+      RenderInterface renderInterface = new LidarEmulator( //
+          129, RealScalar.of(10), () -> twdxTEntity.getStateTimeNow(), trq);
+      owlyAnimationFrame.addBackground(renderInterface);
+    }
     owlyAnimationFrame.setObstacleQuery(trq);
     owlyAnimationFrame.addBackground((RenderInterface) region);
-    owlyAnimationFrame.addBackground(renderInterface);
     owlyAnimationFrame.configCoordinateOffset(200, 400);
     owlyAnimationFrame.jFrame.setVisible(true);
   }
