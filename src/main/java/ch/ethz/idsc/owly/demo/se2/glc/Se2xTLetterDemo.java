@@ -7,7 +7,6 @@ import java.util.Arrays;
 import ch.ethz.idsc.owly.demo.rn.R2ImageRegions;
 import ch.ethz.idsc.owly.demo.rn.R2xTEllipsoidStateTimeRegion;
 import ch.ethz.idsc.owly.demo.rn.R2xTPolygonStateTimeRegion;
-import ch.ethz.idsc.owly.demo.rn.glc.R2xTEllipsoidsAnimationDemo;
 import ch.ethz.idsc.owly.demo.se2.Se2PointsVsRegion;
 import ch.ethz.idsc.owly.demo.se2.Se2PointsVsRegions;
 import ch.ethz.idsc.owly.demo.util.CameraEmulator;
@@ -19,16 +18,17 @@ import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
 import ch.ethz.idsc.owly.gui.RenderInterface;
 import ch.ethz.idsc.owly.gui.ani.OwlyAnimationFrame;
 import ch.ethz.idsc.owly.gui.region.RegionRenders;
-import ch.ethz.idsc.owly.math.ScalarTensorFunction;
-import ch.ethz.idsc.owly.math.noise.SimplexContinuousNoise;
+import ch.ethz.idsc.owly.math.CogPoints;
 import ch.ethz.idsc.owly.math.region.ImageRegion;
 import ch.ethz.idsc.owly.math.region.Region;
 import ch.ethz.idsc.owly.math.region.RegionUnion;
 import ch.ethz.idsc.owly.math.se2.BijectionFamily;
+import ch.ethz.idsc.owly.math.se2.Se2Family;
 import ch.ethz.idsc.owly.math.state.StateTime;
 import ch.ethz.idsc.owly.math.state.TimeInvariantRegion;
 import ch.ethz.idsc.owly.math.state.TrajectoryRegionQuery;
 import ch.ethz.idsc.tensor.RealScalar;
+import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
 import ch.ethz.idsc.tensor.sca.Sin;
 
@@ -36,7 +36,7 @@ public class Se2xTLetterDemo implements DemoInterface {
   @Override
   public void start() {
     OwlyAnimationFrame owlyAnimationFrame = new OwlyAnimationFrame();
-    CarxTEntity carxTEntity = new CarxTEntity(Tensors.vector(7, 5, 1 + Math.PI));
+    CarxTEntity carxTEntity = new CarxTEntity(Tensors.vector(6.75, 5.4, 1 + Math.PI));
     owlyAnimationFrame.set(carxTEntity);
     // ---
     switch (3) {
@@ -70,28 +70,40 @@ public class Se2xTLetterDemo implements DemoInterface {
           RealScalar.of(4.0)));
       Region<StateTime> region1 = new R2xTEllipsoidStateTimeRegion( //
           Tensors.vector(0.4, 0.5), noise1, () -> carxTEntity.getStateTimeNow().time());
-      ScalarTensorFunction stf2 = R2xTEllipsoidsAnimationDemo.wrap1DTensor(SimplexContinuousNoise.FUNCTION, Tensors.vector(1, 3), 0.03, 6.3);
-      BijectionFamily noise2 = new SimpleTranslationFamily( //
-          s -> Tensors.vector(6, 6).add(stf2.apply(s)));
-      Region<StateTime> region2 = new R2xTEllipsoidStateTimeRegion( //
-          Tensors.vector(0.8, 0.6), noise2, () -> carxTEntity.getStateTimeNow().time());
+      // ---
+      // ScalarTensorFunction stf2 = R2xTEllipsoidsAnimationDemo.wrap1DTensor(SimplexContinuousNoise.FUNCTION, Tensors.vector(1, 3), 0.03, 6.3);
+      // BijectionFamily noise2 = new SimpleTranslationFamily( //
+      // s -> Tensors.vector(6, 6).add(stf2.apply(s)));
+      // Region<StateTime> region2 = new R2xTEllipsoidStateTimeRegion( //
+      // Tensors.vector(0.8, 0.6), noise2, () -> carxTEntity.getStateTimeNow().time());
+      // ---
+      Tensor polygon = CogPoints.of(4, RealScalar.of(1.0), RealScalar.of(0.3));
+      // ---
+      BijectionFamily rigid3 = new Se2Family(s -> Tensors.vector(8.0, 5.8, s.number().doubleValue() * 0.25));
+      Region<StateTime> cog0 = new R2xTPolygonStateTimeRegion( //
+          polygon, rigid3, () -> carxTEntity.getStateTimeNow().time());
       // ---
       TrajectoryRegionQuery trq = new SimpleTrajectoryRegionQuery( //
           RegionUnion.wrap(Arrays.asList( //
               new TimeInvariantRegion(se2PointsVsRegion), // <- expects se2 states
-              region1, region2 //
+              region1,
+              // region2,
+              cog0 //
           )));
       carxTEntity.obstacleQuery = trq;
       TrajectoryRegionQuery ray = new SimpleTrajectoryRegionQuery( //
           RegionUnion.wrap(Arrays.asList( //
               new TimeInvariantRegion(imageRegion), //
-              region1, region2 //
+              region1,
+              // region2,
+              cog0 //
           )));
       // abstractEntity.raytraceQuery = SimpleTrajectoryRegionQuery.timeInvariant(imageRegion);
       owlyAnimationFrame.setObstacleQuery(trq);
       owlyAnimationFrame.addBackground(RegionRenders.create(imageRegion));
       owlyAnimationFrame.addBackground((RenderInterface) region1);
-      owlyAnimationFrame.addBackground((RenderInterface) region2);
+      // owlyAnimationFrame.addBackground((RenderInterface) region2);
+      owlyAnimationFrame.addBackground((RenderInterface) cog0);
       {
         RenderInterface renderInterface = new CameraEmulator( //
             48, RealScalar.of(10), () -> carxTEntity.getStateTimeNow(), ray);
