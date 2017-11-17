@@ -3,6 +3,7 @@ package ch.ethz.idsc.owly.demo.rn.glc;
 
 import java.io.IOException;
 
+import ch.ethz.idsc.owly.demo.rn.R2ImageRegionWrap;
 import ch.ethz.idsc.owly.demo.rn.R2ImageRegions;
 import ch.ethz.idsc.owly.demo.util.DemoInterface;
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
@@ -17,11 +18,13 @@ public class R2ImageAnimationDemo implements DemoInterface {
   @Override
   public void start() {
     try {
+      R2ImageRegionWrap r2ImageRegionWrap = R2ImageRegions._GTOB;
+      // ---
       OwlyAnimationFrame owlyAnimationFrame = new OwlyAnimationFrame();
       R2Entity r2Entity = new R2Entity(Tensors.vector(7, 6));
-      r2Entity.extraCosts.add(R2ImageRegions.imageCost_gtob());
+      r2Entity.extraCosts.add(r2ImageRegionWrap.costFunction());
       owlyAnimationFrame.set(r2Entity);
-      ImageRegion imageRegion = R2ImageRegions.inside_gtob();
+      ImageRegion imageRegion = r2ImageRegionWrap.imageRegion();
       owlyAnimationFrame.setObstacleQuery(SimpleTrajectoryRegionQuery.timeInvariant(imageRegion));
       owlyAnimationFrame.addBackground(RegionRenders.create(imageRegion));
       owlyAnimationFrame.configCoordinateOffset(50, 700);

@@ -4,6 +4,7 @@ package ch.ethz.idsc.owly.demo.se2.glc;
 import java.io.IOException;
 import java.util.Arrays;
 
+import ch.ethz.idsc.owly.demo.rn.R2ImageRegionWrap;
 import ch.ethz.idsc.owly.demo.rn.R2ImageRegions;
 import ch.ethz.idsc.owly.demo.rn.R2xTEllipsoidStateTimeRegion;
 import ch.ethz.idsc.owly.demo.rn.R2xTPolygonStateTimeRegion;
@@ -41,7 +42,8 @@ public class Se2xTLetterDemo implements DemoInterface {
     // ---
     switch (3) {
     case 1: {
-      ImageRegion imageRegion = R2ImageRegions.inside_gtob();
+      R2ImageRegionWrap r2ImageRegionWrap = R2ImageRegions._GTOB;
+      ImageRegion imageRegion = r2ImageRegionWrap.imageRegion();
       Se2PointsVsRegion se2PointsVsRegion = Se2PointsVsRegions.line(Tensors.vector(0.2, 0.1, 0, -0.1), imageRegion);
       TrajectoryRegionQuery trq = SimpleTrajectoryRegionQuery.timeInvariant(se2PointsVsRegion);
       carxTEntity.obstacleQuery = trq;
@@ -61,9 +63,10 @@ public class Se2xTLetterDemo implements DemoInterface {
       break;
     }
     case 3: {
-      ImageRegion imageRegion = R2ImageRegions.inside_gtob();
+      R2ImageRegionWrap r2ImageRegionWrap = R2ImageRegions._GTOB;
+      ImageRegion imageRegion = r2ImageRegionWrap.imageRegion();
       try {
-        carxTEntity.extraCosts.add(R2ImageRegions.imageCost_gtob());
+        carxTEntity.extraCosts.add(r2ImageRegionWrap.costFunction());
       } catch (Exception exception) {
         exception.printStackTrace();
       }

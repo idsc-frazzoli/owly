@@ -3,6 +3,7 @@ package ch.ethz.idsc.owly.demo.se2.glc;
 
 import java.io.IOException;
 
+import ch.ethz.idsc.owly.demo.rn.R2ImageRegionWrap;
 import ch.ethz.idsc.owly.demo.rn.R2ImageRegions;
 import ch.ethz.idsc.owly.demo.util.CameraEmulator;
 import ch.ethz.idsc.owly.demo.util.LidarEmulator;
@@ -18,9 +19,10 @@ import ch.ethz.idsc.tensor.Tensors;
 public class Se2Letter3Demo extends Se2CarDemo {
   @Override
   void configure(OwlyAnimationFrame owlyAnimationFrame) throws IOException {
+    R2ImageRegionWrap r2ImageRegionWrap = R2ImageRegions._GTOB;
     CarEntity se2Entity = CarEntity.createDefault(Tensors.vector(6, 6, 1));
-    se2Entity.extraCosts.add(R2ImageRegions.imageCost_gtob());
-    ImageRegion imageRegion = R2ImageRegions.inside_gtob();
+    se2Entity.extraCosts.add(r2ImageRegionWrap.costFunction());
+    ImageRegion imageRegion = r2ImageRegionWrap.imageRegion();
     TrajectoryRegionQuery trq = createCarQuery(imageRegion);
     se2Entity.obstacleQuery = trq;
     TrajectoryRegionQuery ray = SimpleTrajectoryRegionQuery.timeInvariant(imageRegion);

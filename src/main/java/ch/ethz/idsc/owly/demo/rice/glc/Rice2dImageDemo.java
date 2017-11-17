@@ -4,6 +4,7 @@ package ch.ethz.idsc.owly.demo.rice.glc;
 import java.util.Collection;
 
 import ch.ethz.idsc.owly.demo.rice.Rice2Controls;
+import ch.ethz.idsc.owly.demo.rn.R2ImageRegionWrap;
 import ch.ethz.idsc.owly.demo.rn.R2ImageRegions;
 import ch.ethz.idsc.owly.demo.util.DemoInterface;
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
@@ -23,7 +24,8 @@ public class Rice2dImageDemo implements DemoInterface {
     OwlyAnimationFrame owlyAnimationFrame = new OwlyAnimationFrame();
     Scalar mu = RealScalar.of(-0.5);
     Collection<Flow> controls = Rice2Controls.create2d(mu, 1, 15);
-    ImageRegion imageRegion = R2ImageRegions.inside_gtob();
+    R2ImageRegionWrap r2ImageRegionWrap = R2ImageRegions._GTOB;
+    ImageRegion imageRegion = r2ImageRegionWrap.imageRegion();
     TrajectoryRegionQuery obstacleQuery = SimpleTrajectoryRegionQuery.timeInvariant(imageRegion);
     owlyAnimationFrame.set(new Rice2dEntity(mu, Tensors.vector(7, 6, 0, 0), controls));
     owlyAnimationFrame.setObstacleQuery(EmptyTrajectoryRegionQuery.INSTANCE);
