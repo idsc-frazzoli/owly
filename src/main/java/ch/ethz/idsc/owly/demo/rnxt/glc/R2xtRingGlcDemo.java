@@ -39,14 +39,13 @@ enum R2xtRingGlcDemo {
   ;
   public static void main(String[] args) {
     RationalScalar resolution = (RationalScalar) RealScalar.of(8);
-    Tensor partitionScale = Tensors.vector(16, 16, 64);
+    Tensor partitionScale = Tensors.vector(16, 16, 16); //Parameters create nice trajectory, which only waits shortly
     Scalar timeScale = RealScalar.of(6);
     Scalar depthScale = RealScalar.of(100);
     Scalar dtMax = RationalScalar.of(1, 6);
     int maxIter = 1000000;
     Scalar lipschitz = RealScalar.ONE;
     Parameters parameters = new R2Parameters(resolution, timeScale, depthScale, partitionScale, dtMax, maxIter, lipschitz);
-    // TODO JONAS why does time has resolution only 1 !?
     System.out.println("1/DomainSize: " + parameters.getEta());
     StateIntegrator stateIntegrator = FixedStateIntegrator.create(EulerIntegrator.INSTANCE, parameters.getdtMax(), //
         parameters.getTrajectorySize());
