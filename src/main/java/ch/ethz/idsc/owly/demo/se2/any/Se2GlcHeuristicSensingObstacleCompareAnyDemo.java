@@ -26,7 +26,7 @@ import ch.ethz.idsc.owly.glc.core.StandardTrajectoryPlanner;
 import ch.ethz.idsc.owly.glc.core.TrajectoryPlanner;
 import ch.ethz.idsc.owly.gui.ani.OwlyFrame;
 import ch.ethz.idsc.owly.gui.ani.OwlyGui;
-import ch.ethz.idsc.owly.math.RotationUtils;
+import ch.ethz.idsc.owly.math.Degree;
 import ch.ethz.idsc.owly.math.StateSpaceModel;
 import ch.ethz.idsc.owly.math.flow.EulerIntegrator;
 import ch.ethz.idsc.owly.math.flow.Flow;
@@ -63,7 +63,7 @@ enum Se2GlcHeuristicSensingObstacleCompareAnyDemo {
         parameters.getTrajectorySize());
     parameters.printResolution();
     System.out.println("DomainSize: 1/Eta: " + parameters.getEta().map(n -> RealScalar.ONE.divide(n)));
-    CarConfig carConfig = new CarConfig(RealScalar.ONE, RotationUtils.DEGREE(45));
+    CarConfig carConfig = new CarConfig(RealScalar.ONE, Degree.of(45));
     Collection<Flow> controls = carConfig.createControls(parameters.getResolutionInt());
     // Creating Goals
     Tensor startState = Tensors.vector(0, 0, 0);
@@ -163,7 +163,7 @@ enum Se2GlcHeuristicSensingObstacleCompareAnyDemo {
   }
 
   public static void main(String[] args) throws Exception {
-    CarConfig carConfig = new CarConfig(RealScalar.ONE, RotationUtils.DEGREE(45));
+    CarConfig carConfig = new CarConfig(RealScalar.ONE, Degree.of(45));
     Collection<Flow> controls = carConfig.createControls(11);
     Tensor goal = Tensors.vector(11, 11, 0);
     GoalInterface[] values = new GoalInterface[] { //

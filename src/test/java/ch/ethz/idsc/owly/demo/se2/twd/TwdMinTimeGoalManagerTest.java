@@ -14,8 +14,8 @@ import junit.framework.TestCase;
 
 public class TwdMinTimeGoalManagerTest extends TestCase {
   public void testSimple() {
-    TwdConfig twdConfig = new TwdConfig(RealScalar.of(1), RealScalar.of(1));
-    Collection<Flow> controls = twdConfig.createControls(8);
+    TwdDuckieFlows twdConfig = new TwdDuckieFlows(RealScalar.of(1), RealScalar.of(1));
+    Collection<Flow> controls = twdConfig.getFlows(8);
     Se2MinTimeGoalManager manager = new Se2MinTimeGoalManager( //
         Tensors.vector(10, 0, Math.PI), Tensors.vector(1, 1, 1), controls);
     // TwdMinTimeGoalManager manager = //
@@ -32,8 +32,8 @@ public class TwdMinTimeGoalManagerTest extends TestCase {
   public void testAllAngles() {
     // TwdMinTimeGoalManager manager = //
     // new TwdMinTimeGoalManager(Tensors.vector(0, 0, Math.PI), RealScalar.ONE, RealScalar.of(Math.PI));
-    TwdConfig twdConfig = new TwdConfig(RealScalar.of(1), RealScalar.of(1));
-    Collection<Flow> controls = twdConfig.createControls(8);
+    TwdDuckieFlows twdConfig = new TwdDuckieFlows(RealScalar.of(1), RealScalar.of(1));
+    Collection<Flow> controls = twdConfig.getFlows(8);
     Se2MinTimeGoalManager manager = new Se2MinTimeGoalManager( //
         Tensors.vector(0, 0, Math.PI), Tensors.vector(1, 1, Math.PI), controls);
     for (int index = -100; index < 100; ++index)

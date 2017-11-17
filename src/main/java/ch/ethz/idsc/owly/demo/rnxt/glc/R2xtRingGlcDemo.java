@@ -19,7 +19,7 @@ import ch.ethz.idsc.owly.glc.core.TrajectoryPlanner;
 import ch.ethz.idsc.owly.gui.ani.OwlyFrame;
 import ch.ethz.idsc.owly.gui.ani.OwlyGui;
 import ch.ethz.idsc.owly.gui.region.RegionRenders;
-import ch.ethz.idsc.owly.math.RotationUtils;
+import ch.ethz.idsc.owly.math.Degree;
 import ch.ethz.idsc.owly.math.StateTimeTensorFunction;
 import ch.ethz.idsc.owly.math.flow.EulerIntegrator;
 import ch.ethz.idsc.owly.math.flow.Flow;
@@ -61,8 +61,8 @@ enum R2xtRingGlcDemo {
     TrajectoryRegionQuery obstacleQuery = //
         new SimpleTrajectoryRegionQuery(new TimeDependentTurningRingRegion( //
             Tensors.vector(0, 0), //
-            RotationUtils.DEGREE(90), //
-            RotationUtils.DEGREE(40), //
+            Degree.of(90), //
+            Degree.of(40), //
             RealScalar.of(0.5), //
             RealScalar.of(3)));
     // ---

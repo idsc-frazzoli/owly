@@ -9,7 +9,7 @@ import ch.ethz.idsc.tensor.red.Norm;
 class TnIdentityWrap implements CoordinateWrap {
   @Override
   public Tensor represent(Tensor x) {
-    return x;
+    return x.copy();
   }
 
   @Override

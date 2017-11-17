@@ -15,7 +15,7 @@ import ch.ethz.idsc.owly.glc.core.GoalInterface;
 import ch.ethz.idsc.owly.glc.core.StandardTrajectoryPlanner;
 import ch.ethz.idsc.owly.glc.core.TrajectoryPlanner;
 import ch.ethz.idsc.owly.gui.ani.PlannerType;
-import ch.ethz.idsc.owly.math.RotationUtils;
+import ch.ethz.idsc.owly.math.Degree;
 import ch.ethz.idsc.owly.math.StateTimeTensorFunction;
 import ch.ethz.idsc.owly.math.flow.Flow;
 import ch.ethz.idsc.owly.math.state.FixedStateIntegrator;
@@ -39,6 +39,7 @@ class CarEntity extends Se2Entity {
   private static final Tensor SHAPE = Tensors.matrixDouble( //
       new double[][] { //
           { .2, +.07, 1 }, //
+          { .25, +.0, 1 }, //
           { .2, -.07, 1 }, //
           { -.1, -.07, 1 }, //
           { -.1, +.07, 1 } //
@@ -62,7 +63,7 @@ class CarEntity extends Se2Entity {
         Se2StateSpaceModel.INSTANCE, //
         Se2CarIntegrator.INSTANCE, //
         new StateTime(state, RealScalar.ZERO))); // initial position
-    CarConfig carConfig = new CarConfig(RealScalar.ONE, RotationUtils.DEGREE(45));
+    CarConfig carConfig = new CarConfig(RealScalar.ONE, Degree.of(45));
     controls = carConfig.createControlsForwardAndReverse(6);
     final Scalar goalRadius_xy = Sqrt.of(RealScalar.of(2)).divide(PARTITIONSCALE.Get(0));
     final Scalar goalRadius_theta = Sqrt.of(RealScalar.of(2)).divide(PARTITIONSCALE.Get(2));

@@ -110,7 +110,7 @@ public class OptimalAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
           if (Objects.nonNull(formerLabel)) {
             if (Scalars.lessThan(next.merit(), formerLabel.merit())) {
               // collision check only if new node is better
-              if (getObstacleQuery().isDisjoint(connectors.get(next))) { // better node not collision
+              if (!getObstacleQuery().firstMember(connectors.get(next)).isPresent()) { // better node not collision
                 if (formerLabel.isRoot())
                   throw new RuntimeException();
                 // final Collection<GlcNode> subDeleteTree =
@@ -131,7 +131,7 @@ public class OptimalAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
                 // two lookups in HashSets: one with key Tensor, other with key Object
                 candidateMap.get(domainKey).remove(nextCandidatePair);
                 // GOAL check
-                if (!getGoalInterface().isDisjoint(connectors.get(next)))
+                if (isInsideGoal(connectors.get(next)))
                   offerDestination(next, connectors.get(next));
                 break;
               }
@@ -139,7 +139,7 @@ public class OptimalAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
               break;
             }
           } else { // No formerLabel, so definitely adding a Node
-            if (getObstacleQuery().isDisjoint(connectors.get(next))) {
+            if (!getObstacleQuery().firstMember(connectors.get(next)).isPresent()) {
               // removing the nextCandidate from bucket of this domain
               // adding next to tree and DomainMap
               nextParent.insertEdgeTo(next);
@@ -152,7 +152,7 @@ public class OptimalAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
               // two lookups in HashSets: one with key Tensor, other with key Object
               candidateMap.get(domainKey).remove(nextCandidatePair);
               // GOAL check
-              if (!getGoalInterface().isDisjoint(connectors.get(next)))
+              if (isInsideGoal(connectors.get(next)))
                 offerDestination(next, connectors.get(next));
               break;
             }
@@ -234,13 +234,13 @@ public class OptimalAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
           }
           final List<StateTime> connector = //
               getStateIntegrator().trajectory(nextParent.stateTime(), next.flow());
-          if (getObstacleQuery().isDisjoint(connector)) { // no collision
+          if (!getObstacleQuery().firstMember(connector).isPresent()) { // no collision
             if (!formerLabel.isRoot())
               formerLabel.parent().removeEdgeTo(formerLabel);
             insertNodeInTree(nextParent, next);
             candidateMap.get(domainKey).remove(nextCandidatePair);
             addedNodesToQueue++;
-            if (!getGoalInterface().isDisjoint(connector))
+            if (isInsideGoal(connector))
               offerDestination(next, connector);
             break; // leaves the while loop, but not the for loop
           }
@@ -306,7 +306,7 @@ public class OptimalAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
         }
         if (!label.isRoot()) {
           connector = getStateIntegrator().trajectory(label.parent().stateTime(), label.flow());
-          if (getObstacleQuery().isDisjoint(connector)) { // label NOT in Collision
+          if (!getObstacleQuery().firstMember(connector).isPresent()) { // label NOT in Collision
             while (!candidateQueue.isEmpty()) { // checking for better candidates/open doors
               CandidatePair nextBest = candidateQueue.element();
               GlcNode nextBestNode = nextBest.getCandidate();
@@ -315,7 +315,7 @@ public class OptimalAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
                 if (Nodes.areConnected(nextBestParent, root)) {
                   // / check if sth better is there
                   connector = getStateIntegrator().trajectory(nextBestParent.stateTime(), nextBestNode.flow());
-                  if (getObstacleQuery().isDisjoint(connector)) {
+                  if (!getObstacleQuery().firstMember(connector).isPresent()) {
                     // final Collection<GlcNode> subDeleteTree =
                     Collection<GlcNode> deletedNodesList = deleteSubtreeOf(label);
                     deletedNodes += deletedNodesList.size();
@@ -361,7 +361,7 @@ public class OptimalAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
               // ******COPY PASTED
               if (Nodes.areConnected(nextBestParent, root)) {
                 connector = getStateIntegrator().trajectory(nextBestParent.stateTime(), nextBestNode.flow());
-                if (getObstacleQuery().isDisjoint(connector)) { // better Candidate obstacle check
+                if (!getObstacleQuery().firstMember(connector).isPresent()) { // better Candidate obstacle check
                   getCandidateMap().get(domainKey).add(formerLabelCandidate);
                   // formerLabel disconnecting
                   // adding next to tree and DomainMap
@@ -385,7 +385,7 @@ public class OptimalAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
       }
       // GOAL check
       if (!connector.isEmpty() && getNode(domainKey) != null) {
-        if (!getGoalInterface().isDisjoint(connector))
+        if (isInsideGoal(connector))
           offerDestination(getNode(domainKey), connector);
       }
     }
@@ -413,7 +413,7 @@ public class OptimalAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
           GlcNode nextBestParent = nextBest.getOrigin();
           if (Nodes.areConnected(nextBestParent, root)) {
             List<StateTime> connector = getStateIntegrator().trajectory(nextBestParent.stateTime(), nextBestNode.flow());
-            if (getObstacleQuery().isDisjoint(connector)) { // best Candidate obstacle check
+            if (!getObstacleQuery().firstMember(connector).isPresent()) { // best Candidate obstacle check
               // adding next to tree and DomainMap
               final CandidatePair removedCP = candidateQueue.remove();
               if (removedCP != nextBest)
@@ -425,7 +425,7 @@ public class OptimalAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
               if (!removed)
                 throw new RuntimeException(); // candidate should be in candidatemap
               // GOAL check
-              if (!getGoalInterface().isDisjoint(connector))
+              if (isInsideGoal(connector))
                 offerDestination(nextBestNode, connector);
               break; // leaves whileloop around candidateQueue
             }
@@ -494,7 +494,7 @@ public class OptimalAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
               if (Nodes.areConnected(possibleCandidateOrigin, root)) {
                 final List<StateTime> connector = //
                     getStateIntegrator().trajectory(possibleCandidateOrigin.stateTime(), possibleCandidateNode.flow());
-                if (getObstacleQuery().isDisjoint(connector)) {
+                if (!getObstacleQuery().firstMember(connector).isPresent()) {
                   Collection<GlcNode> deleteTree = deleteSubtreeOf(label);
                   CandidatePair formerLabelCandidate = new CandidatePair(label.parent(), label);
                   label.parent().removeEdgeTo(label);
@@ -507,7 +507,7 @@ public class OptimalAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
                   replacedNodes++;
                   insertNodeInTree(possibleCandidateOrigin, possibleCandidateNode);
                   candidateMap.get(domainKey).remove(nextCandidatePair);
-                  if (!getGoalInterface().isDisjoint(connector))
+                  if (isInsideGoal(connector))
                     offerDestination(possibleCandidateNode, connector);
                   break; // leaves the Candidate Queue while loop if a better was found
                 }
@@ -563,7 +563,7 @@ public class OptimalAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
     treeCollection.stream().forEach(node -> {
       if (!node.isRoot()) {
         final List<StateTime> trajectory = getStateIntegrator().trajectory(node.parent().stateTime(), node.flow());
-        if (!getGoalInterface().isDisjoint(trajectory))
+        if (isInsideGoal(trajectory))
           offerDestination(node, trajectory);
       }
     });

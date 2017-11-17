@@ -22,7 +22,7 @@ public enum CirclePoints {
    * @return n x 2 matrix with evenly spaced points on the unit-circle */
   public static Tensor of(int n) {
     Tensor polygon = Tensors.empty();
-    for (Tensor theta : Drop.tail(Subdivide.of(RealScalar.ZERO, RotationUtils.DEGREE(360), n), 1))
+    for (Tensor theta : Drop.tail(Subdivide.of(RealScalar.ZERO, Degree.of(360), n), 1))
       polygon.append(AngleVector.of(theta.Get()));
     return polygon;
   }

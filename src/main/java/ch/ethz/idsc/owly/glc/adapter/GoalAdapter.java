@@ -29,9 +29,13 @@ public class GoalAdapter implements GoalInterface {
     return trajectoryRegionQuery.firstMember(trajectory);
   }
 
+  // @Override // from TrajectoryRegionQuery
+  // public boolean isDisjoint(List<StateTime> trajectory) {
+  // return trajectoryRegionQuery.isDisjoint(trajectory);
+  // }
   @Override // from TrajectoryRegionQuery
-  public boolean isDisjoint(List<StateTime> trajectory) {
-    return trajectoryRegionQuery.isDisjoint(trajectory);
+  public final boolean isMember(StateTime stateTime) {
+    return trajectoryRegionQuery.isMember(stateTime);
   }
 
   @Override // from CostFunction

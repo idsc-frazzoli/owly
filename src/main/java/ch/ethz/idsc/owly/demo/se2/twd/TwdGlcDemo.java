@@ -48,8 +48,8 @@ enum TwdGlcDemo {
     StateIntegrator stateIntegrator = FixedStateIntegrator.create( //
         MidpointIntegrator.INSTANCE, parameters.getdtMax(), parameters.getTrajectorySize());
     // ---
-    TwdConfig twdControls = new TwdConfig(RealScalar.ONE, RealScalar.ONE);
-    Collection<Flow> controls = twdControls.createControls2(parameters.getResolutionInt());
+    TwdDuckieFlows twdControls = new TwdDuckieFlows(RealScalar.ONE, RealScalar.ONE);
+    Collection<Flow> controls = twdControls.getFlows(parameters.getResolutionInt());
     // ---
     TrajectoryRegionQuery obstacleQuery = SimpleTrajectoryRegionQuery.timeInvariant( //
         RegionUnion.wrap(Arrays.asList( //

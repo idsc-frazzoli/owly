@@ -11,7 +11,7 @@ public enum IdentityWrap implements CoordinateWrap {
   // ---
   @Override
   public Tensor represent(Tensor x) {
-    return x;
+    return x.copy();
   }
 
   @Override

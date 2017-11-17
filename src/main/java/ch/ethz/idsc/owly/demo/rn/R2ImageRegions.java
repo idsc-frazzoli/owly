@@ -5,16 +5,9 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Point;
 import java.awt.image.BufferedImage;
-import java.io.IOException;
-import java.util.Set;
 
 import ch.ethz.idsc.owly.data.CharImage;
-import ch.ethz.idsc.owly.demo.util.FloodFill2D;
-import ch.ethz.idsc.owly.demo.util.ImageCostFunction;
-import ch.ethz.idsc.owly.glc.core.CostFunction;
 import ch.ethz.idsc.owly.math.region.ImageRegion;
-import ch.ethz.idsc.tensor.DoubleScalar;
-import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
 import ch.ethz.idsc.tensor.alg.Transpose;
@@ -23,7 +16,7 @@ import ch.ethz.idsc.tensor.io.ImageFormat;
 /** collection of ready-to-use image regions */
 public enum R2ImageRegions {
   ;
-  private static ImageRegion transpose(BufferedImage bufferedImage, Tensor range, boolean strict) {
+  public static ImageRegion transpose(BufferedImage bufferedImage, Tensor range, boolean strict) {
     return new ImageRegion(Transpose.of(ImageFormat.from(bufferedImage)), range, strict);
   }
 
@@ -59,17 +52,25 @@ public enum R2ImageRegions {
     return transpose(charImage.bufferedImage(), Tensors.vector(20, 10), false);
   }
 
-  public static ImageRegion inside_0f5c_2182() {
+  /***************************************************/
+  public static final R2ImageRegionWrap _0F5C_2182 = //
+      new R2ImageRegionWrap(inside_0f5c_2182_charImage(), Tensors.vector(20, 10));
+
+  private static Tensor inside_0f5c_2182_charImage() {
     CharImage charImage = CharImage.fillWhite(new Dimension(320, 640));
     charImage.setFont(new Font(Font.DIALOG, Font.PLAIN, 600));
     charImage.draw('\u0f5c', new Point(20, 560));
     charImage.setFont(new Font(Font.DIALOG, Font.PLAIN, 270));
     charImage.draw('\u2182', new Point(-5, 230));
     charImage.draw('\u2182', new Point(-5, 420));
-    return transpose(charImage.bufferedImage(), Tensors.vector(20, 10), false);
+    return Transpose.of(ImageFormat.from(charImage.bufferedImage()));
   }
 
-  public static CharImage inside_gtob_charImage() {
+  /***************************************************/
+  public static final R2ImageRegionWrap _GTOB = //
+      new R2ImageRegionWrap(inside_gtob_charImage(), Tensors.vector(12, 12));
+
+  public static Tensor inside_gtob_charImage() {
     CharImage charImage = CharImage.fillWhite(new Dimension(640, 640));
     charImage.setFont(new Font(Font.DIALOG, Font.BOLD, 400));
     charImage.draw('G', new Point(0, 310));
@@ -77,9 +78,10 @@ public enum R2ImageRegions {
     charImage.draw('I', new Point(480, 323));
     charImage.draw('O', new Point(20, 560));
     charImage.draw('B', new Point(280, 580));
-    return charImage;
+    return Transpose.of(ImageFormat.from(charImage.bufferedImage()));
   }
 
+  /***************************************************/
   public static CharImage inside_roundabout() {
     CharImage charImage = CharImage.fillWhite(new Dimension(236, 180));
     charImage.setFont(new Font(Font.DIALOG, Font.BOLD, 400));
@@ -92,21 +94,5 @@ public enum R2ImageRegions {
   public static ImageRegion inside_circ() {
     CharImage charImage = inside_roundabout();
     return transpose(charImage.bufferedImage(), CIRC_RANGE, false);
-  }
-
-  private static final Tensor GTOB_RANGE = Tensors.vector(12, 12);
-
-  public static ImageRegion inside_gtob() {
-    CharImage charImage = inside_gtob_charImage();
-    return transpose(charImage.bufferedImage(), GTOB_RANGE, false);
-  }
-
-  public static CostFunction imageCost_gtob() throws IOException {
-    CharImage charImage = inside_gtob_charImage();
-    final Tensor tensor = Transpose.of(ImageFormat.from(charImage.bufferedImage()));
-    Set<Tensor> seeds = FloodFill2D.seeds(tensor);
-    final int ttl = 15; // magic const
-    Tensor cost = FloodFill2D.of(seeds, RealScalar.of(ttl), tensor);
-    return new ImageCostFunction(cost.divide(DoubleScalar.of(ttl)), GTOB_RANGE, RealScalar.ZERO);
   }
 }

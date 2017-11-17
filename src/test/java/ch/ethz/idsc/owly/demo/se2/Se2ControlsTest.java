@@ -6,7 +6,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
-import ch.ethz.idsc.owly.math.RotationUtils;
+import ch.ethz.idsc.owly.math.Degree;
 import ch.ethz.idsc.owly.math.flow.Flow;
 import ch.ethz.idsc.owly.math.region.So2Region;
 import ch.ethz.idsc.tensor.RealScalar;
@@ -22,13 +22,13 @@ import junit.framework.TestCase;
 
 public class Se2ControlsTest extends TestCase {
   public void testSimple() {
-    CarConfig carConfig = new CarConfig(RealScalar.ONE, RotationUtils.DEGREE(45));
+    CarConfig carConfig = new CarConfig(RealScalar.ONE, Degree.of(45));
     Collection<Flow> controls = carConfig.createControls(6);
     Scalar maxSpeed = Se2Controls.maxSpeed(controls);
     assertTrue(Chop._13.close(maxSpeed, RealScalar.ONE));
     Scalar maxTurn = Se2Controls.maxTurning(controls);
     assertTrue(Chop._13.close(maxTurn, RealScalar.of(45 * Math.PI / 180)));
-    assertTrue(Chop._13.close(maxTurn, RotationUtils.DEGREE(45)));
+    assertTrue(Chop._13.close(maxTurn, Degree.of(45)));
   }
 
   public void testMaxRate() {

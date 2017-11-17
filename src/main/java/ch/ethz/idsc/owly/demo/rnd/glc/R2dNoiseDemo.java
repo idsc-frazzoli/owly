@@ -2,7 +2,6 @@
 package ch.ethz.idsc.owly.demo.rnd.glc;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -55,7 +54,7 @@ enum R2dNoiseDemo {
         partitionScale, stateIntegrator, controls, obstacleQuery, goalInterface);
     // Trajectories.s
     StateTime root_x = new StateTime(Tensors.vector(0, 0, 0, 0), RealScalar.ZERO);
-    boolean root_free = obstacleQuery.isDisjoint(Collections.singletonList(root_x));
+    boolean root_free = !obstacleQuery.isMember(root_x);
     GlobalAssert.that(root_free);
     trajectoryPlanner.insertRoot(root_x);
     Stopwatch stopwatch = Stopwatch.started();

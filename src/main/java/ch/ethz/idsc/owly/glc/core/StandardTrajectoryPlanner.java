@@ -68,7 +68,7 @@ public class StandardTrajectoryPlanner extends AbstractTrajectoryPlanner {
         final GlcNode formerLabel = getNode(domainKey);
         if (Objects.nonNull(formerLabel)) {
           if (Scalars.lessThan(next.merit(), formerLabel.merit())) {
-            if (getObstacleQuery().isDisjoint(connectors.get(next))) { // no collision
+            if (!getObstacleQuery().firstMember(connectors.get(next)).isPresent()) { // no collision
               /** removal from queue is unsure; needs to be checked with theory. */
               boolean removed = queue().remove(formerLabel);
               if (!removed) {
@@ -80,21 +80,21 @@ public class StandardTrajectoryPlanner extends AbstractTrajectoryPlanner {
               boolean replaced = insert(domainKey, next);
               GlobalAssert.that(replaced);
               domainQueue.remove();
-              if (!getGoalInterface().isDisjoint(connectors.get(next)))
+              if (isInsideGoal(connectors.get(next)))
                 offerDestination(next, connectors.get(next));
               // Same principle as in B. Paden's implementation, leaving while loop after first relabel
               break; // leaves the while loop, but not the for loop
             }
           }
         } else { // No formerLabel, so definitely adding a Node
-          if (getObstacleQuery().isDisjoint(connectors.get(next))) {
+          if (!getObstacleQuery().firstMember(connectors.get(next)).isPresent()) {
             // removing the nextCandidate from bucket of this domain
             // adding next to tree and DomainMap
             node.insertEdgeTo(next);
             insert(domainKey, next);
             domainQueue.remove();
             // GOAL check
-            if (!getGoalInterface().isDisjoint(connectors.get(next)))
+            if (isInsideGoal(connectors.get(next)))
               offerDestination(next, connectors.get(next));
             break;
           }

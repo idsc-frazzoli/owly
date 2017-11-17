@@ -3,6 +3,7 @@ package ch.ethz.idsc.owly.math.state;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import ch.ethz.idsc.owly.math.flow.Flow;
 import ch.ethz.idsc.owly.math.flow.Integrator;
@@ -16,7 +17,7 @@ public class FixedStateIntegrator implements StateIntegrator {
    * @param timeStep
    * @param trajectorySize
    * @return */
-  public static StateIntegrator create(Integrator integrator, Scalar timeStep, int trajectorySize) {
+  public static FixedStateIntegrator create(Integrator integrator, Scalar timeStep, int trajectorySize) {
     return new FixedStateIntegrator(integrator, timeStep, trajectorySize);
   }
 
@@ -48,5 +49,16 @@ public class FixedStateIntegrator implements StateIntegrator {
       prev = next;
     }
     return trajectory;
+  }
+
+  public Optional<StateTime> firstMember(StateTime stateTime, Flow flow, TrajectoryRegionQuery trajectoryRegionQuery) {
+    for (int count = 0; count < trajectorySize; ++count) {
+      stateTime = new StateTime( //
+          integrator.step(flow, stateTime.state(), timeStep), //
+          stateTime.time().add(timeStep));
+      if (trajectoryRegionQuery.isMember(stateTime))
+        return Optional.of(stateTime);
+    }
+    return Optional.empty();
   }
 }

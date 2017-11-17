@@ -15,8 +15,12 @@ public enum EmptyTrajectoryRegionQuery implements TrajectoryRegionQuery {
     return Optional.empty();
   }
 
-  @Override
-  public boolean isDisjoint(List<StateTime> trajectory) {
-    return true;
+  // @Override
+  // public boolean isDisjoint(List<StateTime> trajectory) {
+  // return true;
+  // }
+  @Override // from TrajectoryRegionQuery
+  public final boolean isMember(StateTime stateTime) {
+    return false;
   }
 }

@@ -9,7 +9,7 @@ import junit.framework.TestCase;
 public class RotationUtilsTest extends TestCase {
   public void testSimple() {
     Scalar s1 = RationalScalar.of(7, 180).multiply(DoubleScalar.of(Math.PI));
-    Scalar s2 = RotationUtils.DEGREE(7);
+    Scalar s2 = Degree.of(7);
     assertEquals(s1, s2);
   }
 }

@@ -1,7 +1,6 @@
 // code by jl
 package ch.ethz.idsc.owly.demo.rn.any;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
@@ -115,14 +114,10 @@ enum R2GlcAnyCircleCompareDemo {
         parameters.increaseDepthLimit(increment);
       }
       // -- GOALCHANGE
-      List<StateTime> goalStateList = new ArrayList<>();
       do {
-        goalStateList.clear();
         goalAngle = goalAngle.subtract(RealScalar.of(0.1 * Math.PI));
         goal = AngleVector.of(goalAngle).multiply(circleRadius);
-        StateTime goalState = new StateTime(goal, RealScalar.ZERO);
-        goalStateList.add(goalState);
-      } while (!obstacleQuery.isDisjoint(goalStateList));
+      } while (obstacleQuery.isMember(new StateTime(goal, RealScalar.ZERO)));
       rnGoal = new RnNoHeuristicCircleGoalManager(goal, goalRadius);
       // System.out.println("Switching to Goal:" + goal);
       Scalar goalSearchHelperRadius = goalRadius.add(RealScalar.ONE).multiply(RealScalar.of(2));
