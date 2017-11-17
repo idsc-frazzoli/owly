@@ -1,8 +1,8 @@
 // code by jph
 package ch.ethz.idsc.owly.math.region;
 
-import ch.ethz.idsc.owly.math.TensorUnaryOperator;
 import ch.ethz.idsc.tensor.Tensor;
+import ch.ethz.idsc.tensor.opt.TensorUnaryOperator;
 
 /** member check is carried on the input tensor mapped by the given operator */
 public class MappedRegion implements Region<Tensor> {

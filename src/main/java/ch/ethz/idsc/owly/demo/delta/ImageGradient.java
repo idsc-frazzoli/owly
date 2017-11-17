@@ -45,7 +45,7 @@ public class ImageGradient implements Serializable {
   private static final Tensor ZEROS = Tensors.vectorDouble(0, 0).unmodifiable();
   // ---
   private final Tensor scale;
-  private final transient Interpolation interpolation; // TODO JAN transient pending on Serializable v043
+  private final Interpolation interpolation;
   private final Scalar maxNormGradient;
 
   /** @param image with rank 2. For instance, Dimensions.of(image) == [179, 128]
