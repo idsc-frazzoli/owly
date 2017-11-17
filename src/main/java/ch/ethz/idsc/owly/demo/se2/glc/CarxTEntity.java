@@ -2,7 +2,7 @@
 package ch.ethz.idsc.owly.demo.se2.glc;
 
 import ch.ethz.idsc.owly.glc.core.TrajectoryPlanner;
-import ch.ethz.idsc.owly.math.StateTimeTensorFunction;
+import ch.ethz.idsc.owly.math.StateTimeCoordinateWrap;
 import ch.ethz.idsc.owly.math.state.StateTime;
 import ch.ethz.idsc.owly.math.state.TrajectoryRegionQuery;
 import ch.ethz.idsc.tensor.RealScalar;
@@ -11,7 +11,7 @@ import ch.ethz.idsc.tensor.Tensor;
 
 /** several magic constants are hard-coded in the implementation.
  * that means, the functionality does not apply to all examples universally. */
-class CarxTEntity extends CarEntity implements StateTimeTensorFunction {
+class CarxTEntity extends CarEntity {
   CarxTEntity(Tensor state) {
     super(state); // initial position
     represent_entity = StateTime::joined;
@@ -30,13 +30,8 @@ class CarxTEntity extends CarEntity implements StateTimeTensorFunction {
   @Override
   public TrajectoryPlanner createTrajectoryPlanner(TrajectoryRegionQuery obstacleQuery, Tensor goal) {
     TrajectoryPlanner trajectoryPlanner = super.createTrajectoryPlanner(obstacleQuery, goal);
-    trajectoryPlanner.represent = this::apply; // TODO design no good since no members are required
+    trajectoryPlanner.represent = new StateTimeCoordinateWrap(SE2WRAP);
     return trajectoryPlanner;
-  }
-
-  @Override // from StateTimeTensorFunction
-  public Tensor apply(StateTime stateTime) {
-    return SE2WRAP.represent(stateTime.state()).copy().append(stateTime.time());
   }
 
   @Override

@@ -64,37 +64,40 @@ public class Se2xTLetterDemo implements DemoInterface {
       ImageRegion imageRegion = R2ImageRegions.inside_gtob();
       try {
         carxTEntity.extraCosts.add(R2ImageRegions.imageCost_gtob());
-      } catch (IOException e) {
-        e.printStackTrace();
+      } catch (Exception exception) {
+        exception.printStackTrace();
       }
-      Se2PointsVsRegion se2PointsVsRegion = Se2PointsVsRegions.line(Tensors.vector(0.2, 0.1, 0, -0.1), imageRegion);
       // ---
-      // ScalarTensorFunction stf1 = R2xTEllipsoidsAnimationDemo.wrap1DTensor(SimplexContinuousNoise.FUNCTION, Tensors.vector(0, 2), 0.03, 6.3);
       BijectionFamily noise1 = new SimpleTranslationFamily(s -> Tensors.vector( //
           Math.sin(s.number().doubleValue() * .12) * 3.0 + 3.6, 4.0));
       Region<StateTime> region1 = new R2xTEllipsoidStateTimeRegion( //
           Tensors.vector(0.4, 0.5), noise1, () -> carxTEntity.getStateTimeNow().time());
       // ---
-      // ScalarTensorFunction stf2 = R2xTEllipsoidsAnimationDemo.wrap1DTensor(SimplexContinuousNoise.FUNCTION, Tensors.vector(1, 3), 0.03, 6.3);
-      // BijectionFamily noise2 = new SimpleTranslationFamily( //
-      // s -> Tensors.vector(6, 6).add(stf2.apply(s)));
-      // Region<StateTime> region2 = new R2xTEllipsoidStateTimeRegion( //
-      // Tensors.vector(0.8, 0.6), noise2, () -> carxTEntity.getStateTimeNow().time());
-      // ---
-      Tensor polygon = CogPoints.of(4, RealScalar.of(1.0), RealScalar.of(0.3));
-      // ---
       BijectionFamily rigid3 = new Se2Family(s -> Tensors.vector(8.0, 5.8, s.number().doubleValue() * 0.36));
+      Tensor polygon = CogPoints.of(4, RealScalar.of(1.0), RealScalar.of(0.3));
       Region<StateTime> cog0 = new R2xTPolygonStateTimeRegion( //
           polygon, rigid3, () -> carxTEntity.getStateTimeNow().time());
       // ---
+      Se2PointsVsRegion se2PointsVsRegion = Se2PointsVsRegions.line(Tensors.vector(0.2, 0.1, 0, -0.1), imageRegion);
       TrajectoryRegionQuery trq = new SimpleTrajectoryRegionQuery( //
           RegionUnion.wrap(Arrays.asList( //
               new TimeInvariantRegion(se2PointsVsRegion), // <- expects se2 states
-              region1,
-              // region2,
-              cog0 //
+              region1, cog0 //
           )));
+      // Se2PointsVsRegion se2PointsVsRegion = Se2PointsVsRegions.line(Tensors.vector(0.2, 0.1, 0, -0.1), RegionUnion.wrap(Arrays.asList( //
+      // new TimeInvariantRegion(imageRegion), // <- expects se2 states
+      // region1, cog0 //
+      // )));
+      // TrajectoryRegionQuery trq = new SimpleTrajectoryRegionQuery( //
+      // );
       carxTEntity.obstacleQuery = trq;
+      // abstractEntity.raytraceQuery = SimpleTrajectoryRegionQuery.timeInvariant(imageRegion);
+      owlyAnimationFrame.setObstacleQuery(trq);
+      owlyAnimationFrame.addBackground(RegionRenders.create(imageRegion));
+      owlyAnimationFrame.addBackground((RenderInterface) region1);
+      // owlyAnimationFrame.addBackground((RenderInterface) region2);
+      owlyAnimationFrame.addBackground((RenderInterface) cog0);
+      // ---
       TrajectoryRegionQuery ray = new SimpleTrajectoryRegionQuery( //
           RegionUnion.wrap(Arrays.asList( //
               new TimeInvariantRegion(imageRegion), //
@@ -102,12 +105,6 @@ public class Se2xTLetterDemo implements DemoInterface {
               // region2,
               cog0 //
           )));
-      // abstractEntity.raytraceQuery = SimpleTrajectoryRegionQuery.timeInvariant(imageRegion);
-      owlyAnimationFrame.setObstacleQuery(trq);
-      owlyAnimationFrame.addBackground(RegionRenders.create(imageRegion));
-      owlyAnimationFrame.addBackground((RenderInterface) region1);
-      // owlyAnimationFrame.addBackground((RenderInterface) region2);
-      owlyAnimationFrame.addBackground((RenderInterface) cog0);
       {
         RenderInterface renderInterface = new CameraEmulator( //
             48, RealScalar.of(10), () -> carxTEntity.getStateTimeNow(), ray);
