@@ -21,7 +21,7 @@ public enum StarPoints {
     Tensor polygon = Tensors.empty();
     Scalar[] rad = new Scalar[] { s_hi, s_lo };
     int count = 0;
-    for (Tensor theta : Drop.tail(Subdivide.of(RealScalar.ZERO, RotationUtils.DEGREE(360), 2 * n2), 1))
+    for (Tensor theta : Drop.tail(Subdivide.of(RealScalar.ZERO, Degree.of(360), 2 * n2), 1))
       polygon.append(AngleVector.of(theta.Get()).multiply(rad[count++ % 2]));
     return polygon;
   }

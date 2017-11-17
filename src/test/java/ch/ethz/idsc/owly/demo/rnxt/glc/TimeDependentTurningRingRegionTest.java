@@ -1,7 +1,7 @@
 // code by jl
 package ch.ethz.idsc.owly.demo.rnxt.glc;
 
-import ch.ethz.idsc.owly.math.RotationUtils;
+import ch.ethz.idsc.owly.math.Degree;
 import ch.ethz.idsc.owly.math.state.StateTime;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
@@ -12,8 +12,8 @@ import junit.framework.TestCase;
 public class TimeDependentTurningRingRegionTest extends TestCase {
   public void testSimple() {
     Tensor center = Tensors.vector(0, 0);
-    Scalar initialGapAngle = RotationUtils.DEGREE(0);
-    Scalar gapLength = RotationUtils.DEGREE(40);
+    Scalar initialGapAngle = Degree.of(0);
+    Scalar gapLength = Degree.of(40);
     Scalar ringThickness = RealScalar.of(0.4);
     Scalar ringRadius = RealScalar.ONE;
     TimeDependentTurningRingRegion test = new TimeDependentTurningRingRegion(center, initialGapAngle, gapLength, ringThickness, ringRadius);
@@ -40,8 +40,8 @@ public class TimeDependentTurningRingRegionTest extends TestCase {
 
   public void testFail() {
     Tensor center = Tensors.vector(0, 0);
-    Scalar initialGapAngle = RotationUtils.DEGREE(0);
-    Scalar gapLength = RotationUtils.DEGREE(40);
+    Scalar initialGapAngle = Degree.of(0);
+    Scalar gapLength = Degree.of(40);
     Scalar ringThickness = RealScalar.of(0.4);
     Scalar ringRadius = RealScalar.ONE;
     // TimeDependentTurningRingRegion test =

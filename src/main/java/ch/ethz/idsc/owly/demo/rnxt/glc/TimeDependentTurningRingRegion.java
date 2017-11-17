@@ -2,7 +2,7 @@
 package ch.ethz.idsc.owly.demo.rnxt.glc;
 
 import ch.ethz.idsc.owly.data.GlobalAssert;
-import ch.ethz.idsc.owly.math.RotationUtils;
+import ch.ethz.idsc.owly.math.Degree;
 import ch.ethz.idsc.owly.math.region.Region;
 import ch.ethz.idsc.owly.math.state.StateTime;
 import ch.ethz.idsc.tensor.RealScalar;
@@ -23,7 +23,7 @@ class TimeDependentTurningRingRegion implements Region<StateTime> {
   private final Scalar gapSizeAngle;
   private final Scalar lowerRingRadius;
   private final Scalar upperRingRadius;
-  private final Scalar turningSpeed = RotationUtils.DEGREE(30); // 30 °/s
+  private final Scalar turningSpeed = Degree.of(30); // 30 °/s
 
   /** Constructs a Ring, with a gap in it, which turns at 30°/s CCW
    * 

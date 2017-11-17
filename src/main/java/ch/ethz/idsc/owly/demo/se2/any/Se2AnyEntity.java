@@ -33,7 +33,7 @@ import ch.ethz.idsc.owly.gui.GeometricLayer;
 import ch.ethz.idsc.owly.gui.ani.AbstractAnyEntity;
 import ch.ethz.idsc.owly.gui.ani.PlannerType;
 import ch.ethz.idsc.owly.math.CoordinateWrap;
-import ch.ethz.idsc.owly.math.RotationUtils;
+import ch.ethz.idsc.owly.math.Degree;
 import ch.ethz.idsc.owly.math.flow.EulerIntegrator;
 import ch.ethz.idsc.owly.math.flow.Flow;
 import ch.ethz.idsc.owly.math.flow.Integrator;
@@ -87,7 +87,7 @@ import ch.ethz.idsc.tensor.sca.Sqrt;
             RationalScalar.of(1, 6), // dtMax
             2000, // maxIter
             Se2StateSpaceModel.INSTANCE.getLipschitz()), // Lipschitz
-        new CarConfig(RealScalar.ONE, RotationUtils.DEGREE(60)).createControlsForwardAndReverse(resolution), //
+        new CarConfig(RealScalar.ONE, Degree.of(60)).createControlsForwardAndReverse(resolution), //
         // ---
         new SimpleEpisodeIntegrator( //
             Se2StateSpaceModel.INSTANCE, //

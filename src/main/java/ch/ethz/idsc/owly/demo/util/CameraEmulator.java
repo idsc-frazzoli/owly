@@ -8,6 +8,7 @@ import java.awt.image.BufferedImage;
 import java.util.Objects;
 import java.util.function.Supplier;
 
+import ch.ethz.idsc.owly.data.GlobalAssert;
 import ch.ethz.idsc.owly.gui.GeometricLayer;
 import ch.ethz.idsc.owly.gui.RenderInterface;
 import ch.ethz.idsc.owly.math.TensorUnaryOperator;
@@ -18,14 +19,18 @@ import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Scalars;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
+import ch.ethz.idsc.tensor.alg.Subdivide;
 
 public class CameraEmulator implements RenderInterface {
+  private static final Color CLEAR_COLOR = new Color(192, 255, 192);
+  // ---
   private final int resolution;
   private final Scalar interval;
   private final Supplier<StateTime> supplier;
   private final TrajectoryRegionQuery raytraceQuery;
   // ---
   private BufferedImage bufferedImage;
+  private final Tensor localPoints = Tensors.empty(); // TODO unmodifiable
   private Scalar next;
 
   /** @param resolution of image in pixels along width and height
@@ -41,6 +46,16 @@ public class CameraEmulator implements RenderInterface {
     this.supplier = supplier;
     this.raytraceQuery = raytraceQuery;
     bufferedImage = new BufferedImage(resolution, resolution, BufferedImage.TYPE_INT_ARGB);
+    for (Tensor _xn : Subdivide.of(0, 1, resolution - 1)) {
+      double xn = _xn.Get().number().doubleValue();
+      double dist = 0.6 + 1.5 * xn + xn * xn;
+      for (Tensor _yn : Subdivide.of(-0.5, 0.5, resolution - 1)) {
+        double y = _yn.Get().number().doubleValue();
+        Tensor probe = Tensors.vector(dist, y * dist);
+        localPoints.append(probe);
+      }
+    }
+    GlobalAssert.that(localPoints.length() == resolution * resolution);
   }
 
   /** @param stateTime from where to expose
@@ -54,17 +69,16 @@ public class CameraEmulator implements RenderInterface {
       Graphics graphics = bufferedImage.getGraphics();
       graphics.setColor(Color.DARK_GRAY);
       graphics.fillRect(0, 0, resolution, resolution);
-      graphics.setColor(new Color(192, 255, 192));
-      for (int x = 0; x < bufferedImage.getWidth(); ++x) {
-        double xn = x / (double) resolution;
-        double dist = 0.6 + 1.5 * xn + xn * xn;
-        for (int y = 0; y < bufferedImage.getHeight(); ++y) {
-          Tensor probe = forward.apply(Tensors.vector(dist, (y - resolution / 2) * 0.02 * dist));
-          if (raytraceQuery.isMember(new StateTime(probe, stateTime.time()))) {
-            // Point2D point2D = geometricLayer.toPoint2D(probe);
-            // graphics.fillRect((int) point2D.getX(), (int) point2D.getY(), 2, 2);
-          } else
-            graphics.fillRect(resolution - y - 1, resolution - x - 1, 1, 1);
+      graphics.setColor(CLEAR_COLOR);
+      int x = 0;
+      int y = 0;
+      for (Tensor probe : localPoints) {
+        if (!raytraceQuery.isMember(new StateTime(forward.apply(probe), stateTime.time())))
+          graphics.fillRect(resolution - y - 1, resolution - x - 1, 1, 1);
+        ++y;
+        if (y == resolution) {
+          ++x;
+          y = 0;
         }
       }
     }

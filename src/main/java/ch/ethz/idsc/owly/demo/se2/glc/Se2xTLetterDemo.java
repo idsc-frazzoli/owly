@@ -62,12 +62,16 @@ public class Se2xTLetterDemo implements DemoInterface {
     }
     case 3: {
       ImageRegion imageRegion = R2ImageRegions.inside_gtob();
+      try {
+        carxTEntity.extraCosts.add(R2ImageRegions.imageCost_gtob());
+      } catch (IOException e) {
+        e.printStackTrace();
+      }
       Se2PointsVsRegion se2PointsVsRegion = Se2PointsVsRegions.line(Tensors.vector(0.2, 0.1, 0, -0.1), imageRegion);
       // ---
       // ScalarTensorFunction stf1 = R2xTEllipsoidsAnimationDemo.wrap1DTensor(SimplexContinuousNoise.FUNCTION, Tensors.vector(0, 2), 0.03, 6.3);
-      BijectionFamily noise1 = new SimpleTranslationFamily(s -> Tensors.of( //
-          Sin.FUNCTION.apply(s.multiply(RealScalar.of(.12))).multiply(RealScalar.of(3.0)).add(RealScalar.of(3.6)), //
-          RealScalar.of(4.0)));
+      BijectionFamily noise1 = new SimpleTranslationFamily(s -> Tensors.vector( //
+          Math.sin(s.number().doubleValue() * .12) * 3.0 + 3.6, 4.0));
       Region<StateTime> region1 = new R2xTEllipsoidStateTimeRegion( //
           Tensors.vector(0.4, 0.5), noise1, () -> carxTEntity.getStateTimeNow().time());
       // ---
@@ -79,7 +83,7 @@ public class Se2xTLetterDemo implements DemoInterface {
       // ---
       Tensor polygon = CogPoints.of(4, RealScalar.of(1.0), RealScalar.of(0.3));
       // ---
-      BijectionFamily rigid3 = new Se2Family(s -> Tensors.vector(8.0, 5.8, s.number().doubleValue() * 0.25));
+      BijectionFamily rigid3 = new Se2Family(s -> Tensors.vector(8.0, 5.8, s.number().doubleValue() * 0.36));
       Region<StateTime> cog0 = new R2xTPolygonStateTimeRegion( //
           polygon, rigid3, () -> carxTEntity.getStateTimeNow().time());
       // ---
@@ -111,7 +115,7 @@ public class Se2xTLetterDemo implements DemoInterface {
       }
       {
         RenderInterface renderInterface = new LidarEmulator( //
-            129, RealScalar.of(10), () -> carxTEntity.getStateTimeNow(), ray);
+            LidarEmulator.DEFAULT, RealScalar.of(10), () -> carxTEntity.getStateTimeNow(), ray);
         owlyAnimationFrame.addBackground(renderInterface);
       }
       break;
