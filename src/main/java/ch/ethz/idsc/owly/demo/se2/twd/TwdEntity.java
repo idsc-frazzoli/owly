@@ -35,11 +35,15 @@ import ch.ethz.idsc.tensor.sca.Sqrt;
   private static final Se2Wrap SE2WRAP = new Se2Wrap(Tensors.vectorDouble(1, 1, 2));
   private static final Tensor PARTITIONSCALE = Tensors.vector(6, 6, 50 / Math.PI); // 50/pi == 15.9155
 
-  public static TwdEntity createDefault(Tensor state) {
-    TwdConfig twdControls = new TwdConfig(RealScalar.ONE, RealScalar.ONE);
-    TwdEntity twdEntity = new TwdEntity(twdControls, state);
+  public static TwdEntity createDuckie(Tensor state) {
+    TwdEntity twdEntity = new TwdEntity( //
+        new TwdDuckieFlows(RealScalar.ONE, RealScalar.ONE), state);
     twdEntity.extraCosts.add(Se2LateralAcceleration.COSTFUNCTION);
     return twdEntity;
+  }
+
+  public static TwdEntity createJ2B2(Tensor state) {
+    return new TwdEntity(new TwdForwardFlows(RealScalar.ONE, RealScalar.ONE), state);
   }
 
   // ---
@@ -47,12 +51,12 @@ import ch.ethz.idsc.tensor.sca.Sqrt;
   final Scalar goalRadius_xy;
   final Scalar goalRadius_theta;
 
-  protected TwdEntity(TwdConfig twdConfig, Tensor state) {
+  protected TwdEntity(TwdFlows twdConfig, Tensor state) {
     super(new SimpleEpisodeIntegrator( //
         Se2StateSpaceModel.INSTANCE, //
         Se2CarIntegrator.INSTANCE, //
         new StateTime(state, RealScalar.ZERO))); // initial position
-    controls = twdConfig.createControls(4);
+    controls = twdConfig.getFlows(4);
     Tensor eta = eta();
     System.out.println("ETA = " + eta);
     goalRadius_xy = Sqrt.of(RealScalar.of(2)).divide(eta.Get(0));

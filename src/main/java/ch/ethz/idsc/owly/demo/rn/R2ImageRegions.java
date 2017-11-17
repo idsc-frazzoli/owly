@@ -59,6 +59,7 @@ public enum R2ImageRegions {
     return transpose(charImage.bufferedImage(), Tensors.vector(20, 10), false);
   }
 
+  /***************************************************/
   public static ImageRegion inside_0f5c_2182() {
     CharImage charImage = CharImage.fillWhite(new Dimension(320, 640));
     charImage.setFont(new Font(Font.DIALOG, Font.PLAIN, 600));
@@ -69,31 +70,15 @@ public enum R2ImageRegions {
     return transpose(charImage.bufferedImage(), Tensors.vector(20, 10), false);
   }
 
-  public static CharImage inside_gtob_charImage() {
-    CharImage charImage = CharImage.fillWhite(new Dimension(640, 640));
-    charImage.setFont(new Font(Font.DIALOG, Font.BOLD, 400));
-    charImage.draw('G', new Point(0, 310));
-    charImage.draw('T', new Point(280, 323));
-    charImage.draw('I', new Point(480, 323));
-    charImage.draw('O', new Point(20, 560));
-    charImage.draw('B', new Point(280, 580));
-    return charImage;
-  }
-
-  public static CharImage inside_roundabout() {
-    CharImage charImage = CharImage.fillWhite(new Dimension(236, 180));
-    charImage.setFont(new Font(Font.DIALOG, Font.BOLD, 400));
-    charImage.draw('a', new Point(-20, 200));
-    return charImage;
-  }
-
-  private static final Tensor CIRC_RANGE = Tensors.vector(3, 4);
-
-  public static ImageRegion inside_circ() {
-    CharImage charImage = inside_roundabout();
-    return transpose(charImage.bufferedImage(), CIRC_RANGE, false);
-  }
-
+  // public static CostFunction imageCost_0f5c_2182() throws IOException {
+  // CharImage charImage = inside_gtob_charImage();
+  // final Tensor tensor = Transpose.of(ImageFormat.from(charImage.bufferedImage()));
+  // Set<Tensor> seeds = FloodFill2D.seeds(tensor);
+  // final int ttl = 15; // magic const
+  // Tensor cost = FloodFill2D.of(seeds, RealScalar.of(ttl), tensor);
+  // return new ImageCostFunction(cost.divide(DoubleScalar.of(ttl)), GTOB_RANGE, RealScalar.ZERO);
+  // }
+  /***************************************************/
   private static final Tensor GTOB_RANGE = Tensors.vector(12, 12);
 
   public static ImageRegion inside_gtob() {
@@ -108,5 +93,31 @@ public enum R2ImageRegions {
     final int ttl = 15; // magic const
     Tensor cost = FloodFill2D.of(seeds, RealScalar.of(ttl), tensor);
     return new ImageCostFunction(cost.divide(DoubleScalar.of(ttl)), GTOB_RANGE, RealScalar.ZERO);
+  }
+
+  public static CharImage inside_gtob_charImage() {
+    CharImage charImage = CharImage.fillWhite(new Dimension(640, 640));
+    charImage.setFont(new Font(Font.DIALOG, Font.BOLD, 400));
+    charImage.draw('G', new Point(0, 310));
+    charImage.draw('T', new Point(280, 323));
+    charImage.draw('I', new Point(480, 323));
+    charImage.draw('O', new Point(20, 560));
+    charImage.draw('B', new Point(280, 580));
+    return charImage;
+  }
+
+  /***************************************************/
+  public static CharImage inside_roundabout() {
+    CharImage charImage = CharImage.fillWhite(new Dimension(236, 180));
+    charImage.setFont(new Font(Font.DIALOG, Font.BOLD, 400));
+    charImage.draw('a', new Point(-20, 200));
+    return charImage;
+  }
+
+  private static final Tensor CIRC_RANGE = Tensors.vector(3, 4);
+
+  public static ImageRegion inside_circ() {
+    CharImage charImage = inside_roundabout();
+    return transpose(charImage.bufferedImage(), CIRC_RANGE, false);
   }
 }

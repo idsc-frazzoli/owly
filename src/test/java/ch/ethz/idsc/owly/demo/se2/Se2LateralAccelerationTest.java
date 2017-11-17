@@ -3,7 +3,7 @@ package ch.ethz.idsc.owly.demo.se2;
 
 import java.util.Collection;
 
-import ch.ethz.idsc.owly.demo.se2.twd.TwdConfig;
+import ch.ethz.idsc.owly.demo.se2.twd.TwdDuckieFlows;
 import ch.ethz.idsc.owly.math.flow.Flow;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Scalars;
@@ -27,8 +27,8 @@ public class Se2LateralAccelerationTest extends TestCase {
   public void testTwd() {
     Scalar ms = Quantity.of(3, "m*s^-1");
     Scalar sa = Quantity.of(0.567, "m*rad^-1");
-    TwdConfig twdConfig = new TwdConfig(ms, sa);
-    Collection<Flow> controls = twdConfig.createControls(8);
+    TwdDuckieFlows twdConfig = new TwdDuckieFlows(ms, sa);
+    Collection<Flow> controls = twdConfig.getFlows(8);
     Tensor u = controls.iterator().next().getU();
     Scalar cost = Se2LateralAcceleration.cost(u, Quantity.of(3, "s"));
     assertEquals(Units.of(cost), Unit.of("rad^2*s^-1"));

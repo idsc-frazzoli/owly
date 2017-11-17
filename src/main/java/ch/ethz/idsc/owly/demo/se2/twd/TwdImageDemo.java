@@ -20,7 +20,7 @@ public class TwdImageDemo implements DemoInterface {
     ImageRegion imageRegion = R2ImageRegions.inside_0f5c_2182();
     TrajectoryRegionQuery obstacleQuery = SimpleTrajectoryRegionQuery.timeInvariant(imageRegion);
     OwlyAnimationFrame owlyAnimationFrame = new OwlyAnimationFrame();
-    TwdEntity twdEntity = TwdEntity.createDefault(Tensors.vector(7, 5, 0));
+    TwdEntity twdEntity = TwdEntity.createJ2B2(Tensors.vector(7, 5, 0));
     owlyAnimationFrame.set(twdEntity);
     owlyAnimationFrame.setObstacleQuery(obstacleQuery);
     owlyAnimationFrame.addBackground(RegionRenders.create(imageRegion));

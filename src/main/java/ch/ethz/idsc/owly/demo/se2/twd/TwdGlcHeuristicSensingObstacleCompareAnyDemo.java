@@ -42,7 +42,7 @@ import ch.ethz.idsc.tensor.Tensors;
 
 enum TwdGlcHeuristicSensingObstacleCompareAnyDemo {
   ;
-  public static final TwdConfig TWDCONFIG = new TwdConfig(RealScalar.ONE, RealScalar.ONE);
+  public static final TwdDuckieFlows TWDCONFIG = new TwdDuckieFlows(RealScalar.ONE, RealScalar.ONE);
 
   private static void _run(Scalar resolution, GoalInterface twdGoal, boolean rechabilityRegion, Scalar sensingRadius) throws Exception {
     boolean heuristic = HeuristicQ.of(twdGoal);
@@ -60,7 +60,7 @@ enum TwdGlcHeuristicSensingObstacleCompareAnyDemo {
         parameters.getTrajectorySize());
     parameters.printResolution();
     System.out.println("DomainSize: 1/Eta: " + parameters.getEta().map(n -> RealScalar.ONE.divide(n)));
-    Collection<Flow> controls = TWDCONFIG.createControls(parameters.getResolutionInt());
+    Collection<Flow> controls = TWDCONFIG.getFlows(parameters.getResolutionInt());
     // Creating Goals
     Tensor startState = Tensors.vector(0, 0, 0);
     Region<Tensor> environmentRegion = new R2NoiseRegion(RealScalar.of(0.1));
@@ -153,7 +153,7 @@ enum TwdGlcHeuristicSensingObstacleCompareAnyDemo {
         // new TwdMinCurvatureGoalManager(Tensors.vector(13, 13, 0), RealScalar.of(0.3), RealScalar.of(1)).getGoalInterface()
         Se2MinTimeGoalManager.create(Tensors.vector(13, 13, 0), Tensors.vector(0.3, 0.3, 1), //
             // let's hope the controls lead to the right results
-            TWDCONFIG.createControls(8)) //
+            TWDCONFIG.getFlows(8)) //
         // new TwdMinTimeGoalManager(Tensors.vector(13, 13, 0), RealScalar.of(0.3), RealScalar.of(1)).getGoalInterface()
         // new TwdNoHeuristicGoalManager(Tensors.vector(6, 6, 0), Tensors.vector(0.3, 0.3, 1)).getGoalInterface() //
     };

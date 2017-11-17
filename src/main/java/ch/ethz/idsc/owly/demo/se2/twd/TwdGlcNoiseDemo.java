@@ -52,8 +52,8 @@ enum TwdGlcNoiseDemo {
     StateIntegrator stateIntegrator = //
         FixedStateIntegrator.create(EulerIntegrator.INSTANCE, parameters.getdtMax(), parameters.getTrajectorySize());
     // Controls
-    TwdConfig twdControls = new TwdConfig(RealScalar.ONE, RealScalar.ONE);
-    Collection<Flow> controls = twdControls.createControls2(parameters.getResolutionInt());
+    TwdDuckieFlows twdControls = new TwdDuckieFlows(RealScalar.ONE, RealScalar.ONE);
+    Collection<Flow> controls = twdControls.getFlows(parameters.getResolutionInt());
     // GoalRegion
     Tensor goalCenter = Tensors.vector(5.5, 0, -1 * Math.PI);
     Tensor radiusVector = Tensors.vector(0.2, 0.2, 50 * Math.PI / 180);

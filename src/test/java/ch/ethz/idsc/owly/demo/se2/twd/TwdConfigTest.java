@@ -18,8 +18,8 @@ import junit.framework.TestCase;
 
 public class TwdConfigTest extends TestCase {
   public void testMaxSpeed() {
-    TwdConfig twdConfig = new TwdConfig(RealScalar.of(3), RealScalar.of(0.567));
-    Collection<Flow> controls = twdConfig.createControls(8);
+    TwdDuckieFlows twdConfig = new TwdDuckieFlows(RealScalar.of(3), RealScalar.of(0.567));
+    Collection<Flow> controls = twdConfig.getFlows(8);
     Scalar maxSpeed = Se2Controls.maxSpeed(controls);
     assertEquals(maxSpeed, RealScalar.of(3));
   }
@@ -27,8 +27,8 @@ public class TwdConfigTest extends TestCase {
   public void testUnit() {
     Scalar ms = Quantity.of(3, "m*s^-1");
     Scalar sa = Quantity.of(0.567, "m*rad^-1");
-    TwdConfig twdConfig = new TwdConfig(ms, sa);
-    Collection<Flow> controls = twdConfig.createControls(8);
+    TwdDuckieFlows twdConfig = new TwdDuckieFlows(ms, sa);
+    Collection<Flow> controls = twdConfig.getFlows(8);
     // System.out.println(controls.iterator().next().getU());
     Scalar maxSpeed = Se2Controls.maxSpeed(controls);
     assertEquals(maxSpeed, ms);
@@ -41,9 +41,9 @@ public class TwdConfigTest extends TestCase {
   public void testNoDuplicates() {
     Scalar ms = Quantity.of(3, "m*s^-1");
     Scalar sa = Quantity.of(0.567, "m*rad^-1");
-    TwdConfig twdConfig = new TwdConfig(ms, sa);
+    TwdDuckieFlows twdConfig = new TwdDuckieFlows(ms, sa);
     for (int res = 3; res <= 8; ++res) {
-      Collection<Flow> controls = twdConfig.createControls(res);
+      Collection<Flow> controls = twdConfig.getFlows(res);
       Set<Tensor> set = new HashSet<>();
       for (Flow flow : controls) {
         Tensor key = flow.getU().map(Round._3);
@@ -53,9 +53,9 @@ public class TwdConfigTest extends TestCase {
   }
 
   public void testSize() {
-    TwdConfig twdConfig = new TwdConfig(RealScalar.of(3), RealScalar.of(0.567));
-    assertEquals(twdConfig.createControls(5).size(), 20);
-    assertEquals(twdConfig.createControls(7).size(), 28);
-    assertEquals(twdConfig.createControls(8).size(), 32);
+    TwdDuckieFlows twdConfig = new TwdDuckieFlows(RealScalar.of(3), RealScalar.of(0.567));
+    assertEquals(twdConfig.getFlows(5).size(), 20);
+    assertEquals(twdConfig.getFlows(7).size(), 28);
+    assertEquals(twdConfig.getFlows(8).size(), 32);
   }
 }

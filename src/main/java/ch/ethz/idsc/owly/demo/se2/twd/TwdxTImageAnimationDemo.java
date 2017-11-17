@@ -23,7 +23,7 @@ public class TwdxTImageAnimationDemo implements DemoInterface {
   @Override
   public void start() {
     OwlyAnimationFrame owlyAnimationFrame = new OwlyAnimationFrame();
-    TwdConfig twdConfig = new TwdConfig(RealScalar.of(1.2), RealScalar.of(.5));
+    TwdDuckieFlows twdConfig = new TwdDuckieFlows(RealScalar.of(1.2), RealScalar.of(.5));
     TwdxTEntity twdxTEntity = new TwdxTEntity(twdConfig, Tensors.vector(-1, -1, 1.0));
     owlyAnimationFrame.set(twdxTEntity);
     // ---
