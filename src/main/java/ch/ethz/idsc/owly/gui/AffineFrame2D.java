@@ -16,6 +16,7 @@ import ch.ethz.idsc.tensor.Tensor;
   private final double m02;
   private final double m12;
 
+  /** @param tensor 3 x 3 matrix */
   public AffineFrame2D(Tensor tensor) {
     this.tensor = tensor.copy();
     m00 = tensor.Get(0, 0).number().doubleValue();

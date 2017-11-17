@@ -35,6 +35,7 @@ public class Se2Family implements RigidFamily {
   public TensorUnaryOperator forward(Scalar scalar) {
     Tensor xya = function.apply(scalar); // {px, py, angle}
     Tensor matrix = RotationMatrix.of(xya.Get(2));
+    // TODO due to the special structure of the matrix, the dot product can be made faster, also below
     Tensor offset = xya.extract(0, 2);
     return tensor -> matrix.dot(tensor).add(offset);
   }

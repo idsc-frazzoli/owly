@@ -65,11 +65,7 @@ public class Se2xTLetterDemo implements DemoInterface {
     case 3: {
       R2ImageRegionWrap r2ImageRegionWrap = R2ImageRegions._GTOB;
       ImageRegion imageRegion = r2ImageRegionWrap.imageRegion();
-      try {
-        carxTEntity.extraCosts.add(r2ImageRegionWrap.costFunction());
-      } catch (Exception exception) {
-        exception.printStackTrace();
-      }
+      carxTEntity.extraCosts.add(r2ImageRegionWrap.costFunction());
       // ---
       BijectionFamily noise1 = new SimpleTranslationFamily(s -> Tensors.vector( //
           Math.sin(s.number().doubleValue() * .12) * 3.0 + 3.6, 4.0));

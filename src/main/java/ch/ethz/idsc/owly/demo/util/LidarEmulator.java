@@ -26,11 +26,12 @@ import ch.ethz.idsc.tensor.red.Norm;
 
 public class LidarEmulator implements RenderInterface {
   public static final Tensor DEFAULT = Subdivide.of(Degree.of(+90), Degree.of(-90), 64);
-  // public static final Scalar SPEED = RealScalar.of(10);
+  public static final Scalar RANGE_MAX = RealScalar.of(5.0);
   // ---
   private final Scalar interval;
   private final Supplier<StateTime> supplier;
   private final TrajectoryRegionQuery raytraceQuery;
+  @SuppressWarnings("unused")
   private Scalar next;
   private final Tensor directions;
   private final List<Tensor> localRays = new ArrayList<>();
@@ -49,7 +50,7 @@ public class LidarEmulator implements RenderInterface {
     // ---
     directions = Tensor.of(sampling.stream().map(Scalar.class::cast).map(AngleVector::of));
     for (Tensor dir : directions)
-      localRays.add(Tensor.of(Subdivide.of(0, 5, 60).stream() // TODO magic const
+      localRays.add(Tensor.of(Subdivide.of(RealScalar.ZERO, RANGE_MAX, 60).stream() // magic const
           .map(Scalar.class::cast) //
           .map(dir::multiply)));
   }
@@ -67,7 +68,7 @@ public class LidarEmulator implements RenderInterface {
           Optional<Tensor> first = rays.stream() //
               .filter(local -> raytraceQuery.isMember(new StateTime(forward.apply(local), time))) //
               .findFirst();
-          return first.isPresent() ? Norm._2.ofVector(first.get()) : RealScalar.of(5);
+          return first.isPresent() ? Norm._2.ofVector(first.get()) : RANGE_MAX;
         }));
     // RnRaytracer lidarRaytrace = new RnRaytracer(raytraceQuery, SPEED);
     // Tensor xya = stateTime.state();
@@ -88,14 +89,15 @@ public class LidarEmulator implements RenderInterface {
   @Override
   public void render(GeometricLayer geometricLayer, Graphics2D graphics) {
     Tensor range = detectRange();
-    {
-      // TODO scale so that range limit == image height
-      graphics.setColor(new Color(224, 224, 255, 128));
-      graphics.fillRect(0, 200, range.length(), 100);
-      graphics.setColor(Color.RED);
-      for (int index = 0; index < range.length(); ++index)
-        graphics.fillRect(index, (int) (300 - range.Get(index).number().doubleValue() * 20), 1, 2);
-    }
+    // {
+    // graphics.setColor(new Color(224, 224, 255, 128));
+    // graphics.fillRect(0, 200, range.length(), 100);
+    // graphics.setColor(Color.RED);
+    // Clip clip = Clip.function(RealScalar.ZERO, RANGE_MAX);
+    // for (int index = 0; index < range.length(); ++index) {
+    // graphics.fillRect(index, 300 - (int) (100 * clip.rescale(range.Get(index)).number().doubleValue()), 1, 2);
+    // }
+    // }
     {
       StateTime stateTime = supplier.get();
       Se2Bijection se2Bijection = new Se2Bijection(stateTime.state());

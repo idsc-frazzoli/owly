@@ -19,7 +19,7 @@ public class Se2Bijection implements Bijection {
 
   @Override
   public TensorUnaryOperator forward() {
-    Tensor matrix = RotationMatrix.of(xya.Get(2));
+    Tensor matrix = RotationMatrix.of(xya.Get(2)); // TODO optimize, dot product is not necessary
     Tensor offset = xya.extract(0, 2);
     return tensor -> matrix.dot(tensor).add(offset);
   }
