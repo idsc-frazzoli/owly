@@ -4,12 +4,9 @@ package ch.ethz.idsc.owly.math.se2;
 import ch.ethz.idsc.owly.math.ScalarTensorFunction;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
-import ch.ethz.idsc.tensor.Tensors;
 import ch.ethz.idsc.tensor.lie.RotationMatrix;
 import ch.ethz.idsc.tensor.opt.TensorUnaryOperator;
-import ch.ethz.idsc.tensor.sca.Cos;
 import ch.ethz.idsc.tensor.sca.ScalarUnaryOperator;
-import ch.ethz.idsc.tensor.sca.Sin;
 
 /** the term "family" conveys the meaning that the rigid transformation
  * depends on a single parameter, for instance time */
@@ -27,36 +24,24 @@ public class Se2Family implements RigidFamily {
   // ---
   private final ScalarTensorFunction function;
 
+  /** @param function maps a {@link Scalar} to a vector {px, py, angle}
+   * that represents the {@link Se2Bijection} */
   public Se2Family(ScalarTensorFunction function) {
     this.function = function;
   }
 
   @Override // from BijectionFamily
   public TensorUnaryOperator forward(Scalar scalar) {
-    Tensor xya = function.apply(scalar); // {px, py, angle}
-    Tensor matrix = RotationMatrix.of(xya.Get(2));
-    // TODO due to the special structure of the matrix, the dot product can be made faster, also below
-    Tensor offset = xya.extract(0, 2);
-    return tensor -> matrix.dot(tensor).add(offset);
+    return new Se2Bijection(function.apply(scalar)).forward();
   }
 
   @Override // from BijectionFamily
   public TensorUnaryOperator inverse(Scalar scalar) {
-    Tensor xya = function.apply(scalar); // {px, py, angle}
-    Tensor matrix = RotationMatrix.of(xya.Get(2).negate());
-    Tensor offset = xya.extract(0, 2);
-    return tensor -> matrix.dot(tensor.subtract(offset));
+    return new Se2Bijection(function.apply(scalar)).inverse();
   }
 
   @Override // from RigidFamily
   public Tensor forward_se2(Scalar scalar) {
-    Tensor xya = function.apply(scalar); // {px, py, angle}
-    Scalar angle = xya.Get(2);
-    Scalar cos = Cos.FUNCTION.apply(angle);
-    Scalar sin = Sin.FUNCTION.apply(angle);
-    return Tensors.of( //
-        Tensors.of(cos, sin.negate(), xya.Get(0)), //
-        Tensors.of(sin, cos, xya.Get(1)), //
-        Tensors.vector(0, 0, 1));
+    return new Se2Bijection(function.apply(scalar)).forward_se2();
   }
 }

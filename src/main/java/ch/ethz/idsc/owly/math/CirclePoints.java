@@ -8,6 +8,8 @@ import ch.ethz.idsc.tensor.Tensors;
 import ch.ethz.idsc.tensor.alg.Drop;
 import ch.ethz.idsc.tensor.alg.Subdivide;
 import ch.ethz.idsc.tensor.lie.AngleVector;
+import ch.ethz.idsc.tensor.sca.Chop;
+import ch.ethz.idsc.tensor.sca.Round;
 
 /** implementation is not consistent with Mathematica
  * 
@@ -30,5 +32,10 @@ public enum CirclePoints {
   public static Tensor elliptic(int n, Scalar width, Scalar height) {
     Tensor scale = Tensors.of(width, height);
     return Tensor.of(of(n).stream().map(row -> row.pmul(scale)));
+  }
+
+  public static Scalar roundToInteger(Scalar scalar) {
+    Scalar round = Round.FUNCTION.apply(scalar);
+    return Chop._12.close(round, scalar) ? round : scalar;
   }
 }

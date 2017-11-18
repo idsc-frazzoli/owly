@@ -33,4 +33,9 @@ public class CirclePointsTest extends TestCase {
     Tensor tensor = CirclePoints.of(n);
     assertEquals(tensor.get(0), Tensors.vector(1, 0));
   }
+
+  public void testConvexHull() {
+    Tensor tensor = CirclePoints.of(6);
+    System.out.println(tensor);
+  }
 }

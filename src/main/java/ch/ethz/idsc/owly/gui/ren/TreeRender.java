@@ -25,7 +25,7 @@ import ch.ethz.idsc.tensor.opt.ConvexHull;
 public class TreeRender implements RenderInterface {
   private static final int NODE_WIDTH = 2;
   private static final int NODE_BOUND = 2500;
-  private static final Color CONVEXHULL = new Color(192, 192, 0, 64);
+  private static final Color CONVEXHULL = new Color(192, 192, 0, 128);
   // ---
   private Collection<? extends StateCostNode> collection;
   private Tensor polygon;
@@ -50,6 +50,12 @@ public class TreeRender implements RenderInterface {
     final double max = dss.getMax();
     long count = dss.getCount();
     // System.out.println(count);
+    if (Objects.nonNull(polygon)) {
+      graphics.setColor(CONVEXHULL);
+      Path2D path2D = geometricLayer.toPath2D(polygon);
+      path2D.closePath();
+      graphics.draw(path2D);
+    }
     if (count <= NODE_BOUND) // don't draw tree beyond certain node count
       for (StateCostNode node : _collection) {
         double val = node.costFromRoot().number().doubleValue();
@@ -67,17 +73,14 @@ public class TreeRender implements RenderInterface {
           graphics.draw(shape);
         }
       }
-    else if (Objects.nonNull(polygon)) {
-      graphics.setColor(CONVEXHULL);
-      Path2D path2D = geometricLayer.toPath2D(polygon);
-      path2D.closePath();
-      graphics.draw(path2D);
-    }
   }
 
   public void setCollection(Collection<? extends StateCostNode> collection) {
     this.collection = collection;
-    polygon = Objects.nonNull(collection) ? ConvexHull.of(Tensor.of( //
-        collection.stream().map(StateCostNode::state).map(tensor -> tensor.extract(0, 2)))) : null;
+    polygon = Objects.nonNull(collection) //
+        ? ConvexHull.of(collection.stream() //
+            .map(StateCostNode::state) //
+            .map(tensor -> tensor.extract(0, 2))) //
+        : null;
   }
 }

@@ -33,7 +33,7 @@ public final class StateTime implements Serializable {
     return time;
   }
 
-  /** @return concatenation of state and time */
+  /** @return concatenation of state and time as vector */
   public Tensor joined() {
     return x.copy().append(time);
   }

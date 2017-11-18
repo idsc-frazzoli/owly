@@ -9,7 +9,7 @@ import ch.ethz.idsc.tensor.opt.TensorUnaryOperator;
 import ch.ethz.idsc.tensor.sca.Cos;
 import ch.ethz.idsc.tensor.sca.Sin;
 
-public class Se2Bijection implements Bijection {
+public class Se2Bijection implements RigidBijection {
   private final Tensor xya;
 
   /** @param xya == {px, py, angle} */
@@ -19,7 +19,10 @@ public class Se2Bijection implements Bijection {
 
   @Override
   public TensorUnaryOperator forward() {
-    Tensor matrix = RotationMatrix.of(xya.Get(2)); // TODO optimize, dot product is not necessary
+    // Scalar angle = xya.Get(2);
+    // Cos.FUNCTION.apply(angle);
+    // TODO due to the special structure of the matrix, the dot product can be made faster, also below
+    Tensor matrix = RotationMatrix.of(xya.Get(2));
     Tensor offset = xya.extract(0, 2);
     return tensor -> matrix.dot(tensor).add(offset);
   }

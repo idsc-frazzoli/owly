@@ -27,6 +27,8 @@ import ch.ethz.idsc.tensor.Tensor;
     m12 = tensor.Get(1, 2).number().doubleValue();
   }
 
+  /** @param point of which the first 2 entries are interpreted as x, and y
+   * @return */
   public Point2D toPoint2D(Tensor point) {
     double px = point.Get(0).number().doubleValue();
     double py = point.Get(1).number().doubleValue();
