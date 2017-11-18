@@ -47,8 +47,8 @@ public class Se2xTLetterDemo implements DemoInterface {
     Region<StateTime> region1 = new R2xTEllipsoidStateTimeRegion( //
         Tensors.vector(0.4, 0.5), noise1, () -> carxTEntity.getStateTimeNow().time());
     // ---
-    BijectionFamily rigid3 = new Se2Family(s -> Tensors.vector(8.0, 5.8, s.number().doubleValue() * 0.36));
-    Tensor polygon = CogPoints.of(4, RealScalar.of(1.0), RealScalar.of(0.3));
+    BijectionFamily rigid3 = new Se2Family(s -> Tensors.vector(8.0, 5.8, s.number().doubleValue() * 0.5));
+    Tensor polygon = CogPoints.of(3, RealScalar.of(1.0), RealScalar.of(0.3));
     Region<StateTime> cog0 = new R2xTPolygonStateTimeRegion( //
         polygon, rigid3, () -> carxTEntity.getStateTimeNow().time());
     // ---
@@ -86,7 +86,7 @@ public class Se2xTLetterDemo implements DemoInterface {
     }
     {
       RenderInterface renderInterface = new LidarEmulator( //
-          LidarEmulator.DEFAULT, RealScalar.of(10), () -> carxTEntity.getStateTimeNow(), ray);
+          LidarEmulator.RAYDEMO, RealScalar.of(10), () -> carxTEntity.getStateTimeNow(), ray);
       owlyAnimationFrame.addBackground(renderInterface);
     }
     // ---

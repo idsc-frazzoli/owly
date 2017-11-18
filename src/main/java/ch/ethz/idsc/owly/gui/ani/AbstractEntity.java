@@ -19,6 +19,7 @@ import ch.ethz.idsc.tensor.Scalars;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.red.ArgMin;
 
+/** entity executes flows along a given trajectory */
 public abstract class AbstractEntity implements RenderInterface, AnimationInterface {
   private final EpisodeIntegrator episodeIntegrator;
   private List<TrajectorySample> trajectory = null;
@@ -112,8 +113,10 @@ public abstract class AbstractEntity implements RenderInterface, AnimationInterf
 
   protected abstract Scalar distance(Tensor x, Tensor y);
 
+  /** @return control vector to feed the episodeIntegrator in case no planned trajectory is available */
   protected abstract Tensor fallbackControl();
 
+  /** @return delay between now and the future point in time from when to divert to a new trajectory */
   public abstract Scalar delayHint();
 
   /** @param obstacleQuery

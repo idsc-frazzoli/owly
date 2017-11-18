@@ -3,6 +3,7 @@ package ch.ethz.idsc.owly.demo.util;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
+import java.awt.Shape;
 import java.awt.geom.Path2D;
 import java.util.ArrayList;
 import java.util.List;
@@ -24,9 +25,18 @@ import ch.ethz.idsc.tensor.lie.AngleVector;
 import ch.ethz.idsc.tensor.opt.TensorUnaryOperator;
 import ch.ethz.idsc.tensor.red.Norm;
 
+// TODO implementation can be made more efficient
 public class LidarEmulator implements RenderInterface {
-  public static final Tensor DEFAULT = Subdivide.of(Degree.of(+90), Degree.of(-90), 64);
+  public static final Tensor DEFAULT = Subdivide.of(Degree.of(+90), Degree.of(-90), 32);
+  public static final Tensor RAYDEMO = Subdivide.of(Degree.of(+90), Degree.of(-90), 5);
+  // ---
   public static final Scalar RANGE_MAX = RealScalar.of(5.0);
+  /** if the number of lasers are bounded by MAX_RAYS each rays is visualized as a line,
+   * otherwise a polygonal area is drawn */
+  private static final int MAX_RAYS = 11;
+  private static final Color COLOR_LASER_RAY = new Color(255, 0, 0, 32);
+  private static final Color COLOR_FREESPACE_FILL = new Color(0, 255, 0, 16);
+  private static final Color COLOR_FREESPACE_DRAW = new Color(0, 255, 0, 64);
   // ---
   private final Scalar interval;
   private final Supplier<StateTime> supplier;
@@ -55,8 +65,9 @@ public class LidarEmulator implements RenderInterface {
           .map(dir::multiply)));
   }
 
-  public Tensor detectRange() {
-    StateTime stateTime = supplier.get();
+  /** @param stateTime
+   * @return ranges as observed at given state-time */
+  public Tensor detectRange(StateTime stateTime) {
     // if (Objects.isNull(next) || Scalars.lessThan(next, stateTime.time()))
     next = stateTime.time().add(interval);
     Scalar time = stateTime.time();
@@ -88,8 +99,7 @@ public class LidarEmulator implements RenderInterface {
 
   @Override
   public void render(GeometricLayer geometricLayer, Graphics2D graphics) {
-    Tensor range = detectRange();
-    // {
+    Tensor range = detectRange(supplier.get());
     // graphics.setColor(new Color(224, 224, 255, 128));
     // graphics.fillRect(0, 200, range.length(), 100);
     // graphics.setColor(Color.RED);
@@ -97,19 +107,26 @@ public class LidarEmulator implements RenderInterface {
     // for (int index = 0; index < range.length(); ++index) {
     // graphics.fillRect(index, 300 - (int) (100 * clip.rescale(range.Get(index)).number().doubleValue()), 1, 2);
     // }
-    // }
-    {
-      StateTime stateTime = supplier.get();
-      Se2Bijection se2Bijection = new Se2Bijection(stateTime.state());
-      TensorUnaryOperator forward = se2Bijection.forward();
-      Tensor polygon = Tensor.of(range.pmul(directions).stream().map(forward));
-      polygon.append(forward.apply(Array.zeros(2)));
+    // ---
+    Se2Bijection se2Bijection = new Se2Bijection(supplier.get().state());
+    geometricLayer.pushMatrix(se2Bijection.forward_se2());
+    Tensor polygon = range.pmul(directions);
+    Tensor origin = Array.zeros(2);
+    if (range.length() <= MAX_RAYS) {
+      graphics.setColor(COLOR_LASER_RAY);
+      for (Tensor point : polygon) {
+        Shape shape = geometricLayer.toVector(origin, point);
+        graphics.draw(shape);
+      }
+    } else {
+      polygon.append(origin);
       Path2D path2D = geometricLayer.toPath2D(polygon);
-      graphics.setColor(new Color(0, 255, 0, 16));
+      graphics.setColor(COLOR_FREESPACE_FILL);
       graphics.fill(path2D);
       path2D.closePath();
-      graphics.setColor(new Color(0, 255, 0, 64));
+      graphics.setColor(COLOR_FREESPACE_DRAW);
       graphics.draw(path2D);
     }
+    geometricLayer.popMatrix();
   }
 }

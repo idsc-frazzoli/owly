@@ -6,9 +6,8 @@ import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.TensorRuntimeException;
-import ch.ethz.idsc.tensor.Tensors;
 import ch.ethz.idsc.tensor.alg.Join;
-import ch.ethz.idsc.tensor.red.Norm;
+import ch.ethz.idsc.tensor.red.Hypot;
 import ch.ethz.idsc.tensor.sca.Exp;
 import ch.ethz.idsc.tensor.sca.Sign;
 
@@ -44,12 +43,12 @@ public class Rice2StateSpaceModel implements StateSpaceModel {
   public Scalar getLipschitz() {
     // theory tells that:
     // lipschitz const is 2-norm of 4x4 state space matrix
-    // 1 0 0 0
-    // 0 1 0 0
+    // 0 0 1 0
+    // 0 0 0 1
     // 0 0 L 0
     // 0 0 0 L
-    // where L == lambda
+    // where L == -lambda
     // confirmed with mathematica
-    return Norm._2.ofVector(Tensors.of(RealScalar.ONE, lambda));
+    return Hypot.BIFUNCTION.apply(RealScalar.ONE, lambda);
   }
 }

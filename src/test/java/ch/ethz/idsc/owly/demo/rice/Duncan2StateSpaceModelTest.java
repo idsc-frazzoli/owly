@@ -23,6 +23,10 @@ public class Duncan2StateSpaceModelTest extends TestCase {
     Tensor x_fxu = x.add(stateSpaceModel.f(x, u).multiply(Quantity.of(1, "s")));
     assertEquals(x_fxu, Tensors.fromString("{15[m], 4[m*s^-1]}"));
   }
+  
+  public void testLipschitz() {
+    
+  }
 
   public void testFail() {
     try {
