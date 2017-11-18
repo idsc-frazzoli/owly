@@ -32,7 +32,7 @@ public class Se2Family implements RigidFamily {
 
   @Override // from BijectionFamily
   public TensorUnaryOperator forward(Scalar scalar) {
-    return new Se2Bijection(function.apply(scalar)).forward();
+    return new Se2ForwardAction(function.apply(scalar));
   }
 
   @Override // from BijectionFamily

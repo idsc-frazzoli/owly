@@ -10,7 +10,9 @@ import ch.ethz.idsc.owly.demo.rn.R2xTEllipsoidStateTimeRegion;
 import ch.ethz.idsc.owly.demo.rn.R2xTPolygonStateTimeRegion;
 import ch.ethz.idsc.owly.demo.se2.Se2PointsVsRegion;
 import ch.ethz.idsc.owly.demo.se2.Se2PointsVsRegions;
+import ch.ethz.idsc.owly.demo.util.CameraEmulator;
 import ch.ethz.idsc.owly.demo.util.DemoInterface;
+import ch.ethz.idsc.owly.demo.util.LidarEmulator;
 import ch.ethz.idsc.owly.demo.util.SimpleTranslationFamily;
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
 import ch.ethz.idsc.owly.gui.RenderInterface;
@@ -70,7 +72,6 @@ public class Se2xTLetterDemo implements DemoInterface {
     // owlyAnimationFrame.addBackground((RenderInterface) region2);
     owlyAnimationFrame.addBackground((RenderInterface) cog0);
     // ---
-    @SuppressWarnings("unused")
     TrajectoryRegionQuery ray = new SimpleTrajectoryRegionQuery( //
         RegionUnion.wrap(Arrays.asList( //
             new TimeInvariantRegion(imageRegion), //
@@ -78,16 +79,16 @@ public class Se2xTLetterDemo implements DemoInterface {
             // region2,
             cog0 //
         )));
-    // {
-    // RenderInterface renderInterface = new CameraEmulator( //
-    // 48, RealScalar.of(10), () -> carxTEntity.getStateTimeNow(), ray);
-    // owlyAnimationFrame.addBackground(renderInterface);
-    // }
-    // {
-    // RenderInterface renderInterface = new LidarEmulator( //
-    // LidarEmulator.DEFAULT, RealScalar.of(10), () -> carxTEntity.getStateTimeNow(), ray);
-    // owlyAnimationFrame.addBackground(renderInterface);
-    // }
+    {
+      RenderInterface renderInterface = new CameraEmulator( //
+          48, RealScalar.of(10), () -> carxTEntity.getStateTimeNow(), ray);
+      owlyAnimationFrame.addBackground(renderInterface);
+    }
+    {
+      RenderInterface renderInterface = new LidarEmulator( //
+          LidarEmulator.DEFAULT, RealScalar.of(10), () -> carxTEntity.getStateTimeNow(), ray);
+      owlyAnimationFrame.addBackground(renderInterface);
+    }
     // ---
     owlyAnimationFrame.configCoordinateOffset(50, 700);
     owlyAnimationFrame.jFrame.setBounds(100, 50, 1200, 800);

@@ -4,12 +4,21 @@ package ch.ethz.idsc.owly.glc.core;
 import java.util.ArrayList;
 import java.util.List;
 
+import ch.ethz.idsc.owly.data.tree.Nodes;
 import ch.ethz.idsc.owly.math.state.StateIntegrator;
 import ch.ethz.idsc.owly.math.state.StateTime;
 
 /** utility functions that operate on List<GlcNode> */
-/* package */ enum GlcTrajectories {
+public enum GlcTrajectories {
   ;
+  /** @param stateIntegrator
+   * @param node
+   * @return densely sampled trajectory from root to given node
+   * that is the result of integrating the flows between the nodes */
+  public static List<TrajectorySample> detailedTrajectoryTo(StateIntegrator stateIntegrator, GlcNode node) {
+    return connect(stateIntegrator, Nodes.listFromRoot(node));
+  }
+
   /** @param stateIntegrator
    * @param list
    * @return */

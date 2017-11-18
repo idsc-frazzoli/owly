@@ -26,6 +26,7 @@ import ch.ethz.idsc.owly.glc.core.DebugUtils;
 import ch.ethz.idsc.owly.glc.core.Expand;
 import ch.ethz.idsc.owly.glc.core.GlcNode;
 import ch.ethz.idsc.owly.glc.core.GlcNodes;
+import ch.ethz.idsc.owly.glc.core.GlcTrajectories;
 import ch.ethz.idsc.owly.glc.core.GoalInterface;
 import ch.ethz.idsc.owly.glc.core.StandardTrajectoryPlanner;
 import ch.ethz.idsc.owly.glc.core.TrajectoryPlanner;
@@ -187,7 +188,8 @@ import ch.ethz.idsc.tensor.sca.Sqrt;
     long toc = System.nanoTime();
     System.err.println("TrajectoryGoalcreation took: " + (toc - tic) * 1e-9 + "s");
     System.out.println("Coarse guidance trajectory");
-    Trajectories.print(trajectoryPlanner.detailedTrajectoryTo(optional.get()));
+    Trajectories.print( //
+        GlcTrajectories.detailedTrajectoryTo(trajectoryPlanner.getStateIntegrator(), optional.get()));
     return new Se2TrajectoryGoalManager(goalRegionsList, trajectory, goalRadiusR2, controls);
   }
 

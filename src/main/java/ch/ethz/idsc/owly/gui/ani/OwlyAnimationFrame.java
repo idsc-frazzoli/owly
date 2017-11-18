@@ -27,6 +27,7 @@ import ch.ethz.idsc.owly.data.tree.Nodes;
 import ch.ethz.idsc.owly.demo.util.UserHome;
 import ch.ethz.idsc.owly.glc.adapter.Trajectories;
 import ch.ethz.idsc.owly.glc.core.GlcNode;
+import ch.ethz.idsc.owly.glc.core.GlcTrajectories;
 import ch.ethz.idsc.owly.glc.core.TrajectoryPlanner;
 import ch.ethz.idsc.owly.glc.core.TrajectorySample;
 import ch.ethz.idsc.owly.gui.RenderInterface;
@@ -186,7 +187,8 @@ public class OwlyAnimationFrame extends TimerFrame {
         List<TrajectorySample> trajectory = new ArrayList<>();
         if (controllable instanceof AbstractEntity) {
           AbstractEntity abstractEntity = (AbstractEntity) controllable;
-          List<TrajectorySample> tail = trajectoryPlanner.detailedTrajectoryTo(optional.get());
+          List<TrajectorySample> tail = //
+              GlcTrajectories.detailedTrajectoryTo(trajectoryPlanner.getStateIntegrator(), optional.get());
           // Optional<GlcNode> temp = trajectoryPlanner.getBestOrElsePeek();
           // List<StateTime> tempList = GlcNodes.getPathFromRootTo(temp.get());
           // System.out.println("Root is: " + tempList.get(0).toInfoString());

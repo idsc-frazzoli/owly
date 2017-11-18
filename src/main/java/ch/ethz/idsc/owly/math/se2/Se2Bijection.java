@@ -19,12 +19,10 @@ public class Se2Bijection implements RigidBijection {
 
   @Override
   public TensorUnaryOperator forward() {
-    // Scalar angle = xya.Get(2);
-    // Cos.FUNCTION.apply(angle);
-    // TODO due to the special structure of the matrix, the dot product can be made faster, also below
-    Tensor matrix = RotationMatrix.of(xya.Get(2));
-    Tensor offset = xya.extract(0, 2);
-    return tensor -> matrix.dot(tensor).add(offset);
+    return new Se2ForwardAction(xya);
+    // Tensor matrix = RotationMatrix.of(xya.Get(2));
+    // Tensor offset = xya.extract(0, 2);
+    // return tensor -> matrix.dot(tensor).add(offset);
   }
 
   @Override
