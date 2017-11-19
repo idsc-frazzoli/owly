@@ -41,7 +41,7 @@ public class TwdxTImageAnimationDemo implements DemoInterface {
     }
     {
       RenderInterface renderInterface = new LidarEmulator( //
-          LidarEmulator.DEFAULT, RealScalar.of(10), () -> twdxTEntity.getStateTimeNow(), trq);
+          LidarEmulator.DEFAULT, () -> twdxTEntity.getStateTimeNow(), trq);
       owlyAnimationFrame.addBackground(renderInterface);
     }
     owlyAnimationFrame.setObstacleQuery(trq);

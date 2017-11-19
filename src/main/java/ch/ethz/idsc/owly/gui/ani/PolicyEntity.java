@@ -1,15 +1,15 @@
 // code by jph
 package ch.ethz.idsc.owly.gui.ani;
 
-import ch.ethz.idsc.owly.math.StateTimeTensorFunction;
 import ch.ethz.idsc.owly.math.state.EpisodeIntegrator;
 import ch.ethz.idsc.owly.math.state.StateTime;
+import ch.ethz.idsc.subare.core.DiscreteModel;
 import ch.ethz.idsc.subare.core.Policy;
 import ch.ethz.idsc.subare.core.util.PolicyWrap;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
 
-public abstract class PolicyEntity implements AnimationInterface {
+public abstract class PolicyEntity implements AnimationInterface, DiscreteModel {
   private final EpisodeIntegrator episodeIntegrator;
   Policy policy;
 
@@ -17,14 +17,14 @@ public abstract class PolicyEntity implements AnimationInterface {
     this.episodeIntegrator = episodeIntegrator;
   }
 
-  public StateTimeTensorFunction represent = StateTime::state;
+  public abstract Tensor represent(StateTime stateTime);
 
-  @Override
+  @Override // from AnimationInterface
   public final void integrate(Scalar now) {
     // implementation does not require that current position is perfectly located on trajectory
     // Tensor u = fallbackControl(); // default control
     StateTime stateTime = getStateTimeNow();
-    Tensor state = represent.apply(stateTime); // may be augmented state time, and/or observation etc.
+    Tensor state = represent(stateTime); // may be augmented state time, and/or observation etc.
     PolicyWrap policyWrap = new PolicyWrap(policy);
     Tensor actions = null; // FIXME
     Tensor u = policyWrap.next(state, actions);

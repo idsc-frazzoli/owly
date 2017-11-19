@@ -51,7 +51,7 @@ public class Se2xTEllipsoidsDemo implements DemoInterface {
     }
     {
       RenderInterface renderInterface = new LidarEmulator( //
-          LidarEmulator.DEFAULT, RealScalar.of(10), () -> carxTEntity.getStateTimeNow(), trq);
+          LidarEmulator.DEFAULT, carxTEntity::getStateTimeNow, trq);
       owlyAnimationFrame.addBackground(renderInterface);
     }
     // ---

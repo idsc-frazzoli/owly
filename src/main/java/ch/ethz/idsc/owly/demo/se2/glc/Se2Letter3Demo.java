@@ -36,7 +36,7 @@ public class Se2Letter3Demo extends Se2CarDemo {
     }
     {
       RenderInterface renderInterface = new LidarEmulator( //
-          LidarEmulator.DEFAULT, RealScalar.of(10), () -> se2Entity.getStateTimeNow(), ray);
+          LidarEmulator.DEFAULT, se2Entity::getStateTimeNow, ray);
       owlyAnimationFrame.addBackground(renderInterface);
     }
   }

@@ -38,23 +38,15 @@ public class LidarEmulator implements RenderInterface {
   private static final Color COLOR_FREESPACE_FILL = new Color(0, 255, 0, 16);
   private static final Color COLOR_FREESPACE_DRAW = new Color(0, 255, 0, 64);
   // ---
-  private final Scalar interval;
   private final Supplier<StateTime> supplier;
   private final TrajectoryRegionQuery raytraceQuery;
-  @SuppressWarnings("unused")
-  private Scalar next;
   private final Tensor directions;
   private final List<Tensor> localRays = new ArrayList<>();
 
   /** @param resolution angular resolution (should be tensor)
-   * @param frameRate
    * @param supplier
    * @param raytraceQuery */
-  public LidarEmulator( //
-      Tensor sampling, Scalar frameRate, //
-      Supplier<StateTime> supplier, //
-      TrajectoryRegionQuery raytraceQuery) {
-    this.interval = frameRate.reciprocal();
+  public LidarEmulator(Tensor sampling, Supplier<StateTime> supplier, TrajectoryRegionQuery raytraceQuery) {
     this.supplier = supplier;
     this.raytraceQuery = raytraceQuery;
     // ---
@@ -68,8 +60,6 @@ public class LidarEmulator implements RenderInterface {
   /** @param stateTime
    * @return ranges as observed at given state-time */
   public Tensor detectRange(StateTime stateTime) {
-    // if (Objects.isNull(next) || Scalars.lessThan(next, stateTime.time()))
-    next = stateTime.time().add(interval);
     Scalar time = stateTime.time();
     Se2Bijection se2Bijection = new Se2Bijection(stateTime.state());
     TensorUnaryOperator forward = se2Bijection.forward();

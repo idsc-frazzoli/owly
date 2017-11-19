@@ -51,6 +51,7 @@ import ch.ethz.idsc.tensor.sca.Sqrt;
   final Scalar goalRadius_xy;
   final Scalar goalRadius_theta;
 
+  // TODO JAN change type of state to StateTime for all Se2 based entities
   protected TwdEntity(TwdFlows twdConfig, Tensor state) {
     super(new SimpleEpisodeIntegrator( //
         Se2StateSpaceModel.INSTANCE, //

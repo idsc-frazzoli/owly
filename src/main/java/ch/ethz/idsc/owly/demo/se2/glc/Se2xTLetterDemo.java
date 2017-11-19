@@ -86,7 +86,7 @@ public class Se2xTLetterDemo implements DemoInterface {
     }
     {
       RenderInterface renderInterface = new LidarEmulator( //
-          LidarEmulator.RAYDEMO, RealScalar.of(10), () -> carxTEntity.getStateTimeNow(), ray);
+          LidarEmulator.RAYDEMO, carxTEntity::getStateTimeNow, ray);
       owlyAnimationFrame.addBackground(renderInterface);
     }
     // ---

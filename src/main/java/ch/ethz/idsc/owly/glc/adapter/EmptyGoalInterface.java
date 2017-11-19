@@ -12,33 +12,28 @@ import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
 
-/** represents an empty/unreachable goal region
+/** represents an empty/unreachable goal region.
+ * The implementation is useful to explore/search space uniformly.
  * 
- * cost are increments in time
- * 
- * implementation is useful to explore/search space */
+ * cost are increments in time */
 public enum EmptyGoalInterface implements GoalInterface {
   INSTANCE;
   // ---
-  @Override
+  @Override // from CostIncrementFunction
   public Scalar costIncrement(GlcNode glcNode, List<StateTime> trajectory, Flow flow) {
     return StateTimeTrajectories.timeIncrement(glcNode, trajectory);
   }
 
-  @Override
+  @Override // from HeuristicFunction
   public Scalar minCostToGoal(Tensor x) {
     return RealScalar.ZERO;
   }
 
-  @Override
+  @Override // from TrajectoryRegionQuery
   public Optional<StateTime> firstMember(List<StateTime> trajectory) {
     return Optional.empty();
   }
 
-  // @Override
-  // public boolean isDisjoint(List<StateTime> trajectory) {
-  // return true;
-  // }
   @Override // from TrajectoryRegionQuery
   public final boolean isMember(StateTime stateTime) {
     return false;

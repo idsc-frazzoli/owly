@@ -34,7 +34,7 @@ public class TwdImageDemo implements DemoInterface {
     }
     {
       RenderInterface renderInterface = new LidarEmulator( //
-          LidarEmulator.DEFAULT, RealScalar.of(10), () -> twdEntity.getStateTimeNow(), obstacleQuery);
+          LidarEmulator.DEFAULT, twdEntity::getStateTimeNow, obstacleQuery);
       owlyAnimationFrame.addBackground(renderInterface);
     }
     owlyAnimationFrame.configCoordinateOffset(50, 700);
