@@ -1,10 +1,10 @@
 // code by jph
 package ch.ethz.idsc.owly.math.se2;
 
-import ch.ethz.idsc.owly.math.TensorUnaryOperator;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.mat.IdentityMatrix;
+import ch.ethz.idsc.tensor.opt.TensorUnaryOperator;
 
 /** the term "family" conveys the meaning that the translation
  * depends on a single parameter, for instance time */

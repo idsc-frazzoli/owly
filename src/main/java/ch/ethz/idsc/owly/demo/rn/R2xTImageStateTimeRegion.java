@@ -9,7 +9,6 @@ import ch.ethz.idsc.owly.gui.AffineTransforms;
 import ch.ethz.idsc.owly.gui.GeometricLayer;
 import ch.ethz.idsc.owly.gui.RenderInterface;
 import ch.ethz.idsc.owly.gui.region.RegionRenders;
-import ch.ethz.idsc.owly.math.TensorUnaryOperator;
 import ch.ethz.idsc.owly.math.region.ImageRegion;
 import ch.ethz.idsc.owly.math.region.Region;
 import ch.ethz.idsc.owly.math.se2.RigidFamily;
@@ -19,6 +18,7 @@ import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.mat.DiagonalMatrix;
 import ch.ethz.idsc.tensor.mat.IdentityMatrix;
+import ch.ethz.idsc.tensor.opt.TensorUnaryOperator;
 
 /** for images only rigid transformations are allowed */
 public class R2xTImageStateTimeRegion implements Region<StateTime>, RenderInterface {

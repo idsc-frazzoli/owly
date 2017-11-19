@@ -10,8 +10,8 @@ import junit.framework.TestCase;
 
 public class Se2MinTimeGoalManagerTest extends TestCase {
   public void testSimple() {
-    CarConfig c = new CarConfig(RealScalar.ONE, RealScalar.ONE);
-    Collection<Flow> controls = c.createControls(3);
+    CarFlows c = new CarStandardFlows(RealScalar.ONE, RealScalar.ONE);
+    Collection<Flow> controls = c.getFlows(3);
     new Se2MinTimeGoalManager(Tensors.vector(1, 2, 3), Tensors.vector(1, 1, 3), controls);
     try {
       new Se2MinTimeGoalManager(Tensors.vector(1, 2, 3), Tensors.vector(1, 2, 3), controls);

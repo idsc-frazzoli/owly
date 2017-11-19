@@ -14,7 +14,7 @@ import java.util.Optional;
 import ch.ethz.idsc.owly.demo.rn.EuclideanDistanceDiscoverRegion;
 import ch.ethz.idsc.owly.demo.rn.R2Config;
 import ch.ethz.idsc.owly.demo.rn.RnMinDistSphericalGoalManager;
-import ch.ethz.idsc.owly.demo.se2.CarConfig;
+import ch.ethz.idsc.owly.demo.se2.CarStandardFlows;
 import ch.ethz.idsc.owly.demo.se2.Se2CarIntegrator;
 import ch.ethz.idsc.owly.demo.se2.Se2StateSpaceModel;
 import ch.ethz.idsc.owly.demo.se2.Se2TrajectoryGoalManager;
@@ -26,6 +26,7 @@ import ch.ethz.idsc.owly.glc.core.DebugUtils;
 import ch.ethz.idsc.owly.glc.core.Expand;
 import ch.ethz.idsc.owly.glc.core.GlcNode;
 import ch.ethz.idsc.owly.glc.core.GlcNodes;
+import ch.ethz.idsc.owly.glc.core.GlcTrajectories;
 import ch.ethz.idsc.owly.glc.core.GoalInterface;
 import ch.ethz.idsc.owly.glc.core.StandardTrajectoryPlanner;
 import ch.ethz.idsc.owly.glc.core.TrajectoryPlanner;
@@ -87,7 +88,7 @@ import ch.ethz.idsc.tensor.sca.Sqrt;
             RationalScalar.of(1, 6), // dtMax
             2000, // maxIter
             Se2StateSpaceModel.INSTANCE.getLipschitz()), // Lipschitz
-        new CarConfig(RealScalar.ONE, Degree.of(60)).createControlsForwardAndReverse(resolution), //
+        new CarStandardFlows(RealScalar.ONE, Degree.of(60)).getFlows(resolution), //
         // ---
         new SimpleEpisodeIntegrator( //
             Se2StateSpaceModel.INSTANCE, //
@@ -187,7 +188,8 @@ import ch.ethz.idsc.tensor.sca.Sqrt;
     long toc = System.nanoTime();
     System.err.println("TrajectoryGoalcreation took: " + (toc - tic) * 1e-9 + "s");
     System.out.println("Coarse guidance trajectory");
-    Trajectories.print(trajectoryPlanner.detailedTrajectoryTo(optional.get()));
+    Trajectories.print( //
+        GlcTrajectories.detailedTrajectoryTo(trajectoryPlanner.getStateIntegrator(), optional.get()));
     return new Se2TrajectoryGoalManager(goalRegionsList, trajectory, goalRadiusR2, controls);
   }
 

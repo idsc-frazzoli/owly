@@ -9,10 +9,10 @@ import java.util.Map;
 import ch.ethz.idsc.owly.glc.core.GlcNode;
 import ch.ethz.idsc.owly.gui.GeometricLayer;
 import ch.ethz.idsc.owly.gui.RenderInterface;
-import ch.ethz.idsc.owly.math.TensorUnaryOperator;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
+import ch.ethz.idsc.tensor.opt.TensorUnaryOperator;
 
 class DomainRender implements RenderInterface {
   private static final Color INTERIOR = new Color(192, 192, 192, 64);

@@ -6,6 +6,7 @@ import java.util.function.Function;
 
 import ch.ethz.idsc.owly.math.state.StateTime;
 import ch.ethz.idsc.tensor.Tensor;
+import ch.ethz.idsc.tensor.opt.TensorUnaryOperator;
 
 /** serializable interface for functions that map a {@link Tensor} to another {@link Tensor} */
 public interface StateTimeTensorFunction extends Function<StateTime, Tensor>, Serializable {

@@ -1,7 +1,7 @@
 // code by jph
 package ch.ethz.idsc.owly.math.region;
 
-import ch.ethz.idsc.owly.math.Polygons;
+import ch.ethz.idsc.owly.math.r2.Polygons;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.sca.N;
 

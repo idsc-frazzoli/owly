@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Optional;
 
 import ch.ethz.idsc.owly.glc.core.GlcNode;
+import ch.ethz.idsc.owly.glc.core.GlcTrajectories;
 import ch.ethz.idsc.owly.glc.core.TrajectoryPlanner;
 import ch.ethz.idsc.owly.glc.core.TrajectorySample;
 import ch.ethz.idsc.owly.gui.GeometricLayer;
@@ -23,7 +24,10 @@ import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
 
 public class TrajectoryRender implements RenderInterface {
-  private static Scalar U_SCALE = RealScalar.of(0.33);
+  private static final Color COLOR_FLOW = new Color(64, 64, 64, 128);
+  private static final Scalar U_SCALE = RealScalar.of(0.33);
+  private static final Color COLOR_GROUND = new Color(255, 255, 255, 128);
+  private static final Color COLOR_NODES = new Color(255, 0, 0, 96);
 
   public static RenderInterface of(TrajectoryPlanner trajectoryPlanner) {
     TrajectoryRender trajectoryRender = new TrajectoryRender();
@@ -31,7 +35,9 @@ public class TrajectoryRender implements RenderInterface {
     if (optional.isPresent()) {
       final GlcNode node = optional.get();
       // draw detailed trajectory from root to goal/furthestgo
-      trajectoryRender.setTrajectory(trajectoryPlanner.detailedTrajectoryTo(node));
+      List<TrajectorySample> trajectory = //
+          GlcTrajectories.detailedTrajectoryTo(trajectoryPlanner.getStateIntegrator(), node);
+      trajectoryRender.setTrajectory(trajectory);
     }
     return trajectoryRender;
   }
@@ -45,8 +51,7 @@ public class TrajectoryRender implements RenderInterface {
     { // draw detailed trajectory from root to goal/furthestgo
       final List<TrajectorySample> list = trajectory;
       { // draw control vectors u along trajectory
-        int rgb = 64;
-        graphics.setColor(new Color(rgb, rgb, rgb, 128));
+        graphics.setColor(COLOR_FLOW);
         for (TrajectorySample trajectorySample : list) {
           Optional<Flow> flow = trajectorySample.getFlow();
           if (flow.isPresent()) {
@@ -63,7 +68,7 @@ public class TrajectoryRender implements RenderInterface {
                 .map(TrajectorySample::stateTime) //
                 .map(StateTime::state)));
         graphics.setStroke(new BasicStroke(5.0f));
-        graphics.setColor(new Color(255, 255, 255, 128));
+        graphics.setColor(COLOR_GROUND);
         graphics.draw(path2d);
         graphics.setStroke(new BasicStroke(2.0f));
         graphics.setColor(trajectoryColor);
@@ -72,7 +77,7 @@ public class TrajectoryRender implements RenderInterface {
       }
     }
     { // draw boxes at nodes in path from root to goal
-      graphics.setColor(new Color(255, 0, 0, 96));
+      graphics.setColor(COLOR_NODES);
       trajectory.stream().map(TrajectorySample::stateTime).map(StateTime::state).forEach(state -> {
         Point2D point2d = geometricLayer.toPoint2D(state);
         graphics.draw(new Rectangle2D.Double(point2d.getX() - 1, point2d.getY() - 1, 2, 2));
@@ -84,7 +89,7 @@ public class TrajectoryRender implements RenderInterface {
     this.trajectory = trajectory;
   }
 
-  public void setColor(Color newTrajectoryColor) {
-    trajectoryColor = newTrajectoryColor;
+  public void setColor(Color trajectoryColor) {
+    this.trajectoryColor = trajectoryColor;
   }
 }

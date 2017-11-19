@@ -6,7 +6,8 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
-import ch.ethz.idsc.owly.demo.se2.CarConfig;
+import ch.ethz.idsc.owly.demo.se2.CarFlows;
+import ch.ethz.idsc.owly.demo.se2.CarStandardFlows;
 import ch.ethz.idsc.owly.demo.se2.Se2CarIntegrator;
 import ch.ethz.idsc.owly.demo.se2.Se2MinTimeGoalManager;
 import ch.ethz.idsc.owly.demo.se2.Se2StateSpaceModel;
@@ -56,9 +57,8 @@ enum Se2GlcDemo {
     // ---
     System.out.println("scale=" + parameters.getEta());
     parameters.printResolution();
-    // Se2Controls uses Se2StateSpaceModel
-    CarConfig carConfig = new CarConfig(RealScalar.ONE, Degree.of(45));
-    Collection<Flow> controls = carConfig.createControls(parameters.getResolutionInt());
+    CarFlows carFlows = new CarStandardFlows(RealScalar.ONE, Degree.of(45));
+    Collection<Flow> controls = carFlows.getFlows(parameters.getResolutionInt());
     GoalInterface goalInterface = Se2MinTimeGoalManager.create( //
         Tensors.vector(0, 1, Math.PI), //
         Tensors.vector(0.1, 0.1, 10 / 180 * Math.PI), //

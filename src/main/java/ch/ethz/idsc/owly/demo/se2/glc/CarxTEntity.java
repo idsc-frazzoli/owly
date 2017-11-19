@@ -12,8 +12,8 @@ import ch.ethz.idsc.tensor.Tensor;
 /** several magic constants are hard-coded in the implementation.
  * that means, the functionality does not apply to all examples universally. */
 class CarxTEntity extends CarEntity {
-  CarxTEntity(Tensor state) {
-    super(state); // initial position
+  CarxTEntity(StateTime stateTime) {
+    super(stateTime); // initial position
     represent_entity = StateTime::joined;
   }
 

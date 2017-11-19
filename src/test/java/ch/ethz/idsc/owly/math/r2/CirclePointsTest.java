@@ -1,5 +1,5 @@
 // code by jph
-package ch.ethz.idsc.owly.math;
+package ch.ethz.idsc.owly.math.r2;
 
 import java.util.Arrays;
 
@@ -8,7 +8,9 @@ import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
 import ch.ethz.idsc.tensor.alg.Array;
 import ch.ethz.idsc.tensor.alg.Dimensions;
+import ch.ethz.idsc.tensor.opt.ConvexHull;
 import ch.ethz.idsc.tensor.red.Norm2Squared;
+import ch.ethz.idsc.tensor.red.Tally;
 import ch.ethz.idsc.tensor.sca.Chop;
 import junit.framework.TestCase;
 
@@ -32,5 +34,11 @@ public class CirclePointsTest extends TestCase {
     int n = 5;
     Tensor tensor = CirclePoints.of(n);
     assertEquals(tensor.get(0), Tensors.vector(1, 0));
+  }
+
+  public void testConvexHull() {
+    Tensor tensor = CirclePoints.of(6);
+    Tensor hull = ConvexHull.of(tensor);
+    assertEquals(Tally.of(tensor), Tally.of(hull));
   }
 }

@@ -23,11 +23,12 @@ import ch.ethz.idsc.tensor.sca.N;
 /** several magic constants are hard-coded in the implementation.
  * that means, the functionality does not apply to all examples universally. */
 public abstract class Se2Entity extends AbstractEntity {
-  public static final Tensor FALLBACK_CONTROL = N.DOUBLE.of(Array.zeros(3)).unmodifiable();
+  private static final Tensor FALLBACK_CONTROL = N.DOUBLE.of(Array.zeros(3)).unmodifiable();
+  // ---
   public final Collection<CostFunction> extraCosts = new LinkedList<>();
   public TrajectoryRegionQuery obstacleQuery = null;
 
-  public Se2Entity(EpisodeIntegrator episodeIntegrator) {
+  protected Se2Entity(EpisodeIntegrator episodeIntegrator) {
     super(episodeIntegrator);
   }
 

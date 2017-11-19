@@ -35,8 +35,7 @@ enum Se2CircleAnyGoalSwitch {
       Tensor possibleGoalReachabilityRegionRadius = radiusVector.add(maxChange);
       Se2NoHeuristicGoalManager possibleGoalReachabilityRegion = new Se2NoHeuristicGoalManager(goal, possibleGoalReachabilityRegionRadius);
       return trajectoryPlanner.changeToGoal(se2GoalManager.getGoalInterface(), possibleGoalReachabilityRegion);
-    } else {
-      return trajectoryPlanner.changeToGoal(se2GoalManager.getGoalInterface());
     }
+    return trajectoryPlanner.changeToGoal(se2GoalManager.getGoalInterface());
   }
 }

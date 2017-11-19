@@ -15,21 +15,7 @@ import ch.ethz.idsc.tensor.alg.Subdivide;
  * but is only permitted to drive forwards, i.e. the longitudinal speed is non-negative.
  * 
  * the implementation of the twd flows assumes that the two wheels are independent
- * from each other: both wheels can be commanded forward and reverse at maximum rates.
- * 
- * Example: duckie bots
- * 
- * ^ +y
- * |
- * WL speedL
- * --
- * |
- * |
- * |------> +x
- * |
- * |
- * --
- * WR speedR */
+ * from each other. */
 public class TwdForwardFlows extends TwdFlows {
   /** @param maxSpeed [m*s^-1]
    * @param halfWidth [m*rad^-1] */
@@ -37,7 +23,7 @@ public class TwdForwardFlows extends TwdFlows {
     super(maxSpeed, halfWidth);
   }
 
-  @Override
+  @Override // from FlowsInterface
   public Collection<Flow> getFlows(int resolution) {
     List<Flow> list = new ArrayList<>();
     Tensor range = Subdivide.of(-1, 1, resolution).extract(0, resolution); // [-1, ..., 1)

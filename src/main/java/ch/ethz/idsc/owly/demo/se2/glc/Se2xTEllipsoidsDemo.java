@@ -27,7 +27,7 @@ public class Se2xTEllipsoidsDemo implements DemoInterface {
   @Override
   public void start() {
     OwlyAnimationFrame owlyAnimationFrame = new OwlyAnimationFrame();
-    CarxTEntity carxTEntity = new CarxTEntity(Tensors.vector(0, 0, 1));
+    CarxTEntity carxTEntity = new CarxTEntity(new StateTime(Tensors.vector(0, 0, 1), RealScalar.ZERO));
     owlyAnimationFrame.set(carxTEntity);
     // ---
     ScalarTensorFunction stf1 = R2xTEllipsoidsAnimationDemo.wrap1DTensor(SimplexContinuousNoise.FUNCTION, Tensors.vector(0, 2), 0.05, 2.3);
@@ -46,12 +46,12 @@ public class Se2xTEllipsoidsDemo implements DemoInterface {
     owlyAnimationFrame.addBackground((RenderInterface) region2);
     {
       RenderInterface renderInterface = new CameraEmulator( //
-          48, RealScalar.of(10), () -> carxTEntity.getStateTimeNow(), trq);
+          48, RealScalar.of(10), carxTEntity::getStateTimeNow, trq);
       owlyAnimationFrame.addBackground(renderInterface);
     }
     {
       RenderInterface renderInterface = new LidarEmulator( //
-          LidarEmulator.DEFAULT, RealScalar.of(10), () -> carxTEntity.getStateTimeNow(), trq);
+          LidarEmulator.DEFAULT, carxTEntity::getStateTimeNow, trq);
       owlyAnimationFrame.addBackground(renderInterface);
     }
     // ---

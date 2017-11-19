@@ -28,6 +28,7 @@ public enum Se2StateSpaceModel implements StateSpaceModel {
   // ---
   @Override
   public Tensor f(Tensor x, Tensor u) {
+    // return AngleVector.of(x.Get(2)).multiply(u.Get(0)).append(u.Get(2)); // <- short form
     // x = {px, py, theta}
     // u = {vx, vy == 0, rate}
     // speed: positive for forward motion, or negative for backward motion

@@ -29,21 +29,22 @@ import ch.ethz.idsc.tensor.Tensors;
 import ch.ethz.idsc.tensor.sca.Sqrt;
 
 /* package */ class TwdEntity extends Se2Entity {
+  private static final Tensor PARTITIONSCALE = Tensors.vector(6, 6, 50 / Math.PI); // 50/pi == 15.9155
+  private static final Scalar SQRT2 = Sqrt.of(RealScalar.of(2));
   // triangle
   private static final Tensor SHAPE = Tensors.matrixDouble( //
-      new double[][] { { .3, 0, 1 }, { -.1, -.1, 1 }, { -.1, +.1, 1 } }).unmodifiable();
+      new double[][] { { .3, 0 }, { -.1, -.1 }, { -.1, +.1 } }).unmodifiable();
   private static final Se2Wrap SE2WRAP = new Se2Wrap(Tensors.vectorDouble(1, 1, 2));
-  private static final Tensor PARTITIONSCALE = Tensors.vector(6, 6, 50 / Math.PI); // 50/pi == 15.9155
 
-  public static TwdEntity createDuckie(Tensor state) {
+  public static TwdEntity createDuckie(StateTime stateTime) {
     TwdEntity twdEntity = new TwdEntity( //
-        new TwdDuckieFlows(RealScalar.ONE, RealScalar.ONE), state);
+        new TwdDuckieFlows(RealScalar.ONE, RealScalar.ONE), stateTime);
     twdEntity.extraCosts.add(Se2LateralAcceleration.COSTFUNCTION);
     return twdEntity;
   }
 
-  public static TwdEntity createJ2B2(Tensor state) {
-    return new TwdEntity(new TwdForwardFlows(RealScalar.ONE, RealScalar.ONE), state);
+  public static TwdEntity createJ2B2(StateTime stateTime) {
+    return new TwdEntity(new TwdForwardFlows(RealScalar.ONE, RealScalar.ONE), stateTime);
   }
 
   // ---
@@ -51,16 +52,15 @@ import ch.ethz.idsc.tensor.sca.Sqrt;
   final Scalar goalRadius_xy;
   final Scalar goalRadius_theta;
 
-  protected TwdEntity(TwdFlows twdConfig, Tensor state) {
-    super(new SimpleEpisodeIntegrator( //
-        Se2StateSpaceModel.INSTANCE, //
-        Se2CarIntegrator.INSTANCE, //
-        new StateTime(state, RealScalar.ZERO))); // initial position
+  /** @param twdConfig
+   * @param stateTime initial position */
+  protected TwdEntity(TwdFlows twdConfig, StateTime stateTime) {
+    super(new SimpleEpisodeIntegrator(Se2StateSpaceModel.INSTANCE, Se2CarIntegrator.INSTANCE, stateTime));
     controls = twdConfig.getFlows(4);
     Tensor eta = eta();
     System.out.println("ETA = " + eta);
-    goalRadius_xy = Sqrt.of(RealScalar.of(2)).divide(eta.Get(0));
-    goalRadius_theta = Sqrt.of(RealScalar.of(2)).divide(eta.Get(2));
+    goalRadius_xy = SQRT2.divide(eta.Get(0));
+    goalRadius_theta = SQRT2.divide(eta.Get(2));
   }
 
   @Override

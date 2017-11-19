@@ -26,8 +26,8 @@ public class QueueRender implements RenderInterface {
     for (GlcNode node : collection) {
       Tensor x = node.stateTime().state();
       Point2D p = geometricLayer.toPoint2D(x);
-      Shape shape2 = new Ellipse2D.Double(p.getX() - 3, p.getY() - 3, 8, 8);
-      graphics.fill(shape2);
+      Shape shape = new Ellipse2D.Double(p.getX() - 3, p.getY() - 3, 8, 8);
+      graphics.fill(shape);
     }
   }
 }

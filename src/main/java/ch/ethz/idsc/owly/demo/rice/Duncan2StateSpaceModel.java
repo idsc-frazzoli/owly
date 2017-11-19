@@ -2,10 +2,12 @@
 package ch.ethz.idsc.owly.demo.rice;
 
 import ch.ethz.idsc.owly.math.StateSpaceModel;
+import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.TensorRuntimeException;
 import ch.ethz.idsc.tensor.alg.Join;
+import ch.ethz.idsc.tensor.red.Hypot;
 import ch.ethz.idsc.tensor.sca.Sign;
 
 /** Single Integrator with friction
@@ -30,6 +32,7 @@ public class Duncan2StateSpaceModel implements StateSpaceModel {
   /** | f(x_1, u) - f(x_2, u) | <= L | x_1 - x_2 | */
   @Override
   public Scalar getLipschitz() {
-    return lambda; // TODO probably wrong
+    // how about when lambda is Quantity?
+    return Hypot.BIFUNCTION.apply(RealScalar.ONE, lambda);
   }
 }

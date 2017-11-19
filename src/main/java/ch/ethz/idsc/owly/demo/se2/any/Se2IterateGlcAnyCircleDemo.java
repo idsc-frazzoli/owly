@@ -5,7 +5,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
-import ch.ethz.idsc.owly.demo.se2.CarConfig;
+import ch.ethz.idsc.owly.demo.se2.CarStandardFlows;
 import ch.ethz.idsc.owly.demo.se2.Se2CarIntegrator;
 import ch.ethz.idsc.owly.demo.se2.Se2StateSpaceModel;
 import ch.ethz.idsc.owly.demo.se2.glc.Se2Parameters;
@@ -62,8 +62,8 @@ class Se2IterateGlcAnyCircleDemo {
         Se2CarIntegrator.INSTANCE, parameters.getdtMax(), parameters.getTrajectorySize());
     // ---
     parameters.printResolution();
-    CarConfig carConfig = new CarConfig(RealScalar.ONE, Degree.of(45));
-    Collection<Flow> controls = carConfig.createControls(parameters.getResolutionInt());
+    CarStandardFlows carConfig = new CarStandardFlows(RealScalar.ONE, Degree.of(45));
+    Collection<Flow> controls = carConfig.getFlows(parameters.getResolutionInt());
     Se2MinCurvatureGoalManager se2GoalManager = new Se2MinCurvatureGoalManager(goal, radiusVector);
     TrajectoryRegionQuery obstacleQuery = SimpleTrajectoryRegionQuery.timeInvariant( //
         RegionUnion.wrap(Arrays.asList( //

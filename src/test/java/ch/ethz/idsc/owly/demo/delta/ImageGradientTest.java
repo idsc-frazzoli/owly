@@ -9,6 +9,7 @@ import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
 import ch.ethz.idsc.tensor.alg.Dimensions;
 import ch.ethz.idsc.tensor.io.ResourceData;
+import ch.ethz.idsc.tensor.io.Serialization;
 import junit.framework.TestCase;
 
 public class ImageGradientTest extends TestCase {
@@ -29,5 +30,14 @@ public class ImageGradientTest extends TestCase {
       assertEquals(cmp, res.multiply(RealScalar.of(2)));
       assertEquals(ig.maxNormGradient(), max.multiply(RealScalar.of(2)));
     }
+  }
+
+  public void testSerialize() throws Exception {
+    Tensor range = Tensors.vector(9, 6.5);
+    final Tensor image = ResourceData.of("/io/delta_uxy.png");
+    assertEquals(Dimensions.of(image), Arrays.asList(128, 179));
+    ImageGradient ig = ImageGradient.linear(image, range, RealScalar.of(.5));
+    @SuppressWarnings("unused")
+    ImageGradient ig2 = Serialization.copy(ig);
   }
 }

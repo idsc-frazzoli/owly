@@ -13,13 +13,13 @@ import ch.ethz.idsc.tensor.qty.UnitSystem;
 import ch.ethz.idsc.tensor.sca.Chop;
 import junit.framework.TestCase;
 
-public class CarConfigTest extends TestCase {
+public class CarFlowsTest extends TestCase {
   public void testUnits() {
     Scalar speed = Quantity.of(2, "m*s^-1");
     Scalar rate_max = (Scalar) Quantity.of(1, "rad*m^-1").map(UnitSystem.SI());
-    CarConfig carConfig = new CarConfig(speed, rate_max);
-    Collection<Flow> c = carConfig.createControls(8);
-    Flow flow = c.iterator().next();
+    CarFlows carFlows = new CarStandardFlows(speed, rate_max);
+    Collection<Flow> collection = carFlows.getFlows(8);
+    Flow flow = collection.iterator().next();
     Tensor x = Tensors.fromString("{1[m],2[m],3[rad]}").map(UnitSystem.SI());
     Tensor r = RungeKutta45Integrator.INSTANCE.step(flow, x, Quantity.of(2, "s"));
     assertTrue(Chop._10.close(r, //

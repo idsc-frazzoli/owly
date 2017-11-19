@@ -1,15 +1,15 @@
 // code by jph
 package ch.ethz.idsc.owly.math.se2;
 
-import ch.ethz.idsc.owly.math.TensorUnaryOperator;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
 import ch.ethz.idsc.tensor.lie.RotationMatrix;
+import ch.ethz.idsc.tensor.opt.TensorUnaryOperator;
 import ch.ethz.idsc.tensor.sca.Cos;
 import ch.ethz.idsc.tensor.sca.Sin;
 
-public class Se2Bijection implements Bijection {
+public class Se2Bijection implements RigidBijection {
   private final Tensor xya;
 
   /** @param xya == {px, py, angle} */
@@ -19,9 +19,10 @@ public class Se2Bijection implements Bijection {
 
   @Override
   public TensorUnaryOperator forward() {
-    Tensor matrix = RotationMatrix.of(xya.Get(2)); // TODO optimize, dot product is not necessary
-    Tensor offset = xya.extract(0, 2);
-    return tensor -> matrix.dot(tensor).add(offset);
+    return new Se2ForwardAction(xya);
+    // Tensor matrix = RotationMatrix.of(xya.Get(2));
+    // Tensor offset = xya.extract(0, 2);
+    // return tensor -> matrix.dot(tensor).add(offset);
   }
 
   @Override

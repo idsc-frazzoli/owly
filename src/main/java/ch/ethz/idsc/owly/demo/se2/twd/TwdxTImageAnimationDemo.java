@@ -24,7 +24,7 @@ public class TwdxTImageAnimationDemo implements DemoInterface {
   public void start() {
     OwlyAnimationFrame owlyAnimationFrame = new OwlyAnimationFrame();
     TwdDuckieFlows twdConfig = new TwdDuckieFlows(RealScalar.of(1.2), RealScalar.of(.5));
-    TwdxTEntity twdxTEntity = new TwdxTEntity(twdConfig, Tensors.vector(-1, -1, 1.0));
+    TwdxTEntity twdxTEntity = new TwdxTEntity(twdConfig, new StateTime(Tensors.vector(-1, -1, 1.0), RealScalar.ZERO));
     owlyAnimationFrame.set(twdxTEntity);
     // ---
     RigidFamily rigidFamily = Se2Family.rotationAround( //
@@ -36,12 +36,12 @@ public class TwdxTImageAnimationDemo implements DemoInterface {
     TrajectoryRegionQuery trq = new SimpleTrajectoryRegionQuery(region);
     {
       RenderInterface renderInterface = new CameraEmulator( //
-          48, RealScalar.of(10), () -> twdxTEntity.getStateTimeNow(), trq);
+          48, RealScalar.of(10), twdxTEntity::getStateTimeNow, trq);
       owlyAnimationFrame.addBackground(renderInterface);
     }
     {
       RenderInterface renderInterface = new LidarEmulator( //
-          LidarEmulator.DEFAULT, RealScalar.of(10), () -> twdxTEntity.getStateTimeNow(), trq);
+          LidarEmulator.DEFAULT, () -> twdxTEntity.getStateTimeNow(), trq);
       owlyAnimationFrame.addBackground(renderInterface);
     }
     owlyAnimationFrame.setObstacleQuery(trq);

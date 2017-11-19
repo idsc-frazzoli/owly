@@ -3,8 +3,8 @@ package ch.ethz.idsc.owly.math.se2;
 
 import java.io.Serializable;
 
-import ch.ethz.idsc.owly.math.TensorUnaryOperator;
 import ch.ethz.idsc.tensor.Scalar;
+import ch.ethz.idsc.tensor.opt.TensorUnaryOperator;
 
 /** the term "family" conveys the meaning that the bijection
  * depends on a single parameter, for instance time */

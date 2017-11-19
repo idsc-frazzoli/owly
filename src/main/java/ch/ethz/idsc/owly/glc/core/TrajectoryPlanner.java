@@ -17,6 +17,7 @@ import ch.ethz.idsc.owly.data.GlobalAssert;
 import ch.ethz.idsc.owly.glc.adapter.HeuristicQ;
 import ch.ethz.idsc.owly.glc.adapter.TrajectoryGoalManager;
 import ch.ethz.idsc.owly.math.StateTimeTensorFunction;
+import ch.ethz.idsc.owly.math.state.StateIntegrator;
 import ch.ethz.idsc.owly.math.state.StateTime;
 import ch.ethz.idsc.owly.math.state.StateTimeCollector;
 import ch.ethz.idsc.owly.math.state.TrajectoryRegionQuery;
@@ -107,7 +108,6 @@ public abstract class TrajectoryPlanner implements ExpandInterface<GlcNode>, Ser
    * @param connector */
   protected synchronized void offerDestination(GlcNode node, List<StateTime> connector) {
     best.put(node, connector);
-    // `if` should be sufficient, `while` to be sure
     if (1 < best.size()) {
       best.remove(best.lastKey());
       GlobalAssert.that(best.size() == 1);
@@ -135,10 +135,8 @@ public abstract class TrajectoryPlanner implements ExpandInterface<GlcNode>, Ser
     return replaceCount;
   }
 
-  /** @param node
-   * @return densely sampled trajectory from root to given node
-   * that is the result of integrating the flows between the nodes */
-  public abstract List<TrajectorySample> detailedTrajectoryTo(GlcNode node);
+  /** @return state integrator for the state space to generate trajectories from given controls */
+  public abstract StateIntegrator getStateIntegrator();
 
   /** @return obstacle query for the purpose of inspection, i.e. no alteration should be made */
   public abstract TrajectoryRegionQuery getObstacleQuery();

@@ -17,7 +17,7 @@ public class Se2LateralAccelerationTest extends TestCase {
   public void testCar() {
     final Scalar ms = Quantity.of(2, "m*s^-1");
     final Scalar mr = Scalars.fromString("3[rad*m^-1]");
-    Flow flow = CarConfig.singleton(ms, mr);
+    Flow flow = CarFlows.singleton(ms, mr);
     assertEquals(Units.of(flow.getU().Get(2)), Unit.of("rad*s^-1"));
     Tensor u = flow.getU();
     Scalar cost = Se2LateralAcceleration.cost(u, Quantity.of(3, "s"));

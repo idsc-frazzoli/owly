@@ -5,7 +5,8 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
-import ch.ethz.idsc.owly.demo.se2.CarConfig;
+import ch.ethz.idsc.owly.demo.se2.CarFlows;
+import ch.ethz.idsc.owly.demo.se2.CarStandardFlows;
 import ch.ethz.idsc.owly.demo.se2.Se2CarIntegrator;
 import ch.ethz.idsc.owly.demo.se2.Se2StateSpaceModel;
 import ch.ethz.idsc.owly.demo.se2.glc.Se2Parameters;
@@ -51,8 +52,8 @@ class Se2GlcAnyDemo {
     System.out.println("1/Domainsize=" + parameters.getEta());
     parameters.printResolution();
     // Se2Controls uses Se2StateSpaceModel
-    CarConfig carConfig = new CarConfig(RealScalar.ONE, Degree.of(45));
-    Collection<Flow> controls = carConfig.createControls(parameters.getResolutionInt());
+    CarFlows carConfig = new CarStandardFlows(RealScalar.ONE, Degree.of(45));
+    Collection<Flow> controls = carConfig.getFlows(parameters.getResolutionInt());
     Se2NoHeuristicGoalManager se2GoalManager = new Se2NoHeuristicGoalManager(//
         Tensors.vector(0, 1, Math.PI), //
         Tensors.vector(0.1, 0.1, 0.1 * Math.PI));
