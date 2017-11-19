@@ -139,8 +139,7 @@ public final class GeometricComponent {
       MouseListener mouseListener = new MouseAdapter() {
         @Override
         public void mousePressed(MouseEvent mouseEvent) {
-          Tensor location = toModel(mouseEvent.getPoint());
-          System.out.println(location.map(Round._3) + ",");
+          System.out.println(getMouseSe2State().map(Round._3));
         }
       };
       jComponent.addMouseListener(mouseListener);

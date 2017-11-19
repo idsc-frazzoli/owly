@@ -224,7 +224,9 @@ public class OwlyAnimationFrame extends TimerFrame {
   };
 
   public void set(AnimationInterface animationInterface) {
-    GlobalAssert.that(animationInterfaces.isEmpty());
+    GlobalAssert.that(animationInterfaces.isEmpty()); // TODO JAN this logic is messy
+    if (Objects.isNull(controllable))
+      controllable = animationInterface;
     add(animationInterface);
   }
 
@@ -241,10 +243,7 @@ public class OwlyAnimationFrame extends TimerFrame {
     geometricComponent.addRenderInterfaceBackground(renderInterface);
   }
 
-  private void add(AnimationInterface animationInterface) {
-    if (Objects.isNull(controllable))
-      controllable = animationInterface;
-    // ---
+  public void add(AnimationInterface animationInterface) {
     animationInterfaces.add(animationInterface);
     if (animationInterface instanceof RenderInterface) {
       RenderInterface renderInterface = (RenderInterface) animationInterface;

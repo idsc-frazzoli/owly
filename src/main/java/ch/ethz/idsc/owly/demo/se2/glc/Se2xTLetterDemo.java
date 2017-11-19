@@ -10,6 +10,7 @@ import ch.ethz.idsc.owly.demo.rn.R2xTEllipsoidStateTimeRegion;
 import ch.ethz.idsc.owly.demo.rn.R2xTPolygonStateTimeRegion;
 import ch.ethz.idsc.owly.demo.se2.Se2PointsVsRegion;
 import ch.ethz.idsc.owly.demo.se2.Se2PointsVsRegions;
+import ch.ethz.idsc.owly.demo.se2.twd.CarPolicyEntity;
 import ch.ethz.idsc.owly.demo.util.CameraEmulator;
 import ch.ethz.idsc.owly.demo.util.DemoInterface;
 import ch.ethz.idsc.owly.demo.util.LidarEmulator;
@@ -72,7 +73,7 @@ public class Se2xTLetterDemo implements DemoInterface {
     // owlyAnimationFrame.addBackground((RenderInterface) region2);
     owlyAnimationFrame.addBackground((RenderInterface) cog0);
     // ---
-    TrajectoryRegionQuery ray = new SimpleTrajectoryRegionQuery( //
+    final TrajectoryRegionQuery ray = new SimpleTrajectoryRegionQuery( //
         RegionUnion.wrap(Arrays.asList( //
             new TimeInvariantRegion(imageRegion), //
             region1,
@@ -88,6 +89,11 @@ public class Se2xTLetterDemo implements DemoInterface {
       RenderInterface renderInterface = new LidarEmulator( //
           LidarEmulator.RAYDEMO, carxTEntity::getStateTimeNow, ray);
       owlyAnimationFrame.addBackground(renderInterface);
+    }
+    {
+      StateTime stateTime = new StateTime(Tensors.vector(5.600, 8.667, -1.571), RealScalar.ZERO);
+      CarPolicyEntity twdPolicyEntity = new CarPolicyEntity(stateTime, ray);
+      owlyAnimationFrame.add(twdPolicyEntity);
     }
     // ---
     owlyAnimationFrame.configCoordinateOffset(50, 700);

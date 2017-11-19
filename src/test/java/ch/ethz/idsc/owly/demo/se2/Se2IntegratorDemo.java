@@ -19,7 +19,7 @@ enum Se2IntegratorDemo {
    * runge4_ 0.108451661
    * runge45 0.37093125200000004 */
   public static void main(String[] args) {
-    Flow flow = CarConfig.singleton(RealScalar.ONE, RealScalar.ONE);
+    Flow flow = CarFlows.singleton(RealScalar.ONE, RealScalar.ONE);
     Stopwatch s1 = Stopwatch.stopped();
     Stopwatch s4 = Stopwatch.stopped();
     Stopwatch s2 = Stopwatch.stopped();

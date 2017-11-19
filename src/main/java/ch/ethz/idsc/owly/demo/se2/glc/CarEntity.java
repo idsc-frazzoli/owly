@@ -4,7 +4,8 @@ package ch.ethz.idsc.owly.demo.se2.glc;
 import java.util.Collection;
 
 import ch.ethz.idsc.owly.data.GlobalAssert;
-import ch.ethz.idsc.owly.demo.se2.CarConfig;
+import ch.ethz.idsc.owly.demo.se2.CarFlows;
+import ch.ethz.idsc.owly.demo.se2.CarStandardFlows;
 import ch.ethz.idsc.owly.demo.se2.Se2CarIntegrator;
 import ch.ethz.idsc.owly.demo.se2.Se2MinTimeGoalManager;
 import ch.ethz.idsc.owly.demo.se2.Se2ShiftCostFunction;
@@ -64,8 +65,8 @@ class CarEntity extends Se2Entity {
    * @param stateTime initial position */
   CarEntity(StateTime stateTime) {
     super(new SimpleEpisodeIntegrator(Se2StateSpaceModel.INSTANCE, Se2CarIntegrator.INSTANCE, stateTime));
-    CarConfig carConfig = new CarConfig(RealScalar.ONE, Degree.of(45));
-    controls = carConfig.createControlsForwardAndReverse(6);
+    CarFlows carFlows = new CarStandardFlows(RealScalar.ONE, Degree.of(45));
+    controls = carFlows.getFlows(6);
     final Scalar goalRadius_xy = SQRT2.divide(PARTITIONSCALE.Get(0));
     final Scalar goalRadius_theta = SQRT2.divide(PARTITIONSCALE.Get(2));
     goalRadius = Tensors.of(goalRadius_xy, goalRadius_xy, goalRadius_theta);

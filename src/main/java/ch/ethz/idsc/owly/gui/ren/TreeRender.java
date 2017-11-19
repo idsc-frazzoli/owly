@@ -18,6 +18,7 @@ import ch.ethz.idsc.owly.gui.RenderInterface;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.opt.ConvexHull;
+import ch.ethz.idsc.tensor.sca.Chop;
 
 /** renders the edges between nodes
  * 
@@ -80,7 +81,7 @@ public class TreeRender implements RenderInterface {
     polygon = Objects.nonNull(collection) //
         ? ConvexHull.of(collection.stream() //
             .map(StateCostNode::state) //
-            .map(tensor -> tensor.extract(0, 2))) //
+            .map(tensor -> tensor.extract(0, 2)), Chop._10) //
         : null;
   }
 }
