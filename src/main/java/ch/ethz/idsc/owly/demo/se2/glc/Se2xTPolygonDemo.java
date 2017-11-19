@@ -21,7 +21,7 @@ public class Se2xTPolygonDemo implements DemoInterface {
   @Override
   public void start() {
     OwlyAnimationFrame owlyAnimationFrame = new OwlyAnimationFrame();
-    CarxTEntity carxTEntity = new CarxTEntity(Tensors.vector(6.75, 5.4, 1 + Math.PI));
+    CarxTEntity carxTEntity = new CarxTEntity(new StateTime(Tensors.vector(6.75, 5.4, 1 + Math.PI), RealScalar.ZERO));
     owlyAnimationFrame.set(carxTEntity);
     // ---
     BijectionFamily shift = new SimpleTranslationFamily( //

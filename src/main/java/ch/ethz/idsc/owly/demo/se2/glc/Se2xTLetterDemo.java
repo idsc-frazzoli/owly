@@ -35,7 +35,7 @@ public class Se2xTLetterDemo implements DemoInterface {
   @Override
   public void start() {
     OwlyAnimationFrame owlyAnimationFrame = new OwlyAnimationFrame();
-    CarxTEntity carxTEntity = new CarxTEntity(Tensors.vector(6.75, 5.4, 1 + Math.PI));
+    CarxTEntity carxTEntity = new CarxTEntity(new StateTime(Tensors.vector(6.75, 5.4, 1 + Math.PI), RealScalar.ZERO));
     owlyAnimationFrame.set(carxTEntity);
     // ---
     R2ImageRegionWrap r2ImageRegionWrap = R2ImageRegions._GTOB;
@@ -81,7 +81,7 @@ public class Se2xTLetterDemo implements DemoInterface {
         )));
     {
       RenderInterface renderInterface = new CameraEmulator( //
-          48, RealScalar.of(10), () -> carxTEntity.getStateTimeNow(), ray);
+          48, RealScalar.of(10), carxTEntity::getStateTimeNow, ray);
       owlyAnimationFrame.addBackground(renderInterface);
     }
     {

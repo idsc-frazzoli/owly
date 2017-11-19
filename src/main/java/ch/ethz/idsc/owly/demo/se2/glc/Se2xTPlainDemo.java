@@ -11,7 +11,9 @@ import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
 import ch.ethz.idsc.owly.gui.ani.OwlyAnimationFrame;
 import ch.ethz.idsc.owly.gui.region.RegionRenders;
 import ch.ethz.idsc.owly.math.region.ImageRegion;
+import ch.ethz.idsc.owly.math.state.StateTime;
 import ch.ethz.idsc.owly.math.state.TrajectoryRegionQuery;
+import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Tensors;
 
 public class Se2xTPlainDemo
@@ -20,7 +22,7 @@ public class Se2xTPlainDemo
   // @Override
   public void start() {
     OwlyAnimationFrame owlyAnimationFrame = new OwlyAnimationFrame();
-    CarxTEntity carxTEntity = new CarxTEntity(Tensors.vector(6.75, 5.4, 1 + Math.PI));
+    CarxTEntity carxTEntity = new CarxTEntity(new StateTime(Tensors.vector(6.75, 5.4, 1 + Math.PI), RealScalar.ZERO));
     owlyAnimationFrame.set(carxTEntity);
     // ---
     R2ImageRegionWrap r2ImageRegionWrap = R2ImageRegions._GTOB;

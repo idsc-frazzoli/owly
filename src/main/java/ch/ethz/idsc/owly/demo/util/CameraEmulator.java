@@ -21,6 +21,7 @@ import ch.ethz.idsc.tensor.Tensors;
 import ch.ethz.idsc.tensor.alg.Subdivide;
 import ch.ethz.idsc.tensor.opt.TensorUnaryOperator;
 
+// TODO frame rate should be handled outside this class!
 public class CameraEmulator implements RenderInterface {
   private static final Color CLEAR_COLOR = new Color(192, 255, 192);
   // ---

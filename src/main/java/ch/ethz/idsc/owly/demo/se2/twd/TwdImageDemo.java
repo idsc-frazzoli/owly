@@ -11,6 +11,7 @@ import ch.ethz.idsc.owly.gui.RenderInterface;
 import ch.ethz.idsc.owly.gui.ani.OwlyAnimationFrame;
 import ch.ethz.idsc.owly.gui.region.RegionRenders;
 import ch.ethz.idsc.owly.math.region.ImageRegion;
+import ch.ethz.idsc.owly.math.state.StateTime;
 import ch.ethz.idsc.owly.math.state.TrajectoryRegionQuery;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Tensors;
@@ -22,14 +23,14 @@ public class TwdImageDemo implements DemoInterface {
     ImageRegion imageRegion = r2ImageRegionWrap.imageRegion();
     TrajectoryRegionQuery obstacleQuery = SimpleTrajectoryRegionQuery.timeInvariant(imageRegion);
     OwlyAnimationFrame owlyAnimationFrame = new OwlyAnimationFrame();
-    TwdEntity twdEntity = TwdEntity.createJ2B2(Tensors.vector(7, 5, 0));
+    TwdEntity twdEntity = TwdEntity.createJ2B2(new StateTime(Tensors.vector(7, 5, 0), RealScalar.ZERO));
     twdEntity.extraCosts.add(r2ImageRegionWrap.costFunction());
     owlyAnimationFrame.set(twdEntity);
     owlyAnimationFrame.setObstacleQuery(obstacleQuery);
     owlyAnimationFrame.addBackground(RegionRenders.create(imageRegion));
     {
       RenderInterface renderInterface = new CameraEmulator( //
-          48, RealScalar.of(10), () -> twdEntity.getStateTimeNow(), obstacleQuery);
+          48, RealScalar.of(10), twdEntity::getStateTimeNow, obstacleQuery);
       owlyAnimationFrame.addBackground(renderInterface);
     }
     {

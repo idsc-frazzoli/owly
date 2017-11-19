@@ -13,8 +13,8 @@ import ch.ethz.idsc.tensor.Tensors;
 /* package */ class TwdxTEntity extends TwdEntity {
   private static final Tensor PARTITIONSCALE = Tensors.vector(6, 6, 50 / Math.PI, 4).unmodifiable(); // 50/pi == 15.9155
 
-  public TwdxTEntity(TwdDuckieFlows twdConfig, Tensor state) {
-    super(twdConfig, state);
+  public TwdxTEntity(TwdDuckieFlows twdConfig, StateTime stateTime) {
+    super(twdConfig, stateTime);
   }
 
   @Override
