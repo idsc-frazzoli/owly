@@ -7,7 +7,7 @@ import java.awt.geom.Path2D;
 import ch.ethz.idsc.owly.data.GlobalAssert;
 import ch.ethz.idsc.owly.gui.GeometricLayer;
 import ch.ethz.idsc.owly.gui.RenderInterface;
-import ch.ethz.idsc.owly.math.CirclePoints;
+import ch.ethz.idsc.owly.math.r2.CirclePoints;
 import ch.ethz.idsc.owly.math.region.EllipsoidRegion;
 import ch.ethz.idsc.owly.math.region.SphericalRegion;
 import ch.ethz.idsc.tensor.Scalar;

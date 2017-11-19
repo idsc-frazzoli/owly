@@ -8,7 +8,7 @@ import java.util.function.Supplier;
 import ch.ethz.idsc.owly.gui.GeometricLayer;
 import ch.ethz.idsc.owly.gui.RenderInterface;
 import ch.ethz.idsc.owly.gui.region.RegionRenders;
-import ch.ethz.idsc.owly.math.Polygons;
+import ch.ethz.idsc.owly.math.r2.Polygons;
 import ch.ethz.idsc.owly.math.region.Region;
 import ch.ethz.idsc.owly.math.se2.BijectionFamily;
 import ch.ethz.idsc.owly.math.state.StateTime;
