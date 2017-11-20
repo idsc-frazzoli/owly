@@ -1,8 +1,6 @@
 // code by jph
 package ch.ethz.idsc.owly.demo.se2.glc;
 
-import java.io.IOException;
-
 import ch.ethz.idsc.owly.demo.rn.R2xTPolygonStateTimeRegion;
 import ch.ethz.idsc.owly.demo.util.DemoInterface;
 import ch.ethz.idsc.owly.demo.util.ExamplePolygons;
@@ -38,7 +36,7 @@ public class Se2xTPolygonDemo implements DemoInterface {
     owlyAnimationFrame.jFrame.setVisible(true);
   }
 
-  public static void main(String[] args) throws IOException {
+  public static void main(String[] args) {
     new Se2xTPolygonDemo().start();
   }
 }

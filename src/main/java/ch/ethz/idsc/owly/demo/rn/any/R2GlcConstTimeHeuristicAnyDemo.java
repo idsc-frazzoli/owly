@@ -6,7 +6,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
-import ch.ethz.idsc.owly.demo.rn.R2Config;
+import ch.ethz.idsc.owly.demo.rn.R2Flows;
 import ch.ethz.idsc.owly.demo.rn.R2NoiseRegion;
 import ch.ethz.idsc.owly.demo.rn.R2Parameters;
 import ch.ethz.idsc.owly.demo.rn.RnTrajectoryGoalManager;
@@ -54,8 +54,8 @@ enum R2GlcConstTimeHeuristicAnyDemo {
         parameters.getTrajectorySize());
     parameters.printResolution();
     System.out.println("DomainSize: 1/Eta: " + parameters.getEta().map(n -> RealScalar.ONE.divide(n)));
-    R2Config r2Config = new R2Config(RealScalar.ONE);
-    Collection<Flow> controls = r2Config.createRadial(parameters.getResolutionInt());
+    R2Flows r2Config = new R2Flows(RealScalar.ONE);
+    Collection<Flow> controls = r2Config.getFlows(parameters.getResolutionInt());
     // Creating Goals
     List<StateTime> precomputedTrajectory = new ArrayList<>();
     List<Region<Tensor>> goalRegions = new ArrayList<>();

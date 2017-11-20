@@ -9,7 +9,7 @@ import java.awt.geom.Rectangle2D;
 import java.util.Collection;
 
 import ch.ethz.idsc.owly.demo.rn.EuclideanDistanceDiscoverRegion;
-import ch.ethz.idsc.owly.demo.rn.R2Config;
+import ch.ethz.idsc.owly.demo.rn.R2Flows;
 import ch.ethz.idsc.owly.demo.rn.R2Parameters;
 import ch.ethz.idsc.owly.demo.rn.RnMinDistSphericalGoalManager;
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
@@ -38,8 +38,8 @@ import ch.ethz.idsc.tensor.red.Norm2Squared;
 /* package */ class R2AnyEntity extends AbstractAnyEntity {
   private static final Tensor FALLBACK_CONTROL = Tensors.vector(0, 0).unmodifiable();
   // ---
-  private static final R2Config r2Config = new R2Config(RealScalar.ONE);
-  protected final Collection<Flow> controls = r2Config.createRadial(parameters.getResolutionInt());
+  private static final R2Flows r2Config = new R2Flows(RealScalar.ONE);
+  protected final Collection<Flow> controls = r2Config.getFlows(parameters.getResolutionInt());
   private final Scalar goalRadius = RealScalar.of(0.2);
 
   /** @param state initial position of entity */
@@ -53,7 +53,7 @@ import ch.ethz.idsc.tensor.red.Norm2Squared;
         2000, // maxIter
         RealScalar.ONE), // Lipschitz
         // --
-        r2Config.createRadial(resolution), //
+        r2Config.getFlows(resolution), //
         // --
         new SimpleEpisodeIntegrator( //
             SingleIntegratorStateSpaceModel.INSTANCE, //

@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import ch.ethz.idsc.owly.demo.rn.R2Config;
+import ch.ethz.idsc.owly.demo.rn.R2Flows;
 import ch.ethz.idsc.owly.demo.rn.RnMinDistSphericalGoalManager;
 import ch.ethz.idsc.owly.math.flow.EulerIntegrator;
 import ch.ethz.idsc.owly.math.flow.Flow;
@@ -61,8 +61,8 @@ public class GlcNodeTest extends TestCase {
     // ---
     Tensor eta = Tensors.vector(8, 8);
     StateIntegrator stateIntegrator = FixedStateIntegrator.create(EulerIntegrator.INSTANCE, RationalScalar.of(1, 5), 5);
-    R2Config r2Config = new R2Config(RealScalar.ONE);
-    Collection<Flow> controls = r2Config.createRadial(36);
+    R2Flows r2Config = new R2Flows(RealScalar.ONE);
+    Collection<Flow> controls = r2Config.getFlows(36);
     GoalInterface rnGoal = RnMinDistSphericalGoalManager.create(stateGoal, radius);
     TrajectoryRegionQuery obstacleQuery = EmptyTrajectoryRegionQuery.INSTANCE;
     // ---

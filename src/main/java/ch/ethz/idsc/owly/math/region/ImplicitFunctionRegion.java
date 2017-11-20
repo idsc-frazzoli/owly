@@ -1,7 +1,7 @@
 // code by jph
 package ch.ethz.idsc.owly.math.region;
 
-import ch.ethz.idsc.owly.math.ImplicitFunction;
+import ch.ethz.idsc.owly.math.TensorScalarFunction;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.sca.Sign;
 
@@ -14,9 +14,9 @@ import ch.ethz.idsc.tensor.sca.Sign;
  * <li>zero when in contact with the obstacle, and
  * <li>negative when in collision
  * </ul> */
-public abstract class ImplicitFunctionRegion implements Region<Tensor>, ImplicitFunction {
+public abstract class ImplicitFunctionRegion implements Region<Tensor>, TensorScalarFunction {
   @Override
   public final boolean isMember(Tensor tensor) {
-    return Sign.isNegativeOrZero(evaluate(tensor));
+    return Sign.isNegativeOrZero(apply(tensor));
   }
 }

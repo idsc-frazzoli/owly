@@ -4,7 +4,7 @@ package ch.ethz.idsc.owly.demo.rn.any;
 import java.util.Collection;
 import java.util.List;
 
-import ch.ethz.idsc.owly.demo.rn.R2Config;
+import ch.ethz.idsc.owly.demo.rn.R2Flows;
 import ch.ethz.idsc.owly.demo.rn.R2Parameters;
 import ch.ethz.idsc.owly.demo.rn.RnMinDistSphericalGoalManager;
 import ch.ethz.idsc.owly.glc.adapter.Parameters;
@@ -45,8 +45,8 @@ enum R2GlcAnyDemo {
         resolution, timeScale, depthScale, partitionScale, dtMax, maxIter, lipschitz);
     StateIntegrator stateIntegrator = FixedStateIntegrator.create(EulerIntegrator.INSTANCE, parameters.getdtMax(), //
         parameters.getTrajectorySize());
-    R2Config r2Config = new R2Config(RealScalar.ONE);
-    Collection<Flow> controls = r2Config.createRadial(parameters.getResolutionInt());
+    R2Flows r2Config = new R2Flows(RealScalar.ONE);
+    Collection<Flow> controls = r2Config.getFlows(parameters.getResolutionInt());
     GoalInterface rnGoal = RnMinDistSphericalGoalManager.create(Tensors.vector(5, 5), DoubleScalar.of(0.25));
     // performance depends on heuristic: zeroHeuristic vs rnGoal
     // Heuristic heuristic = new ZeroHeuristic(); // rnGoal

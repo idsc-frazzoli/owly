@@ -15,12 +15,8 @@ import ch.ethz.idsc.tensor.Tensor;
 
 // TODO first API draft, unify with se2entity and abstract entity
 public abstract class PolicyEntity implements AnimationInterface, RenderInterface {
-  protected final EpisodeIntegrator episodeIntegrator;
+  protected EpisodeIntegrator episodeIntegrator;
   public TrajectoryRegionQuery obstacleQuery = null;
-
-  public PolicyEntity(EpisodeIntegrator episodeIntegrator) {
-    this.episodeIntegrator = episodeIntegrator;
-  }
 
   public abstract Tensor represent(StateTime stateTime);
 

@@ -42,7 +42,7 @@ public class Se2Letter3Demo extends Se2CarDemo {
     }
   }
 
-  public static void main(String[] args) throws IOException {
+  public static void main(String[] args) {
     new Se2Letter3Demo().start();
   }
 }

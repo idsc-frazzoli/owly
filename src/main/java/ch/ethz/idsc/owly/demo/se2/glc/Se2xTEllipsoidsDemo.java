@@ -1,7 +1,6 @@
 // code by jph
 package ch.ethz.idsc.owly.demo.se2.glc;
 
-import java.io.IOException;
 import java.util.Arrays;
 
 import ch.ethz.idsc.owly.demo.rn.R2xTEllipsoidStateTimeRegion;
@@ -60,7 +59,7 @@ public class Se2xTEllipsoidsDemo implements DemoInterface {
     owlyAnimationFrame.jFrame.setVisible(true);
   }
 
-  public static void main(String[] args) throws IOException {
+  public static void main(String[] args) {
     new Se2xTEllipsoidsDemo().start();
   }
 }

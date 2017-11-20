@@ -1,7 +1,6 @@
 // code by jph
 package ch.ethz.idsc.owly.demo.se2.glc;
 
-import java.io.IOException;
 import java.util.Arrays;
 
 import ch.ethz.idsc.owly.demo.rn.R2ImageRegionWrap;
@@ -27,9 +26,6 @@ import ch.ethz.idsc.owly.math.se2.Se2Family;
 import ch.ethz.idsc.owly.math.state.StateTime;
 import ch.ethz.idsc.owly.math.state.TimeInvariantRegion;
 import ch.ethz.idsc.owly.math.state.TrajectoryRegionQuery;
-import ch.ethz.idsc.subare.core.Policy;
-import ch.ethz.idsc.subare.core.util.DiscreteQsa;
-import ch.ethz.idsc.subare.core.util.EGreedyPolicy;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
@@ -93,11 +89,8 @@ public class Se2xTLetterDemo implements DemoInterface {
       owlyAnimationFrame.addBackground(renderInterface);
     }
     {
-      StateTime stateTime = new StateTime(Tensors.vector(5.600, 8.667, -1.571), RealScalar.ZERO);
-      CarDiscreteModel carDiscreteModel = new CarDiscreteModel(5);
-      DiscreteQsa qsa = DiscreteQsa.build(carDiscreteModel);
-      Policy policy = EGreedyPolicy.bestEquiprobable(carDiscreteModel, qsa, RealScalar.of(0.2));
-      CarPolicyEntity twdPolicyEntity = new CarPolicyEntity(carDiscreteModel, policy, stateTime, ray);
+      CarPolicyEntity twdPolicyEntity = new CarPolicyEntity( //
+          Tensors.vector(5.600, 8.667, -1.571), ray);
       owlyAnimationFrame.add(twdPolicyEntity);
     }
     // ---
@@ -106,7 +99,7 @@ public class Se2xTLetterDemo implements DemoInterface {
     owlyAnimationFrame.jFrame.setVisible(true);
   }
 
-  public static void main(String[] args) throws IOException {
+  public static void main(String[] args) {
     new Se2xTLetterDemo().start();
   }
 }

@@ -39,6 +39,6 @@ public class DeltaMinTimeGoalManager extends SimpleTrajectoryRegionQuery impleme
 
   @Override // from HeuristicFunction
   public Scalar minCostToGoal(Tensor x) {
-    return Ramp.of(sphericalRegion.evaluate(x).divide(maxSpeed)); // unit [m] / [m/s] simplifies to [s]
+    return Ramp.of(sphericalRegion.apply(x).divide(maxSpeed)); // unit [m] / [m/s] simplifies to [s]
   }
 }

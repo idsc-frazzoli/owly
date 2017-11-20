@@ -4,7 +4,7 @@ package ch.ethz.idsc.owly.demo.rn.glc;
 import java.util.Collection;
 import java.util.LinkedList;
 
-import ch.ethz.idsc.owly.demo.rn.R2Config;
+import ch.ethz.idsc.owly.demo.rn.R2Flows;
 import ch.ethz.idsc.owly.demo.rn.RnMinTimeGoalManager;
 import ch.ethz.idsc.owly.glc.adapter.MultiCostGoalAdapter;
 import ch.ethz.idsc.owly.glc.core.CostFunction;
@@ -33,7 +33,7 @@ import ch.ethz.idsc.tensor.red.Norm2Squared;
 /* package */ class R2Entity extends AbstractCircularEntity {
   /** extra cost functions, for instance to prevent cutting corners */
   public final Collection<CostFunction> extraCosts = new LinkedList<>();
-  protected final R2Config r2Config = new R2Config(RealScalar.ONE);
+  protected final R2Flows r2Config = new R2Flows(RealScalar.ONE);
 
   /** @param state initial position of entity */
   public R2Entity(Tensor state) {
@@ -79,7 +79,7 @@ import ch.ethz.idsc.tensor.red.Norm2Squared;
 
   Collection<Flow> createControls() {
     /** 36 corresponds to 10[Degree] resolution */
-    return r2Config.createRadial(36);
+    return r2Config.getFlows(36);
   }
 
   protected Tensor eta() {

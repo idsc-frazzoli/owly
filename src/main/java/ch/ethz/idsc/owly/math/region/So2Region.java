@@ -25,7 +25,7 @@ public class So2Region extends ImplicitFunctionRegion {
   }
 
   @Override // from ImplicitFunction
-  public Scalar evaluate(Tensor x) {
+  public Scalar apply(Tensor x) {
     return mod.apply(x.Get().subtract(center)).abs().subtract(radius);
   }
 
