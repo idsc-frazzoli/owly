@@ -70,7 +70,6 @@ enum Se2GlcHeuristicSensingObstacleCompareAnyDemo {
     Region<Tensor> environmentRegion = new R2NoiseRegion(RealScalar.of(0.5));
     TrajectoryRegionQuery obstacleQuery = SimpleTrajectoryRegionQuery.timeInvariant( //
         EuclideanDistanceDiscoverRegion.of(environmentRegion, startState, sensingRadius));
-    // TODO JONAS can remove todo "change back to AnyPlannerInterface"
     AnyPlannerInterface anyTrajectoryPlanner = new OptimalAnyTrajectoryPlanner( //
         parameters.getEta(), stateIntegrator, controls, obstacleQuery, se2Goal);
     anyTrajectoryPlanner.switchRootToState(startState);
@@ -79,7 +78,6 @@ enum Se2GlcHeuristicSensingObstacleCompareAnyDemo {
     // --
     Optional<GlcNode> finalGoalNode = anyTrajectoryPlanner.getFinalGoalNode();
     List<StateTime> trajectory = GlcNodes.getPathFromRootTo(finalGoalNode.get());
-    // StateTimeTrajectories.print(trajectory);
     boolean useGui = false;
     OwlyFrame owlyFrame = OwlyGui.start();
     owlyFrame.configCoordinateOffset(400, 400);
