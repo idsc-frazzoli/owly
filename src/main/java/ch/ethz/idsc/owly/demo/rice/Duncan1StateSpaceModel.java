@@ -29,7 +29,7 @@ public class Duncan1StateSpaceModel implements StateSpaceModel {
   }
 
   /** | f(x_1, u) - f(x_2, u) | <= L | x_1 - x_2 | */
-  @Override
+  @Override // from StateSpaceModel
   public Scalar getLipschitz() {
     return lambda;
   }

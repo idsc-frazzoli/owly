@@ -14,7 +14,7 @@ import ch.ethz.idsc.owly.gui.ani.AbstractCircularEntity;
 import ch.ethz.idsc.owly.math.StateTimeTensorFunction;
 import ch.ethz.idsc.owly.math.flow.Flow;
 import ch.ethz.idsc.owly.math.flow.Integrator;
-import ch.ethz.idsc.owly.math.flow.RungeKutta4Integrator;
+import ch.ethz.idsc.owly.math.flow.RungeKutta45Integrator;
 import ch.ethz.idsc.owly.math.state.EmptyTrajectoryRegionQuery;
 import ch.ethz.idsc.owly.math.state.FixedStateIntegrator;
 import ch.ethz.idsc.owly.math.state.SimpleEpisodeIntegrator;
@@ -30,7 +30,7 @@ import ch.ethz.idsc.tensor.Tensors;
 /* package */ class PsuEntity extends AbstractCircularEntity {
   public static final Tensor FALLBACK_CONTROL = Tensors.vectorDouble(0).unmodifiable();
   // ---
-  private static final Integrator INTEGRATOR = RungeKutta4Integrator.INSTANCE;
+  private static final Integrator INTEGRATOR = RungeKutta45Integrator.INSTANCE;
   /** preserve 1[s] of the former trajectory */
   private static final Scalar DELAY_HINT = RealScalar.ONE;
 
