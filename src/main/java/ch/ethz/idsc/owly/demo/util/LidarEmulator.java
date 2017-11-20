@@ -71,32 +71,13 @@ public class LidarEmulator implements RenderInterface {
               .findFirst();
           return first.isPresent() ? Norm._2.ofVector(first.get()) : RANGE_MAX;
         }));
-    // RnRaytracer lidarRaytrace = new RnRaytracer(raytraceQuery, SPEED);
-    // Tensor xya = stateTime.state();
-    // Tensor origin = xya.extract(0, 2).add(AngleVector.of(xya.Get(2)).multiply(RealScalar.of(.1)));
-    // Scalar time0 = stateTime.time();
-    // // not only store distance, but also collision point!
-    // Tensor range = Tensor.of(sampling.stream().map(angle -> {
-    // Optional<StateTime> optional = lidarRaytrace.firstMember( //
-    // new StateTime(origin, time0), AngleVector.of(xya.Get(2).add(angle)));
-    // return optional.isPresent() //
-    // ? optional.get().time().subtract(time0).multiply(SPEED)
-    // : DoubleScalar.POSITIVE_INFINITY;
-    // }));
     // System.out.println(stopwatch.display_seconds());
     return range;
   }
 
   @Override
   public void render(GeometricLayer geometricLayer, Graphics2D graphics) {
-    Tensor range = detectRange(supplier.get());
-    // graphics.setColor(new Color(224, 224, 255, 128));
-    // graphics.fillRect(0, 200, range.length(), 100);
-    // graphics.setColor(Color.RED);
-    // Clip clip = Clip.function(RealScalar.ZERO, RANGE_MAX);
-    // for (int index = 0; index < range.length(); ++index) {
-    // graphics.fillRect(index, 300 - (int) (100 * clip.rescale(range.Get(index)).number().doubleValue()), 1, 2);
-    // }
+    final Tensor range = detectRange(supplier.get()).unmodifiable();
     // ---
     Se2Bijection se2Bijection = new Se2Bijection(supplier.get().state());
     geometricLayer.pushMatrix(se2Bijection.forward_se2());

@@ -49,11 +49,8 @@ public class CarPolicyEntity extends PolicyEntity implements RewardInterface {
   private final CarDiscreteModel carDiscreteModel;
   LearningRate learningRate = DefaultLearningRate.of(2, 0.51);
 
-  /**
-   * 
-   * @param start
-   * @param raytraceQuery
-   */
+  /** @param start
+   * @param raytraceQuery */
   public CarPolicyEntity(Tensor start, TrajectoryRegionQuery raytraceQuery) {
     this.start = start;
     CarDiscreteModel carDiscreteModel = new CarDiscreteModel(5);
@@ -97,7 +94,6 @@ public class CarPolicyEntity extends PolicyEntity implements RewardInterface {
   @Override // from AnimationInterface
   public final void integrate(Scalar now) {
     // implementation does not require that current position is perfectly located on trajectory
-    // Tensor u = fallbackControl(); // default control
     StateTime stateTime = getStateTimeNow();
     Tensor state = represent(stateTime); // may be augmented state time, and/or observation etc.
     if (Objects.nonNull(prev_state) && !carDiscreteModel.isTerminal(prev_state)) {
@@ -106,9 +102,7 @@ public class CarPolicyEntity extends PolicyEntity implements RewardInterface {
       GlobalAssert.that(Objects.nonNull(prev_reward));
       episodeLog.add(new StepAdapter(prev_state, prev_action, prev_reward, state));
     }
-    // System.out.println(episodeLog.size() + " " + prev_reward);
     prev_state = state;
-    // System.out.println(state);
     PolicyWrap policyWrap = new PolicyWrap(policy);
     Tensor actions = carDiscreteModel.actions(state);
     prev_action = policyWrap.next(state, actions);
@@ -148,9 +142,6 @@ public class CarPolicyEntity extends PolicyEntity implements RewardInterface {
     }
     {
       lidarEmulator.render(geometricLayer, graphics);
-      // StateTime stateTime = getStateTimeNow();
-      // Tensor range = lidarEmulator.detectRange(stateTime);
-      // geometricLayer.pushMatrix(stateTime.state());
     }
   }
 }
