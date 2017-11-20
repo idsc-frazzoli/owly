@@ -28,7 +28,7 @@ public class Deadzone implements ScalarUnaryOperator {
     this.max = max;
   }
 
-  @Override
+  @Override // from ScalarUnaryOperator
   public Scalar apply(Scalar scalar) {
     if (Scalars.lessThan(scalar, min))
       return scalar.subtract(min);

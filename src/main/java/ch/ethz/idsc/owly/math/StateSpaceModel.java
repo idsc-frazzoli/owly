@@ -20,6 +20,7 @@ public interface StateSpaceModel extends Serializable {
   Tensor f(Tensor x, Tensor u);
 
   /** | f(x_1, u) - f(x_2, u) | <= L | x_1 - x_2 |
+   * TODO description need quantifiers: for all / there is ?
    * 
    * @return L */
   Scalar getLipschitz();

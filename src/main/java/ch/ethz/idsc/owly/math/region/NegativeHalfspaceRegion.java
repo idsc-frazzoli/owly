@@ -13,7 +13,7 @@ public class NegativeHalfspaceRegion implements Region<Tensor> {
     this.index = index;
   }
 
-  @Override
+  @Override // from Region
   public boolean isMember(Tensor tensor) {
     return Sign.isNegative(tensor.Get(index));
   }

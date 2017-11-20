@@ -14,7 +14,7 @@ public enum MidpointIntegrator implements Integrator {
   // ---
   private static final Scalar HALF = RationalScalar.of(1, 2);
 
-  @Override
+  @Override // from Integrator
   public Tensor step(Flow flow, Tensor x, Scalar h) {
     Tensor k1 = flow.at(x).multiply(h);
     Tensor k2 = flow.at(x.add(k1.multiply(HALF))).multiply(h);

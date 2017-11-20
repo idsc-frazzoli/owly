@@ -15,6 +15,7 @@ import ch.ethz.idsc.tensor.sca.Sign;
 
 public class SphereRandomSample implements RandomSampleInterface {
   private static final Distribution UNIFORM = UniformDistribution.of(-1, 1);
+  // ---
   private final Tensor center;
   private final Scalar radius;
 

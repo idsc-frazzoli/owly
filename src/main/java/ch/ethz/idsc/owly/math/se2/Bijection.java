@@ -1,3 +1,4 @@
+// code by jph
 package ch.ethz.idsc.owly.math.se2;
 
 import ch.ethz.idsc.tensor.opt.TensorUnaryOperator;

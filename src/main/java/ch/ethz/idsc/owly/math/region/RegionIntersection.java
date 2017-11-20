@@ -30,7 +30,7 @@ public class RegionIntersection<T> implements Region<T> {
     this.collection = collection;
   }
 
-  @Override
+  @Override // from Region
   public boolean isMember(T tensor) {
     return collection.stream().allMatch(region -> region.isMember(tensor));
   }

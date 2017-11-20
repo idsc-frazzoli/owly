@@ -30,7 +30,7 @@ public class RegionUnion<T> implements Region<T> {
     this.collection = collection;
   }
 
-  @Override
+  @Override // from Region
   public boolean isMember(T type) {
     return collection.stream().parallel().anyMatch(region -> region.isMember(type));
   }

@@ -39,7 +39,7 @@ enum R2xtRingGlcDemo {
   ;
   public static void main(String[] args) {
     RationalScalar resolution = (RationalScalar) RealScalar.of(8);
-    Tensor partitionScale = Tensors.vector(16, 16, 16); //Parameters create nice trajectory, which only waits shortly
+    Tensor partitionScale = Tensors.vector(16, 16, 16); // Parameters create nice trajectory, which only waits shortly
     Scalar timeScale = RealScalar.of(6);
     Scalar depthScale = RealScalar.of(100);
     Scalar dtMax = RationalScalar.of(1, 6);

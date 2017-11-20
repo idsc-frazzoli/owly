@@ -36,7 +36,7 @@ public class SphericalRegion extends ImplicitFunctionRegion {
     this.radius = radius;
   }
 
-  @Override // from ImplicitFunction
+  @Override // from TensorScalarFunction
   public Scalar apply(Tensor x) {
     // ||x - center|| - radius
     return Norm._2.between(x, center).subtract(radius); // result may be negative
