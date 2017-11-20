@@ -44,13 +44,13 @@ public abstract class Se2AbstractGoalManager implements Region<Tensor>, CostFunc
   /** @param tensor == {px, py, angle}
    * @return signed distance of {px, py} from spherical region */
   protected final Scalar d_xy(Tensor tensor) {
-    return sphericalRegion.evaluate(tensor.extract(0, 2));
+    return sphericalRegion.apply(tensor.extract(0, 2));
   }
 
   /** @param tensor == {px, py, angle}
    * @return signed distance of angle from so2region */
   protected final Scalar d_angle(Tensor tensor) {
-    return so2Region.evaluate(tensor.get(2));
+    return so2Region.apply(tensor.get(2));
   }
 
   @Override // from Region

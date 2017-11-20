@@ -25,7 +25,7 @@ public class FreeBoundedIntervalRegion extends ImplicitFunctionRegion {
   }
 
   @Override
-  public Scalar evaluate(Tensor x) {
+  public Scalar apply(Tensor x) {
     return semiwidth.subtract(Abs.FUNCTION.apply(x.Get(index).subtract(center)));
   }
 }

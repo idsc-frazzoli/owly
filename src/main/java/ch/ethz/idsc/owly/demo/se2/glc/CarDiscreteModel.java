@@ -7,7 +7,6 @@ import ch.ethz.idsc.owly.demo.se2.CarForwardFlows;
 import ch.ethz.idsc.owly.math.flow.Flow;
 import ch.ethz.idsc.subare.core.DiscreteModel;
 import ch.ethz.idsc.subare.core.TerminalInterface;
-import ch.ethz.idsc.tensor.DoubleScalar;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
@@ -26,7 +25,7 @@ public class CarDiscreteModel implements DiscreteModel, TerminalInterface {
 
   public CarDiscreteModel(int resolution) {
     states = Permutations.of(Range.of(0, resolution)).append(COLLISION).unmodifiable();
-    CarFlows carFlows = new CarForwardFlows(DoubleScalar.of(.3), DoubleScalar.of(2));
+    CarFlows carFlows = new CarForwardFlows(RealScalar.of(1), RealScalar.of(2));
     Collection<Flow> collection = carFlows.getFlows(6);
     actions = Tensor.of(collection.stream() //
         .map(Flow::getU) //

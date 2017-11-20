@@ -22,7 +22,7 @@ class R3Tubes extends ImplicitFunctionRegion {
    * motivated by
    * https://reference.wolfram.com/language/ref/ContourPlot3D.html */
   @Override
-  public Scalar evaluate(Tensor tensor) {
+  public Scalar apply(Tensor tensor) {
     final double[] data = Primitives.toArrayDouble(tensor);
     double x = data[0];
     double y = data[1];

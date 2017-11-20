@@ -43,7 +43,7 @@ public class EllipsoidRegion extends ImplicitFunctionRegion {
   }
 
   @Override // from ImplicitFunction
-  public Scalar evaluate(Tensor tensor) {
+  public Scalar apply(Tensor tensor) {
     return Norm2Squared.ofVector(tensor.subtract(center).pmul(invert)).subtract(RealScalar.ONE);
   }
 

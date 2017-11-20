@@ -22,7 +22,7 @@ class LinearStateSpaceModel implements StateSpaceModel {
     this.b = b;
     this.c = c;
     this.d = d;
-    L = Norm._2.of(a);
+    L = Norm._2.ofMatrix(a);
   }
 
   @Override

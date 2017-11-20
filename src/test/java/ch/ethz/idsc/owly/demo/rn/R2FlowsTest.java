@@ -12,11 +12,11 @@ import ch.ethz.idsc.tensor.opt.ConvexHull;
 import ch.ethz.idsc.tensor.sca.Chop;
 import junit.framework.TestCase;
 
-public class R2ControlsTest extends TestCase {
+public class R2FlowsTest extends TestCase {
   public void testSimple() {
     int n = 100;
-    R2Config r2Config = new R2Config(RealScalar.ONE);
-    Collection<Flow> flows = r2Config.createRadial(n);
+    R2Flows r2Config = new R2Flows(RealScalar.ONE);
+    Collection<Flow> flows = r2Config.getFlows(n);
     assertEquals(flows.size(), n);
     Tensor tflow = Tensor.of(flows.stream().map(Flow::getU));
     Tensor hul = ConvexHull.of(tflow);
@@ -25,16 +25,16 @@ public class R2ControlsTest extends TestCase {
 
   public void testMaxSpeed() {
     int n = 10;
-    R2Config r2Config = new R2Config(RealScalar.ONE);
-    Collection<Flow> controls = r2Config.createRadial(n);
+    R2Flows r2Config = new R2Flows(RealScalar.ONE);
+    Collection<Flow> controls = r2Config.getFlows(n);
     Scalar maxSpeed = RnControls.maxSpeed(controls);
     assertTrue(Chop._14.close(maxSpeed, RealScalar.ONE));
   }
 
   public void testFail() {
-    R2Config r2Config = new R2Config(RealScalar.ONE);
+    R2Flows r2Config = new R2Flows(RealScalar.ONE);
     try {
-      r2Config.createRadial(2);
+      r2Config.getFlows(2);
       assertTrue(false);
     } catch (Exception exception) {
       // ---

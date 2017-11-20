@@ -40,12 +40,12 @@ public class EllipsoidRegionTest extends TestCase {
 
   public void testInfty() {
     ImplicitFunctionRegion ifr = new EllipsoidRegion(Tensors.vector(5, 10), Tensors.vector(1 / 0.0, 2));
-    assertEquals(ifr.evaluate(Tensors.vector(1000, 8)), RealScalar.ZERO);
+    assertEquals(ifr.apply(Tensors.vector(1000, 8)), RealScalar.ZERO);
   }
 
   public void test1D() {
     ImplicitFunctionRegion ifr = new EllipsoidRegion(Tensors.vector(10), Tensors.vector(2));
-    assertEquals(ifr.evaluate(Tensors.vector(8)), RealScalar.ZERO);
+    assertEquals(ifr.apply(Tensors.vector(8)), RealScalar.ZERO);
   }
 
   public void testLengthFail() {

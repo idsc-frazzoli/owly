@@ -14,8 +14,8 @@ import junit.framework.TestCase;
 
 public class RnMinTimeGoalManagerTest extends TestCase {
   public void testSimple() {
-    R2Config r2Config = new R2Config(Quantity.of(2, "m*s^-1"));
-    Collection<Flow> controls = r2Config.createRadial(10);
+    R2Flows r2Config = new R2Flows(Quantity.of(2, "m*s^-1"));
+    Collection<Flow> controls = r2Config.getFlows(10);
     Tensor center = Tensors.fromString("{3[m],6[m]}");
     Scalar radius = Quantity.of(1, "m");
     GoalInterface goalInterface = RnMinTimeGoalManager.create(center, radius, controls);
