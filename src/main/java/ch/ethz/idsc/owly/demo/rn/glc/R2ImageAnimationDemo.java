@@ -1,8 +1,6 @@
 // code by jph
 package ch.ethz.idsc.owly.demo.rn.glc;
 
-import java.io.IOException;
-
 import ch.ethz.idsc.owly.demo.rn.R2ImageRegionWrap;
 import ch.ethz.idsc.owly.demo.rn.R2ImageRegions;
 import ch.ethz.idsc.owly.demo.util.DemoInterface;
@@ -34,7 +32,7 @@ public class R2ImageAnimationDemo implements DemoInterface {
     }
   }
 
-  public static void main(String[] args) throws IOException {
+  public static void main(String[] args) {
     new R2ImageAnimationDemo().start();
   }
 }

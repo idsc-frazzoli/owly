@@ -1,7 +1,6 @@
 // code by jph
 package ch.ethz.idsc.owly.demo.se2.glc;
 
-import java.io.IOException;
 import java.util.Arrays;
 
 import ch.ethz.idsc.owly.demo.rn.R2ImageRegionWrap;
@@ -90,7 +89,8 @@ public class Se2xTLetterDemo implements DemoInterface {
       owlyAnimationFrame.addBackground(renderInterface);
     }
     {
-      CarPolicyEntity twdPolicyEntity = new CarPolicyEntity(ray);
+      CarPolicyEntity twdPolicyEntity = new CarPolicyEntity( //
+          Tensors.vector(5.600, 8.667, -1.571), ray);
       owlyAnimationFrame.add(twdPolicyEntity);
     }
     // ---
@@ -99,7 +99,7 @@ public class Se2xTLetterDemo implements DemoInterface {
     owlyAnimationFrame.jFrame.setVisible(true);
   }
 
-  public static void main(String[] args) throws IOException {
+  public static void main(String[] args) {
     new Se2xTLetterDemo().start();
   }
 }

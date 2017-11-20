@@ -1,8 +1,6 @@
 // code by jph
 package ch.ethz.idsc.owly.demo.se2.glc;
 
-import java.io.IOException;
-
 import ch.ethz.idsc.owly.demo.rn.R2ImageRegions;
 import ch.ethz.idsc.owly.gui.ani.OwlyAnimationFrame;
 import ch.ethz.idsc.owly.gui.region.RegionRenders;
@@ -24,7 +22,7 @@ public class Se2Letter1Demo extends Se2CarDemo {
     owlyAnimationFrame.addBackground(RegionRenders.create(imageRegion));
   }
 
-  public static void main(String[] args) throws IOException {
+  public static void main(String[] args) {
     new Se2Letter1Demo().start();
   }
 }

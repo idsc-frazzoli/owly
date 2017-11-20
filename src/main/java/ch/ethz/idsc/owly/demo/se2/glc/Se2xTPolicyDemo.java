@@ -1,36 +1,40 @@
 // code by jph
 package ch.ethz.idsc.owly.demo.se2.glc;
 
+import java.util.Arrays;
+
 import ch.ethz.idsc.owly.demo.rn.R2ImageRegionWrap;
 import ch.ethz.idsc.owly.demo.rn.R2ImageRegions;
-import ch.ethz.idsc.owly.demo.se2.Se2PointsVsRegion;
-import ch.ethz.idsc.owly.demo.se2.Se2PointsVsRegions;
+import ch.ethz.idsc.owly.demo.util.DemoInterface;
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
 import ch.ethz.idsc.owly.gui.ani.OwlyAnimationFrame;
 import ch.ethz.idsc.owly.gui.region.RegionRenders;
 import ch.ethz.idsc.owly.math.region.ImageRegion;
-import ch.ethz.idsc.owly.math.state.StateTime;
+import ch.ethz.idsc.owly.math.region.RegionUnion;
+import ch.ethz.idsc.owly.math.state.TimeInvariantRegion;
 import ch.ethz.idsc.owly.math.state.TrajectoryRegionQuery;
-import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Tensors;
 
-public class Se2xTPlainDemo
-// implements DemoInterface
-{
-  // @Override
+public class Se2xTPolicyDemo implements DemoInterface {
+  @Override
   public void start() {
     OwlyAnimationFrame owlyAnimationFrame = new OwlyAnimationFrame();
-    CarxTEntity carxTEntity = new CarxTEntity(new StateTime(Tensors.vector(6.75, 5.4, 1 + Math.PI), RealScalar.ZERO));
-    owlyAnimationFrame.set(carxTEntity);
     // ---
-    R2ImageRegionWrap r2ImageRegionWrap = R2ImageRegions._GTOB;
-    carxTEntity.extraCosts.add(r2ImageRegionWrap.costFunction());
+    R2ImageRegionWrap r2ImageRegionWrap = R2ImageRegions._2181;
     ImageRegion imageRegion = r2ImageRegionWrap.imageRegion();
-    Se2PointsVsRegion se2PointsVsRegion = Se2PointsVsRegions.line(Tensors.vector(0.2, 0.1, 0, -0.1), imageRegion);
-    TrajectoryRegionQuery trq = SimpleTrajectoryRegionQuery.timeInvariant(se2PointsVsRegion);
-    carxTEntity.obstacleQuery = trq;
+    // ---
+    TrajectoryRegionQuery trq = SimpleTrajectoryRegionQuery.timeInvariant(imageRegion);
+    // abstractEntity.raytraceQuery = SimpleTrajectoryRegionQuery.timeInvariant(imageRegion);
     owlyAnimationFrame.setObstacleQuery(trq);
     owlyAnimationFrame.addBackground(RegionRenders.create(imageRegion));
+    // ---
+    final TrajectoryRegionQuery ray = new SimpleTrajectoryRegionQuery( //
+        RegionUnion.wrap(Arrays.asList( //
+            new TimeInvariantRegion(imageRegion))));
+    {
+      CarPolicyEntity twdPolicyEntity = new CarPolicyEntity(Tensors.vector(1, 2.8, 1.57), ray);
+      owlyAnimationFrame.add(twdPolicyEntity);
+    }
     // ---
     owlyAnimationFrame.configCoordinateOffset(50, 700);
     owlyAnimationFrame.jFrame.setBounds(100, 50, 1200, 800);
@@ -38,6 +42,6 @@ public class Se2xTPlainDemo
   }
 
   public static void main(String[] args) {
-    new Se2xTPlainDemo().start();
+    new Se2xTPolicyDemo().start();
   }
 }
