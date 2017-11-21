@@ -24,7 +24,7 @@ public enum RungeKutta4Integrator implements Integrator {
     return k1.add(k4).multiply(SIXTH).add(k2.add(k3).multiply(THIRD));
   }
 
-  @Override
+  @Override // from Integrator
   public Tensor step(Flow flow, Tensor x, Scalar h) {
     return x.add(increment(flow, x, h));
   }

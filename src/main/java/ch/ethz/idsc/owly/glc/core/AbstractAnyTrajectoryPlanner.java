@@ -75,7 +75,7 @@ public abstract class AbstractAnyTrajectoryPlanner extends AbstractTrajectoryPla
       }
       // we did not follow the planned path ==> new Motion planning problem,
       // also often used to start a new MPP
-      insertRoot(new StateTime(state, RealScalar.ZERO)); 
+      insertRoot(new StateTime(state, RealScalar.ZERO));
     }
     return increaseDepthBy;
   }

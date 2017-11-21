@@ -5,7 +5,7 @@ package ch.ethz.idsc.owly.math.region;
 public enum Regions {
   ;
   private static class EmptyRegion<T> implements Region<T> {
-    @Override
+    @Override // from Region
     public boolean isMember(T type) {
       return false;
     }

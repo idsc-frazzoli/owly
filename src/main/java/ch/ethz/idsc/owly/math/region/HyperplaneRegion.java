@@ -25,6 +25,6 @@ public class HyperplaneRegion extends ImplicitFunctionRegion {
 
   @Override
   public Scalar apply(Tensor x) {
-    return (Scalar) x.dot(normal).add(distanceFromZero);
+    return distanceFromZero.add(x.dot(normal));
   }
 }

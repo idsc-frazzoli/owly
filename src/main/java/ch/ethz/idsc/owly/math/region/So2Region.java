@@ -24,7 +24,7 @@ public class So2Region extends ImplicitFunctionRegion {
     mod = Mod.function(half_circumference.multiply(RealScalar.of(2)), half_circumference.negate());
   }
 
-  @Override // from ImplicitFunction
+  @Override // from TensorScalarFunction
   public Scalar apply(Tensor x) {
     return mod.apply(x.Get().subtract(center)).abs().subtract(radius);
   }

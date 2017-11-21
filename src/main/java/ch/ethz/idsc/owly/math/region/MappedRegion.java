@@ -14,7 +14,7 @@ public class MappedRegion implements Region<Tensor> {
     this.function = function;
   }
 
-  @Override
+  @Override // from Region
   public boolean isMember(Tensor tensor) {
     return region.isMember(function.apply(tensor));
   }

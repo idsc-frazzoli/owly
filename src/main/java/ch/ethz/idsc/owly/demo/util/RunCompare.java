@@ -1,5 +1,5 @@
 // code by jl
-package ch.ethz.idsc.owly.glc.adapter;
+package ch.ethz.idsc.owly.demo.util;
 
 import java.nio.charset.Charset;
 import java.nio.file.Files;
@@ -8,7 +8,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import ch.ethz.idsc.owly.data.Stopwatch;
-import ch.ethz.idsc.owly.demo.util.UserHome;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Scalars;
@@ -21,7 +20,7 @@ public class RunCompare {
   private Tensor currentIterations;
   private Tensor currentCosts = Tensors.vector(0);
   private final int numberOfPlanners;
-  private List<String> lines = new ArrayList<String>();
+  private List<String> lines = new ArrayList<>();
   private Stopwatch stopwatch;
   private int currentPlannerID = -1;
 

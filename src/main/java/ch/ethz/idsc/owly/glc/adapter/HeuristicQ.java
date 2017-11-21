@@ -1,6 +1,8 @@
 // code by jl
 package ch.ethz.idsc.owly.glc.adapter;
 
+import java.util.Objects;
+
 import ch.ethz.idsc.owly.glc.core.HeuristicFunction;
 
 /** class contains static utility function that operate on instances of the {@link HeuristicFunction}
@@ -12,6 +14,8 @@ public enum HeuristicQ {
    * @param heuristicFunction to inspect
    * @return true if a non-trivial heuristic is implemented, false if not */
   public static boolean of(HeuristicFunction heuristicFunction) {
+    if (Objects.isNull(heuristicFunction))
+      throw new NullPointerException();
     try {
       // if this throws no exception, x was not used and the result is a constant => no heuristic
       heuristicFunction.minCostToGoal(null);

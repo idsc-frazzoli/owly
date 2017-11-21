@@ -10,7 +10,7 @@ import ch.ethz.idsc.tensor.Tensor;
 enum BulirschStoerIntegrator implements Integrator {
   INSTANCE;
   // ---
-  @Override
+  @Override // from Integrator
   public Tensor step(Flow flow, Tensor x, Scalar h) {
     // LONGTERM implement
     throw new RuntimeException();

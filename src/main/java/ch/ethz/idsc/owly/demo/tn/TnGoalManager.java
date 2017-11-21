@@ -33,18 +33,18 @@ class TnGoalManager implements Region<Tensor>, CostFunction {
     this.radius = radius;
   }
 
-  @Override
+  @Override // from CostIncrementFunction
   public Scalar costIncrement(GlcNode node, List<StateTime> trajectory, Flow flow) {
     StateTime from = node.stateTime();
     return Norm._2.between(from.state(), Lists.getLast(trajectory).state());
   }
 
-  @Override
+  @Override // from HeuristicFunction
   public Scalar minCostToGoal(Tensor x) {
     return Ramp.of(tnWarp.distance(x, center).subtract(radius));
   }
 
-  @Override
+  @Override // from Region
   public boolean isMember(Tensor tensor) {
     return Scalars.isZero(minCostToGoal(tensor));
   }

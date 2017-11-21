@@ -19,7 +19,7 @@ public enum RungeKutta45Integrator implements Integrator {
   private static final Scalar W1 = RationalScalar.of(-1, 15);
   private static final Scalar W2 = RationalScalar.of(16, 15);
 
-  @Override
+  @Override // from Integrator
   public Tensor step(Flow flow, Tensor x, Scalar h) {
     Tensor y1;
     final Tensor flow_at_x = flow.at(x); // used twice
