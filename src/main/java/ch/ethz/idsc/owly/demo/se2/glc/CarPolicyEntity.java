@@ -10,7 +10,6 @@ import java.util.Objects;
 
 import ch.ethz.idsc.owly.demo.se2.Se2CarIntegrator;
 import ch.ethz.idsc.owly.demo.se2.Se2StateSpaceModel;
-import ch.ethz.idsc.owly.demo.util.LidarEmulator;
 import ch.ethz.idsc.owly.gui.GeometricLayer;
 import ch.ethz.idsc.owly.gui.ani.PolicyEntity;
 import ch.ethz.idsc.owly.math.Degree;
@@ -18,6 +17,7 @@ import ch.ethz.idsc.owly.math.r2.CirclePoints;
 import ch.ethz.idsc.owly.math.state.SimpleEpisodeIntegrator;
 import ch.ethz.idsc.owly.math.state.StateTime;
 import ch.ethz.idsc.owly.math.state.TrajectoryRegionQuery;
+import ch.ethz.idsc.owly.sim.LidarEmulator;
 import ch.ethz.idsc.subare.core.LearningRate;
 import ch.ethz.idsc.subare.core.Policy;
 import ch.ethz.idsc.subare.core.RewardInterface;

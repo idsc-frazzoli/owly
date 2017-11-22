@@ -3,13 +3,13 @@ package ch.ethz.idsc.owly.demo.psu.glc;
 
 import ch.ethz.idsc.owly.demo.psu.PsuStateSpaceModel;
 import ch.ethz.idsc.owly.demo.util.DemoInterface;
-import ch.ethz.idsc.owly.demo.util.VectorFields;
 import ch.ethz.idsc.owly.gui.ani.OwlyAnimationFrame;
 import ch.ethz.idsc.owly.gui.ren.VectorFieldRender;
 import ch.ethz.idsc.owly.math.sample.BoxRandomSample;
 import ch.ethz.idsc.owly.math.sample.RandomSample;
 import ch.ethz.idsc.owly.math.sample.RandomSampleInterface;
 import ch.ethz.idsc.owly.math.state.EmptyTrajectoryRegionQuery;
+import ch.ethz.idsc.owly.util.VectorFields;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
