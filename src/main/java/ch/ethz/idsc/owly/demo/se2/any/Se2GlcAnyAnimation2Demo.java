@@ -2,10 +2,10 @@
 package ch.ethz.idsc.owly.demo.se2.any;
 
 import ch.ethz.idsc.owly.demo.util.DemoInterface;
-import ch.ethz.idsc.owly.demo.util.ImageRegions;
 import ch.ethz.idsc.owly.gui.ani.OwlyAnimationFrame;
 import ch.ethz.idsc.owly.gui.region.RegionRenders;
 import ch.ethz.idsc.owly.math.region.ImageRegion;
+import ch.ethz.idsc.owly.util.ImageRegions;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
 

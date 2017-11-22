@@ -3,9 +3,7 @@ package ch.ethz.idsc.owly.demo.se2.twd;
 
 import ch.ethz.idsc.owly.demo.rn.R2ImageRegionWrap;
 import ch.ethz.idsc.owly.demo.rn.R2ImageRegions;
-import ch.ethz.idsc.owly.demo.util.CameraEmulator;
 import ch.ethz.idsc.owly.demo.util.DemoInterface;
-import ch.ethz.idsc.owly.demo.util.LidarEmulator;
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
 import ch.ethz.idsc.owly.gui.RenderInterface;
 import ch.ethz.idsc.owly.gui.ani.OwlyAnimationFrame;
@@ -13,6 +11,8 @@ import ch.ethz.idsc.owly.gui.region.RegionRenders;
 import ch.ethz.idsc.owly.math.region.ImageRegion;
 import ch.ethz.idsc.owly.math.state.StateTime;
 import ch.ethz.idsc.owly.math.state.TrajectoryRegionQuery;
+import ch.ethz.idsc.owly.sim.CameraEmulator;
+import ch.ethz.idsc.owly.sim.LidarEmulator;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Tensors;
 

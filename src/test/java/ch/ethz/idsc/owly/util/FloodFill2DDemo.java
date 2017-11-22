@@ -1,11 +1,12 @@
 // code by jph
-package ch.ethz.idsc.owly.demo.util;
+package ch.ethz.idsc.owly.util;
 
 import java.io.IOException;
 import java.util.Set;
 
 import ch.ethz.idsc.owly.data.Stopwatch;
 import ch.ethz.idsc.owly.demo.rn.R2ImageRegions;
+import ch.ethz.idsc.owly.demo.util.UserHome;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;

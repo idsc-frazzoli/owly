@@ -1,5 +1,5 @@
 // code by jph
-package ch.ethz.idsc.owly.demo.util;
+package ch.ethz.idsc.owly.util;
 
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.alg.Dimensions;

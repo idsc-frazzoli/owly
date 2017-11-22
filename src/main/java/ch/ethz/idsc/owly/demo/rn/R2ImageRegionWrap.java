@@ -3,10 +3,10 @@ package ch.ethz.idsc.owly.demo.rn;
 
 import java.util.Set;
 
-import ch.ethz.idsc.owly.demo.util.FloodFill2D;
-import ch.ethz.idsc.owly.demo.util.ImageCostFunction;
 import ch.ethz.idsc.owly.glc.core.CostFunction;
 import ch.ethz.idsc.owly.math.region.ImageRegion;
+import ch.ethz.idsc.owly.util.FloodFill2D;
+import ch.ethz.idsc.owly.util.ImageCostFunction;
 import ch.ethz.idsc.tensor.DoubleScalar;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Tensor;

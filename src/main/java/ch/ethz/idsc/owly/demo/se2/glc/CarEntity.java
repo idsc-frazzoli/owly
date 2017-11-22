@@ -21,7 +21,6 @@ import ch.ethz.idsc.owly.math.StateTimeTensorFunction;
 import ch.ethz.idsc.owly.math.flow.Flow;
 import ch.ethz.idsc.owly.math.state.FixedStateIntegrator;
 import ch.ethz.idsc.owly.math.state.SimpleEpisodeIntegrator;
-import ch.ethz.idsc.owly.math.state.StateIntegrator;
 import ch.ethz.idsc.owly.math.state.StateTime;
 import ch.ethz.idsc.owly.math.state.TrajectoryRegionQuery;
 import ch.ethz.idsc.tensor.RationalScalar;
@@ -38,6 +37,11 @@ class CarEntity extends Se2Entity {
   private static final Tensor PARTITIONSCALE = Tensors.vector(5, 5, 50 / Math.PI).unmodifiable(); // 50/pi == 15.9155
   private static final Scalar SQRT2 = Sqrt.of(RealScalar.of(2));
   private static final Scalar SHIFT_PENALTY = RealScalar.of(0.4);
+  /** the time difference between two successive nodes in the planner tree
+   * is 4/10 */
+  // TODO use 10/4 in last entry of partition scale
+  public static final FixedStateIntegrator FIXEDSTATEINTEGRATOR = //
+      FixedStateIntegrator.create(Se2CarIntegrator.INSTANCE, RationalScalar.of(1, 10), 4);
   // ---
   private static final Tensor SHAPE = Tensors.matrixDouble( //
       new double[][] { //
@@ -92,12 +96,10 @@ class CarEntity extends Se2Entity {
   public TrajectoryPlanner createTrajectoryPlanner(TrajectoryRegionQuery obstacleQuery, Tensor goal) {
     GlobalAssert.that(VectorQ.ofLength(goal, 3));
     this.obstacleQuery = obstacleQuery;
-    StateIntegrator stateIntegrator = //
-        FixedStateIntegrator.create(Se2CarIntegrator.INSTANCE, RationalScalar.of(1, 10), 4);
     GoalInterface goalInterface = MultiCostGoalAdapter.of( //
         Se2MinTimeGoalManager.create(goal, goalRadius, controls), extraCosts);
     TrajectoryPlanner trajectoryPlanner = new StandardTrajectoryPlanner( //
-        eta(), stateIntegrator, controls, obstacleQuery, goalInterface);
+        eta(), FIXEDSTATEINTEGRATOR, controls, obstacleQuery, goalInterface);
     trajectoryPlanner.represent = StateTimeTensorFunction.state(SE2WRAP::represent);
     return trajectoryPlanner;
   }
