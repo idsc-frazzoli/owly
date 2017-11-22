@@ -7,6 +7,7 @@ import java.util.Optional;
 
 import ch.ethz.idsc.owly.math.flow.Flow;
 import ch.ethz.idsc.owly.math.flow.Integrator;
+import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.TensorRuntimeException;
 import ch.ethz.idsc.tensor.sca.Sign;
@@ -51,6 +52,19 @@ public class FixedStateIntegrator implements StateIntegrator {
     return trajectory;
   }
 
+  /** @return time advancement of trajectory which is the product of the fine grained
+   * time step and the trajectory size */
+  public Scalar getTimeStepTrajectory() {
+    return timeStep.multiply(RealScalar.of(trajectorySize));
+  }
+
+  /** function can be used for ray-tracing until an obstacle is intersected
+   * or the end of the trajectory is reached.
+   * 
+   * @param stateTime
+   * @param flow
+   * @param trajectoryRegionQuery
+   * @return */
   public Optional<StateTime> firstMember(StateTime stateTime, Flow flow, TrajectoryRegionQuery trajectoryRegionQuery) {
     for (int count = 0; count < trajectorySize; ++count) {
       stateTime = new StateTime( //
