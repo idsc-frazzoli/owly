@@ -3,6 +3,11 @@ package ch.ethz.idsc.owly.demo.delta.glc;
 
 import java.util.Collection;
 
+import ch.ethz.idsc.owl.glc.adapter.Parameters;
+import ch.ethz.idsc.owl.glc.adapter.SimpleTrajectoryRegionQuery;
+import ch.ethz.idsc.owl.glc.any.OptimalAnyTrajectoryPlanner;
+import ch.ethz.idsc.owl.glc.core.TrajectoryPlanner;
+import ch.ethz.idsc.owl.glc.std.StandardTrajectoryPlanner;
 import ch.ethz.idsc.owl.gui.ren.VectorFieldRender;
 import ch.ethz.idsc.owl.math.StateSpaceModel;
 import ch.ethz.idsc.owl.math.VectorFields;
@@ -22,11 +27,6 @@ import ch.ethz.idsc.owly.demo.delta.DeltaControls;
 import ch.ethz.idsc.owly.demo.delta.DeltaHeuristicGoalManager;
 import ch.ethz.idsc.owly.demo.delta.DeltaParameters;
 import ch.ethz.idsc.owly.demo.delta.ImageGradient;
-import ch.ethz.idsc.owly.glc.adapter.Parameters;
-import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
-import ch.ethz.idsc.owly.glc.any.OptimalAnyTrajectoryPlanner;
-import ch.ethz.idsc.owly.glc.core.TrajectoryPlanner;
-import ch.ethz.idsc.owly.glc.std.StandardTrajectoryPlanner;
 import ch.ethz.idsc.tensor.RationalScalar;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;

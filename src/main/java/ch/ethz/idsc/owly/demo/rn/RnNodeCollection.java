@@ -9,8 +9,8 @@ import ch.ethz.idsc.owl.data.nd.NdCluster;
 import ch.ethz.idsc.owl.data.nd.NdEntry;
 import ch.ethz.idsc.owl.data.nd.NdMap;
 import ch.ethz.idsc.owl.data.nd.NdTreeMap;
-import ch.ethz.idsc.owly.rrts.core.RrtsNode;
-import ch.ethz.idsc.owly.rrts.core.RrtsNodeCollection;
+import ch.ethz.idsc.owl.rrts.core.RrtsNode;
+import ch.ethz.idsc.owl.rrts.core.RrtsNodeCollection;
 import ch.ethz.idsc.tensor.Tensor;
 
 /** collection of nodes in R^n backed by a n-dimensional uniform tree

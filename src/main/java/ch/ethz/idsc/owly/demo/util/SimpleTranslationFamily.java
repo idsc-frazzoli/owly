@@ -2,7 +2,7 @@
 package ch.ethz.idsc.owly.demo.util;
 
 import ch.ethz.idsc.owl.math.ScalarTensorFunction;
-import ch.ethz.idsc.owl.math.se2.TranslationFamily;
+import ch.ethz.idsc.owl.math.map.TranslationFamily;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
 

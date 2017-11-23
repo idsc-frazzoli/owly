@@ -10,7 +10,7 @@ import ch.ethz.idsc.owl.gui.RenderInterface;
 import ch.ethz.idsc.owl.math.state.StateTime;
 import ch.ethz.idsc.owl.math.state.StateTimeCollector;
 
-class StateTimeCollectorRender implements RenderInterface {
+public class StateTimeCollectorRender implements RenderInterface {
   private static final Color COLOR = new Color(0, 0, 0, 128);
   private static final int SIZE = 2;
   // ---

@@ -16,14 +16,14 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
 import ch.ethz.idsc.owl.data.tree.Nodes;
+import ch.ethz.idsc.owl.glc.core.TrajectoryPlanner;
 import ch.ethz.idsc.owl.gui.BaseFrame;
 import ch.ethz.idsc.owl.gui.RenderInterface;
 import ch.ethz.idsc.owl.gui.ren.RenderElements;
 import ch.ethz.idsc.owl.gui.ren.TrajectoryRender;
 import ch.ethz.idsc.owl.math.state.TrajectorySample;
-import ch.ethz.idsc.owly.glc.core.TrajectoryPlanner;
-import ch.ethz.idsc.owly.rrts.core.RrtsNode;
-import ch.ethz.idsc.owly.rrts.core.TransitionRegionQuery;
+import ch.ethz.idsc.owl.rrts.core.RrtsNode;
+import ch.ethz.idsc.owl.rrts.core.TransitionRegionQuery;
 import ch.ethz.idsc.tensor.io.Serialization;
 
 public class OwlyFrame extends BaseFrame {

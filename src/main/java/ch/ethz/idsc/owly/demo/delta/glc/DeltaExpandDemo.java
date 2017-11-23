@@ -3,9 +3,13 @@ package ch.ethz.idsc.owly.demo.delta.glc;
 
 import java.util.Collection;
 
+import ch.ethz.idsc.owl.glc.adapter.Expand;
+import ch.ethz.idsc.owl.glc.adapter.SimpleTrajectoryRegionQuery;
+import ch.ethz.idsc.owl.glc.core.GoalInterface;
+import ch.ethz.idsc.owl.glc.core.TrajectoryPlanner;
+import ch.ethz.idsc.owl.glc.std.StandardTrajectoryPlanner;
 import ch.ethz.idsc.owl.gui.ani.OwlyFrame;
 import ch.ethz.idsc.owl.gui.ani.OwlyGui;
-import ch.ethz.idsc.owl.gui.region.RegionRenders;
 import ch.ethz.idsc.owl.math.StateSpaceModel;
 import ch.ethz.idsc.owl.math.flow.Flow;
 import ch.ethz.idsc.owl.math.flow.RungeKutta45Integrator;
@@ -20,12 +24,8 @@ import ch.ethz.idsc.owly.demo.delta.DeltaControls;
 import ch.ethz.idsc.owly.demo.delta.DeltaMinTimeGoalManager;
 import ch.ethz.idsc.owly.demo.delta.DeltaStateSpaceModel;
 import ch.ethz.idsc.owly.demo.delta.ImageGradient;
+import ch.ethz.idsc.owly.demo.util.RegionRenders;
 import ch.ethz.idsc.owly.demo.util.UserHome;
-import ch.ethz.idsc.owly.glc.adapter.Expand;
-import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
-import ch.ethz.idsc.owly.glc.core.GoalInterface;
-import ch.ethz.idsc.owly.glc.core.TrajectoryPlanner;
-import ch.ethz.idsc.owly.glc.std.StandardTrajectoryPlanner;
 import ch.ethz.idsc.tensor.RationalScalar;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;

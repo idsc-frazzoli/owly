@@ -4,6 +4,7 @@ package ch.ethz.idsc.owl.math.r2;
 import java.util.ArrayList;
 import java.util.List;
 
+import ch.ethz.idsc.owl.math.planar.Polygons;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;

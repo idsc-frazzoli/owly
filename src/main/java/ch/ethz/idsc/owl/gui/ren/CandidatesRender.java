@@ -12,10 +12,10 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
+import ch.ethz.idsc.owl.glc.any.CandidatePair;
+import ch.ethz.idsc.owl.glc.any.OptimalAnyTrajectoryPlanner;
 import ch.ethz.idsc.owl.gui.GeometricLayer;
 import ch.ethz.idsc.owl.gui.RenderInterface;
-import ch.ethz.idsc.owly.glc.any.CandidatePair;
-import ch.ethz.idsc.owly.glc.any.OptimalAnyTrajectoryPlanner;
 import ch.ethz.idsc.tensor.Tensor;
 
 class CandidatesRender implements RenderInterface {

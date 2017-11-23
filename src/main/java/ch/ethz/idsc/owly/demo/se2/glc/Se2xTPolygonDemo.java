@@ -1,16 +1,16 @@
 // code by jph
 package ch.ethz.idsc.owly.demo.se2.glc;
 
+import ch.ethz.idsc.owl.glc.adapter.SimpleTrajectoryRegionQuery;
 import ch.ethz.idsc.owl.gui.RenderInterface;
 import ch.ethz.idsc.owl.gui.ani.OwlyAnimationFrame;
+import ch.ethz.idsc.owl.math.map.BijectionFamily;
 import ch.ethz.idsc.owl.math.region.Region;
-import ch.ethz.idsc.owl.math.se2.BijectionFamily;
 import ch.ethz.idsc.owl.math.state.StateTime;
 import ch.ethz.idsc.owly.demo.rn.R2xTPolygonStateTimeRegion;
 import ch.ethz.idsc.owly.demo.util.DemoInterface;
 import ch.ethz.idsc.owly.demo.util.ExamplePolygons;
 import ch.ethz.idsc.owly.demo.util.SimpleTranslationFamily;
-import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Tensors;
 import ch.ethz.idsc.tensor.sca.Sin;

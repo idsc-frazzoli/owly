@@ -6,9 +6,10 @@ import java.awt.Graphics2D;
 import ch.ethz.idsc.owl.gui.GeometricLayer;
 import ch.ethz.idsc.owl.gui.RenderInterface;
 import ch.ethz.idsc.owl.math.region.PolygonRegion;
+import ch.ethz.idsc.owly.demo.util.RegionRenders;
 import ch.ethz.idsc.tensor.Tensor;
 
-class PolygonRegionRender implements RenderInterface {
+public class PolygonRegionRender implements RenderInterface {
   private final Tensor polygon;
 
   public PolygonRegionRender(PolygonRegion polygonRegion) {

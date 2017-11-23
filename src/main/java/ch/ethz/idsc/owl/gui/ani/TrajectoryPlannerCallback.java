@@ -3,9 +3,9 @@ package ch.ethz.idsc.owl.gui.ani;
 
 import java.util.List;
 
+import ch.ethz.idsc.owl.glc.core.TrajectoryPlanner;
 import ch.ethz.idsc.owl.math.state.TrajectorySample;
-import ch.ethz.idsc.owly.glc.core.TrajectoryPlanner;
-import ch.ethz.idsc.owly.rrts.core.RrtsPlanner;
+import ch.ethz.idsc.owl.rrts.core.RrtsPlanner;
 
 /**
  * 

@@ -4,11 +4,11 @@ package ch.ethz.idsc.owl.img;
 import java.util.List;
 
 import ch.ethz.idsc.owl.data.GlobalAssert;
+import ch.ethz.idsc.owl.glc.adapter.Trajectories;
+import ch.ethz.idsc.owl.glc.core.CostFunction;
+import ch.ethz.idsc.owl.glc.core.GlcNode;
 import ch.ethz.idsc.owl.math.flow.Flow;
 import ch.ethz.idsc.owl.math.state.StateTime;
-import ch.ethz.idsc.owly.glc.adapter.Trajectories;
-import ch.ethz.idsc.owly.glc.core.CostFunction;
-import ch.ethz.idsc.owly.glc.core.GlcNode;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;

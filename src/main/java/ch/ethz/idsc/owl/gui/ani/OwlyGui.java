@@ -1,7 +1,7 @@
 // code by jph
 package ch.ethz.idsc.owl.gui.ani;
 
-import ch.ethz.idsc.owly.glc.core.TrajectoryPlanner;
+import ch.ethz.idsc.owl.glc.core.TrajectoryPlanner;
 
 public enum OwlyGui {
   ;

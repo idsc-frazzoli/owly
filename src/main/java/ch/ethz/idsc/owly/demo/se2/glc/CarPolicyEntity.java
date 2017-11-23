@@ -11,7 +11,7 @@ import java.util.Objects;
 import ch.ethz.idsc.owl.gui.GeometricLayer;
 import ch.ethz.idsc.owl.gui.ani.PolicyEntity;
 import ch.ethz.idsc.owl.math.Degree;
-import ch.ethz.idsc.owl.math.r2.CirclePoints;
+import ch.ethz.idsc.owl.math.planar.CirclePoints;
 import ch.ethz.idsc.owl.math.state.SimpleEpisodeIntegrator;
 import ch.ethz.idsc.owl.math.state.StateTime;
 import ch.ethz.idsc.owl.math.state.TrajectoryRegionQuery;

@@ -3,12 +3,12 @@ package ch.ethz.idsc.owly.demo.se2.any;
 
 import java.util.List;
 
+import ch.ethz.idsc.owl.glc.adapter.StateTimeTrajectories;
+import ch.ethz.idsc.owl.glc.core.GlcNode;
 import ch.ethz.idsc.owl.math.flow.Flow;
 import ch.ethz.idsc.owl.math.region.Region;
 import ch.ethz.idsc.owl.math.state.StateTime;
 import ch.ethz.idsc.owly.demo.se2.Se2AbstractGoalManager;
-import ch.ethz.idsc.owly.glc.adapter.StateTimeTrajectories;
-import ch.ethz.idsc.owly.glc.core.GlcNode;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;

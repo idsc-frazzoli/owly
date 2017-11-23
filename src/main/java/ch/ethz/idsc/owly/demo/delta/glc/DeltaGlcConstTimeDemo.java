@@ -1,10 +1,10 @@
 // code by jl
 package ch.ethz.idsc.owly.demo.delta.glc;
 
+import ch.ethz.idsc.owl.glc.adapter.GlcExpand;
+import ch.ethz.idsc.owl.glc.core.TrajectoryPlanner;
 import ch.ethz.idsc.owl.gui.ani.OwlyFrame;
 import ch.ethz.idsc.owl.gui.ani.OwlyGui;
-import ch.ethz.idsc.owly.glc.adapter.GlcExpand;
-import ch.ethz.idsc.owly.glc.core.TrajectoryPlanner;
 import ch.ethz.idsc.tensor.RationalScalar;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;

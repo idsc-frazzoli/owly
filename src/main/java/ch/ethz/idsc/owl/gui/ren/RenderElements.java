@@ -6,12 +6,12 @@ import java.util.LinkedList;
 import java.util.List;
 
 import ch.ethz.idsc.owl.data.tree.StateCostNode;
+import ch.ethz.idsc.owl.glc.any.OptimalAnyTrajectoryPlanner;
+import ch.ethz.idsc.owl.glc.core.TrajectoryPlanner;
 import ch.ethz.idsc.owl.gui.RenderInterface;
 import ch.ethz.idsc.owl.math.state.StateTimeCollector;
 import ch.ethz.idsc.owl.math.state.TrajectoryRegionQuery;
-import ch.ethz.idsc.owly.glc.any.OptimalAnyTrajectoryPlanner;
-import ch.ethz.idsc.owly.glc.core.TrajectoryPlanner;
-import ch.ethz.idsc.owly.rrts.core.TransitionRegionQuery;
+import ch.ethz.idsc.owl.rrts.core.TransitionRegionQuery;
 
 public enum RenderElements {
   ;

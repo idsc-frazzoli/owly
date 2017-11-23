@@ -1,6 +1,7 @@
 // code by jph
 package ch.ethz.idsc.owl.math.r2;
 
+import ch.ethz.idsc.owl.math.planar.Cross2D;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;

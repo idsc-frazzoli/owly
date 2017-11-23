@@ -8,6 +8,8 @@ import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.util.Collection;
 
+import ch.ethz.idsc.owl.glc.adapter.SimpleTrajectoryRegionQuery;
+import ch.ethz.idsc.owl.glc.core.GoalInterface;
 import ch.ethz.idsc.owl.gui.GeometricLayer;
 import ch.ethz.idsc.owl.gui.ani.AbstractAnyEntity;
 import ch.ethz.idsc.owl.gui.ani.PlannerType;
@@ -25,8 +27,6 @@ import ch.ethz.idsc.owly.demo.rn.EuclideanDistanceDiscoverRegion;
 import ch.ethz.idsc.owly.demo.rn.R2Flows;
 import ch.ethz.idsc.owly.demo.rn.R2Parameters;
 import ch.ethz.idsc.owly.demo.rn.RnMinDistSphericalGoalManager;
-import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
-import ch.ethz.idsc.owly.glc.core.GoalInterface;
 import ch.ethz.idsc.tensor.RationalScalar;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
