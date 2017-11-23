@@ -4,7 +4,7 @@ package ch.ethz.idsc.owly.demo.util;
 import java.util.HashSet;
 import java.util.Set;
 
-import ch.ethz.idsc.owly.math.region.Region;
+import ch.ethz.idsc.owl.math.region.Region;
 import junit.framework.TestCase;
 import lcm.util.ClassDiscovery;
 import lcm.util.ClassPaths;

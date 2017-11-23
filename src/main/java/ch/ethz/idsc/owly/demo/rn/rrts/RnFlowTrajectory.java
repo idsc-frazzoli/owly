@@ -4,12 +4,13 @@ package ch.ethz.idsc.owly.demo.rn.rrts;
 import java.util.LinkedList;
 import java.util.List;
 
-import ch.ethz.idsc.owly.glc.core.TrajectorySample;
-import ch.ethz.idsc.owly.math.SingleIntegratorStateSpaceModel;
-import ch.ethz.idsc.owly.math.StateSpaceModel;
-import ch.ethz.idsc.owly.math.StateSpaceModels;
-import ch.ethz.idsc.owly.math.flow.Flow;
-import ch.ethz.idsc.owly.math.state.StateTime;
+import ch.ethz.idsc.owl.data.Lists;
+import ch.ethz.idsc.owl.math.SingleIntegratorStateSpaceModel;
+import ch.ethz.idsc.owl.math.StateSpaceModel;
+import ch.ethz.idsc.owl.math.StateSpaceModels;
+import ch.ethz.idsc.owl.math.flow.Flow;
+import ch.ethz.idsc.owl.math.state.StateTime;
+import ch.ethz.idsc.owl.math.state.TrajectorySample;
 import ch.ethz.idsc.owly.rrts.core.RrtsNode;
 import ch.ethz.idsc.owly.rrts.core.Transition;
 import ch.ethz.idsc.owly.rrts.core.TransitionSpace;
@@ -46,13 +47,13 @@ public class RnFlowTrajectory {
       Transition transition = transitionSpace.connect(prev.state(), node.state());
       List<StateTime> stateTimes = transition.sampled(t0, ofs, dt);
       for (StateTime stateTime : stateTimes) {
-        StateTime orig = trajectory.get(trajectory.size() - 1).stateTime();
+        StateTime orig = Lists.getLast(trajectory).stateTime();
         Flow flow = between(orig, stateTime);
         trajectory.add(new TrajectorySample(stateTime, flow));
       }
       prev = node;
       t0 = t0.add(transition.length());
-      Scalar rem = t0.subtract(trajectory.get(trajectory.size() - 1).stateTime().time());
+      Scalar rem = t0.subtract(Lists.getLast(trajectory).stateTime().time());
       ofs = dt.subtract(rem);
     }
     return trajectory;

@@ -3,7 +3,7 @@ package ch.ethz.idsc.owly.rrts.core;
 
 import java.util.List;
 
-import ch.ethz.idsc.owly.math.state.StateTime;
+import ch.ethz.idsc.owl.math.state.StateTime;
 import ch.ethz.idsc.owly.rrts.adapter.LengthCostFunction;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;

@@ -3,17 +3,17 @@ package ch.ethz.idsc.owly.demo.rnd.glc;
 
 import java.util.List;
 
-import ch.ethz.idsc.owly.data.GlobalAssert;
-import ch.ethz.idsc.owly.data.Lists;
+import ch.ethz.idsc.owl.data.GlobalAssert;
+import ch.ethz.idsc.owl.data.Lists;
+import ch.ethz.idsc.owl.math.flow.Flow;
+import ch.ethz.idsc.owl.math.region.SphericalRegion;
+import ch.ethz.idsc.owl.math.state.StateTime;
+import ch.ethz.idsc.owl.math.state.TimeInvariantRegion;
 import ch.ethz.idsc.owly.demo.rnd.RndAndRegion;
 import ch.ethz.idsc.owly.demo.rnd.RndState;
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
 import ch.ethz.idsc.owly.glc.core.GlcNode;
 import ch.ethz.idsc.owly.glc.core.GoalInterface;
-import ch.ethz.idsc.owly.math.flow.Flow;
-import ch.ethz.idsc.owly.math.region.SphericalRegion;
-import ch.ethz.idsc.owly.math.state.StateTime;
-import ch.ethz.idsc.owly.math.state.TimeInvariantRegion;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.red.Norm;

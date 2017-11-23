@@ -3,14 +3,14 @@ package ch.ethz.idsc.owly.demo.delta.glc;
 
 import java.util.List;
 
-import ch.ethz.idsc.owly.data.Stopwatch;
+import ch.ethz.idsc.owl.data.Stopwatch;
+import ch.ethz.idsc.owl.gui.ani.OwlyFrame;
+import ch.ethz.idsc.owl.gui.ani.OwlyGui;
+import ch.ethz.idsc.owl.math.state.StateTime;
+import ch.ethz.idsc.owly.glc.adapter.GlcExpand;
+import ch.ethz.idsc.owly.glc.adapter.GlcNodes;
 import ch.ethz.idsc.owly.glc.adapter.StateTimeTrajectories;
 import ch.ethz.idsc.owly.glc.core.DebugUtils;
-import ch.ethz.idsc.owly.glc.core.GlcExpand;
-import ch.ethz.idsc.owly.glc.core.GlcNodes;
-import ch.ethz.idsc.owly.gui.ani.OwlyFrame;
-import ch.ethz.idsc.owly.gui.ani.OwlyGui;
-import ch.ethz.idsc.owly.math.state.StateTime;
 import ch.ethz.idsc.tensor.RationalScalar;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Tensor;

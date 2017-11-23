@@ -1,9 +1,9 @@
 // code by jl
 package ch.ethz.idsc.owly.demo.delta.glc;
 
+import ch.ethz.idsc.owl.math.StateSpaceModel;
 import ch.ethz.idsc.owly.glc.adapter.Parameters;
 import ch.ethz.idsc.owly.glc.core.TrajectoryPlanner;
-import ch.ethz.idsc.owly.math.StateSpaceModel;
 
 /** A Container, which contains a {@link TrajectoryPlanner} and its linked objects:
  * Currently:

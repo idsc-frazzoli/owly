@@ -1,10 +1,10 @@
 // code by jl and jph
 package ch.ethz.idsc.owly.demo.rn.any;
 
+import ch.ethz.idsc.owl.gui.ani.OwlyAnimationFrame;
+import ch.ethz.idsc.owl.math.region.Region;
 import ch.ethz.idsc.owly.demo.rn.R2NoiseRegion;
 import ch.ethz.idsc.owly.demo.util.DemoInterface;
-import ch.ethz.idsc.owly.gui.ani.OwlyAnimationFrame;
-import ch.ethz.idsc.owly.math.region.Region;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;

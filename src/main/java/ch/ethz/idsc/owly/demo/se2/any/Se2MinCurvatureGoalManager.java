@@ -3,11 +3,11 @@ package ch.ethz.idsc.owly.demo.se2.any;
 
 import java.util.List;
 
+import ch.ethz.idsc.owl.math.flow.Flow;
+import ch.ethz.idsc.owl.math.state.StateTime;
 import ch.ethz.idsc.owly.demo.se2.Se2AbstractGoalManager;
 import ch.ethz.idsc.owly.glc.adapter.StateTimeTrajectories;
 import ch.ethz.idsc.owly.glc.core.GlcNode;
-import ch.ethz.idsc.owly.math.flow.Flow;
-import ch.ethz.idsc.owly.math.state.StateTime;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
@@ -22,10 +22,9 @@ import ch.ethz.idsc.tensor.sca.Ramp;
   }
 
   @Override // from CostFunction
-  public Scalar costIncrement(GlcNode node, List<StateTime> trajectory, Flow flow) {
-    StateTime from = node.stateTime();
+  public Scalar costIncrement(GlcNode glcNode, List<StateTime> trajectory, Flow flow) {
     return RealScalar.ONE.add(Power.of(flow.getU().Get(1), 2)) //
-        .multiply(StateTimeTrajectories.timeIncrement(from, trajectory));
+        .multiply(StateTimeTrajectories.timeIncrement(glcNode, trajectory));
   }
 
   @Override // from HeuristicFunction

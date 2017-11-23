@@ -3,7 +3,7 @@ package ch.ethz.idsc.owly.demo.se2;
 
 import java.util.Collection;
 
-import ch.ethz.idsc.owly.math.flow.Flow;
+import ch.ethz.idsc.owl.math.flow.Flow;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Tensors;
 import junit.framework.TestCase;

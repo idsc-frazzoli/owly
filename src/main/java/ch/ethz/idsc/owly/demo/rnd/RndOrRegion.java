@@ -1,7 +1,7 @@
 // code by jph
 package ch.ethz.idsc.owly.demo.rnd;
 
-import ch.ethz.idsc.owly.math.region.Region;
+import ch.ethz.idsc.owl.math.region.Region;
 import ch.ethz.idsc.tensor.Tensor;
 
 /** 

@@ -1,15 +1,15 @@
 // code by jph
 package ch.ethz.idsc.owly.demo.se2;
 
-import ch.ethz.idsc.owly.data.DontModify;
-import ch.ethz.idsc.owly.data.GlobalAssert;
+import ch.ethz.idsc.owl.data.DontModify;
+import ch.ethz.idsc.owl.data.GlobalAssert;
+import ch.ethz.idsc.owl.math.region.Region;
+import ch.ethz.idsc.owl.math.region.So2Region;
+import ch.ethz.idsc.owl.math.region.SphericalRegion;
 import ch.ethz.idsc.owly.glc.adapter.GoalAdapter;
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
 import ch.ethz.idsc.owly.glc.core.CostFunction;
 import ch.ethz.idsc.owly.glc.core.GoalInterface;
-import ch.ethz.idsc.owly.math.region.Region;
-import ch.ethz.idsc.owly.math.region.So2Region;
-import ch.ethz.idsc.owly.math.region.SphericalRegion;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.alg.VectorQ;

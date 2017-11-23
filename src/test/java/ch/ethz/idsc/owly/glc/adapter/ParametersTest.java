@@ -1,9 +1,9 @@
 // code by jl
 package ch.ethz.idsc.owly.glc.adapter;
 
+import ch.ethz.idsc.owl.math.StateSpaceModel;
 import ch.ethz.idsc.owly.demo.se2.Se2StateSpaceModel;
 import ch.ethz.idsc.owly.demo.se2.glc.Se2Parameters;
-import ch.ethz.idsc.owly.math.StateSpaceModel;
 import ch.ethz.idsc.tensor.RationalScalar;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;

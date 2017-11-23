@@ -3,19 +3,19 @@ package ch.ethz.idsc.owly.demo.rice.glc;
 
 import java.util.Collection;
 
+import ch.ethz.idsc.owl.gui.ani.OwlyAnimationFrame;
+import ch.ethz.idsc.owl.gui.ren.VectorFieldRender;
+import ch.ethz.idsc.owl.math.VectorFields;
+import ch.ethz.idsc.owl.math.flow.Flow;
+import ch.ethz.idsc.owl.math.region.Region;
+import ch.ethz.idsc.owl.math.sample.BoxRandomSample;
+import ch.ethz.idsc.owl.math.sample.RandomSample;
+import ch.ethz.idsc.owl.math.sample.RandomSampleInterface;
 import ch.ethz.idsc.owly.demo.rice.Rice2Controls;
 import ch.ethz.idsc.owly.demo.rice.Rice2StateSpaceModel;
 import ch.ethz.idsc.owly.demo.rn.R2NoiseRegion;
 import ch.ethz.idsc.owly.demo.util.DemoInterface;
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
-import ch.ethz.idsc.owly.gui.ani.OwlyAnimationFrame;
-import ch.ethz.idsc.owly.gui.ren.VectorFieldRender;
-import ch.ethz.idsc.owly.math.flow.Flow;
-import ch.ethz.idsc.owly.math.region.Region;
-import ch.ethz.idsc.owly.math.sample.BoxRandomSample;
-import ch.ethz.idsc.owly.math.sample.RandomSample;
-import ch.ethz.idsc.owly.math.sample.RandomSampleInterface;
-import ch.ethz.idsc.owly.util.VectorFields;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;

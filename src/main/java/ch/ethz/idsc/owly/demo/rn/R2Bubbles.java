@@ -1,7 +1,7 @@
 // code by jph
 package ch.ethz.idsc.owly.demo.rn;
 
-import ch.ethz.idsc.owly.math.region.ImplicitFunctionRegion;
+import ch.ethz.idsc.owl.math.region.ImplicitFunctionRegion;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;

@@ -1,7 +1,7 @@
 // code by jph
 package ch.ethz.idsc.owly.demo.ip;
 
-import ch.ethz.idsc.owly.math.StateSpaceModel;
+import ch.ethz.idsc.owl.math.StateSpaceModel;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;

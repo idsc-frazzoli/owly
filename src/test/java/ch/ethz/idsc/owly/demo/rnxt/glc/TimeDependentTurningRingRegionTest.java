@@ -1,8 +1,8 @@
 // code by jl
 package ch.ethz.idsc.owly.demo.rnxt.glc;
 
-import ch.ethz.idsc.owly.math.Degree;
-import ch.ethz.idsc.owly.math.state.StateTime;
+import ch.ethz.idsc.owl.math.Degree;
+import ch.ethz.idsc.owl.math.state.StateTime;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;

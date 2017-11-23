@@ -3,7 +3,7 @@ package ch.ethz.idsc.owly.glc.core;
 
 import java.util.Optional;
 
-import ch.ethz.idsc.owly.data.tree.StateCostNode;
+import ch.ethz.idsc.owl.data.tree.StateCostNode;
 
 public interface ExpandInterface<T extends StateCostNode> {
   /** retrieves next node and removes the node from the queue

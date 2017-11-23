@@ -1,10 +1,10 @@
 // code by jph
 package ch.ethz.idsc.owly.demo.se2.twd;
 
+import ch.ethz.idsc.owl.math.StateSpaceModels;
+import ch.ethz.idsc.owl.math.flow.Flow;
 import ch.ethz.idsc.owly.demo.se2.Se2StateSpaceModel;
 import ch.ethz.idsc.owly.demo.util.FlowsInterface;
-import ch.ethz.idsc.owly.math.StateSpaceModels;
-import ch.ethz.idsc.owly.math.flow.Flow;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensors;

@@ -13,14 +13,16 @@ import java.util.PriorityQueue;
 import java.util.Queue;
 import java.util.TreeMap;
 
-import ch.ethz.idsc.owly.data.GlobalAssert;
+import ch.ethz.idsc.owl.data.GlobalAssert;
+import ch.ethz.idsc.owl.math.StateTimeTensorFunction;
+import ch.ethz.idsc.owl.math.state.StateIntegrator;
+import ch.ethz.idsc.owl.math.state.StateTime;
+import ch.ethz.idsc.owl.math.state.StateTimeCollector;
+import ch.ethz.idsc.owl.math.state.TrajectoryRegionQuery;
+import ch.ethz.idsc.owly.glc.adapter.GlcNodes;
 import ch.ethz.idsc.owly.glc.adapter.HeuristicQ;
 import ch.ethz.idsc.owly.glc.adapter.TrajectoryGoalManager;
-import ch.ethz.idsc.owly.math.StateTimeTensorFunction;
-import ch.ethz.idsc.owly.math.state.StateIntegrator;
-import ch.ethz.idsc.owly.math.state.StateTime;
-import ch.ethz.idsc.owly.math.state.StateTimeCollector;
-import ch.ethz.idsc.owly.math.state.TrajectoryRegionQuery;
+import ch.ethz.idsc.owly.glc.any.AbstractAnyTrajectoryPlanner;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.sca.Floor;
 
@@ -33,7 +35,7 @@ public abstract class TrajectoryPlanner implements ExpandInterface<GlcNode>, Ser
   /** best is a reference to a Node in the goal region,
    * or null if such a node has not been identified
    * use function setBestNull() to reset best to null */
-  /* package */ final NavigableMap<GlcNode, List<StateTime>> best = new TreeMap<>(NodeMeritComparator.INSTANCE);
+  protected final NavigableMap<GlcNode, List<StateTime>> best = new TreeMap<>(NodeMeritComparator.INSTANCE);
   private int replaceCount = 0;
 
   /* package */ TrajectoryPlanner(Tensor eta) {
@@ -57,7 +59,7 @@ public abstract class TrajectoryPlanner implements ExpandInterface<GlcNode>, Ser
    * 
    * @param stateTime
    * @return */
-  /* package */ Tensor convertToKey(StateTime stateTime) {
+  protected Tensor convertToKey(StateTime stateTime) {
     return eta.pmul(represent.apply(stateTime)).map(Floor.FUNCTION);
   }
 
@@ -72,7 +74,7 @@ public abstract class TrajectoryPlanner implements ExpandInterface<GlcNode>, Ser
    * @param node
    * @return true if node replaces a existing entry in the domain map,
    * false if the domain map did not have a pre-existing mapping from given domain_key */
-  /* package */ final boolean insert(Tensor domain_key, GlcNode node) {
+  protected final boolean insert(Tensor domain_key, GlcNode node) {
     if (!node.isLeaf()) {
       System.err.println("The Inserted Node has children");
       throw new RuntimeException();
@@ -87,7 +89,7 @@ public abstract class TrajectoryPlanner implements ExpandInterface<GlcNode>, Ser
 
   /** @param domain_key
    * @return node in domain or null if domain has not been assigned a node yet */
-  /* package */ final GlcNode getNode(Tensor domain_key) {
+  protected final GlcNode getNode(Tensor domain_key) {
     return domainMap.get(domain_key);
   }
 
@@ -144,11 +146,11 @@ public abstract class TrajectoryPlanner implements ExpandInterface<GlcNode>, Ser
   /** @return goal query for the purpose of inspection, i.e. no alteration should be made */
   public abstract GoalInterface getGoalInterface();
 
-  /* package */ final Collection<GlcNode> queue() {
+  protected final Collection<GlcNode> queue() {
     return queue;
   }
 
-  /* package */ final Map<Tensor, GlcNode> domainMap() {
+  protected final Map<Tensor, GlcNode> domainMap() {
     return domainMap;
   }
 

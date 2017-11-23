@@ -4,11 +4,11 @@ package ch.ethz.idsc.owly.demo.se2;
 import java.util.List;
 import java.util.Objects;
 
-import ch.ethz.idsc.owly.data.DontModify;
+import ch.ethz.idsc.owl.data.DontModify;
+import ch.ethz.idsc.owl.math.flow.Flow;
+import ch.ethz.idsc.owl.math.state.StateTime;
 import ch.ethz.idsc.owly.glc.core.CostFunction;
 import ch.ethz.idsc.owly.glc.core.GlcNode;
-import ch.ethz.idsc.owly.math.flow.Flow;
-import ch.ethz.idsc.owly.math.state.StateTime;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;

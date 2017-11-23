@@ -1,8 +1,8 @@
 // code by jph
 package ch.ethz.idsc.owly.demo.se2;
 
-import ch.ethz.idsc.owly.math.region.Region;
-import ch.ethz.idsc.owly.math.se2.Se2Bijection;
+import ch.ethz.idsc.owl.math.region.Region;
+import ch.ethz.idsc.owl.math.se2.Se2Bijection;
 import ch.ethz.idsc.tensor.Tensor;
 
 /** used in se2 animation demo to check if footprint of vehicle intersects with obstacle region */

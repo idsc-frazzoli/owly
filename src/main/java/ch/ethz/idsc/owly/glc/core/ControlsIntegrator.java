@@ -7,10 +7,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import ch.ethz.idsc.owly.data.Lists;
-import ch.ethz.idsc.owly.math.flow.Flow;
-import ch.ethz.idsc.owly.math.state.StateIntegrator;
-import ch.ethz.idsc.owly.math.state.StateTime;
+import ch.ethz.idsc.owl.data.Lists;
+import ch.ethz.idsc.owl.math.flow.Flow;
+import ch.ethz.idsc.owl.math.state.StateIntegrator;
+import ch.ethz.idsc.owl.math.state.StateTime;
+import ch.ethz.idsc.owly.glc.std.StandardTrajectoryPlanner;
 
 /** private utility class to facilitate the construction of the map */
 /* private */ class FlowTrajectory {
@@ -42,7 +43,7 @@ import ch.ethz.idsc.owly.math.state.StateTime;
  * 
  * Since the integration is independent for all controls,
  * the implementation can be carried out in parallel. */
-/* package */ class ControlsIntegrator implements Serializable {
+public class ControlsIntegrator implements Serializable {
   private final StateIntegrator stateIntegrator;
   private final Collection<Flow> controls;
   private final CostFunction costFunction;
@@ -50,7 +51,7 @@ import ch.ethz.idsc.owly.math.state.StateTime;
   /** @param stateIntegrator
    * @param controls
    * @param costFunction */
-  ControlsIntegrator(StateIntegrator stateIntegrator, Collection<Flow> controls, CostFunction costFunction) {
+  public ControlsIntegrator(StateIntegrator stateIntegrator, Collection<Flow> controls, CostFunction costFunction) {
     this.stateIntegrator = stateIntegrator;
     this.controls = controls;
     this.costFunction = costFunction;
@@ -61,7 +62,7 @@ import ch.ethz.idsc.owly.math.state.StateTime;
    * @param node from which to expand
    * @param costFunction
    * @return */
-  Map<GlcNode, List<StateTime>> inParallel(GlcNode node) {
+  public Map<GlcNode, List<StateTime>> inParallel(GlcNode node) {
     // parallel results in speedup of ~25% (rice2demo)
     return controls.stream().parallel() //
         .map(flow -> new FlowTrajectory(flow, stateIntegrator.trajectory(node.stateTime(), flow))) //

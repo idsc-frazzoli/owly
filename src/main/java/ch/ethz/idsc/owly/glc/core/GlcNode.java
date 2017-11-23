@@ -1,9 +1,9 @@
 // code by jph and jl
 package ch.ethz.idsc.owly.glc.core;
 
-import ch.ethz.idsc.owly.data.tree.StateCostNode;
-import ch.ethz.idsc.owly.math.flow.Flow;
-import ch.ethz.idsc.owly.math.state.StateTime;
+import ch.ethz.idsc.owl.data.tree.StateCostNode;
+import ch.ethz.idsc.owl.math.flow.Flow;
+import ch.ethz.idsc.owl.math.state.StateTime;
 import ch.ethz.idsc.tensor.Scalar;
 
 /** glc specific node

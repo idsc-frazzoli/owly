@@ -3,13 +3,13 @@ package ch.ethz.idsc.owly.glc.adapter;
 
 import java.util.Collection;
 
-import ch.ethz.idsc.owly.math.region.Region;
-import ch.ethz.idsc.owly.math.state.StandardTrajectoryRegionQuery;
-import ch.ethz.idsc.owly.math.state.StateTime;
-import ch.ethz.idsc.owly.math.state.StateTimeCollector;
-import ch.ethz.idsc.owly.math.state.TimeDependentRegion;
-import ch.ethz.idsc.owly.math.state.TimeInvariantRegion;
-import ch.ethz.idsc.owly.math.state.TrajectoryRegionQuery;
+import ch.ethz.idsc.owl.math.region.Region;
+import ch.ethz.idsc.owl.math.state.StandardTrajectoryRegionQuery;
+import ch.ethz.idsc.owl.math.state.StateTime;
+import ch.ethz.idsc.owl.math.state.StateTimeCollector;
+import ch.ethz.idsc.owl.math.state.TimeDependentRegion;
+import ch.ethz.idsc.owl.math.state.TimeInvariantRegion;
+import ch.ethz.idsc.owl.math.state.TrajectoryRegionQuery;
 import ch.ethz.idsc.tensor.Tensor;
 
 /** default wrapper for obstacle and goal queries

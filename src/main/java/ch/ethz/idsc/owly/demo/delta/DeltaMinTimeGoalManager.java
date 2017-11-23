@@ -3,14 +3,14 @@ package ch.ethz.idsc.owly.demo.delta;
 
 import java.util.List;
 
+import ch.ethz.idsc.owl.math.flow.Flow;
+import ch.ethz.idsc.owl.math.region.SphericalRegion;
+import ch.ethz.idsc.owl.math.state.StateTime;
+import ch.ethz.idsc.owl.math.state.TimeInvariantRegion;
 import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
 import ch.ethz.idsc.owly.glc.adapter.StateTimeTrajectories;
 import ch.ethz.idsc.owly.glc.core.GlcNode;
 import ch.ethz.idsc.owly.glc.core.GoalInterface;
-import ch.ethz.idsc.owly.math.flow.Flow;
-import ch.ethz.idsc.owly.math.region.SphericalRegion;
-import ch.ethz.idsc.owly.math.state.StateTime;
-import ch.ethz.idsc.owly.math.state.TimeInvariantRegion;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.sca.Ramp;
@@ -34,7 +34,7 @@ public class DeltaMinTimeGoalManager extends SimpleTrajectoryRegionQuery impleme
 
   @Override // from CostIncrementFunction
   public Scalar costIncrement(GlcNode glcNode, List<StateTime> trajectory, Flow flow) {
-    return StateTimeTrajectories.timeIncrement(glcNode.stateTime(), trajectory); // unit [s]
+    return StateTimeTrajectories.timeIncrement(glcNode, trajectory); // unit [s]
   }
 
   @Override // from HeuristicFunction

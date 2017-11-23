@@ -3,8 +3,8 @@ package ch.ethz.idsc.owly.demo.rn.rrts;
 
 import java.util.List;
 
+import ch.ethz.idsc.owl.math.state.StateTime;
 import ch.ethz.idsc.owly.demo.rn.RnTransition;
-import ch.ethz.idsc.owly.math.state.StateTime;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Tensors;
 import junit.framework.TestCase;
