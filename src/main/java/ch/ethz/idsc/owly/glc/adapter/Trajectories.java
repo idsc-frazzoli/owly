@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.List;
 
 import ch.ethz.idsc.owly.data.GlobalAssert;
+import ch.ethz.idsc.owly.data.Lists;
 import ch.ethz.idsc.owly.glc.core.GlcNode;
 import ch.ethz.idsc.owly.glc.core.TrajectorySample;
 import ch.ethz.idsc.owly.math.state.StateTime;
@@ -22,7 +23,7 @@ public enum Trajectories {
   public static List<TrajectorySample> glue(List<TrajectorySample> head, List<TrajectorySample> tail) {
     List<TrajectorySample> trajectory = new ArrayList<>();
     trajectory.addAll(head);
-    TrajectorySample tsh = head.get(head.size() - 1);
+    TrajectorySample tsh = Lists.getLast(head);
     TrajectorySample tst = tail.get(0);
     boolean contact = tsh.stateTime().equals(tst.stateTime());
     if (!contact) {

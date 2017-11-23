@@ -3,6 +3,7 @@ package ch.ethz.idsc.owly.demo.rice;
 
 import java.util.List;
 
+import ch.ethz.idsc.owly.data.Lists;
 import ch.ethz.idsc.owly.math.StateSpaceModel;
 import ch.ethz.idsc.owly.math.StateSpaceModels;
 import ch.ethz.idsc.owly.math.flow.Flow;
@@ -44,7 +45,7 @@ public class Duncan1StateSpaceModelTest extends TestCase {
     Scalar push = Quantity.of(3, "m*s^-2");
     Flow flow = StateSpaceModels.createFlow(stateSpaceModel, Tensors.of(push));
     List<StateTime> list = stateIntegrator.trajectory(stateTime, flow);
-    StateTime last = list.get(list.size() - 1);
+    StateTime last = Lists.getLast(list);
     assertEquals(last.time(), Quantity.of(100, "s"));
     assertTrue(Chop._12.close(last.state().get(0), push.divide(lambda)));
   }

@@ -6,6 +6,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 
+import ch.ethz.idsc.owly.data.Lists;
 import ch.ethz.idsc.owly.data.Stopwatch;
 import ch.ethz.idsc.owly.demo.delta.DeltaAltStateSpaceModel;
 import ch.ethz.idsc.owly.demo.delta.DeltaTrajectoryGoalManager;
@@ -122,7 +123,7 @@ enum DeltaGlcConstTimeHeuristicAnyDemo {
       System.out.println("After goal switch needed " + expandIter + " iterations");
       {
         timingDatabase.startStopwatchFor(0);
-        Tensor tempGoal = trajectory.get(trajectory.size() - 1).state();
+        Tensor tempGoal = Lists.getLast(trajectory).state();
         TrajectoryPlannerContainer standardTrajectoryPlannerContainer = DeltaHelper.createGlcFromRootToGoal(RealScalar.of(-0.02), resolution, partitionScale,
             trajectory.get(0).state(), tempGoal);
         int interSta = GlcExpand.maxDepth(standardTrajectoryPlannerContainer.getTrajectoryPlanner(), DoubleScalar.POSITIVE_INFINITY.number().intValue());

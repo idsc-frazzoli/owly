@@ -8,6 +8,7 @@ import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.util.List;
 
+import ch.ethz.idsc.owly.data.Lists;
 import ch.ethz.idsc.owly.glc.core.TrajectoryPlanner;
 import ch.ethz.idsc.owly.glc.core.TrajectorySample;
 import ch.ethz.idsc.owly.gui.GeometricLayer;
@@ -87,7 +88,7 @@ public class R2RrtsEntity extends AbstractRrtsEntity {
   @Override
   public void startPlanner( //
       TrajectoryPlannerCallback trajectoryPlannerCallback, List<TrajectorySample> head, Tensor goal) {
-    StateTime tail = head.get(head.size() - 1).stateTime();
+    StateTime tail = Lists.getLast(head).stateTime();
     NoiseCircleHelper nch = new NoiseCircleHelper(obstacleQuery, tail, goal.extract(0, 2));
     nch.plan(350);
     if (nch.trajectory != null) {

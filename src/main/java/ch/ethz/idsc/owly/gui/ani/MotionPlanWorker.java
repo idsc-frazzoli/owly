@@ -3,6 +3,7 @@ package ch.ethz.idsc.owly.gui.ani;
 
 import java.util.List;
 
+import ch.ethz.idsc.owly.data.Lists;
 import ch.ethz.idsc.owly.data.Stopwatch;
 import ch.ethz.idsc.owly.glc.core.Expand;
 import ch.ethz.idsc.owly.glc.core.TrajectoryPlanner;
@@ -32,7 +33,7 @@ public class MotionPlanWorker {
       @Override
       public void run() {
         Stopwatch stopwatch = Stopwatch.started();
-        StateTime root = head.get(head.size() - 1).stateTime(); // last statetime in head trajectory
+        StateTime root = Lists.getLast(head).stateTime(); // last statetime in head trajectory
         trajectoryPlanner.insertRoot(root);
         Expand.maxSteps(trajectoryPlanner, 5000, () -> isRelevant); // magic const
         if (isRelevant) {

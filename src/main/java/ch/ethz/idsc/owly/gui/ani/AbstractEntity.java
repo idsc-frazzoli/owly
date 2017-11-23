@@ -7,6 +7,7 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 import ch.ethz.idsc.owly.data.GlobalAssert;
+import ch.ethz.idsc.owly.data.Lists;
 import ch.ethz.idsc.owly.glc.core.TrajectoryPlanner;
 import ch.ethz.idsc.owly.glc.core.TrajectorySample;
 import ch.ethz.idsc.owly.gui.RenderInterface;
@@ -78,7 +79,7 @@ public abstract class AbstractEntity implements RenderInterface, AnimationInterf
     if (Objects.isNull(trajectory))
       return episodeIntegrator.tail().state();
     List<TrajectorySample> relevant = getFutureTrajectoryUntil(delay);
-    return relevant.get(relevant.size() - 1).stateTime().state();
+    return Lists.getLast(relevant).stateTime().state();
   }
 
   // TODO JAN design preliminary

@@ -3,6 +3,7 @@ package ch.ethz.idsc.owly.math.state;
 
 import java.util.List;
 
+import ch.ethz.idsc.owly.data.Lists;
 import ch.ethz.idsc.owly.math.StateSpaceModel;
 import ch.ethz.idsc.owly.math.StateSpaceModels;
 import ch.ethz.idsc.owly.math.flow.Flow;
@@ -29,7 +30,7 @@ abstract class AbstractEpisodeIntegrator implements EpisodeIntegrator {
   @Override // from EpisodeIntegrator
   public final void move(Tensor u, Scalar now) {
     List<StateTime> trajectory = move(StateSpaceModels.createFlow(stateSpaceModel, u), now.subtract(stateTime.time()));
-    stateTime = trajectory.get(trajectory.size() - 1);
+    stateTime = Lists.getLast(trajectory);
   }
 
   @Override
