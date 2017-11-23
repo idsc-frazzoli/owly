@@ -1,8 +1,8 @@
 // code by jph
 package ch.ethz.idsc.owly.demo.rn;
 
-import ch.ethz.idsc.owly.rrts.core.Transition;
-import ch.ethz.idsc.owly.rrts.core.TransitionSpace;
+import ch.ethz.idsc.owl.rrts.core.Transition;
+import ch.ethz.idsc.owl.rrts.core.TransitionSpace;
 import ch.ethz.idsc.tensor.Tensor;
 
 public class RnTransitionSpace implements TransitionSpace {

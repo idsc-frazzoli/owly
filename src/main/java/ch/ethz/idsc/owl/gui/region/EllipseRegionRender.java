@@ -10,21 +10,22 @@ import ch.ethz.idsc.owl.gui.RenderInterface;
 import ch.ethz.idsc.owl.math.planar.CirclePoints;
 import ch.ethz.idsc.owl.math.region.EllipsoidRegion;
 import ch.ethz.idsc.owl.math.region.SphericalRegion;
+import ch.ethz.idsc.owly.demo.util.RegionRenders;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
 
 /** visualize planar ellipse */
-class EllipseRegionRender implements RenderInterface {
+public class EllipseRegionRender implements RenderInterface {
   /** @param ellipsoidRegion
    * @return */
-  static RenderInterface of(EllipsoidRegion ellipsoidRegion) {
+  public static RenderInterface of(EllipsoidRegion ellipsoidRegion) {
     Tensor radius = ellipsoidRegion.radius();
     return new EllipseRegionRender(ellipsoidRegion.center().extract(0, 2), radius.Get(0), radius.Get(1));
   }
 
   /** @param sphericalRegion
    * @return */
-  static RenderInterface of(SphericalRegion sphericalRegion) {
+  public static RenderInterface of(SphericalRegion sphericalRegion) {
     return new EllipseRegionRender(sphericalRegion.center().extract(0, 2), sphericalRegion.radius(), sphericalRegion.radius());
   }
 

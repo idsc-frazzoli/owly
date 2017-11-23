@@ -3,9 +3,9 @@ package ch.ethz.idsc.owly.demo.se2.glc;
 
 import java.util.Arrays;
 
+import ch.ethz.idsc.owl.glc.adapter.SimpleTrajectoryRegionQuery;
 import ch.ethz.idsc.owl.gui.RenderInterface;
 import ch.ethz.idsc.owl.gui.ani.OwlyAnimationFrame;
-import ch.ethz.idsc.owl.gui.region.RegionRenders;
 import ch.ethz.idsc.owl.math.map.BijectionFamily;
 import ch.ethz.idsc.owl.math.map.Se2Family;
 import ch.ethz.idsc.owl.math.planar.CogPoints;
@@ -24,8 +24,8 @@ import ch.ethz.idsc.owly.demo.rn.R2xTPolygonStateTimeRegion;
 import ch.ethz.idsc.owly.demo.se2.Se2PointsVsRegion;
 import ch.ethz.idsc.owly.demo.se2.Se2PointsVsRegions;
 import ch.ethz.idsc.owly.demo.util.DemoInterface;
+import ch.ethz.idsc.owly.demo.util.RegionRenders;
 import ch.ethz.idsc.owly.demo.util.SimpleTranslationFamily;
-import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;

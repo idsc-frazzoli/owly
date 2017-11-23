@@ -11,14 +11,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import ch.ethz.idsc.owl.glc.adapter.GlcTrajectories;
+import ch.ethz.idsc.owl.glc.core.GlcNode;
+import ch.ethz.idsc.owl.glc.core.TrajectoryPlanner;
 import ch.ethz.idsc.owl.gui.GeometricLayer;
 import ch.ethz.idsc.owl.gui.RenderInterface;
 import ch.ethz.idsc.owl.math.flow.Flow;
 import ch.ethz.idsc.owl.math.state.StateTime;
 import ch.ethz.idsc.owl.math.state.TrajectorySample;
-import ch.ethz.idsc.owly.glc.adapter.GlcTrajectories;
-import ch.ethz.idsc.owly.glc.core.GlcNode;
-import ch.ethz.idsc.owly.glc.core.TrajectoryPlanner;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;

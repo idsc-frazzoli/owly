@@ -3,12 +3,12 @@ package ch.ethz.idsc.owly.demo.rnxt.glc;
 
 import java.util.Collections;
 
+import ch.ethz.idsc.owl.glc.adapter.GlcNodes;
+import ch.ethz.idsc.owl.glc.adapter.HeuristicQ;
+import ch.ethz.idsc.owl.glc.core.GlcNode;
+import ch.ethz.idsc.owl.glc.core.GoalInterface;
 import ch.ethz.idsc.owl.math.region.EllipsoidRegion;
 import ch.ethz.idsc.owl.math.state.StateTime;
-import ch.ethz.idsc.owly.glc.adapter.GlcNodes;
-import ch.ethz.idsc.owly.glc.adapter.HeuristicQ;
-import ch.ethz.idsc.owly.glc.core.GlcNode;
-import ch.ethz.idsc.owly.glc.core.GoalInterface;
 import ch.ethz.idsc.tensor.DoubleScalar;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;

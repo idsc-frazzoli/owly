@@ -4,10 +4,10 @@ package ch.ethz.idsc.owl.math.state;
 import java.util.ArrayList;
 import java.util.List;
 
+import ch.ethz.idsc.owl.glc.adapter.SimpleTrajectoryRegionQuery;
+import ch.ethz.idsc.owl.glc.adapter.Trajectories;
+import ch.ethz.idsc.owl.glc.core.GlcNode;
 import ch.ethz.idsc.owl.math.region.EllipsoidRegion;
-import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
-import ch.ethz.idsc.owly.glc.adapter.Trajectories;
-import ch.ethz.idsc.owly.glc.core.GlcNode;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;

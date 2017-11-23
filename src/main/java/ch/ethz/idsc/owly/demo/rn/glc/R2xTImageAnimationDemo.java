@@ -1,6 +1,7 @@
 // code by jph
 package ch.ethz.idsc.owly.demo.rn.glc;
 
+import ch.ethz.idsc.owl.glc.adapter.SimpleTrajectoryRegionQuery;
 import ch.ethz.idsc.owl.gui.RenderInterface;
 import ch.ethz.idsc.owl.gui.ani.AbstractEntity;
 import ch.ethz.idsc.owl.gui.ani.OwlyAnimationFrame;
@@ -12,7 +13,6 @@ import ch.ethz.idsc.owl.math.state.StateTime;
 import ch.ethz.idsc.owly.demo.rn.R2ImageRegions;
 import ch.ethz.idsc.owly.demo.rn.R2xTImageStateTimeRegion;
 import ch.ethz.idsc.owly.demo.util.DemoInterface;
-import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Tensors;
 

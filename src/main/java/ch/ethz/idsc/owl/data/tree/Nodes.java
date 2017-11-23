@@ -7,7 +7,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
-import ch.ethz.idsc.owly.glc.any.OptimalAnyTrajectoryPlanner;
+import ch.ethz.idsc.owl.glc.any.OptimalAnyTrajectoryPlanner;
 
 /** utility functions */
 public enum Nodes {

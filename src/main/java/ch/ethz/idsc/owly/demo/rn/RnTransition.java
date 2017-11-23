@@ -6,7 +6,7 @@ import java.util.Collections;
 import java.util.List;
 
 import ch.ethz.idsc.owl.math.state.StateTime;
-import ch.ethz.idsc.owly.rrts.adapter.AbstractTransition;
+import ch.ethz.idsc.owl.rrts.adapter.AbstractTransition;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Scalars;
 import ch.ethz.idsc.tensor.Tensor;

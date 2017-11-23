@@ -1,15 +1,15 @@
 // code by jph
 package ch.ethz.idsc.owly.demo.rn.rrts;
 
+import ch.ethz.idsc.owl.rrts.adapter.EmptyTransitionRegionQuery;
+import ch.ethz.idsc.owl.rrts.adapter.LengthCostFunction;
+import ch.ethz.idsc.owl.rrts.core.DefaultRrts;
+import ch.ethz.idsc.owl.rrts.core.Rrts;
+import ch.ethz.idsc.owl.rrts.core.RrtsNode;
+import ch.ethz.idsc.owl.rrts.core.RrtsNodeCollection;
+import ch.ethz.idsc.owl.rrts.core.TransitionRegionQuery;
 import ch.ethz.idsc.owly.demo.rn.RnNodeCollection;
 import ch.ethz.idsc.owly.demo.rn.RnTransitionSpace;
-import ch.ethz.idsc.owly.rrts.adapter.EmptyTransitionRegionQuery;
-import ch.ethz.idsc.owly.rrts.adapter.LengthCostFunction;
-import ch.ethz.idsc.owly.rrts.core.DefaultRrts;
-import ch.ethz.idsc.owly.rrts.core.Rrts;
-import ch.ethz.idsc.owly.rrts.core.RrtsNode;
-import ch.ethz.idsc.owly.rrts.core.RrtsNodeCollection;
-import ch.ethz.idsc.owly.rrts.core.TransitionRegionQuery;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Tensors;
 import junit.framework.TestCase;

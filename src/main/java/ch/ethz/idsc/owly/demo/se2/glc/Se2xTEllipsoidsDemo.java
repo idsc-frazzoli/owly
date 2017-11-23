@@ -3,6 +3,7 @@ package ch.ethz.idsc.owly.demo.se2.glc;
 
 import java.util.Arrays;
 
+import ch.ethz.idsc.owl.glc.adapter.SimpleTrajectoryRegionQuery;
 import ch.ethz.idsc.owl.gui.RenderInterface;
 import ch.ethz.idsc.owl.gui.ani.OwlyAnimationFrame;
 import ch.ethz.idsc.owl.math.ScalarTensorFunction;
@@ -18,7 +19,6 @@ import ch.ethz.idsc.owly.demo.rn.R2xTEllipsoidStateTimeRegion;
 import ch.ethz.idsc.owly.demo.rn.glc.R2xTEllipsoidsAnimationDemo;
 import ch.ethz.idsc.owly.demo.util.DemoInterface;
 import ch.ethz.idsc.owly.demo.util.SimpleTranslationFamily;
-import ch.ethz.idsc.owly.glc.adapter.SimpleTrajectoryRegionQuery;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Tensors;
 

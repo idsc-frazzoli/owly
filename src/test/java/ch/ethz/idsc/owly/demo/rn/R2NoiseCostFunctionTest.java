@@ -1,8 +1,8 @@
 // code by jph
 package ch.ethz.idsc.owly.demo.rn;
 
-import ch.ethz.idsc.owly.glc.adapter.HeuristicQ;
-import ch.ethz.idsc.owly.glc.core.CostFunction;
+import ch.ethz.idsc.owl.glc.adapter.HeuristicQ;
+import ch.ethz.idsc.owl.glc.core.CostFunction;
 import ch.ethz.idsc.tensor.RealScalar;
 import junit.framework.TestCase;
 

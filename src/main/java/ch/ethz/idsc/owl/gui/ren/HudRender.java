@@ -4,9 +4,9 @@ package ch.ethz.idsc.owl.gui.ren;
 import java.awt.Color;
 import java.awt.Graphics2D;
 
+import ch.ethz.idsc.owl.glc.core.TrajectoryPlanner;
 import ch.ethz.idsc.owl.gui.GeometricLayer;
 import ch.ethz.idsc.owl.gui.RenderInterface;
-import ch.ethz.idsc.owly.glc.core.TrajectoryPlanner;
 
 // TODO decide on purpose of HudRender, for now, do nothing
 class HudRender implements RenderInterface {

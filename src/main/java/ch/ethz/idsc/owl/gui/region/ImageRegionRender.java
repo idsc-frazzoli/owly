@@ -8,12 +8,13 @@ import ch.ethz.idsc.owl.gui.AffineTransforms;
 import ch.ethz.idsc.owl.gui.GeometricLayer;
 import ch.ethz.idsc.owl.gui.RenderInterface;
 import ch.ethz.idsc.owl.math.region.ImageRegion;
+import ch.ethz.idsc.owly.demo.util.RegionRenders;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.mat.DiagonalMatrix;
 import ch.ethz.idsc.tensor.mat.IdentityMatrix;
 
-class ImageRegionRender implements RenderInterface {
+public class ImageRegionRender implements RenderInterface {
   private final BufferedImage bufferedImage;
   private final Tensor invsc;
 
