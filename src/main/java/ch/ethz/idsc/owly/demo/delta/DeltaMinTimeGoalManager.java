@@ -34,7 +34,7 @@ public class DeltaMinTimeGoalManager extends SimpleTrajectoryRegionQuery impleme
 
   @Override // from CostIncrementFunction
   public Scalar costIncrement(GlcNode glcNode, List<StateTime> trajectory, Flow flow) {
-    return StateTimeTrajectories.timeIncrement(glcNode.stateTime(), trajectory); // unit [s]
+    return StateTimeTrajectories.timeIncrement(glcNode, trajectory); // unit [s]
   }
 
   @Override // from HeuristicFunction

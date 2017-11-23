@@ -45,11 +45,10 @@ public class DeltaTrajectoryGoalManager extends TrajectoryGoalManager {
   }
 
   @Override
-  public Scalar costIncrement(GlcNode node, List<StateTime> trajectory, Flow flow) {
-    StateTime from = node.stateTime();
+  public Scalar costIncrement(GlcNode glcNode, List<StateTime> trajectory, Flow flow) {
     Scalar sum = Norm._2.ofVector(flow.getU()).add(timeCostScalingFactor);
     // Costfunction: integrate (u^2 +1, t)
-    return sum.multiply(StateTimeTrajectories.timeIncrement(from, trajectory));
+    return sum.multiply(StateTimeTrajectories.timeIncrement(glcNode, trajectory));
   }
 
   @Override

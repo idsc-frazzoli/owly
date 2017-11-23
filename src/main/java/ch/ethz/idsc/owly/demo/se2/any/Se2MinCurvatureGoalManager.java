@@ -22,10 +22,9 @@ import ch.ethz.idsc.tensor.sca.Ramp;
   }
 
   @Override // from CostFunction
-  public Scalar costIncrement(GlcNode node, List<StateTime> trajectory, Flow flow) {
-    StateTime from = node.stateTime();
+  public Scalar costIncrement(GlcNode glcNode, List<StateTime> trajectory, Flow flow) {
     return RealScalar.ONE.add(Power.of(flow.getU().Get(1), 2)) //
-        .multiply(StateTimeTrajectories.timeIncrement(from, trajectory));
+        .multiply(StateTimeTrajectories.timeIncrement(glcNode, trajectory));
   }
 
   @Override // from HeuristicFunction

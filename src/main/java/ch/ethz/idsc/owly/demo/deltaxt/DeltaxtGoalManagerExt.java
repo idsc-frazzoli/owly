@@ -45,10 +45,8 @@ class DeltaxtGoalManagerExt extends SimpleTrajectoryRegionQuery implements GoalI
   // --
 
   @Override
-  public Scalar costIncrement(GlcNode node, List<StateTime> trajectory, Flow flow) {
-    StateTime from = node.stateTime();
-    // Costfunction: t
-    return StateTimeTrajectories.timeIncrement(from, trajectory);
+  public Scalar costIncrement(GlcNode glcNode, List<StateTime> trajectory, Flow flow) {
+    return StateTimeTrajectories.timeIncrement(glcNode, trajectory);
   }
 
   /** Ellipsoid with axis: a,b and vector from Center: v = (x,y)

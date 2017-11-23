@@ -28,14 +28,13 @@ class DeltaxtDinghyGoalManager extends TrajectoryGoalManager implements GoalInte
   }
 
   @Override
-  public Scalar costIncrement(GlcNode node, List<StateTime> trajectory, Flow flow) {
-    StateTime from = node.stateTime();
+  public Scalar costIncrement(GlcNode glcNode, List<StateTime> trajectory, Flow flow) {
     // Costfunction: t
     // return StateTimeTrajectories.timeIncrement(from, trajectory);
     // alternative:
     Scalar sum = Norm._2.ofVector(flow.getU()).add(timeCostScalingFactor);
     // Costfunction: integrate (u^2 +1, t)
-    return sum.multiply(StateTimeTrajectories.timeIncrement(from, trajectory));
+    return sum.multiply(StateTimeTrajectories.timeIncrement(glcNode, trajectory));
   }
 
   @Override

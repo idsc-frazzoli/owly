@@ -49,8 +49,8 @@ import ch.ethz.idsc.tensor.sca.Ramp;
 
   /** shortest Time Cost */
   @Override
-  public Scalar costIncrement(GlcNode node, List<StateTime> trajectory, Flow flow) {
-    return StateTimeTrajectories.timeIncrement(node.stateTime(), trajectory);
+  public Scalar costIncrement(GlcNode glcNode, List<StateTime> trajectory, Flow flow) {
+    return StateTimeTrajectories.timeIncrement(glcNode, trajectory);
   }
 
   /** Ellipsoid with axis: a,b and vector from Center: v = (x,y)
