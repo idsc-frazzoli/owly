@@ -3,10 +3,10 @@ package ch.ethz.idsc.owly.demo.rn;
 
 import java.util.Arrays;
 
-import ch.ethz.idsc.owly.math.region.EllipsoidRegion;
-import ch.ethz.idsc.owly.math.region.Region;
-import ch.ethz.idsc.owly.math.region.RegionIntersection;
-import ch.ethz.idsc.owly.math.region.SphericalRegion;
+import ch.ethz.idsc.owl.math.region.EllipsoidRegion;
+import ch.ethz.idsc.owl.math.region.Region;
+import ch.ethz.idsc.owl.math.region.RegionIntersection;
+import ch.ethz.idsc.owl.math.region.SphericalRegion;
 import ch.ethz.idsc.tensor.DoubleScalar;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;

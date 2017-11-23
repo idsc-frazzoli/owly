@@ -5,9 +5,9 @@ import java.util.Optional;
 import java.util.PriorityQueue;
 import java.util.Queue;
 
-import ch.ethz.idsc.owly.data.tree.NodeCostComparator;
+import ch.ethz.idsc.owl.data.tree.NodeCostComparator;
+import ch.ethz.idsc.owl.math.sample.RandomSampleInterface;
 import ch.ethz.idsc.owly.glc.core.ExpandInterface;
-import ch.ethz.idsc.owly.math.sample.RandomSampleInterface;
 
 public class RrtsPlanner implements ExpandInterface<RrtsNode> {
   private static final RrtsNode DUMMY = new RrtsNodeImpl(null, null);

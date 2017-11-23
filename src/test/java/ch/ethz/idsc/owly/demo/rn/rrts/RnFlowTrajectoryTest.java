@@ -4,10 +4,10 @@ package ch.ethz.idsc.owly.demo.rn.rrts;
 import java.util.Arrays;
 import java.util.List;
 
-import ch.ethz.idsc.owly.data.tree.Nodes;
+import ch.ethz.idsc.owl.data.tree.Nodes;
+import ch.ethz.idsc.owl.math.state.TrajectorySample;
 import ch.ethz.idsc.owly.demo.rn.RnNodeCollection;
 import ch.ethz.idsc.owly.demo.rn.RnTransitionSpace;
-import ch.ethz.idsc.owly.glc.core.TrajectorySample;
 import ch.ethz.idsc.owly.rrts.adapter.EmptyTransitionRegionQuery;
 import ch.ethz.idsc.owly.rrts.adapter.LengthCostFunction;
 import ch.ethz.idsc.owly.rrts.core.DefaultRrts;

@@ -4,16 +4,18 @@ package ch.ethz.idsc.owly.glc.core;
 import java.util.List;
 import java.util.Objects;
 
-import ch.ethz.idsc.owly.data.GlobalAssert;
-import ch.ethz.idsc.owly.data.Stopwatch;
-import ch.ethz.idsc.owly.math.state.StateIntegrator;
-import ch.ethz.idsc.owly.math.state.StateTime;
-import ch.ethz.idsc.owly.math.state.TrajectoryRegionQuery;
+import ch.ethz.idsc.owl.data.GlobalAssert;
+import ch.ethz.idsc.owl.data.Stopwatch;
+import ch.ethz.idsc.owl.math.state.StateIntegrator;
+import ch.ethz.idsc.owl.math.state.StateTime;
+import ch.ethz.idsc.owl.math.state.TrajectoryRegionQuery;
+import ch.ethz.idsc.owly.glc.any.AbstractAnyTrajectoryPlanner;
+import ch.ethz.idsc.owly.glc.std.StandardTrajectoryPlanner;
 import ch.ethz.idsc.tensor.Tensor;
 
 /** planner is shared between
  * {@link StandardTrajectoryPlanner} and {@link AbstractAnyTrajectoryPlanner} */
-/* package */ abstract class AbstractTrajectoryPlanner extends TrajectoryPlanner {
+public abstract class AbstractTrajectoryPlanner extends TrajectoryPlanner {
   protected final StateIntegrator stateIntegrator;
   private /* not final */ TrajectoryRegionQuery obstacleQuery;
   private /* not final */ GoalInterface goalInterface;

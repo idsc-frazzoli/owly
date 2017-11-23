@@ -2,9 +2,9 @@ package ch.ethz.idsc.owly.demo.se2.glc;
 
 import java.util.Collection;
 
+import ch.ethz.idsc.owl.math.flow.Flow;
 import ch.ethz.idsc.owly.demo.se2.CarFlows;
 import ch.ethz.idsc.owly.demo.se2.CarForwardFlows;
-import ch.ethz.idsc.owly.math.flow.Flow;
 import ch.ethz.idsc.subare.core.DiscreteModel;
 import ch.ethz.idsc.subare.core.TerminalInterface;
 import ch.ethz.idsc.tensor.RealScalar;

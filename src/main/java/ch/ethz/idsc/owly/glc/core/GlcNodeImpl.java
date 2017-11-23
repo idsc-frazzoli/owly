@@ -7,11 +7,11 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
-import ch.ethz.idsc.owly.data.GlobalAssert;
-import ch.ethz.idsc.owly.data.tree.AbstractNode;
-import ch.ethz.idsc.owly.data.tree.Nodes;
-import ch.ethz.idsc.owly.math.flow.Flow;
-import ch.ethz.idsc.owly.math.state.StateTime;
+import ch.ethz.idsc.owl.data.GlobalAssert;
+import ch.ethz.idsc.owl.data.tree.AbstractNode;
+import ch.ethz.idsc.owl.data.tree.Nodes;
+import ch.ethz.idsc.owl.math.flow.Flow;
+import ch.ethz.idsc.owl.math.state.StateTime;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
 

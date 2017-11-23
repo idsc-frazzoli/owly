@@ -1,8 +1,8 @@
 // code by jl
 package ch.ethz.idsc.owly.demo.deltaxt;
 
-import ch.ethz.idsc.owly.math.region.Region;
-import ch.ethz.idsc.owly.math.state.StateTime;
+import ch.ethz.idsc.owl.math.region.Region;
+import ch.ethz.idsc.owl.math.state.StateTime;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.TensorRuntimeException;
 import ch.ethz.idsc.tensor.alg.Last;

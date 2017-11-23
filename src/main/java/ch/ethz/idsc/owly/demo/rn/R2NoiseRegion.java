@@ -1,10 +1,10 @@
 // code by jph
 package ch.ethz.idsc.owly.demo.rn;
 
-import ch.ethz.idsc.owly.math.noise.ContinuousNoise;
-import ch.ethz.idsc.owly.math.noise.ContinuousNoiseUtils;
-import ch.ethz.idsc.owly.math.noise.SimplexContinuousNoise;
-import ch.ethz.idsc.owly.math.region.Region;
+import ch.ethz.idsc.owl.math.noise.ContinuousNoise;
+import ch.ethz.idsc.owl.math.noise.ContinuousNoiseUtils;
+import ch.ethz.idsc.owl.math.noise.SimplexContinuousNoise;
+import ch.ethz.idsc.owl.math.region.Region;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Scalars;
 import ch.ethz.idsc.tensor.Tensor;

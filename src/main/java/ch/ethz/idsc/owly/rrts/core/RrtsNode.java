@@ -3,7 +3,7 @@ package ch.ethz.idsc.owly.rrts.core;
 
 import java.util.Collection;
 
-import ch.ethz.idsc.owly.data.tree.StateCostNode;
+import ch.ethz.idsc.owl.data.tree.StateCostNode;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
 

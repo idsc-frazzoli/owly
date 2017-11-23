@@ -4,11 +4,11 @@ package ch.ethz.idsc.owly.glc.adapter;
 import java.util.List;
 import java.util.Optional;
 
+import ch.ethz.idsc.owl.math.region.Region;
+import ch.ethz.idsc.owl.math.region.RegionUnion;
+import ch.ethz.idsc.owl.math.state.StateTime;
+import ch.ethz.idsc.owl.math.state.TimeInvariantRegion;
 import ch.ethz.idsc.owly.glc.core.GoalInterface;
-import ch.ethz.idsc.owly.math.region.Region;
-import ch.ethz.idsc.owly.math.region.RegionUnion;
-import ch.ethz.idsc.owly.math.state.StateTime;
-import ch.ethz.idsc.owly.math.state.TimeInvariantRegion;
 import ch.ethz.idsc.tensor.Tensor;
 
 public abstract class TrajectoryGoalManager extends SimpleTrajectoryRegionQuery implements GoalInterface {

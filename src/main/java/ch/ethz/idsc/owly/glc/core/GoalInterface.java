@@ -1,7 +1,7 @@
 // code by jph
 package ch.ethz.idsc.owly.glc.core;
 
-import ch.ethz.idsc.owly.math.state.TrajectoryRegionQuery;
+import ch.ethz.idsc.owl.math.state.TrajectoryRegionQuery;
 
 /** the cost to goal and the goal region have to be compatible in order
  * for the planner to work properly.

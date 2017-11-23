@@ -2,8 +2,8 @@
 package ch.ethz.idsc.owly.demo.se2.glc;
 
 import ch.ethz.idsc.owly.demo.se2.Se2Wrap;
+import ch.ethz.idsc.owly.glc.adapter.Expand;
 import ch.ethz.idsc.owly.glc.adapter.IdentityWrap;
-import ch.ethz.idsc.owly.glc.core.Expand;
 import ch.ethz.idsc.owly.glc.core.GlcNode;
 import ch.ethz.idsc.owly.glc.core.TrajectoryPlanner;
 import ch.ethz.idsc.tensor.RealScalar;

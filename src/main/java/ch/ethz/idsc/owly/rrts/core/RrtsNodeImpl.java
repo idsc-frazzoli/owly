@@ -1,7 +1,7 @@
 // code by jph
 package ch.ethz.idsc.owly.rrts.core;
 
-import ch.ethz.idsc.owly.data.tree.SetNode;
+import ch.ethz.idsc.owl.data.tree.SetNode;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Scalars;
 import ch.ethz.idsc.tensor.Tensor;

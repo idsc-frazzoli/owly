@@ -1,9 +1,9 @@
 // code by jph
 package ch.ethz.idsc.owly.demo.se2;
 
-import ch.ethz.idsc.owly.math.region.Region;
-import ch.ethz.idsc.owly.math.region.So2Region;
-import ch.ethz.idsc.owly.math.region.SphericalRegion;
+import ch.ethz.idsc.owl.math.region.Region;
+import ch.ethz.idsc.owl.math.region.So2Region;
+import ch.ethz.idsc.owl.math.region.SphericalRegion;
 import ch.ethz.idsc.tensor.Tensor;
 
 public class Se2SphericalRegion implements Region<Tensor> {

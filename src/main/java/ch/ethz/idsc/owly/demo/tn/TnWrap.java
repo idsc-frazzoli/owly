@@ -4,7 +4,7 @@ package ch.ethz.idsc.owly.demo.tn;
 import java.util.ArrayList;
 import java.util.List;
 
-import ch.ethz.idsc.owly.math.CoordinateWrap;
+import ch.ethz.idsc.owl.math.CoordinateWrap;
 import ch.ethz.idsc.tensor.RationalScalar;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;

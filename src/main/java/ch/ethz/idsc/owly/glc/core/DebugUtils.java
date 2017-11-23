@@ -6,8 +6,9 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 
-import ch.ethz.idsc.owly.data.GlobalAssert;
-import ch.ethz.idsc.owly.data.tree.Nodes;
+import ch.ethz.idsc.owl.data.GlobalAssert;
+import ch.ethz.idsc.owl.data.tree.Nodes;
+import ch.ethz.idsc.owly.glc.adapter.GlcNodes;
 import ch.ethz.idsc.owly.glc.adapter.StateTimeTrajectories;
 import ch.ethz.idsc.tensor.Scalars;
 
@@ -22,31 +23,12 @@ public enum DebugUtils {
   }
 
   // ---
-  public static final void nodeAmountCompare(GlcNode best, int size) {
+  private static final void nodeAmountCompare(GlcNode best, int size) {
     final GlcNode root = Nodes.rootFrom(best);
     if (size != Nodes.ofSubtree(root).size()) {
       System.out.println("****NODE CHECK****");
       System.out.println("Nodes in DomainMap: " + size);
       System.out.println("Nodes in SubTree from Node: " + Nodes.ofSubtree(best).size());
-      throw new RuntimeException();
-    }
-  }
-
-  /** @param best getBestOrElsePeek()
-   * @param node
-   * @param size domainMap.size() */
-  static final void nodeAmountCheck(GlcNode best, GlcNode node, int size) {
-    final GlcNode root = Nodes.rootFrom(best); //
-    int treeSize = Nodes.ofSubtree(root).size();
-    if (size != treeSize) {
-      System.err.println("DomainMap  != TreeSize:");
-      System.err.println(size + " =/= " + treeSize + " after expanding of Node: ");
-      System.err.println("DEPTH: " + node.depth());
-      System.err.println("State: " + node.state());
-      if (node.isRoot())
-        System.err.println("Node has no parents");
-      if (node.isLeaf())
-        System.err.println("Node is leaf");
       throw new RuntimeException();
     }
   }

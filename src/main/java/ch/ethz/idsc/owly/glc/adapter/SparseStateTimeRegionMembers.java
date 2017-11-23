@@ -4,11 +4,11 @@ package ch.ethz.idsc.owly.glc.adapter;
 import java.util.Collection;
 import java.util.Collections;
 
-import ch.ethz.idsc.owly.data.LinearRasterMap;
-import ch.ethz.idsc.owly.data.RasterMap;
-import ch.ethz.idsc.owly.math.state.StateTime;
-import ch.ethz.idsc.owly.math.state.StateTimeCollector;
-import ch.ethz.idsc.owly.math.state.StateTimeRegionCallback;
+import ch.ethz.idsc.owl.data.LinearRasterMap;
+import ch.ethz.idsc.owl.data.RasterMap;
+import ch.ethz.idsc.owl.math.state.StateTime;
+import ch.ethz.idsc.owl.math.state.StateTimeCollector;
+import ch.ethz.idsc.owl.math.state.StateTimeRegionCallback;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
 

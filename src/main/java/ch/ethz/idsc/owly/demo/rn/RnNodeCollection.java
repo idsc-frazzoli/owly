@@ -4,11 +4,11 @@ package ch.ethz.idsc.owly.demo.rn;
 import java.util.Collection;
 import java.util.stream.Collectors;
 
-import ch.ethz.idsc.owly.data.nd.NdCenterInterface;
-import ch.ethz.idsc.owly.data.nd.NdCluster;
-import ch.ethz.idsc.owly.data.nd.NdEntry;
-import ch.ethz.idsc.owly.data.nd.NdMap;
-import ch.ethz.idsc.owly.data.nd.NdTreeMap;
+import ch.ethz.idsc.owl.data.nd.NdCenterInterface;
+import ch.ethz.idsc.owl.data.nd.NdCluster;
+import ch.ethz.idsc.owl.data.nd.NdEntry;
+import ch.ethz.idsc.owl.data.nd.NdMap;
+import ch.ethz.idsc.owl.data.nd.NdTreeMap;
 import ch.ethz.idsc.owly.rrts.core.RrtsNode;
 import ch.ethz.idsc.owly.rrts.core.RrtsNodeCollection;
 import ch.ethz.idsc.tensor.Tensor;

@@ -3,14 +3,14 @@ package ch.ethz.idsc.owly.demo.rn;
 
 import java.util.List;
 
+import ch.ethz.idsc.owl.math.flow.Flow;
+import ch.ethz.idsc.owl.math.noise.ContinuousNoise;
+import ch.ethz.idsc.owl.math.noise.ContinuousNoiseUtils;
+import ch.ethz.idsc.owl.math.noise.SimplexContinuousNoise;
+import ch.ethz.idsc.owl.math.state.StateTime;
 import ch.ethz.idsc.owly.glc.adapter.Trajectories;
 import ch.ethz.idsc.owly.glc.core.CostFunction;
 import ch.ethz.idsc.owly.glc.core.GlcNode;
-import ch.ethz.idsc.owly.math.flow.Flow;
-import ch.ethz.idsc.owly.math.noise.ContinuousNoise;
-import ch.ethz.idsc.owly.math.noise.ContinuousNoiseUtils;
-import ch.ethz.idsc.owly.math.noise.SimplexContinuousNoise;
-import ch.ethz.idsc.owly.math.state.StateTime;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;

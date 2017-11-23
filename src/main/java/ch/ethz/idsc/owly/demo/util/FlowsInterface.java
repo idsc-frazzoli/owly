@@ -3,7 +3,7 @@ package ch.ethz.idsc.owly.demo.util;
 
 import java.util.Collection;
 
-import ch.ethz.idsc.owly.math.flow.Flow;
+import ch.ethz.idsc.owl.math.flow.Flow;
 
 public interface FlowsInterface {
   /** Example:

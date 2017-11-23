@@ -1,10 +1,10 @@
 // code by jph and jl
 package ch.ethz.idsc.owly.demo.rn;
 
-import ch.ethz.idsc.owly.math.region.Region;
-import ch.ethz.idsc.owly.math.sample.BoxRandomSample;
-import ch.ethz.idsc.owly.math.sample.RandomSample;
-import ch.ethz.idsc.owly.math.sample.RandomSampleInterface;
+import ch.ethz.idsc.owl.math.region.Region;
+import ch.ethz.idsc.owl.math.sample.BoxRandomSample;
+import ch.ethz.idsc.owl.math.sample.RandomSample;
+import ch.ethz.idsc.owl.math.sample.RandomSampleInterface;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
 
