@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.function.Function;
 
 import ch.ethz.idsc.owl.data.GlobalAssert;
-import ch.ethz.idsc.owl.math.r2.Cross2D;
+import ch.ethz.idsc.owl.math.planar.Cross2D;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;

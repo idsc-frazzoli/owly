@@ -3,7 +3,7 @@ package ch.ethz.idsc.owl.math.flow;
 
 import ch.ethz.idsc.owl.math.StateSpaceModel;
 import ch.ethz.idsc.owl.math.StateSpaceModels;
-import ch.ethz.idsc.owl.math.se2.Se2Integrator;
+import ch.ethz.idsc.owl.math.map.Se2Integrator;
 import ch.ethz.idsc.owly.demo.psu.PsuStateSpaceModel;
 import ch.ethz.idsc.owly.demo.se2.Se2StateSpaceModel;
 import ch.ethz.idsc.tensor.RationalScalar;

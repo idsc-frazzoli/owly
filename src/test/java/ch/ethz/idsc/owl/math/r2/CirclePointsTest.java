@@ -3,6 +3,7 @@ package ch.ethz.idsc.owl.math.r2;
 
 import java.util.Arrays;
 
+import ch.ethz.idsc.owl.math.planar.CirclePoints;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;

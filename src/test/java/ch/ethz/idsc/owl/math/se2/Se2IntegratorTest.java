@@ -1,6 +1,8 @@
 // code by jph
 package ch.ethz.idsc.owl.math.se2;
 
+import ch.ethz.idsc.owl.math.map.Se2Integrator;
+import ch.ethz.idsc.owl.math.map.Se2Utils;
 import ch.ethz.idsc.owly.demo.se2.Se2CarIntegrator;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;

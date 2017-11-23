@@ -3,10 +3,10 @@ package ch.ethz.idsc.owly.demo.se2.twd;
 
 import ch.ethz.idsc.owl.gui.RenderInterface;
 import ch.ethz.idsc.owl.gui.ani.OwlyAnimationFrame;
+import ch.ethz.idsc.owl.math.map.RigidFamily;
+import ch.ethz.idsc.owl.math.map.Se2Family;
 import ch.ethz.idsc.owl.math.region.ImageRegion;
 import ch.ethz.idsc.owl.math.region.Region;
-import ch.ethz.idsc.owl.math.se2.RigidFamily;
-import ch.ethz.idsc.owl.math.se2.Se2Family;
 import ch.ethz.idsc.owl.math.state.StateTime;
 import ch.ethz.idsc.owl.math.state.TrajectoryRegionQuery;
 import ch.ethz.idsc.owl.sim.CameraEmulator;

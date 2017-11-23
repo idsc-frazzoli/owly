@@ -5,7 +5,7 @@ import ch.ethz.idsc.owl.data.Stopwatch;
 import ch.ethz.idsc.owl.math.flow.Flow;
 import ch.ethz.idsc.owl.math.flow.RungeKutta45Integrator;
 import ch.ethz.idsc.owl.math.flow.RungeKutta4Integrator;
-import ch.ethz.idsc.owl.math.se2.Se2Integrator;
+import ch.ethz.idsc.owl.math.map.Se2Integrator;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;

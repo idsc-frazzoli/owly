@@ -6,8 +6,8 @@ import java.util.List;
 
 import ch.ethz.idsc.owl.data.GlobalAssert;
 import ch.ethz.idsc.owl.math.flow.Flow;
-import ch.ethz.idsc.owl.math.se2.RigidFamily;
-import ch.ethz.idsc.owl.math.se2.TranslationFamily;
+import ch.ethz.idsc.owl.math.map.RigidFamily;
+import ch.ethz.idsc.owl.math.map.TranslationFamily;
 import ch.ethz.idsc.owl.math.state.StateIntegrator;
 import ch.ethz.idsc.owl.math.state.StateTime;
 import ch.ethz.idsc.tensor.Scalar;

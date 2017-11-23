@@ -1,5 +1,5 @@
 // code by jph
-package ch.ethz.idsc.owl.math.r2;
+package ch.ethz.idsc.owl.math.planar;
 
 import ch.ethz.idsc.owl.math.Degree;
 import ch.ethz.idsc.tensor.RealScalar;

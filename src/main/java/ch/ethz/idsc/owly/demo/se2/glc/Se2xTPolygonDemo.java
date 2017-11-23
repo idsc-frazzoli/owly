@@ -3,8 +3,8 @@ package ch.ethz.idsc.owly.demo.se2.glc;
 
 import ch.ethz.idsc.owl.gui.RenderInterface;
 import ch.ethz.idsc.owl.gui.ani.OwlyAnimationFrame;
+import ch.ethz.idsc.owl.math.map.BijectionFamily;
 import ch.ethz.idsc.owl.math.region.Region;
-import ch.ethz.idsc.owl.math.se2.BijectionFamily;
 import ch.ethz.idsc.owl.math.state.StateTime;
 import ch.ethz.idsc.owly.demo.rn.R2xTPolygonStateTimeRegion;
 import ch.ethz.idsc.owly.demo.util.DemoInterface;

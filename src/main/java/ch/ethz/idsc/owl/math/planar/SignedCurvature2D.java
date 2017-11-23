@@ -1,6 +1,6 @@
 // code by jph
 // adapted from document by Tobias Ewald
-package ch.ethz.idsc.owl.math.r2;
+package ch.ethz.idsc.owl.math.planar;
 
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;

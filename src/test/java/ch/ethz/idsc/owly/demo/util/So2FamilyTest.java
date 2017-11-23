@@ -1,8 +1,8 @@
 // code by jph
 package ch.ethz.idsc.owly.demo.util;
 
-import ch.ethz.idsc.owl.math.se2.BijectionFamily;
-import ch.ethz.idsc.owl.math.se2.So2Family;
+import ch.ethz.idsc.owl.math.map.BijectionFamily;
+import ch.ethz.idsc.owl.math.map.So2Family;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;

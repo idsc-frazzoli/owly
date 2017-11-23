@@ -6,7 +6,7 @@ import java.awt.geom.Path2D;
 
 import ch.ethz.idsc.owl.gui.GeometricLayer;
 import ch.ethz.idsc.owl.gui.RenderInterface;
-import ch.ethz.idsc.owl.math.r2.CirclePoints;
+import ch.ethz.idsc.owl.math.planar.CirclePoints;
 import ch.ethz.idsc.owly.demo.rn.RnPointcloudRegion;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
