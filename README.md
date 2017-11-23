@@ -4,7 +4,7 @@
 
 The repository contains Java 8 implementations of motion planners and their variants.
 
-Version `0.0.9`
+Version `0.1.0`
 
 List of algorithms:
 
@@ -145,7 +145,7 @@ Modify the `pom` file of your project to specify `repository` and `dependency` o
       <dependency>
         <groupId>ch.ethz.idsc</groupId>
         <artifactId>owly</artifactId>
-        <version>0.0.9</version>
+        <version>0.1.0</version>
       </dependency>
     </dependencies>
 
@@ -156,4 +156,4 @@ The library is used in the projects:
 * `owly3d`
 * `matsim`
 
-The repository has over `220` unit tests.
+The repository has over `230` unit tests.
