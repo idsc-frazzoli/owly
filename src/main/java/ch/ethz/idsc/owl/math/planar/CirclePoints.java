@@ -34,7 +34,8 @@ public enum CirclePoints {
     return Tensor.of(of(n).stream().map(row -> row.pmul(scale)));
   }
 
-  public static Scalar roundToInteger(Scalar scalar) {
+  @SuppressWarnings("unused")
+  private static Scalar roundToInteger(Scalar scalar) {
     Scalar round = Round.FUNCTION.apply(scalar);
     return Chop._12.close(round, scalar) ? round : scalar;
   }

@@ -9,14 +9,13 @@ import java.util.List;
 import ch.ethz.idsc.owl.math.StateSpaceModel;
 import ch.ethz.idsc.owl.math.StateSpaceModels;
 import ch.ethz.idsc.owl.math.flow.Flow;
+import ch.ethz.idsc.owl.math.planar.CirclePoints;
 import ch.ethz.idsc.tensor.DoubleScalar;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
 import ch.ethz.idsc.tensor.alg.Array;
-import ch.ethz.idsc.tensor.alg.Range;
 import ch.ethz.idsc.tensor.alg.Subdivide;
-import ch.ethz.idsc.tensor.lie.AngleVector;
 
 /** controls for position and velocity */
 public enum Rice2Controls {
@@ -43,11 +42,8 @@ public enum Rice2Controls {
     Collection<Flow> collection = new HashSet<>();
     collection.add(StateSpaceModels.createFlow(stateSpaceModel, Array.zeros(2)));
     for (Tensor amp : Subdivide.of(0, 1, seg).extract(1, seg + 1))
-      for (Tensor angle : Range.of(0, num).multiply(DoubleScalar.of(2 * Math.PI / num))) {
-        Tensor u = AngleVector.of(angle.Get()).multiply(amp.Get());
-        // System.out.println(u);
-        collection.add(StateSpaceModels.createFlow(stateSpaceModel, u));
-      }
+      for (Tensor u : CirclePoints.of(num))
+        collection.add(StateSpaceModels.createFlow(stateSpaceModel, u.multiply(amp.Get())));
     return collection;
   }
 }

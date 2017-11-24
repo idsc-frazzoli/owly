@@ -10,14 +10,11 @@ import ch.ethz.idsc.owl.math.SingleIntegratorStateSpaceModel;
 import ch.ethz.idsc.owl.math.StateSpaceModel;
 import ch.ethz.idsc.owl.math.StateSpaceModels;
 import ch.ethz.idsc.owl.math.flow.Flow;
+import ch.ethz.idsc.owl.math.planar.CirclePoints;
 import ch.ethz.idsc.owly.demo.util.FlowsInterface;
-import ch.ethz.idsc.tensor.DoubleScalar;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.alg.Array;
-import ch.ethz.idsc.tensor.alg.Range;
-import ch.ethz.idsc.tensor.lie.AngleVector;
-import ch.ethz.idsc.tensor.sca.Chop;
 import ch.ethz.idsc.tensor.sca.Sign;
 
 public class R2Flows implements FlowsInterface {
@@ -33,10 +30,8 @@ public class R2Flows implements FlowsInterface {
     GlobalAssert.that(2 < resolution); // otherwise does not cover plane
     StateSpaceModel stateSpaceModel = SingleIntegratorStateSpaceModel.INSTANCE;
     List<Flow> list = new ArrayList<>();
-    for (Tensor angle : Range.of(0, resolution).multiply(DoubleScalar.of(2 * Math.PI / resolution))) {
-      Tensor u = Chop._10.of(AngleVector.of(angle.Get()).multiply(speed));
-      list.add(StateSpaceModels.createFlow(stateSpaceModel, u));
-    }
+    for (Tensor u : CirclePoints.of(resolution))
+      list.add(StateSpaceModels.createFlow(stateSpaceModel, u.multiply(speed)));
     return list;
   }
 

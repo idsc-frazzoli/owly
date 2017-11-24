@@ -19,6 +19,7 @@ import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Tensors;
 
 /** the obstacle region in the demo is the outside of a rotating letter 'a' */
+// TODO the display of the lidar is incorrect
 public class TwdxTImageAnimationDemo implements DemoInterface {
   @Override
   public void start() {

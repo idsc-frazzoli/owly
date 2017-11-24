@@ -16,32 +16,32 @@ import ch.ethz.idsc.tensor.io.ImageFormat;
 /** collection of ready-to-use image regions */
 public enum R2ImageRegions {
   ;
-  // TODO transpose is obsolete
-  public static ImageRegion transpose(BufferedImage bufferedImage, Tensor range, boolean strict) {
-    return new ImageRegion(Transpose.of(ImageFormat.from(bufferedImage)), range, strict);
+  static ImageRegion normal(BufferedImage bufferedImage, Tensor range, boolean strict) {
+    return new ImageRegion(ImageFormat.from(bufferedImage), range, strict);
   }
 
-  public static ImageRegion normal(BufferedImage bufferedImage, Tensor range, boolean strict) {
-    return new ImageRegion(ImageFormat.from(bufferedImage), range, strict);
+  // the use of normal is preferred over transpose
+  static ImageRegion transpose(BufferedImage bufferedImage, Tensor range, boolean strict) {
+    return new ImageRegion(Transpose.of(ImageFormat.from(bufferedImage)), range, strict);
   }
 
   public static ImageRegion outside_0b36() {
     CharImage charImage = CharImage.fillBlack(new Dimension(256, 256));
     charImage.setFont(new Font(Font.DIALOG, Font.PLAIN, 256));
     charImage.draw('\u0b36', new Point(30, 200));
-    return transpose(charImage.bufferedImage(), Tensors.vector(7, 7), false);
+    return normal(charImage.bufferedImage(), Tensors.vector(7, 7), false);
   }
 
   public static ImageRegion inside_0b36() {
     CharImage charImage = CharImage.fillWhite(new Dimension(210, 256));
     charImage.draw('\u0b36', new Point(0, 240));
-    return transpose(charImage.bufferedImage(), Tensors.vector(6, 7), false);
+    return normal(charImage.bufferedImage(), Tensors.vector(6, 7), false);
   }
 
   public static ImageRegion inside_265b() {
     CharImage charImage = CharImage.fillWhite(new Dimension(320, 320));
     charImage.draw('\u265b', new Point(-20, 300));
-    return transpose(charImage.bufferedImage(), Tensors.vector(7, 7), false);
+    return normal(charImage.bufferedImage(), Tensors.vector(7, 7), false);
   }
 
   public static ImageRegion inside_2180() {
@@ -61,7 +61,7 @@ public enum R2ImageRegions {
   public static ImageRegion inside_2182() {
     CharImage charImage = CharImage.fillWhite(new Dimension(480, 320));
     charImage.draw('\u2182', new Point(-10, 305));
-    return transpose(charImage.bufferedImage(), Tensors.vector(9, 6), false);
+    return normal(charImage.bufferedImage(), Tensors.vector(9, 6), false);
   }
 
   public static ImageRegion inside_0f5c() {
