@@ -18,6 +18,7 @@ import ch.ethz.idsc.owl.math.state.StateIntegrator;
 import ch.ethz.idsc.owl.math.state.StateTime;
 import ch.ethz.idsc.owl.math.state.TrajectoryRegionQuery;
 import ch.ethz.idsc.owly.demo.delta.DeltaControls;
+import ch.ethz.idsc.owly.demo.delta.DeltaFlows;
 import ch.ethz.idsc.owly.demo.delta.DeltaMinTimeGoalManager;
 import ch.ethz.idsc.owly.demo.delta.DeltaStateSpaceModel;
 import ch.ethz.idsc.owly.demo.delta.ImageGradient;
@@ -71,8 +72,7 @@ import ch.ethz.idsc.tensor.sca.Chop;
     StateIntegrator stateIntegrator = FixedStateIntegrator.create( //
         RungeKutta45Integrator.INSTANCE, RationalScalar.of(1, 10), 4);
     StateSpaceModel stateSpaceModel = new DeltaStateSpaceModel(imageGradient);
-    Collection<Flow> controls = DeltaControls.createControls( //
-        stateSpaceModel, U_NORM, U_SIZE);
+    Collection<Flow> controls = new DeltaFlows(stateSpaceModel, U_NORM).getFlows(U_SIZE);
     Scalar u_norm = DeltaControls.maxSpeed(controls);
     GlobalAssert.that(Chop._10.close(u_norm, U_NORM));
     Scalar maxMove = stateSpaceModel.getLipschitz().add(u_norm);
