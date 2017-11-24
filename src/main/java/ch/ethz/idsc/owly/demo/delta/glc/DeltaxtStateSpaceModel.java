@@ -8,7 +8,7 @@ import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
 
-// TODO should be obsolete
+// TODO JONAS should be obsolete
 //@Deprecated
 class DeltaxtStateSpaceModel implements StateSpaceModel {
   private final ImageGradient imageGradient;
@@ -40,6 +40,5 @@ class DeltaxtStateSpaceModel implements StateSpaceModel {
 
   public Scalar getMaxPossibleChange() {
     return maxInput.add(imageGradient.maxNormGradient());
-    // TODO modify due to time state
   }
 }

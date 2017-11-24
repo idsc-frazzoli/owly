@@ -561,7 +561,7 @@ public class OptimalAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
 
   private boolean goalCheckTree(Collection<GlcNode> treeCollection) {
     // Parallel: 15%-50% Speedgain, tested with R2GlcConstTimeHeuristicAnyDemo
-    // TODO parallel gives different result as compared to non-parallel? e.g. R2GlcAnyCircleDemo
+    // TODO JONAS parallel gives different result as compared to non-parallel? e.g. R2GlcAnyCircleDemo
     // No difference with synchronized, same bug, even with exactly the same List
     treeCollection.stream().forEach(node -> {
       if (!node.isRoot()) {
