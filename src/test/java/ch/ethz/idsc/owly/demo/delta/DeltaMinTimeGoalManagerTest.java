@@ -23,7 +23,7 @@ public class DeltaMinTimeGoalManagerTest extends TestCase {
     assertTrue(Scalars.lessThan(RealScalar.ZERO, maxNormGradient));
     Scalar amp = RealScalar.of(2);
     StateSpaceModel stateSpaceModel = new DeltaStateSpaceModel(imageGradient);
-    Collection<Flow> controls = DeltaControls.createControls(stateSpaceModel, amp, 20);
+    Collection<Flow> controls = new DeltaFlows(stateSpaceModel, amp).getFlows(20);
     assertTrue(Chop._10.close(DeltaControls.maxSpeed(controls), amp));
     // System.out.println(stateSpaceModel.getLipschitz());
     Scalar maxMove = DeltaControls.maxSpeed(controls).add(imageGradient.maxNormGradient());

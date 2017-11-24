@@ -1,14 +1,9 @@
 // code by jph
 package ch.ethz.idsc.owl.math.planar;
 
-import ch.ethz.idsc.owl.math.Degree;
-import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
-import ch.ethz.idsc.tensor.alg.Drop;
-import ch.ethz.idsc.tensor.alg.Subdivide;
-import ch.ethz.idsc.tensor.lie.AngleVector;
 
 public enum StarPoints {
   ;
@@ -22,8 +17,8 @@ public enum StarPoints {
     Tensor polygon = Tensors.empty();
     Scalar[] rad = new Scalar[] { s_hi, s_lo };
     int count = 0;
-    for (Tensor theta : Drop.tail(Subdivide.of(RealScalar.ZERO, Degree.of(360), 2 * n2), 1))
-      polygon.append(AngleVector.of(theta.Get()).multiply(rad[count++ % 2]));
+    for (Tensor u : CirclePoints.of(2 * n2))
+      polygon.append(u.multiply(rad[count++ % 2]));
     return polygon;
   }
 }

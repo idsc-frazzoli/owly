@@ -20,7 +20,7 @@ import ch.ethz.idsc.owl.math.state.FixedStateIntegrator;
 import ch.ethz.idsc.owl.math.state.StateIntegrator;
 import ch.ethz.idsc.owl.math.state.StateTime;
 import ch.ethz.idsc.owl.math.state.TrajectoryRegionQuery;
-import ch.ethz.idsc.owly.demo.delta.DeltaControls;
+import ch.ethz.idsc.owly.demo.delta.DeltaFlows;
 import ch.ethz.idsc.owly.demo.delta.DeltaMinTimeGoalManager;
 import ch.ethz.idsc.owly.demo.delta.DeltaStateSpaceModel;
 import ch.ethz.idsc.owly.demo.delta.ImageGradient;
@@ -49,7 +49,7 @@ enum DeltaExpandDemo {
     ImageGradient ipr = ImageGradient.linear(ResourceData.of("/io/delta_uxy.png"), range, amp);
     Scalar maxInput = RealScalar.ONE;
     StateSpaceModel stateSpaceModel = new DeltaStateSpaceModel(ipr);
-    Collection<Flow> controls = DeltaControls.createControls(stateSpaceModel, maxInput, 25);
+    Collection<Flow> controls = new DeltaFlows(stateSpaceModel, maxInput).getFlows(25);
     Tensor obstacleImage = ResourceData.of("/io/delta_free.png"); //
     Region<Tensor> region = new ImageRegion(obstacleImage, range, true);
     TrajectoryRegionQuery obstacleQuery = SimpleTrajectoryRegionQuery.timeInvariant(region);

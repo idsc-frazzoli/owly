@@ -3,10 +3,10 @@ package ch.ethz.idsc.owly.demo.delta.glc;
 
 import java.util.Collection;
 
-import ch.ethz.idsc.owl.glc.adapter.Parameters;
 import ch.ethz.idsc.owl.glc.adapter.SimpleTrajectoryRegionQuery;
 import ch.ethz.idsc.owl.glc.any.OptimalAnyTrajectoryPlanner;
 import ch.ethz.idsc.owl.glc.core.TrajectoryPlanner;
+import ch.ethz.idsc.owl.glc.par.Parameters;
 import ch.ethz.idsc.owl.glc.std.StandardTrajectoryPlanner;
 import ch.ethz.idsc.owl.gui.ren.VectorFieldRender;
 import ch.ethz.idsc.owl.math.StateSpaceModel;
@@ -23,7 +23,7 @@ import ch.ethz.idsc.owl.math.state.StateIntegrator;
 import ch.ethz.idsc.owl.math.state.StateTime;
 import ch.ethz.idsc.owl.math.state.TrajectoryRegionQuery;
 import ch.ethz.idsc.owly.demo.delta.DeltaAltStateSpaceModel;
-import ch.ethz.idsc.owly.demo.delta.DeltaControls;
+import ch.ethz.idsc.owly.demo.delta.DeltaFlows;
 import ch.ethz.idsc.owly.demo.delta.DeltaHeuristicGoalManager;
 import ch.ethz.idsc.owly.demo.delta.DeltaParameters;
 import ch.ethz.idsc.owly.demo.delta.ImageGradient;
@@ -59,8 +59,8 @@ public enum DeltaHelper {
     Scalar maxInput = RealScalar.of(0.1);
     DeltaAltStateSpaceModel stateSpaceModel = new DeltaAltStateSpaceModel(ipr, maxInput);
     System.out.println("MaxGradient of field is: " + ipr.maxNormGradient());
-    Collection<Flow> controls = DeltaControls.createControls( //
-        stateSpaceModel, maxInput, resolution.number().intValue());
+    Collection<Flow> controls = new DeltaFlows(stateSpaceModel, maxInput).getFlows( //
+        resolution.number().intValue());
     Parameters parameters = new DeltaParameters(resolution, timeScale, depthScale, //
         partitionScale, dtMax, maxIter, stateSpaceModel.getLipschitz());
     System.out.println("1/DomainSize: " + parameters.getEta());
@@ -90,8 +90,8 @@ public enum DeltaHelper {
     Scalar maxInput = RealScalar.of(0.1);
     DeltaAltStateSpaceModel stateSpaceModel = new DeltaAltStateSpaceModel(ipr, maxInput);
     System.out.println("MaxGradient of field is: " + ipr.maxNormGradient());
-    Collection<Flow> controls = DeltaControls.createControls( //
-        stateSpaceModel, maxInput, resolution.number().intValue());
+    Collection<Flow> controls = new DeltaFlows(stateSpaceModel, maxInput).getFlows( //
+        resolution.number().intValue());
     Parameters parameters = new DeltaParameters(resolution, timeScale, depthScale, //
         partitionScale, dtMax, maxIter, stateSpaceModel.getLipschitz());
     System.out.println("1/DomainSize: " + parameters.getEta());

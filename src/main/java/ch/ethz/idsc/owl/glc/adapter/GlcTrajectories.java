@@ -10,15 +10,15 @@ import ch.ethz.idsc.owl.math.state.StateIntegrator;
 import ch.ethz.idsc.owl.math.state.StateTime;
 import ch.ethz.idsc.owl.math.state.TrajectorySample;
 
-/** utility functions that operate on List<GlcNode> */
+/** utility functions that operate on {@link GlcNode}s */
 public enum GlcTrajectories {
   ;
   /** @param stateIntegrator
-   * @param node
+   * @param glcNode
    * @return densely sampled trajectory from root to given node
    * that is the result of integrating the flows between the nodes */
-  public static List<TrajectorySample> detailedTrajectoryTo(StateIntegrator stateIntegrator, GlcNode node) {
-    return connect(stateIntegrator, Nodes.listFromRoot(node));
+  public static List<TrajectorySample> detailedTrajectoryTo(StateIntegrator stateIntegrator, GlcNode glcNode) {
+    return connect(stateIntegrator, Nodes.listFromRoot(glcNode));
   }
 
   /** @param stateIntegrator
@@ -27,8 +27,8 @@ public enum GlcTrajectories {
   public static List<TrajectorySample> connect(StateIntegrator stateIntegrator, List<GlcNode> list) {
     List<TrajectorySample> trajectory = new ArrayList<>();
     if (!list.isEmpty()) {
-      GlcNode node = list.get(0);
-      trajectory.add(new TrajectorySample(node.stateTime(), node.flow())); // add first node
+      GlcNode glcNode = list.get(0);
+      trajectory.add(new TrajectorySample(glcNode.stateTime(), glcNode.flow())); // add first node
       for (int index = 1; index < list.size(); ++index) {
         GlcNode prevNode = list.get(index - 1);
         GlcNode nextNode = list.get(index);

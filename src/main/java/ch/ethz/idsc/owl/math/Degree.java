@@ -1,6 +1,7 @@
 // code by jph
 package ch.ethz.idsc.owl.math;
 
+import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.qty.Quantity;
 import ch.ethz.idsc.tensor.qty.Unit;
@@ -18,6 +19,10 @@ public enum Degree {
    * @param degree
    * @return radians == degree * PI / 180 */
   public static final Scalar of(Number degree) {
-    return UnitSystem.SI().apply(Quantity.of(degree, DEGREE));
+    return of(RealScalar.of(degree));
+  }
+
+  public static final Scalar of(Scalar scalar) {
+    return UnitSystem.SI().apply(Quantity.of(scalar, DEGREE));
   }
 }

@@ -35,7 +35,8 @@ public abstract class TrajectoryPlanner implements ExpandInterface<GlcNode>, Ser
   /** best is a reference to a Node in the goal region,
    * or null if such a node has not been identified
    * use function setBestNull() to reset best to null */
-  protected final NavigableMap<GlcNode, List<StateTime>> best = new TreeMap<>(NodeMeritComparator.INSTANCE);
+  protected final NavigableMap<GlcNode, List<StateTime>> best = //
+      new TreeMap<>(NodeMeritComparator.INSTANCE);
   private int replaceCount = 0;
 
   /* package */ TrajectoryPlanner(Tensor eta) {
@@ -181,6 +182,7 @@ public abstract class TrajectoryPlanner implements ExpandInterface<GlcNode>, Ser
   /** @return the node, to which the trajectory should lead:
    * The Furthest, the best or the top of the Queue */
   public Optional<GlcNode> getFinalGoalNode() {
+    // FIXME JONAS TrajectoryGoalManager cannot be used here; capability may be checked via an interface
     if ((getGoalInterface() instanceof TrajectoryGoalManager)) {
       Optional<GlcNode> furthest = getFurthestGoalNode();
       if (furthest.isPresent())

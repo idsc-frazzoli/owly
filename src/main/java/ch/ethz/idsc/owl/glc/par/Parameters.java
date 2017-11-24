@@ -1,5 +1,5 @@
 // code by jl, theory by bp
-package ch.ethz.idsc.owl.glc.adapter;
+package ch.ethz.idsc.owl.glc.par;
 
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;

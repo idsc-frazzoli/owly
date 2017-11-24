@@ -61,6 +61,6 @@ enum R2InsideCharDemo {
   }
 
   public static void main(String[] args) throws Exception {
-    _2182();
+    _0b36();
   }
 }

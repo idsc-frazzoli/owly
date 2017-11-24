@@ -1,7 +1,7 @@
 // code by jl
 package ch.ethz.idsc.owly.demo.se2.twd;
 
-import ch.ethz.idsc.owl.glc.adapter.DefaultParameters;
+import ch.ethz.idsc.owl.glc.par.DefaultParameters;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
