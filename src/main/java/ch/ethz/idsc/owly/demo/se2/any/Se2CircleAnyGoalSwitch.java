@@ -1,8 +1,8 @@
 // code by jl
 package ch.ethz.idsc.owly.demo.se2.any;
 
-import ch.ethz.idsc.owl.glc.adapter.Parameters;
 import ch.ethz.idsc.owl.glc.any.AbstractAnyTrajectoryPlanner;
+import ch.ethz.idsc.owl.glc.par.Parameters;
 import ch.ethz.idsc.owl.math.Degree;
 import ch.ethz.idsc.owl.math.state.StateTime;
 import ch.ethz.idsc.tensor.DoubleScalar;

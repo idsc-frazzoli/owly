@@ -63,7 +63,7 @@ import ch.ethz.idsc.tensor.sca.Ramp;
    * sqrt(a²y² + b²x²) */
   @Override // from HeuristicFunction
   public Scalar minCostToGoal(Tensor x) {
-    // FIXME the formula is probably conceptually wrong:
+    // FIXME JONAS the formula is probably conceptually wrong:
     // we don't need distance in along a certain direction but overall shortest distance regardless of direction
     Tensor rnVector = x.subtract(center);
     Scalar root = Hypot.BIFUNCTION.apply(radius.Get(0).multiply(rnVector.Get(1)), radius.Get(1).multiply(rnVector.Get(0)));

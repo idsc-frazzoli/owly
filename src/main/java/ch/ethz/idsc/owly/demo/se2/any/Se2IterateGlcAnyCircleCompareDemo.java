@@ -8,12 +8,12 @@ import java.util.List;
 
 import ch.ethz.idsc.owl.glc.adapter.GlcExpand;
 import ch.ethz.idsc.owl.glc.adapter.HeuristicQ;
-import ch.ethz.idsc.owl.glc.adapter.Parameters;
 import ch.ethz.idsc.owl.glc.adapter.SimpleTrajectoryRegionQuery;
 import ch.ethz.idsc.owl.glc.any.AnyPlannerInterface;
 import ch.ethz.idsc.owl.glc.any.OptimalAnyTrajectoryPlanner;
 import ch.ethz.idsc.owl.glc.core.DebugUtils;
 import ch.ethz.idsc.owl.glc.core.TrajectoryPlanner;
+import ch.ethz.idsc.owl.glc.par.Parameters;
 import ch.ethz.idsc.owl.glc.std.StandardTrajectoryPlanner;
 import ch.ethz.idsc.owl.gui.ani.OwlyFrame;
 import ch.ethz.idsc.owl.gui.ani.OwlyGui;
@@ -137,9 +137,9 @@ class Se2IterateGlcAnyCircleCompareDemo {
       System.out.println("***DEFAULT***");
       timingDatabase.startStopwatchFor(0);
       {
-        StandardTrajectoryPlanner defaultTrajectoryPlanner = new StandardTrajectoryPlanner( //
+        TrajectoryPlanner defaultTrajectoryPlanner = new StandardTrajectoryPlanner( //
             parameters.getEta(), stateIntegrator, controls, obstacleQuery, se2GoalManager2.getGoalInterface());
-        // TODO why not use plan statetime newRootState here !?
+        // TODO JONAS why not use plan statetime newRootState here !?
         defaultTrajectoryPlanner.insertRoot(new StateTime(newRootState.state(), RealScalar.ZERO));
         iters = GlcExpand.maxDepth(defaultTrajectoryPlanner, parameters.getDepthLimit());
         timingDatabase.saveIterations(iters, 0);

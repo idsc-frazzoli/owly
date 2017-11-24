@@ -64,7 +64,7 @@ public abstract class AbstractAnyTrajectoryPlanner extends AbstractTrajectoryPla
    * @param state the new Rootstate
    * @return The value,by which the depth limit needs to be increased as of the RootSwitch */
   @Override
-  // TODO: Maybe insert StateTime? instead of state
+  // TODO JONAS insert StateTime instead of state
   public final int switchRootToState(Tensor state) {
     // TODO because of appending NaN, ::represent must only consider StateTime::state()
     GlcNode newRoot = getNode(convertToKey(new StateTime(state, DoubleScalar.INDETERMINATE)));

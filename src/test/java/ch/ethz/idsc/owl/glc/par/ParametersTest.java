@@ -1,5 +1,5 @@
 // code by jl
-package ch.ethz.idsc.owl.glc.adapter;
+package ch.ethz.idsc.owl.glc.par;
 
 import ch.ethz.idsc.owl.math.StateSpaceModel;
 import ch.ethz.idsc.owly.demo.se2.Se2StateSpaceModel;
