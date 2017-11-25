@@ -7,7 +7,7 @@ import java.awt.geom.Path2D;
 import ch.ethz.idsc.owl.data.GlobalAssert;
 import ch.ethz.idsc.owl.gui.GeometricLayer;
 import ch.ethz.idsc.owl.gui.RenderInterface;
-import ch.ethz.idsc.owl.math.planar.CirclePoints;
+import ch.ethz.idsc.owl.math.planar.EllipsePoints;
 import ch.ethz.idsc.owl.math.region.EllipsoidRegion;
 import ch.ethz.idsc.owl.math.region.SphericalRegion;
 import ch.ethz.idsc.owly.demo.util.RegionRenders;
@@ -36,7 +36,7 @@ public class EllipseRegionRender implements RenderInterface {
 
   private EllipseRegionRender(Tensor center, Scalar radiusX, Scalar radiusY) {
     GlobalAssert.that(center.length() == 2);
-    polygon = Tensor.of(CirclePoints.elliptic(RESOLUTION, radiusX, radiusY) //
+    polygon = Tensor.of(EllipsePoints.of(RESOLUTION, radiusX, radiusY) //
         .stream().map(row -> row.add(center)));
   }
 

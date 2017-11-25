@@ -8,7 +8,7 @@ import java.util.function.Supplier;
 import ch.ethz.idsc.owl.gui.GeometricLayer;
 import ch.ethz.idsc.owl.gui.RenderInterface;
 import ch.ethz.idsc.owl.math.map.BijectionFamily;
-import ch.ethz.idsc.owl.math.planar.CirclePoints;
+import ch.ethz.idsc.owl.math.planar.EllipsePoints;
 import ch.ethz.idsc.owl.math.region.Region;
 import ch.ethz.idsc.owl.math.state.StateTime;
 import ch.ethz.idsc.owly.demo.util.RegionRenders;
@@ -36,7 +36,7 @@ public class R2xTEllipsoidStateTimeRegion implements Region<StateTime>, RenderIn
     invert = radius.map(Scalar::reciprocal);
     this.bijectionFamily = bijectionFamily;
     this.supplier = supplier;
-    polygon = CirclePoints.elliptic(RESOLUTION, radius.Get(0), radius.Get(1));
+    polygon = EllipsePoints.of(RESOLUTION, radius.extract(0, 2));
   }
 
   @Override // from Region

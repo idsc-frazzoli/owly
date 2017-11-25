@@ -5,13 +5,14 @@ import java.util.List;
 import java.util.Optional;
 
 import ch.ethz.idsc.owl.glc.core.GoalInterface;
+import ch.ethz.idsc.owl.glc.core.TrajectoryGoalMarker;
 import ch.ethz.idsc.owl.math.region.Region;
 import ch.ethz.idsc.owl.math.region.RegionUnion;
 import ch.ethz.idsc.owl.math.state.StateTime;
 import ch.ethz.idsc.owl.math.state.TimeInvariantRegion;
 import ch.ethz.idsc.tensor.Tensor;
 
-public abstract class TrajectoryGoalManager extends SimpleTrajectoryRegionQuery implements GoalInterface {
+public abstract class TrajectoryGoalManager extends SimpleTrajectoryRegionQuery implements GoalInterface, TrajectoryGoalMarker {
   private final List<Region<Tensor>> goalRegionList;
 
   public TrajectoryGoalManager(List<Region<Tensor>> goalRegionList) {

@@ -23,13 +23,6 @@ public class CirclePointsTest extends TestCase {
     assertTrue(Chop._14.close(nrm, Array.of(l -> RealScalar.ONE, n)));
   }
 
-  public void testScaled() {
-    int n = 11;
-    Tensor tensor = CirclePoints.elliptic(n, RealScalar.of(2), RealScalar.of(.5));
-    // System.out.println(Pretty.of(tensor.map(Round._4)));
-    assertEquals(Dimensions.of(tensor), Arrays.asList(n, 2));
-  }
-
   public void testFirst() {
     int n = 5;
     Tensor tensor = CirclePoints.of(n);
@@ -40,5 +33,11 @@ public class CirclePointsTest extends TestCase {
     Tensor tensor = CirclePoints.of(6);
     Tensor hull = ConvexHull.of(tensor);
     assertEquals(Tally.of(tensor), Tally.of(hull));
+  }
+
+  public void testSmall() {
+    assertEquals(CirclePoints.of(0), Tensors.empty());
+    assertEquals(CirclePoints.of(1), Tensors.fromString("{{1, 0}}"));
+    assertEquals(Chop._14.of(CirclePoints.of(2)), Tensors.fromString("{{1,0},{-1, 0}}"));
   }
 }
