@@ -70,7 +70,7 @@ import ch.ethz.idsc.tensor.sca.Chop;
   public TrajectoryPlanner createTrajectoryPlanner(TrajectoryRegionQuery obstacleQuery, Tensor goal) {
     Tensor eta = eta();
     StateIntegrator stateIntegrator = FixedStateIntegrator.create( //
-        RungeKutta45Integrator.INSTANCE, RationalScalar.of(1, 10), 4);
+        RungeKutta45Integrator.INSTANCE, RationalScalar.of(1, 5), 4);
     StateSpaceModel stateSpaceModel = new DeltaStateSpaceModel(imageGradient);
     Collection<Flow> controls = new DeltaFlows(stateSpaceModel, U_NORM).getFlows(U_SIZE);
     Scalar u_norm = DeltaControls.maxSpeed(controls);

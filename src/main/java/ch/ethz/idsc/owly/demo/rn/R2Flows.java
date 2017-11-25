@@ -10,11 +10,11 @@ import ch.ethz.idsc.owl.math.SingleIntegratorStateSpaceModel;
 import ch.ethz.idsc.owl.math.StateSpaceModel;
 import ch.ethz.idsc.owl.math.StateSpaceModels;
 import ch.ethz.idsc.owl.math.flow.Flow;
-import ch.ethz.idsc.owl.math.planar.CirclePoints;
 import ch.ethz.idsc.owly.demo.util.FlowsInterface;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.alg.Array;
+import ch.ethz.idsc.tensor.lie.CirclePoints;
 import ch.ethz.idsc.tensor.sca.Sign;
 
 public class R2Flows implements FlowsInterface {

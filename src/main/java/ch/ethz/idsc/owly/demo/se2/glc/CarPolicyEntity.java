@@ -11,7 +11,6 @@ import java.util.Objects;
 import ch.ethz.idsc.owl.gui.GeometricLayer;
 import ch.ethz.idsc.owl.gui.ani.PolicyEntity;
 import ch.ethz.idsc.owl.math.Degree;
-import ch.ethz.idsc.owl.math.planar.CirclePoints;
 import ch.ethz.idsc.owl.math.state.SimpleEpisodeIntegrator;
 import ch.ethz.idsc.owl.math.state.StateTime;
 import ch.ethz.idsc.owl.math.state.TrajectoryRegionQuery;
@@ -37,6 +36,7 @@ import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
 import ch.ethz.idsc.tensor.alg.Ordering;
 import ch.ethz.idsc.tensor.alg.Subdivide;
+import ch.ethz.idsc.tensor.lie.CirclePoints;
 import ch.ethz.idsc.tensor.sca.Chop;
 
 public class CarPolicyEntity extends PolicyEntity implements RewardInterface {
