@@ -16,7 +16,6 @@ import java.util.TreeMap;
 import ch.ethz.idsc.owl.data.GlobalAssert;
 import ch.ethz.idsc.owl.glc.adapter.GlcNodes;
 import ch.ethz.idsc.owl.glc.adapter.HeuristicQ;
-import ch.ethz.idsc.owl.glc.adapter.TrajectoryGoalManager;
 import ch.ethz.idsc.owl.glc.any.AbstractAnyTrajectoryPlanner;
 import ch.ethz.idsc.owl.math.StateTimeTensorFunction;
 import ch.ethz.idsc.owl.math.state.StateIntegrator;
@@ -182,18 +181,16 @@ public abstract class TrajectoryPlanner implements ExpandInterface<GlcNode>, Ser
   /** @return the node, to which the trajectory should lead:
    * The Furthest, the best or the top of the Queue */
   public Optional<GlcNode> getFinalGoalNode() {
-    // FIXME JONAS TrajectoryGoalManager cannot be used here; capability may be checked via an interface
-    if ((getGoalInterface() instanceof TrajectoryGoalManager)) {
+    if ((getGoalInterface() instanceof TrajectoryGoalMarker)) {
       Optional<GlcNode> furthest = getFurthestGoalNode();
       if (furthest.isPresent())
         return furthest;
-      else // if TrajectoryGoalManager is used, the heuristic will not be "good enough for guidance"
-        return getBest();
+      // if TrajectoryGoalMarker is used, the heuristic will not be "good enough for guidance"
+      return getBest();
     }
-    if (HeuristicQ.of(getGoalInterface())) {
-      return getBestOrElsePeek();
-    }
-    return getBest();
+    return HeuristicQ.of(getGoalInterface()) //
+        ? getBestOrElsePeek() //
+        : getBest();
   }
 
   /** @param stateTime to be checked if corresponds to an existing Node in tree

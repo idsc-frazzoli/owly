@@ -6,10 +6,10 @@ import java.awt.geom.Path2D;
 
 import ch.ethz.idsc.owl.gui.GeometricLayer;
 import ch.ethz.idsc.owl.gui.RenderInterface;
-import ch.ethz.idsc.owl.math.planar.CirclePoints;
 import ch.ethz.idsc.owly.demo.util.RegionRenders;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
+import ch.ethz.idsc.tensor.lie.CirclePoints;
 
 public class RnPointcloudRegionRender implements RenderInterface {
   private static final int RESOLUTION = 16;
@@ -20,7 +20,7 @@ public class RnPointcloudRegionRender implements RenderInterface {
   public RnPointcloudRegionRender(RnPointcloudRegion rnPointcloudRegion) {
     points = rnPointcloudRegion.points();
     Scalar radius = rnPointcloudRegion.radius();
-    polygon = CirclePoints.elliptic(RESOLUTION, radius, radius);
+    polygon = CirclePoints.of(RESOLUTION).multiply(radius);
   }
 
   @Override

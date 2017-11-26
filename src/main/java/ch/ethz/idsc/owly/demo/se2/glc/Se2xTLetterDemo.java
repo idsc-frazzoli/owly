@@ -88,11 +88,6 @@ public class Se2xTLetterDemo implements DemoInterface {
           LidarEmulator.RAYDEMO, carxTEntity::getStateTimeNow, ray);
       owlyAnimationFrame.addBackground(renderInterface);
     }
-    {
-      CarPolicyEntity twdPolicyEntity = new CarPolicyEntity( //
-          Tensors.vector(5.600, 8.667, -1.571), ray);
-      owlyAnimationFrame.add(twdPolicyEntity);
-    }
     // ---
     owlyAnimationFrame.configCoordinateOffset(50, 700);
     owlyAnimationFrame.jFrame.setBounds(100, 50, 1200, 800);
