@@ -63,12 +63,14 @@ import ch.ethz.idsc.tensor.sca.Ramp;
    * sqrt(a²y² + b²x²) */
   @Override // from HeuristicFunction
   public Scalar minCostToGoal(Tensor x) {
-    // FIXME JONAS the formula is probably conceptually wrong:
-    // we don't need distance in along a certain direction but overall shortest distance regardless of direction
+    // TODO -> JAN the formula is probably conceptually wrong:
+    // check answer below
     Tensor rnVector = x.subtract(center);
     Scalar root = Hypot.BIFUNCTION.apply(radius.Get(0).multiply(rnVector.Get(1)), radius.Get(1).multiply(rnVector.Get(0)));
     // ---
     Scalar specificRadius = radius.Get(0).multiply(radius.Get(1)).multiply(Norm._2.between(x, center)).divide(root);
+    // shortest distance towards goal, minus radius of (elliptic) goalregion,
+    // as we need to guarantee that minCostToGoal(x in Goal) == 0;
     return Ramp.of(Norm._2.between(x, center).subtract(specificRadius)); // <- do not change
   }
 }

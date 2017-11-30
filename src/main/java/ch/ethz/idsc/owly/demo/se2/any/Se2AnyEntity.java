@@ -45,6 +45,7 @@ import ch.ethz.idsc.owly.demo.rn.R2Flows;
 import ch.ethz.idsc.owly.demo.rn.RnMinDistSphericalGoalManager;
 import ch.ethz.idsc.owly.demo.se2.CarStandardFlows;
 import ch.ethz.idsc.owly.demo.se2.Se2CarIntegrator;
+import ch.ethz.idsc.owly.demo.se2.Se2MinTimeGoalManager;
 import ch.ethz.idsc.owly.demo.se2.Se2StateSpaceModel;
 import ch.ethz.idsc.owly.demo.se2.Se2TrajectoryGoalManager;
 import ch.ethz.idsc.owly.demo.se2.Se2Wrap;
@@ -168,7 +169,7 @@ import ch.ethz.idsc.tensor.sca.Sqrt;
     TrajectoryPlanner trajectoryPlanner = new StandardTrajectoryPlanner( //
         eta, stateIntegratorR2, controlsR2, obstacleQueryR2, rnGoal);
     if (rnGoal.isMember(new StateTime(currentState, RealScalar.ZERO)))
-      return new Se2MinTimeEuclideanDistanceHeuristicGoalManager(goal, goalRadius, controls).getGoalInterface();
+      return new Se2MinTimeGoalManager(goal, goalRadius, controls).getGoalInterface();
     trajectoryPlanner.insertRoot(new StateTime(currentState, RealScalar.ZERO));
     // int iters =
     Expand.maxTime(trajectoryPlanner, RealScalar.of(1.5)); // 1.5 [s]

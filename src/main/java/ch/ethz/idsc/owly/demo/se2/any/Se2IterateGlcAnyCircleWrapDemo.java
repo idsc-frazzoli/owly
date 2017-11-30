@@ -6,11 +6,13 @@ import java.util.Collection;
 import java.util.List;
 
 import ch.ethz.idsc.owl.glc.adapter.GlcExpand;
+import ch.ethz.idsc.owl.glc.adapter.MultiCostGoalAdapter;
 import ch.ethz.idsc.owl.glc.adapter.SimpleTrajectoryRegionQuery;
 import ch.ethz.idsc.owl.glc.adapter.StateTimeTrajectories;
 import ch.ethz.idsc.owl.glc.any.AbstractAnyTrajectoryPlanner;
 import ch.ethz.idsc.owl.glc.any.AnyPlannerInterface;
 import ch.ethz.idsc.owl.glc.any.OptimalAnyTrajectoryPlanner;
+import ch.ethz.idsc.owl.glc.core.GoalInterface;
 import ch.ethz.idsc.owl.glc.core.TrajectoryPlanner;
 import ch.ethz.idsc.owl.glc.par.Parameters;
 import ch.ethz.idsc.owl.gui.ani.OwlyFrame;
@@ -29,6 +31,8 @@ import ch.ethz.idsc.owl.math.state.StateTime;
 import ch.ethz.idsc.owl.math.state.TrajectoryRegionQuery;
 import ch.ethz.idsc.owly.demo.se2.CarStandardFlows;
 import ch.ethz.idsc.owly.demo.se2.Se2CarIntegrator;
+import ch.ethz.idsc.owly.demo.se2.Se2LateralAcceleration;
+import ch.ethz.idsc.owly.demo.se2.Se2MinTimeGoalManager;
 import ch.ethz.idsc.owly.demo.se2.Se2StateSpaceModel;
 import ch.ethz.idsc.owly.demo.se2.Se2Wrap;
 import ch.ethz.idsc.owly.demo.se2.Se2WrapGoalManagerExt;
@@ -67,10 +71,9 @@ class Se2IterateGlcAnyCircleWrapDemo {
     CarStandardFlows carConfig = new CarStandardFlows(RealScalar.ONE, Degree.of(45));
     Collection<Flow> controls = carConfig.getFlows(parameters.getResolutionInt());
     CoordinateWrap coordinateWrap = new Se2Wrap(Tensors.vector(1, 1, 1));
-    Se2MinCurvatureGoalManager se2GoalManager = new Se2MinCurvatureGoalManager(goal, radiusVector);
-    Se2WrapGoalManagerExt se2WrapGoalManagerExt = new Se2WrapGoalManagerExt( //
-        coordinateWrap, //
-        se2GoalManager);
+    GoalInterface se2GoalManager = MultiCostGoalAdapter.of( //
+        new Se2WrapGoalManagerExt(coordinateWrap, new Se2MinTimeGoalManager(goal, radiusVector, controls)).getGoalInterface(), //
+        Arrays.asList(Se2LateralAcceleration.COSTFUNCTION));
     TrajectoryRegionQuery obstacleQuery = SimpleTrajectoryRegionQuery.timeInvariant( //
         RegionUnion.wrap(Arrays.asList( //
             new EllipsoidRegion(Tensors.vector(0, 0, 0), Tensors.vector(1, 1, Double.POSITIVE_INFINITY)), //
@@ -81,7 +84,7 @@ class Se2IterateGlcAnyCircleWrapDemo {
     // ---
     Scalar tic = RealScalar.of(System.nanoTime());
     AnyPlannerInterface anyPlannerInterface = new OptimalAnyTrajectoryPlanner( //
-        parameters.getEta(), stateIntegrator, controls, obstacleQuery, se2WrapGoalManagerExt.getGoalInterface());
+        parameters.getEta(), stateIntegrator, controls, obstacleQuery, se2GoalManager);
     // ---
     anyPlannerInterface.switchRootToState(new StateTime(Tensors.vector(0, 3, 0), RealScalar.ZERO));
     OwlyFrame owlyFrame = OwlyGui.start();
@@ -114,7 +117,11 @@ class Se2IterateGlcAnyCircleWrapDemo {
       owlyFrame.setGlc((TrajectoryPlanner) anyPlannerInterface);
       Thread.sleep(delay.number().intValue() / 2);
       // --
-      goalFound = Se2CircleAnyGoalSwitch.switchToNextCircularGoal((AbstractAnyTrajectoryPlanner) anyPlannerInterface, iter, parameters);
+      goalFound = Se2CircleAnyGoalSwitch.switchToNextCircularGoal(//
+          (AbstractAnyTrajectoryPlanner) anyPlannerInterface, //
+          iter, //
+          controls, //
+          parameters);
       Thread.sleep(delay.number().intValue() / 2);
       // --
       if (!goalFound)

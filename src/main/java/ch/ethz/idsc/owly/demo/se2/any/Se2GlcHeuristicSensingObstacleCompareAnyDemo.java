@@ -33,6 +33,7 @@ import ch.ethz.idsc.owl.math.state.TrajectoryRegionQuery;
 import ch.ethz.idsc.owly.demo.rn.EuclideanDistanceDiscoverRegion;
 import ch.ethz.idsc.owly.demo.rn.R2NoiseRegion;
 import ch.ethz.idsc.owly.demo.se2.CarStandardFlows;
+import ch.ethz.idsc.owly.demo.se2.Se2MinTimeGoalManager;
 import ch.ethz.idsc.owly.demo.se2.Se2StateSpaceModel;
 import ch.ethz.idsc.owly.demo.se2.glc.Se2Parameters;
 import ch.ethz.idsc.owly.demo.util.RunCompare;
@@ -165,7 +166,7 @@ enum Se2GlcHeuristicSensingObstacleCompareAnyDemo {
     Collection<Flow> controls = carConfig.getFlows(11);
     Tensor goal = Tensors.vector(11, 11, 0);
     GoalInterface[] values = new GoalInterface[] { //
-        new Se2MinTimeEuclideanDistanceHeuristicGoalManager(goal, Tensors.vector(0.5, 0.5, 0.8), controls).getGoalInterface(),
+        new Se2MinTimeGoalManager(goal, Tensors.vector(0.5, 0.5, 0.8), controls).getGoalInterface(),
         new Se2NoHeuristicGoalManager(goal, Tensors.vector(0.5, 0.5, 0.8)).getGoalInterface()
         // RnMinDistSphericalGoalManager.create(Tensors.vector(25, 25), RealScalar.of(0.3)),
         // new RnSimpleCircleGoalManager(Tensors.vector(20, 20), RealScalar.of(0.3)) //

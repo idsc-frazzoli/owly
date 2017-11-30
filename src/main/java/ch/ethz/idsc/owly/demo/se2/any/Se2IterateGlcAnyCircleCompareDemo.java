@@ -8,10 +8,12 @@ import java.util.List;
 
 import ch.ethz.idsc.owl.glc.adapter.GlcExpand;
 import ch.ethz.idsc.owl.glc.adapter.HeuristicQ;
+import ch.ethz.idsc.owl.glc.adapter.MultiCostGoalAdapter;
 import ch.ethz.idsc.owl.glc.adapter.SimpleTrajectoryRegionQuery;
 import ch.ethz.idsc.owl.glc.any.AnyPlannerInterface;
 import ch.ethz.idsc.owl.glc.any.OptimalAnyTrajectoryPlanner;
 import ch.ethz.idsc.owl.glc.core.DebugUtils;
+import ch.ethz.idsc.owl.glc.core.GoalInterface;
 import ch.ethz.idsc.owl.glc.core.TrajectoryPlanner;
 import ch.ethz.idsc.owl.glc.par.Parameters;
 import ch.ethz.idsc.owl.glc.std.StandardTrajectoryPlanner;
@@ -29,8 +31,9 @@ import ch.ethz.idsc.owl.math.state.StateIntegrator;
 import ch.ethz.idsc.owl.math.state.StateTime;
 import ch.ethz.idsc.owl.math.state.TrajectoryRegionQuery;
 import ch.ethz.idsc.owly.demo.se2.CarStandardFlows;
-import ch.ethz.idsc.owly.demo.se2.Se2AbstractGoalManager;
 import ch.ethz.idsc.owly.demo.se2.Se2CarIntegrator;
+import ch.ethz.idsc.owly.demo.se2.Se2LateralAcceleration;
+import ch.ethz.idsc.owly.demo.se2.Se2MinTimeGoalManager;
 import ch.ethz.idsc.owly.demo.se2.Se2StateSpaceModel;
 import ch.ethz.idsc.owly.demo.se2.glc.Se2Parameters;
 import ch.ethz.idsc.owly.demo.util.RunCompare;
@@ -63,8 +66,10 @@ class Se2IterateGlcAnyCircleCompareDemo {
     parameters.printResolution();
     CarStandardFlows carConfig = new CarStandardFlows(RealScalar.ONE, Degree.of(45));
     Collection<Flow> controls = carConfig.getFlows(parameters.getResolutionInt());
-    Se2AbstractGoalManager se2GoalManager = new Se2MinCurvatureGoalManager( //
-        Tensors.vector(3, 0, 1.5 * Math.PI), radiusVector);
+    Tensor goalCenter = Tensors.vector(3, 0, 1.5 * Math.PI);
+    GoalInterface se2GoalManager = MultiCostGoalAdapter.of( //
+        Se2MinTimeGoalManager.create(goalCenter, radiusVector, controls), //
+        Arrays.asList(Se2LateralAcceleration.COSTFUNCTION));
     TrajectoryRegionQuery obstacleQuery = SimpleTrajectoryRegionQuery.timeInvariant( //
         RegionUnion.wrap(Arrays.asList( //
             new EllipsoidRegion(Tensors.vector(0, 0, 0), Tensors.vector(1, 1, Double.POSITIVE_INFINITY)), //
@@ -81,7 +86,7 @@ class Se2IterateGlcAnyCircleCompareDemo {
     System.out.println("***ANY***");
     // {
     AnyPlannerInterface anyTrajectoryPlanner = new OptimalAnyTrajectoryPlanner( //
-        parameters.getEta(), stateIntegrator, controls, obstacleQuery, se2GoalManager.getGoalInterface());
+        parameters.getEta(), stateIntegrator, controls, obstacleQuery, se2GoalManager);
     anyTrajectoryPlanner.switchRootToState(new StateTime(Tensors.vector(0, 3, 0), RealScalar.ZERO));
     int iters = GlcExpand.maxDepth(anyTrajectoryPlanner, parameters.getDepthLimit());
     System.out.println("After " + iters + " iterations");
@@ -94,7 +99,7 @@ class Se2IterateGlcAnyCircleCompareDemo {
     OwlyFrame owlyFrameDefault = OwlyGui.start();
     {
       StandardTrajectoryPlanner defaultTrajectoryPlanner = new StandardTrajectoryPlanner( //
-          parameters.getEta(), stateIntegrator, controls, obstacleQuery, se2GoalManager.getGoalInterface());
+          parameters.getEta(), stateIntegrator, controls, obstacleQuery, se2GoalManager);
       defaultTrajectoryPlanner.insertRoot(new StateTime(Tensors.vector(0, 3, 0), RealScalar.ZERO));
       iters = GlcExpand.maxDepth(defaultTrajectoryPlanner, parameters.getDepthLimit());
       DebugUtils.nodeAmountCompare(defaultTrajectoryPlanner);
@@ -113,8 +118,9 @@ class Se2IterateGlcAnyCircleCompareDemo {
       if (anyTrajectory != null)
         newRootState = anyTrajectory.get(anyTrajectory.size() > 5 ? 5 : 0);
       int index = iter % 4;
-      Se2AbstractGoalManager se2GoalManager2 = new Se2MinCurvatureGoalManager( //
-          goalList.get(index), radiusVector);
+      GoalInterface se2GoalManager2 = MultiCostGoalAdapter.of( //
+          Se2MinTimeGoalManager.create(goalList.get(index), radiusVector, controls), //
+          Arrays.asList(Se2LateralAcceleration.COSTFUNCTION));
       // --
       System.out.println("***ANY***");
       timingDatabase.startStopwatchFor(1);
@@ -122,7 +128,7 @@ class Se2IterateGlcAnyCircleCompareDemo {
         int increment = anyTrajectoryPlanner.switchRootToState(newRootState);
         parameters.increaseDepthLimit(increment);
         // --
-        goalFound = anyTrajectoryPlanner.changeToGoal(se2GoalManager2.getGoalInterface());
+        goalFound = anyTrajectoryPlanner.changeToGoal(se2GoalManager2);
         // --
         expandIter = 0;
         if (!goalFound)
@@ -138,9 +144,8 @@ class Se2IterateGlcAnyCircleCompareDemo {
       timingDatabase.startStopwatchFor(0);
       {
         TrajectoryPlanner defaultTrajectoryPlanner = new StandardTrajectoryPlanner( //
-            parameters.getEta(), stateIntegrator, controls, obstacleQuery, se2GoalManager2.getGoalInterface());
-        // TODO JONAS why not use plan statetime newRootState here !?
-        defaultTrajectoryPlanner.insertRoot(new StateTime(newRootState.state(), RealScalar.ZERO));
+            parameters.getEta(), stateIntegrator, controls, obstacleQuery, se2GoalManager2);
+        defaultTrajectoryPlanner.insertRoot(newRootState);
         iters = GlcExpand.maxDepth(defaultTrajectoryPlanner, parameters.getDepthLimit());
         timingDatabase.saveIterations(iters, 0);
         System.out.println("After " + iters + " iterations");
