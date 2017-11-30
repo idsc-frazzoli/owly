@@ -18,7 +18,7 @@ public interface AnyPlannerInterface extends ExpandInterface<GlcNode> {
    * (deleting of the useless nodes and relabeling of modified Domains)
    * @param state the new Rootstate
    * @return The value,by which the depth limit needs to be increased as of the RootSwitch */
-  int switchRootToState(Tensor state);
+  int switchRootToState(StateTime stateTime);
 
   /** Includes all the functionality of the RootSwitch
    * (deleting of the useless nodes and relabeling of modified Domains)

@@ -30,8 +30,6 @@ import ch.ethz.idsc.owl.math.state.StateIntegrator;
 import ch.ethz.idsc.owl.math.state.StateTime;
 import ch.ethz.idsc.owl.math.state.TrajectoryRegionQuery;
 import ch.ethz.idsc.owl.math.state.TrajectorySample;
-import ch.ethz.idsc.tensor.DoubleScalar;
-import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
 
@@ -61,13 +59,13 @@ public abstract class AbstractAnyTrajectoryPlanner extends AbstractTrajectoryPla
 
   /** Includes all the functionality of the RootSwitch
    * (deleting of the useless nodes and relabling of modified Domains)
-   * @param state the new Rootstate
+   * @param stateTime the new Rootstate
    * @return The value,by which the depth limit needs to be increased as of the RootSwitch */
   @Override
   // TODO JONAS insert StateTime instead of state
-  public final int switchRootToState(Tensor state) {
+  public final int switchRootToState(StateTime stateTime) {
     // TODO because of appending NaN, ::represent must only consider StateTime::state()
-    GlcNode newRoot = getNode(convertToKey(new StateTime(state, DoubleScalar.INDETERMINATE)));
+    GlcNode newRoot = getNode(convertToKey(stateTime));
     int increaseDepthBy = 0;
     // TODO JONAS not nice, as we jump from state to startnode
     if (newRoot != null) {
@@ -75,7 +73,7 @@ public abstract class AbstractAnyTrajectoryPlanner extends AbstractTrajectoryPla
     } else {
       System.err.println("***RESET***");
       System.out.println("This domain is not labelled yet:");
-      System.out.println(state);
+      System.out.println(stateTime.toInfoString());
       if (!domainMap().isEmpty()) {
         deleteSubtreeOf(getRoot());
         domainMap().clear();
@@ -83,7 +81,7 @@ public abstract class AbstractAnyTrajectoryPlanner extends AbstractTrajectoryPla
       }
       // we did not follow the planned path ==> new Motion planning problem,
       // also often used to start a new MPP
-      insertRoot(new StateTime(state, RealScalar.ZERO));
+      insertRoot(stateTime);
     }
     return increaseDepthBy;
   }

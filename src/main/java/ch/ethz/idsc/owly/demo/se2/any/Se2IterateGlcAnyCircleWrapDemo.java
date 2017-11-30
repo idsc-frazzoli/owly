@@ -83,7 +83,7 @@ class Se2IterateGlcAnyCircleWrapDemo {
     AnyPlannerInterface anyPlannerInterface = new OptimalAnyTrajectoryPlanner( //
         parameters.getEta(), stateIntegrator, controls, obstacleQuery, se2WrapGoalManagerExt.getGoalInterface());
     // ---
-    anyPlannerInterface.switchRootToState(Tensors.vector(0, 3, 0));
+    anyPlannerInterface.switchRootToState(new StateTime(Tensors.vector(0, 3, 0), RealScalar.ZERO));
     OwlyFrame owlyFrame = OwlyGui.start();
     Scalar toc = RealScalar.of(System.nanoTime());
     int iters = GlcExpand.maxDepth(anyPlannerInterface, parameters.getDepthLimit());
@@ -106,7 +106,7 @@ class Se2IterateGlcAnyCircleWrapDemo {
       List<StateTime> trajectory = anyPlannerInterface.trajectoryToBest();
       if (trajectory != null) {
         StateTime newRootState = trajectory.get(trajectory.size() > 3 ? 3 : 0);
-        int increment = anyPlannerInterface.switchRootToState(newRootState.state());
+        int increment = anyPlannerInterface.switchRootToState(newRootState);
         parameters.increaseDepthLimit(increment);
       } else {
         throw new RuntimeException();

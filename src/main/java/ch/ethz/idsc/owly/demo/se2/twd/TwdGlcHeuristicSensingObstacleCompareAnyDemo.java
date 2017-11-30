@@ -62,10 +62,10 @@ enum TwdGlcHeuristicSensingObstacleCompareAnyDemo {
     System.out.println("DomainSize: 1/Eta: " + parameters.getEta().map(n -> RealScalar.ONE.divide(n)));
     Collection<Flow> controls = TWDCONFIG.getFlows(parameters.getResolutionInt());
     // Creating Goals
-    Tensor startState = Tensors.vector(0, 0, 0);
+    StateTime startState = new StateTime(Tensors.vector(0, 0, 0), RealScalar.ZERO);
     Region<Tensor> environmentRegion = new R2NoiseRegion(RealScalar.of(0.1));
     TrajectoryRegionQuery obstacleQuery = SimpleTrajectoryRegionQuery.timeInvariant( //
-        EuclideanDistanceDiscoverRegion.of(environmentRegion, startState, RealScalar.of(4)));
+        EuclideanDistanceDiscoverRegion.of(environmentRegion, startState.state(), RealScalar.of(4)));
     AnyPlannerInterface anyTrajectoryPlanner = new OptimalAnyTrajectoryPlanner( //
         parameters.getEta(), stateIntegrator, controls, obstacleQuery, twdGoal);
     anyTrajectoryPlanner.switchRootToState(startState);
@@ -98,7 +98,7 @@ enum TwdGlcHeuristicSensingObstacleCompareAnyDemo {
       if (trajectory.size() > 5) {
         //
         newRootState = trajectory.get(trajectory.size() > 3 ? 3 : 0);
-        int increment = anyTrajectoryPlanner.switchRootToState(newRootState.state());
+        int increment = anyTrajectoryPlanner.switchRootToState(newRootState);
         parameters.increaseDepthLimit(increment);
       }
       // -- OBSTACLE CHANGE

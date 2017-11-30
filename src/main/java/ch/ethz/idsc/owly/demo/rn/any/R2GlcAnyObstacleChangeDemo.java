@@ -66,7 +66,7 @@ enum R2GlcAnyObstacleChangeDemo {
     // --
     AnyPlannerInterface anyPlannerInterface = new OptimalAnyTrajectoryPlanner( //
         parameters.getEta(), stateIntegrator, controls, obstacleQuery1, rnGoal);
-    anyPlannerInterface.switchRootToState(Tensors.vector(0, 6));
+    anyPlannerInterface.switchRootToState(new StateTime(Tensors.vector(0, 6), RealScalar.ZERO));
     GlcExpand.maxDepth(anyPlannerInterface, parameters.getDepthLimit());
     List<StateTime> trajectory = anyPlannerInterface.trajectoryToBest();
     StateTimeTrajectories.print(trajectory);

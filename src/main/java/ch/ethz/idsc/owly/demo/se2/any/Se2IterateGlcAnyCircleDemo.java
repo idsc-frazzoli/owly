@@ -77,7 +77,7 @@ class Se2IterateGlcAnyCircleDemo {
     AnyPlannerInterface anyPlannerInterface = new OptimalAnyTrajectoryPlanner( //
         parameters.getEta(), stateIntegrator, controls, obstacleQuery, se2GoalManager.getGoalInterface());
     // ---
-    anyPlannerInterface.switchRootToState(Tensors.vector(0, 3, 0));
+    anyPlannerInterface.switchRootToState(new StateTime(Tensors.vector(0, 3, 0), RealScalar.ZERO));
     int iters = GlcExpand.maxDepth(anyPlannerInterface, parameters.getDepthLimit());
     System.out.println("After " + iters + " iterations");
     Scalar toc = RealScalar.of(System.nanoTime());
@@ -97,7 +97,7 @@ class Se2IterateGlcAnyCircleDemo {
       List<StateTime> trajectory = anyPlannerInterface.trajectoryToBest();
       if (trajectory != null) {
         StateTime newRootState = trajectory.get(trajectory.size() > 5 ? 5 : 0);
-        int increment = anyPlannerInterface.switchRootToState(newRootState.state());
+        int increment = anyPlannerInterface.switchRootToState(newRootState);
         parameters.increaseDepthLimit(increment);
       } else {
         throw new RuntimeException();

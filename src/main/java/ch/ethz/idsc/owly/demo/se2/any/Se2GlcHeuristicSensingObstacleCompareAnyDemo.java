@@ -66,10 +66,10 @@ enum Se2GlcHeuristicSensingObstacleCompareAnyDemo {
     CarStandardFlows carConfig = new CarStandardFlows(RealScalar.ONE, Degree.of(45));
     Collection<Flow> controls = carConfig.getFlows(parameters.getResolutionInt());
     // Creating Goals
-    Tensor startState = Tensors.vector(0, 0, 0);
+    StateTime startState = new StateTime(Tensors.vector(0, 0, 0), RealScalar.ZERO);
     Region<Tensor> environmentRegion = new R2NoiseRegion(RealScalar.of(0.5));
     TrajectoryRegionQuery obstacleQuery = SimpleTrajectoryRegionQuery.timeInvariant( //
-        EuclideanDistanceDiscoverRegion.of(environmentRegion, startState, sensingRadius));
+        EuclideanDistanceDiscoverRegion.of(environmentRegion, startState.state(), sensingRadius));
     AnyPlannerInterface anyTrajectoryPlanner = new OptimalAnyTrajectoryPlanner( //
         parameters.getEta(), stateIntegrator, controls, obstacleQuery, se2Goal);
     anyTrajectoryPlanner.switchRootToState(startState);
@@ -121,7 +121,7 @@ enum Se2GlcHeuristicSensingObstacleCompareAnyDemo {
         // -- ROOTCHANGE
         if (trajectory.size() > 2) {
           //
-          int increment = anyTrajectoryPlanner.switchRootToState(newRootState.state());
+          int increment = anyTrajectoryPlanner.switchRootToState(newRootState);
           parameters.increaseDepthLimit(increment);
         }
         // -- OBSTACLE CHANGE

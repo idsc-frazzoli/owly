@@ -82,7 +82,7 @@ class Se2IterateGlcAnyCircleCompareDemo {
     // {
     AnyPlannerInterface anyTrajectoryPlanner = new OptimalAnyTrajectoryPlanner( //
         parameters.getEta(), stateIntegrator, controls, obstacleQuery, se2GoalManager.getGoalInterface());
-    anyTrajectoryPlanner.switchRootToState(Tensors.vector(0, 3, 0));
+    anyTrajectoryPlanner.switchRootToState(new StateTime(Tensors.vector(0, 3, 0), RealScalar.ZERO));
     int iters = GlcExpand.maxDepth(anyTrajectoryPlanner, parameters.getDepthLimit());
     System.out.println("After " + iters + " iterations");
     // }
@@ -119,7 +119,7 @@ class Se2IterateGlcAnyCircleCompareDemo {
       System.out.println("***ANY***");
       timingDatabase.startStopwatchFor(1);
       {
-        int increment = anyTrajectoryPlanner.switchRootToState(newRootState.state());
+        int increment = anyTrajectoryPlanner.switchRootToState(newRootState);
         parameters.increaseDepthLimit(increment);
         // --
         goalFound = anyTrajectoryPlanner.changeToGoal(se2GoalManager2.getGoalInterface());

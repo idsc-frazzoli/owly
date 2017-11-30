@@ -43,8 +43,8 @@ import ch.ethz.idsc.tensor.red.Norm2Squared;
   private final Scalar goalRadius = RealScalar.of(0.2);
 
   /** @param state initial position of entity */
-  public R2AnyEntity(Tensor state, int resolution) {
-    super(state, new R2Parameters( //
+  public R2AnyEntity(StateTime state, int resolution) {
+    super(new R2Parameters( //
         (RationalScalar) RealScalar.of(resolution), // resolution
         RealScalar.of(2), // TimeScale
         RealScalar.of(100), // DepthScale
@@ -58,7 +58,7 @@ import ch.ethz.idsc.tensor.red.Norm2Squared;
         new SimpleEpisodeIntegrator( //
             SingleIntegratorStateSpaceModel.INSTANCE, //
             EulerIntegrator.INSTANCE, //
-            new StateTime(state, RealScalar.ZERO)), //
+            state), //
         RealScalar.of(0.5), // lead time
         RealScalar.of(0.3)); // expand Time
   }
@@ -112,13 +112,13 @@ import ch.ethz.idsc.tensor.red.Norm2Squared;
   }
 
   @Override
-  protected TrajectoryRegionQuery updateObstacle(Region<Tensor> environmentRegion, Tensor currentState) {
+  protected TrajectoryRegionQuery updateObstacle(Region<Tensor> environmentRegion, StateTime currentState) {
     return SimpleTrajectoryRegionQuery.timeInvariant( //
-        EuclideanDistanceDiscoverRegion.of(environmentRegion, currentState, RealScalar.of(4)));
+        EuclideanDistanceDiscoverRegion.of(environmentRegion, currentState.state(), RealScalar.of(4)));
   }
 
   @Override
-  protected TrajectoryRegionQuery initializeObstacle(Region<Tensor> region, Tensor currentState) {
+  protected TrajectoryRegionQuery initializeObstacle(Region<Tensor> region, StateTime currentState) {
     return updateObstacle(region, currentState);
   }
 

@@ -4,11 +4,12 @@ package ch.ethz.idsc.owly.demo.se2.any;
 import ch.ethz.idsc.owl.gui.ani.OwlyAnimationFrame;
 import ch.ethz.idsc.owl.img.ImageRegions;
 import ch.ethz.idsc.owl.math.region.ImageRegion;
+import ch.ethz.idsc.owl.math.state.StateTime;
 import ch.ethz.idsc.owly.demo.rn.R2ImageRegionWrap;
 import ch.ethz.idsc.owly.demo.rn.R2ImageRegions;
 import ch.ethz.idsc.owly.demo.util.DemoInterface;
 import ch.ethz.idsc.owly.demo.util.RegionRenders;
-import ch.ethz.idsc.tensor.Tensor;
+import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Tensors;
 
 public class Se2GlcAnyAnimation1Demo implements DemoInterface {
@@ -16,8 +17,7 @@ public class Se2GlcAnyAnimation1Demo implements DemoInterface {
   public void start() {
     try {
       OwlyAnimationFrame owlyAnimationFrame = new OwlyAnimationFrame();
-      Tensor root = Tensors.vector(2.5, 0.75, 0);
-      root = Tensors.vector(7, 6, 1);
+      StateTime root = new StateTime(Tensors.vector(7, 6, 1), RealScalar.ZERO);
       Se2AnyEntity se2AnyEntity = new Se2AnyEntity(root, 8);
       se2AnyEntity.trajectoryPlannerCallback = owlyAnimationFrame.trajectoryPlannerCallback;
       // Region obstacleRegion = new InvertedRegion(EmptyRegion.INSTANCE);
