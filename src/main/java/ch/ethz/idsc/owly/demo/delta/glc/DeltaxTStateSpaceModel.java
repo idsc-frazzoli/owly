@@ -10,11 +10,11 @@ import ch.ethz.idsc.tensor.Tensor;
 
 // TODO JONAS should be obsolete
 //@Deprecated
-class DeltaxtStateSpaceModel implements StateSpaceModel {
+class DeltaxTStateSpaceModel implements StateSpaceModel {
   private final ImageGradient imageGradient;
   private final Scalar maxInput;
 
-  public DeltaxtStateSpaceModel(ImageGradient imageGradient, Scalar maxInput) {
+  public DeltaxTStateSpaceModel(ImageGradient imageGradient, Scalar maxInput) {
     this.imageGradient = imageGradient;
     this.maxInput = maxInput;
   }

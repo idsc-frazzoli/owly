@@ -42,7 +42,7 @@ import ch.ethz.idsc.tensor.Tensors;
 import ch.ethz.idsc.tensor.io.AnimationWriter;
 import ch.ethz.idsc.tensor.io.ResourceData;
 
-public class DeltaxtGlcDemo implements DemoInterface {
+public class DeltaxTGlcDemo implements DemoInterface {
   ;
   @Override
   public void start() {
@@ -62,7 +62,7 @@ public class DeltaxtGlcDemo implements DemoInterface {
     }
     ImageGradient ipr = ImageGradient.linear(ResourceData.of("/io/delta_uxy.png"), range, RealScalar.of(-0.1));
     Scalar maxInput = RealScalar.ONE;
-    DeltaxtStateSpaceModel stateSpaceModel = new DeltaxtStateSpaceModel(ipr, maxInput);
+    DeltaxTStateSpaceModel stateSpaceModel = new DeltaxTStateSpaceModel(ipr, maxInput);
     Collection<Flow> controls = new DeltaFlows(stateSpaceModel, maxInput).getFlows( //
         resolution.number().intValue());
     Parameters parameters = new DeltaParameters(resolution, timeScale, depthScale, //
@@ -93,7 +93,7 @@ public class DeltaxtGlcDemo implements DemoInterface {
     }
     Trajectories.print(dinghyTrajectory);
     // GOALCREATION
-    DeltaxtDinghyGoalManager deltaGoalManager2 = new DeltaxtDinghyGoalManager(goalRegions, stateSpaceModel);
+    DeltaxTDinghyGoalManager deltaGoalManager2 = new DeltaxTDinghyGoalManager(goalRegions, stateSpaceModel);
     TrajectoryPlanner trajectoryPlanner = new StandardTrajectoryPlanner( //
         parameters.getEta(), stateIntegrator, controls, obstacleQuery, deltaGoalManager2);
     trajectoryPlanner.insertRoot(new StateTime(Tensors.vector(8.8, 0.5, 0), RealScalar.ZERO));
@@ -138,6 +138,6 @@ public class DeltaxtGlcDemo implements DemoInterface {
   }
 
   public static void main(String[] args) {
-    new DeltaxtGlcDemo().start();
+    new DeltaxTGlcDemo().start();
   }
 }

@@ -6,6 +6,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Map;
 import java.util.NavigableMap;
 import java.util.Optional;
@@ -16,8 +17,11 @@ import java.util.TreeMap;
 import ch.ethz.idsc.owl.data.GlobalAssert;
 import ch.ethz.idsc.owl.glc.adapter.GlcNodes;
 import ch.ethz.idsc.owl.glc.adapter.HeuristicQ;
+import ch.ethz.idsc.owl.glc.adapter.SimpleTrajectoryRegionQuery;
+import ch.ethz.idsc.owl.glc.adapter.TrajectoryGoalManager;
 import ch.ethz.idsc.owl.glc.any.AbstractAnyTrajectoryPlanner;
 import ch.ethz.idsc.owl.math.StateTimeTensorFunction;
+import ch.ethz.idsc.owl.math.region.Region;
 import ch.ethz.idsc.owl.math.state.StateIntegrator;
 import ch.ethz.idsc.owl.math.state.StateTime;
 import ch.ethz.idsc.owl.math.state.StateTimeCollector;
@@ -200,6 +204,25 @@ public abstract class TrajectoryPlanner implements ExpandInterface<GlcNode>, Ser
   }
 
   /** @return Returns the Node, which belongs to the furthest StateTime in the GoalRegion,
-   * Furthest is determined by the merit of the Node at the end of its trajectory */
-  protected abstract Optional<GlcNode> getFurthestGoalNode();
+   * Furthest is determined by the best node in the highest list entry of the Goallist
+   * or Optional.empty() if no such node has been identified yet */
+  protected final Optional<GlcNode> getFurthestGoalNode() {
+    if (!(getGoalInterface() instanceof TrajectoryGoalManager))
+      throw new RuntimeException(); // can only run on for TrajectoryGoalManager
+    List<Region<Tensor>> goalRegions = ((TrajectoryGoalManager) getGoalInterface()).getGoalRegionList();
+    ListIterator<Region<Tensor>> iter = goalRegions.listIterator(goalRegions.size());
+    DomainQueue regionQueue = new DomainQueue(); // priority queue over merit of GlcNodes
+    while (iter.hasPrevious()) { // goes through all regions from last to first
+      TrajectoryRegionQuery strq = SimpleTrajectoryRegionQuery.timeInvariant(iter.previous());// go through Regions from the last to first:
+      for (GlcNode tempBest : best.keySet()) {
+        List<StateTime> trajectory = best.get(tempBest);
+        Optional<StateTime> optional = strq.firstMember(trajectory);
+        if (optional.isPresent())
+          regionQueue.add(tempBest); // saves members in PQ
+      }
+      if (!regionQueue.isEmpty())
+        break; // leave while loop when Nodes where found in latest Goalregion
+    }
+    return Optional.ofNullable(regionQueue.peek());
+  }
 }

@@ -15,14 +15,14 @@ import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.red.Norm;
 
-class DeltaxtDinghyGoalManager extends TrajectoryGoalManager implements GoalInterface {
+class DeltaxTDinghyGoalManager extends TrajectoryGoalManager implements GoalInterface {
   private final Scalar timeCostScalingFactor;
 
-  public DeltaxtDinghyGoalManager(List<Region<Tensor>> goalRegions, DeltaxtStateSpaceModel stateSpaceModel) {
+  public DeltaxTDinghyGoalManager(List<Region<Tensor>> goalRegions, DeltaxTStateSpaceModel stateSpaceModel) {
     this(goalRegions, RealScalar.ONE, stateSpaceModel);
   }
 
-  public DeltaxtDinghyGoalManager(List<Region<Tensor>> goalRegions, Scalar timeCostScalingFactor, DeltaxtStateSpaceModel stateSpaceModel) {
+  public DeltaxTDinghyGoalManager(List<Region<Tensor>> goalRegions, Scalar timeCostScalingFactor, DeltaxTStateSpaceModel stateSpaceModel) {
     super(goalRegions);
     this.timeCostScalingFactor = timeCostScalingFactor;
   }
