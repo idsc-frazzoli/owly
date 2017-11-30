@@ -29,6 +29,7 @@ import ch.ethz.idsc.owl.math.state.TrajectoryRegionQuery;
 import ch.ethz.idsc.owl.math.state.TrajectorySample;
 import ch.ethz.idsc.owly.demo.delta.DeltaFlows;
 import ch.ethz.idsc.owly.demo.delta.DeltaParameters;
+import ch.ethz.idsc.owly.demo.delta.DeltaStateSpaceModel;
 import ch.ethz.idsc.owly.demo.delta.ImageGradient;
 import ch.ethz.idsc.owly.demo.util.DemoInterface;
 import ch.ethz.idsc.owly.demo.util.RegionRenders;
@@ -62,7 +63,7 @@ public class DeltaxTGlcDemo implements DemoInterface {
     }
     ImageGradient ipr = ImageGradient.linear(ResourceData.of("/io/delta_uxy.png"), range, RealScalar.of(-0.1));
     Scalar maxInput = RealScalar.ONE;
-    DeltaxTStateSpaceModel stateSpaceModel = new DeltaxTStateSpaceModel(ipr, maxInput);
+    DeltaStateSpaceModel stateSpaceModel = new DeltaStateSpaceModel(ipr);
     Collection<Flow> controls = new DeltaFlows(stateSpaceModel, maxInput).getFlows( //
         resolution.number().intValue());
     Parameters parameters = new DeltaParameters(resolution, timeScale, depthScale, //
@@ -79,16 +80,19 @@ public class DeltaxTGlcDemo implements DemoInterface {
     List<TrajectorySample> dinghyTrajectory = new ArrayList<>();
     Tensor radius = Tensors.vector(0.3, 0.3, 2);
     // Start of dinghy
-    StateTime next = new StateTime(Tensors.vector(1.7, 2.100, 0), RealScalar.ZERO);
-    // StateTime next = new StateTime(Tensors.vector(1.3, 2.100, 0), RealScalar.ZERO);
-    goalRegions.add(new EllipsoidRegion(next.state(), radius));
+    StateTime next = new StateTime(Tensors.vector(1.7, 2.100), RealScalar.ZERO);
+    // TODO JAN: TENSOR Example compability from {{1,2},3} to {1,2,3} just give example
+    Tensor nextTensor = Tensors.of(next.state(), next.time()).extract(0, 2);
+    System.out.println("Test: " + nextTensor);
+    goalRegions.add(new EllipsoidRegion(nextTensor, radius));
     dinghyTrajectory.add(new TrajectorySample(next, null));
     Scalar dinghyExpandTime = RealScalar.of(25); // [s]
     for (int i = 0; Scalars.lessThan(RealScalar.of(i), dinghyExpandTime.divide(parameters.getExpandTime())); i++) {
       Flow flow = StateSpaceModels.createFlow(stateSpaceModel, Tensors.vector(0, 0));
       List<StateTime> connector = stateIntegrator.trajectory(next, flow);
       next = Lists.getLast(connector);
-      goalRegions.add(new EllipsoidRegion(next.state(), radius));
+      nextTensor = next.state().append(next.time());
+      goalRegions.add(new EllipsoidRegion(nextTensor, radius));
       dinghyTrajectory.add(new TrajectorySample(next, flow));
     }
     Trajectories.print(dinghyTrajectory);
@@ -96,7 +100,8 @@ public class DeltaxTGlcDemo implements DemoInterface {
     DeltaxTDinghyGoalManager deltaGoalManager2 = new DeltaxTDinghyGoalManager(goalRegions, stateSpaceModel);
     TrajectoryPlanner trajectoryPlanner = new StandardTrajectoryPlanner( //
         parameters.getEta(), stateIntegrator, controls, obstacleQuery, deltaGoalManager2);
-    trajectoryPlanner.insertRoot(new StateTime(Tensors.vector(8.8, 0.5, 0), RealScalar.ZERO));
+    trajectoryPlanner.represent = StateTime::joined;
+    trajectoryPlanner.insertRoot(new StateTime(Tensors.vector(8.8, 0.5), RealScalar.ZERO));
     // RUN
     OwlyFrame owlyFrame = OwlyGui.start();
     owlyFrame.configCoordinateOffset(33, 416);

@@ -10,6 +10,7 @@ import ch.ethz.idsc.owl.glc.core.GoalInterface;
 import ch.ethz.idsc.owl.math.flow.Flow;
 import ch.ethz.idsc.owl.math.region.Region;
 import ch.ethz.idsc.owl.math.state.StateTime;
+import ch.ethz.idsc.owly.demo.delta.DeltaStateSpaceModel;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
@@ -18,11 +19,11 @@ import ch.ethz.idsc.tensor.red.Norm;
 class DeltaxTDinghyGoalManager extends TrajectoryGoalManager implements GoalInterface {
   private final Scalar timeCostScalingFactor;
 
-  public DeltaxTDinghyGoalManager(List<Region<Tensor>> goalRegions, DeltaxTStateSpaceModel stateSpaceModel) {
+  public DeltaxTDinghyGoalManager(List<Region<Tensor>> goalRegions, DeltaStateSpaceModel stateSpaceModel) {
     this(goalRegions, RealScalar.ONE, stateSpaceModel);
   }
 
-  public DeltaxTDinghyGoalManager(List<Region<Tensor>> goalRegions, Scalar timeCostScalingFactor, DeltaxTStateSpaceModel stateSpaceModel) {
+  public DeltaxTDinghyGoalManager(List<Region<Tensor>> goalRegions, Scalar timeCostScalingFactor, DeltaStateSpaceModel stateSpaceModel) {
     super(goalRegions);
     this.timeCostScalingFactor = timeCostScalingFactor;
   }
