@@ -27,7 +27,7 @@ class RxtTimeInvariantRegion implements Region<StateTime> {
   public boolean isMember(StateTime stateTime) {
     // consistency check
     if (!Last.of(stateTime.state()).equals(stateTime.time()))
-      throw TensorRuntimeException.of(stateTime.state(), stateTime.time());
+      throw TensorRuntimeException.of(Last.of(stateTime.state()), stateTime.time());
     // ---
     int toIndex = stateTime.state().length() - 1;
     return region.isMember(stateTime.state().extract(0, toIndex));

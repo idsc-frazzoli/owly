@@ -73,16 +73,17 @@ public class DeltaxTGlcDemo implements DemoInterface {
         RungeKutta45Integrator.INSTANCE, parameters.getdtMax(), parameters.getTrajectorySize());
     Tensor obstacleImage = ResourceData.of("/io/delta_free.png"); //
     ImageRegion imageRegion = new ImageRegion(obstacleImage, range, true);
-    TrajectoryRegionQuery obstacleQuery = //
-        new SimpleTrajectoryRegionQuery(new RxtTimeInvariantRegion(imageRegion));
-    // Creating Dinghy trajectory
+    TrajectoryRegionQuery obstacleQuery = SimpleTrajectoryRegionQuery.timeInvariant(imageRegion);
+    // Creating DINGHY TRAJECTORY
     List<Region<Tensor>> goalRegions = new ArrayList<>();
     List<TrajectorySample> dinghyTrajectory = new ArrayList<>();
     Tensor radius = Tensors.vector(0.3, 0.3, 2);
     // Start of dinghy
     StateTime next = new StateTime(Tensors.vector(1.7, 2.100), RealScalar.ZERO);
-    // TODO JAN: TENSOR Example compability from {{1,2},3} to {1,2,3} just give example
+    // TODO JAN: nicer Tensorsolution?
     Tensor nextTensor = Tensors.of(next.state(), next.time()).extract(0, 2);
+    nextTensor = Tensor.of(nextTensor.flatten(-1));
+    //
     System.out.println("Test: " + nextTensor);
     goalRegions.add(new EllipsoidRegion(nextTensor, radius));
     dinghyTrajectory.add(new TrajectorySample(next, null));
@@ -91,15 +92,16 @@ public class DeltaxTGlcDemo implements DemoInterface {
       Flow flow = StateSpaceModels.createFlow(stateSpaceModel, Tensors.vector(0, 0));
       List<StateTime> connector = stateIntegrator.trajectory(next, flow);
       next = Lists.getLast(connector);
-      nextTensor = next.state().append(next.time());
+      nextTensor = Tensors.of(next.state(), next.time()).extract(0, 2);
+      nextTensor = Tensor.of(nextTensor.flatten(-1));
       goalRegions.add(new EllipsoidRegion(nextTensor, radius));
       dinghyTrajectory.add(new TrajectorySample(next, flow));
     }
     Trajectories.print(dinghyTrajectory);
     // GOALCREATION
-    DeltaxTDinghyGoalManager deltaGoalManager2 = new DeltaxTDinghyGoalManager(goalRegions, stateSpaceModel);
+    DeltaxTDinghyGoalManager deltaGoalManager = new DeltaxTDinghyGoalManager(goalRegions, stateSpaceModel);
     TrajectoryPlanner trajectoryPlanner = new StandardTrajectoryPlanner( //
-        parameters.getEta(), stateIntegrator, controls, obstacleQuery, deltaGoalManager2);
+        parameters.getEta(), stateIntegrator, controls, obstacleQuery, deltaGoalManager);
     trajectoryPlanner.represent = StateTime::joined;
     trajectoryPlanner.insertRoot(new StateTime(Tensors.vector(8.8, 0.5), RealScalar.ZERO));
     // RUN
