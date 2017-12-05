@@ -86,6 +86,7 @@ public class DeltaxTGlcDemo implements DemoInterface {
     //
     System.out.println("Test: " + nextTensor);
     goalRegions.add(new EllipsoidRegion(nextTensor, radius));
+    // TODO JONAS use sth. similar to : R2xTEllipsoidStateTimeRegion
     dinghyTrajectory.add(new TrajectorySample(next, null));
     Scalar dinghyExpandTime = RealScalar.of(25); // [s]
     for (int i = 0; Scalars.lessThan(RealScalar.of(i), dinghyExpandTime.divide(parameters.getExpandTime())); i++) {

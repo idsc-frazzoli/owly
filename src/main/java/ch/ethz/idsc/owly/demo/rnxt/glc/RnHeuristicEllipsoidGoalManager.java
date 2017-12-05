@@ -13,14 +13,12 @@ import ch.ethz.idsc.owl.math.region.EllipsoidRegion;
 import ch.ethz.idsc.owl.math.state.StateTime;
 import ch.ethz.idsc.owl.math.state.TimeInvariantRegion;
 import ch.ethz.idsc.owly.demo.rn.RnControls;
-import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.alg.Array;
 import ch.ethz.idsc.tensor.red.Hypot;
 import ch.ethz.idsc.tensor.red.Norm;
 import ch.ethz.idsc.tensor.sca.Ramp;
-import ch.ethz.idsc.tensor.sca.Sqrt;
 
 /** objective is minimum time
  * path length is measured in Euclidean distance
@@ -78,9 +76,6 @@ import ch.ethz.idsc.tensor.sca.Sqrt;
         .divide(root);
     // shortest distance/speed = time towards goal, minus radius of (elliptic) goalregion,
     // as we need to guarantee that minCostToGoal(x in Goal) == 0;
-    // return Ramp.of(ellipsoidRegion.apply(x).divide(maxSpeed)); // TESTFAIL
-    System.out.println("Test, distance to ellipsoid " + Norm._2.between(x, ellipsoidRegion.center()).subtract(specificRadius));
-    System.out.println("test: " + Sqrt.FUNCTION.apply(RealScalar.of(32)).subtract(RealScalar.of(12).divide(Sqrt.FUNCTION.apply(RealScalar.of(26)))));
     return Ramp.of(Norm._2.between(x, ellipsoidRegion.center()).subtract(specificRadius)).divide(maxSpeed); // <- do not change
   }
 }

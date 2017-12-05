@@ -16,7 +16,6 @@ import ch.ethz.idsc.tensor.DoubleScalar;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensors;
-import ch.ethz.idsc.tensor.sca.Sqrt;
 import junit.framework.TestCase;
 
 public class R2xtEllipsoidGoalManagerTest extends TestCase {
@@ -51,18 +50,6 @@ public class R2xtEllipsoidGoalManagerTest extends TestCase {
       assertEquals(rnxtGoal.minCostToGoal(Tensors.vector(0, 3)), RealScalar.ZERO);
       // GoalManager underestimates the time to get to the goal, if goal is only available after x seconds,
       // time of euclidean path with MaxSpeed is still underestimating
-    }
-  }
-
-  public void testMinCostToGoal2() {
-    Collection<Flow> controls = (new R2Flows(RealScalar.ONE)).getFlows(5);
-    EllipsoidRegion ellipsoidRegion = new EllipsoidRegion(Tensors.vector(0, 0), Tensors.vector(2, 3));
-    {
-      RnHeuristicEllipsoidGoalManager rnxtGoal = new RnHeuristicEllipsoidGoalManager(//
-          ellipsoidRegion, controls);
-      assertEquals(rnxtGoal.minCostToGoal(Tensors.vector(4, 4)),
-          Sqrt.FUNCTION.apply(RealScalar.of(32)).subtract(RealScalar.of(12).divide(Sqrt.FUNCTION.apply(RealScalar.of(26)))));
-      System.out.println("test: " + Sqrt.FUNCTION.apply(RealScalar.of(32)).subtract(RealScalar.of(12).divide(Sqrt.FUNCTION.apply(RealScalar.of(26)))));
     }
   }
 
