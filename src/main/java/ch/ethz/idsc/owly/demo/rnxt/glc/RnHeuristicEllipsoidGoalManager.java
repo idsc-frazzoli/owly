@@ -1,4 +1,4 @@
-// code by jph and jl
+// code by jl
 package ch.ethz.idsc.owly.demo.rnxt.glc;
 
 import java.util.List;
@@ -21,6 +21,7 @@ import ch.ethz.idsc.tensor.sca.Ramp;
 /** objective is minimum time
  * path length is measured in Euclidean distance
  * Heuristic is minimum Time along Euclidean distance */
+@Deprecated
 /* package */ class RnHeuristicEllipsoidGoalManager extends SimpleTrajectoryRegionQuery implements GoalInterface {
   /** constructor creates a spherical region in R^n with given center and radius.
    * distance measure is Euclidean distance, if radius(i) = infinity => cylinder
@@ -54,7 +55,7 @@ import ch.ethz.idsc.tensor.sca.Ramp;
   }
 
   /** Ellipsoid with axis: a,b and vector from Center: v = (x,y)
-   * reference:
+   * reference (not relevant for problem):
    * https://math.stackexchange.com/questions/432902/how-to-get-the-radius-of-an-ellipse-at-a-specific-angle-by-knowing-its-semi-majo
    * specific radius at intersection r =
    * 
@@ -63,8 +64,9 @@ import ch.ethz.idsc.tensor.sca.Ramp;
    * sqrt(a²y² + b²x²) */
   @Override // from HeuristicFunction
   public Scalar minCostToGoal(Tensor x) {
-    // TODO -> JAN the formula is probably conceptually wrong:
-    // check answer below
+    // FIXME the formula is conceptually wrong:
+    // 1) function may return larger values than necessary
+    // 2) cost increment has unit time, while minCost has length unit
     Tensor rnVector = x.subtract(center);
     Scalar root = Hypot.BIFUNCTION.apply(radius.Get(0).multiply(rnVector.Get(1)), radius.Get(1).multiply(rnVector.Get(0)));
     // ---
