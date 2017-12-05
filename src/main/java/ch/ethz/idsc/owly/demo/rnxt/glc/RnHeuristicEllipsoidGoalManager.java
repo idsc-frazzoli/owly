@@ -1,6 +1,7 @@
 // code by jl
 package ch.ethz.idsc.owly.demo.rnxt.glc;
 
+import java.util.Collection;
 import java.util.List;
 
 import ch.ethz.idsc.owl.glc.adapter.SimpleTrajectoryRegionQuery;
@@ -11,12 +12,15 @@ import ch.ethz.idsc.owl.math.flow.Flow;
 import ch.ethz.idsc.owl.math.region.EllipsoidRegion;
 import ch.ethz.idsc.owl.math.state.StateTime;
 import ch.ethz.idsc.owl.math.state.TimeInvariantRegion;
+import ch.ethz.idsc.owly.demo.rn.RnControls;
+import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.alg.Array;
 import ch.ethz.idsc.tensor.red.Hypot;
 import ch.ethz.idsc.tensor.red.Norm;
 import ch.ethz.idsc.tensor.sca.Ramp;
+import ch.ethz.idsc.tensor.sca.Sqrt;
 
 /** objective is minimum time
  * path length is measured in Euclidean distance
@@ -28,24 +32,24 @@ import ch.ethz.idsc.tensor.sca.Ramp;
    * 
    * @param center vector with length == n
    * @param radius positive */
-  public static GoalInterface create(Tensor center, Scalar radius) {
+  public static GoalInterface create(Tensor center, Scalar radius, Collection<Flow> controls) {
     return new RnHeuristicEllipsoidGoalManager(new EllipsoidRegion( //
-        center, Array.of(l -> radius, center.length())));
+        center, Array.of(l -> radius, center.length())), controls);
   }
 
   // ---
-  private final Tensor center;
-  private final Tensor radius;
+  private final EllipsoidRegion ellipsoidRegion;
+  private final Scalar maxSpeed;
 
   /** constructor creates a ellipsoid region in R^n x T with given center and radius.
    * distance measure is Euclidean distance, if radius(i) = infinity => cylinder
    * 
    * @param center vector with length == n
    * @param radius vector with length == n & positive in all entries */
-  public RnHeuristicEllipsoidGoalManager(EllipsoidRegion ellipsoidRegion) {
+  public RnHeuristicEllipsoidGoalManager(EllipsoidRegion ellipsoidRegion, Collection<Flow> controls) {
     super(new TimeInvariantRegion(ellipsoidRegion));
-    center = ellipsoidRegion.center();
-    radius = ellipsoidRegion.radius();
+    this.ellipsoidRegion = ellipsoidRegion;
+    maxSpeed = RnControls.maxSpeed(controls);
   }
 
   /** shortest Time Cost */
@@ -66,13 +70,17 @@ import ch.ethz.idsc.tensor.sca.Ramp;
   public Scalar minCostToGoal(Tensor x) {
     // FIXME the formula is conceptually wrong:
     // 1) function may return larger values than necessary
-    // 2) cost increment has unit time, while minCost has length unit
-    Tensor rnVector = x.subtract(center);
-    Scalar root = Hypot.BIFUNCTION.apply(radius.Get(0).multiply(rnVector.Get(1)), radius.Get(1).multiply(rnVector.Get(0)));
+    // 2) SOLVED: cost increment has unit time, while minCost has length unit
+    Tensor rnVector = x.subtract(ellipsoidRegion.center());
+    Scalar root = Hypot.BIFUNCTION.apply(ellipsoidRegion.radius().Get(0).multiply(rnVector.Get(1)), ellipsoidRegion.radius().Get(1).multiply(rnVector.Get(0)));
     // ---
-    Scalar specificRadius = radius.Get(0).multiply(radius.Get(1)).multiply(Norm._2.between(x, center)).divide(root);
-    // shortest distance towards goal, minus radius of (elliptic) goalregion,
+    Scalar specificRadius = ellipsoidRegion.radius().Get(0).multiply(ellipsoidRegion.radius().Get(1)).multiply(Norm._2.between(x, ellipsoidRegion.center()))
+        .divide(root);
+    // shortest distance/speed = time towards goal, minus radius of (elliptic) goalregion,
     // as we need to guarantee that minCostToGoal(x in Goal) == 0;
-    return Ramp.of(Norm._2.between(x, center).subtract(specificRadius)); // <- do not change
+    // return Ramp.of(ellipsoidRegion.apply(x).divide(maxSpeed)); // TESTFAIL
+    System.out.println("Test, distance to ellipsoid " + Norm._2.between(x, ellipsoidRegion.center()).subtract(specificRadius));
+    System.out.println("test: " + Sqrt.FUNCTION.apply(RealScalar.of(32)).subtract(RealScalar.of(12).divide(Sqrt.FUNCTION.apply(RealScalar.of(26)))));
+    return Ramp.of(Norm._2.between(x, ellipsoidRegion.center()).subtract(specificRadius)).divide(maxSpeed); // <- do not change
   }
 }

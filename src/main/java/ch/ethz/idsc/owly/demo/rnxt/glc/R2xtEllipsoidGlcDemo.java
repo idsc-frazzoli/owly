@@ -51,7 +51,7 @@ enum R2xtEllipsoidGlcDemo {
     Collection<Flow> controls = r2Config.getFlows(parameters.getResolutionInt());
     Tensor goal = Tensors.vector(5, 5);
     EllipsoidRegion ellipsoidRegion = new EllipsoidRegion(goal, Tensors.vector(0.2, 0.2));
-    GoalInterface goalInterface = new RnHeuristicEllipsoidGoalManager(ellipsoidRegion);
+    GoalInterface goalInterface = new RnHeuristicEllipsoidGoalManager(ellipsoidRegion, controls);
     // with HeuristicGoalManager only expand 10% of nodes
     // GoalRegion at x:5, y= 5 and all time
     TrajectoryRegionQuery obstacleQuery = SimpleTrajectoryRegionQuery.timeDependent( //

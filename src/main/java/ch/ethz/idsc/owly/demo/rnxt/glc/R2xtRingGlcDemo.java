@@ -54,7 +54,7 @@ enum R2xtRingGlcDemo {
     controls.add(r2Config.stayPut());
     Tensor goal = Tensors.vector(5, 5);
     EllipsoidRegion ellipsoidRegion = new EllipsoidRegion(goal, Tensors.vector(0.2, 0.2));
-    GoalInterface goalInterface = new RnHeuristicEllipsoidGoalManager(ellipsoidRegion);
+    GoalInterface goalInterface = new RnHeuristicEllipsoidGoalManager(ellipsoidRegion, controls);
     // HeuristicGoalManager expands only 10% of nodes
     // GoalRegion at x:5, y= 5 and all time
     TrajectoryRegionQuery obstacleQuery = //
