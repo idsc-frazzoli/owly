@@ -19,7 +19,6 @@ import ch.ethz.idsc.owl.gui.ani.OwlyGui;
 import ch.ethz.idsc.owl.math.StateSpaceModels;
 import ch.ethz.idsc.owl.math.flow.Flow;
 import ch.ethz.idsc.owl.math.flow.RungeKutta45Integrator;
-import ch.ethz.idsc.owl.math.region.EllipsoidRegion;
 import ch.ethz.idsc.owl.math.region.ImageRegion;
 import ch.ethz.idsc.owl.math.region.Region;
 import ch.ethz.idsc.owl.math.state.FixedStateIntegrator;
@@ -31,8 +30,10 @@ import ch.ethz.idsc.owly.demo.delta.DeltaFlows;
 import ch.ethz.idsc.owly.demo.delta.DeltaParameters;
 import ch.ethz.idsc.owly.demo.delta.DeltaStateSpaceModel;
 import ch.ethz.idsc.owly.demo.delta.ImageGradient;
+import ch.ethz.idsc.owly.demo.rn.R2xTEllipsoidStateTimeRegion;
 import ch.ethz.idsc.owly.demo.util.DemoInterface;
 import ch.ethz.idsc.owly.demo.util.RegionRenders;
+import ch.ethz.idsc.owly.demo.util.TrajectoryTranslationFamily;
 import ch.ethz.idsc.owly.demo.util.UserHome;
 import ch.ethz.idsc.tensor.RationalScalar;
 import ch.ethz.idsc.tensor.RealScalar;
@@ -48,8 +49,8 @@ public class DeltaxTGlcDemo implements DemoInterface {
   @Override
   public void start() {
     // SETUP
-    RationalScalar resolution = (RationalScalar) RationalScalar.of(12, 1);
-    Tensor partitionScale = Tensors.vector(2e12, 2e12, 2e12);
+    RationalScalar resolution = (RationalScalar) RationalScalar.of(9, 1);
+    Tensor partitionScale = Tensors.vector(150, 150, 300);
     Scalar timeScale = RealScalar.of(5);
     Scalar depthScale = RealScalar.of(10);
     Scalar dtMax = RationalScalar.of(1, 6);
@@ -75,32 +76,33 @@ public class DeltaxTGlcDemo implements DemoInterface {
     ImageRegion imageRegion = new ImageRegion(obstacleImage, range, true);
     TrajectoryRegionQuery obstacleQuery = SimpleTrajectoryRegionQuery.timeInvariant(imageRegion);
     // Creating DINGHY TRAJECTORY
-    List<Region<Tensor>> goalRegions = new ArrayList<>();
+    // List<Region<Tensor>> goalRegions = new ArrayList<>();
     List<TrajectorySample> dinghyTrajectory = new ArrayList<>();
-    Tensor radius = Tensors.vector(0.3, 0.3, 2);
+    Tensor radius = Tensors.vector(0.3, 0.3);
     // Start of dinghy
     StateTime next = new StateTime(Tensors.vector(1.7, 2.100), RealScalar.ZERO);
     // TODO JAN: nicer Tensorsolution?
-    Tensor nextTensor = Tensors.of(next.state(), next.time()).extract(0, 2);
-    nextTensor = Tensor.of(nextTensor.flatten(-1));
+    Tensor nextTensor = Tensor.of(Tensors.of(next.state(), next.time()).flatten(-1));
     //
     System.out.println("Test: " + nextTensor);
-    goalRegions.add(new EllipsoidRegion(nextTensor, radius));
     // TODO JONAS use sth. similar to : R2xTEllipsoidStateTimeRegion
     dinghyTrajectory.add(new TrajectorySample(next, null));
     Scalar dinghyExpandTime = RealScalar.of(25); // [s]
+    Flow flow = StateSpaceModels.createFlow(stateSpaceModel, Tensors.vector(0, 0));
+    // goalRegions.add(new EllipsoidRegion(nextTensor, radius));
+    Region<StateTime> goalRegion = new R2xTEllipsoidStateTimeRegion(radius, //
+        TrajectoryTranslationFamily.create(stateIntegrator, next, flow), //
+        null);
     for (int i = 0; Scalars.lessThan(RealScalar.of(i), dinghyExpandTime.divide(parameters.getExpandTime())); i++) {
-      Flow flow = StateSpaceModels.createFlow(stateSpaceModel, Tensors.vector(0, 0));
       List<StateTime> connector = stateIntegrator.trajectory(next, flow);
       next = Lists.getLast(connector);
-      nextTensor = Tensors.of(next.state(), next.time()).extract(0, 2);
-      nextTensor = Tensor.of(nextTensor.flatten(-1));
-      goalRegions.add(new EllipsoidRegion(nextTensor, radius));
+      nextTensor = Tensor.of(Tensors.of(next.state(), next.time()).flatten(-1));
+      // goalRegions.add(new EllipsoidRegion(nextTensor, radius));
       dinghyTrajectory.add(new TrajectorySample(next, flow));
     }
     Trajectories.print(dinghyTrajectory);
     // GOALCREATION
-    DeltaxTDinghyGoalManager deltaGoalManager = new DeltaxTDinghyGoalManager(goalRegions, stateSpaceModel);
+    DeltaxTDinghyGoalManager deltaGoalManager = new DeltaxTDinghyGoalManager(goalRegion, stateSpaceModel, RealScalar.of(1));
     TrajectoryPlanner trajectoryPlanner = new StandardTrajectoryPlanner( //
         parameters.getEta(), stateIntegrator, controls, obstacleQuery, deltaGoalManager);
     trajectoryPlanner.represent = StateTime::joined;
