@@ -76,32 +76,24 @@ public class DeltaxTGlcDemo implements DemoInterface {
     ImageRegion imageRegion = new ImageRegion(obstacleImage, range, true);
     TrajectoryRegionQuery obstacleQuery = SimpleTrajectoryRegionQuery.timeInvariant(imageRegion);
     // Creating DINGHY TRAJECTORY
-    // List<Region<Tensor>> goalRegions = new ArrayList<>();
     List<TrajectorySample> dinghyTrajectory = new ArrayList<>();
     Tensor radius = Tensors.vector(0.3, 0.3);
     // Start of dinghy
     StateTime next = new StateTime(Tensors.vector(1.7, 2.100), RealScalar.ZERO);
-    // TODO JAN: nicer Tensorsolution?
-    Tensor nextTensor = Tensor.of(Tensors.of(next.state(), next.time()).flatten(-1));
-    //
-    System.out.println("Test: " + nextTensor);
-    // TODO JONAS use sth. similar to : R2xTEllipsoidStateTimeRegion
     dinghyTrajectory.add(new TrajectorySample(next, null));
     Scalar dinghyExpandTime = RealScalar.of(25); // [s]
     Flow flow = StateSpaceModels.createFlow(stateSpaceModel, Tensors.vector(0, 0));
-    // goalRegions.add(new EllipsoidRegion(nextTensor, radius));
     Region<StateTime> goalRegion = new R2xTEllipsoidStateTimeRegion(radius, //
         TrajectoryTranslationFamily.create(stateIntegrator, next, flow), //
         null);
+    // for visualization purposes
     for (int i = 0; Scalars.lessThan(RealScalar.of(i), dinghyExpandTime.divide(parameters.getExpandTime())); i++) {
-      List<StateTime> connector = stateIntegrator.trajectory(next, flow);
-      next = Lists.getLast(connector);
-      nextTensor = Tensor.of(Tensors.of(next.state(), next.time()).flatten(-1));
-      // goalRegions.add(new EllipsoidRegion(nextTensor, radius));
+      next = Lists.getLast(stateIntegrator.trajectory(next, flow));
       dinghyTrajectory.add(new TrajectorySample(next, flow));
     }
     Trajectories.print(dinghyTrajectory);
     // GOALCREATION
+    // TODO JONAS check if parameter changes sth. does the goal move?
     DeltaxTDinghyGoalManager deltaGoalManager = new DeltaxTDinghyGoalManager(goalRegion, stateSpaceModel, RealScalar.of(1));
     TrajectoryPlanner trajectoryPlanner = new StandardTrajectoryPlanner( //
         parameters.getEta(), stateIntegrator, controls, obstacleQuery, deltaGoalManager);
