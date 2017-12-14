@@ -43,7 +43,7 @@ enum R2xtRingGlcDemo {
     Scalar timeScale = RealScalar.of(6);
     Scalar depthScale = RealScalar.of(100);
     Scalar dtMax = RationalScalar.of(1, 6);
-    int maxIter = 1000000;
+    int maxIter = 10000;
     Scalar lipschitz = RealScalar.ONE;
     Parameters parameters = new R2Parameters(resolution, timeScale, depthScale, partitionScale, dtMax, maxIter, lipschitz);
     System.out.println("1/DomainSize: " + parameters.getEta());

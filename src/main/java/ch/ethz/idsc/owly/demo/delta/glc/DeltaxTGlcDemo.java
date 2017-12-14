@@ -26,7 +26,7 @@ import ch.ethz.idsc.owl.math.state.StateIntegrator;
 import ch.ethz.idsc.owl.math.state.StateTime;
 import ch.ethz.idsc.owl.math.state.TrajectoryRegionQuery;
 import ch.ethz.idsc.owl.math.state.TrajectorySample;
-import ch.ethz.idsc.owly.demo.delta.DeltaFlows;
+import ch.ethz.idsc.owly.demo.delta.DeltaFlowsDrifting;
 import ch.ethz.idsc.owly.demo.delta.DeltaParameters;
 import ch.ethz.idsc.owly.demo.delta.DeltaStateSpaceModel;
 import ch.ethz.idsc.owly.demo.delta.ImageGradient;
@@ -65,7 +65,7 @@ public class DeltaxTGlcDemo implements DemoInterface {
     ImageGradient ipr = ImageGradient.linear(ResourceData.of("/io/delta_uxy.png"), range, RealScalar.of(-0.1));
     Scalar maxInput = RealScalar.ONE;
     DeltaStateSpaceModel stateSpaceModel = new DeltaStateSpaceModel(ipr);
-    Collection<Flow> controls = new DeltaFlows(stateSpaceModel, maxInput).getFlows( //
+    Collection<Flow> controls = new DeltaFlowsDrifting(stateSpaceModel, maxInput).getFlows( //
         resolution.number().intValue());
     Parameters parameters = new DeltaParameters(resolution, timeScale, depthScale, //
         partitionScale, dtMax, maxIter, stateSpaceModel.getLipschitz());
@@ -80,12 +80,15 @@ public class DeltaxTGlcDemo implements DemoInterface {
     Tensor radius = Tensors.vector(0.3, 0.3);
     // Start of dinghy
     StateTime next = new StateTime(Tensors.vector(1.7, 2.100), RealScalar.ZERO);
+    StateIntegrator dinghyStateIntegrator = FixedStateIntegrator.create( //
+        RungeKutta45Integrator.INSTANCE, parameters.getdtMax(), RealScalar.of(25).divide(parameters.getdtMax()).number().intValue());
     dinghyTrajectory.add(new TrajectorySample(next, null));
     Scalar dinghyExpandTime = RealScalar.of(25); // [s]
     Flow flow = StateSpaceModels.createFlow(stateSpaceModel, Tensors.vector(0, 0));
     Region<StateTime> goalRegion = new R2xTEllipsoidStateTimeRegion(radius, //
-        TrajectoryTranslationFamily.create(stateIntegrator, next, flow), //
+        TrajectoryTranslationFamily.create(dinghyStateIntegrator, next, flow), //
         null);
+    // all state times in trajectory members of goalRegion
     // for visualization purposes
     for (int i = 0; Scalars.lessThan(RealScalar.of(i), dinghyExpandTime.divide(parameters.getExpandTime())); i++) {
       next = Lists.getLast(stateIntegrator.trajectory(next, flow));
@@ -94,7 +97,7 @@ public class DeltaxTGlcDemo implements DemoInterface {
     Trajectories.print(dinghyTrajectory);
     // GOALCREATION
     // TODO JONAS check if parameter changes sth. does the goal move?
-    DeltaxTDinghyGoalManager deltaGoalManager = new DeltaxTDinghyGoalManager(goalRegion, stateSpaceModel, RealScalar.of(1));
+    DeltaxTDinghyGoalManager deltaGoalManager = new DeltaxTDinghyGoalManager(goalRegion, stateSpaceModel, RealScalar.of(0.001));
     TrajectoryPlanner trajectoryPlanner = new StandardTrajectoryPlanner( //
         parameters.getEta(), stateIntegrator, controls, obstacleQuery, deltaGoalManager);
     trajectoryPlanner.represent = StateTime::joined;
@@ -106,7 +109,7 @@ public class DeltaxTGlcDemo implements DemoInterface {
     owlyFrame.addBackground(RegionRenders.create(imageRegion));
     owlyFrame.addTrajectory(dinghyTrajectory, new Color(224, 168, 0, 224));
     while (!trajectoryPlanner.getBest().isPresent() && owlyFrame.jFrame.isVisible()) {
-      GlcExpand.maxSteps(trajectoryPlanner, 30, parameters.getDepthLimit());
+      GlcExpand.maxSteps(trajectoryPlanner, 100, parameters.getDepthLimit());
       owlyFrame.setGlc(trajectoryPlanner);
       try {
         gsw.append(owlyFrame.offscreen());
