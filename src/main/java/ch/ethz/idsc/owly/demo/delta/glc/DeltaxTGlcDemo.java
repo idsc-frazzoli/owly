@@ -96,7 +96,6 @@ public class DeltaxTGlcDemo implements DemoInterface {
     }
     Trajectories.print(dinghyTrajectory);
     // GOALCREATION
-    // TODO JONAS check if parameter changes sth. does the goal move?
     DeltaxTDinghyGoalManager deltaGoalManager = new DeltaxTDinghyGoalManager(goalRegion, stateSpaceModel, RealScalar.of(0.001));
     TrajectoryPlanner trajectoryPlanner = new StandardTrajectoryPlanner( //
         parameters.getEta(), stateIntegrator, controls, obstacleQuery, deltaGoalManager);
