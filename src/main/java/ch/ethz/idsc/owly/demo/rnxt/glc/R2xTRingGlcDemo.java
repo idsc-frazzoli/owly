@@ -20,13 +20,14 @@ import ch.ethz.idsc.owl.math.Degree;
 import ch.ethz.idsc.owl.math.StateTimeTensorFunction;
 import ch.ethz.idsc.owl.math.flow.EulerIntegrator;
 import ch.ethz.idsc.owl.math.flow.Flow;
-import ch.ethz.idsc.owl.math.region.EllipsoidRegion;
+import ch.ethz.idsc.owl.math.region.SphericalRegion;
 import ch.ethz.idsc.owl.math.state.FixedStateIntegrator;
 import ch.ethz.idsc.owl.math.state.StateIntegrator;
 import ch.ethz.idsc.owl.math.state.StateTime;
 import ch.ethz.idsc.owl.math.state.TrajectoryRegionQuery;
 import ch.ethz.idsc.owly.demo.rn.R2Flows;
 import ch.ethz.idsc.owly.demo.rn.R2Parameters;
+import ch.ethz.idsc.owly.demo.rn.RnMinDistSphericalGoalManager;
 import ch.ethz.idsc.owly.demo.util.RegionRenders;
 import ch.ethz.idsc.tensor.RationalScalar;
 import ch.ethz.idsc.tensor.RealScalar;
@@ -35,11 +36,11 @@ import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
 import ch.ethz.idsc.tensor.alg.Array;
 
-enum R2xtRingGlcDemo {
+enum R2xTRingGlcDemo {
   ;
   public static void main(String[] args) {
     RationalScalar resolution = (RationalScalar) RealScalar.of(8);
-    Tensor partitionScale = Tensors.vector(16, 16, 16); // Parameters create nice trajectory, which only waits shortly
+    Tensor partitionScale = Tensors.vector(25, 25, 64); // Parameters create nice trajectory, which only waits shortly
     Scalar timeScale = RealScalar.of(6);
     Scalar depthScale = RealScalar.of(100);
     Scalar dtMax = RationalScalar.of(1, 6);
@@ -50,11 +51,11 @@ enum R2xtRingGlcDemo {
     StateIntegrator stateIntegrator = FixedStateIntegrator.create(EulerIntegrator.INSTANCE, parameters.getdtMax(), //
         parameters.getTrajectorySize());
     R2Flows r2Config = new R2Flows(RealScalar.ONE);
-    Collection<Flow> controls = r2Config.getFlows(parameters.getResolutionInt());
+    Collection<Flow> controls = r2Config.getFlows(parameters.getResolutionInt() - 1);
     controls.add(r2Config.stayPut());
     Tensor goal = Tensors.vector(5, 5);
-    EllipsoidRegion ellipsoidRegion = new EllipsoidRegion(goal, Tensors.vector(0.2, 0.2));
-    GoalInterface goalInterface = new RnHeuristicEllipsoidGoalManager(ellipsoidRegion, controls);
+    SphericalRegion sphericalRegion = new SphericalRegion(goal, RealScalar.of(0.2));
+    GoalInterface goalInterface = new RnMinDistSphericalGoalManager(sphericalRegion);
     // HeuristicGoalManager expands only 10% of nodes
     // GoalRegion at x:5, y= 5 and all time
     TrajectoryRegionQuery obstacleQuery = //
@@ -78,7 +79,7 @@ enum R2xtRingGlcDemo {
       StateTimeTrajectories.print(trajectory);
     }
     OwlyFrame owlyFrame = OwlyGui.glc(trajectoryPlanner);
-    owlyFrame.addBackground(RegionRenders.create(ellipsoidRegion));
+    owlyFrame.addBackground(RegionRenders.create(sphericalRegion));
     owlyFrame.configCoordinateOffset(300, 500);
   }
 }

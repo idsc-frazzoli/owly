@@ -77,6 +77,7 @@ import ch.ethz.idsc.tensor.sca.Ramp;
     // shortest distance/speed = time towards goal, minus radius of (elliptic) goalregion,
     // as we need to guarantee that minCostToGoal(x in Goal) == 0;
     // TODO implement formular: https://math.stackexchange.com/questions/90974/calculating-distance-of-a-point-from-an-ellipse-border
+    // needs to solve a quartic equation each time
     return Ramp.of(Norm._2.between(x, ellipsoidRegion.center()).subtract(specificRadius)).divide(maxSpeed); // <- do not change
   }
 }

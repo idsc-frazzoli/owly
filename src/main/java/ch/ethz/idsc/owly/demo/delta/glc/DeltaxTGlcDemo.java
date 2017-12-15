@@ -26,7 +26,7 @@ import ch.ethz.idsc.owl.math.state.StateIntegrator;
 import ch.ethz.idsc.owl.math.state.StateTime;
 import ch.ethz.idsc.owl.math.state.TrajectoryRegionQuery;
 import ch.ethz.idsc.owl.math.state.TrajectorySample;
-import ch.ethz.idsc.owly.demo.delta.DeltaFlowsDrifting;
+import ch.ethz.idsc.owly.demo.delta.DeltaFlows;
 import ch.ethz.idsc.owly.demo.delta.DeltaParameters;
 import ch.ethz.idsc.owly.demo.delta.DeltaStateSpaceModel;
 import ch.ethz.idsc.owly.demo.delta.ImageGradient;
@@ -65,10 +65,11 @@ public class DeltaxTGlcDemo implements DemoInterface {
     ImageGradient ipr = ImageGradient.linear(ResourceData.of("/io/delta_uxy.png"), range, RealScalar.of(-0.1));
     Scalar maxInput = RealScalar.ONE;
     DeltaStateSpaceModel stateSpaceModel = new DeltaStateSpaceModel(ipr);
-    Collection<Flow> controls = new DeltaFlowsDrifting(stateSpaceModel, maxInput).getFlows( //
-        resolution.number().intValue());
     Parameters parameters = new DeltaParameters(resolution, timeScale, depthScale, //
         partitionScale, dtMax, maxIter, stateSpaceModel.getLipschitz());
+    DeltaFlows deltaFlows = new DeltaFlows(stateSpaceModel, maxInput);
+    Collection<Flow> controls = deltaFlows.getFlows(parameters.getResolutionInt() - 1);
+    controls.add(deltaFlows.stayPut());
     System.out.println("1/DomainSize: " + parameters.getEta());
     StateIntegrator stateIntegrator = FixedStateIntegrator.create( //
         RungeKutta45Integrator.INSTANCE, parameters.getdtMax(), parameters.getTrajectorySize());
