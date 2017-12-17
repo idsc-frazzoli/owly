@@ -56,7 +56,8 @@ enum R2GlcAnyDemo {
     // ---
     AnyPlannerInterface anyPlannerInterface = new OptimalAnyTrajectoryPlanner( //
         parameters.getEta(), stateIntegrator, controls, obstacleQuery, rnGoal);
-    anyPlannerInterface.switchRootToState(Tensors.vector(0, 0));
+    // Initial root at time 0
+    anyPlannerInterface.switchRootToState(new StateTime(Tensors.vector(0, 0), RealScalar.ZERO));
     GlcExpand.maxDepth(anyPlannerInterface, parameters.getDepthLimit());
     OwlyFrame owlyFrame = OwlyGui.start();
     Tensor goal = Tensors.vector(6, 6);
@@ -70,7 +71,7 @@ enum R2GlcAnyDemo {
       if (trajectory != null) {
         StateTime newRootState = trajectory.get(trajectory.size() > 1 ? 1 : 0);
         // ---
-        int increment = anyPlannerInterface.switchRootToState(newRootState.state());
+        int increment = anyPlannerInterface.switchRootToState(newRootState);
         parameters.increaseDepthLimit(increment);
       } else {
         throw new RuntimeException();

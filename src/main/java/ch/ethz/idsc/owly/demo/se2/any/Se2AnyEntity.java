@@ -45,6 +45,7 @@ import ch.ethz.idsc.owly.demo.rn.R2Flows;
 import ch.ethz.idsc.owly.demo.rn.RnMinDistSphericalGoalManager;
 import ch.ethz.idsc.owly.demo.se2.CarStandardFlows;
 import ch.ethz.idsc.owly.demo.se2.Se2CarIntegrator;
+import ch.ethz.idsc.owly.demo.se2.Se2MinTimeGoalManager;
 import ch.ethz.idsc.owly.demo.se2.Se2StateSpaceModel;
 import ch.ethz.idsc.owly.demo.se2.Se2TrajectoryGoalManager;
 import ch.ethz.idsc.owly.demo.se2.Se2Wrap;
@@ -77,23 +78,21 @@ import ch.ethz.idsc.tensor.sca.Sqrt;
   private Region<Tensor> environmentRegion;
 
   /** @param state initial position of entity */
-  public Se2AnyEntity(Tensor state, int resolution) {
-    super(state, //
-        // ---
-        new Se2Parameters( //
-            (RationalScalar) RealScalar.of(resolution), // resolution
-            RealScalar.of(2), // TimeScale
-            RealScalar.of(200), // DepthScale
-            Tensors.vector(5, 5, 50 / Math.PI), // PartitionScale 50/pi == 15.9155
-            RationalScalar.of(1, 6), // dtMax
-            2000, // maxIter
-            Se2StateSpaceModel.INSTANCE.getLipschitz()), // Lipschitz
+  public Se2AnyEntity(StateTime state, int resolution) {
+    super(new Se2Parameters( //
+        (RationalScalar) RealScalar.of(resolution), // resolution
+        RealScalar.of(2), // TimeScale
+        RealScalar.of(200), // DepthScale
+        Tensors.vector(5, 5, 50 / Math.PI), // PartitionScale 50/pi == 15.9155
+        RationalScalar.of(1, 6), // dtMax
+        2000, // maxIter
+        Se2StateSpaceModel.INSTANCE.getLipschitz()), // Lipschitz
         new CarStandardFlows(RealScalar.ONE, Degree.of(60)).getFlows(resolution), //
         // ---
         new SimpleEpisodeIntegrator( //
             Se2StateSpaceModel.INSTANCE, //
             INTEGRATOR, //
-            new StateTime(state, RealScalar.ZERO)),
+            state),
         // ---
         DELAY_HINT, EXPAND_TIME); //
     final Scalar goalRadius_xy = Sqrt.of(RealScalar.of(2)).divide(parameters.getEta().Get(0));
@@ -170,7 +169,7 @@ import ch.ethz.idsc.tensor.sca.Sqrt;
     TrajectoryPlanner trajectoryPlanner = new StandardTrajectoryPlanner( //
         eta, stateIntegratorR2, controlsR2, obstacleQueryR2, rnGoal);
     if (rnGoal.isMember(new StateTime(currentState, RealScalar.ZERO)))
-      return new Se2MinTimeEuclideanDistanceHeuristicGoalManager(goal, goalRadius, controls).getGoalInterface();
+      return new Se2MinTimeGoalManager(goal, goalRadius, controls).getGoalInterface();
     trajectoryPlanner.insertRoot(new StateTime(currentState, RealScalar.ZERO));
     // int iters =
     Expand.maxTime(trajectoryPlanner, RealScalar.of(1.5)); // 1.5 [s]
@@ -194,17 +193,17 @@ import ch.ethz.idsc.tensor.sca.Sqrt;
   }
 
   @Override
-  protected TrajectoryRegionQuery initializeObstacle(Region<Tensor> oldEnvironmentRegion, Tensor currentState) {
+  protected TrajectoryRegionQuery initializeObstacle(Region<Tensor> oldEnvironmentRegion, StateTime currentState) {
     environmentRegion = oldEnvironmentRegion;
     return SimpleTrajectoryRegionQuery.timeInvariant(oldEnvironmentRegion);
     // return updateObstacle(oldEnvironmentRegion, currentState);
   }
 
   @Override
-  protected TrajectoryRegionQuery updateObstacle(Region<Tensor> oldEnvironmentRegion, Tensor currentState) {
+  protected TrajectoryRegionQuery updateObstacle(Region<Tensor> oldEnvironmentRegion, StateTime currentState) {
     environmentRegion = oldEnvironmentRegion; // environment stays the same
     return SimpleTrajectoryRegionQuery.timeInvariant( //
-        EuclideanDistanceDiscoverRegion.of(oldEnvironmentRegion, currentState, RealScalar.of(4.5)));
+        EuclideanDistanceDiscoverRegion.of(oldEnvironmentRegion, currentState.state(), RealScalar.of(4.5)));
   }
 
   @Override

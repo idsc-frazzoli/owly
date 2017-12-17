@@ -39,7 +39,7 @@ import ch.ethz.idsc.tensor.alg.Array;
 /** (x,y,theta) */
 enum Se2Demo {
   ;
-  // TODO JAN this demo has 'misses', why !?
+  // this demo has 'misses', why !? issue is being investigated in owl
   public static void main(String[] args) {
     Tensor eta = Tensors.vector(3, 3, 50 / Math.PI);
     StateIntegrator stateIntegrator = FixedStateIntegrator.create( //

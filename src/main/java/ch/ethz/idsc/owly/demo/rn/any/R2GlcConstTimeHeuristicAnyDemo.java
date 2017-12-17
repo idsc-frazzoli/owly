@@ -9,7 +9,6 @@ import java.util.Optional;
 import ch.ethz.idsc.owl.glc.adapter.GlcExpand;
 import ch.ethz.idsc.owl.glc.adapter.GlcNodes;
 import ch.ethz.idsc.owl.glc.adapter.SimpleTrajectoryRegionQuery;
-import ch.ethz.idsc.owl.glc.adapter.StateTimeTrajectories;
 import ch.ethz.idsc.owl.glc.any.AnyPlannerInterface;
 import ch.ethz.idsc.owl.glc.any.OptimalAnyTrajectoryPlanner;
 import ch.ethz.idsc.owl.glc.core.DebugUtils;
@@ -72,13 +71,9 @@ enum R2GlcConstTimeHeuristicAnyDemo {
     TrajectoryRegionQuery obstacleQuery = SimpleTrajectoryRegionQuery.timeInvariant(region);
     AnyPlannerInterface anyPlannerInterface = new OptimalAnyTrajectoryPlanner( //
         parameters.getEta(), stateIntegrator, controls, obstacleQuery, rnGoal);
-    Tensor startState = Tensors.vector(-3, 0);
-    anyPlannerInterface.switchRootToState(startState);
+    anyPlannerInterface.switchRootToState(new StateTime(Tensors.vector(-3, 0), RealScalar.ZERO));
     GlcExpand.constTime(anyPlannerInterface, runTime, parameters.getDepthLimit());
     // --
-    Optional<GlcNode> finalGoalNode = anyPlannerInterface.getFinalGoalNode();
-    List<StateTime> trajectory = GlcNodes.getPathFromRootTo(finalGoalNode.get());
-    StateTimeTrajectories.print(trajectory);
     OwlyFrame owlyFrame = OwlyGui.start();
     owlyFrame.configCoordinateOffset(400, 400);
     owlyFrame.jFrame.setBounds(0, 0, 800, 800);
@@ -90,15 +85,17 @@ enum R2GlcConstTimeHeuristicAnyDemo {
       long tic = System.nanoTime();
       // -- ROOTCHANGE
       long ticTemp = System.nanoTime();
-      finalGoalNode = anyPlannerInterface.getFinalGoalNode();
-      if (finalGoalNode.isPresent())
+      Optional<GlcNode> finalGoalNode = anyPlannerInterface.getFinalGoalNode();
+      List<StateTime> trajectory = null;
+      if (finalGoalNode.isPresent()) {
         trajectory = GlcNodes.getPathFromRootTo(finalGoalNode.get());
-      System.out.println("trajectorys size: " + trajectory.size());
-      if (trajectory.size() > 5) {
-        //
-        StateTime newRootState = trajectory.get(trajectory.size() > 3 ? 3 : 0);
-        int increment = anyPlannerInterface.switchRootToState(newRootState.state());
-        parameters.increaseDepthLimit(increment);
+        System.out.println("trajectorys size: " + trajectory.size());
+        if (trajectory.size() > 5) {
+          //
+          StateTime newRootState = trajectory.get(trajectory.size() > 3 ? 3 : 0);
+          int increment = anyPlannerInterface.switchRootToState(newRootState);
+          parameters.increaseDepthLimit(increment);
+        }
       }
       long tocTemp = System.nanoTime();
       System.out.println("Rootchange took: " + (tocTemp - ticTemp) * 1e-9 + "s");
@@ -125,7 +122,6 @@ enum R2GlcConstTimeHeuristicAnyDemo {
       int expandIter = GlcExpand.constTime(anyPlannerInterface, runTime, parameters.getDepthLimit());
       furthestState = anyPlannerInterface.getFurthestGoalState();
       // check if furthest Goal is already in last Region in List
-      trajectory = GlcNodes.getPathFromRootTo(finalGoalNode.get());
       tocTemp = System.nanoTime();
       System.out.println("Expanding took: " + (tocTemp - ticTemp) * 1e-9 + "s");
       // --

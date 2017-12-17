@@ -67,7 +67,7 @@ class Se2GlcAnyDemo {
     AnyPlannerInterface anyPlannerInterface = new OptimalAnyTrajectoryPlanner( //
         parameters.getEta(), stateIntegrator, controls, obstacleQuery, se2GoalManager.getGoalInterface());
     // ---
-    anyPlannerInterface.switchRootToState(Tensors.vector(0, 0, 0));
+    anyPlannerInterface.switchRootToState(new StateTime(Tensors.vector(0, 0, 0), RealScalar.ZERO));
     int iters = GlcExpand.maxDepth(anyPlannerInterface, parameters.getDepthLimit());
     System.out.println("After " + iters + " iterations");
     List<StateTime> trajectory = anyPlannerInterface.trajectoryToBest();
@@ -87,7 +87,7 @@ class Se2GlcAnyDemo {
       throw new RuntimeException();
     }
     // ---
-    anyPlannerInterface.switchRootToState(newRootState.state());
+    anyPlannerInterface.switchRootToState(newRootState);
     anyPlannerInterface.changeToGoal(se2GoalManager2.getGoalInterface());
     int iters2 = GlcExpand.maxDepth(anyPlannerInterface, parameters.getDepthLimit());
     // ---

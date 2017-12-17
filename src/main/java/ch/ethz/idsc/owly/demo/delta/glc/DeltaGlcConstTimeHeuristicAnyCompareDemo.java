@@ -91,7 +91,7 @@ enum DeltaGlcConstTimeHeuristicAnyCompareDemo {
       if (trajectory.size() > 7) {
         //
         StateTime newRootState = trajectory.get(trajectory.size() > 7 ? 1 : 0);
-        int increment = ((OptimalAnyTrajectoryPlanner) slowTrajectoryPlannerContainer.getTrajectoryPlanner()).switchRootToState(newRootState.state());
+        int increment = ((OptimalAnyTrajectoryPlanner) slowTrajectoryPlannerContainer.getTrajectoryPlanner()).switchRootToState(newRootState);
         slowTrajectoryPlannerContainer.getParameters().increaseDepthLimit(increment);
       }
       stopwatch.stop();

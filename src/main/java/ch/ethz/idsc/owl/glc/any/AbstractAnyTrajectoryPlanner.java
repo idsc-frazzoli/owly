@@ -6,7 +6,6 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.ListIterator;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -15,11 +14,8 @@ import ch.ethz.idsc.owl.data.tree.Nodes;
 import ch.ethz.idsc.owl.glc.adapter.GlcNodes;
 import ch.ethz.idsc.owl.glc.adapter.GlcTrajectories;
 import ch.ethz.idsc.owl.glc.adapter.HeuristicQ;
-import ch.ethz.idsc.owl.glc.adapter.SimpleTrajectoryRegionQuery;
-import ch.ethz.idsc.owl.glc.adapter.TrajectoryGoalManager;
 import ch.ethz.idsc.owl.glc.core.AbstractTrajectoryPlanner;
 import ch.ethz.idsc.owl.glc.core.ControlsIntegrator;
-import ch.ethz.idsc.owl.glc.core.DomainQueue;
 import ch.ethz.idsc.owl.glc.core.GlcNode;
 import ch.ethz.idsc.owl.glc.core.GoalInterface;
 import ch.ethz.idsc.owl.math.flow.Flow;
@@ -30,8 +26,6 @@ import ch.ethz.idsc.owl.math.state.StateIntegrator;
 import ch.ethz.idsc.owl.math.state.StateTime;
 import ch.ethz.idsc.owl.math.state.TrajectoryRegionQuery;
 import ch.ethz.idsc.owl.math.state.TrajectorySample;
-import ch.ethz.idsc.tensor.DoubleScalar;
-import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
 
@@ -61,13 +55,11 @@ public abstract class AbstractAnyTrajectoryPlanner extends AbstractTrajectoryPla
 
   /** Includes all the functionality of the RootSwitch
    * (deleting of the useless nodes and relabling of modified Domains)
-   * @param state the new Rootstate
+   * @param stateTime the new Rootstate
    * @return The value,by which the depth limit needs to be increased as of the RootSwitch */
   @Override
-  // TODO JONAS insert StateTime instead of state
-  public final int switchRootToState(Tensor state) {
-    // TODO because of appending NaN, ::represent must only consider StateTime::state()
-    GlcNode newRoot = getNode(convertToKey(new StateTime(state, DoubleScalar.INDETERMINATE)));
+  public final int switchRootToState(StateTime stateTime) {
+    GlcNode newRoot = getNode(convertToKey(stateTime));
     int increaseDepthBy = 0;
     // TODO JONAS not nice, as we jump from state to startnode
     if (newRoot != null) {
@@ -75,7 +67,7 @@ public abstract class AbstractAnyTrajectoryPlanner extends AbstractTrajectoryPla
     } else {
       System.err.println("***RESET***");
       System.out.println("This domain is not labelled yet:");
-      System.out.println(state);
+      System.out.println(stateTime.toInfoString());
       if (!domainMap().isEmpty()) {
         deleteSubtreeOf(getRoot());
         domainMap().clear();
@@ -83,7 +75,7 @@ public abstract class AbstractAnyTrajectoryPlanner extends AbstractTrajectoryPla
       }
       // we did not follow the planned path ==> new Motion planning problem,
       // also often used to start a new MPP
-      insertRoot(new StateTime(state, RealScalar.ZERO));
+      insertRoot(stateTime);
     }
     return increaseDepthBy;
   }
@@ -269,29 +261,6 @@ public abstract class AbstractAnyTrajectoryPlanner extends AbstractTrajectoryPla
     if (key.isPresent())
       return getGoalInterface().firstMember(best.get(key.get()));
     return Optional.empty();
-  }
-
-  /** @return furthest Node (lowest cost in highest list index), whose incoming trajectory is in GoalRegion,
-   * or Optional.empty() if no such node has been identified yet */
-  @Override
-  protected final Optional<GlcNode> getFurthestGoalNode() {
-    if (!(getGoalInterface() instanceof TrajectoryGoalManager))
-      throw new RuntimeException(); // can only run on for TrajectoryGoalManager
-    List<Region<Tensor>> goalRegions = ((TrajectoryGoalManager) getGoalInterface()).getGoalRegionList();
-    ListIterator<Region<Tensor>> iter = goalRegions.listIterator(goalRegions.size());
-    DomainQueue regionQueue = new DomainQueue(); // priority queue over merit of GlcNodes
-    while (iter.hasPrevious()) { // goes through all regions from last to first
-      TrajectoryRegionQuery strq = SimpleTrajectoryRegionQuery.timeInvariant(iter.previous());// go through Regions from the last to first:
-      for (GlcNode tempBest : best.keySet()) {
-        List<StateTime> trajectory = best.get(tempBest);
-        Optional<StateTime> optional = strq.firstMember(trajectory);
-        if (optional.isPresent())
-          regionQueue.add(tempBest); // saves members in PQ
-      }
-      if (!regionQueue.isEmpty())
-        break; // leave while loop when Nodes where found in latest Goalregion
-    }
-    return Optional.ofNullable(regionQueue.peek());
   }
 
   public final Scalar getTrajectoryCost() {

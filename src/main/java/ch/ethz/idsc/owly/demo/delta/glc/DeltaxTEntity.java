@@ -24,6 +24,6 @@ import ch.ethz.idsc.tensor.Tensors;
 
   @Override
   protected Tensor eta() {
-    return Tensors.vector(5, 5, 4); // TODO JAN correlate time scale to integrator step
+    return Tensors.vector(5, 5, 4); // see owl: correlate time scale to integrator step
   }
 }

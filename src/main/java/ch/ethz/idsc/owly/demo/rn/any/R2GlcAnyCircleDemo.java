@@ -71,7 +71,8 @@ enum R2GlcAnyCircleDemo {
     // ---
     AnyPlannerInterface anyPlannerInterface = new OptimalAnyTrajectoryPlanner( //
         parameters.getEta(), stateIntegrator, controls, obstacleQuery, rnGoal);
-    anyPlannerInterface.switchRootToState(Tensors.vector(0, 1).multiply(circleRadius));
+    StateTime initalRoot = new StateTime(Tensors.vector(0, 1).multiply(circleRadius), RealScalar.ZERO);
+    anyPlannerInterface.switchRootToState(initalRoot);
     GlcExpand.maxDepth(anyPlannerInterface, parameters.getDepthLimit());
     List<StateTime> trajectory = anyPlannerInterface.trajectoryToBest();
     // StateTimeTrajectories.print(trajectory);
@@ -87,7 +88,7 @@ enum R2GlcAnyCircleDemo {
       if (trajectory.size() > 0) {
         // --
         StateTime newRootState = trajectory.get(trajectory.size() > 5 ? 5 : 0);
-        int increment = anyPlannerInterface.switchRootToState(newRootState.state());
+        int increment = anyPlannerInterface.switchRootToState(newRootState);
         parameters.increaseDepthLimit(increment);
       }
       // -- GOALCHANGE

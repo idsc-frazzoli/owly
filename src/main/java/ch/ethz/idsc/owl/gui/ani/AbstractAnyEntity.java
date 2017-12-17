@@ -23,6 +23,7 @@ import ch.ethz.idsc.owl.math.region.Region;
 import ch.ethz.idsc.owl.math.region.Regions;
 import ch.ethz.idsc.owl.math.state.EpisodeIntegrator;
 import ch.ethz.idsc.owl.math.state.StateIntegrator;
+import ch.ethz.idsc.owl.math.state.StateTime;
 import ch.ethz.idsc.owl.math.state.TrajectoryRegionQuery;
 import ch.ethz.idsc.owl.math.state.TrajectorySample;
 import ch.ethz.idsc.tensor.RealScalar;
@@ -42,13 +43,14 @@ public abstract class AbstractAnyEntity extends AbstractEntity {
    * @param parameters
    * @param controls
    * @param episodeIntegrator */
-  public AbstractAnyEntity(Tensor state, Parameters parameters, //
+  public AbstractAnyEntity(StateTime state, Parameters parameters, //
       Collection<Flow> controls, EpisodeIntegrator episodeIntegrator) {
-    this(state, parameters, controls, episodeIntegrator, RealScalar.ONE, RealScalar.of(0.5));
+    this(parameters, controls, episodeIntegrator, RealScalar.ONE, RealScalar.of(0.5));
   }
 
   public AbstractAnyEntity( //
-      Tensor state, Parameters parameters, //
+      // Tensor state, //
+      Parameters parameters, //
       Collection<Flow> controls, //
       EpisodeIntegrator episodeIntegrator, //
       Scalar delayHint, Scalar expandTime) {
@@ -98,7 +100,7 @@ public abstract class AbstractAnyEntity extends AbstractEntity {
    * @param region the Region of the environment
    * @param currentState the current state of the Entity
    * @return The new TRQ, which is the new Obstacle */
-  protected TrajectoryRegionQuery updateObstacle(Region<Tensor> region, Tensor currentState) {
+  protected TrajectoryRegionQuery updateObstacle(Region<Tensor> region, StateTime currentState) {
     return null;
   }
 
@@ -126,9 +128,11 @@ public abstract class AbstractAnyEntity extends AbstractEntity {
   public OptimalAnyTrajectoryPlanner trajectoryPlanner;
 
   // TODO SE2wrap remove to somewhere else
-  public void startLife(Region<Tensor> environmentRegion, Tensor root) {
+  // TODO JONAS/JAN how to end thread, when OwlyAnimationFrame is closed
+  public void startLife(Region<Tensor> environmentRegion, StateTime root) {
     TrajectoryRegionQuery trq = initializeObstacle(environmentRegion, root);
-    trajectoryPlanner = (OptimalAnyTrajectoryPlanner) createTrajectoryPlanner(trq, root);
+    // TrajectoryPlanner with Goal where he is currently
+    trajectoryPlanner = (OptimalAnyTrajectoryPlanner) createTrajectoryPlanner(trq, root.state());
     trajectoryPlanner.represent = StateTimeTensorFunction.state(getWrap()::represent);
     trajectoryPlanner.switchRootToState(root); // setting start
     thread = new Thread(() -> {
@@ -151,7 +155,7 @@ public abstract class AbstractAnyEntity extends AbstractEntity {
         int depthLimitIncrease = trajectoryPlanner.switchRootToNode(newRoot);
         parameters.increaseDepthLimit(depthLimitIncrease);
         // ObstacleUpdate
-        TrajectoryRegionQuery newObstacle = updateObstacle(environmentRegion, head.get(0).stateTime().state());
+        TrajectoryRegionQuery newObstacle = updateObstacle(environmentRegion, head.get(0).stateTime());
         trajectoryPlanner.obstacleUpdate(newObstacle);
         if (switchGoalRequest) {
           // Goalswitch
@@ -189,7 +193,7 @@ public abstract class AbstractAnyEntity extends AbstractEntity {
    * @param region
    * @param currentState
    * @return ObstacleQuery */
-  protected TrajectoryRegionQuery initializeObstacle(Region<Tensor> oldEnvironmentRegion, Tensor currentState) {
+  protected TrajectoryRegionQuery initializeObstacle(Region<Tensor> oldEnvironmentRegion, StateTime currentStateTime) {
     return SimpleTrajectoryRegionQuery.timeInvariant(oldEnvironmentRegion);
   }
 

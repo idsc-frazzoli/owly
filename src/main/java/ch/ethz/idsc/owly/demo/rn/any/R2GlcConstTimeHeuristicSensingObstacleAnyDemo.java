@@ -64,7 +64,7 @@ enum R2GlcConstTimeHeuristicSensingObstacleAnyDemo {
         EuclideanDistanceDiscoverRegion.of(environmentRegion, startState, RealScalar.of(4)));
     AnyPlannerInterface anyPlannerInterface = new OptimalAnyTrajectoryPlanner( //
         parameters.getEta(), stateIntegrator, controls, obstacleQuery, rnGoal);
-    anyPlannerInterface.switchRootToState(startState);
+    anyPlannerInterface.switchRootToState(new StateTime(Tensors.vector(-3, 0), RealScalar.ZERO));
     GlcExpand.constTime(anyPlannerInterface, runTime, parameters.getDepthLimit());
     // --
     Optional<GlcNode> finalGoalNode = anyPlannerInterface.getFinalGoalNode();
@@ -87,7 +87,7 @@ enum R2GlcConstTimeHeuristicSensingObstacleAnyDemo {
       if (trajectory.size() > 5) {
         //
         StateTime newRootState = trajectory.get(trajectory.size() > 3 ? 3 : 0);
-        int increment = anyPlannerInterface.switchRootToState(newRootState.state());
+        int increment = anyPlannerInterface.switchRootToState(newRootState);
         parameters.increaseDepthLimit(increment);
       }
       // -- OBSTACLE CHANGE

@@ -3,27 +3,28 @@ package ch.ethz.idsc.owly.demo.delta.glc;
 
 import java.util.List;
 
+import ch.ethz.idsc.owl.glc.adapter.SimpleTrajectoryRegionQuery;
 import ch.ethz.idsc.owl.glc.adapter.StateTimeTrajectories;
-import ch.ethz.idsc.owl.glc.adapter.TrajectoryGoalManager;
 import ch.ethz.idsc.owl.glc.core.GlcNode;
 import ch.ethz.idsc.owl.glc.core.GoalInterface;
 import ch.ethz.idsc.owl.math.flow.Flow;
 import ch.ethz.idsc.owl.math.region.Region;
 import ch.ethz.idsc.owl.math.state.StateTime;
+import ch.ethz.idsc.owly.demo.delta.DeltaStateSpaceModel;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.red.Norm;
 
-class DeltaxtDinghyGoalManager extends TrajectoryGoalManager implements GoalInterface {
+class DeltaxTDinghyGoalManager extends SimpleTrajectoryRegionQuery implements GoalInterface {
   private final Scalar timeCostScalingFactor;
 
-  public DeltaxtDinghyGoalManager(List<Region<Tensor>> goalRegions, DeltaxtStateSpaceModel stateSpaceModel) {
-    this(goalRegions, RealScalar.ONE, stateSpaceModel);
+  public DeltaxTDinghyGoalManager(Region<StateTime> goalRegion, DeltaStateSpaceModel stateSpaceModel) {
+    this(goalRegion, stateSpaceModel, RealScalar.ONE);
   }
 
-  public DeltaxtDinghyGoalManager(List<Region<Tensor>> goalRegions, Scalar timeCostScalingFactor, DeltaxtStateSpaceModel stateSpaceModel) {
-    super(goalRegions);
+  public DeltaxTDinghyGoalManager(Region<StateTime> goalRegion, DeltaStateSpaceModel stateSpaceModel, Scalar timeCostScalingFactor) {
+    super(goalRegion);
     this.timeCostScalingFactor = timeCostScalingFactor;
   }
 

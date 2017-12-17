@@ -78,7 +78,8 @@ enum R2GlcAnyCircleCompareDemo {
     // ANYPLANNER
     AnyPlannerInterface anyPlannerInterface = new OptimalAnyTrajectoryPlanner( //
         parameters.getEta(), stateIntegrator, controls, obstacleQuery, rnGoal);
-    anyPlannerInterface.switchRootToState(Tensors.vector(0, 1).multiply(circleRadius));
+    StateTime initialRoot = new StateTime(Tensors.vector(0, 1).multiply(circleRadius), RealScalar.ZERO);
+    anyPlannerInterface.switchRootToState(initialRoot);
     GlcExpand.maxDepth(anyPlannerInterface, parameters.getDepthLimit());
     List<StateTime> anyTrajectory = anyPlannerInterface.trajectoryToBest();
     // StateTimeTrajectories.print(trajectory);
@@ -110,7 +111,7 @@ enum R2GlcAnyCircleCompareDemo {
         switchingRoot = true;
         // --
         newRootState = anyTrajectory.get(anyTrajectory.size() > 5 ? 5 : 0);
-        int increment = anyPlannerInterface.switchRootToState(newRootState.state());
+        int increment = anyPlannerInterface.switchRootToState(newRootState);
         parameters.increaseDepthLimit(increment);
       }
       // -- GOALCHANGE

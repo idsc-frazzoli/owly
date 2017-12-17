@@ -33,6 +33,7 @@ import ch.ethz.idsc.owl.math.state.TrajectoryRegionQuery;
 import ch.ethz.idsc.owly.demo.rn.EuclideanDistanceDiscoverRegion;
 import ch.ethz.idsc.owly.demo.rn.R2NoiseRegion;
 import ch.ethz.idsc.owly.demo.se2.CarStandardFlows;
+import ch.ethz.idsc.owly.demo.se2.Se2MinTimeGoalManager;
 import ch.ethz.idsc.owly.demo.se2.Se2StateSpaceModel;
 import ch.ethz.idsc.owly.demo.se2.glc.Se2Parameters;
 import ch.ethz.idsc.owly.demo.util.RunCompare;
@@ -66,10 +67,10 @@ enum Se2GlcHeuristicSensingObstacleCompareAnyDemo {
     CarStandardFlows carConfig = new CarStandardFlows(RealScalar.ONE, Degree.of(45));
     Collection<Flow> controls = carConfig.getFlows(parameters.getResolutionInt());
     // Creating Goals
-    Tensor startState = Tensors.vector(0, 0, 0);
+    StateTime startState = new StateTime(Tensors.vector(0, 0, 0), RealScalar.ZERO);
     Region<Tensor> environmentRegion = new R2NoiseRegion(RealScalar.of(0.5));
     TrajectoryRegionQuery obstacleQuery = SimpleTrajectoryRegionQuery.timeInvariant( //
-        EuclideanDistanceDiscoverRegion.of(environmentRegion, startState, sensingRadius));
+        EuclideanDistanceDiscoverRegion.of(environmentRegion, startState.state(), sensingRadius));
     AnyPlannerInterface anyTrajectoryPlanner = new OptimalAnyTrajectoryPlanner( //
         parameters.getEta(), stateIntegrator, controls, obstacleQuery, se2Goal);
     anyTrajectoryPlanner.switchRootToState(startState);
@@ -121,7 +122,7 @@ enum Se2GlcHeuristicSensingObstacleCompareAnyDemo {
         // -- ROOTCHANGE
         if (trajectory.size() > 2) {
           //
-          int increment = anyTrajectoryPlanner.switchRootToState(newRootState.state());
+          int increment = anyTrajectoryPlanner.switchRootToState(newRootState);
           parameters.increaseDepthLimit(increment);
         }
         // -- OBSTACLE CHANGE
@@ -165,7 +166,7 @@ enum Se2GlcHeuristicSensingObstacleCompareAnyDemo {
     Collection<Flow> controls = carConfig.getFlows(11);
     Tensor goal = Tensors.vector(11, 11, 0);
     GoalInterface[] values = new GoalInterface[] { //
-        new Se2MinTimeEuclideanDistanceHeuristicGoalManager(goal, Tensors.vector(0.5, 0.5, 0.8), controls).getGoalInterface(),
+        new Se2MinTimeGoalManager(goal, Tensors.vector(0.5, 0.5, 0.8), controls).getGoalInterface(),
         new Se2NoHeuristicGoalManager(goal, Tensors.vector(0.5, 0.5, 0.8)).getGoalInterface()
         // RnMinDistSphericalGoalManager.create(Tensors.vector(25, 25), RealScalar.of(0.3)),
         // new RnSimpleCircleGoalManager(Tensors.vector(20, 20), RealScalar.of(0.3)) //

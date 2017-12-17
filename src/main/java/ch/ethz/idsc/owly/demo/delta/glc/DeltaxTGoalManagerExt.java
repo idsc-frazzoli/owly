@@ -20,12 +20,12 @@ import ch.ethz.idsc.tensor.sca.Power;
 import ch.ethz.idsc.tensor.sca.Ramp;
 import ch.ethz.idsc.tensor.sca.Sqrt;
 
-class DeltaxtGoalManagerExt extends SimpleTrajectoryRegionQuery implements GoalInterface {
+class DeltaxTGoalManagerExt extends SimpleTrajectoryRegionQuery implements GoalInterface {
   private final Tensor center;
   private final Tensor radius;
   private final Scalar maxSpeed;
 
-  public DeltaxtGoalManagerExt(Tensor center, Tensor radius, Scalar maxSpeed) {
+  public DeltaxTGoalManagerExt(Tensor center, Tensor radius, Scalar maxSpeed) {
     super(new TimeInvariantRegion(new EllipsoidRegion(center, radius)));
     this.center = center;
     this.maxSpeed = maxSpeed;
@@ -34,7 +34,7 @@ class DeltaxtGoalManagerExt extends SimpleTrajectoryRegionQuery implements GoalI
     this.radius = radius;
   }
 
-  public DeltaxtGoalManagerExt(Region<Tensor> region, Tensor center, Tensor radius, Scalar maxSpeed) {
+  public DeltaxTGoalManagerExt(Region<Tensor> region, Tensor center, Tensor radius, Scalar maxSpeed) {
     super(new TimeInvariantRegion(region));
     this.center = center;
     this.maxSpeed = maxSpeed;

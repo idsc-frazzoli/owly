@@ -106,7 +106,7 @@ public enum DeltaHelper {
     // Tensors.vector(2.1, 0.3), Tensors.vector(.3, .3));
     OptimalAnyTrajectoryPlanner trajectoryPlanner = new OptimalAnyTrajectoryPlanner(parameters.getEta(), stateIntegrator, controls, obstacleQuery,
         deltaGoalManager);
-    trajectoryPlanner.switchRootToState((Tensors.vector(8.8, 0.5)));
+    trajectoryPlanner.switchRootToState(new StateTime(Tensors.vector(8.8, 0.5), RealScalar.ZERO));
     return new TrajectoryPlannerContainer(trajectoryPlanner, parameters, stateSpaceModel);
   }
 
