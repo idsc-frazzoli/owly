@@ -16,7 +16,7 @@ import ch.ethz.idsc.tensor.Tensors;
 import ch.ethz.idsc.tensor.sca.N;
 
 public class RunCompare {
-  private Tensor currentRuntimes;
+  public Tensor currentRuntimes;
   private Tensor currentIterations;
   private Tensor currentCosts = Tensors.vector(0);
   private final int numberOfPlanners;
@@ -86,7 +86,7 @@ public class RunCompare {
    * @param iterations
    * @param plannerID */
   public void saveIterations(int iterations, int plannerID) {
-    if (plannerID > numberOfPlanners)
+    if (plannerID >= numberOfPlanners)
       throw new RuntimeException();
     currentIterations.set(RealScalar.of(iterations), plannerID);
   }
@@ -95,7 +95,7 @@ public class RunCompare {
    * @param cost
    * @param plannerID */
   public void saveCost(Scalar cost, int plannerID) {
-    if (plannerID > numberOfPlanners)
+    if (plannerID >= numberOfPlanners)
       throw new RuntimeException();
     currentCosts.set(N.DOUBLE.of(cost), plannerID);
   }
