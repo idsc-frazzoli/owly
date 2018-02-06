@@ -40,7 +40,7 @@ enum DeltaGlcConstTimeHeuristicAnyDemo {
     boolean useGui = true;
     Stopwatch quickPlannerStopwatch = Stopwatch.started();
     // Tensor partitionScale = Tensors.vector(120, 120);
-    Tensor partitionScale = Tensors.vector(50, 50);
+    Tensor partitionScale = Tensors.vector(70, 70);
     TrajectoryPlannerContainer quickTrajectoryPlannerContainer = DeltaHelper.createGlc(RealScalar.of(-0.02), quickResolution, partitionScale);
     GlcExpand.maxDepth(quickTrajectoryPlannerContainer.getTrajectoryPlanner(), DoubleScalar.POSITIVE_INFINITY.number().intValue());
     OwlyFrame quickOwlyFrame = OwlyGui.start();
@@ -60,7 +60,6 @@ enum DeltaGlcConstTimeHeuristicAnyDemo {
     System.out.println("Quickplanner took: " + quickPlannerStopwatch.display_seconds());
     System.out.println("***QUICK PLANNER FINISHED***");
     // -- SLOWPLANNER
-    partitionScale = Tensors.vector(50, 50);
     RationalScalar resolution = (RationalScalar) RationalScalar.of(12, 1);
     TrajectoryPlannerContainer slowTrajectoryPlannerContainer = DeltaHelper.createGlcAny(RealScalar.of(-0.02), resolution, partitionScale);
     // -- GOALMANAGER
@@ -85,13 +84,13 @@ enum DeltaGlcConstTimeHeuristicAnyDemo {
     OwlyFrame owlyFrame = OwlyGui.start();
     owlyFrame.configCoordinateOffset(33, 416);
     owlyFrame.jFrame.setBounds(100, 100, 620, 475);
+    Scalar initialPlanningTime = RealScalar.of(10);
     Scalar planningTime = RealScalar.of(5);
     RunCompare timingDatabase = new RunCompare(1);
     // -- ANYTIMELOOP
     boolean finalGoalFound = false;
     int iter = 0;
     while (!finalGoalFound && iter < 300) {
-      iter++;
       List<StateTime> trajectory = new ArrayList<>();
       Optional<GlcNode> finalGoalNode = null;
       // -- ROOTCHANGE
@@ -102,26 +101,32 @@ enum DeltaGlcConstTimeHeuristicAnyDemo {
         trajectory = GlcNodes.getPathFromRootTo(finalGoalNode.get());
       System.out.println("trajectorys size: " + trajectory.size());
       Scalar currentTime = timingDatabase.currentRuntimes.Get(0);
-      // if (Scalars.lessThan(trajectory.get(trajectory.size() - 1).time(), currentTime)) {
-      // System.err.println("Too slow expansion of Tree");
-      // throw new RuntimeException();
-      // } else {
-      boolean test = trajectory.removeIf(st -> Scalars.lessThan(st.time(), currentTime));
-      if (trajectory.size() == 0 && iter != 1)
+      if (iter > 1) { // only move forward after initial expansion
+        boolean test = trajectory.removeIf(st -> Scalars.lessThan(st.time(), currentTime.add(planningTime).subtract(initialPlanningTime)));
+        // only nodes in the future are kept
+        if (!test)
+          System.out.println("Did not move forward a node");
+      }
+      if (trajectory.size() >= 1) {
+        StateTime newRootState = trajectory.get(0);
+        int increment = ((OptimalAnyTrajectoryPlanner) slowTrajectoryPlannerContainer.getTrajectoryPlanner()).switchRootToState(newRootState);
+        slowTrajectoryPlannerContainer.getParameters().increaseDepthLimit(increment);
+      } else if (trajectory.size() == 0 && iter != 0) {
         throw new RuntimeException("Too slow expansion of tree");
-      if (!test)
-        System.out.println("Did not move forward a node");
-      StateTime newRootState = trajectory.get(0);
-      int increment = ((OptimalAnyTrajectoryPlanner) slowTrajectoryPlannerContainer.getTrajectoryPlanner()).switchRootToState(newRootState);
-      slowTrajectoryPlannerContainer.getParameters().increaseDepthLimit(increment);
-      // }
+      }
       stopwatch.stop();
       System.out.println("Rootchange took: " + stopwatch.display_seconds() + "s");
       // -- EXPANDING
       stopwatch.resetToZero();
+      int expandIter = 0;
       stopwatch.start();
-      int expandIter = GlcExpand.constTime(slowTrajectoryPlannerContainer.getTrajectoryPlanner(), planningTime,
-          slowTrajectoryPlannerContainer.getParameters().getDepthLimit());
+      if (iter != 0)
+        expandIter = GlcExpand.constTime(slowTrajectoryPlannerContainer.getTrajectoryPlanner(), planningTime,
+            slowTrajectoryPlannerContainer.getParameters().getDepthLimit());
+      else // 1st expansion takes longer
+        expandIter = GlcExpand.constTime(slowTrajectoryPlannerContainer.getTrajectoryPlanner(), initialPlanningTime,
+            slowTrajectoryPlannerContainer.getParameters().getDepthLimit());
+      iter++; // One additional expansion was conducted
       finalGoalNode = slowTrajectoryPlannerContainer.getTrajectoryPlanner().getFinalGoalNode();
       trajectory = GlcNodes.getPathFromRootTo(finalGoalNode.get());
       stopwatch.stop();

@@ -70,8 +70,6 @@ public enum DeltaHelper {
         SimpleTrajectoryRegionQuery.timeInvariant(new ImageRegion(obstacleImage, range, true));
     DeltaHeuristicGoalManager deltaGoalManager = new DeltaHeuristicGoalManager( //
         goal, Tensors.vector(0.3, 0.3), stateSpaceModel.getMaxPossibleChange());
-    // DeltaGoalManager deltaGoalManager = new DeltaGoalManager( //
-    // Tensors.vector(2.1, 0.3), Tensors.vector(.3, .3));
     TrajectoryPlanner trajectoryPlanner = new StandardTrajectoryPlanner( //
         parameters.getEta(), stateIntegrator, controls, obstacleQuery, deltaGoalManager);
     trajectoryPlanner.insertRoot(new StateTime(Tensors.vector(8.8, 0.5), RealScalar.ZERO));
@@ -81,7 +79,6 @@ public enum DeltaHelper {
   static TrajectoryPlannerContainer createGlcAny(Scalar gradientAmp, RationalScalar resolution, Tensor partitionScale) throws Exception {
     Scalar timeScale = RealScalar.of(60);
     Scalar depthScale = RealScalar.of(100);
-    // Tensor partitionScale = Tensors.vector(6e29, 6e29);
     Scalar dtMax = RationalScalar.of(1, 6);
     int maxIter = 2000;
     Tensor range = Tensors.vector(9, 6.5);

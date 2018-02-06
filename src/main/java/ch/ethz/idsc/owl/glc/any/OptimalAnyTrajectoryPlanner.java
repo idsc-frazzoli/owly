@@ -461,7 +461,7 @@ public class OptimalAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
     StringBuilder stringBuilder = new StringBuilder(super.infoString() + ", ");
     stringBuilder.append("OptimalAnyPlanner");
     if (getGoalInterface() instanceof TrajectoryGoalManager)
-      stringBuilder.append(", with a TrajectoryGoalManger");
+      stringBuilder.append(", with a TrajectoryGoalManager");
     return stringBuilder.toString();
   }
 
