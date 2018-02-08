@@ -2,14 +2,17 @@
 package ch.ethz.idsc.owly.demo.delta.glc;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Supplier;
 
 import ch.ethz.idsc.owl.data.Stopwatch;
 import ch.ethz.idsc.owl.glc.adapter.GlcExpand;
 import ch.ethz.idsc.owl.glc.adapter.GlcNodes;
 import ch.ethz.idsc.owl.glc.adapter.HeuristicQ;
+import ch.ethz.idsc.owl.glc.adapter.SimpleTrajectoryRegionQuery;
 import ch.ethz.idsc.owl.glc.adapter.StateTimeTrajectories;
 import ch.ethz.idsc.owl.glc.any.OptimalAnyTrajectoryPlanner;
 import ch.ethz.idsc.owl.glc.core.DebugUtils;
@@ -17,12 +20,26 @@ import ch.ethz.idsc.owl.glc.core.GlcNode;
 import ch.ethz.idsc.owl.glc.core.TrajectoryPlanner;
 import ch.ethz.idsc.owl.gui.ani.OwlyFrame;
 import ch.ethz.idsc.owl.gui.ani.OwlyGui;
+import ch.ethz.idsc.owl.math.StateSpaceModels;
+import ch.ethz.idsc.owl.math.flow.Flow;
+import ch.ethz.idsc.owl.math.flow.RungeKutta45Integrator;
+import ch.ethz.idsc.owl.math.map.BijectionFamily;
 import ch.ethz.idsc.owl.math.region.EllipsoidRegion;
+import ch.ethz.idsc.owl.math.region.ImageRegion;
 import ch.ethz.idsc.owl.math.region.Region;
+import ch.ethz.idsc.owl.math.region.RegionIntersection;
+import ch.ethz.idsc.owl.math.region.RegionUnion;
+import ch.ethz.idsc.owl.math.region.SphericalRegion;
+import ch.ethz.idsc.owl.math.state.FixedStateIntegrator;
+import ch.ethz.idsc.owl.math.state.StateIntegrator;
 import ch.ethz.idsc.owl.math.state.StateTime;
+import ch.ethz.idsc.owl.math.state.TimeInvariantRegion;
+import ch.ethz.idsc.owl.math.state.TrajectoryRegionQuery;
 import ch.ethz.idsc.owly.demo.delta.DeltaAltStateSpaceModel;
 import ch.ethz.idsc.owly.demo.delta.DeltaTrajectoryGoalManager;
+import ch.ethz.idsc.owly.demo.util.RegionRenders;
 import ch.ethz.idsc.owly.demo.util.RunCompare;
+import ch.ethz.idsc.owly.demo.util.TrajectoryTranslationFamily;
 import ch.ethz.idsc.tensor.DoubleScalar;
 import ch.ethz.idsc.tensor.RationalScalar;
 import ch.ethz.idsc.tensor.RealScalar;
@@ -30,8 +47,10 @@ import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Scalars;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
+import ch.ethz.idsc.tensor.io.ResourceData;
+import ch.ethz.idsc.tensor.opt.TensorUnaryOperator;
 
-enum DeltaGlcConstTimeHeuristicAnyDemo {
+enum DeltaGlcConstTimeHeuristicAnyDemoMovingObstacles {
   ;
   @SuppressWarnings("unused")
   public static void main(String[] args) throws Exception {
@@ -60,7 +79,7 @@ enum DeltaGlcConstTimeHeuristicAnyDemo {
     System.out.println("Quickplanner took: " + quickPlannerStopwatch.display_seconds());
     System.out.println("***QUICK PLANNER FINISHED***");
     // -- SLOWPLANNER
-    RationalScalar resolution = (RationalScalar) RationalScalar.of(12, 1);
+    RationalScalar resolution = (RationalScalar) RationalScalar.of(10, 1);
     TrajectoryPlannerContainer slowTrajectoryPlannerContainer = DeltaHelper.createGlcAny(RealScalar.of(-0.02), resolution, partitionScale);
     // -- GOALMANAGER
     Iterator<StateTime> iterator = quickTrajectory.iterator();
@@ -81,9 +100,41 @@ enum DeltaGlcConstTimeHeuristicAnyDemo {
     owlyFrame.configCoordinateOffset(33, 416);
     owlyFrame.jFrame.setBounds(100, 100, 620, 475);
     // Timings
-    Scalar initialPlanningTime = RealScalar.of(10);
-    Scalar planningTime = RealScalar.of(5);
+    // Scalar initialPlanningTime = RealScalar.of(10);
+    Scalar planningTime = RealScalar.of(80);
     RunCompare timingDatabase = new RunCompare(1);
+    // Obstacles
+    Tensor range = Tensors.vector(9, 6.5);
+    Tensor obstacleImage = ResourceData.of("/io/delta_free.png");
+    Region<Tensor> imageRegion = new ImageRegion(obstacleImage, range, true);
+    Scalar sensingRadius = RealScalar.of(1);
+    Supplier<Scalar> supplier = () -> timingDatabase.currentRuntimes.Get(0);
+    Flow obstacleFlow = StateSpaceModels.createFlow(quickTrajectoryPlannerContainer.getStateSpaceModel(), //
+        Tensors.vectorDouble(0, 0));
+    StateIntegrator stateIntegrator = FixedStateIntegrator.create( //
+        RungeKutta45Integrator.INSTANCE, RationalScalar.of(1, 10), 120 * 10);
+    // all the starting positions of the floating obstacles
+    List<Tensor> originList = Arrays.asList(Tensors.vector(1.8, 1.2), //
+        Tensors.vector(5, 5), //
+        Tensors.vector(1.5, 5.5), //
+        Tensors.vector(0.8, 6), //
+        Tensors.vector(7, 3));
+    List<BijectionFamily> obstacleTrajectoriesList = new ArrayList<>();
+    for (Tensor entry : originList)
+      obstacleTrajectoriesList.add(TrajectoryTranslationFamily.create(stateIntegrator, new StateTime(entry, RealScalar.ZERO), obstacleFlow));
+    // all the radius of the floating obstacles
+    List<Scalar> radiusList = Arrays.asList(RealScalar.of(0.4), //
+        RealScalar.of(0.5), //
+        RealScalar.of(0.3), //
+        RealScalar.of(0.3), //
+        RealScalar.of(0.4));
+    if (radiusList.size() != originList.size())
+      throw new RuntimeException();
+    List<Region<StateTime>> floatingObstaclesList = new ArrayList<>();
+    for (int i = 0; i < radiusList.size(); i++) {
+      TensorUnaryOperator fwd = obstacleTrajectoriesList.get(i).forward(supplier.get());
+      floatingObstaclesList.add(new TimeInvariantRegion(new SphericalRegion(fwd.apply(Tensors.vector(0, 0)), radiusList.get(i))));
+    }
     // -- ANYTIMELOOP
     boolean finalGoalFound = false;
     int iter = 0;
@@ -102,8 +153,8 @@ enum DeltaGlcConstTimeHeuristicAnyDemo {
           trajectory = GlcNodes.getPathFromRootTo(bestEstimate.get());
       }
       System.out.println("trajectorys size: " + trajectory.size());
-      Scalar currentTime = timingDatabase.currentRuntimes.Get(0).subtract(initialPlanningTime);
-      if (iter > 1) { // only move forward after initial expansion
+      Scalar currentTime = supplier.get();
+      if (iter >= 1) { // only move forward after initial expansion
         boolean test = trajectory.removeIf(st -> Scalars.lessThan(st.time(), currentTime.add(planningTime)));
         // only nodes in the future are kept
         if (!test)
@@ -117,15 +168,27 @@ enum DeltaGlcConstTimeHeuristicAnyDemo {
         throw new RuntimeException("Too slow expansion of tree");
       }
       stopwatch.stop();
+      // -- OBSTACLE UPDATE
+      stopwatch.start();
+      if (trajectory.size() >= 1) {
+        // Definition of the floating Obstacles
+        Region<StateTime> floatingObstacles = RegionUnion.wrap(//
+            createFloatingObstacles(obstacleTrajectoriesList, radiusList, supplier));
+        Region<StateTime> discoveredFloatingObstacle = RegionIntersection.wrap(Arrays.asList( //
+            new TimeInvariantRegion(new SphericalRegion(trajectory.get(0).state(), sensingRadius)), floatingObstacles));
+        // Combination of the discovered new obstacles and the map
+        TrajectoryRegionQuery newObstacle = new SimpleTrajectoryRegionQuery( //
+            RegionUnion.wrap(Arrays.asList(new TimeInvariantRegion(imageRegion), floatingObstacles)));
+        ((OptimalAnyTrajectoryPlanner) slowTrajectoryPlannerContainer.getTrajectoryPlanner()).obstacleUpdate(newObstacle);
+        System.out.println("Obstaclechange took: " + stopwatch.display_seconds() + "s");
+      }
+      stopwatch.stop();
+      stopwatch.resetToZero();
       // -- EXPANDING
       stopwatch.start();
       int expandIter = 0;
-      if (iter != 0)
-        expandIter = GlcExpand.constTime(slowTrajectoryPlannerContainer.getTrajectoryPlanner(), planningTime,
-            slowTrajectoryPlannerContainer.getParameters().getDepthLimit());
-      else // 1st expansion takes longer
-        expandIter = GlcExpand.constTime(slowTrajectoryPlannerContainer.getTrajectoryPlanner(), initialPlanningTime,
-            slowTrajectoryPlannerContainer.getParameters().getDepthLimit());
+      expandIter = GlcExpand.constTime(slowTrajectoryPlannerContainer.getTrajectoryPlanner(), planningTime,
+          slowTrajectoryPlannerContainer.getParameters().getDepthLimit());
       iter++; // One additional expansion was conducted
       finalGoalNode = slowTrajectoryPlannerContainer.getTrajectoryPlanner().getFinalGoalNode();
       trajectory = GlcNodes.getPathFromRootTo(finalGoalNode.get());
@@ -133,8 +196,11 @@ enum DeltaGlcConstTimeHeuristicAnyDemo {
       timingDatabase.pauseStopwatchFor(0);
       timingDatabase.saveIterations(expandIter, 0);
       System.out.println("Expanding " + expandIter + " Nodes took: " + stopwatch.display_seconds() + "s");
-      if (useGui)
+      if (useGui) {
         owlyFrame.setGlc((TrajectoryPlanner) slowTrajectoryPlannerContainer.getTrajectoryPlanner());
+        owlyFrame.addBackground(RegionRenders.create(imageRegion));
+        // owlyFrame.addBackground((RenderInterface) region1);
+      }
       List<StateTime> Trajectory = null;
       if (optional.isPresent()) {
         Trajectory = GlcNodes.getPathFromRootTo(finalGoalNode.get());
@@ -156,5 +222,15 @@ enum DeltaGlcConstTimeHeuristicAnyDemo {
     String filename = "GLCR" + resolution + (test ? "H" : "noH");
     timingDatabase.write2File(filename);
     System.out.println("Finished LOOP");
+  }
+
+  private static List<Region<StateTime>> createFloatingObstacles(List<BijectionFamily> obstacleTrajectoriesList, List<Scalar> radiusList,
+      Supplier<Scalar> supplier) {
+    List<Region<StateTime>> floatingObstaclesList = new ArrayList<>();
+    for (int i = 0; i < radiusList.size(); i++) {
+      TensorUnaryOperator fwd = obstacleTrajectoriesList.get(i).forward(supplier.get());
+      floatingObstaclesList.add(new TimeInvariantRegion(new SphericalRegion(fwd.apply(Tensors.vector(0, 0)), radiusList.get(i))));
+    }
+    return floatingObstaclesList;
   }
 }
