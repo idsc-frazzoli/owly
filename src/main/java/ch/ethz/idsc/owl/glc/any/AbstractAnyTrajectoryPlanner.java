@@ -163,31 +163,8 @@ public abstract class AbstractAnyTrajectoryPlanner extends AbstractTrajectoryPla
       // -- GOALCHECK TREE
       boolean goalInTreeFound = false;
       long tic = System.nanoTime();
-      // old check for debugging
-      // goalInTreeFound = goalCheckTree();
-      // Scalar timeDiffOld = RealScalar.of((System.nanoTime() - tic) * 1e-9);
-      // Collection<GlcNode> oldBest = new ArrayList<>(best.keySet());
-      // setBestNull();
       tic = System.nanoTime();
       goalInTreeFound = goalCheckTree(goalCheckHelp);
-      // DEBUGING
-      // Scalar timeDiffNew = RealScalar.of((System.nanoTime() - tic) * 1e-9);
-      // tic = System.nanoTime();
-      // System.err.println("The NEW GoalCheck needed: " //
-      // + timeDiffNew.divide(timeDiffOld).multiply(RealScalar.of(100)).number().intValue()//
-      // + "% of the time of the OLD");
-      // if (!best.isEmpty() || !oldBest.isEmpty()) {
-      // System.err.println("OldVersion found: " + oldBest.size() + " GoalNodes: ");
-      // for (GlcNode node : oldBest)
-      // System.out.println(node.state());
-      // System.err.println("NewVersion found: " + best.size() + " GoalNodes");
-      // for (GlcNode node : best.keySet())
-      // System.out.println(node.state());
-      // }
-      // if (!(oldBest.containsAll(best.keySet()) && best.keySet().containsAll(oldBest))) {
-      // System.err.println("Not the same GoalNodes found in both runs");
-      // throw new RuntimeException();
-      // }
       // INFORMATION
       System.out.println("Checked current tree for goal in "//
           + (System.nanoTime() - tic) * 1e-9 + "s");

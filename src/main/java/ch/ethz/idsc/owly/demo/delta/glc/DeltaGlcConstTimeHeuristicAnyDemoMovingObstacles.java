@@ -59,7 +59,7 @@ enum DeltaGlcConstTimeHeuristicAnyDemoMovingObstacles {
     boolean useGui = true;
     Stopwatch quickPlannerStopwatch = Stopwatch.started();
     // Tensor partitionScale = Tensors.vector(120, 120);
-    Tensor partitionScale = Tensors.vector(70, 70);
+    Tensor partitionScale = Tensors.vector(50, 50);
     TrajectoryPlannerContainer quickTrajectoryPlannerContainer = DeltaHelper.createGlc(RealScalar.of(-0.02), quickResolution, partitionScale);
     GlcExpand.maxDepth(quickTrajectoryPlannerContainer.getTrajectoryPlanner(), DoubleScalar.POSITIVE_INFINITY.number().intValue());
     OwlyFrame quickOwlyFrame = OwlyGui.start();
@@ -79,7 +79,8 @@ enum DeltaGlcConstTimeHeuristicAnyDemoMovingObstacles {
     System.out.println("Quickplanner took: " + quickPlannerStopwatch.display_seconds());
     System.out.println("***QUICK PLANNER FINISHED***");
     // -- SLOWPLANNER
-    RationalScalar resolution = (RationalScalar) RationalScalar.of(10, 1);
+    partitionScale = Tensors.vector(120, 120);
+    RationalScalar resolution = (RationalScalar) RationalScalar.of(12, 1);
     TrajectoryPlannerContainer slowTrajectoryPlannerContainer = DeltaHelper.createGlcAny(RealScalar.of(-0.02), resolution, partitionScale);
     // -- GOALMANAGER
     Iterator<StateTime> iterator = quickTrajectory.iterator();
@@ -100,32 +101,33 @@ enum DeltaGlcConstTimeHeuristicAnyDemoMovingObstacles {
     owlyFrame.configCoordinateOffset(33, 416);
     owlyFrame.jFrame.setBounds(100, 100, 620, 475);
     // Timings
-    // Scalar initialPlanningTime = RealScalar.of(10);
-    Scalar planningTime = RealScalar.of(80);
+    Scalar planningTime = RealScalar.of(5);
     RunCompare timingDatabase = new RunCompare(1);
     // Obstacles
     Tensor range = Tensors.vector(9, 6.5);
     Tensor obstacleImage = ResourceData.of("/io/delta_free.png");
     Region<Tensor> imageRegion = new ImageRegion(obstacleImage, range, true);
-    Scalar sensingRadius = RealScalar.of(1);
+    Scalar sensingRadius = RealScalar.of(2.5);
     Supplier<Scalar> supplier = () -> timingDatabase.currentRuntimes.Get(0);
     Flow obstacleFlow = StateSpaceModels.createFlow(quickTrajectoryPlannerContainer.getStateSpaceModel(), //
         Tensors.vectorDouble(0, 0));
     StateIntegrator stateIntegrator = FixedStateIntegrator.create( //
         RungeKutta45Integrator.INSTANCE, RationalScalar.of(1, 10), 120 * 10);
     // all the starting positions of the floating obstacles
-    List<Tensor> originList = Arrays.asList(Tensors.vector(1.8, 1.2), //
-        Tensors.vector(5, 5), //
-        Tensors.vector(1.5, 5.5), //
-        Tensors.vector(0.8, 6), //
-        Tensors.vector(7, 3));
+    List<Tensor> originList = Arrays.asList(//
+        Tensors.vector(1.8, 1.2), //
+        Tensors.vector(3.5, 4), //
+        Tensors.vector(0.7, 4.5), //
+        Tensors.vector(1.5, 0.8), //
+        Tensors.vector(5.0, 3.0));
     List<BijectionFamily> obstacleTrajectoriesList = new ArrayList<>();
     for (Tensor entry : originList)
       obstacleTrajectoriesList.add(TrajectoryTranslationFamily.create(stateIntegrator, new StateTime(entry, RealScalar.ZERO), obstacleFlow));
     // all the radius of the floating obstacles
-    List<Scalar> radiusList = Arrays.asList(RealScalar.of(0.4), //
-        RealScalar.of(0.5), //
-        RealScalar.of(0.3), //
+    List<Scalar> radiusList = Arrays.asList(//
+        RealScalar.of(0.4), //
+        RealScalar.of(0.25), //
+        RealScalar.of(0.2), //
         RealScalar.of(0.3), //
         RealScalar.of(0.4));
     if (radiusList.size() != originList.size())
@@ -174,11 +176,12 @@ enum DeltaGlcConstTimeHeuristicAnyDemoMovingObstacles {
         // Definition of the floating Obstacles
         Region<StateTime> floatingObstacles = RegionUnion.wrap(//
             createFloatingObstacles(obstacleTrajectoriesList, radiusList, supplier));
+        // TODO does not work the intersection
         Region<StateTime> discoveredFloatingObstacle = RegionIntersection.wrap(Arrays.asList( //
             new TimeInvariantRegion(new SphericalRegion(trajectory.get(0).state(), sensingRadius)), floatingObstacles));
         // Combination of the discovered new obstacles and the map
         TrajectoryRegionQuery newObstacle = new SimpleTrajectoryRegionQuery( //
-            RegionUnion.wrap(Arrays.asList(new TimeInvariantRegion(imageRegion), floatingObstacles)));
+            RegionUnion.wrap(Arrays.asList(new TimeInvariantRegion(imageRegion), discoveredFloatingObstacle)));
         ((OptimalAnyTrajectoryPlanner) slowTrajectoryPlannerContainer.getTrajectoryPlanner()).obstacleUpdate(newObstacle);
         System.out.println("Obstaclechange took: " + stopwatch.display_seconds() + "s");
       }
@@ -191,7 +194,6 @@ enum DeltaGlcConstTimeHeuristicAnyDemoMovingObstacles {
           slowTrajectoryPlannerContainer.getParameters().getDepthLimit());
       iter++; // One additional expansion was conducted
       finalGoalNode = slowTrajectoryPlannerContainer.getTrajectoryPlanner().getFinalGoalNode();
-      trajectory = GlcNodes.getPathFromRootTo(finalGoalNode.get());
       stopwatch.stop();
       timingDatabase.pauseStopwatchFor(0);
       timingDatabase.saveIterations(expandIter, 0);
