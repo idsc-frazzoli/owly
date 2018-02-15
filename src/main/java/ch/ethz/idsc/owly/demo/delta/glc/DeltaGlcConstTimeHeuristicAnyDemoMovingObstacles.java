@@ -101,13 +101,13 @@ enum DeltaGlcConstTimeHeuristicAnyDemoMovingObstacles {
     owlyFrame.configCoordinateOffset(33, 416);
     owlyFrame.jFrame.setBounds(100, 100, 620, 475);
     // Timings
-    Scalar planningTime = RealScalar.of(5);
+    Scalar planningTime = RealScalar.of(10); // 5
     RunCompare timingDatabase = new RunCompare(1);
     // Obstacles
     Tensor range = Tensors.vector(9, 6.5);
     Tensor obstacleImage = ResourceData.of("/io/delta_free.png");
     Region<Tensor> imageRegion = new ImageRegion(obstacleImage, range, true);
-    Scalar sensingRadius = RealScalar.of(2.5);
+    Scalar sensingRadius = RealScalar.of(5);
     Supplier<Scalar> supplier = () -> timingDatabase.currentRuntimes.Get(0);
     Flow obstacleFlow = StateSpaceModels.createFlow(quickTrajectoryPlannerContainer.getStateSpaceModel(), //
         Tensors.vectorDouble(0, 0));
@@ -115,21 +115,21 @@ enum DeltaGlcConstTimeHeuristicAnyDemoMovingObstacles {
         RungeKutta45Integrator.INSTANCE, RationalScalar.of(1, 10), 120 * 10);
     // all the starting positions of the floating obstacles
     List<Tensor> originList = Arrays.asList(//
-        Tensors.vector(1.8, 1.2), //
-        Tensors.vector(3.5, 4), //
-        Tensors.vector(0.7, 4.5), //
+        Tensors.vector(1.8, 1.5), // TODO Jonas find inic positon so ends up on top left corner
+        Tensors.vector(3.7, 4.5), //
+        // Tensors.vector(1.8, 2.5), //
         Tensors.vector(1.5, 0.8), //
-        Tensors.vector(5.0, 3.0));
+        Tensors.vector(5.0, 3.0)); // good
     List<BijectionFamily> obstacleTrajectoriesList = new ArrayList<>();
     for (Tensor entry : originList)
       obstacleTrajectoriesList.add(TrajectoryTranslationFamily.create(stateIntegrator, new StateTime(entry, RealScalar.ZERO), obstacleFlow));
     // all the radius of the floating obstacles
     List<Scalar> radiusList = Arrays.asList(//
-        RealScalar.of(0.4), //
-        RealScalar.of(0.25), //
         RealScalar.of(0.2), //
-        RealScalar.of(0.3), //
-        RealScalar.of(0.4));
+        RealScalar.of(0.6), //
+        // RealScalar.of(0.2), //
+        RealScalar.of(0.5), //
+        RealScalar.of(0.5));
     if (radiusList.size() != originList.size())
       throw new RuntimeException();
     List<Region<StateTime>> floatingObstaclesList = new ArrayList<>();
@@ -176,7 +176,6 @@ enum DeltaGlcConstTimeHeuristicAnyDemoMovingObstacles {
         // Definition of the floating Obstacles
         Region<StateTime> floatingObstacles = RegionUnion.wrap(//
             createFloatingObstacles(obstacleTrajectoriesList, radiusList, supplier));
-        // TODO does not work the intersection
         Region<StateTime> discoveredFloatingObstacle = RegionIntersection.wrap(Arrays.asList( //
             new TimeInvariantRegion(new SphericalRegion(trajectory.get(0).state(), sensingRadius)), floatingObstacles));
         // Combination of the discovered new obstacles and the map
