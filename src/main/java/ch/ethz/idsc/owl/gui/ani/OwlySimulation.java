@@ -125,55 +125,56 @@ public class OwlySimulation extends TimerFrame {
     }
     // ---
     geometricComponent.jComponent.addMouseListener(new MouseAdapter() {
-      /*MotionPlanWorker mpw = null;
-
-      @Override
-      public void mouseClicked(MouseEvent mouseEvent) {
-        final int mods = mouseEvent.getModifiersEx();
-        final int mask = MouseWheelEvent.CTRL_DOWN_MASK; // 128 = 2^7
-        if (mouseEvent.getButton() == MouseEvent.BUTTON1) {
-          if ((mods & mask) == 0) { // no ctrl pressed
-            if (Objects.nonNull(mpw)) {
-              mpw.flagShutdown();
-              mpw = null;
-            }
-            if (controllable instanceof AbstractEntity) {
-              AbstractEntity abstractEntity = (AbstractEntity) controllable;
-              final Tensor goal = geometricComponent.getMouseSe2State();
-              final List<TrajectorySample> head = //
-                  abstractEntity.getFutureTrajectoryUntil(abstractEntity.delayHint());
-              switch (abstractEntity.getPlannerType()) {
-              case STANDARD: {
-                TrajectoryPlanner trajectoryPlanner = //
-                    abstractEntity.createTrajectoryPlanner(obstacleQuery, goal);
-                mpw = new MotionPlanWorker(trajectoryPlannerCallback);
-                mpw.start(head, trajectoryPlanner);
-                break;
-              }
-              case ANY: {
-                AbstractAnyEntity abstractAnyEntity = (AbstractAnyEntity) abstractEntity;
-                abstractAnyEntity.switchToGoal(trajectoryPlannerCallback, head, goal);
-                break;
-              }
-              case RRTS: {
-                AbstractRrtsEntity abstractRrtsEntity = (AbstractRrtsEntity) abstractEntity;
-                abstractRrtsEntity.startPlanner(trajectoryPlannerCallback, head, goal);
-                break;
-              }
-              default:
-                throw new RuntimeException();
-              }
-            }
-          } else { // ctrl pressed
-            System.out.println(geometricComponent.getMouseSe2State());
-            if (controllable instanceof AbstractEntity) {
-              @SuppressWarnings("unused")
-              AbstractEntity abstractEntity = (AbstractEntity) controllable;
-              // abstractEntity.resetStateTo(owlyComponent.getMouseGoal());
-            }
-          }
-        }
-      }*/
+      /* MotionPlanWorker mpw = null;
+       * 
+       * @Override
+       * public void mouseClicked(MouseEvent mouseEvent) {
+       * final int mods = mouseEvent.getModifiersEx();
+       * final int mask = MouseWheelEvent.CTRL_DOWN_MASK; // 128 = 2^7
+       * if (mouseEvent.getButton() == MouseEvent.BUTTON1) {
+       * if ((mods & mask) == 0) { // no ctrl pressed
+       * if (Objects.nonNull(mpw)) {
+       * mpw.flagShutdown();
+       * mpw = null;
+       * }
+       * if (controllable instanceof AbstractEntity) {
+       * AbstractEntity abstractEntity = (AbstractEntity) controllable;
+       * final Tensor goal = geometricComponent.getMouseSe2State();
+       * final List<TrajectorySample> head = //
+       * abstractEntity.getFutureTrajectoryUntil(abstractEntity.delayHint());
+       * switch (abstractEntity.getPlannerType()) {
+       * case STANDARD: {
+       * TrajectoryPlanner trajectoryPlanner = //
+       * abstractEntity.createTrajectoryPlanner(obstacleQuery, goal);
+       * mpw = new MotionPlanWorker(trajectoryPlannerCallback);
+       * mpw.start(head, trajectoryPlanner);
+       * break;
+       * }
+       * case ANY: {
+       * AbstractAnyEntity abstractAnyEntity = (AbstractAnyEntity) abstractEntity;
+       * abstractAnyEntity.switchToGoal(trajectoryPlannerCallback, head, goal);
+       * break;
+       * }
+       * case RRTS: {
+       * AbstractRrtsEntity abstractRrtsEntity = (AbstractRrtsEntity) abstractEntity;
+       * abstractRrtsEntity.startPlanner(trajectoryPlannerCallback, head, goal);
+       * break;
+       * }
+       * default:
+       * throw new RuntimeException();
+       * }
+       * }
+       * } else { // ctrl pressed
+       * System.out.println(geometricComponent.getMouseSe2State());
+       * if (controllable instanceof AbstractEntity) {
+       * 
+       * @SuppressWarnings("unused")
+       * AbstractEntity abstractEntity = (AbstractEntity) controllable;
+       * // abstractEntity.resetStateTo(owlyComponent.getMouseGoal());
+       * }
+       * }
+       * }
+       * } */
     });
   }
 
