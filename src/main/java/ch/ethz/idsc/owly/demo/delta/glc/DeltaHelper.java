@@ -27,6 +27,7 @@ import ch.ethz.idsc.owly.demo.delta.DeltaFlows;
 import ch.ethz.idsc.owly.demo.delta.DeltaHeuristicGoalManager;
 import ch.ethz.idsc.owly.demo.delta.DeltaParameters;
 import ch.ethz.idsc.owly.demo.delta.ImageGradient;
+import ch.ethz.idsc.owly.demo.rn.EuclideanDistanceDiscoverRegion;
 import ch.ethz.idsc.tensor.RationalScalar;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
@@ -49,9 +50,8 @@ public enum DeltaHelper {
 
   static TrajectoryPlannerContainer createGlcFromRootToGoal(Scalar gradientAmp, RationalScalar resolution, Tensor partitionScale, Tensor root, Tensor goal)
       throws Exception {
-    Scalar timeScale = RealScalar.of(60);
+    Scalar timeScale = RealScalar.of(50);
     Scalar depthScale = RealScalar.of(100);
-    // Tensor partitionScale = Tensors.vector(2e26, 2e26);
     Scalar dtMax = RationalScalar.of(1, 6);
     int maxIter = 2000;
     Tensor range = Tensors.vector(9, 6.5);
@@ -71,8 +71,6 @@ public enum DeltaHelper {
         SimpleTrajectoryRegionQuery.timeInvariant(new ImageRegion(obstacleImage, range, true));
     DeltaHeuristicGoalManager deltaGoalManager = new DeltaHeuristicGoalManager( //
         goal, Tensors.vector(0.3, 0.3), stateSpaceModel.getMaxPossibleChange());
-    // DeltaGoalManager deltaGoalManager = new DeltaGoalManager( //
-    // Tensors.vector(2.1, 0.3), Tensors.vector(.3, .3));
     TrajectoryPlanner trajectoryPlanner = new StandardTrajectoryPlanner( //
         parameters.getEta(), stateIntegrator, controls, obstacleQuery, deltaGoalManager);
     trajectoryPlanner.insertRoot(new StateTime(Tensors.vector(8.8, 0.5), RealScalar.ZERO));
@@ -80,10 +78,11 @@ public enum DeltaHelper {
   }
 
   static TrajectoryPlannerContainer createGlcAny(Scalar gradientAmp, RationalScalar resolution, Tensor partitionScale) throws Exception {
-    Scalar timeScale = RealScalar.of(40);
+    Scalar timeScale = RealScalar.of(50);
     Scalar depthScale = RealScalar.of(100);
-    // Tensor partitionScale = Tensors.vector(6e29, 6e29);
     Scalar dtMax = RationalScalar.of(1, 6);
+    Tensor goal = Tensors.vector(2.9, 2.4);
+    Tensor root = Tensors.vector(8.8, 0.5);
     int maxIter = 2000;
     Tensor range = Tensors.vector(9, 6.5);
     ImageGradient ipr = ImageGradient.linear(ResourceData.of("/io/delta_uxy.png"), range, gradientAmp);
@@ -98,15 +97,16 @@ public enum DeltaHelper {
     StateIntegrator stateIntegrator = FixedStateIntegrator.create( //
         RungeKutta45Integrator.INSTANCE, parameters.getdtMax(), parameters.getTrajectorySize());
     Tensor obstacleImage = ResourceData.of("/io/delta_free.png");
-    TrajectoryRegionQuery obstacleQuery = //
-        SimpleTrajectoryRegionQuery.timeInvariant(new ImageRegion(obstacleImage, range, true));
+    // TrajectoryRegionQuery obstacleQuery = //
+    // SimpleTrajectoryRegionQuery.timeInvariant(new ImageRegion(obstacleImage, range, true));
+    Scalar sensingRadius = RealScalar.of(3);
+    TrajectoryRegionQuery obstacleQuery = SimpleTrajectoryRegionQuery.timeInvariant( //
+        EuclideanDistanceDiscoverRegion.of(new ImageRegion(obstacleImage, range, true), root, sensingRadius));
     DeltaHeuristicGoalManager deltaGoalManager = new DeltaHeuristicGoalManager( //
-        Tensors.vector(2.9, 2.4), Tensors.vector(0.3, 0.3), stateSpaceModel.getMaxPossibleChange());
-    // DeltaGoalManager deltaGoalManager = new DeltaGoalManager( //
-    // Tensors.vector(2.1, 0.3), Tensors.vector(.3, .3));
+        goal, Tensors.vector(0.3, 0.3), stateSpaceModel.getMaxPossibleChange());
     OptimalAnyTrajectoryPlanner trajectoryPlanner = new OptimalAnyTrajectoryPlanner(parameters.getEta(), stateIntegrator, controls, obstacleQuery,
         deltaGoalManager);
-    trajectoryPlanner.switchRootToState(new StateTime(Tensors.vector(8.8, 0.5), RealScalar.ZERO));
+    trajectoryPlanner.switchRootToState(new StateTime(root, RealScalar.ZERO));
     return new TrajectoryPlannerContainer(trajectoryPlanner, parameters, stateSpaceModel);
   }
 
