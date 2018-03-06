@@ -43,7 +43,7 @@ public final class StateTime implements Serializable {
   }
 
   public String toCompactString() {
-    return String.format("t=%s  x=%s", time(), state().map(Round._4).toString());
+    return String.format("t=%s  x=%s", time().map(Round._2), state().map(Round._4).toString());
   }
 
   @Override // from Object

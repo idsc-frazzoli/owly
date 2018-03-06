@@ -52,11 +52,16 @@ public abstract class AbstractEntity implements RenderInterface, AnimationInterf
       if (index < trajectory.size()) {
         GlobalAssert.that(trajectory.get(index).getFlow().isPresent());
         u = trajectory.get(index).getFlow().get().getU();
+        u = realisticControl(u);
       } else {
         trajectory = resetAction(trajectory);
       }
     }
     episodeIntegrator.move(u, now);
+  }
+
+  public Tensor realisticControl(Tensor u) {
+    return u;
   }
 
   /** @param delay
