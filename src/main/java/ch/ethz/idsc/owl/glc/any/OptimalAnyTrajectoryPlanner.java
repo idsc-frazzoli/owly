@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.PriorityQueue;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -51,7 +52,7 @@ public class OptimalAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
   @Override // from ExpandInterface
   public void expand(final GlcNode node) {
     integratorWatch.start();
-    Map<GlcNode, List<StateTime>> connectors = controlsIntegrator.inParallel(node);
+    Map<GlcNode, List<StateTime>> connectors = controlsIntegrator.from(node);
     CandidatePairQueueMap candidatePairQueueMap = new CandidatePairQueueMap();
     integratorWatch.stop();
     integratorWatch1.start();
@@ -108,9 +109,10 @@ public class OptimalAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
         while (!candidateQueue.isEmpty()) {
           // retrieving the Candidates
           final CandidatePair nextCandidatePair = candidateQueue.poll();
-          final GlcNode formerLabel = getNode(domainKey);
+          final Optional<GlcNode> formerLabelOpt = getNode(domainKey);
           final GlcNode next = nextCandidatePair.getCandidate();
-          if (Objects.nonNull(formerLabel)) {
+          if (formerLabelOpt.isPresent()) {
+            GlcNode formerLabel = formerLabelOpt.get();
             if (Scalars.lessThan(next.merit(), formerLabel.merit())) {
               // collision check only if new node is better
               if (!getObstacleQuery().firstMember(connectors.get(next)).isPresent()) { // better node not collision
@@ -297,7 +299,8 @@ public class OptimalAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
       GlcNode label = entry.getValue();
       Tensor domainKey = entry.getKey();
       List<StateTime> connector = new ArrayList<>();
-      if (getNode(domainKey) == label) { // check if nothing was changed in previous loopiteration, otherwise next domain
+      // check if nothing was changed in previous loopiteration, otherwise next domain
+      if (getNode(domainKey).isPresent() && getNode(domainKey).get() == label) {
         // maybe break into next for loop iteration better?
         PriorityQueue<CandidatePair> candidateQueue = new PriorityQueue<>();
         if (candidateMap.containsKey(domainKey)) { // fills candidatebucket
@@ -387,9 +390,9 @@ public class OptimalAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
         }
       }
       // GOAL check
-      if (!connector.isEmpty() && getNode(domainKey) != null) {
+      if (!connector.isEmpty() && getNode(domainKey).isPresent()) {
         if (isInsideGoal(connector))
-          offerDestination(getNode(domainKey), connector);
+          offerDestination(getNode(domainKey).get(), connector);
       }
     }
     long toc = System.nanoTime();
@@ -481,7 +484,8 @@ public class OptimalAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
       // iterating through all Nodes in Tree starting at lowest depth
       GlcNode label = entry.getValue();
       Tensor domainKey = entry.getKey();
-      if (getNode(domainKey) == label && !label.isRoot()) { // this node could have been deleted from tree in prev iteration
+      if (getNode(domainKey).isPresent() && getNode(domainKey).get() == label && !label.isRoot()) { // this node could have been deleted from tree in prev
+                                                                                                    // iteration
         // could be relabeled in loopiteration before, therefore no check is needed if changed
         if (getCandidateMap().containsKey(domainKey)) {
           Set<CandidatePair> tempCandidateSet = candidateMap.get(domainKey);

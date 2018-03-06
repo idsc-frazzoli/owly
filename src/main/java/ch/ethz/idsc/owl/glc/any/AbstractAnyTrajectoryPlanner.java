@@ -44,7 +44,10 @@ public abstract class AbstractAnyTrajectoryPlanner extends AbstractTrajectoryPla
       GoalInterface goalInterface //
   ) {
     super(eta, stateIntegrator, obstacleQuery, goalInterface);
-    controlsIntegrator = new ControlsIntegrator(stateIntegrator, controls, goalInterface);
+    controlsIntegrator = new ControlsIntegrator( //
+        stateIntegrator, //
+        () -> controls.stream().parallel(), //
+        goalInterface);
     this.controls = controls;
   }
 
@@ -59,11 +62,11 @@ public abstract class AbstractAnyTrajectoryPlanner extends AbstractTrajectoryPla
    * @return The value,by which the depth limit needs to be increased as of the RootSwitch */
   @Override
   public final int switchRootToState(StateTime stateTime) {
-    GlcNode newRoot = getNode(convertToKey(stateTime));
+    Optional<GlcNode> newRoot = getNode(convertToKey(stateTime));
     int increaseDepthBy = 0;
     // TODO JONAS not nice, as we jump from state to startnode
-    if (newRoot != null) {
-      increaseDepthBy = switchRootToNode(newRoot);
+    if (newRoot.isPresent()) {
+      increaseDepthBy = switchRootToNode(newRoot.get());
     } else {
       System.err.println("***RESET***");
       System.out.println("This domain is not labelled yet:");
@@ -203,7 +206,7 @@ public abstract class AbstractAnyTrajectoryPlanner extends AbstractTrajectoryPla
 
   protected void changeGoalInterface(GoalInterface newGoal) {
     setGoalInterface(newGoal);
-    controlsIntegrator = new ControlsIntegrator(stateIntegrator, controls, newGoal);
+    controlsIntegrator = new ControlsIntegrator(stateIntegrator, () -> controls.stream().parallel(), newGoal);
   }
 
   /** Checks if relabeling is needed for all domains with their Candidates and relabels those.

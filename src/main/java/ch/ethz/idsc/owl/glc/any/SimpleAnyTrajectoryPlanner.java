@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
+import java.util.Optional;
 
 import ch.ethz.idsc.owl.data.tree.Nodes;
 import ch.ethz.idsc.owl.glc.adapter.TrajectoryGoalManager;
@@ -39,7 +40,7 @@ public class SimpleAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
 
   @Override // from ExpandInterface
   public void expand(final GlcNode node) {
-    Map<GlcNode, List<StateTime>> connectors = controlsIntegrator.inParallel(node);
+    Map<GlcNode, List<StateTime>> connectors = controlsIntegrator.from(node);
     // --
     CandidatePairQueueMap candidates = new CandidatePairQueueMap();
     for (GlcNode next : connectors.keySet()) { // <- order of keys is non-deterministic
@@ -61,9 +62,10 @@ public class SimpleAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
       if (Objects.nonNull(candidateQueue) && !getBest().isPresent()) {
         while (!candidateQueue.isEmpty()) {
           final CandidatePair nextCandidatePair = candidateQueue.element();
-          final GlcNode formerLabel = getNode(domain_key);
+          final Optional<GlcNode> formerLabelOpt = getNode(domain_key);
           final GlcNode next = nextCandidatePair.getCandidate();
-          if (Objects.nonNull(formerLabel)) {
+          if (formerLabelOpt.isPresent()) {
+            GlcNode formerLabel = formerLabelOpt.get();
             if (Scalars.lessThan(next.merit(), formerLabel.merit())) {
               // collision check only if new node is better
               if (!getObstacleQuery().firstMember(connectors.get(next)).isPresent()) {// better node not collision
