@@ -59,7 +59,6 @@ enum DeltaGlcConstTimeHeuristicAnyDemoMovingObstacles {
     RationalScalar quickResolution = (RationalScalar) RationalScalar.of(9, 1);
     boolean useGui = true;
     Stopwatch quickPlannerStopwatch = Stopwatch.started();
-    // Tensor partitionScale = Tensors.vector(70, 70);
     Tensor partitionScale = Tensors.vector(120, 120);
     TrajectoryPlannerContainer quickTrajectoryPlannerContainer = DeltaHelper.createGlc(RealScalar.of(-0.02), quickResolution, partitionScale);
     GlcExpand.maxDepth(quickTrajectoryPlannerContainer.getTrajectoryPlanner(), DoubleScalar.POSITIVE_INFINITY.number().intValue());
@@ -80,7 +79,6 @@ enum DeltaGlcConstTimeHeuristicAnyDemoMovingObstacles {
     System.out.println("Quickplanner took: " + quickPlannerStopwatch.display_seconds());
     System.out.println("***QUICK PLANNER FINISHED***");
     // -- SLOWPLANNER
-    partitionScale = Tensors.vector(120, 120);
     RationalScalar resolution = (RationalScalar) RationalScalar.of(12, 1);
     TrajectoryPlannerContainer slowTrajectoryPlannerContainer = DeltaHelper.createGlcAny(RealScalar.of(-0.02), resolution, partitionScale);
     // -- GOALMANAGER
@@ -102,7 +100,7 @@ enum DeltaGlcConstTimeHeuristicAnyDemoMovingObstacles {
     owlyFrame.configCoordinateOffset(33, 416);
     owlyFrame.jFrame.setBounds(100, 100, 620, 475);
     // Timings
-    Scalar planningTime = RealScalar.of(3.5); // good: 5s
+    Scalar planningTime = RealScalar.of(5); // good: 5s
     RunCompare timingDatabase = new RunCompare(1);
     // Obstacles
     Tensor range = Tensors.vector(9, 6.5);
