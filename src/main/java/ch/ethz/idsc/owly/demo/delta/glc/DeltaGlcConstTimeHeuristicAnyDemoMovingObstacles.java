@@ -25,7 +25,6 @@ import ch.ethz.idsc.owl.math.flow.Flow;
 import ch.ethz.idsc.owl.math.flow.RungeKutta45Integrator;
 import ch.ethz.idsc.owl.math.map.BijectionFamily;
 import ch.ethz.idsc.owl.math.region.EllipsoidRegion;
-import ch.ethz.idsc.owl.math.region.ImageRegion;
 import ch.ethz.idsc.owl.math.region.Region;
 import ch.ethz.idsc.owl.math.region.RegionIntersection;
 import ch.ethz.idsc.owl.math.region.RegionUnion;
@@ -47,7 +46,6 @@ import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Scalars;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
-import ch.ethz.idsc.tensor.io.ResourceData;
 import ch.ethz.idsc.tensor.opt.TensorUnaryOperator;
 import ch.ethz.idsc.tensor.red.Mean;
 
@@ -104,10 +102,8 @@ enum DeltaGlcConstTimeHeuristicAnyDemoMovingObstacles {
     RunCompare timingDatabase = new RunCompare(1);
     // Obstacles
     Tensor range = Tensors.vector(9, 6.5);
-    Tensor obstacleImage = ResourceData.of("/io/delta_free.png");
-    Region<Tensor> imageRegion = new ImageRegion(obstacleImage, range, true);
-    owlyFrame.addBackground(RegionRenders.create(imageRegion));
-    quickOwlyFrame.addBackground(RegionRenders.create(imageRegion));
+    owlyFrame.addBackground(RegionRenders.create(slowTrajectoryPlannerContainer.getObstacleMap()));
+    quickOwlyFrame.addBackground(RegionRenders.create(slowTrajectoryPlannerContainer.getObstacleMap()));
     quickOwlyFrame.setGlc(quickTrajectoryPlannerContainer.getTrajectoryPlanner());
     Scalar sensingRadius = RealScalar.of(5);
     Supplier<Scalar> supplier = () -> timingDatabase.currentRuntimes.Get(0);
@@ -186,15 +182,11 @@ enum DeltaGlcConstTimeHeuristicAnyDemoMovingObstacles {
         // Combination of the discovered new obstacles and the map
         stopwatch.start();
         TrajectoryRegionQuery newObstacle = new SimpleTrajectoryRegionQuery( //
-            RegionUnion.wrap(Arrays.asList(new TimeInvariantRegion(imageRegion), discoveredFloatingObstacle)));
+            RegionUnion.wrap(Arrays.asList(new TimeInvariantRegion(slowTrajectoryPlannerContainer.getObstacleMap()), discoveredFloatingObstacle)));
         ((OptimalAnyTrajectoryPlanner) slowTrajectoryPlannerContainer.getTrajectoryPlanner()).obstacleUpdate(newObstacle);
         System.out.println("Obstaclechange took: " + stopwatch.display_seconds() + "s");
-        // listUpdateTime.append(RealScalar.of(stopwatch.display_seconds()));
       }
-      // stopwatch.stop();
-      // stopwatch.resetToZero();
       // -- EXPANDING
-      // stopwatch.start();
       int expandIter = 0;
       expandIter = GlcExpand.constTime(slowTrajectoryPlannerContainer.getTrajectoryPlanner(), planningTime,
           slowTrajectoryPlannerContainer.getParameters().getDepthLimit());
@@ -207,7 +199,7 @@ enum DeltaGlcConstTimeHeuristicAnyDemoMovingObstacles {
       listUpdateTime.append(RealScalar.of(stopwatch.display_seconds()));
       if (useGui) {
         owlyFrame.setGlc((TrajectoryPlanner) slowTrajectoryPlannerContainer.getTrajectoryPlanner());
-        owlyFrame.addBackground(RegionRenders.create(imageRegion));
+        owlyFrame.addBackground(RegionRenders.create(slowTrajectoryPlannerContainer.getObstacleMap()));
       }
       List<StateTime> Trajectory = null;
       if (optional.isPresent()) {
