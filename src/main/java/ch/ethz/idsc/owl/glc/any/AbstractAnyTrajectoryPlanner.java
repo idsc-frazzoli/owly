@@ -30,7 +30,7 @@ import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
 
 public abstract class AbstractAnyTrajectoryPlanner extends AbstractTrajectoryPlanner implements AnyPlannerInterface {
-  protected ControlsIntegrator controlsIntegrator;
+  protected transient ControlsIntegrator controlsIntegrator;
   private final Collection<Flow> controls;
   public transient Stopwatch subTreeDeleterWatch = Stopwatch.stopped();
   public transient Stopwatch integratorWatch1 = Stopwatch.stopped();
