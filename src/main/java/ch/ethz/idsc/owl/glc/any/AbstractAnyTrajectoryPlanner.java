@@ -44,7 +44,10 @@ public abstract class AbstractAnyTrajectoryPlanner extends AbstractTrajectoryPla
       GoalInterface goalInterface //
   ) {
     super(eta, stateIntegrator, obstacleQuery, goalInterface);
-    controlsIntegrator = new ControlsIntegrator(stateIntegrator, controls, goalInterface);
+    controlsIntegrator = new ControlsIntegrator( //
+        stateIntegrator, //
+        () -> controls.stream().parallel(), //
+        goalInterface);
     this.controls = controls;
   }
 
@@ -59,11 +62,11 @@ public abstract class AbstractAnyTrajectoryPlanner extends AbstractTrajectoryPla
    * @return The value,by which the depth limit needs to be increased as of the RootSwitch */
   @Override
   public final int switchRootToState(StateTime stateTime) {
-    GlcNode newRoot = getNode(convertToKey(stateTime));
+    Optional<GlcNode> newRoot = getNode(convertToKey(stateTime));
     int increaseDepthBy = 0;
     // TODO JONAS not nice, as we jump from state to startnode
-    if (newRoot != null) {
-      increaseDepthBy = switchRootToNode(newRoot);
+    if (newRoot.isPresent()) {
+      increaseDepthBy = switchRootToNode(newRoot.get());
     } else {
       System.err.println("***RESET***");
       System.out.println("This domain is not labelled yet:");
@@ -163,31 +166,8 @@ public abstract class AbstractAnyTrajectoryPlanner extends AbstractTrajectoryPla
       // -- GOALCHECK TREE
       boolean goalInTreeFound = false;
       long tic = System.nanoTime();
-      // old check for debugging
-      // goalInTreeFound = goalCheckTree();
-      // Scalar timeDiffOld = RealScalar.of((System.nanoTime() - tic) * 1e-9);
-      // Collection<GlcNode> oldBest = new ArrayList<>(best.keySet());
-      // setBestNull();
       tic = System.nanoTime();
       goalInTreeFound = goalCheckTree(goalCheckHelp);
-      // DEBUGING
-      // Scalar timeDiffNew = RealScalar.of((System.nanoTime() - tic) * 1e-9);
-      // tic = System.nanoTime();
-      // System.err.println("The NEW GoalCheck needed: " //
-      // + timeDiffNew.divide(timeDiffOld).multiply(RealScalar.of(100)).number().intValue()//
-      // + "% of the time of the OLD");
-      // if (!best.isEmpty() || !oldBest.isEmpty()) {
-      // System.err.println("OldVersion found: " + oldBest.size() + " GoalNodes: ");
-      // for (GlcNode node : oldBest)
-      // System.out.println(node.state());
-      // System.err.println("NewVersion found: " + best.size() + " GoalNodes");
-      // for (GlcNode node : best.keySet())
-      // System.out.println(node.state());
-      // }
-      // if (!(oldBest.containsAll(best.keySet()) && best.keySet().containsAll(oldBest))) {
-      // System.err.println("Not the same GoalNodes found in both runs");
-      // throw new RuntimeException();
-      // }
       // INFORMATION
       System.out.println("Checked current tree for goal in "//
           + (System.nanoTime() - tic) * 1e-9 + "s");
@@ -203,7 +183,7 @@ public abstract class AbstractAnyTrajectoryPlanner extends AbstractTrajectoryPla
 
   protected void changeGoalInterface(GoalInterface newGoal) {
     setGoalInterface(newGoal);
-    controlsIntegrator = new ControlsIntegrator(stateIntegrator, controls, newGoal);
+    controlsIntegrator = new ControlsIntegrator(stateIntegrator, () -> controls.stream().parallel(), newGoal);
   }
 
   /** Checks if relabeling is needed for all domains with their Candidates and relabels those.

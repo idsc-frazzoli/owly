@@ -17,6 +17,8 @@ public enum DebugUtils {
   // ---
   // function for convenience
   public static final void nodeAmountCompare(TrajectoryPlanner trajectoryPlanner) {
+    if (!trajectoryPlanner.getBestOrElsePeek().isPresent())
+      throw new RuntimeException("Queue is emtpy");
     nodeAmountCompare( //
         Nodes.rootFrom(trajectoryPlanner.getBestOrElsePeek().get()), //
         trajectoryPlanner.domainMap().size());
