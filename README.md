@@ -1,10 +1,6 @@
-# ch.ethz.idsc.owly
+# ch.ethz.idsc.owly <a href="https://travis-ci.org/idsc-frazzoli/owly"><img src="https://travis-ci.org/idsc-frazzoli/owly.svg?branch=master" alt="Build Status"></a>
 
-<a href="https://travis-ci.org/idsc-frazzoli/owly"><img src="https://travis-ci.org/idsc-frazzoli/owly.svg?branch=master" alt="Build Status"></a>
-
-The repository contains Java 8 implementations of motion planners and their variants.
-
-Version `0.1.0`
+The repository contains Java 8 implementations of motion planners and their variants, version `0.1.0`
 
 List of algorithms:
 
