@@ -31,7 +31,7 @@ import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
 
 /** omni-directional movement with constant speed */
-public abstract class AbstractAnyEntity extends AbstractEntity {
+public abstract class AbstractAnyEntity extends AbstractCircularEntity {
   /** preserve delayHint[s] of the former trajectory */
   protected final Scalar delayHint;
   private final Scalar expandTime;
