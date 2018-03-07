@@ -39,8 +39,7 @@ enum DeltaGlcConstTimeHeuristicAnyDemo {
     RationalScalar quickResolution = (RationalScalar) RationalScalar.of(9, 1);
     boolean useGui = true;
     Stopwatch quickPlannerStopwatch = Stopwatch.started();
-    // Tensor partitionScale = Tensors.vector(120, 120);
-    Tensor partitionScale = Tensors.vector(70, 70);
+    Tensor partitionScale = Tensors.vector(120, 120);
     TrajectoryPlannerContainer quickTrajectoryPlannerContainer = DeltaHelper.createGlc(RealScalar.of(-0.02), quickResolution, partitionScale);
     GlcExpand.maxDepth(quickTrajectoryPlannerContainer.getTrajectoryPlanner(), DoubleScalar.POSITIVE_INFINITY.number().intValue());
     OwlyFrame quickOwlyFrame = OwlyGui.start();
@@ -114,7 +113,8 @@ enum DeltaGlcConstTimeHeuristicAnyDemo {
         int increment = ((OptimalAnyTrajectoryPlanner) slowTrajectoryPlannerContainer.getTrajectoryPlanner()).switchRootToState(newRootState);
         slowTrajectoryPlannerContainer.getParameters().increaseDepthLimit(increment);
       } else if (trajectory.size() == 0 && iter != 0) {
-        throw new RuntimeException("Too slow expansion of tree");
+        System.err.println("Too slow expansion of tree");
+        break;
       }
       stopwatch.stop();
       // -- EXPANDING

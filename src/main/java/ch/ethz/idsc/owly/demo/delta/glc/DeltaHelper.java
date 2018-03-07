@@ -67,17 +67,22 @@ public enum DeltaHelper {
     StateIntegrator stateIntegrator = FixedStateIntegrator.create( //
         RungeKutta45Integrator.INSTANCE, parameters.getdtMax(), parameters.getTrajectorySize());
     Tensor obstacleImage = ResourceData.of("/io/delta_free.png"); //
+    Region<Tensor> obstacleMap = new ImageRegion(obstacleImage, range, true);
     TrajectoryRegionQuery obstacleQuery = //
-        SimpleTrajectoryRegionQuery.timeInvariant(new ImageRegion(obstacleImage, range, true));
+        SimpleTrajectoryRegionQuery.timeInvariant(obstacleMap);
     DeltaHeuristicGoalManager deltaGoalManager = new DeltaHeuristicGoalManager( //
         goal, Tensors.vector(0.3, 0.3), stateSpaceModel.getMaxPossibleChange());
     TrajectoryPlanner trajectoryPlanner = new StandardTrajectoryPlanner( //
         parameters.getEta(), stateIntegrator, controls, obstacleQuery, deltaGoalManager);
     trajectoryPlanner.insertRoot(new StateTime(Tensors.vector(8.8, 0.5), RealScalar.ZERO));
-    return new TrajectoryPlannerContainer(trajectoryPlanner, parameters, stateSpaceModel);
+    return new TrajectoryPlannerContainer(trajectoryPlanner, parameters, stateSpaceModel, obstacleMap);
   }
 
   static TrajectoryPlannerContainer createGlcAny(Scalar gradientAmp, RationalScalar resolution, Tensor partitionScale) throws Exception {
+    return createGlcAny(gradientAmp, resolution, partitionScale, RealScalar.ZERO);
+  }
+
+  static TrajectoryPlannerContainer createGlcAny(Scalar gradientAmp, RationalScalar resolution, Tensor partitionScale, Scalar sensingRadius) throws Exception {
     Scalar timeScale = RealScalar.of(50);
     Scalar depthScale = RealScalar.of(100);
     Scalar dtMax = RationalScalar.of(1, 6);
@@ -97,17 +102,17 @@ public enum DeltaHelper {
     StateIntegrator stateIntegrator = FixedStateIntegrator.create( //
         RungeKutta45Integrator.INSTANCE, parameters.getdtMax(), parameters.getTrajectorySize());
     Tensor obstacleImage = ResourceData.of("/io/delta_free.png");
-    // TrajectoryRegionQuery obstacleQuery = //
-    // SimpleTrajectoryRegionQuery.timeInvariant(new ImageRegion(obstacleImage, range, true));
-    Scalar sensingRadius = RealScalar.of(3);
+    Region<Tensor> obstacleMap = new ImageRegion(obstacleImage, range, true);
     TrajectoryRegionQuery obstacleQuery = SimpleTrajectoryRegionQuery.timeInvariant( //
-        EuclideanDistanceDiscoverRegion.of(new ImageRegion(obstacleImage, range, true), root, sensingRadius));
+        EuclideanDistanceDiscoverRegion.of(obstacleMap, root, sensingRadius));
+    if (sensingRadius.equals(RealScalar.ZERO))
+      obstacleQuery = SimpleTrajectoryRegionQuery.timeInvariant(new ImageRegion(obstacleImage, range, true));
     DeltaHeuristicGoalManager deltaGoalManager = new DeltaHeuristicGoalManager( //
         goal, Tensors.vector(0.3, 0.3), stateSpaceModel.getMaxPossibleChange());
     OptimalAnyTrajectoryPlanner trajectoryPlanner = new OptimalAnyTrajectoryPlanner(parameters.getEta(), stateIntegrator, controls, obstacleQuery,
         deltaGoalManager);
     trajectoryPlanner.switchRootToState(new StateTime(root, RealScalar.ZERO));
-    return new TrajectoryPlannerContainer(trajectoryPlanner, parameters, stateSpaceModel);
+    return new TrajectoryPlannerContainer(trajectoryPlanner, parameters, stateSpaceModel, obstacleMap);
   }
 
   public static VectorFieldRender vectorFieldRender(StateSpaceModel stateSpaceModel, Tensor range, Region<Tensor> region, Scalar factor) {
