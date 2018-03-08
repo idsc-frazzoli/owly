@@ -32,7 +32,7 @@ import ch.ethz.idsc.tensor.Tensors;
 public class Se2GlcTrackDemo extends Se2CarDemo {
   @Override
   void configure(OwlyAnimationFrame owlyAnimationFrame) throws IOException {
-    R2ImageRegionWrap r2ImageRegionWrap = R2ImageRegions._GTOB;
+    R2ImageRegionWrap r2ImageRegionWrap = R2ImageRegions._EIGHT;
     CarEntity se2Entity = CarEntity.createDefault(new StateTime(Tensors.vector(6, 6, 1), RealScalar.ZERO));
     se2Entity.extraCosts.add(r2ImageRegionWrap.costFunction());
     ImageRegion imageRegion = r2ImageRegionWrap.imageRegion();
@@ -61,10 +61,14 @@ public class Se2GlcTrackDemo extends Se2CarDemo {
     //
     // define waypoints
     Tensor waypoints = Tensors.of( //
-        Tensors.vector(5.5, 8.5, 1.5), //
-        Tensors.vector(7.5, 10, 0), //
-        Tensors.vector(10, 8.5, -1.5), //
-        Tensors.vector(7.5, 6.7, -3)); //
+        Tensors.vector(5.5, 6.3, 1.5), //
+        Tensors.vector(7.8, 8.5, 0), //
+        Tensors.vector(10, 6.1, -1.5), //
+        Tensors.vector(7.9, 3.8, -3.14), //
+        Tensors.vector(5.5, 6.3, 1.5), //
+        Tensors.vector(3.4, 8.4, -3.14), //
+        Tensors.vector(1.8, 6.4, -1.5), //
+        Tensors.vector(3.5, 4, 0)); //
     //
     {
       RenderInterface pointRenderInterface = new PointRender( //
@@ -85,7 +89,7 @@ public class Se2GlcTrackDemo extends Se2CarDemo {
     while (true) {
       Tensor loc = abstractEntity.getEstimatedLocationAt(abstractEntity.delayHint());
       Scalar dist = se2Entity.distance(loc, goal).abs();
-      Scalar distThreshold = RealScalar.of(2);
+      Scalar distThreshold = RealScalar.of(1);
       if (Scalars.lessThan(dist, distThreshold)) { // if close enough to current waypoint switch to next
         // shut down mpw
         if (Objects.nonNull(mpw)) {
