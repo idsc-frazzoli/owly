@@ -2,6 +2,8 @@
 package ch.ethz.idsc.owly.demo.se2.glc;
 
 import java.awt.Color;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.io.IOException;
 import java.util.List;
 import java.util.Objects;
@@ -13,7 +15,7 @@ import ch.ethz.idsc.owl.gui.ani.AbstractEntity;
 import ch.ethz.idsc.owl.gui.ani.AnimationInterface;
 import ch.ethz.idsc.owl.gui.ani.MotionPlanWorker;
 import ch.ethz.idsc.owl.gui.ani.OwlyAnimationFrame;
-import ch.ethz.idsc.owl.gui.ren.PointRender;
+import ch.ethz.idsc.owl.gui.ren.ArrowHeadRender;
 import ch.ethz.idsc.owl.math.region.ImageRegion;
 import ch.ethz.idsc.owl.math.state.StateTime;
 import ch.ethz.idsc.owl.math.state.TrajectoryRegionQuery;
@@ -68,12 +70,11 @@ public class Se2GlcTrackDemo extends Se2CarDemo {
         Tensors.vector(5.5, 6.3, 1.5), //
         Tensors.vector(3.4, 8.4, -3.14), //
         Tensors.vector(1.8, 6.4, -1.5), //
-        Tensors.vector(3.5, 4, 0)); //
+        Tensors.vector(3.5, 4, 0)).unmodifiable();
     //
     {
-      RenderInterface pointRenderInterface = new PointRender( //
-          waypoints, 5, Color.black);
-      owlyAnimationFrame.addBackground(pointRenderInterface);
+      RenderInterface renderInterface = new ArrowHeadRender(waypoints, new Color(64, 192, 64, 64));
+      owlyAnimationFrame.addBackground(renderInterface);
     }
     //
     // plan to first waypoint
@@ -85,6 +86,13 @@ public class Se2GlcTrackDemo extends Se2CarDemo {
     mpw.start(head, trajectoryPlanner);
     //
     // start waypoint tracking loop
+    owlyAnimationFrame.jFrame.addWindowListener(new WindowAdapter() {
+      @Override
+      public void windowClosed(WindowEvent e) {
+        // TODO program should terminate
+        System.out.println("window was closed. while loop should terminate.");
+      }
+    });
     int i = 0;
     while (true) {
       Tensor loc = abstractEntity.getEstimatedLocationAt(abstractEntity.delayHint());

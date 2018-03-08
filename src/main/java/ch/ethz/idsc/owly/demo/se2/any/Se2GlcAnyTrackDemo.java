@@ -1,20 +1,14 @@
 // code by jl
 package ch.ethz.idsc.owly.demo.se2.any;
 
-import java.util.Arrays;
 import java.util.List;
 
-import ch.ethz.idsc.owl.glc.core.TrajectoryPlanner;
 import ch.ethz.idsc.owl.gui.ani.AbstractAnyEntity;
 import ch.ethz.idsc.owl.gui.ani.AbstractEntity;
-import ch.ethz.idsc.owl.gui.ani.AbstractRrtsEntity;
 import ch.ethz.idsc.owl.gui.ani.AnimationInterface;
-import ch.ethz.idsc.owl.gui.ani.MotionPlanWorker;
 import ch.ethz.idsc.owl.gui.ani.OwlySimulation;
-import ch.ethz.idsc.owl.img.ImageRegions;
 import ch.ethz.idsc.owl.math.region.ImageRegion;
 import ch.ethz.idsc.owl.math.state.StateTime;
-import ch.ethz.idsc.owl.math.state.TrajectoryRegionQuery;
 import ch.ethz.idsc.owl.math.state.TrajectorySample;
 import ch.ethz.idsc.owly.demo.rn.R2ImageRegionWrap;
 import ch.ethz.idsc.owly.demo.rn.R2ImageRegions;

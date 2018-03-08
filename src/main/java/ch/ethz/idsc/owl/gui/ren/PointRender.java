@@ -13,25 +13,28 @@ import ch.ethz.idsc.owl.gui.RenderInterface;
 import ch.ethz.idsc.tensor.Tensor;
 
 public class PointRender implements RenderInterface {
-  private Color color;
   private Tensor points;
+  private double radius_half;
   private double radius;
+  private Color color;
 
   public PointRender(Tensor points, double radius, Color color) {
-    this.points = points;
+    this.points = Objects.requireNonNull(points);
     this.color = color;
+    radius_half = radius / 2;
     this.radius = radius;
   }
 
   @Override
   public void render(GeometricLayer geometricLayer, Graphics2D graphics) {
-    if (Objects.isNull(points))
-      return;
     // draw points
     graphics.setColor(color);
     for (Tensor p : points) {
       Point2D point2d = geometricLayer.toPoint2D(p);
-      graphics.draw(new Ellipse2D.Double(point2d.getX(), point2d.getY(), radius, radius));
+      graphics.draw(new Ellipse2D.Double( //
+          point2d.getX() - radius_half, //
+          point2d.getY() - radius_half, //
+          radius, radius));
     }
   }
 }
