@@ -107,7 +107,7 @@ public abstract class AbstractAnyEntity extends AbstractCircularEntity {
   Thread thread;
   public TrajectoryPlannerCallback trajectoryPlannerCallback;
   private List<TrajectorySample> head;
-  GlcNode newRoot;
+  StateTime newRootStateTime;
   Tensor goal;
   boolean switchGoalRequest = false;
 
@@ -127,7 +127,6 @@ public abstract class AbstractAnyEntity extends AbstractCircularEntity {
 
   public OptimalAnyTrajectoryPlanner trajectoryPlanner;
 
-  // TODO SE2wrap remove to somewhere else
   // TODO JONAS/JAN how to end thread, when OwlyAnimationFrame is closed
   public void startLife(Region<Tensor> environmentRegion, StateTime root) {
     TrajectoryRegionQuery trq = initializeObstacle(environmentRegion, root);
@@ -140,19 +139,19 @@ public abstract class AbstractAnyEntity extends AbstractCircularEntity {
         Stopwatch stopwatch = Stopwatch.started();
         head = getFutureTrajectoryUntil(delayHint()); // Point on trajectory with delay from now
         // Rootswitch
-        int index = getIndexOfLastNodeOf(head);
         Trajectories.print(head);
         System.out.println("headsize " + head.size());
+        int index = getIndexOfLastNodeOf(head);
         System.out.println("index    " + index);
         //
         Optional<GlcNode> optional = trajectoryPlanner.existsInTree(head.get(index).stateTime());
-        if (!optional.isPresent())
-          throw new RuntimeException();
-        GlcNode newRoot = optional.get(); // getting last GlcNode in Head as root
+        newRootStateTime = head.get(0).stateTime();
+        if (optional.isPresent())
+          newRootStateTime = optional.get().stateTime(); // getting last GlcNode in Head as root
         System.out.println("NEW ROOT");
-        System.out.println(newRoot.stateTime().toInfoString());
+        System.out.println(newRootStateTime.toInfoString());
         head = head.subList(0, index + 1); // cutting head to this Node
-        int depthLimitIncrease = trajectoryPlanner.switchRootToNode(newRoot);
+        int depthLimitIncrease = trajectoryPlanner.switchRootToState(newRootStateTime);
         parameters.increaseDepthLimit(depthLimitIncrease);
         // ObstacleUpdate
         TrajectoryRegionQuery newObstacle = updateObstacle(environmentRegion, head.get(0).stateTime());
@@ -176,7 +175,9 @@ public abstract class AbstractAnyEntity extends AbstractCircularEntity {
         } catch (Exception exception) {
           exception.printStackTrace();
         }
+        stopwatch.stop();
         System.err.println("Last iteration took: " + stopwatch.display_seconds() + "s");
+        stopwatch.resetToZero();
       }
     });
     thread.start();
@@ -210,7 +211,10 @@ public abstract class AbstractAnyEntity extends AbstractCircularEntity {
         return index;
       index--; // going to previous statetime in traj
     }
+    if (trajectory.size() == 1) { // no trajectory, drifting around
+      return 0;
+    }
     Trajectories.print(trajectory);
-    throw new RuntimeException(); // no StateTime in trajectory corresponds to Node in Tree?
+    throw new RuntimeException("no StateTime in trajectory corresponds to Node in Tree");
   }
 }

@@ -39,10 +39,10 @@ import ch.ethz.idsc.owl.math.state.StateIntegrator;
 import ch.ethz.idsc.owl.math.state.StateTime;
 import ch.ethz.idsc.owl.math.state.TimeInvariantRegion;
 import ch.ethz.idsc.owl.math.state.TrajectoryRegionQuery;
+import ch.ethz.idsc.owly.demo.delta.DeltaAltStateSpaceModel;
 import ch.ethz.idsc.owly.demo.delta.DeltaFlows;
 import ch.ethz.idsc.owly.demo.delta.DeltaHeuristicGoalManager;
 import ch.ethz.idsc.owly.demo.delta.DeltaParameters;
-import ch.ethz.idsc.owly.demo.delta.DeltaStateSpaceModel;
 import ch.ethz.idsc.owly.demo.delta.DeltaTrajectoryGoalManager;
 import ch.ethz.idsc.owly.demo.delta.ImageGradient;
 import ch.ethz.idsc.owly.demo.rn.EuclideanDistanceDiscoverRegion;
@@ -62,24 +62,24 @@ import ch.ethz.idsc.tensor.sca.Sqrt;
 /* package */ class DeltaAnyEntity extends AbstractAnyEntity {
   private static final Integrator INTEGRATOR = RungeKutta45Integrator.INSTANCE;
   public static final Tensor FALLBACK_CONTROL = Tensors.vectorDouble(0, 0).unmodifiable();
-  // --
-  public static final Tensor image = ResourceData.of("/io/delta_free.png");
-  private static final Tensor range = Tensors.vector(12.6, 9.1).unmodifiable(); // overall size of map
-  private static final DeltaStateSpaceModel deltaStateSpaceModel = //
-      new DeltaStateSpaceModel(ImageGradient.linear(image, range, RealScalar.of(-.02)));
-  /** the constants define the control */
-  private static final Scalar U_NORM = RealScalar.of(1);
-  private final Scalar maxSpeed;
-  /** resolution of radial controls */
-  /***************************************************/
-  private final Tensor goalRadius;
+  public static final Scalar AMP = RealScalar.of(-.02);
+  private static final Scalar U_NORM = RealScalar.of(0.1);
+  public static final Tensor IMAGE_OBSTACLE = ResourceData.of("/io/delta_free.png");
+  public static final Tensor RANGE = Tensors.vector(9, 6.5).unmodifiable(); // overall size of map
+  public static final ImageGradient IMAGEGRADIENT = ImageGradient.linear(ResourceData.of("/io/delta_uxy.png"), RANGE, AMP);
+  private static final DeltaAltStateSpaceModel DELTASTATESPACEMODEL = //
+      new DeltaAltStateSpaceModel(IMAGEGRADIENT, U_NORM);
   /** preserve 1[s] of the former trajectory */
   private static final Scalar DELAY_HINT = RealScalar.of(4);
   private static final Scalar EXPAND_TIME = RealScalar.of(3);
   private static final Scalar SENSING_RADIUS = RealScalar.of(4.5);
-  private final Region<Tensor> environmentMapObstacle;
+  private static final Region<Tensor> ENVIRONMENTOBSTACLEMAP = //
+      new ImageRegion(ResourceData.of("/io/delta_free.png"), RANGE, true);
+  // --
   private final List<R2xTEllipsoidStateTimeRegion> undiscoveredObstaclesList = new ArrayList<>();
   private TrajectoryRegionQuery obstacleQuery;
+  private final Scalar maxSpeed;
+  private final Tensor goalRadius;
 
   /** @param state initial position of entity */
   public DeltaAnyEntity(List<Tensor> undiscoveredObstacleTensorList, StateTime state, int resolution) {
@@ -87,33 +87,33 @@ import ch.ethz.idsc.tensor.sca.Sqrt;
         (RationalScalar) RealScalar.of(resolution), // resolution
         RealScalar.of(50), // TimeScale
         RealScalar.of(100), // DepthScale
-        Tensors.vector(120, 120), // PartitionScale 50/pi == 15.9155
+        Tensors.vector(120, 120), // PartitionScale
         RationalScalar.of(1, 6), // dtMax
         2000, // maxIter
-        deltaStateSpaceModel.getLipschitz()), // Lipschitz
+        DELTASTATESPACEMODEL.getLipschitz()), // Lipschitz
         // -- Controls
-        new DeltaFlows(deltaStateSpaceModel, U_NORM). //
+        new DeltaFlows(DELTASTATESPACEMODEL, U_NORM). //
             getFlows(Power.of(RealScalar.of(resolution), FALLBACK_CONTROL.length()).number().intValue()), // From B. Paden's PhdThesis
         // ---Integrator
         new SimpleEpisodeIntegrator( //
-            deltaStateSpaceModel, //
+            DELTASTATESPACEMODEL, //
             INTEGRATOR, //
             state),
         // ---
         DELAY_HINT, EXPAND_TIME); //
     final Scalar goalRadius_xy = Sqrt.of(RealScalar.of(2)).divide(parameters.getEta().Get(0));
     this.goalRadius = Tensors.of(goalRadius_xy, goalRadius_xy);
-    this.environmentMapObstacle = new ImageRegion(image, range, true);
-    this.maxSpeed = deltaStateSpaceModel.getLipschitz().add(U_NORM);
+    this.maxSpeed = DELTASTATESPACEMODEL.getLipschitz().add(U_NORM);
+    System.out.println("MaxGradient of field is: " + IMAGEGRADIENT.maxNormGradient());
     // Obstacle creation
-    Flow flow = StateSpaceModels.createFlow(deltaStateSpaceModel, DeltaEntity.FALLBACK_CONTROL);
-    StateIntegrator stateIntegrator = FixedStateIntegrator.create( //
+    Flow flow = StateSpaceModels.createFlow(DELTASTATESPACEMODEL, DeltaEntity.FALLBACK_CONTROL);
+    StateIntegrator stateIntegratorObstacles = FixedStateIntegrator.create( //
         INTEGRATOR, RationalScalar.of(1, 10), 120 * 10);
     for (Tensor temp : undiscoveredObstacleTensorList) {
       Tensor radius = Tensors.of(temp.Get(2), temp.Get(2));
       Tensor pos = temp.extract(0, 2);
       undiscoveredObstaclesList.add(new R2xTEllipsoidStateTimeRegion(radius, //
-          TrajectoryTranslationFamily.create(stateIntegrator, new StateTime(pos, RealScalar.ZERO), flow), //
+          TrajectoryTranslationFamily.create(stateIntegratorObstacles, new StateTime(pos, RealScalar.ZERO), flow), //
           () -> getStateTimeNow().time()));
     }
   }
@@ -154,8 +154,7 @@ import ch.ethz.idsc.tensor.sca.Sqrt;
   protected final GoalInterface createGoalFromR2(Tensor goal) {
     System.out.println("creatingGOAL from R2");
     Tensor currentState = getEstimatedLocationAt(DELAY_HINT).extract(0, 2);
-    Tensor r2goal = goal;
-    Tensor goalRadiusR2 = goalRadius;
+    Tensor r2GoalState = goal.extract(0, 2);
     long tic = System.nanoTime();
     // ---
     Tensor eta = Tensors.vector(8, 8);
@@ -163,12 +162,13 @@ import ch.ethz.idsc.tensor.sca.Sqrt;
     R2Flows r2Config = new R2Flows(RealScalar.ONE);
     Collection<Flow> controlsR2 = r2Config.getFlows(8);
     // TODO JONAS extract R2planner from DeltaAnyEntity
-    GoalInterface rnGoal = RnMinDistSphericalGoalManager.create(r2goal, goalRadius.Get(0));
+    GoalInterface r2GoalManager = RnMinDistSphericalGoalManager.create(r2GoalState, goalRadius.Get(0));
     // ---
-    TrajectoryRegionQuery obstacleQueryR2 = new SimpleTrajectoryRegionQuery(new TimeInvariantRegion(environmentMapObstacle));
+    TrajectoryRegionQuery obstacleQueryR2 = new SimpleTrajectoryRegionQuery(new TimeInvariantRegion(ENVIRONMENTOBSTACLEMAP));
     TrajectoryPlanner trajectoryPlanner = new StandardTrajectoryPlanner( //
-        eta, stateIntegratorR2, controlsR2, obstacleQueryR2, rnGoal);
-    if (rnGoal.isMember(new StateTime(currentState, RealScalar.ZERO)))
+        eta, stateIntegratorR2, controlsR2, obstacleQueryR2, r2GoalManager);
+    System.out.println("test: " + currentState);
+    if (r2GoalManager.isMember(new StateTime(currentState, RealScalar.ZERO)))
       return new DeltaHeuristicGoalManager(goal, goalRadius, maxSpeed);
     trajectoryPlanner.insertRoot(new StateTime(currentState, RealScalar.ZERO));
     Expand.maxTime(trajectoryPlanner, RealScalar.of(1.5)); // 1.5 [s]
@@ -177,15 +177,12 @@ import ch.ethz.idsc.tensor.sca.Sqrt;
     List<StateTime> trajectory = GlcNodes.getPathFromRootTo(optional.get());
     List<Region<Tensor>> goalRegionsList = new ArrayList<>();
     for (StateTime entry : trajectory) {
-      Tensor goalTemp = Tensors.of(entry.state().Get(0), entry.state().Get(1), RealScalar.ZERO);
-      if (trajectory.indexOf(entry) == trajectory.size() - 1) // if last entry of trajectory
-        goalRegionsList.add(new EllipsoidRegion(goal, goalRadius));
-      else
-        goalRegionsList.add(new EllipsoidRegion(goalTemp, goalRadiusR2));
+      Tensor goalTemp = entry.state();
+      goalRegionsList.add(new EllipsoidRegion(goalTemp, goalRadius));
     }
     long toc = System.nanoTime();
     System.err.println("TrajectoryGoalcreation took: " + (toc - tic) * 1e-9 + "s");
-    System.out.println("Coarse guidance trajectory");
+    System.out.println("Coarse guidance trajectory size: " + trajectory.size());
     Trajectories.print( //
         GlcTrajectories.detailedTrajectoryTo(trajectoryPlanner.getStateIntegrator(), optional.get()));
     return new DeltaTrajectoryGoalManager(goalRegionsList, trajectory, goalRadius, maxSpeed);
@@ -202,7 +199,7 @@ import ch.ethz.idsc.tensor.sca.Sqrt;
     System.out.println("Updating Obstacle");
     obstacleQuery = SimpleTrajectoryRegionQuery.timeInvariant( //
         EuclideanDistanceDiscoverRegion.of(//
-            RegionUnion.wrap(Arrays.asList(environmentMapObstacle, //
+            RegionUnion.wrap(Arrays.asList(ENVIRONMENTOBSTACLEMAP, //
                 undiscoveredObstaclesList.get(0).regionAtTime(), //
                 undiscoveredObstaclesList.get(1).regionAtTime(), //
                 undiscoveredObstaclesList.get(2).regionAtTime(), //
