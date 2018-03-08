@@ -1,6 +1,7 @@
-// code by jph
+// code by jph, ynager
 package ch.ethz.idsc.owly.demo.se2.glc;
 
+import java.awt.Color;
 import java.io.IOException;
 import java.util.List;
 import java.util.Objects;
@@ -12,6 +13,7 @@ import ch.ethz.idsc.owl.gui.ani.AbstractEntity;
 import ch.ethz.idsc.owl.gui.ani.AnimationInterface;
 import ch.ethz.idsc.owl.gui.ani.MotionPlanWorker;
 import ch.ethz.idsc.owl.gui.ani.OwlyAnimationFrame;
+import ch.ethz.idsc.owl.gui.ren.PointRender;
 import ch.ethz.idsc.owl.math.region.ImageRegion;
 import ch.ethz.idsc.owl.math.state.StateTime;
 import ch.ethz.idsc.owl.math.state.TrajectoryRegionQuery;
@@ -50,30 +52,37 @@ public class Se2GlcTrackDemo extends Se2CarDemo {
           LidarEmulator.DEFAULT, se2Entity::getStateTimeNow, ray);
       owlyAnimationFrame.addBackground(renderInterface);
     }
-    
-    //setup stuff
+    //
+    // setup motion planning
     MotionPlanWorker mpw;
     AnimationInterface controllable = se2Entity;
     AbstractEntity abstractEntity = (AbstractEntity) controllable;
-    
     List<TrajectorySample> head;
+    //
+    // define waypoints
     Tensor waypoints = Tensors.of( //
         Tensors.vector(5.5, 8.5, 1.5), //
         Tensors.vector(7.5, 10, 0), //
         Tensors.vector(10, 8.5, -1.5), //
         Tensors.vector(7.5, 6.7, -3)); //
-    
-    //plan to first waypoint
+    //
+    {
+      RenderInterface pointRenderInterface = new PointRender( //
+          waypoints, 5, Color.black);
+      owlyAnimationFrame.addBackground(pointRenderInterface);
+    }
+    //
+    // plan to first waypoint
     Tensor goal = waypoints.get(0);
     head = abstractEntity.getFutureTrajectoryUntil(abstractEntity.delayHint());
     TrajectoryPlanner trajectoryPlanner = //
         abstractEntity.createTrajectoryPlanner(trq, goal);
     mpw = new MotionPlanWorker(owlyAnimationFrame.trajectoryPlannerCallback);
     mpw.start(head, trajectoryPlanner);
-    
+    //
+    // start waypoint tracking loop
     int i = 0;
     while (true) {
-      //
       Tensor loc = abstractEntity.getEstimatedLocationAt(abstractEntity.delayHint());
       Scalar dist = se2Entity.distance(loc, goal).abs();
       Scalar distThreshold = RealScalar.of(2);
