@@ -25,19 +25,19 @@ public class Se2GlcAnyTrackDemo implements DemoInterface {
 
   @Override
   public void start() {
-    OwlySimulation OwlySimulation = new OwlySimulation();
+    OwlySimulation owlySimulation = new OwlySimulation();
     StateTime root = new StateTime(Tensors.vector(7, 6, 1), RealScalar.ZERO);
     Se2AnyEntity se2AnyEntity = new Se2AnyEntity(root, 8);
-    se2AnyEntity.trajectoryPlannerCallback = OwlySimulation.trajectoryPlannerCallback;
+    se2AnyEntity.trajectoryPlannerCallback = owlySimulation.trajectoryPlannerCallback;
     R2ImageRegionWrap r2ImageRegionWrap = R2ImageRegions._GTOB;
     ImageRegion imageRegion = r2ImageRegionWrap.imageRegion();
     imageRegion = r2ImageRegionWrap.imageRegion();
     se2AnyEntity.startLife(imageRegion, root); // (trq, root);
-    OwlySimulation.set(se2AnyEntity);
-    OwlySimulation.configCoordinateOffset(50, 700);
-    OwlySimulation.addBackground(RegionRenders.create(imageRegion));
-    OwlySimulation.jFrame.setBounds(100, 50, 800, 800);
-    OwlySimulation.jFrame.setVisible(true);
+    owlySimulation.set(se2AnyEntity);
+    owlySimulation.configCoordinateOffset(50, 700);
+    owlySimulation.addBackground(RegionRenders.create(imageRegion));
+    owlySimulation.jFrame.setBounds(100, 50, 800, 800);
+    owlySimulation.jFrame.setVisible(true);
     AnimationInterface controllable = se2AnyEntity;
     AbstractEntity abstractEntity = (AbstractEntity) controllable;
     List<TrajectorySample> head;
