@@ -6,6 +6,7 @@ import java.awt.Color;
 import java.util.List;
 import java.util.Objects;
 
+import ch.ethz.idsc.owl.data.GlobalAssert;
 import ch.ethz.idsc.owl.glc.core.TrajectoryPlanner;
 import ch.ethz.idsc.owl.gui.RenderInterface;
 import ch.ethz.idsc.owl.gui.ani.AbstractAnyEntity;
@@ -80,6 +81,7 @@ public class WaypointFollowing {
         //
         switch (entity.getPlannerType()) {
         case STANDARD: {
+          GlobalAssert.that(Objects.nonNull(obstacleQuery));
           TrajectoryPlanner trajectoryPlanner = //
               entity.createTrajectoryPlanner(obstacleQuery, goal);
           mpw = new MotionPlanWorker(owlyAnimationFrame.trajectoryPlannerCallback);
