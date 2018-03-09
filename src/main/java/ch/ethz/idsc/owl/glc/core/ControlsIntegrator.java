@@ -15,7 +15,7 @@ import ch.ethz.idsc.owl.math.state.StateIntegrator;
 import ch.ethz.idsc.owl.math.state.StateTime;
 
 /** private utility class to facilitate the construction of the map */
-/* private */ class FlowTrajectory {
+/* private */ class FlowTrajectory implements Serializable {
   private final Flow flow;
   private final List<StateTime> trajectory;
 

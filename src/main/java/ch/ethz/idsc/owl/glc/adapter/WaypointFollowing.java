@@ -1,5 +1,4 @@
 // code by ynager
-
 package ch.ethz.idsc.owl.glc.adapter;
 
 import java.awt.Color;
@@ -14,7 +13,7 @@ import ch.ethz.idsc.owl.gui.ani.AbstractEntity;
 import ch.ethz.idsc.owl.gui.ani.AbstractRrtsEntity;
 import ch.ethz.idsc.owl.gui.ani.MotionPlanWorker;
 import ch.ethz.idsc.owl.gui.ani.OwlyAnimationFrame;
-import ch.ethz.idsc.owl.gui.ren.PointRender;
+import ch.ethz.idsc.owl.gui.ren.ArrowHeadRender;
 import ch.ethz.idsc.owl.math.state.TrajectoryRegionQuery;
 import ch.ethz.idsc.owl.math.state.TrajectorySample;
 import ch.ethz.idsc.tensor.RealScalar;
@@ -34,8 +33,8 @@ public class WaypointFollowing {
     this.entity = entity;
     this.owlyAnimationFrame = owlyAnimationFrame;
     {
-      RenderInterface pointRenderInterface = new PointRender(waypoints, 5, Color.black);
-      owlyAnimationFrame.addBackground(pointRenderInterface);
+      RenderInterface renderInterface = new ArrowHeadRender(waypoints, new Color(64, 192, 64, 64));
+      owlyAnimationFrame.addBackground(renderInterface);
     }
   }
 
@@ -48,7 +47,7 @@ public class WaypointFollowing {
   }
 
   /** sets the distance threshold. When the distance from the current state
-   * to the current goal is below this threshold, planning to the next goal 
+   * to the current goal is below this threshold, planning to the next goal
    * is initiated
    * 
    * @param distThreshold */

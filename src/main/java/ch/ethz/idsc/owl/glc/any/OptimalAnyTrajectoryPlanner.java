@@ -300,7 +300,8 @@ public class OptimalAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
       Tensor domainKey = entry.getKey();
       List<StateTime> connector = new ArrayList<>();
       // check if nothing was changed in previous loopiteration, otherwise next domain
-      if (getNode(domainKey).isPresent() && getNode(domainKey).get() == label) {
+      final Optional<GlcNode> currentLabelOpt = getNode(domainKey);
+      if (currentLabelOpt.isPresent() && currentLabelOpt.get() == label) {
         // maybe break into next for loop iteration better?
         PriorityQueue<CandidatePair> candidateQueue = new PriorityQueue<>();
         if (candidateMap.containsKey(domainKey)) { // fills candidatebucket
@@ -484,8 +485,9 @@ public class OptimalAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
       // iterating through all Nodes in Tree starting at lowest depth
       GlcNode label = entry.getValue();
       Tensor domainKey = entry.getKey();
-      if (getNode(domainKey).isPresent() && getNode(domainKey).get() == label && !label.isRoot()) { // this node could have been deleted from tree in prev
-                                                                                                    // iteration
+      final Optional<GlcNode> currentLabelOpt = getNode(domainKey);
+      if (currentLabelOpt.isPresent() && currentLabelOpt.get() == label && !label.isRoot()) { // this node could have been deleted from tree in prev
+                                                                                              // iteration
         // could be relabeled in loopiteration before, therefore no check is needed if changed
         if (getCandidateMap().containsKey(domainKey)) {
           Set<CandidatePair> tempCandidateSet = candidateMap.get(domainKey);

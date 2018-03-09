@@ -51,12 +51,13 @@ public class Se2GlcTrackDemo extends Se2CarDemo {
         Tensors.vector(5.5, 6.3, 1.5), //
         Tensors.vector(3.4, 8.4, -3.14), //
         Tensors.vector(1.8, 6.4, -1.5), //
-        Tensors.vector(3.5, 4, 0)); //
+        Tensors.vector(3.5, 4, 0)).unmodifiable(); //
     // start waypoint following
     WaypointFollowing wpf = new WaypointFollowing(waypoints, se2Entity, owlyAnimationFrame);
     wpf.setObstacleQuery(trq);
     wpf.setDistanceThreshold(RealScalar.of(1));
     wpf.start();
+    //
   }
 
   public static void main(String[] args) {

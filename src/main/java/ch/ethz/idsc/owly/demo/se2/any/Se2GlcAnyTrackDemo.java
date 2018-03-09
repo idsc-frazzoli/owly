@@ -1,20 +1,14 @@
 // code by jl
 package ch.ethz.idsc.owly.demo.se2.any;
 
-import java.util.Arrays;
 import java.util.List;
 
-import ch.ethz.idsc.owl.glc.core.TrajectoryPlanner;
 import ch.ethz.idsc.owl.gui.ani.AbstractAnyEntity;
 import ch.ethz.idsc.owl.gui.ani.AbstractEntity;
-import ch.ethz.idsc.owl.gui.ani.AbstractRrtsEntity;
 import ch.ethz.idsc.owl.gui.ani.AnimationInterface;
-import ch.ethz.idsc.owl.gui.ani.MotionPlanWorker;
 import ch.ethz.idsc.owl.gui.ani.OwlySimulation;
-import ch.ethz.idsc.owl.img.ImageRegions;
 import ch.ethz.idsc.owl.math.region.ImageRegion;
 import ch.ethz.idsc.owl.math.state.StateTime;
-import ch.ethz.idsc.owl.math.state.TrajectoryRegionQuery;
 import ch.ethz.idsc.owl.math.state.TrajectorySample;
 import ch.ethz.idsc.owly.demo.rn.R2ImageRegionWrap;
 import ch.ethz.idsc.owly.demo.rn.R2ImageRegions;
@@ -31,19 +25,19 @@ public class Se2GlcAnyTrackDemo implements DemoInterface {
 
   @Override
   public void start() {
-    OwlySimulation OwlySimulation = new OwlySimulation();
+    OwlySimulation owlySimulation = new OwlySimulation();
     StateTime root = new StateTime(Tensors.vector(7, 6, 1), RealScalar.ZERO);
     Se2AnyEntity se2AnyEntity = new Se2AnyEntity(root, 8);
-    se2AnyEntity.trajectoryPlannerCallback = OwlySimulation.trajectoryPlannerCallback;
+    se2AnyEntity.trajectoryPlannerCallback = owlySimulation.trajectoryPlannerCallback;
     R2ImageRegionWrap r2ImageRegionWrap = R2ImageRegions._GTOB;
     ImageRegion imageRegion = r2ImageRegionWrap.imageRegion();
     imageRegion = r2ImageRegionWrap.imageRegion();
     se2AnyEntity.startLife(imageRegion, root); // (trq, root);
-    OwlySimulation.set(se2AnyEntity);
-    OwlySimulation.configCoordinateOffset(50, 700);
-    OwlySimulation.addBackground(RegionRenders.create(imageRegion));
-    OwlySimulation.jFrame.setBounds(100, 50, 800, 800);
-    OwlySimulation.jFrame.setVisible(true);
+    owlySimulation.set(se2AnyEntity);
+    owlySimulation.configCoordinateOffset(50, 700);
+    owlySimulation.addBackground(RegionRenders.create(imageRegion));
+    owlySimulation.jFrame.setBounds(100, 50, 800, 800);
+    owlySimulation.jFrame.setVisible(true);
     AnimationInterface controllable = se2AnyEntity;
     AbstractEntity abstractEntity = (AbstractEntity) controllable;
     List<TrajectorySample> head;

@@ -1,6 +1,7 @@
 // code by jph
 package ch.ethz.idsc.owl.glc.core;
 
+import java.io.Serializable;
 import java.util.List;
 
 import ch.ethz.idsc.owl.img.ImageCostFunction;
@@ -11,7 +12,7 @@ import ch.ethz.idsc.tensor.Scalar;
 /** used in combination with a {@link HeuristicFunction}.
  * 
  * standalone implementations include {@link ImageCostFunction} */
-public interface CostIncrementFunction {
+public interface CostIncrementFunction extends Serializable {
   /** @param glcNode from which trajectory starts
    * @param trajectory
    * @param flow along which trajectory was computed
