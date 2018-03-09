@@ -4,7 +4,8 @@ package ch.ethz.idsc.owl.glc.adapter;
 import java.awt.Color;
 import java.util.List;
 import java.util.Objects;
-
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import ch.ethz.idsc.owl.data.GlobalAssert;
 import ch.ethz.idsc.owl.glc.core.TrajectoryPlanner;
 import ch.ethz.idsc.owl.gui.RenderInterface;
@@ -35,7 +36,7 @@ public class WaypointFollowing {
     this.waypoints = waypoints;
     this.entity = entity;
     this.owlyAnimationFrame = owlyAnimationFrame;
-    //draw waypoints
+    // draw waypoints
     if (entity instanceof Se2Entity) {
       RenderInterface renderInterface = new ArrowHeadRender(waypoints, new Color(64, 192, 64, 64));
       owlyAnimationFrame.addBackground(renderInterface);
@@ -68,6 +69,13 @@ public class WaypointFollowing {
     List<TrajectorySample> head = entity.getFutureTrajectoryUntil(entity.delayHint());
     Tensor goal = waypoints.get(0);
     //
+    owlyAnimationFrame.jFrame.addWindowListener(new WindowAdapter() {
+      @Override
+      public void windowClosed(WindowEvent e) {
+        System.out.println("window was closed. terminating...");
+        System.exit(0);
+      }
+    });
     // start waypoint tracking loop
     int i = 0;
     boolean init = true;
