@@ -30,7 +30,7 @@ import ch.ethz.idsc.tensor.red.Norm2Squared;
 /** omni-directional movement with constant speed
  * 
  * the implementation chooses certain values */
-/* package */ class R2Entity extends AbstractCircularEntity {
+/* package */ public class R2Entity extends AbstractCircularEntity {
   /** extra cost functions, for instance to prevent cutting corners */
   public final Collection<CostFunction> extraCosts = new LinkedList<>();
   protected final R2Flows r2Config = new R2Flows(RealScalar.ONE);

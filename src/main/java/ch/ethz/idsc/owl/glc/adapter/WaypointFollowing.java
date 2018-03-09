@@ -14,8 +14,11 @@ import ch.ethz.idsc.owl.gui.ani.AbstractRrtsEntity;
 import ch.ethz.idsc.owl.gui.ani.MotionPlanWorker;
 import ch.ethz.idsc.owl.gui.ani.OwlyAnimationFrame;
 import ch.ethz.idsc.owl.gui.ren.ArrowHeadRender;
+import ch.ethz.idsc.owl.gui.ren.PointRender;
 import ch.ethz.idsc.owl.math.state.TrajectoryRegionQuery;
 import ch.ethz.idsc.owl.math.state.TrajectorySample;
+import ch.ethz.idsc.owly.demo.se2.glc.Se2Entity;
+import ch.ethz.idsc.owly.demo.rn.glc.R2Entity;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Scalars;
@@ -32,8 +35,12 @@ public class WaypointFollowing {
     this.waypoints = waypoints;
     this.entity = entity;
     this.owlyAnimationFrame = owlyAnimationFrame;
-    {
+    //draw waypoints
+    if (entity instanceof Se2Entity) {
       RenderInterface renderInterface = new ArrowHeadRender(waypoints, new Color(64, 192, 64, 64));
+      owlyAnimationFrame.addBackground(renderInterface);
+    } else if (entity instanceof R2Entity) {
+      RenderInterface renderInterface = new PointRender(waypoints, 5, Color.black);
       owlyAnimationFrame.addBackground(renderInterface);
     }
   }
