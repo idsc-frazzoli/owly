@@ -50,7 +50,7 @@ public class R2RrtsEntity extends AbstractRrtsEntity {
   }
 
   @Override
-  protected Scalar distance(Tensor x, Tensor y) {
+  public Scalar distance(Tensor x, Tensor y) {
     return Norm2Squared.between(x, y);
   }
 

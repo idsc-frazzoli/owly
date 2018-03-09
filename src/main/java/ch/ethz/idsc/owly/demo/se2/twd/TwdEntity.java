@@ -64,7 +64,7 @@ import ch.ethz.idsc.tensor.sca.Sqrt;
   }
 
   @Override
-  protected Scalar distance(Tensor x, Tensor y) {
+  public Scalar distance(Tensor x, Tensor y) {
     return SE2WRAP.distance(x, y);
   }
 

@@ -27,7 +27,7 @@ import ch.ethz.idsc.tensor.Tensors;
   private static final Tensor WEIGHT = Tensors.vector(1.0, 1.0, 0.2);
 
   @Override
-  protected Scalar distance(Tensor x, Tensor y) {
+  public Scalar distance(Tensor x, Tensor y) {
     Tensor d = x.subtract(y);
     return d.pmul(WEIGHT).dot(d).Get();
   }
