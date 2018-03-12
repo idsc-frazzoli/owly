@@ -1,11 +1,16 @@
 // code by jph, ynager
 package ch.ethz.idsc.owly.demo.se2.glc;
 
+import java.awt.Color;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.io.IOException;
+
+import ch.ethz.idsc.owl.glc.adapter.GlcWaypointFollowing;
 import ch.ethz.idsc.owl.glc.adapter.SimpleTrajectoryRegionQuery;
-import ch.ethz.idsc.owl.glc.adapter.WaypointFollowing;
 import ch.ethz.idsc.owl.gui.RenderInterface;
 import ch.ethz.idsc.owl.gui.ani.OwlyAnimationFrame;
+import ch.ethz.idsc.owl.gui.ren.ArrowHeadRender;
 import ch.ethz.idsc.owl.math.region.ImageRegion;
 import ch.ethz.idsc.owl.math.state.StateTime;
 import ch.ethz.idsc.owl.math.state.TrajectoryRegionQuery;
@@ -42,6 +47,13 @@ public class Se2GlcTrackDemo extends Se2CarDemo {
       owlyAnimationFrame.addBackground(renderInterface);
     }
     //
+    owlyAnimationFrame.jFrame.addWindowListener(new WindowAdapter() {
+      @Override
+      public void windowClosed(WindowEvent e) {
+        System.out.println("window was closed. terminating...");
+        System.exit(0);
+      }
+    });
     // define waypoints
     Tensor waypoints = Tensors.of( //
         Tensors.vector(5.5, 6.3, 1.5), //
@@ -52,12 +64,13 @@ public class Se2GlcTrackDemo extends Se2CarDemo {
         Tensors.vector(3.4, 8.4, -3.14), //
         Tensors.vector(1.8, 6.4, -1.5), //
         Tensors.vector(3.5, 4, 0)).unmodifiable(); //
+    // draw waypoints
+    RenderInterface renderInterface = new ArrowHeadRender(waypoints, new Color(64, 192, 64, 64));
+    owlyAnimationFrame.addBackground(renderInterface);
     // start waypoint following
-    WaypointFollowing wpf = new WaypointFollowing(waypoints, se2Entity, owlyAnimationFrame);
-    wpf.setObstacleQuery(trq);
+    GlcWaypointFollowing wpf = new GlcWaypointFollowing(waypoints, se2Entity, owlyAnimationFrame.trajectoryPlannerCallback, trq);
     wpf.setDistanceThreshold(RealScalar.of(1));
     wpf.start();
-    //
   }
 
   public static void main(String[] args) {

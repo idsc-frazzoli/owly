@@ -1,57 +1,25 @@
 // code by ynager
 package ch.ethz.idsc.owl.glc.adapter;
 
-import java.awt.Color;
 import java.util.List;
-import java.util.Objects;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
-import ch.ethz.idsc.owl.data.GlobalAssert;
-import ch.ethz.idsc.owl.glc.core.TrajectoryPlanner;
-import ch.ethz.idsc.owl.gui.RenderInterface;
-import ch.ethz.idsc.owl.gui.ani.AbstractAnyEntity;
 import ch.ethz.idsc.owl.gui.ani.AbstractEntity;
-import ch.ethz.idsc.owl.gui.ani.AbstractRrtsEntity;
-import ch.ethz.idsc.owl.gui.ani.MotionPlanWorker;
-import ch.ethz.idsc.owl.gui.ani.OwlyAnimationFrame;
-import ch.ethz.idsc.owl.gui.ren.ArrowHeadRender;
-import ch.ethz.idsc.owl.gui.ren.PointRender;
-import ch.ethz.idsc.owl.math.state.TrajectoryRegionQuery;
+import ch.ethz.idsc.owl.gui.ani.TrajectoryPlannerCallback;
 import ch.ethz.idsc.owl.math.state.TrajectorySample;
-import ch.ethz.idsc.owly.demo.se2.glc.Se2Entity;
-import ch.ethz.idsc.owly.demo.rn.glc.R2Entity;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Scalars;
 import ch.ethz.idsc.tensor.Tensor;
 
-public class WaypointFollowing {
-  private Tensor waypoints;
-  private AbstractEntity entity;
-  private OwlyAnimationFrame owlyAnimationFrame;
-  private TrajectoryRegionQuery obstacleQuery = null;
+public abstract class WaypointFollowing {
+  private final Tensor waypoints;
+  protected final AbstractEntity entity;
+  protected final TrajectoryPlannerCallback trajectoryPlannerCallback;
   private Scalar distThreshold = RealScalar.of(1);
 
-  public WaypointFollowing(Tensor waypoints, AbstractEntity entity, OwlyAnimationFrame owlyAnimationFrame) {
+  public WaypointFollowing(Tensor waypoints, AbstractEntity entity, TrajectoryPlannerCallback trajectoryPlannerCallback) {
     this.waypoints = waypoints;
     this.entity = entity;
-    this.owlyAnimationFrame = owlyAnimationFrame;
-    // draw waypoints
-    if (entity instanceof Se2Entity) {
-      RenderInterface renderInterface = new ArrowHeadRender(waypoints, new Color(64, 192, 64, 64));
-      owlyAnimationFrame.addBackground(renderInterface);
-    } else if (entity instanceof R2Entity) {
-      RenderInterface renderInterface = new PointRender(waypoints, 5, Color.black);
-      owlyAnimationFrame.addBackground(renderInterface);
-    }
-  }
-
-  /** modifies the obstacle region
-   * (so far only relevant for the standard planner)
-   * 
-   * @param obstacleQuery */
-  public void setObstacleQuery(TrajectoryRegionQuery obstacleQuery) { // only used for glc
-    this.obstacleQuery = obstacleQuery;
+    this.trajectoryPlannerCallback = trajectoryPlannerCallback;
   }
 
   /** sets the distance threshold. When the distance from the current state
@@ -63,19 +31,17 @@ public class WaypointFollowing {
     this.distThreshold = distThreshold;
   }
 
-  /** Start looping through waypoints */
+  /** starts planning towards a goal
+   * 
+   * @param TrajectoryPlannerCallback
+   * @param head
+   * @param goal */
+  protected abstract void planToGoal(List<TrajectorySample> head, Tensor goal);
+
+  /** Start planning through waypoints */
   public void start() {
-    MotionPlanWorker mpw = null;
     List<TrajectorySample> head = entity.getFutureTrajectoryUntil(entity.delayHint());
     Tensor goal = waypoints.get(0);
-    //
-    owlyAnimationFrame.jFrame.addWindowListener(new WindowAdapter() {
-      @Override
-      public void windowClosed(WindowEvent e) {
-        System.out.println("window was closed. terminating...");
-        System.exit(0);
-      }
-    });
     // start waypoint tracking loop
     int i = 0;
     boolean init = true;
@@ -84,37 +50,10 @@ public class WaypointFollowing {
       Scalar dist = entity.distance(loc, goal).abs();
       //
       if (Scalars.lessThan(dist, distThreshold) || init) { // if close enough to current waypoint switch to next
-        // shut down mpw
-        if (Objects.nonNull(mpw)) {
-          mpw.flagShutdown();
-          mpw = null;
-        }
         i = (i + 1) % waypoints.length();
         goal = waypoints.get(i);
         head = entity.getFutureTrajectoryUntil(entity.delayHint());
-        //
-        switch (entity.getPlannerType()) {
-        case STANDARD: {
-          GlobalAssert.that(Objects.nonNull(obstacleQuery));
-          TrajectoryPlanner trajectoryPlanner = //
-              entity.createTrajectoryPlanner(obstacleQuery, goal);
-          mpw = new MotionPlanWorker(owlyAnimationFrame.trajectoryPlannerCallback);
-          mpw.start(head, trajectoryPlanner);
-          break;
-        }
-        case ANY: {
-          AbstractAnyEntity abstractAnyEntity = (AbstractAnyEntity) entity;
-          abstractAnyEntity.switchToGoal(owlyAnimationFrame.trajectoryPlannerCallback, head, goal);
-          break;
-        }
-        case RRTS: {
-          AbstractRrtsEntity abstractRrtsEntity = (AbstractRrtsEntity) entity;
-          abstractRrtsEntity.startPlanner(owlyAnimationFrame.trajectoryPlannerCallback, head, goal);
-          break;
-        }
-        default:
-          throw new RuntimeException();
-        }
+        planToGoal(head, goal);
         init = false;
       } else {
         try {
