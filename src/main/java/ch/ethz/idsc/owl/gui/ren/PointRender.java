@@ -4,25 +4,24 @@ package ch.ethz.idsc.owl.gui.ren;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
-import java.awt.geom.Ellipse2D;
-import java.awt.geom.Point2D;
 import java.util.Objects;
 
 import ch.ethz.idsc.owl.gui.GeometricLayer;
 import ch.ethz.idsc.owl.gui.RenderInterface;
+import ch.ethz.idsc.owl.math.map.Se2Utils;
+import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Tensor;
+import ch.ethz.idsc.tensor.lie.CirclePoints;
 
 public class PointRender implements RenderInterface {
-  private Tensor points;
-  private double radius_half;
-  private double radius;
-  private Color color;
+  private final Tensor points;
+  private final Color color;
+  private final Tensor shape;
 
   public PointRender(Tensor points, double radius, Color color) {
     this.points = Objects.requireNonNull(points);
     this.color = color;
-    radius_half = radius / 2;
-    this.radius = radius;
+    shape = CirclePoints.of(7).multiply(RealScalar.of(radius));
   }
 
   @Override
@@ -30,11 +29,9 @@ public class PointRender implements RenderInterface {
     // draw points
     graphics.setColor(color);
     for (Tensor p : points) {
-      Point2D point2d = geometricLayer.toPoint2D(p);
-      graphics.draw(new Ellipse2D.Double( //
-          point2d.getX() - radius_half, //
-          point2d.getY() - radius_half, //
-          radius, radius));
+      geometricLayer.pushMatrix(Se2Utils.toSE2Matrix(p.extract(0, 2).copy().append(RealScalar.ZERO)));
+      graphics.fill(geometricLayer.toPath2D(shape));
+      geometricLayer.popMatrix();
     }
   }
 }

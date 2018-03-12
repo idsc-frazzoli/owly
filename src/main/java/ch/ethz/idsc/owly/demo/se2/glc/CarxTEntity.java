@@ -18,8 +18,8 @@ class CarxTEntity extends CarEntity {
   }
 
   @Override
-  protected Scalar distance(Tensor x, Tensor y) {
-    return SE2WRAP.distance(x.extract(0, 3), y.extract(0, 3));
+  public Scalar distance(Tensor x, Tensor y) {
+    return SE2WRAP.distance(x.extract(0, 3), y.extract(0, 3)); // non-negative
   }
 
   @Override

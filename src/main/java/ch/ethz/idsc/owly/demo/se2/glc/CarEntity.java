@@ -33,7 +33,7 @@ import ch.ethz.idsc.tensor.sca.Sqrt;
 
 /** several magic constants are hard-coded in the implementation.
  * that means, the functionality does not apply to all examples universally. */
-class CarEntity extends Se2Entity {
+public class CarEntity extends Se2Entity {
   private static final Tensor PARTITIONSCALE = Tensors.vector(5, 5, 50 / Math.PI).unmodifiable(); // 50/pi == 15.9155
   private static final Scalar SQRT2 = Sqrt.of(RealScalar.of(2));
   private static final Scalar SHIFT_PENALTY = RealScalar.of(0.4);
@@ -78,8 +78,8 @@ class CarEntity extends Se2Entity {
   }
 
   @Override
-  protected Scalar distance(Tensor x, Tensor y) {
-    return SE2WRAP.distance(x, y);
+  public Scalar distance(Tensor x, Tensor y) {
+    return SE2WRAP.distance(x, y); // non-negative
   }
 
   @Override

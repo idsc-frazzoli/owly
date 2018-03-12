@@ -281,7 +281,7 @@ public class OptimalAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
     int oldCandidateMapSize = candidateMap.size();
     // TODO JONAS What to do if root in collision
     // DomainMap, over which it is iterated
-    Map<Tensor, GlcNode> iterableDomainMap = new HashMap<Tensor, GlcNode>(domainMap());
+    Map<Tensor, GlcNode> iterableDomainMap = new HashMap<>(domainMap());
     // only iterate through domains which are in the reachability Region, connectivity between nodes is useless,
     // because it does not give us information if something could have changed for ancestors or predecessors
     // only nodes are checked, no integration is performed (will be done on selected Nodes in the reachability set)
@@ -472,7 +472,7 @@ public class OptimalAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
   @Override
   /* package */ final void relabelingDomains() {
     GlcNode root = getRoot();
-    Map<Tensor, GlcNode> iterableTreeMap = new HashMap<Tensor, GlcNode>(domainMap());
+    Map<Tensor, GlcNode> iterableTreeMap = new HashMap<>(domainMap());
     System.err.println("checking for domainlabel changes due to heuristic change,  Treesize: " + iterableTreeMap.size());
     iterableTreeMap = iterableTreeMap.entrySet()//
         .stream()//

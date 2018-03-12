@@ -36,6 +36,6 @@ class TnWrap implements CoordinateWrap {
   public Scalar distance(Tensor p, Tensor q) {
     Tensor d = p.subtract(q);
     Tensor m = Tensors.vector(i -> mod_distance.get(i).apply(d.Get(i)), d.length());
-    return Norm._2.ofVector(m);
+    return Norm._2.ofVector(m); // non-negative
   }
 }

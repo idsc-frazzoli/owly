@@ -38,8 +38,8 @@ import ch.ethz.idsc.tensor.Tensors;
   }
 
   @Override
-  protected Scalar distance(Tensor x, Tensor y) {
-    return PsuWrap.INSTANCE.distance(x, y);
+  public Scalar distance(Tensor x, Tensor y) {
+    return PsuWrap.INSTANCE.distance(x, y); // non-negative
   }
 
   @Override
