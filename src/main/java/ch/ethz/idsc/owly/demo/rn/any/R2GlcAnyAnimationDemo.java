@@ -14,7 +14,6 @@ import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
 
 public class R2GlcAnyAnimationDemo implements DemoInterface {
-  ;
   @Override
   public void start() {
     OwlyAnimationFrame owlyAnimationFrame = new OwlyAnimationFrame();

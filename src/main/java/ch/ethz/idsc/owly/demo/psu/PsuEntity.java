@@ -39,7 +39,7 @@ import ch.ethz.idsc.tensor.Tensors;
 
   @Override
   public Scalar distance(Tensor x, Tensor y) {
-    return PsuWrap.INSTANCE.distance(x, y);
+    return PsuWrap.INSTANCE.distance(x, y); // non-negative
   }
 
   @Override

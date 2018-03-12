@@ -51,7 +51,7 @@ public class R2RrtsEntity extends AbstractRrtsEntity {
 
   @Override
   public Scalar distance(Tensor x, Tensor y) {
-    return Norm2Squared.between(x, y);
+    return Norm2Squared.between(x, y); // non-negative
   }
 
   @Override

@@ -15,7 +15,6 @@ import ch.ethz.idsc.tensor.sca.Decrement;
 
 /** computes manhatten distance by flood fill */
 public class FloodFill2D {
-  ;
   public static Tensor of(Set<Tensor> seeds, Scalar ttl, Tensor tensor) {
     FloodFill2D floodFill = new FloodFill2D(seeds, ttl, tensor);
     return floodFill.array;

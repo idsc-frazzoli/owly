@@ -1,5 +1,5 @@
 // code by jph, ynager
-package ch.ethz.idsc.owly.demo.se2.glc;
+package ch.ethz.idsc.owly.demo.rn.glc;
 
 import java.awt.Color;
 import java.awt.event.WindowAdapter;
@@ -10,58 +10,59 @@ import ch.ethz.idsc.owl.glc.adapter.GlcWaypointFollowing;
 import ch.ethz.idsc.owl.glc.adapter.SimpleTrajectoryRegionQuery;
 import ch.ethz.idsc.owl.gui.RenderInterface;
 import ch.ethz.idsc.owl.gui.ani.OwlyAnimationFrame;
-import ch.ethz.idsc.owl.gui.ren.ArrowHeadRender;
+import ch.ethz.idsc.owl.gui.ren.PointRender;
 import ch.ethz.idsc.owl.math.region.ImageRegion;
-import ch.ethz.idsc.owl.math.state.StateTime;
 import ch.ethz.idsc.owl.math.state.TrajectoryRegionQuery;
-import ch.ethz.idsc.owl.sim.CameraEmulator;
-import ch.ethz.idsc.owl.sim.LidarEmulator;
 import ch.ethz.idsc.owly.demo.rn.R2ImageRegionWrap;
 import ch.ethz.idsc.owly.demo.rn.R2ImageRegions;
+import ch.ethz.idsc.owly.demo.util.DemoInterface;
 import ch.ethz.idsc.owly.demo.util.RegionRenders;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
 
-public class Se2GlcTrackDemo extends Se2CarDemo {
+public class R2GlcTrackDemo implements DemoInterface {
   @Override
+  public void start() {
+    try {
+      OwlyAnimationFrame owlyAnimationFrame = new OwlyAnimationFrame();
+      owlyAnimationFrame.configCoordinateOffset(50, 700);
+      owlyAnimationFrame.jFrame.setBounds(100, 50, 1200, 800);
+      owlyAnimationFrame.jFrame.setVisible(true);
+      configure(owlyAnimationFrame);
+    } catch (Exception exception) {
+      exception.printStackTrace();
+    }
+  }
+
   void configure(OwlyAnimationFrame owlyAnimationFrame) throws IOException {
     R2ImageRegionWrap r2ImageRegionWrap = R2ImageRegions._EIGHT;
-    CarEntity se2Entity = CarEntity.createDefault(new StateTime(Tensors.vector(6, 6, 1), RealScalar.ZERO));
-    se2Entity.extraCosts.add(r2ImageRegionWrap.costFunction());
+    R2Entity r2Entity = new R2Entity(Tensors.vector(5.5, 6.3));
+    // CarEntity se2Entity = CarEntity.createDefault(new StateTime(Tensors.vector(6, 6, 1), RealScalar.ZERO));
+    r2Entity.extraCosts.add(r2ImageRegionWrap.costFunction());
     ImageRegion imageRegion = r2ImageRegionWrap.imageRegion();
-    TrajectoryRegionQuery trq = createCarQuery(imageRegion);
-    se2Entity.obstacleQuery = trq;
-    TrajectoryRegionQuery ray = SimpleTrajectoryRegionQuery.timeInvariant(imageRegion);
-    owlyAnimationFrame.set(se2Entity);
+    TrajectoryRegionQuery trq = SimpleTrajectoryRegionQuery.timeInvariant(imageRegion);
+    // r2Entity.obstacleQuery = trq;
+    // TrajectoryRegionQuery ray = SimpleTrajectoryRegionQuery.timeInvariant(imageRegion);
+    owlyAnimationFrame.set(r2Entity);
     owlyAnimationFrame.setObstacleQuery(trq);
     owlyAnimationFrame.addBackground(RegionRenders.create(imageRegion));
-    {
-      RenderInterface renderInterface = new CameraEmulator( //
-          48, RealScalar.of(10), se2Entity::getStateTimeNow, ray);
-      owlyAnimationFrame.addBackground(renderInterface);
-    }
-    {
-      RenderInterface renderInterface = new LidarEmulator( //
-          LidarEmulator.DEFAULT, se2Entity::getStateTimeNow, ray);
-      owlyAnimationFrame.addBackground(renderInterface);
-    }
     // define waypoints
     Tensor waypoints = Tensors.of( //
-        Tensors.vector(5.5, 6.3, 1.5), //
-        Tensors.vector(7.8, 8.5, 0), //
-        Tensors.vector(10, 6.1, -1.5), //
-        Tensors.vector(7.9, 3.8, -3.14), //
-        Tensors.vector(5.5, 6.3, 1.5), //
-        Tensors.vector(3.4, 8.4, -3.14), //
-        Tensors.vector(1.8, 6.4, -1.5), //
-        Tensors.vector(3.5, 4, 0)).unmodifiable(); //
+        Tensors.vector(5.5, 6.3), //
+        Tensors.vector(7.8, 8.5), //
+        Tensors.vector(10, 6.1), //
+        Tensors.vector(7.9, 3.8), //
+        Tensors.vector(5.5, 6.3), //
+        Tensors.vector(3.4, 8.4), //
+        Tensors.vector(1.8, 6.4), //
+        Tensors.vector(3.5, 4)).unmodifiable(); //
     // draw waypoints
-    RenderInterface renderInterface = new ArrowHeadRender(waypoints, new Color(64, 192, 64, 64));
+    RenderInterface renderInterface = new PointRender(waypoints, 0.07, new Color(64, 192, 64, 64));
     owlyAnimationFrame.addBackground(renderInterface);
     // start waypoint following
     GlcWaypointFollowing wpf = new GlcWaypointFollowing( //
-        waypoints, se2Entity, owlyAnimationFrame.trajectoryPlannerCallback, trq);
+        waypoints, r2Entity, owlyAnimationFrame.trajectoryPlannerCallback, trq);
     wpf.setDistanceThreshold(RealScalar.of(1));
     wpf.startNonBlocking();
     //
@@ -75,6 +76,6 @@ public class Se2GlcTrackDemo extends Se2CarDemo {
   }
 
   public static void main(String[] args) {
-    new Se2GlcTrackDemo().start();
+    new R2GlcTrackDemo().start();
   }
 }
