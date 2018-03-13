@@ -10,10 +10,8 @@ import java.util.Optional;
 
 import ch.ethz.idsc.owl.glc.adapter.Expand;
 import ch.ethz.idsc.owl.glc.adapter.GlcNodes;
-import ch.ethz.idsc.owl.glc.adapter.GlcTrajectories;
 import ch.ethz.idsc.owl.glc.adapter.IdentityWrap;
 import ch.ethz.idsc.owl.glc.adapter.SimpleTrajectoryRegionQuery;
-import ch.ethz.idsc.owl.glc.adapter.Trajectories;
 import ch.ethz.idsc.owl.glc.core.DebugUtils;
 import ch.ethz.idsc.owl.glc.core.GlcNode;
 import ch.ethz.idsc.owl.glc.core.GoalInterface;
@@ -26,7 +24,6 @@ import ch.ethz.idsc.owl.math.StateSpaceModels;
 import ch.ethz.idsc.owl.math.flow.EulerIntegrator;
 import ch.ethz.idsc.owl.math.flow.Flow;
 import ch.ethz.idsc.owl.math.flow.Integrator;
-import ch.ethz.idsc.owl.math.flow.RungeKutta45Integrator;
 import ch.ethz.idsc.owl.math.region.EllipsoidRegion;
 import ch.ethz.idsc.owl.math.region.ImageRegion;
 import ch.ethz.idsc.owl.math.region.InvertedRegion;
@@ -60,7 +57,7 @@ import ch.ethz.idsc.tensor.sca.Power;
 import ch.ethz.idsc.tensor.sca.Sqrt;
 
 /* package */ class DeltaAnyEntity extends AbstractAnyEntity {
-  private static final Integrator INTEGRATOR = RungeKutta45Integrator.INSTANCE;
+  private static final Integrator INTEGRATOR = EulerIntegrator.INSTANCE;
   public static final Tensor FALLBACK_CONTROL = Tensors.vectorDouble(0, 0).unmodifiable();
   public static final Scalar AMP = RealScalar.of(-.02);
   private static final Scalar U_NORM = RealScalar.of(0.1);
@@ -152,9 +149,9 @@ import ch.ethz.idsc.tensor.sca.Sqrt;
   }
 
   protected final GoalInterface createGoalFromR2(Tensor goal) {
-    System.out.println("creatingGOAL from R2");
     Tensor currentState = getEstimatedLocationAt(DELAY_HINT).extract(0, 2);
     Tensor r2GoalState = goal.extract(0, 2);
+    System.out.println("creating waypoints from R2 planner to" + goal);
     long tic = System.nanoTime();
     // ---
     Tensor eta = Tensors.vector(8, 8);
@@ -167,9 +164,8 @@ import ch.ethz.idsc.tensor.sca.Sqrt;
     TrajectoryRegionQuery obstacleQueryR2 = new SimpleTrajectoryRegionQuery(new TimeInvariantRegion(ENVIRONMENTOBSTACLEMAP));
     TrajectoryPlanner trajectoryPlanner = new StandardTrajectoryPlanner( //
         eta, stateIntegratorR2, controlsR2, obstacleQueryR2, r2GoalManager);
-    System.out.println("test: " + currentState);
     if (r2GoalManager.isMember(new StateTime(currentState, RealScalar.ZERO)))
-      return new DeltaHeuristicGoalManager(goal, goalRadius, maxSpeed);
+      return new DeltaHeuristicGoalManager(r2GoalState, goalRadius, maxSpeed);
     trajectoryPlanner.insertRoot(new StateTime(currentState, RealScalar.ZERO));
     Expand.maxTime(trajectoryPlanner, RealScalar.of(1.5)); // 1.5 [s]
     Optional<GlcNode> optional = trajectoryPlanner.getFinalGoalNode();
@@ -183,8 +179,6 @@ import ch.ethz.idsc.tensor.sca.Sqrt;
     long toc = System.nanoTime();
     System.err.println("TrajectoryGoalcreation took: " + (toc - tic) * 1e-9 + "s");
     System.out.println("Coarse guidance trajectory size: " + trajectory.size());
-    Trajectories.print( //
-        GlcTrajectories.detailedTrajectoryTo(trajectoryPlanner.getStateIntegrator(), optional.get()));
     return new DeltaTrajectoryGoalManager(goalRegionsList, trajectory, goalRadius, maxSpeed);
   }
 

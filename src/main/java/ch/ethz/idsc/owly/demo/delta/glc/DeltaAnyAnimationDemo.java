@@ -26,18 +26,18 @@ public class DeltaAnyAnimationDemo implements DemoInterface {
     // ---
     ImageRegion imageRegion = new ImageRegion(DeltaAnyEntity.IMAGE_OBSTACLE, DeltaAnyEntity.RANGE, true);
     // --
+    OwlyAnimationFrame owlyAnimationFrame = new OwlyAnimationFrame();
     DeltaAnyEntity entity = new DeltaAnyEntity(obstacleInitList, new StateTime(Tensors.vector(8.8, 0.5), RealScalar.ZERO), resolution);
+    entity.trajectoryPlannerCallback = owlyAnimationFrame.trajectoryPlannerCallback;
     entity.startLife(imageRegion, new StateTime(Tensors.vector(8.8, 0.5), RealScalar.ZERO));
     // ---
     // ---
-    OwlyAnimationFrame owlyAnimationFrame = new OwlyAnimationFrame();
     owlyAnimationFrame.set(entity);
     owlyAnimationFrame.setObstacleQuery(entity.getTrajectoryRegionQuery());
     owlyAnimationFrame.addBackground(RegionRenders.create(imageRegion));
     for (int i = 0; i < obstacleInitList.size(); i++) {
       owlyAnimationFrame.addBackground((RenderInterface) entity.getFloatingObstacle(i));
     }
-    // owlyAnimationFrame.addBackground(DeltaHelper.vectorFieldRender(stateSpaceModel, DeltaAnyEntity.RANGE, imageRegion, RealScalar.of(0.5)));
     owlyAnimationFrame.jFrame.setVisible(true);
     owlyAnimationFrame.configCoordinateOffset(33, 416);
     owlyAnimationFrame.jFrame.setBounds(100, 100, 620, 475);

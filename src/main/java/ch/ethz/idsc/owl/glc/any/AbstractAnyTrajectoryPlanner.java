@@ -230,7 +230,7 @@ public abstract class AbstractAnyTrajectoryPlanner extends AbstractTrajectoryPla
     GlcNode label = domainMap().get(convertToKey(stateTime));
     if (Objects.isNull(label))
       return Optional.empty();
-    if (label.stateTime().state().equals(stateTime.state()))
+    if (label.stateTime().state().equals(stateTime.state())) // check if node=label
       return Optional.ofNullable(label);
     return Optional.empty();
   }
