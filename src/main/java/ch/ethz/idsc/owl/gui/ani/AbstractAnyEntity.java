@@ -139,6 +139,7 @@ public abstract class AbstractAnyEntity extends AbstractCircularEntity {
         Stopwatch stopwatch = Stopwatch.started();
         head = getFutureTrajectoryUntil(delayHint()); // Point on trajectory with delay from now
         // Rootswitch
+        System.out.println("Printing head");
         Trajectories.print(head);
         System.out.println("headsize " + head.size());
         int index = getIndexOfLastNodeOf(head);
@@ -205,13 +206,12 @@ public abstract class AbstractAnyEntity extends AbstractCircularEntity {
 
   private final int getIndexOfLastNodeOf(List<TrajectorySample> trajectory) {
     int index = trajectory.size() - 1;
-    for (TrajectorySample entry : trajectory)
-      while (index >= 0) {
-        Optional<GlcNode> optional = trajectoryPlanner.existsInTree(trajectory.get(index).stateTime());
-        if (optional.isPresent())
-          return index;
-        index--; // going to previous statetime in traj
-      }
+    while (index >= 0) {
+      Optional<GlcNode> optional = trajectoryPlanner.existsInTree(trajectory.get(index).stateTime());
+      if (optional.isPresent())
+        return index;
+      index--; // going to previous statetime in traj
+    }
     if (trajectory.size() == 1) { // no trajectory, drifting around
       return 0;
     }

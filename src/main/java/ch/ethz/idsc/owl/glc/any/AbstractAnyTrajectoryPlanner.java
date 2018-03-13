@@ -228,10 +228,12 @@ public abstract class AbstractAnyTrajectoryPlanner extends AbstractTrajectoryPla
   @Override
   public final Optional<GlcNode> existsInTree(StateTime stateTime) {
     GlcNode label = domainMap().get(convertToKey(stateTime));
-    if (Objects.isNull(label))
+    if (Objects.isNull(label)) {
       return Optional.empty();
+    }
     if (label.stateTime().state().equals(stateTime.state())) // check if node=label
       return Optional.ofNullable(label);
+    System.out.println("Label is unequal :" + label.stateTime().toInfoString());
     return Optional.empty();
   }
 
