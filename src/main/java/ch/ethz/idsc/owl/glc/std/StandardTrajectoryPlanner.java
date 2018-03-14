@@ -76,8 +76,9 @@ public class StandardTrajectoryPlanner extends AbstractTrajectoryPlanner {
   private void processCandidates( //
       GlcNode node, Map<GlcNode, List<StateTime>> connectors, Tensor domainKey, DomainQueue domainQueue) {
     for (GlcNode next : domainQueue) { // iterate over the candidates in DomainQueue
+      final Flow flow = next.flow();
       final List<StateTime> trajectory = connectors.get(next);
-      if (!getObstacleQuery().firstMember(trajectory).isPresent()) {
+      if (!getObstacleQuery().firstMember(flow, trajectory).isPresent()) {
         Optional<GlcNode> former = getNode(domainKey);
         boolean isPresent = former.isPresent();
         synchronized (this) {
