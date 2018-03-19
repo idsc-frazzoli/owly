@@ -126,6 +126,17 @@ public enum R2ImageRegions {
     return Transpose.of(ImageFormat.from(charImage.bufferedImage()));
   }
 
+  /****************************************************/
+  public static final R2ImageRegionWrap _SQUARE = //
+      new R2ImageRegionWrap(esh_charImage(), Tensors.vector(12, 12));
+
+  public static Tensor esh_charImage() {
+    CharImage charImage = CharImage.fillWhite(new Dimension(200, 200));
+    charImage.setFont(new Font(Font.SERIF, Font.BOLD, 170));
+    charImage.draw('\u229E', new Point(20, 150));
+    return Transpose.of(ImageFormat.from(charImage.bufferedImage()));
+  }
+
   /***************************************************/
   public static CharImage inside_roundabout() {
     CharImage charImage = CharImage.fillWhite(new Dimension(236, 180));

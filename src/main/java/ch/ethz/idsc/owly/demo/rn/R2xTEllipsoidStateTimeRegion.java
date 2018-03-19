@@ -25,9 +25,9 @@ public class R2xTEllipsoidStateTimeRegion implements Region<StateTime>, RenderIn
   private static final int RESOLUTION = 22;
   // ---
   private final Tensor invert;
-  private final Tensor polygon;
-  private final BijectionFamily bijectionFamily;
-  private final Supplier<Scalar> supplier;
+  protected final Tensor polygon;
+  protected final BijectionFamily bijectionFamily;
+  protected final Supplier<Scalar> supplier;
 
   /** @param radius encodes principle axis of ellipsoid region
    * @param bijectionFamily with origin at center of ellipsoid region
