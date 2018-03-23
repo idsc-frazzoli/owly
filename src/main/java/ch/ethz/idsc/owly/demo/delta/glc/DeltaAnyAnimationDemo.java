@@ -1,4 +1,4 @@
-// code by JL
+// code by jl
 package ch.ethz.idsc.owly.demo.delta.glc;
 
 import java.util.ArrayList;
@@ -19,10 +19,10 @@ public class DeltaAnyAnimationDemo implements DemoInterface {
   public void start() {
     int resolution = 9;
     List<Tensor> obstacleInitList = new ArrayList<>();
-    obstacleInitList.add(Tensors.vector(0.62, 0.35, 0.2));
-    obstacleInitList.add(Tensors.vector(4, 4.5, 0.6));
+    obstacleInitList.add(Tensors.vector(2, 0.35, 0.2));
+    obstacleInitList.add(Tensors.vector(3, 5.2, 0.35));
     obstacleInitList.add(Tensors.vector(1.5, 1, 0.4));
-    obstacleInitList.add(Tensors.vector(5, 3.0, 0.5));
+    obstacleInitList.add(Tensors.vector(5.3, 3.2, 0.25));
     // ---
     ImageRegion imageRegion = new ImageRegion(DeltaAnyEntity.IMAGE_OBSTACLE, DeltaAnyEntity.RANGE, true);
     // --

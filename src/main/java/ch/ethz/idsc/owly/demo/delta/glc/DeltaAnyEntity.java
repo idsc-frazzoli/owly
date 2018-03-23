@@ -3,7 +3,6 @@
 package ch.ethz.idsc.owly.demo.delta.glc;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
@@ -53,8 +52,8 @@ import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
 import ch.ethz.idsc.tensor.io.ResourceData;
+import ch.ethz.idsc.tensor.red.Norm2Squared;
 import ch.ethz.idsc.tensor.sca.Power;
-import ch.ethz.idsc.tensor.sca.Sqrt;
 
 /* package */ class DeltaAnyEntity extends AbstractAnyEntity {
   private static final Integrator INTEGRATOR = EulerIntegrator.INSTANCE;
@@ -63,9 +62,12 @@ import ch.ethz.idsc.tensor.sca.Sqrt;
   private static final Scalar U_NORM = RealScalar.of(0.1);
   public static final Tensor IMAGE_OBSTACLE = ResourceData.of("/io/delta_free.png");
   public static final Tensor RANGE = Tensors.vector(9, 6.5).unmodifiable(); // overall size of map
-  public static final ImageGradient IMAGEGRADIENT = ImageGradient.linear(ResourceData.of("/io/delta_uxy.png"), RANGE, AMP);
+  private static final Tensor IMAGEFLOW = ResourceData.of("/io/delta_uxy.png");
+  public static final ImageGradient IMAGEGRADIENT = ImageGradient.linear(IMAGEFLOW, RANGE, AMP);
   private static final DeltaAltStateSpaceModel DELTASTATESPACEMODEL = //
       new DeltaAltStateSpaceModel(IMAGEGRADIENT, U_NORM);
+  private static final DeltaAltStateSpaceModel DELTASTATESPACEMODELSLOW = //
+      new DeltaAltStateSpaceModel(ImageGradient.nearest(IMAGEFLOW, RANGE, RealScalar.of(-0.02)), U_NORM);
   /** preserve 1[s] of the former trajectory */
   private static final Scalar DELAY_HINT = RealScalar.of(4);
   private static final Scalar EXPAND_TIME = RealScalar.of(3);
@@ -82,7 +84,7 @@ import ch.ethz.idsc.tensor.sca.Sqrt;
   public DeltaAnyEntity(List<Tensor> undiscoveredObstacleTensorList, StateTime state, int resolution) {
     super(new DeltaParameters( //
         (RationalScalar) RealScalar.of(resolution), // resolution
-        RealScalar.of(50), // TimeScale
+        RealScalar.of(40), // TimeScale
         RealScalar.of(100), // DepthScale
         Tensors.vector(120, 120), // PartitionScale
         RationalScalar.of(1, 6), // dtMax
@@ -98,19 +100,19 @@ import ch.ethz.idsc.tensor.sca.Sqrt;
             state),
         // ---
         DELAY_HINT, EXPAND_TIME); //
-    final Scalar goalRadius_xy = Sqrt.of(RealScalar.of(2)).divide(parameters.getEta().Get(0));
+    final Scalar goalRadius_xy = RealScalar.of(0.5); // Sqrt.of(RealScalar.of(2)).divide(parameters.getEta().Get(0));
     this.goalRadius = Tensors.of(goalRadius_xy, goalRadius_xy);
     this.maxSpeed = DELTASTATESPACEMODEL.getLipschitz().add(U_NORM);
     System.out.println("MaxGradient of field is: " + IMAGEGRADIENT.maxNormGradient());
     // Obstacle creation
-    Flow flow = StateSpaceModels.createFlow(DELTASTATESPACEMODEL, DeltaEntity.FALLBACK_CONTROL);
+    Flow obstacleFlow = StateSpaceModels.createFlow(DELTASTATESPACEMODELSLOW, DeltaEntity.FALLBACK_CONTROL);
     StateIntegrator stateIntegratorObstacles = FixedStateIntegrator.create( //
         INTEGRATOR, RationalScalar.of(1, 10), 120 * 10);
     for (Tensor temp : undiscoveredObstacleTensorList) {
       Tensor radius = Tensors.of(temp.Get(2), temp.Get(2));
       Tensor pos = temp.extract(0, 2);
       undiscoveredObstaclesList.add(new R2xTEllipsoidStateTimeRegion(radius, //
-          TrajectoryTranslationFamily.create(stateIntegratorObstacles, new StateTime(pos, RealScalar.ZERO), flow), //
+          TrajectoryTranslationFamily.create(stateIntegratorObstacles, new StateTime(pos, RealScalar.ZERO), obstacleFlow), //
           () -> getStateTimeNow().time()));
     }
   }
@@ -130,7 +132,7 @@ import ch.ethz.idsc.tensor.sca.Sqrt;
 
   @Override
   protected Scalar distance(Tensor x, Tensor y) {
-    return IdentityWrap.INSTANCE.distance(x, y);
+    return Norm2Squared.between(x, y);
   }
 
   @Override
@@ -141,6 +143,12 @@ import ch.ethz.idsc.tensor.sca.Sqrt;
   @Override
   protected final GoalInterface createGoal(Tensor goal) {
     return createGoalFromR2(goal);
+  }
+
+  @Override // Inserts a initial Goal in the obstacle region
+  public TrajectoryPlanner createTrajectoryPlanner(TrajectoryRegionQuery obstacleQuery, Tensor goal) {
+    goal = Tensors.vector(2.8, 2.4);
+    return super.createTrajectoryPlanner(obstacleQuery, goal);
   }
 
   @Override
@@ -191,14 +199,13 @@ import ch.ethz.idsc.tensor.sca.Sqrt;
   @Override
   protected TrajectoryRegionQuery updateObstacle(Region<Tensor> region, StateTime currentState) {
     System.out.println("Updating Obstacle");
+    List<Region<Tensor>> tempList = new ArrayList<>();
+    tempList.add(ENVIRONMENTOBSTACLEMAP);
+    for (R2xTEllipsoidStateTimeRegion entry : undiscoveredObstaclesList)
+      tempList.add(entry.regionAtTime());
     obstacleQuery = SimpleTrajectoryRegionQuery.timeInvariant( //
         EuclideanDistanceDiscoverRegion.of(//
-            RegionUnion.wrap(Arrays.asList(ENVIRONMENTOBSTACLEMAP, //
-                undiscoveredObstaclesList.get(0).regionAtTime(), //
-                undiscoveredObstaclesList.get(1).regionAtTime(), //
-                undiscoveredObstaclesList.get(2).regionAtTime(), //
-                undiscoveredObstaclesList.get(3).regionAtTime())),
-            currentState.state(), SENSING_RADIUS));
+            RegionUnion.wrap(tempList), currentState.state(), SENSING_RADIUS));
     return obstacleQuery;
   }
 

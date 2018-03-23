@@ -154,6 +154,7 @@ public abstract class AbstractAnyEntity extends AbstractCircularEntity {
         head = head.subList(0, index + 1); // cutting head to this Node
         int depthLimitIncrease = trajectoryPlanner.switchRootToState(newRootStateTime);
         parameters.increaseDepthLimit(depthLimitIncrease);
+        getIndexOfLastNodeOf(getFutureTrajectoryUntil(delayHint())); // Test
         // ObstacleUpdate
         TrajectoryRegionQuery newObstacle = updateObstacle(environmentRegion, head.get(0).stateTime());
         trajectoryPlanner.obstacleUpdate(newObstacle);
@@ -169,13 +170,16 @@ public abstract class AbstractAnyEntity extends AbstractCircularEntity {
           int iters = GlcExpand.constTime(trajectoryPlanner, expandTime, parameters.getDepthLimit());
           System.out.println("Expanded " + iters + "Nodes");
         }
-        if (trajectoryPlannerCallback != null)
+        if (trajectoryPlannerCallback != null) {
           trajectoryPlannerCallback.expandResult(head, trajectoryPlanner);
+          System.out.println("Expand Result");
+        }
         try {
           Thread.sleep(10);
         } catch (Exception exception) {
           exception.printStackTrace();
         }
+        getIndexOfLastNodeOf(getFutureTrajectoryUntil(delayHint())); // Test
         stopwatch.stop();
         System.err.println("Last iteration took: " + stopwatch.display_seconds() + "s");
         stopwatch.resetToZero();
