@@ -10,12 +10,14 @@ import ch.ethz.idsc.owl.gui.RenderInterface;
 import ch.ethz.idsc.owl.math.map.BijectionFamily;
 import ch.ethz.idsc.owl.math.planar.EllipsePoints;
 import ch.ethz.idsc.owl.math.region.Region;
+import ch.ethz.idsc.owl.math.region.SphericalRegion;
 import ch.ethz.idsc.owl.math.state.StateTime;
 import ch.ethz.idsc.owly.demo.util.RegionRenders;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Scalars;
 import ch.ethz.idsc.tensor.Tensor;
+import ch.ethz.idsc.tensor.Tensors;
 import ch.ethz.idsc.tensor.opt.TensorUnaryOperator;
 import ch.ethz.idsc.tensor.red.Norm2Squared;
 
@@ -45,6 +47,11 @@ public class R2xTEllipsoidStateTimeRegion implements Region<StateTime>, RenderIn
     Scalar time = stateTime.time();
     TensorUnaryOperator rev = bijectionFamily.inverse(time);
     return Scalars.lessEquals(Norm2Squared.ofVector(rev.apply(state).pmul(invert)), RealScalar.ONE);
+  }
+
+  public Region<Tensor> regionAtTime() {
+    TensorUnaryOperator fwd = bijectionFamily.forward(supplier.get());
+    return new SphericalRegion(fwd.apply(Tensors.vector(0, 0)), invert.map(Scalar::reciprocal).Get(0));
   }
 
   @Override // from RenderInterface

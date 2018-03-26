@@ -31,7 +31,7 @@ import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
 
 /** omni-directional movement with constant speed */
-public abstract class AbstractAnyEntity extends AbstractEntity {
+public abstract class AbstractAnyEntity extends AbstractCircularEntity {
   /** preserve delayHint[s] of the former trajectory */
   protected final Scalar delayHint;
   private final Scalar expandTime;
@@ -107,7 +107,7 @@ public abstract class AbstractAnyEntity extends AbstractEntity {
   Thread thread;
   public TrajectoryPlannerCallback trajectoryPlannerCallback;
   private List<TrajectorySample> head;
-  GlcNode newRoot;
+  StateTime newRootStateTime;
   Tensor goal;
   boolean switchGoalRequest = false;
 
@@ -127,7 +127,6 @@ public abstract class AbstractAnyEntity extends AbstractEntity {
 
   public OptimalAnyTrajectoryPlanner trajectoryPlanner;
 
-  // TODO SE2wrap remove to somewhere else
   // TODO JONAS/JAN how to end thread, when OwlyAnimationFrame is closed
   public void startLife(Region<Tensor> environmentRegion, StateTime root) {
     TrajectoryRegionQuery trq = initializeObstacle(environmentRegion, root);
@@ -140,20 +139,22 @@ public abstract class AbstractAnyEntity extends AbstractEntity {
         Stopwatch stopwatch = Stopwatch.started();
         head = getFutureTrajectoryUntil(delayHint()); // Point on trajectory with delay from now
         // Rootswitch
-        int index = getIndexOfLastNodeOf(head);
+        System.out.println("Printing head");
         Trajectories.print(head);
         System.out.println("headsize " + head.size());
+        int index = getIndexOfLastNodeOf(head);
         System.out.println("index    " + index);
         //
         Optional<GlcNode> optional = trajectoryPlanner.existsInTree(head.get(index).stateTime());
-        if (!optional.isPresent())
-          throw new RuntimeException();
-        GlcNode newRoot = optional.get(); // getting last GlcNode in Head as root
+        newRootStateTime = head.get(0).stateTime();
+        if (optional.isPresent())
+          newRootStateTime = optional.get().stateTime(); // getting last GlcNode in Head as root
         System.out.println("NEW ROOT");
-        System.out.println(newRoot.stateTime().toInfoString());
+        System.out.println(newRootStateTime.toInfoString());
         head = head.subList(0, index + 1); // cutting head to this Node
-        int depthLimitIncrease = trajectoryPlanner.switchRootToNode(newRoot);
+        int depthLimitIncrease = trajectoryPlanner.switchRootToState(newRootStateTime);
         parameters.increaseDepthLimit(depthLimitIncrease);
+        getIndexOfLastNodeOf(getFutureTrajectoryUntil(delayHint())); // Test
         // ObstacleUpdate
         TrajectoryRegionQuery newObstacle = updateObstacle(environmentRegion, head.get(0).stateTime());
         trajectoryPlanner.obstacleUpdate(newObstacle);
@@ -166,17 +167,22 @@ public abstract class AbstractAnyEntity extends AbstractEntity {
           trajectoryPlanner.changeToGoal(goalInterface, goalCheckHelp); // <- may take a while
           switchGoalRequest = false;
         } else {
-          // int iters =
-          GlcExpand.constTime(trajectoryPlanner, expandTime, parameters.getDepthLimit());
+          int iters = GlcExpand.constTime(trajectoryPlanner, expandTime, parameters.getDepthLimit());
+          System.out.println("Expanded " + iters + "Nodes");
         }
-        if (trajectoryPlannerCallback != null)
+        if (trajectoryPlannerCallback != null) {
           trajectoryPlannerCallback.expandResult(head, trajectoryPlanner);
+          System.out.println("Expand Result");
+        }
         try {
           Thread.sleep(10);
         } catch (Exception exception) {
           exception.printStackTrace();
         }
+        getIndexOfLastNodeOf(getFutureTrajectoryUntil(delayHint())); // Test
+        stopwatch.stop();
         System.err.println("Last iteration took: " + stopwatch.display_seconds() + "s");
+        stopwatch.resetToZero();
       }
     });
     thread.start();
@@ -210,7 +216,10 @@ public abstract class AbstractAnyEntity extends AbstractEntity {
         return index;
       index--; // going to previous statetime in traj
     }
+    if (trajectory.size() == 1) { // no trajectory, drifting around
+      return 0;
+    }
     Trajectories.print(trajectory);
-    throw new RuntimeException(); // no StateTime in trajectory corresponds to Node in Tree?
+    throw new RuntimeException("no StateTime in trajectory corresponds to Node in Tree");
   }
 }
