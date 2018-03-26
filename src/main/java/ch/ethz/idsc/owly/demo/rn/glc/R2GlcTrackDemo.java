@@ -4,7 +4,6 @@ package ch.ethz.idsc.owly.demo.rn.glc;
 import java.awt.Color;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.io.IOException;
 
 import ch.ethz.idsc.owl.glc.adapter.GlcWaypointFollowing;
 import ch.ethz.idsc.owl.glc.adapter.SimpleTrajectoryRegionQuery;
@@ -35,7 +34,7 @@ public class R2GlcTrackDemo implements DemoInterface {
     }
   }
 
-  void configure(OwlyAnimationFrame owlyAnimationFrame) throws IOException {
+  void configure(OwlyAnimationFrame owlyAnimationFrame) {
     R2ImageRegionWrap r2ImageRegionWrap = R2ImageRegions._EIGHT;
     R2Entity r2Entity = new R2Entity(Tensors.vector(5.5, 6.3));
     // CarEntity se2Entity = CarEntity.createDefault(new StateTime(Tensors.vector(6, 6, 1), RealScalar.ZERO));

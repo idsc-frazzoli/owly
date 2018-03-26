@@ -66,17 +66,17 @@ enum DeltaExpandDemo {
     owlyFrame.addBackground(DeltaHelper.vectorFieldRender(stateSpaceModel, range, region, RealScalar.of(0.05)));
     owlyFrame.configCoordinateOffset(33, 416);
     owlyFrame.jFrame.setBounds(100, 100, 620, 475);
-    AnimationWriter gsw = AnimationWriter.of(UserHome.Pictures("delta_s.gif"), 250);
-    while (!trajectoryPlanner.getBest().isPresent() && owlyFrame.jFrame.isVisible()) {
-      Expand.maxSteps(trajectoryPlanner, 40);
-      owlyFrame.setGlc(trajectoryPlanner);
-      gsw.append(owlyFrame.offscreen());
-      Thread.sleep(1);
+    try (AnimationWriter gsw = AnimationWriter.of(UserHome.Pictures("delta_s.gif"), 250)) {
+      while (!trajectoryPlanner.getBest().isPresent() && owlyFrame.jFrame.isVisible()) {
+        Expand.maxSteps(trajectoryPlanner, 40);
+        owlyFrame.setGlc(trajectoryPlanner);
+        gsw.append(owlyFrame.offscreen());
+        Thread.sleep(1);
+      }
+      int repeatLast = 6;
+      while (0 < repeatLast--)
+        gsw.append(owlyFrame.offscreen());
     }
-    int repeatLast = 6;
-    while (0 < repeatLast--)
-      gsw.append(owlyFrame.offscreen());
-    gsw.close();
     System.out.println("created gif");
   }
 }

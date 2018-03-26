@@ -83,7 +83,7 @@ import ch.ethz.idsc.tensor.sca.Power;
   /** @param state initial position of entity */
   public DeltaAnyEntity(List<Tensor> undiscoveredObstacleTensorList, StateTime state, int resolution) {
     super(new DeltaParameters( //
-        (RationalScalar) RealScalar.of(resolution), // resolution
+        RealScalar.of(resolution), // resolution
         RealScalar.of(40), // TimeScale
         RealScalar.of(100), // DepthScale
         Tensors.vector(120, 120), // PartitionScale

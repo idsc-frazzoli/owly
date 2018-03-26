@@ -5,6 +5,7 @@ import ch.ethz.idsc.owl.glc.core.TrajectoryPlanner;
 import ch.ethz.idsc.owl.math.StateTimeCoordinateWrap;
 import ch.ethz.idsc.owl.math.state.StateTime;
 import ch.ethz.idsc.owl.math.state.TrajectoryRegionQuery;
+import ch.ethz.idsc.owly.demo.se2.CarFlows;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
@@ -14,6 +15,11 @@ import ch.ethz.idsc.tensor.Tensor;
 class CarxTEntity extends CarEntity {
   CarxTEntity(StateTime stateTime) {
     super(stateTime); // initial position
+    represent_entity = StateTime::joined;
+  }
+
+  CarxTEntity(StateTime stateTime, CarFlows carflows) {
+    super(stateTime, carflows); // initial position
     represent_entity = StateTime::joined;
   }
 

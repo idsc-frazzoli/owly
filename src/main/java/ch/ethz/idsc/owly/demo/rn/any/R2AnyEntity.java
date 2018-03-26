@@ -45,7 +45,7 @@ import ch.ethz.idsc.tensor.red.Norm2Squared;
   /** @param state initial position of entity */
   public R2AnyEntity(StateTime state, int resolution) {
     super(new R2Parameters( //
-        (RationalScalar) RealScalar.of(resolution), // resolution
+        RealScalar.of(resolution), // resolution
         RealScalar.of(2), // TimeScale
         RealScalar.of(100), // DepthScale
         Tensors.vector(30, 30), // PartitionScale

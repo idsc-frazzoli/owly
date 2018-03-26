@@ -144,7 +144,7 @@ enum R2GlcAnyCircleCompareDemo {
         database.stopStopwatchFor(0);
         database.saveIterations(itersStandard, 0);
         if (activateGui)
-          owlyStandardFrame.setGlc((TrajectoryPlanner) standardTrajectoryPlanner);
+          owlyStandardFrame.setGlc(standardTrajectoryPlanner);
         Scalar anyCost = ((AbstractAnyTrajectoryPlanner) anyPlannerInterface).getTrajectoryCost();
         database.saveCost(anyCost, 1);
         Scalar staCost = standardTrajectoryPlanner.getBest().get().costFromRoot();
