@@ -99,10 +99,6 @@ public abstract class AbstractAnyTrajectoryPlanner extends AbstractTrajectoryPla
     subTreeDeleterWatch.start();
     Collection<GlcNode> deleteTreeCollection = new HashSet<>();
     Nodes.ofSubtree(baseNode, deleteTreeCollection);
-    // {
-    // domainMap().values().removeIf(deleteTreeCollection::contains);
-    // }
-    // Collection<GlcNode> deleteTreeCollection = Nodes.ofSubtree(baseNode);
     // // -- GOAL: goalNode deleted?
     best.keySet().removeAll(deleteTreeCollection);
     // // -- QUEUE: Deleting Nodes from Queue
@@ -111,14 +107,10 @@ public abstract class AbstractAnyTrajectoryPlanner extends AbstractTrajectoryPla
     // // -- DOMAINMAP: Removing Nodes (DeleteTree) from DomainMap
     for (GlcNode node : deleteTreeCollection)
       domainMap().remove(convertToKey(node.stateTime()));
-    // boolean test = domainMap().values().removeAll(deleteTreeCollection);
-    // if (test)
-    // throw new RuntimeException();
     // -- EDGE: Removing Edges between Nodes in DeleteTree
     // TODO JONAS edge removal of all nodes needed?
     // better for garbage collector, otherwise child<->parent pair might keep itself in existence
     // Minimum needed:
-    // baseRoot.parent().removeEdgeTo(baseRoot);
     // oldRoot has no parent, therefore is skipped
     deleteTreeCollection.remove(baseNode);
     // if parallel, run in below exceptions
@@ -141,8 +133,6 @@ public abstract class AbstractAnyTrajectoryPlanner extends AbstractTrajectoryPla
     System.out.println("*** GOALSWITCH ***");
     long tictotal = System.nanoTime();
     {
-      // boolean noHeuristic = ((getGoalInterface() instanceof NoHeuristic) && (newGoal instanceof NoHeuristic));
-      // boolean noHeuristic = !getGoalInterface().hasHeuristic() && !newGoal.hasHeuristic();
       boolean noHeuristic = !HeuristicQ.of(getGoalInterface()) && !HeuristicQ.of(newGoal);
       changeGoalInterface(newGoal);
       long tic = System.nanoTime();
@@ -152,7 +142,7 @@ public abstract class AbstractAnyTrajectoryPlanner extends AbstractTrajectoryPla
       if (!noHeuristic) {
         treeCollection.stream().parallel() //
             .forEach(glcNode -> glcNode.setMinCostToGoal(getGoalInterface().minCostToGoal(glcNode.state())));
-        // relabelingDomains();
+        relabelingDomains();
         List<GlcNode> list = new LinkedList<>(queue());
         queue().clear();
         queue().addAll(list);
@@ -228,9 +218,10 @@ public abstract class AbstractAnyTrajectoryPlanner extends AbstractTrajectoryPla
   @Override
   public final Optional<GlcNode> existsInTree(StateTime stateTime) {
     GlcNode label = domainMap().get(convertToKey(stateTime));
-    if (Objects.isNull(label))
+    if (Objects.isNull(label)) {
       return Optional.empty();
-    if (label.stateTime().state().equals(stateTime.state()))
+    }
+    if (label.stateTime().state().equals(stateTime.state())) // check if node=label
       return Optional.ofNullable(label);
     return Optional.empty();
   }

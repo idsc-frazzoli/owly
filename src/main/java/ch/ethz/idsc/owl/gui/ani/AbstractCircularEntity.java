@@ -17,7 +17,7 @@ public abstract class AbstractCircularEntity extends AbstractEntity {
   }
 
   @Override
-  public final PlannerType getPlannerType() {
+  public PlannerType getPlannerType() {
     return PlannerType.STANDARD;
   }
 
