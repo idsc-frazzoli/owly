@@ -80,7 +80,7 @@ import ch.ethz.idsc.tensor.sca.Sqrt;
   /** @param state initial position of entity */
   public Se2AnyEntity(StateTime state, int resolution) {
     super(new Se2Parameters( //
-        (RationalScalar) RealScalar.of(resolution), // resolution
+        RealScalar.of(resolution), // resolution
         RealScalar.of(2), // TimeScale
         RealScalar.of(200), // DepthScale
         Tensors.vector(5, 5, 50 / Math.PI), // PartitionScale 50/pi == 15.9155

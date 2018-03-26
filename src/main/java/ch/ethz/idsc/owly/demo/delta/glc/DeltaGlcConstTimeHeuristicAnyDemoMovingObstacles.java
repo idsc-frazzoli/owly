@@ -17,7 +17,6 @@ import ch.ethz.idsc.owl.glc.adapter.StateTimeTrajectories;
 import ch.ethz.idsc.owl.glc.any.OptimalAnyTrajectoryPlanner;
 import ch.ethz.idsc.owl.glc.core.DebugUtils;
 import ch.ethz.idsc.owl.glc.core.GlcNode;
-import ch.ethz.idsc.owl.glc.core.TrajectoryPlanner;
 import ch.ethz.idsc.owl.gui.ani.OwlyFrame;
 import ch.ethz.idsc.owl.gui.ani.OwlyGui;
 import ch.ethz.idsc.owl.math.StateSpaceModels;
@@ -198,7 +197,7 @@ enum DeltaGlcConstTimeHeuristicAnyDemoMovingObstacles {
       System.out.println("Expanding " + expandIter + " Nodes took: " + stopwatch.display_seconds() + "s");
       listUpdateTime.append(RealScalar.of(stopwatch.display_seconds()));
       if (useGui) {
-        owlyFrame.setGlc((TrajectoryPlanner) slowTrajectoryPlannerContainer.getTrajectoryPlanner());
+        owlyFrame.setGlc(slowTrajectoryPlannerContainer.getTrajectoryPlanner());
         owlyFrame.addBackground(RegionRenders.create(slowTrajectoryPlannerContainer.getObstacleMap()));
       }
       List<StateTime> Trajectory = null;

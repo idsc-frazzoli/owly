@@ -14,7 +14,6 @@ import ch.ethz.idsc.owl.glc.adapter.StateTimeTrajectories;
 import ch.ethz.idsc.owl.glc.any.OptimalAnyTrajectoryPlanner;
 import ch.ethz.idsc.owl.glc.core.DebugUtils;
 import ch.ethz.idsc.owl.glc.core.GlcNode;
-import ch.ethz.idsc.owl.glc.core.TrajectoryPlanner;
 import ch.ethz.idsc.owl.gui.ani.OwlyFrame;
 import ch.ethz.idsc.owl.gui.ani.OwlyGui;
 import ch.ethz.idsc.owl.math.region.EllipsoidRegion;
@@ -134,7 +133,7 @@ enum DeltaGlcConstTimeHeuristicAnyDemo {
       timingDatabase.saveIterations(expandIter, 0);
       System.out.println("Expanding " + expandIter + " Nodes took: " + stopwatch.display_seconds() + "s");
       if (useGui)
-        owlyFrame.setGlc((TrajectoryPlanner) slowTrajectoryPlannerContainer.getTrajectoryPlanner());
+        owlyFrame.setGlc(slowTrajectoryPlannerContainer.getTrajectoryPlanner());
       List<StateTime> Trajectory = null;
       if (optional.isPresent()) {
         Trajectory = GlcNodes.getPathFromRootTo(finalGoalNode.get());

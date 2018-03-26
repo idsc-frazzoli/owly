@@ -17,7 +17,6 @@ public enum SignedCurvature2D {
    * @param c
    * @return inverse of radius of circle that interpolates the given points a, b, c */
   public static Scalar of(Tensor a, Tensor b, Tensor c) {
-    // System.out.println("length of tensors: "+ a.length()+", "+ b.length()+", "+c.length());
     Scalar v = b.subtract(a).dot(Cross2D.of(c.subtract(b))).Get();
     Scalar w = b.subtract(a).dot(c.subtract(a)).Get();
     Scalar n = Norm._2.between(c, b);

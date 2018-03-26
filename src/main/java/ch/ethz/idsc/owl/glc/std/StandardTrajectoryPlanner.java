@@ -87,7 +87,7 @@ public class StandardTrajectoryPlanner extends AbstractTrajectoryPlanner {
       // check flow constraints if any given
       boolean isFlowViolated = false;
       if (tfrq != null)
-        isFlowViolated = tfrq.firstMember(trajectory, next.flow()).isPresent();
+        isFlowViolated = tfrq.firstMember(trajectory, flow).isPresent();
       // check collisions
       if (!getObstacleQuery().firstMember(trajectory).isPresent() && !isFlowViolated) {
         Optional<GlcNode> former = getNode(domainKey);
