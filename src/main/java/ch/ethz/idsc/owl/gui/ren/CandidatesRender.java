@@ -42,8 +42,8 @@ class CandidatesRender implements RenderInterface {
         final CandidatePair candidate = candidateSetIterator.next();
         final Point2D p1 = geometricLayer.toPoint2D(candidate.getCandidate().state());
         final Point2D p2 = geometricLayer.toPoint2D(candidate.getOrigin().state());
-        Stroke dashed = new BasicStroke(//
-            (float) 1, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL, 0, new float[] { 5 }, 0);
+        Stroke dashed = new BasicStroke( //
+            1, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL, 0, new float[] { 5 }, 0);
         graphics.setStroke(dashed);
         graphics.setColor(new Color(0, 0, 0, 30));
         Shape shape = new Line2D.Double(p2.getX(), p2.getY(), p1.getX(), p1.getY());

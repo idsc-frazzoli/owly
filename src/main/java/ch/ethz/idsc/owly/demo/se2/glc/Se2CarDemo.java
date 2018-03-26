@@ -25,10 +25,10 @@ public abstract class Se2CarDemo implements DemoInterface {
   public final void start() {
     try {
       OwlyAnimationFrame owlyAnimationFrame = new OwlyAnimationFrame();
-      configure(owlyAnimationFrame);
       owlyAnimationFrame.configCoordinateOffset(50, 700);
       owlyAnimationFrame.jFrame.setBounds(100, 50, 1200, 800);
       owlyAnimationFrame.jFrame.setVisible(true);
+      configure(owlyAnimationFrame);
     } catch (Exception exception) {
       exception.printStackTrace();
     }

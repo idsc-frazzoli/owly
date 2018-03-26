@@ -45,7 +45,6 @@ import ch.ethz.idsc.tensor.io.AnimationWriter;
 import ch.ethz.idsc.tensor.io.ResourceData;
 
 public class DeltaxTGlcDemo implements DemoInterface {
-  ;
   @Override
   public void start() {
     // SETUP

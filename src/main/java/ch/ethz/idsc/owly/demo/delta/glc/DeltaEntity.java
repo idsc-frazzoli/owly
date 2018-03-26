@@ -52,8 +52,8 @@ import ch.ethz.idsc.tensor.sca.Chop;
   }
 
   @Override
-  protected Scalar distance(Tensor x, Tensor y) {
-    return Norm2Squared.between(x, y);
+  public Scalar distance(Tensor x, Tensor y) {
+    return Norm2Squared.between(x, y); // non-negative
   }
 
   @Override

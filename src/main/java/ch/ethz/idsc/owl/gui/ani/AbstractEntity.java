@@ -52,11 +52,16 @@ public abstract class AbstractEntity implements RenderInterface, AnimationInterf
       if (index < trajectory.size()) {
         GlobalAssert.that(trajectory.get(index).getFlow().isPresent());
         u = trajectory.get(index).getFlow().get().getU();
+        u = realisticControl(u);
       } else {
         trajectory = resetAction(trajectory);
       }
     }
     episodeIntegrator.move(u, now);
+  }
+
+  public Tensor realisticControl(Tensor u) {
+    return u;
   }
 
   /** @param delay
@@ -112,7 +117,10 @@ public abstract class AbstractEntity implements RenderInterface, AnimationInterf
 
   public abstract PlannerType getPlannerType();
 
-  protected abstract Scalar distance(Tensor x, Tensor y);
+  /** @param x
+   * @param y
+   * @return non-negative number */
+  public abstract Scalar distance(Tensor x, Tensor y);
 
   /** @return control vector to feed the episodeIntegrator in case no planned trajectory is available */
   protected abstract Tensor fallbackControl();

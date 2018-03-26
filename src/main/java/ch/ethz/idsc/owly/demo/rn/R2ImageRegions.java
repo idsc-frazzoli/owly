@@ -106,6 +106,27 @@ public enum R2ImageRegions {
   }
 
   /***************************************************/
+  public static final R2ImageRegionWrap _EIGHT = //
+      new R2ImageRegionWrap(eight_charImage(), Tensors.vector(12, 12));
+
+  public static Tensor eight_charImage() {
+    CharImage charImage = CharImage.fillWhite(new Dimension(640, 640));
+    charImage.setFont(new Font(Font.DIALOG, Font.PLAIN, 650));
+    charImage.draw('8', new Point(100, 550));
+    return Transpose.of(ImageFormat.from(charImage.bufferedImage()));
+  }
+
+  public static final R2ImageRegionWrap _EIGHT_LOW_RES = //
+      new R2ImageRegionWrap(eight_charImage_lowRes(), Tensors.vector(12, 12));
+
+  public static Tensor eight_charImage_lowRes() {
+    CharImage charImage = CharImage.fillWhite(new Dimension(320, 320));
+    charImage.setFont(new Font(Font.DIALOG, Font.PLAIN, 320));
+    charImage.draw('8', new Point(50, 270));
+    return Transpose.of(ImageFormat.from(charImage.bufferedImage()));
+  }
+
+  /***************************************************/
   public static CharImage inside_roundabout() {
     CharImage charImage = CharImage.fillWhite(new Dimension(236, 180));
     charImage.setFont(new Font(Font.DIALOG, Font.BOLD, 400));
