@@ -3,8 +3,10 @@ package ch.ethz.idsc.owl.math.map;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics2D;
+import java.awt.Rectangle;
 import java.awt.Shape;
 import java.awt.Stroke;
+import java.awt.geom.AffineTransform;
 import java.awt.geom.Area;
 import java.awt.geom.Path2D;
 import java.awt.geom.Rectangle2D;
@@ -13,6 +15,7 @@ import java.util.function.Supplier;
 
 import ch.ethz.idsc.owl.gui.GeometricLayer;
 import ch.ethz.idsc.owl.gui.RenderInterface;
+import ch.ethz.idsc.owl.math.region.ImageArea;
 import ch.ethz.idsc.owl.math.region.ImageRegion;
 import ch.ethz.idsc.owl.math.state.StateTime;
 import ch.ethz.idsc.owl.sim.LidarEmulator;
@@ -21,11 +24,11 @@ import ch.ethz.idsc.owly.demo.util.RegionRenders;
 public class ShadowMap implements RenderInterface {
   //
   private BufferedImage bufferedImage;
-  private final ImageRegion imageRegion;
   private final LidarEmulator lidar;
   private final Supplier<StateTime> supplier;
   private final Rectangle2D rInit;
   private Area shadowArea;
+  private final Area obstacleArea;
   private int counter = 0;
   //
   private static final Color COLOR_SHADDOW_FILL = new Color(255, 50, 74, 16);
@@ -33,12 +36,23 @@ public class ShadowMap implements RenderInterface {
 
   public ShadowMap(LidarEmulator lidar, ImageRegion imageRegion, Supplier<StateTime> supplier) {
     this.lidar = lidar;
-    this.bufferedImage = RegionRenders.image(imageRegion.image());
-    this.imageRegion = imageRegion;
     this.supplier = supplier;
+    this.bufferedImage = RegionRenders.image(imageRegion.image());
+    // turn imageRegion into area
+    ImageArea imageArea = new ImageArea(bufferedImage, new Color(244, 244, 244), 5);
+    AffineTransform tx = new AffineTransform();
+    tx.scale(3.6, 3.6);
+    tx.translate(13.6, -5.7); // TODO: get transformation from imageRegion
+    obstacleArea = imageArea.createTransformedArea(tx);
+    Stroke stroke = new BasicStroke(4, BasicStroke.CAP_ROUND, BasicStroke.JOIN_BEVEL);
+    Shape strokeShape = stroke.createStrokedShape(obstacleArea);
+    obstacleArea.add(new Area(strokeShape));
+    // define initial shadow area
     this.rInit = new Rectangle2D.Double();
     this.rInit.setFrame(50, 0, 720, 700); // TODO: somehow get frame size from imageRegion
     this.shadowArea = new Area(rInit);
+    // subtract obstacles from shaddow
+    shadowArea.subtract(obstacleArea);
   }
 
   public BufferedImage getBufferedImage() {
@@ -53,7 +67,7 @@ public class ShadowMap implements RenderInterface {
     Stroke stroke = new BasicStroke(1, BasicStroke.CAP_ROUND, BasicStroke.JOIN_BEVEL);
     Shape strokeShape = stroke.createStrokedShape(shadowArea);
     shadowArea.add(new Area(strokeShape));
-    shadowArea.intersect(new Area(rInit));
+    shadowArea.subtract(obstacleArea);
   }
 
   @Override
@@ -64,6 +78,7 @@ public class ShadowMap implements RenderInterface {
     geometricLayer.popMatrix();
     //
     // TODO: replace counter with time reference passed to updateMap
+    // TODO: move map calculation to new thread, separate from render()
     if (counter == 0) {
       updateMap(lidarPath2D);
     }
