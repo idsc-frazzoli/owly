@@ -1,9 +1,9 @@
+// code by ynager
 package ch.ethz.idsc.owl.math.map;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics2D;
-import java.awt.Rectangle;
 import java.awt.Shape;
 import java.awt.Stroke;
 import java.awt.geom.AffineTransform;
@@ -22,7 +22,6 @@ import ch.ethz.idsc.owl.sim.LidarEmulator;
 import ch.ethz.idsc.owly.demo.util.RegionRenders;
 
 public class ShadowMap implements RenderInterface {
-  //
   private BufferedImage bufferedImage;
   private final LidarEmulator lidar;
   private final Supplier<StateTime> supplier;
@@ -39,11 +38,11 @@ public class ShadowMap implements RenderInterface {
     this.supplier = supplier;
     this.bufferedImage = RegionRenders.image(imageRegion.image());
     // turn imageRegion into area
-    ImageArea imageArea = new ImageArea(bufferedImage, new Color(244, 244, 244), 5);
+    Area area = ImageArea.fromImage(bufferedImage, new Color(244, 244, 244), 5);
     AffineTransform tx = new AffineTransform();
     tx.scale(3.6, 3.6);
     tx.translate(13.6, -5.7); // TODO: get transformation from imageRegion
-    obstacleArea = imageArea.createTransformedArea(tx);
+    obstacleArea = area.createTransformedArea(tx);
     Stroke stroke = new BasicStroke(4, BasicStroke.CAP_ROUND, BasicStroke.JOIN_BEVEL);
     Shape strokeShape = stroke.createStrokedShape(obstacleArea);
     obstacleArea.add(new Area(strokeShape));
