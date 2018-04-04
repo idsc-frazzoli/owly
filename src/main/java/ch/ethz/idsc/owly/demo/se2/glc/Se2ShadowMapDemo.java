@@ -37,7 +37,7 @@ public class Se2ShadowMapDemo extends Se2CarDemo {
         LidarEmulator.DEFAULT, se2Entity::getStateTimeNow, ray);
     owlyAnimationFrame.addBackground(lidarEmulator);
     // SHADOWMAP
-    ShadowMap shadowMap = new ShadowMap((LidarEmulator) lidarEmulator, imageRegion, se2Entity::getStateTimeNow);
+    ShadowMap shadowMap = new ShadowMap((LidarEmulator) lidarEmulator, imageRegion, se2Entity::getStateTimeNow, 10);
     owlyAnimationFrame.addBackground(shadowMap);
     shadowMap.startNonBlocking();
     //

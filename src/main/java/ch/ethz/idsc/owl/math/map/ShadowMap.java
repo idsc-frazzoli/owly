@@ -30,24 +30,21 @@ import ch.ethz.idsc.tensor.mat.Inverse;
 
 public class ShadowMap implements RenderInterface {
   //
-  private final int resolution = 100;
-  private final Tensor shadowMapTransform = Tensors.matrix(new Number[][] //
-  { { resolution, 0, 0 }, { 0, -resolution, 0 }, { 0, 0, 1 } }).unmodifiable();
-  private final int updateRate = 10; //[Hz]
-  private final LidarEmulator lidar;
-  private final Supplier<StateTime> stateTimeSupplier;
-  private final Rectangle2D rInit;
   private static final Color COLOR_SHADDOW_FILL = new Color(255, 50, 74, 16);
   private static final Color COLOR_SHADDOW_DRAW = new Color(255, 50, 74, 64);
+  private final LidarEmulator lidar;
+  private final Supplier<StateTime> stateTimeSupplier;
+  private boolean isPaused = false;
+  private float strokeWidth;
   private final Area obstacleArea;
   private Area shadowArea;
   private Timer increaserTimer;
-  private boolean isPaused = false;
-  private float strokeVelocity = 0;
+  private final int updateRate; //[Hz]
 
-  public ShadowMap(LidarEmulator lidar, ImageRegion imageRegion, Supplier<StateTime> stateTimeSupplier) {
+  public ShadowMap(LidarEmulator lidar, ImageRegion imageRegion, Supplier<StateTime> stateTimeSupplier, int updateRate) {
     this.lidar = lidar;
     this.stateTimeSupplier = stateTimeSupplier;
+    this.updateRate = updateRate;
     BufferedImage bufferedImage = RegionRenders.image(imageRegion.image());
     ImageArea imageArea = new ImageArea(bufferedImage, new Color(244, 244, 244), 5);
     //
@@ -58,43 +55,37 @@ public class ShadowMap implements RenderInterface {
         -scale.Get(1).reciprocal().number().doubleValue(), 1);
     Tensor translate = IdentityMatrix.of(3);
     translate.set(RealScalar.of(-bufferedImage.getHeight()), 1, 2);
-    Tensor tmatrix = shadowMapTransform.dot(invsc).dot(translate);
+    Tensor tmatrix = invsc.dot(translate);
     obstacleArea = imageArea.createTransformedArea(AffineTransforms.toAffineTransform(tmatrix));
     //
     // define initial shadow area
-    this.rInit = new Rectangle2D.Double();
-    this.rInit.setFrame(obstacleArea.getBounds());
+    Rectangle2D rInit = new Rectangle2D.Double();
+    rInit.setFrame(obstacleArea.getBounds());
     this.shadowArea = new Area(rInit);
-    Stroke stroke = new BasicStroke(4, BasicStroke.CAP_ROUND, BasicStroke.JOIN_BEVEL);
+    Stroke stroke = new BasicStroke(0.1f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_BEVEL);
     Shape strokeShape = stroke.createStrokedShape(obstacleArea);
     obstacleArea.add(new Area(strokeShape));
     //
     // subtract obstacles from shadow area
     shadowArea.subtract(obstacleArea);
     //
-    strokeVelocity = velocityToStroke(1);
+    float vMax = 0.2f; // max pedestrian velocity in [m/s]
+    strokeWidth = 2*vMax/updateRate; //TODO: check if this is correct
   }
 
   public void updateMap() {
-    GeometricLayer geom = new GeometricLayer(shadowMapTransform, Tensors.vectorInt(0, 0, 0));
     Se2Bijection se2Bijection = new Se2Bijection(stateTimeSupplier.get().state());
-    geom.pushMatrix(se2Bijection.forward_se2());
+    GeometricLayer geom = new GeometricLayer(se2Bijection.forward_se2(), Tensors.vectorInt(0, 0, 0));
     Path2D lidarPath2D = geom.toPath2D(lidar.getPolygon());
-    // subtract current lidar measurement from shadow area
+    // subtract current LIDAR measurement from shadow area
     shadowArea.subtract(new Area(lidarPath2D));
-    // inflate shadow area
-    // TODO: calculate stroke based on resolution, v_max and updateRate
-    Stroke stroke = new BasicStroke(strokeVelocity, BasicStroke.CAP_ROUND, BasicStroke.JOIN_BEVEL);
+    // dilate shadow area
+    Stroke stroke = new BasicStroke(strokeWidth, BasicStroke.CAP_ROUND, BasicStroke.JOIN_BEVEL);
     Shape strokeShape = stroke.createStrokedShape(shadowArea);
     shadowArea.add(new Area(strokeShape));
-    shadowArea.subtract(obstacleArea);
+    shadowArea.subtract(obstacleArea);    
   }
   
-  private float velocityToStroke(double vMax) {
-    float strokePerMeter = resolution/3; //TODO: find a way to get the actual value of this
-    return (float) (strokePerMeter*vMax/updateRate);
-  }
-
   public final void startNonBlocking() {
     TimerTask mapUpdate = new TimerTask() {
       public void run() {
@@ -103,7 +94,7 @@ public class ShadowMap implements RenderInterface {
       }
     };
     increaserTimer = new Timer("MapUpdateTimer");
-    increaserTimer.scheduleAtFixedRate(mapUpdate, 10, 1000/updateRate); // call mapUpdate at 10Hz
+    increaserTimer.scheduleAtFixedRate(mapUpdate, 10, 1000/updateRate);
   }
 
   public final void flagShutdown() {
@@ -120,7 +111,7 @@ public class ShadowMap implements RenderInterface {
 
   @Override
   public void render(GeometricLayer geometricLayer, Graphics2D graphics) {
-    final Tensor matrix = geometricLayer.getMatrix().dot(Inverse.of(shadowMapTransform));
+    final Tensor matrix = geometricLayer.getMatrix();
     Area plotArea = new Area(shadowArea.createTransformedArea(AffineTransforms.toAffineTransform(matrix)));
     graphics.setColor(COLOR_SHADDOW_FILL);
     graphics.fill(plotArea);
