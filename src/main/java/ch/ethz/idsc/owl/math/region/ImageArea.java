@@ -6,12 +6,9 @@ import java.awt.Rectangle;
 import java.awt.geom.Area;
 import java.awt.image.BufferedImage;
 
-public class ImageArea extends Area {
-  public ImageArea(BufferedImage image, Color color, int tolerance) {
-    super(getArea(image, color, tolerance));
-  }
-
-  public static Area getArea(BufferedImage image, Color color, int tolerance) {
+public enum ImageArea {
+  ;
+  public static Area fromImage(BufferedImage image, Color color, int tolerance) {
     if (image == null)
       return null;
     Area area = new Area();

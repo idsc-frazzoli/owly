@@ -1,3 +1,4 @@
+// code by ynager
 package ch.ethz.idsc.owl.math.map;
 
 import java.awt.BasicStroke;
@@ -26,7 +27,6 @@ import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
 import ch.ethz.idsc.tensor.mat.DiagonalMatrix;
 import ch.ethz.idsc.tensor.mat.IdentityMatrix;
-import ch.ethz.idsc.tensor.mat.Inverse;
 
 public class ShadowMap implements RenderInterface {
   //
@@ -46,7 +46,7 @@ public class ShadowMap implements RenderInterface {
     this.stateTimeSupplier = stateTimeSupplier;
     this.updateRate = updateRate;
     BufferedImage bufferedImage = RegionRenders.image(imageRegion.image());
-    ImageArea imageArea = new ImageArea(bufferedImage, new Color(244, 244, 244), 5);
+    Area area = ImageArea.fromImage(bufferedImage, new Color(244, 244, 244), 5);
     //
     // convert imageRegion into Area
     Tensor scale = imageRegion.scale();
@@ -56,7 +56,7 @@ public class ShadowMap implements RenderInterface {
     Tensor translate = IdentityMatrix.of(3);
     translate.set(RealScalar.of(-bufferedImage.getHeight()), 1, 2);
     Tensor tmatrix = invsc.dot(translate);
-    obstacleArea = imageArea.createTransformedArea(AffineTransforms.toAffineTransform(tmatrix));
+    obstacleArea = area.createTransformedArea(AffineTransforms.toAffineTransform(tmatrix));
     //
     // define initial shadow area
     Rectangle2D rInit = new Rectangle2D.Double();
@@ -70,7 +70,7 @@ public class ShadowMap implements RenderInterface {
     shadowArea.subtract(obstacleArea);
     //
     float vMax = 0.2f; // max pedestrian velocity in [m/s]
-    strokeWidth = 2*vMax/updateRate; //TODO: check if this is correct
+    strokeWidth = 2*vMax/updateRate; //TODO: check if correct
   }
 
   public void updateMap() {
