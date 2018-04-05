@@ -4,7 +4,6 @@ package ch.ethz.idsc.owly.demo.util;
 import java.awt.Color;
 import java.awt.image.BufferedImage;
 
-import ch.ethz.idsc.owl.data.GlobalAssert;
 import ch.ethz.idsc.owl.gui.RenderInterface;
 import ch.ethz.idsc.owl.gui.region.EllipseRegionRender;
 import ch.ethz.idsc.owl.gui.region.ImageRegionRender;
@@ -23,7 +22,7 @@ import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Scalars;
 import ch.ethz.idsc.tensor.Tensor;
-import ch.ethz.idsc.tensor.alg.TensorRank;
+import ch.ethz.idsc.tensor.alg.MatrixQ;
 import ch.ethz.idsc.tensor.io.ImageFormat;
 
 public enum RegionRenders {
@@ -41,7 +40,7 @@ public enum RegionRenders {
   }
 
   public static BufferedImage image(Tensor image) {
-    GlobalAssert.that(TensorRank.of(image) == 2);
+    MatrixQ.elseThrow(image); // GlobalAssert.that(TensorRank.of(image) == 2);
     return ImageFormat.of(image.map(RegionRenders::color));
   }
 
