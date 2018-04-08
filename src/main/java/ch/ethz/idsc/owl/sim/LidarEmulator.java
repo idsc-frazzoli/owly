@@ -101,8 +101,8 @@ public class LidarEmulator implements RenderInterface {
     geometricLayer.popMatrix();
   }
 
-  public Tensor getPolygon() {
-    final Tensor range = detectRange(supplier.get()).unmodifiable();
+  public Tensor getPolygon(StateTime stateTime) {
+    final Tensor range = detectRange(stateTime).unmodifiable();
     return range.pmul(directions).append(Array.zeros(2));
   }
 }

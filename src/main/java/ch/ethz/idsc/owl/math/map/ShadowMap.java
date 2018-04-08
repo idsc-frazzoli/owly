@@ -34,13 +34,13 @@ public class ShadowMap implements RenderInterface {
   private static final Color COLOR_SHADDOW_DRAW = new Color(255, 50, 74, 64);
   // ---
   private final LidarEmulator lidar;
-  private final Supplier<StateTime> stateTimeSupplier;
+  public final Supplier<StateTime> stateTimeSupplier;
   private boolean isPaused = false;
-  private float strokeWidth;
   private final Area obstacleArea;
   private Area shadowArea;
   private Timer increaserTimer;
   private final int updateRate; // [Hz]
+  public float vMax = 0.1f;
 
   public ShadowMap(LidarEmulator lidar, ImageRegion imageRegion, Supplier<StateTime> stateTimeSupplier, int updateRate) {
     this.lidar = lidar;
@@ -64,28 +64,31 @@ public class ShadowMap implements RenderInterface {
     Rectangle2D rInit = new Rectangle2D.Double();
     rInit.setFrame(obstacleArea.getBounds());
     this.shadowArea = new Area(rInit);
-    Stroke stroke = new BasicStroke(0.1f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_BEVEL);
+    Stroke stroke = new BasicStroke(0.03f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_BEVEL);
     Shape strokeShape = stroke.createStrokedShape(obstacleArea);
     obstacleArea.add(new Area(strokeShape));
     //
     // subtract obstacles from shadow area
     shadowArea.subtract(obstacleArea);
     //
-    float vMax = 0.2f; // magic const, max pedestrian velocity in [m/s]
-    strokeWidth = 2 * vMax / updateRate; // TODO: check if correct
+    // float vMax = 0.2f; // magic const, max pedestrian velocity in [m/s]
+    // strokeWidth = 2 * vMax / updateRate; // TODO: check if correct
   }
 
-  public void updateMap() {
-    Se2Bijection se2Bijection = new Se2Bijection(stateTimeSupplier.get().state());
+  public void updateMap(Area area, StateTime stateTime, float timeDelta) {
+    Se2Bijection se2Bijection = new Se2Bijection(stateTime.state());
     GeometricLayer geom = new GeometricLayer(se2Bijection.forward_se2(), Tensors.vectorInt(0, 0, 0));
-    Path2D lidarPath2D = geom.toPath2D(lidar.getPolygon());
+    Path2D lidarPath2D = geom.toPath2D(lidar.getPolygon(stateTime));
     // subtract current LIDAR measurement from shadow area
-    shadowArea.subtract(new Area(lidarPath2D));
+    area.subtract(new Area(lidarPath2D));
     // dilate shadow area
+    float strokeWidth = timeDelta * 2 * vMax; // TODO: check if correct
     Stroke stroke = new BasicStroke(strokeWidth, BasicStroke.CAP_ROUND, BasicStroke.JOIN_BEVEL);
     Shape strokeShape = stroke.createStrokedShape(shadowArea);
-    shadowArea.add(new Area(strokeShape));
-    shadowArea.subtract(obstacleArea);
+    area.add(new Area(strokeShape));
+    area.subtract(obstacleArea);
+    // shadowArea.add(new Area(strokeShape));
+    // shadowArea.subtract(obstacleArea);
   }
 
   public final void startNonBlocking() {
@@ -93,7 +96,9 @@ public class ShadowMap implements RenderInterface {
       @Override
       public void run() {
         if (!isPaused)
-          updateMap();
+          updateMap(shadowArea, stateTimeSupplier.get(), 1.0f / updateRate);
+        // if (!isPaused)
+        // updateMap();
       }
     };
     increaserTimer = new Timer("MapUpdateTimer");
@@ -110,6 +115,10 @@ public class ShadowMap implements RenderInterface {
 
   public final void resume() {
     isPaused = false;
+  }
+
+  public final Area getCurrentMap() {
+    return shadowArea;
   }
 
   @Override

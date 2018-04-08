@@ -12,23 +12,27 @@ import ch.ethz.idsc.tensor.alg.Subdivide;
 
 /** controls allow to drive forward and backward */
 public class CarVelocityFlows extends CarFlows {
-  private final Scalar speed;
+  private final Tensor velocities;
   private final Scalar rate_max;
-  private final int velResolution;
 
-  /** @param speed with unit [m*s^-1]
+  /** @param velocity with unit [m*s^-1]
+   * @param velocity resolution
    * @param rate_max with unit [rad*m^-1], i.e. the amount of
    * rotation [rad] performed per distance [m^-1] */
-  public CarVelocityFlows(Scalar speed, int velResolution, Scalar rate_max) {
-    this.speed = speed;
+  public CarVelocityFlows(Scalar velocity, int velResolution, Scalar rate_max) {
     this.rate_max = rate_max;
-    this.velResolution = velResolution;
+    this.velocities = Subdivide.of(velocity.negate(), velocity, velResolution);
+  }
+
+  public CarVelocityFlows(Tensor velocities, Scalar rate_max) {
+    this.rate_max = rate_max;
+    this.velocities = velocities;
   }
 
   @Override
   public Collection<Flow> getFlows(int resolution) {
     List<Flow> list = new ArrayList<>();
-    for (Tensor sp : Subdivide.of(speed.negate(), speed, velResolution)) { // {-1, -0.5, 0, 0.5, 1}
+    for (Tensor sp : velocities) {
       for (Tensor angle : Subdivide.of(rate_max.negate(), rate_max, resolution)) {
         list.add(singleton((Scalar) sp, angle));
       }
