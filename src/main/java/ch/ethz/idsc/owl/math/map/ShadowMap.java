@@ -17,7 +17,7 @@ import java.util.function.Supplier;
 import ch.ethz.idsc.owl.gui.AffineTransforms;
 import ch.ethz.idsc.owl.gui.GeometricLayer;
 import ch.ethz.idsc.owl.gui.RenderInterface;
-import ch.ethz.idsc.owl.math.region.ImageArea;
+import ch.ethz.idsc.owl.img.ImageArea;
 import ch.ethz.idsc.owl.math.region.ImageRegion;
 import ch.ethz.idsc.owl.math.state.StateTime;
 import ch.ethz.idsc.owl.sim.LidarEmulator;
@@ -32,6 +32,7 @@ public class ShadowMap implements RenderInterface {
   //
   private static final Color COLOR_SHADDOW_FILL = new Color(255, 50, 74, 16);
   private static final Color COLOR_SHADDOW_DRAW = new Color(255, 50, 74, 64);
+  // ---
   private final LidarEmulator lidar;
   private final Supplier<StateTime> stateTimeSupplier;
   private boolean isPaused = false;
@@ -39,13 +40,14 @@ public class ShadowMap implements RenderInterface {
   private final Area obstacleArea;
   private Area shadowArea;
   private Timer increaserTimer;
-  private final int updateRate; //[Hz]
+  private final int updateRate; // [Hz]
 
   public ShadowMap(LidarEmulator lidar, ImageRegion imageRegion, Supplier<StateTime> stateTimeSupplier, int updateRate) {
     this.lidar = lidar;
     this.stateTimeSupplier = stateTimeSupplier;
     this.updateRate = updateRate;
     BufferedImage bufferedImage = RegionRenders.image(imageRegion.image());
+    // TODO 244 and 5 magic const, redundant to values specified elsewhere
     Area area = ImageArea.fromImage(bufferedImage, new Color(244, 244, 244), 5);
     //
     // convert imageRegion into Area
@@ -69,8 +71,8 @@ public class ShadowMap implements RenderInterface {
     // subtract obstacles from shadow area
     shadowArea.subtract(obstacleArea);
     //
-    float vMax = 0.2f; // max pedestrian velocity in [m/s]
-    strokeWidth = 2*vMax/updateRate; //TODO: check if correct
+    float vMax = 0.2f; // magic const, max pedestrian velocity in [m/s]
+    strokeWidth = 2 * vMax / updateRate; // TODO: check if correct
   }
 
   public void updateMap() {
@@ -83,24 +85,25 @@ public class ShadowMap implements RenderInterface {
     Stroke stroke = new BasicStroke(strokeWidth, BasicStroke.CAP_ROUND, BasicStroke.JOIN_BEVEL);
     Shape strokeShape = stroke.createStrokedShape(shadowArea);
     shadowArea.add(new Area(strokeShape));
-    shadowArea.subtract(obstacleArea);    
+    shadowArea.subtract(obstacleArea);
   }
-  
+
   public final void startNonBlocking() {
     TimerTask mapUpdate = new TimerTask() {
+      @Override
       public void run() {
-        if(!isPaused)
+        if (!isPaused)
           updateMap();
       }
     };
     increaserTimer = new Timer("MapUpdateTimer");
-    increaserTimer.scheduleAtFixedRate(mapUpdate, 10, 1000/updateRate);
+    increaserTimer.scheduleAtFixedRate(mapUpdate, 10, 1000 / updateRate);
   }
 
   public final void flagShutdown() {
     increaserTimer.cancel();
   }
-  
+
   public final void pause() {
     isPaused = true;
   }
