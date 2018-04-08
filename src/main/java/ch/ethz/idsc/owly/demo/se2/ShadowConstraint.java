@@ -4,6 +4,7 @@ package ch.ethz.idsc.owly.demo.se2;
 import java.awt.Shape;
 import java.awt.geom.Area;
 import java.awt.geom.Ellipse2D;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -17,11 +18,12 @@ import ch.ethz.idsc.owl.math.state.StateTime;
 import ch.ethz.idsc.tensor.DoubleScalar;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Scalars;
+import ch.ethz.idsc.tensor.Tensor;
 
 @DontModify
-public final class ShadowConstraint implements Constraint {
-  ShadowMap shadowMap;
-  StateTime rootStateTime;
+public final class ShadowConstraint implements Constraint, Serializable {
+  private final ShadowMap shadowMap;
+  private StateTime rootStateTime; // FIXME design error prone
 
   public ShadowConstraint(ShadowMap shadowMap) {
     this.shadowMap = shadowMap;
@@ -38,8 +40,9 @@ public final class ShadowConstraint implements Constraint {
     shadowMap.pause();
     // TODO: hack, find cleaner solution to temporarily halt time or compensate for it
     // check if shadowArea far enough away from node to be unreachable by shadow
-    double posX = glcNode.state().Get(0).number().doubleValue();
-    double posY = glcNode.state().Get(1).number().doubleValue();
+    Tensor state = glcNode.state();
+    double posX = state.Get(0).number().doubleValue();
+    double posY = state.Get(1).number().doubleValue();
     double tDelt = glcNode.stateTime().time().number().doubleValue() //
         - rootStateTime.time().number().doubleValue();
     //
@@ -50,9 +53,8 @@ public final class ShadowConstraint implements Constraint {
     Area circleArea = new Area(circle);
     circleArea.intersect(simShadowArea);
     //
-    if (circleArea.isEmpty()) {
+    if (circleArea.isEmpty())
       return true;
-    }
     //
     Scalar vel = glcNode.flow().getU().Get(0);
     Scalar tStop = vel.multiply(vel).multiply(DoubleScalar.of(1.4));
@@ -70,7 +72,8 @@ public final class ShadowConstraint implements Constraint {
     }
     //
     // get root node and build node trajectory list
-    List<GlcNode> nodeList = new ArrayList<GlcNode>();
+    // TODO yannik can use: GlcNodes.getPathFromRootTo(targetNode) ?
+    List<GlcNode> nodeList = new ArrayList<>();
     GlcNode nodeIt = targetNode;
     while (!nodeIt.isRoot()) {
       nodeList.add(nodeIt);

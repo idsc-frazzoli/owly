@@ -17,7 +17,7 @@ import java.util.function.Supplier;
 import ch.ethz.idsc.owl.gui.AffineTransforms;
 import ch.ethz.idsc.owl.gui.GeometricLayer;
 import ch.ethz.idsc.owl.gui.RenderInterface;
-import ch.ethz.idsc.owl.math.region.ImageArea;
+import ch.ethz.idsc.owl.img.ImageArea;
 import ch.ethz.idsc.owl.math.region.ImageRegion;
 import ch.ethz.idsc.owl.math.state.StateTime;
 import ch.ethz.idsc.owl.sim.LidarEmulator;
@@ -32,13 +32,14 @@ public class ShadowMap implements RenderInterface {
   //
   private static final Color COLOR_SHADDOW_FILL = new Color(255, 50, 74, 16);
   private static final Color COLOR_SHADDOW_DRAW = new Color(255, 50, 74, 64);
+  // ---
   private final LidarEmulator lidar;
   public final Supplier<StateTime> stateTimeSupplier;
   private boolean isPaused = false;
   private final Area obstacleArea;
   private Area shadowArea;
   private Timer increaserTimer;
-  private final int updateRate; //[Hz]
+  private final int updateRate; // [Hz]
   public float vMax = 0.1f;
 
   public ShadowMap(LidarEmulator lidar, ImageRegion imageRegion, Supplier<StateTime> stateTimeSupplier, int updateRate) {
@@ -46,6 +47,7 @@ public class ShadowMap implements RenderInterface {
     this.stateTimeSupplier = stateTimeSupplier;
     this.updateRate = updateRate;
     BufferedImage bufferedImage = RegionRenders.image(imageRegion.image());
+    // TODO 244 and 5 magic const, redundant to values specified elsewhere
     Area area = ImageArea.fromImage(bufferedImage, new Color(244, 244, 244), 5);
     //
     // convert imageRegion into Area
@@ -68,6 +70,9 @@ public class ShadowMap implements RenderInterface {
     //
     // subtract obstacles from shadow area
     shadowArea.subtract(obstacleArea);
+    //
+    // float vMax = 0.2f; // magic const, max pedestrian velocity in [m/s]
+    // strokeWidth = 2 * vMax / updateRate; // TODO: check if correct
   }
 
   public void updateMap(Area area, StateTime stateTime, float timeDelta) {
@@ -77,28 +82,33 @@ public class ShadowMap implements RenderInterface {
     // subtract current LIDAR measurement from shadow area
     area.subtract(new Area(lidarPath2D));
     // dilate shadow area
-    float strokeWidth = timeDelta*2*vMax; //TODO: check if correct
+    float strokeWidth = timeDelta * 2 * vMax; // TODO: check if correct
     Stroke stroke = new BasicStroke(strokeWidth, BasicStroke.CAP_ROUND, BasicStroke.JOIN_BEVEL);
     Shape strokeShape = stroke.createStrokedShape(shadowArea);
     area.add(new Area(strokeShape));
-    area.subtract(obstacleArea);    
+    area.subtract(obstacleArea);
+    // shadowArea.add(new Area(strokeShape));
+    // shadowArea.subtract(obstacleArea);
   }
-  
+
   public final void startNonBlocking() {
     TimerTask mapUpdate = new TimerTask() {
+      @Override
       public void run() {
-        if(!isPaused)
-          updateMap(shadowArea, stateTimeSupplier.get(), 1.0f/updateRate);
+        if (!isPaused)
+          updateMap(shadowArea, stateTimeSupplier.get(), 1.0f / updateRate);
+        // if (!isPaused)
+        // updateMap();
       }
     };
     increaserTimer = new Timer("MapUpdateTimer");
-    increaserTimer.scheduleAtFixedRate(mapUpdate, 10, 1000/updateRate);
+    increaserTimer.scheduleAtFixedRate(mapUpdate, 10, 1000 / updateRate);
   }
 
   public final void flagShutdown() {
     increaserTimer.cancel();
   }
-  
+
   public final void pause() {
     isPaused = true;
   }
@@ -106,7 +116,7 @@ public class ShadowMap implements RenderInterface {
   public final void resume() {
     isPaused = false;
   }
-  
+
   public final Area getCurrentMap() {
     return shadowArea;
   }

@@ -28,7 +28,6 @@ public abstract class Se2Entity extends AbstractEntity {
   // ---
   public final Collection<CostFunction> extraCosts = new LinkedList<>();
   public final Collection<Constraint> extraConstraints = new LinkedList<>();
-  
   public TrajectoryRegionQuery obstacleQuery = null;
 
   protected Se2Entity(EpisodeIntegrator episodeIntegrator) {

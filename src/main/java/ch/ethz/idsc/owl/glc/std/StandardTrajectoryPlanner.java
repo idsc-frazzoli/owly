@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import ch.ethz.idsc.owl.glc.adapter.GoalAdapter;
 import ch.ethz.idsc.owl.glc.core.AbstractTrajectoryPlanner;
 import ch.ethz.idsc.owl.glc.core.ControlsIntegrator;
 import ch.ethz.idsc.owl.glc.core.DomainQueue;

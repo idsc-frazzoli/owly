@@ -114,7 +114,7 @@ public class CarEntity extends Se2Entity {
     this.obstacleQuery = obstacleQuery;
     GoalInterface goalInterface = MultiCostGoalAdapter.of( //
         Se2MinTimeGoalManager.create(goal, goalRadius, controls), extraCosts);
-    goalInterface = CostConstraintGoalAdapter.of(goalInterface, extraConstraints); //add constraints
+    goalInterface = CostConstraintGoalAdapter.of(goalInterface, extraConstraints); // add constraints
     TrajectoryPlanner trajectoryPlanner = new StandardTrajectoryPlanner( //
         eta(), FIXEDSTATEINTEGRATOR, controls, obstacleQuery, goalInterface);
     trajectoryPlanner.represent = StateTimeTensorFunction.state(SE2WRAP::represent);
