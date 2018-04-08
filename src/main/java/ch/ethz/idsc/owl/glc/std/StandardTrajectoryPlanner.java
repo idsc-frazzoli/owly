@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import ch.ethz.idsc.owl.glc.adapter.GoalAdapter;
 import ch.ethz.idsc.owl.glc.core.AbstractTrajectoryPlanner;
 import ch.ethz.idsc.owl.glc.core.ControlsIntegrator;
 import ch.ethz.idsc.owl.glc.core.DomainQueue;
@@ -84,12 +85,17 @@ public class StandardTrajectoryPlanner extends AbstractTrajectoryPlanner {
     for (GlcNode next : domainQueue) { // iterate over the candidates in DomainQueue
       final Flow flow = next.flow();
       final List<StateTime> trajectory = connectors.get(next);
-      // check flow constraints if any given
+      //
+      // Check constraints
+      boolean isConSatisfied = getGoalInterface().isSatisfied(next, node, trajectory, flow);
+      //
+      // TODO: make the following cleaner
       boolean isFlowViolated = false;
       if (tfrq != null)
         isFlowViolated = tfrq.firstMember(trajectory, flow).isPresent();
+      //
       // check collisions
-      if (!getObstacleQuery().firstMember(trajectory).isPresent() && !isFlowViolated) {
+      if (!getObstacleQuery().firstMember(trajectory).isPresent() && !isFlowViolated && isConSatisfied) {
         Optional<GlcNode> former = getNode(domainKey);
         boolean isPresent = former.isPresent();
         synchronized (this) {

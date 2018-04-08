@@ -9,6 +9,7 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.Objects;
 
+import ch.ethz.idsc.owl.glc.core.Constraint;
 import ch.ethz.idsc.owl.glc.core.CostFunction;
 import ch.ethz.idsc.owl.gui.GeometricLayer;
 import ch.ethz.idsc.owl.gui.ani.AbstractEntity;
@@ -26,6 +27,8 @@ public abstract class Se2Entity extends AbstractEntity {
   private static final Tensor FALLBACK_CONTROL = N.DOUBLE.of(Array.zeros(3)).unmodifiable();
   // ---
   public final Collection<CostFunction> extraCosts = new LinkedList<>();
+  public final Collection<Constraint> extraConstraints = new LinkedList<>();
+  
   public TrajectoryRegionQuery obstacleQuery = null;
 
   protected Se2Entity(EpisodeIntegrator episodeIntegrator) {

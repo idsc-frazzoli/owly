@@ -4,6 +4,7 @@ package ch.ethz.idsc.owly.demo.se2.glc;
 import java.util.Collection;
 
 import ch.ethz.idsc.owl.data.GlobalAssert;
+import ch.ethz.idsc.owl.glc.adapter.CostConstraintGoalAdapter;
 import ch.ethz.idsc.owl.glc.adapter.MultiCostGoalAdapter;
 import ch.ethz.idsc.owl.glc.core.GoalInterface;
 import ch.ethz.idsc.owl.glc.core.TrajectoryPlanner;
@@ -113,6 +114,7 @@ public class CarEntity extends Se2Entity {
     this.obstacleQuery = obstacleQuery;
     GoalInterface goalInterface = MultiCostGoalAdapter.of( //
         Se2MinTimeGoalManager.create(goal, goalRadius, controls), extraCosts);
+    goalInterface = CostConstraintGoalAdapter.of(goalInterface, extraConstraints); //add constraints
     TrajectoryPlanner trajectoryPlanner = new StandardTrajectoryPlanner( //
         eta(), FIXEDSTATEINTEGRATOR, controls, obstacleQuery, goalInterface);
     trajectoryPlanner.represent = StateTimeTensorFunction.state(SE2WRAP::represent);
