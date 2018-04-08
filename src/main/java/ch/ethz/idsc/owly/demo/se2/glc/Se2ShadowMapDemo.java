@@ -1,6 +1,8 @@
 // code by jph
 package ch.ethz.idsc.owly.demo.se2.glc;
 
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.io.IOException;
 
 import ch.ethz.idsc.owl.glc.adapter.SimpleTrajectoryRegionQuery;
@@ -35,8 +37,17 @@ public class Se2ShadowMapDemo extends Se2CarDemo {
         LidarEmulator.DEFAULT, se2Entity::getStateTimeNow, ray);
     owlyAnimationFrame.addBackground(lidarEmulator);
     // SHADOWMAP
-    ShadowMap shadowMap = new ShadowMap((LidarEmulator) lidarEmulator, imageRegion, se2Entity::getStateTimeNow);
+    ShadowMap shadowMap = new ShadowMap((LidarEmulator) lidarEmulator, imageRegion, se2Entity::getStateTimeNow, 10);
     owlyAnimationFrame.addBackground(shadowMap);
+    shadowMap.startNonBlocking();
+    //
+    owlyAnimationFrame.jFrame.addWindowListener(new WindowAdapter() {
+      @Override
+      public void windowClosed(WindowEvent e) {
+        System.out.println("window was closed. terminating...");
+        shadowMap.flagShutdown();
+      }
+    });
   }
 
   public static void main(String[] args) {
