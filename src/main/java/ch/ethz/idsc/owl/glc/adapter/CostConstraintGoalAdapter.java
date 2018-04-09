@@ -37,8 +37,7 @@ public class CostConstraintGoalAdapter implements GoalInterface {
   @Override
   public boolean isSatisfied(GlcNode glcNode, GlcNode parentNode, List<StateTime> trajectory) {
     return constraintCollection.stream() //
-        .map(constraint -> constraint.isSatisfied(glcNode, parentNode, trajectory)) //
-        .reduce(Boolean::logicalAnd).get();
+        .allMatch(constraint -> constraint.isSatisfied(glcNode, parentNode, trajectory));
   }
 
   @Override

@@ -1,4 +1,4 @@
-// code by jl
+// code by ynager
 package ch.ethz.idsc.owly.demo.se2;
 
 import java.awt.Shape;
@@ -21,7 +21,9 @@ import ch.ethz.idsc.tensor.Tensor;
 @DontModify
 public final class ShadowConstraint implements Constraint, Serializable {
   private final ShadowMap shadowMap;
-  StateTime rootStateTime = null;
+  // FIXME design error prone because calling isSatisfied(...) alters state of instance
+  // ... that means the order in which to call isSatisfied determines the outcome of the test
+  private StateTime rootStateTime = null;
 
   public ShadowConstraint(ShadowMap shadowMap) {
     this.shadowMap = shadowMap;
@@ -62,6 +64,7 @@ public final class ShadowConstraint implements Constraint, Serializable {
       if (targetNode.isRoot())
         break;
       targetNode = targetNode.parent();
+      // TODO comment on t -= t - targetNode_time ?
       t = t.subtract(t.subtract(targetNode.stateTime().time()));
     }
     //
@@ -79,12 +82,8 @@ public final class ShadowConstraint implements Constraint, Serializable {
     // simulate shadow map until t with no new sensor info
     shadowMap.updateMap(simShadowArea, targetNode.stateTime(), tStop.number().floatValue());
     // check if node is inside simulated shadow area
-    if (simShadowArea.contains(posX, posY)) {
-      shadowMap.resume();
-      return false;
-    }
-    //
+    boolean value = !simShadowArea.contains(posX, posY);
     shadowMap.resume();
-    return true;
+    return value;
   }
 }

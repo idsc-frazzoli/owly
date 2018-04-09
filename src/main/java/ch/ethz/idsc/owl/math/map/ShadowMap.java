@@ -24,7 +24,7 @@ import ch.ethz.idsc.owl.sim.LidarEmulator;
 import ch.ethz.idsc.owly.demo.util.RegionRenders;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Tensor;
-import ch.ethz.idsc.tensor.Tensors;
+import ch.ethz.idsc.tensor.alg.Array;
 import ch.ethz.idsc.tensor.mat.DiagonalMatrix;
 import ch.ethz.idsc.tensor.mat.IdentityMatrix;
 
@@ -40,11 +40,12 @@ public class ShadowMap implements RenderInterface {
   private Area shadowArea;
   private Timer increaserTimer;
   private final int updateRate; // [Hz]
-  public float vMax = 0.1f; // magic const, max pedestrian velocity in [m/s]
+  public final float vMax;
 
-  public ShadowMap(LidarEmulator lidar, ImageRegion imageRegion, Supplier<StateTime> stateTimeSupplier, int updateRate) {
+  public ShadowMap(LidarEmulator lidar, ImageRegion imageRegion, Supplier<StateTime> stateTimeSupplier, float vMax, int updateRate) {
     this.lidar = lidar;
     this.stateTimeSupplier = stateTimeSupplier;
+    this.vMax = vMax;
     this.updateRate = updateRate;
     BufferedImage bufferedImage = RegionRenders.image(imageRegion.image());
     // TODO 244 and 5 magic const, redundant to values specified elsewhere
@@ -74,7 +75,7 @@ public class ShadowMap implements RenderInterface {
 
   public void updateMap(Area area, StateTime stateTime, float timeDelta) {
     Se2Bijection se2Bijection = new Se2Bijection(stateTime.state());
-    GeometricLayer geom = new GeometricLayer(se2Bijection.forward_se2(), Tensors.vectorInt(0, 0, 0));
+    GeometricLayer geom = new GeometricLayer(se2Bijection.forward_se2(), Array.zeros(3));
     Path2D lidarPath2D = geom.toPath2D(lidar.getPolygon(stateTime));
     // subtract current LIDAR measurement from shadow area
     area.subtract(new Area(lidarPath2D));

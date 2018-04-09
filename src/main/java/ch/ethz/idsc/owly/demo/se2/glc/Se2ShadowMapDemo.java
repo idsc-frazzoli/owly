@@ -1,4 +1,4 @@
-// code by jph
+// code by ynager
 package ch.ethz.idsc.owly.demo.se2.glc;
 
 import java.awt.event.WindowAdapter;
@@ -6,7 +6,6 @@ import java.awt.event.WindowEvent;
 import java.io.IOException;
 
 import ch.ethz.idsc.owl.glc.adapter.SimpleTrajectoryRegionQuery;
-import ch.ethz.idsc.owl.gui.RenderInterface;
 import ch.ethz.idsc.owl.gui.ani.OwlyAnimationFrame;
 import ch.ethz.idsc.owl.img.ImageRegions;
 import ch.ethz.idsc.owl.math.Degree;
@@ -40,11 +39,11 @@ public class Se2ShadowMapDemo extends Se2CarDemo {
     owlyAnimationFrame.setObstacleQuery(trq);
     owlyAnimationFrame.addBackground(RegionRenders.create(imageRegion));
     // LIDAR
-    RenderInterface lidarEmulator = new LidarEmulator( //
+    LidarEmulator lidarEmulator = new LidarEmulator( //
         LidarEmulator.DEFAULT, se2Entity::getStateTimeNow, ray);
     owlyAnimationFrame.addBackground(lidarEmulator);
     // SHADOWMAP
-    ShadowMap shadowMap = new ShadowMap((LidarEmulator) lidarEmulator, imageRegion, se2Entity::getStateTimeNow, 10);
+    ShadowMap shadowMap = new ShadowMap(lidarEmulator, imageRegion, se2Entity::getStateTimeNow, 0.1f, 10);
     owlyAnimationFrame.addBackground(shadowMap);
     ShadowConstraint shadowConstraint = new ShadowConstraint(shadowMap);
     se2Entity.extraConstraints.add(shadowConstraint);
