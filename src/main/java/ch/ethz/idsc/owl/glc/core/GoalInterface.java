@@ -3,7 +3,6 @@ package ch.ethz.idsc.owl.glc.core;
 
 import java.util.List;
 
-import ch.ethz.idsc.owl.math.flow.Flow;
 import ch.ethz.idsc.owl.math.state.StateTime;
 import ch.ethz.idsc.owl.math.state.TrajectoryRegionQuery;
 
@@ -14,7 +13,7 @@ import ch.ethz.idsc.owl.math.state.TrajectoryRegionQuery;
  * are assembled into one {@link GoalInterface} */
 public interface GoalInterface extends CostFunction, TrajectoryRegionQuery, Constraint {
   @Override
-  public default boolean isSatisfied(GlcNode glcNode, GlcNode prev, List<StateTime> trajectory, Flow flow) {
+  public default boolean isSatisfied(GlcNode glcNode, GlcNode parentNode, List<StateTime> trajectory) {
     return true;
   }
 }

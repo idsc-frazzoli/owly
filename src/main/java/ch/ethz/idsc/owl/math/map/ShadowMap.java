@@ -30,8 +30,8 @@ import ch.ethz.idsc.tensor.mat.IdentityMatrix;
 
 public class ShadowMap implements RenderInterface {
   //
-  private static final Color COLOR_SHADDOW_FILL = new Color(255, 50, 74, 16);
-  private static final Color COLOR_SHADDOW_DRAW = new Color(255, 50, 74, 64);
+  private static final Color COLOR_SHADOW_FILL = new Color(255, 50, 74, 16);
+  private static final Color COLOR_SHADOW_DRAW = new Color(255, 50, 74, 64);
   // ---
   private final LidarEmulator lidar;
   public final Supplier<StateTime> stateTimeSupplier;
@@ -40,7 +40,7 @@ public class ShadowMap implements RenderInterface {
   private Area shadowArea;
   private Timer increaserTimer;
   private final int updateRate; // [Hz]
-  public float vMax = 0.1f;
+  public float vMax = 0.1f; // magic const, max pedestrian velocity in [m/s]
 
   public ShadowMap(LidarEmulator lidar, ImageRegion imageRegion, Supplier<StateTime> stateTimeSupplier, int updateRate) {
     this.lidar = lidar;
@@ -70,9 +70,6 @@ public class ShadowMap implements RenderInterface {
     //
     // subtract obstacles from shadow area
     shadowArea.subtract(obstacleArea);
-    //
-    // float vMax = 0.2f; // magic const, max pedestrian velocity in [m/s]
-    // strokeWidth = 2 * vMax / updateRate; // TODO: check if correct
   }
 
   public void updateMap(Area area, StateTime stateTime, float timeDelta) {
@@ -87,8 +84,6 @@ public class ShadowMap implements RenderInterface {
     Shape strokeShape = stroke.createStrokedShape(shadowArea);
     area.add(new Area(strokeShape));
     area.subtract(obstacleArea);
-    // shadowArea.add(new Area(strokeShape));
-    // shadowArea.subtract(obstacleArea);
   }
 
   public final void startNonBlocking() {
@@ -97,8 +92,6 @@ public class ShadowMap implements RenderInterface {
       public void run() {
         if (!isPaused)
           updateMap(shadowArea, stateTimeSupplier.get(), 1.0f / updateRate);
-        // if (!isPaused)
-        // updateMap();
       }
     };
     increaserTimer = new Timer("MapUpdateTimer");
@@ -125,9 +118,9 @@ public class ShadowMap implements RenderInterface {
   public void render(GeometricLayer geometricLayer, Graphics2D graphics) {
     final Tensor matrix = geometricLayer.getMatrix();
     Area plotArea = new Area(shadowArea.createTransformedArea(AffineTransforms.toAffineTransform(matrix)));
-    graphics.setColor(COLOR_SHADDOW_FILL);
+    graphics.setColor(COLOR_SHADOW_FILL);
     graphics.fill(plotArea);
-    graphics.setColor(COLOR_SHADDOW_DRAW);
+    graphics.setColor(COLOR_SHADOW_DRAW);
     graphics.draw(plotArea);
   }
 }

@@ -5,14 +5,12 @@ import java.awt.Shape;
 import java.awt.geom.Area;
 import java.awt.geom.Ellipse2D;
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import ch.ethz.idsc.owl.data.DontModify;
+import ch.ethz.idsc.owl.glc.adapter.GlcNodes;
 import ch.ethz.idsc.owl.glc.core.Constraint;
 import ch.ethz.idsc.owl.glc.core.GlcNode;
-import ch.ethz.idsc.owl.math.flow.Flow;
 import ch.ethz.idsc.owl.math.map.ShadowMap;
 import ch.ethz.idsc.owl.math.state.StateTime;
 import ch.ethz.idsc.tensor.DoubleScalar;
@@ -23,22 +21,20 @@ import ch.ethz.idsc.tensor.Tensor;
 @DontModify
 public final class ShadowConstraint implements Constraint, Serializable {
   private final ShadowMap shadowMap;
-  private StateTime rootStateTime; // FIXME design error prone
+  StateTime rootStateTime = null;
 
   public ShadowConstraint(ShadowMap shadowMap) {
     this.shadowMap = shadowMap;
   }
 
   @Override // from CostIncrementFunction
-  public boolean isSatisfied(GlcNode glcNode, GlcNode prev, List<StateTime> trajectory, Flow flow) {
+  public boolean isSatisfied(GlcNode glcNode, GlcNode parentNode, List<StateTime> trajectory) {
+    //
+    shadowMap.pause(); // TODO: hack, find cleaner solution to halt time or compensate for it
     // get time at root
-    // TODO: find a nicer solution to get time at root
-    if (prev.isRoot()) {
-      this.rootStateTime = prev.stateTime();
-      return true;
+    if (parentNode.isRoot()) {
+      rootStateTime = parentNode.stateTime();
     }
-    shadowMap.pause();
-    // TODO: hack, find cleaner solution to temporarily halt time or compensate for it
     // check if shadowArea far enough away from node to be unreachable by shadow
     Tensor state = glcNode.state();
     double posX = state.Get(0).number().doubleValue();
@@ -49,7 +45,6 @@ public final class ShadowConstraint implements Constraint, Serializable {
     double rad = tDelt * shadowMap.vMax;
     Shape circle = new Ellipse2D.Double(posX - rad, posY + rad, rad, rad);
     Area simShadowArea = (Area) shadowMap.getCurrentMap().clone();
-    //
     Area circleArea = new Area(circle);
     circleArea.intersect(simShadowArea);
     //
@@ -57,12 +52,11 @@ public final class ShadowConstraint implements Constraint, Serializable {
       return true;
     //
     Scalar vel = glcNode.flow().getU().Get(0);
-    Scalar tStop = vel.multiply(vel).multiply(DoubleScalar.of(1.4));
-    //
+    Scalar tStop = vel.multiply(vel).multiply(DoubleScalar.of(2.0));
     // find node at t-tStop
     Scalar tMinTStop = (Scalar) glcNode.stateTime().time().subtract(tStop).unmodifiable();
-    Scalar t = prev.stateTime().time();
-    GlcNode targetNode = prev;
+    Scalar t = parentNode.stateTime().time();
+    GlcNode targetNode = parentNode;
     //
     while (Scalars.lessThan(tMinTStop, t)) {
       if (targetNode.isRoot())
@@ -71,21 +65,14 @@ public final class ShadowConstraint implements Constraint, Serializable {
       t = t.subtract(t.subtract(targetNode.stateTime().time()));
     }
     //
-    // get root node and build node trajectory list
-    // TODO yannik can use: GlcNodes.getPathFromRootTo(targetNode) ?
-    List<GlcNode> nodeList = new ArrayList<>();
-    GlcNode nodeIt = targetNode;
-    while (!nodeIt.isRoot()) {
-      nodeList.add(nodeIt);
-      nodeIt = nodeIt.parent();
-    }
-    Collections.reverse(nodeList); // reverse list, now starting at root+1
-    //
-    // simulate shadow map evolution from root+1 to targetNode
-    if (!nodeList.isEmpty()) {
-      for (GlcNode node : nodeList) {
-        Scalar timeBetweenNodes = node.stateTime().time().subtract(node.parent().stateTime().time());
-        shadowMap.updateMap(simShadowArea, node.stateTime(), timeBetweenNodes.number().floatValue());
+    List<StateTime> path = GlcNodes.getPathFromRootTo(targetNode);
+    path.remove(0); // remove root
+    if (!path.isEmpty()) {
+      Scalar prevTime = rootStateTime.time();
+      for (StateTime stateTime : path) {
+        Scalar timeBetweenNodes = stateTime.time().subtract(prevTime);
+        shadowMap.updateMap(simShadowArea, stateTime, timeBetweenNodes.number().floatValue());
+        prevTime = stateTime.time();
       }
     }
     //

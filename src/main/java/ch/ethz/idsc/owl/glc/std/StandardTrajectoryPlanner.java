@@ -86,7 +86,7 @@ public class StandardTrajectoryPlanner extends AbstractTrajectoryPlanner {
       final List<StateTime> trajectory = connectors.get(next);
       //
       // Check constraints
-      boolean isConSatisfied = getGoalInterface().isSatisfied(next, node, trajectory, flow);
+      boolean isConSatisfied = getGoalInterface().isSatisfied(next, node, trajectory);
       //
       // TODO: make the following cleaner
       boolean isFlowViolated = false;
