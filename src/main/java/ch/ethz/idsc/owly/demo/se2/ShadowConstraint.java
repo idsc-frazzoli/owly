@@ -41,20 +41,19 @@ public final class ShadowConstraint implements Constraint, Serializable {
     Tensor state = glcNode.state();
     double posX = state.Get(0).number().doubleValue();
     double posY = state.Get(1).number().doubleValue();
-    double tDelt = glcNode.stateTime().time().number().doubleValue() //
-        - rootStateTime.time().number().doubleValue();
-    //
-    double rad = tDelt * shadowMap.vMax;
-    Shape circle = new Ellipse2D.Double(posX - rad, posY + rad, rad, rad);
     Area simShadowArea = (Area) shadowMap.getCurrentMap().clone();
-    Area circleArea = new Area(circle);
-    circleArea.intersect(simShadowArea);
     //
-    if (circleArea.isEmpty())
-      return true;
+    /* double rad = tDelt * shadowMap.vMax;
+     * double tDelt = glcNode.stateTime().time().number().doubleValue() //
+     * - rootStateTime.time().number().doubleValue();
+     * Shape circle = new Ellipse2D.Double(posX - rad, posY + rad, 2*rad, 2*rad);
+     * Area circleArea = new Area(circle);
+     * circleArea.intersect(simShadowArea);
+     * if (circleArea.isEmpty())
+     * return true; */
     //
     Scalar vel = glcNode.flow().getU().Get(0);
-    Scalar tStop = vel.multiply(vel).multiply(DoubleScalar.of(2.0));
+    Scalar tStop = vel.multiply(vel).multiply(DoubleScalar.of(1.2));
     // find node at t-tStop
     Scalar tMinTStop = (Scalar) glcNode.stateTime().time().subtract(tStop).unmodifiable();
     Scalar t = parentNode.stateTime().time();
@@ -64,7 +63,7 @@ public final class ShadowConstraint implements Constraint, Serializable {
       if (targetNode.isRoot())
         break;
       targetNode = targetNode.parent();
-      // TODO comment on t -= t - targetNode_time ?
+      // get time at parent node
       t = t.subtract(t.subtract(targetNode.stateTime().time()));
     }
     //
@@ -78,8 +77,7 @@ public final class ShadowConstraint implements Constraint, Serializable {
         prevTime = stateTime.time();
       }
     }
-    //
-    // simulate shadow map until t with no new sensor info
+    // simulate shadow map until t with no new sensors info
     shadowMap.updateMap(simShadowArea, targetNode.stateTime(), tStop.number().floatValue());
     // check if node is inside simulated shadow area
     boolean value = !simShadowArea.contains(posX, posY);
