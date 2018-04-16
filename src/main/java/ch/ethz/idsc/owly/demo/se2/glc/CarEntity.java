@@ -18,7 +18,6 @@ import ch.ethz.idsc.owl.math.flow.Flow;
 import ch.ethz.idsc.owl.math.state.FixedStateIntegrator;
 import ch.ethz.idsc.owl.math.state.SimpleEpisodeIntegrator;
 import ch.ethz.idsc.owl.math.state.StateTime;
-import ch.ethz.idsc.owl.math.state.TrajectoryFlowRegionQuery;
 import ch.ethz.idsc.owl.math.state.TrajectoryRegionQuery;
 import ch.ethz.idsc.owly.demo.se2.CarFlows;
 import ch.ethz.idsc.owly.demo.se2.CarStandardFlows;
@@ -65,8 +64,6 @@ public class CarEntity extends Se2Entity {
   // ---
   private final Collection<Flow> controls;
   private final Tensor goalRadius;
-  private TrajectoryFlowRegionQuery tfrq;
-
   /** extra cost functions, for instance
    * 1) to penalize switching gears
    * 2) to prevent cutting corners
@@ -106,10 +103,6 @@ public class CarEntity extends Se2Entity {
     return PlannerType.STANDARD;
   }
 
-  public void setTrajectoryFlowRegionQuery(TrajectoryFlowRegionQuery tfrq) {
-    this.tfrq = tfrq;
-  }
-
   @Override
   public TrajectoryPlanner createTrajectoryPlanner(TrajectoryRegionQuery obstacleQuery, Tensor goal) {
     GlobalAssert.that(VectorQ.ofLength(goal, 3));
@@ -122,7 +115,6 @@ public class CarEntity extends Se2Entity {
         eta(), FIXEDSTATEINTEGRATOR, controls, plannerConstraint, goalInterface);
     trajectoryPlanner.represent = StateTimeTensorFunction.state(SE2WRAP::represent);
     StandardTrajectoryPlanner stp = (StandardTrajectoryPlanner) trajectoryPlanner;
-    stp.setTrajectoryFlowRegionQuery(tfrq);
     return trajectoryPlanner;
   }
 
