@@ -4,11 +4,13 @@ package ch.ethz.idsc.owly.demo.se2.glc;
 import java.util.Collection;
 
 import ch.ethz.idsc.owl.data.GlobalAssert;
-import ch.ethz.idsc.owl.glc.adapter.CostConstraintGoalAdapter;
+import ch.ethz.idsc.owl.glc.adapter.MultiConstraintAdapter;
 import ch.ethz.idsc.owl.glc.adapter.MultiCostGoalAdapter;
 import ch.ethz.idsc.owl.glc.core.GoalInterface;
 import ch.ethz.idsc.owl.glc.core.TrajectoryPlanner;
+import ch.ethz.idsc.owl.glc.std.PlannerConstraint;
 import ch.ethz.idsc.owl.glc.std.StandardTrajectoryPlanner;
+import ch.ethz.idsc.owl.glc.std.TrajectoryObstacleConstraint;
 import ch.ethz.idsc.owl.gui.ani.PlannerType;
 import ch.ethz.idsc.owl.math.Degree;
 import ch.ethz.idsc.owl.math.StateTimeTensorFunction;
@@ -114,9 +116,10 @@ public class CarEntity extends Se2Entity {
     this.obstacleQuery = obstacleQuery;
     GoalInterface goalInterface = MultiCostGoalAdapter.of( //
         Se2MinTimeGoalManager.create(goal, goalRadius, controls), extraCosts);
-    goalInterface = CostConstraintGoalAdapter.of(goalInterface, extraConstraints); // add constraints
+    extraConstraints.add(new TrajectoryObstacleConstraint(obstacleQuery));
+    PlannerConstraint plannerConstraint = MultiConstraintAdapter.of(extraConstraints);
     TrajectoryPlanner trajectoryPlanner = new StandardTrajectoryPlanner( //
-        eta(), FIXEDSTATEINTEGRATOR, controls, obstacleQuery, goalInterface);
+        eta(), FIXEDSTATEINTEGRATOR, controls, plannerConstraint, goalInterface);
     trajectoryPlanner.represent = StateTimeTensorFunction.state(SE2WRAP::represent);
     StandardTrajectoryPlanner stp = (StandardTrajectoryPlanner) trajectoryPlanner;
     stp.setTrajectoryFlowRegionQuery(tfrq);

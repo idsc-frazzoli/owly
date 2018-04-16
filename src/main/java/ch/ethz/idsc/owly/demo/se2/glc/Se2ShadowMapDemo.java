@@ -18,6 +18,7 @@ import ch.ethz.idsc.owly.demo.se2.CarFlows;
 import ch.ethz.idsc.owly.demo.se2.CarVelocityFlows;
 import ch.ethz.idsc.owly.demo.se2.ShadowConstraint;
 import ch.ethz.idsc.owly.demo.util.RegionRenders;
+import ch.ethz.idsc.tensor.DoubleScalar;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Tensors;
 
@@ -45,7 +46,7 @@ public class Se2ShadowMapDemo extends Se2CarDemo {
     // SHADOWMAP
     ShadowMap shadowMap = new ShadowMap(lidarEmulator, imageRegion, se2Entity::getStateTimeNow, 0.1f, 10);
     owlyAnimationFrame.addBackground(shadowMap);
-    ShadowConstraint shadowConstraint = new ShadowConstraint(shadowMap);
+    ShadowConstraint shadowConstraint = new ShadowConstraint(shadowMap, DoubleScalar.of(1.5));
     se2Entity.extraConstraints.add(shadowConstraint);
     owlyAnimationFrame.set(se2Entity);
     shadowMap.startNonBlocking();

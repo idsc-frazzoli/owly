@@ -39,13 +39,23 @@ public class StandardTrajectoryPlanner extends AbstractTrajectoryPlanner {
   private transient final ControlsIntegrator controlsIntegrator;
   private TrajectoryFlowRegionQuery tfrq = null;
 
+  // TODO deprecated
   public StandardTrajectoryPlanner( //
       Tensor eta, //
       StateIntegrator stateIntegrator, //
       Collection<Flow> controls, //
       TrajectoryRegionQuery obstacleQuery, //
       GoalInterface goalInterface) {
-    super(eta, stateIntegrator, obstacleQuery, goalInterface);
+    this(eta, stateIntegrator, controls, new TrajectoryObstacleConstraint(obstacleQuery), goalInterface);
+  }
+
+  public StandardTrajectoryPlanner( //
+      Tensor eta, //
+      StateIntegrator stateIntegrator, //
+      Collection<Flow> controls, //
+      PlannerConstraint plannerConstraint, //
+      GoalInterface goalInterface) {
+    super(eta, stateIntegrator, plannerConstraint, goalInterface);
     controlsIntegrator = new ControlsIntegrator( //
         stateIntegrator, //
         () -> controls.stream().parallel(), //
@@ -85,16 +95,13 @@ public class StandardTrajectoryPlanner extends AbstractTrajectoryPlanner {
       final Flow flow = next.flow();
       final List<StateTime> trajectory = connectors.get(next);
       //
-      // Check constraints
-      boolean isConSatisfied = getGoalInterface().isSatisfied(next, node, trajectory);
-      //
       // TODO: make the following cleaner
       boolean isFlowViolated = false;
       if (tfrq != null)
         isFlowViolated = tfrq.firstMember(trajectory, flow).isPresent();
       //
       // check collisions
-      if (!getObstacleQuery().firstMember(trajectory).isPresent() && !isFlowViolated && isConSatisfied) {
+      if (getPlannerConstraint().isSatisfied(node, trajectory, flow) && !isFlowViolated) {
         Optional<GlcNode> former = getNode(domainKey);
         boolean isPresent = former.isPresent();
         synchronized (this) {
