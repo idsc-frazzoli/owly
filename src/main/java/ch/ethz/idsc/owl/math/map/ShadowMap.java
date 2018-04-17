@@ -86,7 +86,7 @@ public class ShadowMap implements RenderInterface {
     Shape strokeShape = stroke.createStrokedShape(shadowArea);
     area.add(new Area(strokeShape));
     area.subtract(obstacleArea);
-    area.intersect(new Area(rInit)); //TODO: can this be improved?
+    area.intersect(new Area(rInit)); // TODO: can this be improved?
   }
 
   public final void startNonBlocking() {

@@ -27,12 +27,12 @@ public class Se2ShadowMapDemo extends Se2CarDemo {
   void configure(OwlyAnimationFrame owlyAnimationFrame) throws IOException {
     CarFlows carFlows = new CarVelocityFlows(Tensors.vector(0.5, 1), Degree.of(60));
     CarEntity se2Entity = new CarEntity(new StateTime(Tensors.vector(3.5, 0.6, 3.14 / 2), RealScalar.ZERO), carFlows); // street_1
-    //CarEntity se2Entity = new CarEntity(new StateTime(Tensors.vector(1.5, 1.0, 3.14 / 2), RealScalar.ZERO), carFlows); // curve_1
+    // CarEntity se2Entity = new CarEntity(new StateTime(Tensors.vector(1.5, 1.0, 3.14 / 2), RealScalar.ZERO), carFlows); // curve_1
     //
     ImageRegion imageRegion = null;
     try {
       imageRegion = ImageRegions.loadFromRepository("/scenarios/street_1.png", Tensors.vector(7, 7), false);
-      //imageRegion = ImageRegions.loadFromRepository("/scenarios/curve_1.png", Tensors.vector(5, 5), false);
+      // imageRegion = ImageRegions.loadFromRepository("/scenarios/curve_1.png", Tensors.vector(5, 5), false);
     } catch (Exception e1) {
       e1.printStackTrace();
     }

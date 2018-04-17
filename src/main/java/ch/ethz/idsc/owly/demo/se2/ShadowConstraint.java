@@ -1,9 +1,7 @@
 // code by ynager
 package ch.ethz.idsc.owly.demo.se2;
 
-import java.awt.Shape;
 import java.awt.geom.Area;
-import java.awt.geom.Ellipse2D;
 import java.io.Serializable;
 import java.util.List;
 
@@ -14,10 +12,8 @@ import ch.ethz.idsc.owl.glc.core.GlcNode;
 import ch.ethz.idsc.owl.math.flow.Flow;
 import ch.ethz.idsc.owl.math.map.ShadowMap;
 import ch.ethz.idsc.owl.math.state.StateTime;
-import ch.ethz.idsc.tensor.DoubleScalar;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Scalars;
-import ch.ethz.idsc.tensor.Tensor;
 
 @DontModify
 public final class ShadowConstraint implements Constraint, Serializable {
@@ -40,7 +36,7 @@ public final class ShadowConstraint implements Constraint, Serializable {
     if (glcNode.isRoot()) {
       rootStateTime = glcNode.stateTime();
     }
-    StateTime childStateTime = trajectory.get(trajectory.size()-1);
+    StateTime childStateTime = trajectory.get(trajectory.size() - 1);
     double posX = childStateTime.state().Get(0).number().doubleValue();
     double posY = childStateTime.state().Get(1).number().doubleValue();
     Area simShadowArea = (Area) shadowMap.getCurrentMap().clone();
