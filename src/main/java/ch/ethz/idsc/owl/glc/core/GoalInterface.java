@@ -1,10 +1,6 @@
 // code by jph
 package ch.ethz.idsc.owl.glc.core;
 
-import java.util.List;
-
-import ch.ethz.idsc.owl.math.flow.Flow;
-import ch.ethz.idsc.owl.math.state.StateTime;
 import ch.ethz.idsc.owl.math.state.TrajectoryRegionQuery;
 
 /** the cost to goal and the goal region have to be compatible in order
@@ -12,9 +8,6 @@ import ch.ethz.idsc.owl.math.state.TrajectoryRegionQuery;
  * 
  * therefore the two concepts of distance and region query
  * are assembled into one {@link GoalInterface} */
-public interface GoalInterface extends CostFunction, TrajectoryRegionQuery, Constraint {
-  @Override
-  public default boolean isSatisfied(GlcNode glcNode, List<StateTime> trajectory, Flow flow) {
-    return true;
-  }
+public interface GoalInterface extends CostFunction, TrajectoryRegionQuery {
+  // --
 }

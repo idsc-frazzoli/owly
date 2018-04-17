@@ -7,8 +7,8 @@ import java.util.List;
 
 import ch.ethz.idsc.owl.data.DontModify;
 import ch.ethz.idsc.owl.glc.adapter.GlcNodes;
-import ch.ethz.idsc.owl.glc.core.Constraint;
 import ch.ethz.idsc.owl.glc.core.GlcNode;
+import ch.ethz.idsc.owl.glc.std.PlannerConstraint;
 import ch.ethz.idsc.owl.math.flow.Flow;
 import ch.ethz.idsc.owl.math.map.ShadowMap;
 import ch.ethz.idsc.owl.math.state.StateTime;
@@ -16,7 +16,7 @@ import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Scalars;
 
 @DontModify
-public final class ShadowConstraint implements Constraint, Serializable {
+public final class ShadowConstraint implements PlannerConstraint, Serializable {
   private final ShadowMap shadowMap;
   // FIXME design error prone because calling isSatisfied(...) alters state of instance
   // ... that means the order in which to call isSatisfied determines the outcome of the test

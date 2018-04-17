@@ -11,8 +11,8 @@ import java.util.List;
 import java.util.Map;
 
 import ch.ethz.idsc.owl.data.DontModify;
-import ch.ethz.idsc.owl.glc.core.Constraint;
 import ch.ethz.idsc.owl.glc.core.GlcNode;
+import ch.ethz.idsc.owl.glc.std.PlannerConstraint;
 import ch.ethz.idsc.owl.math.flow.Flow;
 import ch.ethz.idsc.owl.math.map.ShadowMap;
 import ch.ethz.idsc.owl.math.state.StateTime;
@@ -25,7 +25,7 @@ import ch.ethz.idsc.tensor.sca.Floor;
 import ch.ethz.idsc.tensor.sca.Sin;
 
 @DontModify
-public final class ShadowConstraint2 implements Constraint, Serializable {
+public final class ShadowConstraint2 implements PlannerConstraint, Serializable {
   private final ShadowMap shadowMap;
   // FIXME design error prone because calling isSatisfied(...) alters state of instance
   // ... that means the order in which to call isSatisfied determines the outcome of the test

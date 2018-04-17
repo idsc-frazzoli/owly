@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.util.Arrays;
 
 import ch.ethz.idsc.owl.glc.adapter.GlcWaypointFollowing;
+import ch.ethz.idsc.owl.glc.std.FlowRegionConstraint;
 import ch.ethz.idsc.owl.gui.RenderInterface;
 import ch.ethz.idsc.owl.gui.ani.OwlyAnimationFrame;
 import ch.ethz.idsc.owl.gui.ren.ArrowHeadRender;
@@ -17,9 +18,7 @@ import ch.ethz.idsc.owl.math.region.FreeBoundedIntervalRegion;
 import ch.ethz.idsc.owl.math.region.ImageRegion;
 import ch.ethz.idsc.owl.math.region.Region;
 import ch.ethz.idsc.owl.math.region.RegionUnion;
-import ch.ethz.idsc.owl.math.state.StandardTrajectoryFlowRegionQuery;
 import ch.ethz.idsc.owl.math.state.StateTime;
-import ch.ethz.idsc.owl.math.state.TrajectoryFlowRegionQuery;
 import ch.ethz.idsc.owl.math.state.TrajectoryRegionQuery;
 import ch.ethz.idsc.owly.demo.rn.R2ImageRegionWrap;
 import ch.ethz.idsc.owly.demo.rn.R2ImageRegions;
@@ -79,9 +78,8 @@ public class Se2GlcVelConstraintDemo extends Se2CarDemo {
     // Flow constraint
     FreeBoundedIntervalRegion flowregion = new FreeBoundedIntervalRegion( //
         0, DoubleScalar.of(-0.6), DoubleScalar.of(0.6)); // only velocities between -0.6 and 0.6 are allowed
-    TrajectoryFlowRegionQuery tfrq = new StandardTrajectoryFlowRegionQuery( //
-        regions, flowregion, null);
-    carEntity.setTrajectoryFlowRegionQuery(tfrq);
+    FlowRegionConstraint flowRegionConstraint = new FlowRegionConstraint(regions, flowregion, null);
+    carEntity.extraConstraints.add(flowRegionConstraint);
     owlyAnimationFrame.set(carEntity);
     // Rendering
     owlyAnimationFrame.addBackground((RenderInterface) r1);

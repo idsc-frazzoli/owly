@@ -20,11 +20,11 @@ import ch.ethz.idsc.owl.glc.adapter.HeuristicQ;
 import ch.ethz.idsc.owl.glc.adapter.SimpleTrajectoryRegionQuery;
 import ch.ethz.idsc.owl.glc.adapter.TrajectoryGoalManager;
 import ch.ethz.idsc.owl.glc.any.AbstractAnyTrajectoryPlanner;
+import ch.ethz.idsc.owl.glc.std.PlannerConstraint;
 import ch.ethz.idsc.owl.math.StateTimeTensorFunction;
 import ch.ethz.idsc.owl.math.region.Region;
 import ch.ethz.idsc.owl.math.state.StateIntegrator;
 import ch.ethz.idsc.owl.math.state.StateTime;
-import ch.ethz.idsc.owl.math.state.StateTimeCollector;
 import ch.ethz.idsc.owl.math.state.TrajectoryRegionQuery;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.sca.Floor;
@@ -150,7 +150,7 @@ public abstract class TrajectoryPlanner implements ExpandInterface<GlcNode>, Ser
   public abstract StateIntegrator getStateIntegrator();
 
   /** @return obstacle query for the purpose of inspection, i.e. no alteration should be made */
-  public abstract TrajectoryRegionQuery getObstacleQuery();
+  public abstract PlannerConstraint getPlannerConstraint();
 
   /** @return goal query for the purpose of inspection, i.e. no alteration should be made */
   public abstract GoalInterface getGoalInterface();
@@ -177,11 +177,12 @@ public abstract class TrajectoryPlanner implements ExpandInterface<GlcNode>, Ser
     StringBuilder stringBuilder = new StringBuilder();
     stringBuilder.append("nodes:" + domainMap().values().size() + ", ");
     {
-      TrajectoryRegionQuery trajectoryRegionQuery = getObstacleQuery();
-      if (trajectoryRegionQuery instanceof StateTimeCollector) {
-        Collection<StateTime> collection = ((StateTimeCollector) trajectoryRegionQuery).getMembers();
-        stringBuilder.append("obstacles:" + collection.size() + ", ");
-      }
+      // FIXME
+      // TrajectoryRegionQuery trajectoryRegionQuery = getObstacleQuery();
+      // if (trajectoryRegionQuery instanceof StateTimeCollector) {
+      // Collection<StateTime> collection = ((StateTimeCollector) trajectoryRegionQuery).getMembers();
+      // stringBuilder.append("obstacles:" + collection.size() + ", ");
+      // }
     }
     stringBuilder.append("replacements:" + replaceCount());
     return stringBuilder.toString();

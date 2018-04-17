@@ -21,6 +21,7 @@ import ch.ethz.idsc.owl.glc.adapter.TrajectoryGoalManager;
 import ch.ethz.idsc.owl.glc.core.DebugUtils;
 import ch.ethz.idsc.owl.glc.core.GlcNode;
 import ch.ethz.idsc.owl.glc.core.GoalInterface;
+import ch.ethz.idsc.owl.glc.std.TrajectoryObstacleConstraint;
 import ch.ethz.idsc.owl.math.flow.Flow;
 import ch.ethz.idsc.owl.math.region.InvertedRegion;
 import ch.ethz.idsc.owl.math.region.Region;
@@ -115,7 +116,8 @@ public class OptimalAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
             GlcNode formerLabel = formerLabelOpt.get();
             if (Scalars.lessThan(next.merit(), formerLabel.merit())) {
               // collision check only if new node is better
-              if (!getObstacleQuery().firstMember(connectors.get(next)).isPresent()) { // better node not collision
+              // if (!getObstacleQuery().firstMember(connectors.get(next)).isPresent()) { // better node not collision
+              if (getPlannerConstraint().isSatisfied(nextParent, connectors.get(next), next.flow())) { // YNAGER
                 if (formerLabel.isRoot())
                   throw new RuntimeException();
                 // final Collection<GlcNode> subDeleteTree =
@@ -144,7 +146,8 @@ public class OptimalAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
               break;
             }
           } else { // No formerLabel, so definitely adding a Node
-            if (!getObstacleQuery().firstMember(connectors.get(next)).isPresent()) {
+            // if (!getObstacleQuery().firstMember(connectors.get(next)).isPresent()) {
+            if (getPlannerConstraint().isSatisfied(nextParent, connectors.get(next), next.flow())) { // YNAGER
               // removing the nextCandidate from bucket of this domain
               // adding next to tree and DomainMap
               nextParent.insertEdgeTo(next);
@@ -239,7 +242,8 @@ public class OptimalAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
           }
           final List<StateTime> connector = //
               getStateIntegrator().trajectory(nextParent.stateTime(), next.flow());
-          if (!getObstacleQuery().firstMember(connector).isPresent()) { // no collision
+          // if (!getObstacleQuery().firstMember(connector).isPresent()) { // no collision
+          if (getPlannerConstraint().isSatisfied(nextParent, connector, next.flow())) { // YNAGER
             if (!formerLabel.isRoot())
               formerLabel.parent().removeEdgeTo(formerLabel);
             insertNodeInTree(nextParent, next);
@@ -264,7 +268,9 @@ public class OptimalAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
 
   @Override
   public void obstacleUpdate(TrajectoryRegionQuery newObstacle, Region<Tensor> rechabilityObstacleRegion) {
-    if (newObstacle == getObstacleQuery()) // intended: equality of reference
+    // if (newObstacle == getObstacleQuery()) // intended: equality of reference
+    // FIXME the below condition with "==" can never be true
+    if (getPlannerConstraint() == new TrajectoryObstacleConstraint(newObstacle)) // YNAGER
       return;
     if (Objects.isNull(newObstacle)) {
       obstacleUpdate(newObstacle);
@@ -274,7 +280,8 @@ public class OptimalAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
     long tictotal = System.nanoTime();
     System.out.println("*** OBSTACLE UPDATE ***");
     long tic = System.nanoTime();
-    setObstacleQuery(newObstacle);
+    // setObstacleQuery(newObstacle);
+    setPlannerConstraint(new TrajectoryObstacleConstraint(newObstacle)); // YNAGER
     GlcNode root = getRoot();
     int oldDomainMapSize = domainMap().size();
     @SuppressWarnings("unused")
@@ -313,7 +320,8 @@ public class OptimalAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
         }
         if (!label.isRoot()) {
           connector = getStateIntegrator().trajectory(label.parent().stateTime(), label.flow());
-          if (!getObstacleQuery().firstMember(connector).isPresent()) { // label NOT in Collision
+          // if (!getObstacleQuery().firstMember(connector).isPresent()) { // label NOT in Collision
+          if (getPlannerConstraint().isSatisfied(label.parent(), connector, label.flow())) { // YNAGER
             while (!candidateQueue.isEmpty()) { // checking for better candidates/open doors
               CandidatePair nextBest = candidateQueue.element();
               GlcNode nextBestNode = nextBest.getCandidate();
@@ -322,7 +330,8 @@ public class OptimalAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
                 if (Nodes.areConnected(nextBestParent, root)) {
                   // / check if sth better is there
                   connector = getStateIntegrator().trajectory(nextBestParent.stateTime(), nextBestNode.flow());
-                  if (!getObstacleQuery().firstMember(connector).isPresent()) {
+                  // if (!getObstacleQuery().firstMember(connector).isPresent()) {
+                  if (getPlannerConstraint().isSatisfied(nextBestParent, connector, nextBestNode.flow())) { // YNAGER
                     // final Collection<GlcNode> subDeleteTree =
                     Collection<GlcNode> deletedNodesList = deleteSubtreeOf(label);
                     deletedNodes += deletedNodesList.size();
@@ -368,7 +377,8 @@ public class OptimalAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
               // ******COPY PASTED
               if (Nodes.areConnected(nextBestParent, root)) {
                 connector = getStateIntegrator().trajectory(nextBestParent.stateTime(), nextBestNode.flow());
-                if (!getObstacleQuery().firstMember(connector).isPresent()) { // better Candidate obstacle check
+                // if (!getObstacleQuery().firstMember(connector).isPresent()) { // better Candidate obstacle check
+                if (getPlannerConstraint().isSatisfied(nextBestParent, connector, nextBestNode.flow())) { //  YNAGER
                   getCandidateMap().get(domainKey).add(formerLabelCandidate);
                   // formerLabel disconnecting
                   // adding next to tree and DomainMap
@@ -420,7 +430,8 @@ public class OptimalAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
           GlcNode nextBestParent = nextBest.getOrigin();
           if (Nodes.areConnected(nextBestParent, root)) {
             List<StateTime> connector = getStateIntegrator().trajectory(nextBestParent.stateTime(), nextBestNode.flow());
-            if (!getObstacleQuery().firstMember(connector).isPresent()) { // best Candidate obstacle check
+            // if (!getObstacleQuery().firstMember(connector).isPresent()) { // best Candidate obstacle check
+            if (getPlannerConstraint().isSatisfied(nextBestParent, connector, nextBestNode.flow())) { //  YNAGER
               // adding next to tree and DomainMap
               final CandidatePair removedCP = candidateQueue.remove();
               if (removedCP != nextBest)
@@ -503,7 +514,8 @@ public class OptimalAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
               if (Nodes.areConnected(possibleCandidateOrigin, root)) {
                 final List<StateTime> connector = //
                     getStateIntegrator().trajectory(possibleCandidateOrigin.stateTime(), possibleCandidateNode.flow());
-                if (!getObstacleQuery().firstMember(connector).isPresent()) {
+                // if (!getObstacleQuery().firstMember(connector).isPresent()) {
+                if (getPlannerConstraint().isSatisfied(possibleCandidateOrigin, connector, possibleCandidateNode.flow())) { //  YNAGER
                   Collection<GlcNode> deleteTree = deleteSubtreeOf(label);
                   CandidatePair formerLabelCandidate = new CandidatePair(label.parent(), label);
                   label.parent().removeEdgeTo(label);
