@@ -36,7 +36,7 @@ public final class ShadowConstraint implements PlannerConstraint, Serializable {
     if (glcNode.isRoot()) {
       rootStateTime = glcNode.stateTime();
     }
-    StateTime childStateTime = trajectory.get(trajectory.size()-1);
+    StateTime childStateTime = trajectory.get(trajectory.size() - 1);
     double posX = childStateTime.state().Get(0).number().doubleValue();
     double posY = childStateTime.state().Get(1).number().doubleValue();
     Area simShadowArea = (Area) shadowMap.getCurrentMap().clone();

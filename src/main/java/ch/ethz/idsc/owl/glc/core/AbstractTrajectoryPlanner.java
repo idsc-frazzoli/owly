@@ -11,7 +11,6 @@ import ch.ethz.idsc.owl.glc.std.PlannerConstraint;
 import ch.ethz.idsc.owl.glc.std.StandardTrajectoryPlanner;
 import ch.ethz.idsc.owl.math.state.StateIntegrator;
 import ch.ethz.idsc.owl.math.state.StateTime;
-import ch.ethz.idsc.owl.math.state.TrajectoryRegionQuery;
 import ch.ethz.idsc.tensor.Tensor;
 
 /** planner is shared between
@@ -58,9 +57,6 @@ public abstract class AbstractTrajectoryPlanner extends TrajectoryPlanner {
     this.goalInterface = goalInterface;
   }
 
-  // protected final void setObstacleQuery(TrajectoryRegionQuery obstacleQuery) {
-  // this.obstacleQuery = obstacleQuery;
-  // }
   protected final boolean isInsideGoal(List<StateTime> trajectory) {
     return goalInterface.firstMember(trajectory).isPresent();
   }

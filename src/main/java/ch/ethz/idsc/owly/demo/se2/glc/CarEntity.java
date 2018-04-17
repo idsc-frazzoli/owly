@@ -64,6 +64,7 @@ public class CarEntity extends Se2Entity {
   // ---
   private final Collection<Flow> controls;
   private final Tensor goalRadius;
+
   /** extra cost functions, for instance
    * 1) to penalize switching gears
    * 2) to prevent cutting corners

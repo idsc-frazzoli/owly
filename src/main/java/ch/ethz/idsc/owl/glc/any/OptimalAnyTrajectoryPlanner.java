@@ -269,6 +269,7 @@ public class OptimalAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
   @Override
   public void obstacleUpdate(TrajectoryRegionQuery newObstacle, Region<Tensor> rechabilityObstacleRegion) {
     // if (newObstacle == getObstacleQuery()) // intended: equality of reference
+    // FIXME the below condition with "==" can never be true
     if (getPlannerConstraint() == new TrajectoryObstacleConstraint(newObstacle)) // YNAGER
       return;
     if (Objects.isNull(newObstacle)) {
