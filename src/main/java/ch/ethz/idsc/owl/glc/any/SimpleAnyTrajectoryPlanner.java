@@ -23,6 +23,7 @@ import ch.ethz.idsc.owl.math.state.TrajectoryRegionQuery;
 import ch.ethz.idsc.tensor.Scalars;
 import ch.ethz.idsc.tensor.Tensor;
 
+// TODO: test changes marked with "YNAGER"
 /** An anytime MotionPlanning Algorithm, not optimal/ complete
  * after: [B. Paden] A Generalized Label Correcting Method for Optimal Kinodynamic Motion Planning
  * Assumptions: -All states of all obstacles are known at all times
@@ -68,7 +69,8 @@ public class SimpleAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
             GlcNode formerLabel = formerLabelOpt.get();
             if (Scalars.lessThan(next.merit(), formerLabel.merit())) {
               // collision check only if new node is better
-              if (!getObstacleQuery().firstMember(connectors.get(next)).isPresent()) {// better node not collision
+              // if (!getObstacleQuery().firstMember(connectors.get(next)).isPresent()) {// better node not collision
+              if (getPlannerConstraint().isSatisfied(nextParent, connectors.get(next), next.flow())) { //  YNAGER
                 // remove former Label from QUEUE
                 final Collection<GlcNode> subDeleteTree = deleteSubtreeOf(formerLabel);
                 if (subDeleteTree.size() > 1)
@@ -83,7 +85,8 @@ public class SimpleAnyTrajectoryPlanner extends AbstractAnyTrajectoryPlanner {
               }
             }
           } else {
-            if (!getObstacleQuery().firstMember(connectors.get(next)).isPresent()) {
+            // if (!getObstacleQuery().firstMember(connectors.get(next)).isPresent()) {
+            if (getPlannerConstraint().isSatisfied(nextParent, connectors.get(next), next.flow())) { //  YNAGER
               nextParent.insertEdgeTo(next);
               insert(domain_key, next);
               if (isInsideGoal(connectors.get(next)))

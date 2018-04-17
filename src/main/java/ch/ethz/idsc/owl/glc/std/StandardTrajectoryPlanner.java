@@ -14,7 +14,6 @@ import ch.ethz.idsc.owl.glc.core.GoalInterface;
 import ch.ethz.idsc.owl.math.flow.Flow;
 import ch.ethz.idsc.owl.math.state.StateIntegrator;
 import ch.ethz.idsc.owl.math.state.StateTime;
-import ch.ethz.idsc.owl.math.state.TrajectoryFlowRegionQuery;
 import ch.ethz.idsc.owl.math.state.TrajectoryRegionQuery;
 import ch.ethz.idsc.tensor.DoubleScalar;
 import ch.ethz.idsc.tensor.ExactScalarQ;
@@ -37,23 +36,28 @@ public class StandardTrajectoryPlanner extends AbstractTrajectoryPlanner {
   private static final Scalar MERIT_EPS = DoubleScalar.of(1E-6);
   // ---
   private transient final ControlsIntegrator controlsIntegrator;
-  private TrajectoryFlowRegionQuery tfrq = null;
 
+  // TODO deprecated
   public StandardTrajectoryPlanner( //
       Tensor eta, //
       StateIntegrator stateIntegrator, //
       Collection<Flow> controls, //
       TrajectoryRegionQuery obstacleQuery, //
       GoalInterface goalInterface) {
-    super(eta, stateIntegrator, obstacleQuery, goalInterface);
+    this(eta, stateIntegrator, controls, new TrajectoryObstacleConstraint(obstacleQuery), goalInterface);
+  }
+
+  public StandardTrajectoryPlanner( //
+      Tensor eta, //
+      StateIntegrator stateIntegrator, //
+      Collection<Flow> controls, //
+      PlannerConstraint plannerConstraint, //
+      GoalInterface goalInterface) {
+    super(eta, stateIntegrator, plannerConstraint, goalInterface);
     controlsIntegrator = new ControlsIntegrator( //
         stateIntegrator, //
         () -> controls.stream().parallel(), //
         goalInterface);
-  }
-
-  public void setTrajectoryFlowRegionQuery(TrajectoryFlowRegionQuery tfrq) {
-    this.tfrq = tfrq;
   }
 
   @Override // from ExpandInterface
@@ -85,16 +89,8 @@ public class StandardTrajectoryPlanner extends AbstractTrajectoryPlanner {
       final Flow flow = next.flow();
       final List<StateTime> trajectory = connectors.get(next);
       //
-      // Check constraints
-      boolean isConSatisfied = getGoalInterface().isSatisfied(next, node, trajectory);
-      //
-      // TODO: make the following cleaner
-      boolean isFlowViolated = false;
-      if (tfrq != null)
-        isFlowViolated = tfrq.firstMember(trajectory, flow).isPresent();
-      //
-      // check collisions
-      if (!getObstacleQuery().firstMember(trajectory).isPresent() && !isFlowViolated && isConSatisfied) {
+      // check constraints
+      if (getPlannerConstraint().isSatisfied(node, trajectory, flow)) {
         Optional<GlcNode> former = getNode(domainKey);
         boolean isPresent = former.isPresent();
         synchronized (this) {

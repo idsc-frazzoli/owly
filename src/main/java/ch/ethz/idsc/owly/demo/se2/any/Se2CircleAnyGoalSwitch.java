@@ -1,8 +1,10 @@
 // code by jl
 package ch.ethz.idsc.owly.demo.se2.any;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
 
 import ch.ethz.idsc.owl.glc.adapter.MultiCostGoalAdapter;
 import ch.ethz.idsc.owl.glc.any.AbstractAnyTrajectoryPlanner;
@@ -36,11 +38,14 @@ enum Se2CircleAnyGoalSwitch {
     Scalar circleRadius = RealScalar.of(3);
     Tensor goal = null;
     Tensor radiusVector = Tensors.of(DoubleScalar.of(0.2), DoubleScalar.of(0.2), Degree.of(15));
+    List<StateTime> goalList = new ArrayList<>();
+    goalList.add(new StateTime(goal, RealScalar.ZERO));
     do {
       Scalar goalAngle = RealScalar.of(2 * Math.PI).divide(stepsPerCircle).multiply(RealScalar.of(iter)).negate();
       goal = Tensors.of(Cos.of(goalAngle).multiply(circleRadius), //
           Sin.of(goalAngle).multiply(circleRadius), goalAngle.subtract(RealScalar.of(Math.PI * 0.5)));
-    } while (trajectoryPlanner.getObstacleQuery().isMember(new StateTime(goal, RealScalar.ZERO)));
+      // } while (trajectoryPlanner.getObstacleQuery().isMember(new StateTime(goal, RealScalar.ZERO)));
+    } while (trajectoryPlanner.getPlannerConstraint().isSatisfied(null, goalList, null)); // YNAGER TODO test changes
     GoalInterface se2GoalManager = MultiCostGoalAdapter.of( //
         Se2MinTimeGoalManager.create(goal, radiusVector, controls), //
         Arrays.asList(Se2LateralAcceleration.COSTFUNCTION));
