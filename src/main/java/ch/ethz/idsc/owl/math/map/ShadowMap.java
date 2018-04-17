@@ -41,6 +41,7 @@ public class ShadowMap implements RenderInterface {
   private Timer increaserTimer;
   private final int updateRate; // [Hz]
   public final float vMax;
+  Rectangle2D rInit;
 
   public ShadowMap(LidarEmulator lidar, ImageRegion imageRegion, Supplier<StateTime> stateTimeSupplier, float vMax, int updateRate) {
     this.lidar = lidar;
@@ -62,10 +63,10 @@ public class ShadowMap implements RenderInterface {
     obstacleArea = area.createTransformedArea(AffineTransforms.toAffineTransform(tmatrix));
     //
     // define initial shadow area
-    Rectangle2D rInit = new Rectangle2D.Double();
+    rInit = new Rectangle2D.Double();
     rInit.setFrame(obstacleArea.getBounds());
     this.shadowArea = new Area(rInit);
-    Stroke stroke = new BasicStroke(0.03f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_BEVEL);
+    Stroke stroke = new BasicStroke(0.01f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_BEVEL);
     Shape strokeShape = stroke.createStrokedShape(obstacleArea);
     obstacleArea.add(new Area(strokeShape));
     //
@@ -85,6 +86,7 @@ public class ShadowMap implements RenderInterface {
     Shape strokeShape = stroke.createStrokedShape(shadowArea);
     area.add(new Area(strokeShape));
     area.subtract(obstacleArea);
+    area.intersect(new Area(rInit)); // TODO: can this be improved?
   }
 
   public final void startNonBlocking() {
