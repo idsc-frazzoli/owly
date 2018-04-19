@@ -4,21 +4,26 @@ package ch.ethz.idsc.owl.glc.adapter;
 import java.util.List;
 
 import ch.ethz.idsc.owl.gui.ani.AbstractEntity;
+import ch.ethz.idsc.owl.math.state.StateTime;
+import ch.ethz.idsc.owl.math.state.TrajectoryRegionQuery;
 import ch.ethz.idsc.owl.math.state.TrajectorySample;
 import ch.ethz.idsc.tensor.DoubleScalar;
+import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Scalars;
 import ch.ethz.idsc.tensor.Tensor;
 
 public abstract class WaypointFollowing {
-  private final Tensor waypoints;
+  protected final TrajectoryRegionQuery obstacleQuery;
   protected final AbstractEntity entity;
+  private final Tensor waypoints;
   private Scalar distThreshold = DoubleScalar.POSITIVE_INFINITY;
   private boolean isRunning = true;
 
-  public WaypointFollowing(Tensor waypoints, AbstractEntity entity) {
+  public WaypointFollowing(Tensor waypoints, AbstractEntity entity, TrajectoryRegionQuery obstacleQuery) {
     this.waypoints = waypoints;
     this.entity = entity;
+    this.obstacleQuery = obstacleQuery;
   }
 
   /** sets the distance threshold. When the distance from the current state
@@ -51,12 +56,17 @@ public abstract class WaypointFollowing {
           if (Scalars.lessThan(dist, distThreshold) || init) { // if close enough to current waypoint switch to next
             i = (i + 1) % waypoints.length();
             goal = waypoints.get(i);
+            // skip waypoint if covered by obstacle
+            if (obstacleQuery.isMember(new StateTime(goal, RealScalar.ZERO))) { // TODO will not work for time dep. obstacles! 
+              i = (i + 1) % waypoints.length();
+              goal = waypoints.get(i);
+            }
             head = entity.getFutureTrajectoryUntil(entity.delayHint());
             planToGoal(head, goal);
             init = false;
           } else {
             try {
-              Thread.sleep(100);
+              Thread.sleep(50);
             } catch (InterruptedException e) {
               e.printStackTrace();
             }

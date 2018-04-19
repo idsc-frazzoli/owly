@@ -13,15 +13,13 @@ import ch.ethz.idsc.owl.math.state.TrajectorySample;
 import ch.ethz.idsc.tensor.Tensor;
 
 public class GlcWaypointFollowing extends WaypointFollowing {
-  private final TrajectoryRegionQuery obstacleQuery;
   protected final TrajectoryPlannerCallback trajectoryPlannerCallback;
   private MotionPlanWorker mpw = null;
 
   public GlcWaypointFollowing( //
       Tensor waypoints, AbstractEntity entity, TrajectoryPlannerCallback trajectoryPlannerCallback, //
       TrajectoryRegionQuery obstacleQuery) {
-    super(waypoints, entity);
-    this.obstacleQuery = obstacleQuery;
+    super(waypoints, entity, obstacleQuery);
     this.trajectoryPlannerCallback = trajectoryPlannerCallback;
   }
 
@@ -32,7 +30,7 @@ public class GlcWaypointFollowing extends WaypointFollowing {
       mpw = null;
     }
     TrajectoryPlanner trajectoryPlanner = entity.createTrajectoryPlanner( //
-        Objects.requireNonNull(obstacleQuery), goal);
+        Objects.requireNonNull(super.obstacleQuery), goal);
     mpw = new MotionPlanWorker(trajectoryPlannerCallback);
     mpw.start(head, trajectoryPlanner);
   }
