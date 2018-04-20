@@ -1,5 +1,5 @@
 // code by ynager
-package ch.ethz.idsc.owl.math.map;
+package ch.ethz.idsc.owl.mapping;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
@@ -18,6 +18,7 @@ import ch.ethz.idsc.owl.gui.AffineTransforms;
 import ch.ethz.idsc.owl.gui.GeometricLayer;
 import ch.ethz.idsc.owl.gui.RenderInterface;
 import ch.ethz.idsc.owl.img.ImageArea;
+import ch.ethz.idsc.owl.math.map.Se2Bijection;
 import ch.ethz.idsc.owl.math.region.ImageRegion;
 import ch.ethz.idsc.owl.math.state.StateTime;
 import ch.ethz.idsc.owl.sim.LidarEmulator;
