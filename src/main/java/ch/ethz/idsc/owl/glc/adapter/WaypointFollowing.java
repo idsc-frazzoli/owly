@@ -2,6 +2,7 @@
 package ch.ethz.idsc.owl.glc.adapter;
 
 import java.util.List;
+import java.util.Objects;
 
 import ch.ethz.idsc.owl.gui.ani.AbstractEntity;
 import ch.ethz.idsc.owl.math.state.StateTime;
@@ -23,7 +24,7 @@ public abstract class WaypointFollowing {
   public WaypointFollowing(Tensor waypoints, AbstractEntity entity, TrajectoryRegionQuery obstacleQuery) {
     this.waypoints = waypoints;
     this.entity = entity;
-    this.obstacleQuery = obstacleQuery;
+    this.obstacleQuery = Objects.requireNonNull(obstacleQuery);
   }
 
   /** sets the distance threshold. When the distance from the current state
@@ -45,9 +46,9 @@ public abstract class WaypointFollowing {
       @Override
       public void run() {
         List<TrajectorySample> head = entity.getFutureTrajectoryUntil(entity.delayHint());
-        Tensor goal = waypoints.get(0);
         // start waypoint tracking loop
         int i = 0;
+        Tensor goal = waypoints.get(i);
         boolean init = true;
         while (isRunning) {
           Tensor loc = entity.getEstimatedLocationAt(entity.delayHint());

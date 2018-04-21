@@ -11,7 +11,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import ch.ethz.idsc.owl.data.GlobalAssert;
 import ch.ethz.idsc.owl.data.nd.NdCenterInterface;
 import ch.ethz.idsc.owl.data.nd.NdCluster;
 import ch.ethz.idsc.owl.data.nd.NdEntry;
@@ -25,24 +24,34 @@ import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Scalars;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
+import ch.ethz.idsc.tensor.sca.Floor;
 import ch.ethz.idsc.tensor.sca.Round;
+import ch.ethz.idsc.tensor.sca.ScalarUnaryOperator;
+import ch.ethz.idsc.tensor.sca.Sign;
 
 public class OccupancyMap2d implements RenderInterface {
-  final static int maxDepth = 5;
-  final static int maxDensity = 20;
-  final private Tensor lbounds;
-  final private Tensor ubounds;
-  Scalar gridRes = DoubleScalar.POSITIVE_INFINITY;
-  NdTreeMap<Scalar> ndTree;
-  BufferedImage bufferedImage;
+  private static final int MAX_DEPTH = 5;
+  private static final int MAX_DENSITY = 20;
+  // ---
+  private final Tensor lbounds;
+  private final Tensor ubounds;
+  private final Scalar gridRes;
+  private final NdTreeMap<Scalar> ndTree;
+  private BufferedImage bufferedImage;
   private final Object lock = new Object();
+  private final ScalarUnaryOperator floor;
+  private final ScalarUnaryOperator roundToMultipleOf;
 
+  /** @param lbounds vector of length 2
+   * @param ubounds vector of length 2
+   * @param gridRes */
   public OccupancyMap2d(Tensor lbounds, Tensor ubounds, Scalar gridRes) {
-    ndTree = new NdTreeMap<>(lbounds, ubounds, maxDensity, maxDepth); // magic const
-    GlobalAssert.that(Scalars.lessThan(RealScalar.ZERO, gridRes));
-    this.gridRes = gridRes;
+    ndTree = new NdTreeMap<>(lbounds, ubounds, MAX_DENSITY, MAX_DEPTH); // magic const
     this.ubounds = ubounds;
     this.lbounds = lbounds;
+    this.gridRes = Sign.requirePositive(gridRes);
+    floor = Floor.toMultipleOf(gridRes);
+    roundToMultipleOf = Round.toMultipleOf(gridRes);
     initRender();
   }
 
@@ -72,8 +81,10 @@ public class OccupancyMap2d implements RenderInterface {
       if (ndTree.isEmpty())
         return false;
       NdCluster<Scalar> cluster = ndTree.buildCluster(distanceInterface, 1);
-      List<Scalar> a = cluster.stream().map(NdEntry::distance).collect(Collectors.toList());
-      return Scalars.lessThan(a.get(0), gridRes);
+      // TODO YN use findFirst of stream to only use first element of collecting all elements to a list
+      List<Scalar> list = //
+          cluster.stream().map(NdEntry::distance).collect(Collectors.toList());
+      return Scalars.lessThan(list.get(0), gridRes);
     }
   }
 
@@ -83,9 +94,8 @@ public class OccupancyMap2d implements RenderInterface {
       NdCenterInterface distanceInterface = NdCenterInterface.euclidean(toTile(pos));
       NdCluster<Scalar> cluster = ndTree.buildCluster(distanceInterface, 1);
       Optional<NdEntry<Scalar>> closest = cluster.stream().findFirst();
-      if (closest.isPresent()) {
+      if (closest.isPresent())
         return closest.get().distance().multiply(gridRes);
-      }
       return DoubleScalar.POSITIVE_INFINITY;
     }
   }
@@ -103,18 +113,23 @@ public class OccupancyMap2d implements RenderInterface {
     return (OccupancyMap2d) this.clone();
   }
 
-  private Tensor toTile(Tensor pos) {
+  /** @param state of which only the first two entries are considered
+   * @return */
+  /* package for testing */ Tensor toTile(Tensor state) {
+    return Floor.of(state.extract(0, 2).subtract(lbounds).divide(gridRes));
     // get x index
-    Scalar xShift = pos.Get(0).subtract(lbounds.get(0));
-    Scalar xRound = (Scalar) xShift.add(gridRes.divide(RealScalar.of(2))).map(Round.toMultipleOf(gridRes));
-    Scalar xIdx = xRound.divide(gridRes).subtract(RealScalar.ONE);
-    // get y index
-    Scalar yShift = pos.Get(1).subtract(lbounds.get(1));
-    Scalar yRound = (Scalar) yShift.add(gridRes.divide(RealScalar.of(2))).map(Round.toMultipleOf(gridRes));
-    Scalar yIdx = yRound.divide(gridRes).subtract(RealScalar.ONE);
-    return Tensors.of(xIdx, yIdx);
+    // Scalar xShift = state.Get(0).subtract(lbounds.get(0));
+    // Scalar xRound = roundToMultipleOf.apply(xShift.add(gridRes.divide(RealScalar.of(2))));
+    // TODO YN this code did not make sense: roundToMultiple ends with * gridRes and below you / gridRes
+    // Scalar xIdx = xRound.divide(gridRes).subtract(RealScalar.ONE);
+    // // get y index
+    // Scalar yShift = state.Get(1).subtract(lbounds.get(1));
+    // Scalar yRound = roundToMultipleOf.apply(yShift.add(gridRes.divide(RealScalar.of(2))));
+    // Scalar yIdx = yRound.divide(gridRes).subtract(RealScalar.ONE);
+    // return Tensors.of(xIdx, yIdx);
   }
 
+  // TODO YN function not called
   private final Tensor getTileCoordinates(Tensor tile) {
     Scalar s = gridRes.divide(RealScalar.of(2));
     return tile.multiply(gridRes).add(Tensors.of(s, s)).add(lbounds);
@@ -138,8 +153,9 @@ public class OccupancyMap2d implements RenderInterface {
   @Override
   public void render(GeometricLayer geometricLayer, Graphics2D graphics) {
     final Tensor matrix = geometricLayer.getMatrix();
-    AffineTransform aT = AffineTransforms.toAffineTransform(matrix);
-    aT.scale(gridRes.number().doubleValue(), gridRes.number().doubleValue());
-    graphics.drawImage(bufferedImage, aT, null);
+    AffineTransform affineTransform = AffineTransforms.toAffineTransform(matrix);
+    double scale = gridRes.number().doubleValue();
+    affineTransform.scale(scale, scale);
+    graphics.drawImage(bufferedImage, affineTransform, null);
   }
 }

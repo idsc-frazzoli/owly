@@ -16,6 +16,10 @@ public class GlcWaypointFollowing extends WaypointFollowing {
   protected final TrajectoryPlannerCallback trajectoryPlannerCallback;
   private MotionPlanWorker mpw = null;
 
+  /** @param waypoints
+   * @param entity
+   * @param trajectoryPlannerCallback
+   * @param obstacleQuery non-null */
   public GlcWaypointFollowing( //
       Tensor waypoints, AbstractEntity entity, TrajectoryPlannerCallback trajectoryPlannerCallback, //
       TrajectoryRegionQuery obstacleQuery) {
@@ -29,8 +33,7 @@ public class GlcWaypointFollowing extends WaypointFollowing {
       mpw.flagShutdown();
       mpw = null;
     }
-    TrajectoryPlanner trajectoryPlanner = entity.createTrajectoryPlanner( //
-        Objects.requireNonNull(super.obstacleQuery), goal);
+    TrajectoryPlanner trajectoryPlanner = entity.createTrajectoryPlanner(obstacleQuery, goal);
     mpw = new MotionPlanWorker(trajectoryPlannerCallback);
     mpw.start(head, trajectoryPlanner);
   }

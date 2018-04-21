@@ -13,7 +13,7 @@ import ch.ethz.idsc.owl.math.state.TrajectoryRegionQuery;
  * non-empty intersection of the trajectory with the region represents a constraint
  * violation. */
 public class TrajectoryObstacleConstraint implements PlannerConstraint, Serializable {
-  private TrajectoryRegionQuery trajectoryRegionQuery;
+  private final TrajectoryRegionQuery trajectoryRegionQuery;
 
   public TrajectoryObstacleConstraint(TrajectoryRegionQuery trajectoryRegionQuery) {
     this.trajectoryRegionQuery = trajectoryRegionQuery;
