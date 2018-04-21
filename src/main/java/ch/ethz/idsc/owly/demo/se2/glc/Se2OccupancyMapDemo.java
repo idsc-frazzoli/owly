@@ -7,51 +7,41 @@ import java.util.TimerTask;
 
 import ch.ethz.idsc.owl.gui.ani.OwlyAnimationFrame;
 import ch.ethz.idsc.owl.mapping.OccupancyMap2d;
-import ch.ethz.idsc.owl.math.region.ImageRegion;
+import ch.ethz.idsc.owl.mapping.OccupancyMapTrajectoryRegionQuery;
 import ch.ethz.idsc.owl.math.state.StateTime;
 import ch.ethz.idsc.owl.math.state.TrajectoryRegionQuery;
-import ch.ethz.idsc.owly.demo.rn.R2ImageRegions;
-import ch.ethz.idsc.owly.demo.util.RegionRenders;
 import ch.ethz.idsc.tensor.DoubleScalar;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
+import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
+import ch.ethz.idsc.tensor.pdf.NormalDistribution;
+import ch.ethz.idsc.tensor.pdf.RandomVariate;
 
 public class Se2OccupancyMapDemo extends Se2CarDemo {
   @Override
   void configure(OwlyAnimationFrame owlyAnimationFrame) {
-    CarEntity se2Entity = CarEntity.createDefault(new StateTime(Tensors.vector(6, 6, 1), RealScalar.ZERO));
-    ImageRegion imageRegion = R2ImageRegions._SQUARE.imageRegion();
-    TrajectoryRegionQuery trq = createCarQuery(imageRegion);
-    se2Entity.obstacleQuery = trq;
-    //
-    OccupancyMap2d om = new OccupancyMap2d(Tensors.vector(0, 0), Tensors.vector(12, 12), DoubleScalar.of(0.5));
+    CarEntity se2Entity = CarEntity.createDefault(new StateTime(Tensors.vector(2, 4, 0), RealScalar.ZERO));
+    OccupancyMap2d om = new OccupancyMap2d(Tensors.vector(0, 0), Tensors.vector(8, 8), DoubleScalar.of(0.4));
+    TrajectoryRegionQuery omtrq = new OccupancyMapTrajectoryRegionQuery(om, null);
+    se2Entity.obstacleQuery = omtrq;
     //
     owlyAnimationFrame.set(se2Entity);
-    owlyAnimationFrame.setObstacleQuery(trq);
-    owlyAnimationFrame.addBackground(RegionRenders.create(imageRegion));
+    owlyAnimationFrame.setObstacleQuery(omtrq);
     owlyAnimationFrame.addBackground(om);
     //
-    om.insert(Tensors.vector(4, 4));
-    om.insert(Tensors.vector(8, 4));
-    //
-    TimerTask mapUpdate = new TimerTask() {
-      @Override
-      public void run() {
-        Scalar d = om.getL2DistToClosest(se2Entity.getStateTimeNow().state().extract(0, 2));
-        System.out.println(se2Entity.getStateTimeNow().state().extract(0, 2) + "   " + d + "\n");
-        Random rand = new Random();
-        Float ri = rand.nextFloat();
-        if(ri < 0.5f) {
-          Float rx = rand.nextFloat()*11.8f + 0.1f;
-          Float ry = rand.nextFloat()*11.8f + 0.1f;
-          om.insert(Tensors.vector(rx, ry));
-        }
-        
+    while (true) {
+      try {
+        om.insert(RandomVariate.of(NormalDistribution.of(6, 0.2), 2));
+        om.insert(RandomVariate.of(NormalDistribution.of(1.5, 0.2), 2));
+        om.insert(RandomVariate.of(NormalDistribution.of(4, 0.3), 2));
+        Thread.sleep(50);
+        System.out.printf("TreeSize: " + om.getTreeSize() + ",  Dist: " //
+            + "%.3f" + "\n", om.getL2DistToClosest(se2Entity.getStateTimeNow().state()).number().floatValue());
+      } catch (InterruptedException e) {
+        e.printStackTrace();
       }
-    };
-    Timer timer = new Timer("MapUpdateTimer");
-    timer.scheduleAtFixedRate(mapUpdate, 10, 1000 / 10);
+    }
   }
 
   public static void main(String[] args) {
