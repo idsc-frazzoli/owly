@@ -3,6 +3,8 @@ package ch.ethz.idsc.owl.mapping;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.geom.AffineTransform;
+import java.awt.geom.Area;
 import java.awt.image.BufferedImage;
 import java.util.Collection;
 import java.util.List;
@@ -16,6 +18,7 @@ import ch.ethz.idsc.owl.data.nd.NdCenterInterface;
 import ch.ethz.idsc.owl.data.nd.NdCluster;
 import ch.ethz.idsc.owl.data.nd.NdEntry;
 import ch.ethz.idsc.owl.data.nd.NdTreeMap;
+import ch.ethz.idsc.owl.gui.AffineTransforms;
 import ch.ethz.idsc.owl.gui.GeometricLayer;
 import ch.ethz.idsc.owl.gui.RenderInterface;
 import ch.ethz.idsc.tensor.DoubleScalar;
@@ -81,12 +84,15 @@ public class OccupancyMap2d implements RenderInterface {
     List<Scalar> a = cluster.stream().map(NdEntry::distance).collect(Collectors.toList());
     if (!a.contains(RealScalar.ZERO)) {
       ndTree.add(tile, RealScalar.of(1));
-      bufferedImage.setRGB(tile.Get(0).number().intValue(), bufferedImage.getHeight() - tile.Get(1).number().intValue(), 0x7FFF0000);
+      // rendering
+      int xvalue = tile.Get(0).number().intValue();
+      int yvalue = bufferedImage.getHeight() - tile.Get(1).number().intValue() - 1;
+      bufferedImage.setRGB(xvalue, yvalue, 0x7FFF0000);
       return true;
     }
     return false;
   }
-  
+
   public boolean remove(Tensor pos) {
     // TODO: build this method
     return false;
@@ -109,14 +115,16 @@ public class OccupancyMap2d implements RenderInterface {
     // System.out.println("considered " + cluster.considered() + " " + ndMap.size());
     return cluster.stream().map(NdEntry::value).collect(Collectors.toList());
   }
-  
+
   public OccupancyMap2d getCopy() throws CloneNotSupportedException {
     return (OccupancyMap2d) this.clone();
   }
 
-
   @Override
   public void render(GeometricLayer geometricLayer, Graphics2D graphics) {
-    graphics.drawImage(bufferedImage, 50, -20, 720, 720, null);
+    final Tensor matrix = geometricLayer.getMatrix();
+    AffineTransform aT = AffineTransforms.toAffineTransform(matrix);
+    aT.scale(0.5, 0.5);
+    graphics.drawImage(bufferedImage, aT, null);
   }
 }

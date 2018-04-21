@@ -1,6 +1,7 @@
 // code by jph
 package ch.ethz.idsc.owly.demo.se2.glc;
 
+import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -39,6 +40,14 @@ public class Se2OccupancyMapDemo extends Se2CarDemo {
       public void run() {
         Scalar d = om.getL2DistToClosest(se2Entity.getStateTimeNow().state().extract(0, 2));
         System.out.println(se2Entity.getStateTimeNow().state().extract(0, 2) + "   " + d + "\n");
+        Random rand = new Random();
+        Float ri = rand.nextFloat();
+        if(ri < 0.5f) {
+          Float rx = rand.nextFloat()*11.8f + 0.1f;
+          Float ry = rand.nextFloat()*11.8f + 0.1f;
+          om.insert(Tensors.vector(rx, ry));
+        }
+        
       }
     };
     Timer timer = new Timer("MapUpdateTimer");
