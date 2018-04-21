@@ -9,7 +9,6 @@ import java.awt.image.BufferedImage;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
-import java.util.Timer;
 import java.util.stream.Collectors;
 
 import ch.ethz.idsc.owl.data.GlobalAssert;
@@ -26,7 +25,7 @@ import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Scalars;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
-import ch.ethz.idsc.tensor.sca.Mod;
+import ch.ethz.idsc.tensor.sca.Round;
 
 public class OccupancyMap2d implements RenderInterface {
   final static int maxDepth = 5;
@@ -37,7 +36,6 @@ public class OccupancyMap2d implements RenderInterface {
   NdTreeMap<Scalar> ndTree;
   BufferedImage bufferedImage;
   private final Object lock = new Object();
-  
 
   public OccupancyMap2d(Tensor lbounds, Tensor ubounds, Scalar gridRes) {
     ndTree = new NdTreeMap<>(lbounds, ubounds, maxDensity, maxDepth); // magic const
@@ -49,7 +47,7 @@ public class OccupancyMap2d implements RenderInterface {
   }
 
   public boolean insert(Tensor pos) {
-    synchronized(lock) {
+    synchronized (lock) {
       if (isOccupied(pos))
         return false;
       Tensor tile = toTile(pos); // get tile corresponding to position
@@ -69,7 +67,7 @@ public class OccupancyMap2d implements RenderInterface {
   }
 
   public boolean isOccupied(Tensor pos) {
-    synchronized(lock) {
+    synchronized (lock) {
       NdCenterInterface distanceInterface = NdCenterInterface.euclidean(toTile(pos));
       if (ndTree.isEmpty())
         return false;
@@ -81,7 +79,7 @@ public class OccupancyMap2d implements RenderInterface {
 
   // calculates l2 distance between center of respective query tile and closest obstacle tile
   public Scalar getL2DistToClosest(Tensor pos) {
-    synchronized(lock) {
+    synchronized (lock) {
       NdCenterInterface distanceInterface = NdCenterInterface.euclidean(toTile(pos));
       NdCluster<Scalar> cluster = ndTree.buildCluster(distanceInterface, 1);
       Optional<NdEntry<Scalar>> closest = cluster.stream().findFirst();
@@ -93,7 +91,7 @@ public class OccupancyMap2d implements RenderInterface {
   }
 
   public Collection<Scalar> getKNearest(Tensor pos, int k_nearest) {
-    synchronized(lock) {
+    synchronized (lock) {
       NdCenterInterface distanceInterface = NdCenterInterface.euclidean(pos);
       NdCluster<Scalar> cluster = ndTree.buildCluster(distanceInterface, k_nearest);
       // System.out.println("considered " + cluster.considered() + " " + ndMap.size());
@@ -108,20 +106,18 @@ public class OccupancyMap2d implements RenderInterface {
   private Tensor toTile(Tensor pos) {
     // get x index
     Scalar xShift = pos.Get(0).subtract(lbounds.get(0));
-    Scalar xIdx = roundUp(xShift, gridRes).divide(gridRes).subtract(RealScalar.ONE);
+    Scalar xRound = (Scalar) xShift.add(gridRes.divide(RealScalar.of(2))).map(Round.toMultipleOf(gridRes));
+    Scalar xIdx = xRound.divide(gridRes).subtract(RealScalar.ONE);
     // get y index
     Scalar yShift = pos.Get(1).subtract(lbounds.get(1));
-    Scalar yIdx = roundUp(yShift, gridRes).divide(gridRes).subtract(RealScalar.ONE);
+    Scalar yRound = (Scalar) yShift.add(gridRes.divide(RealScalar.of(2))).map(Round.toMultipleOf(gridRes));
+    Scalar yIdx = yRound.divide(gridRes).subtract(RealScalar.ONE);
     return Tensors.of(xIdx, yIdx);
   }
 
   private final Tensor getTileCoordinates(Tensor tile) {
     Scalar s = gridRes.divide(RealScalar.of(2));
     return tile.multiply(gridRes).add(Tensors.of(s, s)).add(lbounds);
-  }
-
-  private Scalar roundUp(Scalar i, Scalar n) {
-    return i.add(n).subtract(Mod.function(n).apply(i));
   }
 
   private void initRender() {

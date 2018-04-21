@@ -1,9 +1,5 @@
-// code by jph
+// code by ynager
 package ch.ethz.idsc.owly.demo.se2.glc;
-
-import java.util.Random;
-import java.util.Timer;
-import java.util.TimerTask;
 
 import ch.ethz.idsc.owl.gui.ani.OwlyAnimationFrame;
 import ch.ethz.idsc.owl.mapping.OccupancyMap2d;
@@ -12,8 +8,6 @@ import ch.ethz.idsc.owl.math.state.StateTime;
 import ch.ethz.idsc.owl.math.state.TrajectoryRegionQuery;
 import ch.ethz.idsc.tensor.DoubleScalar;
 import ch.ethz.idsc.tensor.RealScalar;
-import ch.ethz.idsc.tensor.Scalar;
-import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
 import ch.ethz.idsc.tensor.pdf.NormalDistribution;
 import ch.ethz.idsc.tensor.pdf.RandomVariate;
@@ -22,7 +16,7 @@ public class Se2OccupancyMapDemo extends Se2CarDemo {
   @Override
   void configure(OwlyAnimationFrame owlyAnimationFrame) {
     CarEntity se2Entity = CarEntity.createDefault(new StateTime(Tensors.vector(2, 4, 0), RealScalar.ZERO));
-    OccupancyMap2d om = new OccupancyMap2d(Tensors.vector(0, 0), Tensors.vector(8, 8), DoubleScalar.of(0.4));
+    OccupancyMap2d om = new OccupancyMap2d(Tensors.vector(0, 0), Tensors.vector(8, 8), DoubleScalar.of(0.25));
     TrajectoryRegionQuery omtrq = new OccupancyMapTrajectoryRegionQuery(om, null);
     se2Entity.obstacleQuery = omtrq;
     //
