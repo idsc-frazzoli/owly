@@ -23,6 +23,8 @@ public class Se2OccupancyMapDemo extends Se2CarDemo {
     owlyAnimationFrame.set(se2Entity);
     owlyAnimationFrame.setObstacleQuery(omtrq);
     owlyAnimationFrame.addBackground(om);
+    // TODO YN design cost function that charges for close encounters with points in tree
+    // ... in order to prevent corner cutting
     //
     while (true) {
       try {
