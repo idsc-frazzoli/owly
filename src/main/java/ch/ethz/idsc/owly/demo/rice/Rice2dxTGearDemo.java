@@ -24,9 +24,10 @@ import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
 
 public class Rice2dxTGearDemo implements DemoInterface {
+  final OwlyAnimationFrame owlyAnimationFrame = new OwlyAnimationFrame();
+
   @Override
   public void start() {
-    OwlyAnimationFrame owlyAnimationFrame = new OwlyAnimationFrame();
     Scalar mu = RealScalar.of(-.5);
     Collection<Flow> controls = Rice2Controls.create2d(mu, 1, 15);
     Rice2dEntity abstractEntity = new Rice2dEntity(mu, Tensors.vector(2, 2, 0, 0), controls);
