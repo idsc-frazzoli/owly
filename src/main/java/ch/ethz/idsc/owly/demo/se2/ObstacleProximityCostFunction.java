@@ -3,6 +3,7 @@ package ch.ethz.idsc.owly.demo.se2;
 
 import java.util.List;
 
+import ch.ethz.idsc.owl.data.Lists;
 import ch.ethz.idsc.owl.glc.core.CostFunction;
 import ch.ethz.idsc.owl.glc.core.GlcNode;
 import ch.ethz.idsc.owl.mapping.OccupancyMap2d;
@@ -12,12 +13,14 @@ import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Scalars;
 import ch.ethz.idsc.tensor.Tensor;
+import ch.ethz.idsc.tensor.sca.Clip;
 
 /** Cost function that penalizes distance to obstacles */
 public final class ObstacleProximityCostFunction implements CostFunction {
   private final Scalar penaltyFactor;
   private final Scalar distThreshold;
-  OccupancyMap2d occupancyMap;
+  private final Clip clip;
+  private final OccupancyMap2d occupancyMap;
 
   /** @param occupancyMap instance
    * @param penaltyFactor
@@ -26,11 +29,20 @@ public final class ObstacleProximityCostFunction implements CostFunction {
     this.penaltyFactor = penaltyFactor;
     this.occupancyMap = occupancyMap;
     this.distThreshold = distThreshold;
+    clip = Clip.function(distThreshold.zero(), distThreshold);
   }
 
   Scalar pointCost(Tensor tensor) {
-    Scalar dist = occupancyMap.getL2DistToClosest(tensor);
-    return Scalars.lessThan(distThreshold, dist) ? RealScalar.ZERO : dist.under(penaltyFactor);
+    Scalar distance = occupancyMap.getL2DistToClosest(tensor);
+    // commented code below uses linear interpolation, resulting in closer encounters
+    // if (clip.isInside(distance)) {
+    // Scalar rescale = RealScalar.ONE.subtract(clip.rescale(distance));
+    // return rescale.multiply(penaltyFactor);
+    // }
+    // return penaltyFactor.zero();
+    // TODO YN risk for division by zero
+    // ... under() is not recommended for the application layer and can't prevent that :-)
+    return Scalars.lessThan(distThreshold, distance) ? RealScalar.ZERO : penaltyFactor.divide(distance);
   }
 
   @Override // from CostIncrementFunction
@@ -40,7 +52,8 @@ public final class ObstacleProximityCostFunction implements CostFunction {
     // .map(StateTime::state) //
     // .map(this::pointCost));
     // return cost.dot(dts).Get();
-    return pointCost(trajectory.get(trajectory.size() - 1).state());
+    StateTime stateTime = Lists.getLast(trajectory);
+    return pointCost(stateTime.state());
   }
 
   @Override // from HeuristicFunction

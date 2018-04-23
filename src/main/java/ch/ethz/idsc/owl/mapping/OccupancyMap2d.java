@@ -28,10 +28,13 @@ import ch.ethz.idsc.tensor.DoubleScalar;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
+import ch.ethz.idsc.tensor.Tensors;
+import ch.ethz.idsc.tensor.red.Mean;
 import ch.ethz.idsc.tensor.sca.Ceiling;
 import ch.ethz.idsc.tensor.sca.Floor;
 import ch.ethz.idsc.tensor.sca.Sign;
 
+/** all pixels have the same amount of weight or clearance radius attached */
 public class OccupancyMap2d implements MappingInterface, TrajectoryRegionQuery, RenderInterface {
   private static final int MAX_DEPTH = 7;
   private static final int MAX_DENSITY = 6;
@@ -40,12 +43,18 @@ public class OccupancyMap2d implements MappingInterface, TrajectoryRegionQuery, 
   private static final int OCCUPIED_COLOR = 0x7FFF << 16;
   private static final int EMPTY_COLOR = 0x1000FF << 8;
   // ---
+  // private static final Scalar DEFAULT_COST = DoubleScalar.of(1);
+  // ---
   private final Tensor lbounds;
   private final Scalar gridRes;
   private final Scalar gridInv;
   /** nd map is used to obtain nearest neighbors */
-  private final NdMap<Scalar> ndMap;
+  private final NdMap<Void> ndMap;
   /** buffered image is used to check for occupancy and visualization */
+  // TODO YN LONGTERM due to the collection/list::remove call i would only insert
+  // exact precision values into occupiedList, which at the moment doesn't happen
+  // also, what is the role of the 3rd coordinate... under certain circumstances the remove doesn't work.
+  // therefore i have removed the 3rd coordinate for now
   private final List<Tensor> occupiedList;
   private final BufferedImage bufferedImage;
   private final int[] pixels;
@@ -67,9 +76,9 @@ public class OccupancyMap2d implements MappingInterface, TrajectoryRegionQuery, 
     WritableRaster writableRaster = bufferedImage.getRaster();
     DataBufferInt dataBufferByte = (DataBufferInt) writableRaster.getDataBuffer();
     pixels = dataBufferByte.getData();
-    occupiedList = new ArrayList<Tensor>();
-    mapRegion = new BoundedBoxRegion(ubounds.subtract(lbounds).divide(RealScalar.of(2)) //
-        .add(lbounds), ubounds.subtract(lbounds).divide(RealScalar.of(2)));
+    occupiedList = new ArrayList<>();
+    Tensor center = Mean.of(Tensors.of(lbounds, ubounds));
+    mapRegion = new BoundedBoxRegion(center, ubounds.subtract(center));
     Graphics graphics = bufferedImage.getGraphics();
     graphics.setColor(new Color(EMPTY_COLOR, true));
     graphics.fillRect(0, 0, bufferedImage.getWidth(), bufferedImage.getHeight());
@@ -78,9 +87,8 @@ public class OccupancyMap2d implements MappingInterface, TrajectoryRegionQuery, 
   /** Build the NdTree structure by inserting all tiles in @param occupiedTiles */
   private void buildNdTree(List<Tensor> occupiedTiles) {
     ndMap.clear();
-    for (Tensor i : occupiedTiles) {
-      ndMap.add(i.extract(0, 2), i.Get(2));
-    }
+    for (Tensor i : occupiedTiles)
+      ndMap.add(i, null); // .extract(0, 2), i.Get(2)
   }
 
   /** Insert an occupied tile at @param state */
@@ -89,13 +97,13 @@ public class OccupancyMap2d implements MappingInterface, TrajectoryRegionQuery, 
       return false;
     final Tensor tile = toTile(state); // get tile corresponding to state
     drawTile(tile);
-    return occupiedList.add(tile.append(RealScalar.ONE));
+    return occupiedList.add(tile);
   }
 
   /** Remove an occupied tile @param state */
   public boolean remove(Tensor state) {
     final Tensor tile = toTile(state);
-    return occupiedList.remove(tile.append(RealScalar.ONE));
+    return occupiedList.remove(tile);
   }
 
   /** Get the size of the NdTree since last updated
@@ -112,7 +120,7 @@ public class OccupancyMap2d implements MappingInterface, TrajectoryRegionQuery, 
       return true;
     final Tensor tile = toTile(state);
     final Scalar idx = (tile.Get(1)).multiply(RealScalar.of(bufferedImage.getWidth())).add(tile.Get(0));
-    return ((int) (pixels[idx.number().intValue()] & OCCUPIED_CHANNEL) != 0) ? true : false;
+    return ((pixels[idx.number().intValue()] & OCCUPIED_CHANNEL) != 0) ? true : false;
   }
 
   /** returns the L2 distance between the center of the tile corresponding to @param state
@@ -122,8 +130,8 @@ public class OccupancyMap2d implements MappingInterface, TrajectoryRegionQuery, 
     if (state.length() != 2)
       state = state.extract(0, 2);
     NdCenterInterface distanceInterface = NdCenterInterface.euclidean(toTile(state));
-    NdCluster<Scalar> cluster = ndMap.buildCluster(distanceInterface, 1);
-    Optional<NdEntry<Scalar>> closest = cluster.stream().findFirst();
+    NdCluster<Void> cluster = ndMap.buildCluster(distanceInterface, 1);
+    Optional<NdEntry<Void>> closest = cluster.stream().findFirst();
     // System.out.print(ndMap.size() + " " + ndMapQuery.size() + "\n");
     if (closest.isPresent())
       return closest.get().distance().multiply(gridRes);
@@ -164,7 +172,8 @@ public class OccupancyMap2d implements MappingInterface, TrajectoryRegionQuery, 
     AffineTransform affineTransform = AffineTransforms.toAffineTransform(matrix);
     final double scale = gridRes.number().doubleValue();
     affineTransform.scale(scale, scale);
-    affineTransform.translate(lbounds.Get(0).multiply(gridInv).number().doubleValue(), //
+    affineTransform.translate( //
+        lbounds.Get(0).multiply(gridInv).number().doubleValue(), //
         lbounds.Get(1).multiply(gridInv).number().doubleValue());
     graphics.drawImage(bufferedImage, affineTransform, null);
   }

@@ -67,7 +67,7 @@ public class CarEntity extends Se2Entity {
   private final Collection<Flow> controls;
   private final Tensor goalRadius;
   // ---
-  Optional<MappingInterface> mapping = Optional.empty();
+  private Optional<MappingInterface> mapping = Optional.empty();
 
   /** extra cost functions, for instance
    * 1) to penalize switching gears
@@ -92,7 +92,7 @@ public class CarEntity extends Se2Entity {
     goalRadius = Tensors.of(goalRadius_xy, goalRadius_xy, goalRadius_theta);
     extraCosts.add(new Se2ShiftCostFunction(SHIFT_PENALTY));
   }
-  
+
   @Override
   public Scalar distance(Tensor x, Tensor y) {
     return SE2WRAP.distance(x, y); // non-negative
@@ -107,7 +107,7 @@ public class CarEntity extends Se2Entity {
   public PlannerType getPlannerType() {
     return PlannerType.STANDARD;
   }
-    
+
   public void setMapping(MappingInterface mapping) {
     this.mapping = Optional.of(mapping);
   }
@@ -115,7 +115,7 @@ public class CarEntity extends Se2Entity {
   @Override
   public TrajectoryPlanner createTrajectoryPlanner(TrajectoryRegionQuery obstacleQuery, Tensor goal) {
     GlobalAssert.that(VectorQ.ofLength(goal, 3));
-    if(mapping.isPresent())
+    if (mapping.isPresent())
       mapping.get().prepareForQuery();
     this.obstacleQuery = obstacleQuery;
     GoalInterface goalInterface = MultiCostGoalAdapter.of( //

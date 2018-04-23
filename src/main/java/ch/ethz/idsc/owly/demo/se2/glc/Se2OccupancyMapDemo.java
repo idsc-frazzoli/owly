@@ -1,6 +1,9 @@
 // code by ynager
 package ch.ethz.idsc.owly.demo.se2.glc;
 
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+
 import ch.ethz.idsc.owl.glc.core.CostFunction;
 import ch.ethz.idsc.owl.gui.ani.OwlyAnimationFrame;
 import ch.ethz.idsc.owl.mapping.OccupancyMap2d;
@@ -13,6 +16,8 @@ import ch.ethz.idsc.tensor.pdf.NormalDistribution;
 import ch.ethz.idsc.tensor.pdf.RandomVariate;
 
 public class Se2OccupancyMapDemo extends Se2CarDemo {
+  boolean isLaunched = true;
+
   @Override
   void configure(OwlyAnimationFrame owlyAnimationFrame) {
     CarEntity se2Entity = CarEntity.createDefault(new StateTime(Tensors.vector(2, 4, 0), RealScalar.ZERO));
@@ -25,10 +30,16 @@ public class Se2OccupancyMapDemo extends Se2CarDemo {
     owlyAnimationFrame.setObstacleQuery(om);
     owlyAnimationFrame.addBackground(om);
     //
-    CostFunction opcf = new ObstacleProximityCostFunction(om, RealScalar.of(1), DoubleScalar.of(0.5));
+    CostFunction opcf = new ObstacleProximityCostFunction(om, RealScalar.of(1.0), DoubleScalar.of(0.5));
     se2Entity.extraCosts.add(opcf);
     //
-    while (true) {
+    owlyAnimationFrame.jFrame.addWindowListener(new WindowAdapter() {
+      @Override
+      public void windowClosed(WindowEvent e) {
+        isLaunched = false;
+      }
+    });
+    while (isLaunched) {
       try {
         om.insert(RandomVariate.of(NormalDistribution.of(6, 0.2), 2));
         om.insert(RandomVariate.of(NormalDistribution.of(1.5, 0.2), 2));
