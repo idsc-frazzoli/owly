@@ -6,6 +6,7 @@ import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
+import ch.ethz.idsc.tensor.red.Mean;
 import junit.framework.TestCase;
 
 public class OccupancyMap2dTest extends TestCase {
@@ -42,16 +43,34 @@ public class OccupancyMap2dTest extends TestCase {
     dist = om.getL2DistToClosest(originTileCoord);
     assertEquals(dist, DoubleScalar.POSITIVE_INFINITY);
     // check entry 1
-    om.insert(entry1);
+    boolean ins1 = om.insert(entry1);
+    assertTrue(ins1);
+    om.prepareForQuery();
     dist = om.getL2DistToClosest(originTileCoord);
+    // System.out.print(dist);
     assertEquals(dist.get(), RealScalar.of(2));
     // check entry 2
-    om.insert(entry2);
+    boolean ins2 = om.insert(entry2);
+    assertTrue(ins2);
+    assertFalse(om.insert(entry2));
+    om.prepareForQuery();
     dist = om.getL2DistToClosest(originTileCoord);
     assertEquals(dist.get(), RealScalar.ONE);
     // check entry 3
     om.insert(entry3);
+    om.prepareForQuery();
     dist = om.getL2DistToClosest(originTileCoord);
     assertEquals(dist.get(), RealScalar.ZERO);
+  }
+
+  public void testCenter() {
+    Tensor lbounds = Tensors.vector(-7, -10);
+    Tensor ubounds = Tensors.vector(1, 2);
+    Tensor center = ubounds.subtract(lbounds).divide(RealScalar.of(2)).add(lbounds);
+    Tensor altcen = Mean.of(Tensors.of(lbounds, ubounds));
+    assertEquals(center, altcen);
+    Tensor radius = ubounds.subtract(center);
+    Tensor altrad = ubounds.subtract(lbounds).divide(RealScalar.of(2));
+    assertEquals(radius, altrad);
   }
 }
