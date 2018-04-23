@@ -1,11 +1,11 @@
 // code by ynager
 package ch.ethz.idsc.owly.demo.se2.glc;
 
+import ch.ethz.idsc.owl.glc.core.CostFunction;
 import ch.ethz.idsc.owl.gui.ani.OwlyAnimationFrame;
 import ch.ethz.idsc.owl.mapping.OccupancyMap2d;
-import ch.ethz.idsc.owl.mapping.OccupancyMapTrajectoryRegionQuery;
 import ch.ethz.idsc.owl.math.state.StateTime;
-import ch.ethz.idsc.owl.math.state.TrajectoryRegionQuery;
+import ch.ethz.idsc.owly.demo.se2.ObstacleProximityCostFunction;
 import ch.ethz.idsc.tensor.DoubleScalar;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Tensors;
@@ -16,15 +16,17 @@ public class Se2OccupancyMapDemo extends Se2CarDemo {
   @Override
   void configure(OwlyAnimationFrame owlyAnimationFrame) {
     CarEntity se2Entity = CarEntity.createDefault(new StateTime(Tensors.vector(2, 4, 0), RealScalar.ZERO));
-    OccupancyMap2d om = new OccupancyMap2d(Tensors.vector(0, 0), Tensors.vector(8, 8), DoubleScalar.of(0.25));
-    TrajectoryRegionQuery omtrq = new OccupancyMapTrajectoryRegionQuery(om, null);
-    se2Entity.obstacleQuery = omtrq;
+    // create occupancy map
+    OccupancyMap2d om = new OccupancyMap2d(Tensors.vector(0, -1), Tensors.vector(8, 8), DoubleScalar.of(0.25));
+    se2Entity.obstacleQuery = om;
+    se2Entity.setMapping(om);
     //
     owlyAnimationFrame.set(se2Entity);
-    owlyAnimationFrame.setObstacleQuery(omtrq);
+    owlyAnimationFrame.setObstacleQuery(om);
     owlyAnimationFrame.addBackground(om);
-    // TODO YN design cost function that charges for close encounters with points in tree
-    // ... in order to prevent corner cutting
+    //
+    CostFunction opcf = new ObstacleProximityCostFunction(om, RealScalar.of(1), DoubleScalar.of(0.5));
+    se2Entity.extraCosts.add(opcf);
     //
     while (true) {
       try {
@@ -32,8 +34,8 @@ public class Se2OccupancyMapDemo extends Se2CarDemo {
         om.insert(RandomVariate.of(NormalDistribution.of(1.5, 0.2), 2));
         om.insert(RandomVariate.of(NormalDistribution.of(4, 0.3), 2));
         Thread.sleep(50);
-        System.out.printf("TreeSize: " + om.getTreeSize() + ",  Dist: " //
-            + "%.3f" + "\n", om.getL2DistToClosest(se2Entity.getStateTimeNow().state()).number().floatValue());
+        // System.out.printf("TreeSize: " + om.getTreeSize() + ", Dist: " //
+        // + "%.3f" + "\n", om.getL2DistToClosest(se2Entity.getStateTimeNow().state()).number().floatValue());
       } catch (InterruptedException e) {
         e.printStackTrace();
       }

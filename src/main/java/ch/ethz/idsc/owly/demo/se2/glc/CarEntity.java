@@ -2,6 +2,7 @@
 package ch.ethz.idsc.owly.demo.se2.glc;
 
 import java.util.Collection;
+import java.util.Optional;
 
 import ch.ethz.idsc.owl.data.GlobalAssert;
 import ch.ethz.idsc.owl.glc.adapter.MultiConstraintAdapter;
@@ -12,6 +13,7 @@ import ch.ethz.idsc.owl.glc.std.PlannerConstraint;
 import ch.ethz.idsc.owl.glc.std.StandardTrajectoryPlanner;
 import ch.ethz.idsc.owl.glc.std.TrajectoryObstacleConstraint;
 import ch.ethz.idsc.owl.gui.ani.PlannerType;
+import ch.ethz.idsc.owl.mapping.AbstractMap;
 import ch.ethz.idsc.owl.math.Degree;
 import ch.ethz.idsc.owl.math.StateTimeTensorFunction;
 import ch.ethz.idsc.owl.math.flow.Flow;
@@ -88,7 +90,7 @@ public class CarEntity extends Se2Entity {
     goalRadius = Tensors.of(goalRadius_xy, goalRadius_xy, goalRadius_theta);
     extraCosts.add(new Se2ShiftCostFunction(SHIFT_PENALTY));
   }
-
+  
   @Override
   public Scalar distance(Tensor x, Tensor y) {
     return SE2WRAP.distance(x, y); // non-negative
@@ -103,10 +105,18 @@ public class CarEntity extends Se2Entity {
   public PlannerType getPlannerType() {
     return PlannerType.STANDARD;
   }
+  
+  //TODO REMOVE
+  Optional<AbstractMap> mapping;
+  public void setMapping(AbstractMap mapping) {
+    this.mapping = Optional.of(mapping);
+  }
 
   @Override
   public TrajectoryPlanner createTrajectoryPlanner(TrajectoryRegionQuery obstacleQuery, Tensor goal) {
     GlobalAssert.that(VectorQ.ofLength(goal, 3));
+    if(mapping.isPresent())
+      mapping.get().prepareForQuery();
     this.obstacleQuery = obstacleQuery;
     GoalInterface goalInterface = MultiCostGoalAdapter.of( //
         Se2MinTimeGoalManager.create(goal, goalRadius, controls), extraCosts);
