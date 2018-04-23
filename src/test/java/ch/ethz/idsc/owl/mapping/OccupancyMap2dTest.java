@@ -43,14 +43,18 @@ public class OccupancyMap2dTest extends TestCase {
     assertEquals(dist, DoubleScalar.POSITIVE_INFINITY);
     // check entry 1
     om.insert(entry1);
+    om.prepareForQuery();
     dist = om.getL2DistToClosest(originTileCoord);
+    System.out.print(dist);
     assertEquals(dist.get(), RealScalar.of(2));
     // check entry 2
     om.insert(entry2);
+    om.prepareForQuery();
     dist = om.getL2DistToClosest(originTileCoord);
     assertEquals(dist.get(), RealScalar.ONE);
     // check entry 3
     om.insert(entry3);
+    om.prepareForQuery();
     dist = om.getL2DistToClosest(originTileCoord);
     assertEquals(dist.get(), RealScalar.ZERO);
   }
