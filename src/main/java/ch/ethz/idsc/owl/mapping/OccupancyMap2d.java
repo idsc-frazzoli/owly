@@ -9,7 +9,6 @@ import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferInt;
 import java.awt.image.WritableRaster;
 import java.util.Collection;
-import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -21,12 +20,12 @@ import ch.ethz.idsc.owl.data.nd.NdTreeMap;
 import ch.ethz.idsc.owl.gui.AffineTransforms;
 import ch.ethz.idsc.owl.gui.GeometricLayer;
 import ch.ethz.idsc.owl.gui.RenderInterface;
+import ch.ethz.idsc.owl.math.region.BoundedBoxRegion;
+import ch.ethz.idsc.owl.math.region.Region;
 import ch.ethz.idsc.tensor.DoubleScalar;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
-import ch.ethz.idsc.tensor.Scalars;
 import ch.ethz.idsc.tensor.Tensor;
-import ch.ethz.idsc.tensor.Tensors;
 import ch.ethz.idsc.tensor.sca.Ceiling;
 import ch.ethz.idsc.tensor.sca.Floor;
 import ch.ethz.idsc.tensor.sca.Sign;
@@ -34,6 +33,10 @@ import ch.ethz.idsc.tensor.sca.Sign;
 public class OccupancyMap2d implements RenderInterface {
   private static final int MAX_DEPTH = 7;
   private static final int MAX_DENSITY = 6;
+  /** red channel is used for occupancy check */
+  private static final int OCCUPIED_CHANNEL = 0xFF << 16;
+  private static final int OCCUPIED_COLOR = 0x7FFF << 16;
+  private static final int EMPTY_COLOR = 0x1000FF << 8;
   // ---
   private final Tensor lbounds;
   private final Scalar gridRes;
@@ -42,6 +45,8 @@ public class OccupancyMap2d implements RenderInterface {
   private final NdMap<Scalar> ndMap;
   /** buffered image is used to check for occupancy and visualization */
   private final BufferedImage bufferedImage;
+  private final int[] pixels;
+  private final Region<Tensor> mapRegion;
 
   /** @param lbounds vector of length 2
    * @param ubounds vector of length 2
@@ -58,9 +63,11 @@ public class OccupancyMap2d implements RenderInterface {
         BufferedImage.TYPE_INT_ARGB);
     WritableRaster writableRaster = bufferedImage.getRaster();
     DataBufferInt dataBufferByte = (DataBufferInt) writableRaster.getDataBuffer();
-    int[] pizels = dataBufferByte.getData(); // TODO use for fast lookup
+    pixels = dataBufferByte.getData();
+    mapRegion = new BoundedBoxRegion(ubounds.subtract(lbounds).divide(RealScalar.of(2)) //
+        .add(lbounds), ubounds.subtract(lbounds).divide(RealScalar.of(2)));
     Graphics graphics = bufferedImage.getGraphics();
-    graphics.setColor(new Color(0f, 0.5f, 0.1f, 0.1f));
+    graphics.setColor(new Color(EMPTY_COLOR, true));
     graphics.fillRect(0, 0, bufferedImage.getWidth(), bufferedImage.getHeight());
   }
 
@@ -82,19 +89,15 @@ public class OccupancyMap2d implements RenderInterface {
     return ndMap.size();
   }
 
-  // TODO YN why not check the pixel in the image for occupancy? == faster
   public synchronized boolean isOccupied(Tensor pos) {
-    NdCenterInterface distanceInterface = NdCenterInterface.euclidean(toTile(pos));
-    if (ndMap.isEmpty())
-      return false;
-    NdCluster<Scalar> cluster = ndMap.buildCluster(distanceInterface, 1);
-    // TODO YN use findFirst of stream to only use first element of collecting all elements to a list
-    List<Scalar> list = //
-        cluster.stream().map(NdEntry::distance).collect(Collectors.toList());
-    return Scalars.lessThan(list.get(0), gridRes);
+    if (!mapRegion.isMember(pos))
+      return true;
+    Tensor tile = toTile(pos);
+    Scalar idx = (tile.Get(1)).multiply(RealScalar.of(bufferedImage.getWidth())).add(tile.Get(0));
+    return ((int) (pixels[idx.number().intValue()] & OCCUPIED_CHANNEL) != 0) ? true : false;
   }
 
-  // calculates l2 distance between center of respective query tile and closest obstacle tile
+  // calculates L2 distance between center of respective query tile and closest obstacle tile
   public synchronized Scalar getL2DistToClosest(Tensor pos) {
     NdCenterInterface distanceInterface = NdCenterInterface.euclidean(toTile(pos));
     NdCluster<Scalar> cluster = ndMap.buildCluster(distanceInterface, 1);
@@ -121,25 +124,20 @@ public class OccupancyMap2d implements RenderInterface {
     return Floor.of(state.extract(0, 2).subtract(lbounds).multiply(gridInv));
   }
 
-  // TODO YN function not called
-  private final Tensor getTileCoordinates(Tensor tile) {
-    Scalar s = gridRes.divide(RealScalar.of(2));
-    return tile.multiply(gridRes).add(Tensors.of(s, s)).add(lbounds);
-  }
-
   private void drawTile(Tensor tile) {
     int xvalue = tile.Get(0).number().intValue();
     int yvalue = tile.Get(1).number().intValue();
-    bufferedImage.setRGB(xvalue, yvalue, 0x7FFF0000);
+    bufferedImage.setRGB(xvalue, yvalue, OCCUPIED_COLOR); // set red channel to 0xFF
   }
 
   @Override
   public void render(GeometricLayer geometricLayer, Graphics2D graphics) {
-    // TODO YN if lbounds is != (0,0) the drawing is not correct
     final Tensor matrix = geometricLayer.getMatrix();
     AffineTransform affineTransform = AffineTransforms.toAffineTransform(matrix);
     double scale = gridRes.number().doubleValue();
     affineTransform.scale(scale, scale);
+    affineTransform.translate(lbounds.Get(0).multiply(gridInv).number().doubleValue(), //
+        lbounds.Get(1).multiply(gridInv).number().doubleValue());
     graphics.drawImage(bufferedImage, affineTransform, null);
   }
 }
