@@ -32,7 +32,7 @@ import ch.ethz.idsc.tensor.sca.Ceiling;
 import ch.ethz.idsc.tensor.sca.Floor;
 import ch.ethz.idsc.tensor.sca.Sign;
 
-public class OccupancyMap2d implements AbstractMap, TrajectoryRegionQuery, RenderInterface {
+public class OccupancyMap2d implements MappingInterface, TrajectoryRegionQuery, RenderInterface {
   private static final int MAX_DEPTH = 7;
   private static final int MAX_DENSITY = 6;
   /** red channel is used for occupancy check */

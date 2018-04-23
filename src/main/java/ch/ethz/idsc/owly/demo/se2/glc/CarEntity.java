@@ -13,7 +13,7 @@ import ch.ethz.idsc.owl.glc.std.PlannerConstraint;
 import ch.ethz.idsc.owl.glc.std.StandardTrajectoryPlanner;
 import ch.ethz.idsc.owl.glc.std.TrajectoryObstacleConstraint;
 import ch.ethz.idsc.owl.gui.ani.PlannerType;
-import ch.ethz.idsc.owl.mapping.AbstractMap;
+import ch.ethz.idsc.owl.mapping.MappingInterface;
 import ch.ethz.idsc.owl.math.Degree;
 import ch.ethz.idsc.owl.math.StateTimeTensorFunction;
 import ch.ethz.idsc.owl.math.flow.Flow;
@@ -66,6 +66,8 @@ public class CarEntity extends Se2Entity {
   // ---
   private final Collection<Flow> controls;
   private final Tensor goalRadius;
+  // ---
+  Optional<MappingInterface> mapping = Optional.empty();
 
   /** extra cost functions, for instance
    * 1) to penalize switching gears
@@ -105,10 +107,8 @@ public class CarEntity extends Se2Entity {
   public PlannerType getPlannerType() {
     return PlannerType.STANDARD;
   }
-  
-  //TODO REMOVE
-  Optional<AbstractMap> mapping;
-  public void setMapping(AbstractMap mapping) {
+    
+  public void setMapping(MappingInterface mapping) {
     this.mapping = Optional.of(mapping);
   }
 
