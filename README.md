@@ -2,10 +2,7 @@
 
 The repository contains Java 8 implementations of motion planners and their variants, version `0.1.0`
 
-List of algorithms:
-
-* GLC
-* RRT*
+List of algorithms: GLC, RRT*
 
 The references are
 
@@ -70,6 +67,12 @@ Two-wheel drive (with Lidar simulator)
 
 ---
 
+Tracking of potential locations of pedestrians and vehicles
+
+![shadow_region](https://user-images.githubusercontent.com/4012178/39653099-f9ed05c6-4fef-11e8-99d8-dc0515fca258.gif)
+
+---
+
 Pendulum Swing Up
 
 ![owly_psu1](https://user-images.githubusercontent.com/4012178/27012135-8979aae6-4eca-11e7-815e-95dd9b9ee0ea.png)
@@ -122,34 +125,6 @@ R^2
 
 ![r2](https://cloud.githubusercontent.com/assets/4012178/26045794/16bd0a54-394c-11e7-9d11-19558bc3be88.png)
 
-## Include in your project
+## Contributors
 
-Modify the `pom` file of your project to specify `repository` and `dependency` of the tensor library:
-
-    <repositories>
-      <repository>
-        <id>owly-mvn-repo</id>
-        <url>https://raw.github.com/idsc-frazzoli/owly/mvn-repo/</url>
-        <snapshots>
-          <enabled>true</enabled>
-          <updatePolicy>always</updatePolicy>
-        </snapshots>
-      </repository>
-    </repositories>
-    
-    <dependencies>
-      <dependency>
-        <groupId>ch.ethz.idsc</groupId>
-        <artifactId>owly</artifactId>
-        <version>0.1.0</version>
-      </dependency>
-    </dependencies>
-
-## References
-
-The library is used in the projects:
-* `retina`
-* `owly3d`
-* `matsim`
-
-The repository has over `230` unit tests.
+Jan Hakenberg, Jonas Londschien, Yannik Nager
