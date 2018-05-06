@@ -1,4 +1,4 @@
-// code by jph
+// code by ynager
 package ch.ethz.idsc.owly.demo.se2;
 
 import java.util.ArrayList;

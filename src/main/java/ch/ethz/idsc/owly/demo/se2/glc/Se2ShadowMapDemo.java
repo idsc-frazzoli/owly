@@ -4,7 +4,6 @@ package ch.ethz.idsc.owly.demo.se2.glc;
 import java.awt.Color;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.io.IOException;
 
 import ch.ethz.idsc.owl.glc.adapter.SimpleTrajectoryRegionQuery;
 import ch.ethz.idsc.owl.gui.ani.OwlyAnimationFrame;
@@ -22,24 +21,20 @@ import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Tensors;
 
 public class Se2ShadowMapDemo extends Se2CarDemo {
-  private static float PED_VELOCITY = 0.2f;
-  private static float PED_RADIUS = 0.15f;
-  private static Color PED_COLOR = new Color(23, 12, 200);
-  private static float CAR_VELOCITY = 0.6f;
-  private static float CAR_RADIUS = 0.3f;
-  private static Color CAR_COLOR = new Color(200, 52, 20);
+  private static final float PED_VELOCITY = 0.2f;
+  private static final float PED_RADIUS = 0.15f;
+  private static final Color PED_COLOR = new Color(23, 12, 200);
+  private static final float CAR_VELOCITY = 0.6f;
+  private static final float CAR_RADIUS = 0.3f;
+  private static final Color CAR_COLOR = new Color(200, 52, 20);
 
   @Override
-  void configure(OwlyAnimationFrame owlyAnimationFrame) throws IOException {
-    CarFlows carFlows = new CarVelocityFlows(Tensors.vector(0.5, 1), Degree.of(60));
+  void configure(OwlyAnimationFrame owlyAnimationFrame) {
+    CarFlows carFlows = new CarVelocityFlows(Tensors.vector(-0.5, 0.5, 1), Degree.of(60));
     CarEntity se2Entity = new CarEntity(new StateTime(Tensors.vector(4.3, 1.3, 3.14 / 2), RealScalar.ZERO), carFlows); // street_1
     // R2ImageRegionWrap regionWrap = R2ImageRegions._SQUARE;
-    ImageRegion imageRegion = null;
-    try {
-      imageRegion = ImageRegions.loadFromRepository("/scenarios/street_2.png", Tensors.vector(9, 9), false);
-    } catch (Exception e1) {
-      e1.printStackTrace();
-    }
+    ImageRegion imageRegion = //
+        ImageRegions.loadFromRepository("/scenarios/street_2.png", Tensors.vector(9, 9), false);
     TrajectoryRegionQuery trq = createCarQuery(imageRegion);
     se2Entity.obstacleQuery = trq;
     // se2Entity.extraCosts.add(regionWrap.costFunction());
@@ -69,6 +64,7 @@ public class Se2ShadowMapDemo extends Se2CarDemo {
       public void windowClosed(WindowEvent e) {
         System.out.println("window was closed. terminating...");
         shadowMapPed.flagShutdown();
+        shadowMapCar.flagShutdown();
       }
     });
   }
