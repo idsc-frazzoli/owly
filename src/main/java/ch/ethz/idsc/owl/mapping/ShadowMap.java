@@ -31,8 +31,8 @@ import ch.ethz.idsc.tensor.mat.IdentityMatrix;
 
 public class ShadowMap implements RenderInterface {
   //
-  private static final Color COLOR_SHADOW_FILL = new Color(255, 50, 74, 16);
-  private static final Color COLOR_SHADOW_DRAW = new Color(255, 50, 74, 64);
+  private Color COLOR_SHADOW_FILL = new Color(255, 50, 74, 16);
+  private Color COLOR_SHADOW_DRAW = new Color(255, 50, 74, 64);
   // ---
   private final LidarEmulator lidar;
   public final Supplier<StateTime> stateTimeSupplier;
@@ -40,15 +40,15 @@ public class ShadowMap implements RenderInterface {
   private final Area obstacleArea;
   private Area shadowArea;
   private Timer increaserTimer;
-  private final int updateRate; // [Hz]
-  public final float vMax;
-  Rectangle2D rInit;
+  private final float vMax;
+  private final float rMin;
+  private final Area initArea;
 
-  public ShadowMap(LidarEmulator lidar, ImageRegion imageRegion, Supplier<StateTime> stateTimeSupplier, float vMax, int updateRate) {
+  public ShadowMap(LidarEmulator lidar, ImageRegion imageRegion, Supplier<StateTime> stateTimeSupplier, float vMax, float rMin) {
     this.lidar = lidar;
     this.stateTimeSupplier = stateTimeSupplier;
     this.vMax = vMax;
-    this.updateRate = updateRate;
+    this.rMin = rMin;
     BufferedImage bufferedImage = RegionRenders.image(imageRegion.image());
     // TODO 244 and 5 magic const, redundant to values specified elsewhere
     Area area = ImageArea.fromImage(bufferedImage, new Color(244, 244, 244), 5);
@@ -62,16 +62,17 @@ public class ShadowMap implements RenderInterface {
     translate.set(RealScalar.of(-bufferedImage.getHeight()), 1, 2);
     Tensor tmatrix = invsc.dot(translate);
     obstacleArea = area.createTransformedArea(AffineTransforms.toAffineTransform(tmatrix));
-    //
-    // define initial shadow area
-    rInit = new Rectangle2D.Double();
+    Rectangle2D rInit = new Rectangle2D.Double();
     rInit.setFrame(obstacleArea.getBounds());
+    initArea = new Area(rInit);
+    erode(initArea, rMin);
+    { // dilate(obstacleArea, rMin);
+      Stroke stroke = new BasicStroke(rMin * 2, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
+      Shape strokeShape = stroke.createStrokedShape(obstacleArea);
+      Area strokeArea = new Area(strokeShape);
+      obstacleArea.add(strokeArea);
+    }
     this.shadowArea = new Area(rInit);
-    Stroke stroke = new BasicStroke(0.01f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_BEVEL);
-    Shape strokeShape = stroke.createStrokedShape(obstacleArea);
-    obstacleArea.add(new Area(strokeShape));
-    //
-    // subtract obstacles from shadow area
     shadowArea.subtract(obstacleArea);
   }
 
@@ -80,17 +81,31 @@ public class ShadowMap implements RenderInterface {
     GeometricLayer geom = new GeometricLayer(se2Bijection.forward_se2(), Array.zeros(3));
     Path2D lidarPath2D = geom.toPath2D(lidar.getPolygon(stateTime));
     // subtract current LIDAR measurement from shadow area
-    area.subtract(new Area(lidarPath2D));
-    // dilate shadow area
-    float strokeWidth = timeDelta * 2 * vMax; // TODO: check if correct
-    Stroke stroke = new BasicStroke(strokeWidth, BasicStroke.CAP_ROUND, BasicStroke.JOIN_BEVEL);
-    Shape strokeShape = stroke.createStrokedShape(shadowArea);
-    area.add(new Area(strokeShape));
+    Area lidarArea = new Area(lidarPath2D);
+    dilate(lidarArea, rMin);
+    area.subtract(lidarArea);
+    dilate(area, timeDelta * vMax);
     area.subtract(obstacleArea);
-    area.intersect(new Area(rInit)); // TODO: can this be improved?
+    area.intersect(initArea);
   }
 
-  public final void startNonBlocking() {
+  /* TODO: Stoke should have cap and join as BasicStroke.CAP_ROUND, this
+   * / however reduces performance */
+  protected void dilate(Area area, float radius) {
+    Stroke stroke = new BasicStroke(radius * 2, BasicStroke.CAP_ROUND, BasicStroke.JOIN_BEVEL);
+    Shape strokeShape = stroke.createStrokedShape(area);
+    Area strokeArea = new Area(strokeShape);
+    area.add(strokeArea);
+  }
+
+  protected void erode(Area area, float radius) {
+    Stroke stroke = new BasicStroke(radius * 2, BasicStroke.CAP_ROUND, BasicStroke.JOIN_BEVEL);
+    Shape strokeShape = stroke.createStrokedShape(area);
+    Area strokeArea = new Area(strokeShape);
+    area.subtract(strokeArea);
+  }
+
+  public final void startNonBlocking(int updateRate) {
     TimerTask mapUpdate = new TimerTask() {
       @Override
       public void run() {
@@ -116,6 +131,11 @@ public class ShadowMap implements RenderInterface {
 
   public final Area getCurrentMap() {
     return shadowArea;
+  }
+
+  public void setColor(Color color) {
+    COLOR_SHADOW_FILL = new Color((color.getRGB() & 0xFFFFFF) | (16 << 24), true);
+    COLOR_SHADOW_DRAW = new Color((color.getRGB() & 0xFFFFFF) | (64 << 24), true);
   }
 
   @Override

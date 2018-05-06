@@ -17,53 +17,50 @@ import ch.ethz.idsc.owl.math.state.TrajectoryRegionQuery;
 import ch.ethz.idsc.owl.sim.LidarEmulator;
 import ch.ethz.idsc.owly.demo.se2.CarFlows;
 import ch.ethz.idsc.owly.demo.se2.CarVelocityFlows;
+import ch.ethz.idsc.owly.demo.se2.ShadowConstraint2;
 import ch.ethz.idsc.owly.demo.util.RegionRenders;
+import ch.ethz.idsc.tensor.DoubleScalar;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Tensors;
 
-public class Se2ShadowMapDemo extends Se2CarDemo {
+public class Se2ShadowConstraintDemo extends Se2CarDemo {
   private static float PED_VELOCITY = 0.2f;
-  private static float PED_RADIUS = 0.15f;
+  private static float PED_RADIUS = 0.1f;
   private static Color PED_COLOR = new Color(23, 12, 200);
-  private static float CAR_VELOCITY = 0.6f;
-  private static float CAR_RADIUS = 0.3f;
-  private static Color CAR_COLOR = new Color(200, 52, 20);
 
   @Override
   void configure(OwlyAnimationFrame owlyAnimationFrame) throws IOException {
     CarFlows carFlows = new CarVelocityFlows(Tensors.vector(0.5, 1), Degree.of(60));
-    CarEntity se2Entity = new CarEntity(new StateTime(Tensors.vector(4.3, 1.3, 3.14 / 2), RealScalar.ZERO), carFlows); // street_1
-    // R2ImageRegionWrap regionWrap = R2ImageRegions._SQUARE;
+    // CarEntity se2Entity = new CarEntity(new StateTime(Tensors.vector(3.5, 0.6, 3.14 / 2), RealScalar.ZERO), carFlows); // street_1
+    // CarEntity se2Entity = new CarEntity(new StateTime(Tensors.vector(1.5, 1.0, 3.14 / 2), RealScalar.ZERO), carFlows); // curve_1
+    CarEntity se2Entity = new CarEntity(new StateTime(Tensors.vector(3.8, 1.0, 3.14 / 2), RealScalar.ZERO), carFlows); // street_1
     ImageRegion imageRegion = null;
     try {
+      // imageRegion = ImageRegions.loadFromRepository("/scenarios/street_1.png", Tensors.vector(7, 7), false);
+      // imageRegion = ImageRegions.loadFromRepository("/scenarios/curve_1.png", Tensors.vector(5, 5), false);
       imageRegion = ImageRegions.loadFromRepository("/scenarios/street_2.png", Tensors.vector(9, 9), false);
     } catch (Exception e1) {
       e1.printStackTrace();
     }
     TrajectoryRegionQuery trq = createCarQuery(imageRegion);
     se2Entity.obstacleQuery = trq;
-    // se2Entity.extraCosts.add(regionWrap.costFunction());
     TrajectoryRegionQuery ray = SimpleTrajectoryRegionQuery.timeInvariant(imageRegion);
-    owlyAnimationFrame.setObstacleQuery(ray);
+    owlyAnimationFrame.setObstacleQuery(trq);
     owlyAnimationFrame.addBackground(RegionRenders.create(imageRegion));
     // LIDAR
     LidarEmulator lidarEmulator = new LidarEmulator( //
         LidarEmulator.DEFAULT, se2Entity::getStateTimeNow, ray);
     owlyAnimationFrame.addBackground(lidarEmulator);
-    owlyAnimationFrame.set(se2Entity);
     // SHADOWMAP
     ShadowMap shadowMapPed = //
         new ShadowMap(lidarEmulator, imageRegion, se2Entity::getStateTimeNow, PED_VELOCITY, PED_RADIUS);
     shadowMapPed.setColor(PED_COLOR);
     owlyAnimationFrame.addBackground(shadowMapPed);
     shadowMapPed.startNonBlocking(10);
+    ShadowConstraint2 shadowConstraintPed = new ShadowConstraint2(shadowMapPed, DoubleScalar.of(3.0), se2Entity.eta());
+    se2Entity.extraConstraints.add(shadowConstraintPed);
     //
-    ShadowMap shadowMapCar = //
-        new ShadowMap(lidarEmulator, imageRegion, se2Entity::getStateTimeNow, CAR_VELOCITY, CAR_RADIUS);
-    shadowMapCar.setColor(CAR_COLOR);
-    owlyAnimationFrame.addBackground(shadowMapCar);
-    shadowMapCar.startNonBlocking(10);
-    //
+    owlyAnimationFrame.set(se2Entity);
     owlyAnimationFrame.jFrame.addWindowListener(new WindowAdapter() {
       @Override
       public void windowClosed(WindowEvent e) {
@@ -74,6 +71,6 @@ public class Se2ShadowMapDemo extends Se2CarDemo {
   }
 
   public static void main(String[] args) {
-    new Se2ShadowMapDemo().start();
+    new Se2ShadowConstraintDemo().start();
   }
 }
