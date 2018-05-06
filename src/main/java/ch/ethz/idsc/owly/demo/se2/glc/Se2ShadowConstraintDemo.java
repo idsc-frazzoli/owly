@@ -4,7 +4,6 @@ package ch.ethz.idsc.owly.demo.se2.glc;
 import java.awt.Color;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.io.IOException;
 
 import ch.ethz.idsc.owl.glc.adapter.SimpleTrajectoryRegionQuery;
 import ch.ethz.idsc.owl.gui.ani.OwlyAnimationFrame;
@@ -24,24 +23,18 @@ import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Tensors;
 
 public class Se2ShadowConstraintDemo extends Se2CarDemo {
-  private static float PED_VELOCITY = 0.2f;
-  private static float PED_RADIUS = 0.1f;
-  private static Color PED_COLOR = new Color(23, 12, 200);
+  private static final float PED_VELOCITY = 0.2f;
+  private static final float PED_RADIUS = 0.1f;
+  private static final Color PED_COLOR = new Color(23, 12, 200);
 
-  @Override
-  void configure(OwlyAnimationFrame owlyAnimationFrame) throws IOException {
+  @Override // from Se2CarDemo
+  void configure(OwlyAnimationFrame owlyAnimationFrame) {
     CarFlows carFlows = new CarVelocityFlows(Tensors.vector(0.5, 1), Degree.of(60));
     // CarEntity se2Entity = new CarEntity(new StateTime(Tensors.vector(3.5, 0.6, 3.14 / 2), RealScalar.ZERO), carFlows); // street_1
     // CarEntity se2Entity = new CarEntity(new StateTime(Tensors.vector(1.5, 1.0, 3.14 / 2), RealScalar.ZERO), carFlows); // curve_1
     CarEntity se2Entity = new CarEntity(new StateTime(Tensors.vector(3.8, 1.0, 3.14 / 2), RealScalar.ZERO), carFlows); // street_1
-    ImageRegion imageRegion = null;
-    try {
-      // imageRegion = ImageRegions.loadFromRepository("/scenarios/street_1.png", Tensors.vector(7, 7), false);
-      // imageRegion = ImageRegions.loadFromRepository("/scenarios/curve_1.png", Tensors.vector(5, 5), false);
-      imageRegion = ImageRegions.loadFromRepository("/scenarios/street_2.png", Tensors.vector(9, 9), false);
-    } catch (Exception e1) {
-      e1.printStackTrace();
-    }
+    ImageRegion imageRegion = //
+        ImageRegions.loadFromRepository("/scenarios/street_2.png", Tensors.vector(9, 9), false);
     TrajectoryRegionQuery trq = createCarQuery(imageRegion);
     se2Entity.obstacleQuery = trq;
     TrajectoryRegionQuery ray = SimpleTrajectoryRegionQuery.timeInvariant(imageRegion);

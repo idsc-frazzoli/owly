@@ -4,7 +4,6 @@ package ch.ethz.idsc.owly.demo.se2.glc;
 import java.awt.Color;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.io.IOException;
 import java.util.Arrays;
 
 import ch.ethz.idsc.owl.glc.adapter.GlcWaypointFollowing;
@@ -26,7 +25,7 @@ import ch.ethz.idsc.tensor.Tensors;
 
 public class Se2GlcTrackDemo extends Se2CarDemo {
   @Override
-  void configure(OwlyAnimationFrame owlyAnimationFrame) throws IOException {
+  void configure(OwlyAnimationFrame owlyAnimationFrame) {
     CarEntity se2Entity = CarEntity.createDefault(new StateTime(Tensors.vector(7, 9, 0), RealScalar.ZERO));
     ImageRegion imageRegion = R2ImageRegions._SQUARE.imageRegion();
     se2Entity.extraCosts.add(R2ImageRegions._SQUARE.costFunction());

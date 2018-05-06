@@ -4,7 +4,6 @@ package ch.ethz.idsc.owly.demo.se2.glc;
 import java.awt.Color;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.io.IOException;
 import java.util.Arrays;
 
 import ch.ethz.idsc.owl.glc.adapter.GlcWaypointFollowing;
@@ -31,14 +30,15 @@ import ch.ethz.idsc.tensor.DoubleScalar;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
+import ch.ethz.idsc.tensor.alg.Subdivide;
 import ch.ethz.idsc.tensor.sca.ArcCos;
 import ch.ethz.idsc.tensor.sca.Cos;
 
 public class Se2GlcVelConstraintDemo extends Se2CarDemo {
   @Override
-  void configure(OwlyAnimationFrame owlyAnimationFrame) throws IOException {
+  void configure(OwlyAnimationFrame owlyAnimationFrame) {
     // Setup Car
-    CarFlows carFlows = new CarVelocityFlows(RealScalar.ONE, 4, Degree.of(45));
+    CarFlows carFlows = new CarVelocityFlows(Subdivide.of(-1, 1, 4), Degree.of(45));
     CarxTEntity carEntity = new CarxTEntity(new StateTime(Tensors.vector(6, 8, 1), RealScalar.ZERO), carFlows);
     // Setup Environment
     R2ImageRegionWrap r2ImageRegionWrap = R2ImageRegions._SQUARE;

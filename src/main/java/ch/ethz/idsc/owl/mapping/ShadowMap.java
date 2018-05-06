@@ -31,8 +31,8 @@ import ch.ethz.idsc.tensor.mat.IdentityMatrix;
 
 public class ShadowMap implements RenderInterface {
   //
-  private Color COLOR_SHADOW_FILL = new Color(255, 50, 74, 16);
-  private Color COLOR_SHADOW_DRAW = new Color(255, 50, 74, 64);
+  private Color COLOR_SHADOW_FILL;
+  private Color COLOR_SHADOW_DRAW;
   // ---
   private final LidarEmulator lidar;
   public final Supplier<StateTime> stateTimeSupplier;
@@ -56,8 +56,7 @@ public class ShadowMap implements RenderInterface {
     // convert imageRegion into Area
     Tensor scale = imageRegion.scale();
     Tensor invsc = DiagonalMatrix.of( //
-        scale.Get(0).reciprocal().number().doubleValue(), //
-        -scale.Get(1).reciprocal().number().doubleValue(), 1);
+        scale.Get(0).reciprocal(), scale.Get(1).negate().reciprocal(), RealScalar.ONE);
     Tensor translate = IdentityMatrix.of(3);
     translate.set(RealScalar.of(-bufferedImage.getHeight()), 1, 2);
     Tensor tmatrix = invsc.dot(translate);
@@ -74,13 +73,13 @@ public class ShadowMap implements RenderInterface {
     }
     this.shadowArea = new Area(rInit);
     shadowArea.subtract(obstacleArea);
+    setColor(new Color(255, 50, 74));
   }
 
   public void updateMap(Area area, StateTime stateTime, float timeDelta) {
     Se2Bijection se2Bijection = new Se2Bijection(stateTime.state());
     GeometricLayer geom = new GeometricLayer(se2Bijection.forward_se2(), Array.zeros(3));
     Path2D lidarPath2D = geom.toPath2D(lidar.getPolygon(stateTime));
-    // subtract current LIDAR measurement from shadow area
     Area lidarArea = new Area(lidarPath2D);
     dilate(lidarArea, rMin);
     area.subtract(lidarArea);

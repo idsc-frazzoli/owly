@@ -1,8 +1,6 @@
 // code by jph
 package ch.ethz.idsc.owly.demo.se2.glc;
 
-import java.io.IOException;
-
 import ch.ethz.idsc.owl.glc.adapter.SimpleTrajectoryRegionQuery;
 import ch.ethz.idsc.owl.gui.ani.OwlyAnimationFrame;
 import ch.ethz.idsc.owl.math.region.Region;
@@ -19,7 +17,7 @@ public abstract class Se2CarDemo implements DemoInterface {
     return SimpleTrajectoryRegionQuery.timeInvariant(se2PointsVsRegion);
   }
 
-  abstract void configure(OwlyAnimationFrame owlyAnimationFrame) throws IOException;
+  abstract void configure(OwlyAnimationFrame owlyAnimationFrame);
 
   @Override
   public final void start() {

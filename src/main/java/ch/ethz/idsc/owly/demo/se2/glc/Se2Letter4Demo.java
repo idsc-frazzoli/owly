@@ -1,8 +1,6 @@
 // code by jph
 package ch.ethz.idsc.owly.demo.se2.glc;
 
-import java.io.IOException;
-
 import ch.ethz.idsc.owl.glc.adapter.SimpleTrajectoryRegionQuery;
 import ch.ethz.idsc.owl.gui.RenderInterface;
 import ch.ethz.idsc.owl.gui.ani.OwlyAnimationFrame;
@@ -18,8 +16,8 @@ import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Tensors;
 
 public class Se2Letter4Demo extends Se2CarDemo {
-  @Override
-  void configure(OwlyAnimationFrame owlyAnimationFrame) throws IOException {
+  @Override // from Se2CarDemo
+  void configure(OwlyAnimationFrame owlyAnimationFrame) {
     R2ImageRegionWrap r2ImageRegionWrap = R2ImageRegions._GTOB;
     StateTime stateTime = new StateTime(Tensors.vector(6, 6, 1), RealScalar.ZERO);
     CarEntity se2Entity = new VaryCarEntity(stateTime);

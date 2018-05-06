@@ -2,6 +2,7 @@
 package ch.ethz.idsc.owl.img;
 
 import java.io.File;
+import java.io.IOException;
 
 import ch.ethz.idsc.owl.math.region.ImageRegion;
 import ch.ethz.idsc.tensor.Tensor;
@@ -18,12 +19,12 @@ public enum ImageRegions {
   }
 
   // for files in repo
-  public static ImageRegion loadFromRepository(String string, Tensor range, boolean strict) throws Exception {
+  public static ImageRegion loadFromRepository(String string, Tensor range, boolean strict) {
     return _universal(ResourceData.of(string), range, strict);
   }
 
   // for files on local machine
-  public static ImageRegion loadFromLocalFile(File file, Tensor range, boolean strict) throws Exception {
+  public static ImageRegion loadFromLocalFile(File file, Tensor range, boolean strict) throws IOException {
     return _universal(Import.of(file), range, strict);
   }
 }
