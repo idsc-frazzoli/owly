@@ -4,12 +4,13 @@ package ch.ethz.idsc.owl.mapping;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.geom.AffineTransform;
 import java.awt.geom.Ellipse2D;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferInt;
 import java.awt.image.WritableRaster;
 import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 
 import ch.ethz.idsc.owl.gui.AffineTransforms;
 import ch.ethz.idsc.owl.gui.GeometricLayer;
@@ -21,16 +22,20 @@ import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Scalars;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
+import ch.ethz.idsc.tensor.mat.DiagonalMatrix;
+import ch.ethz.idsc.tensor.mat.IdentityMatrix;
 import ch.ethz.idsc.tensor.red.Mean;
 import ch.ethz.idsc.tensor.sca.Ceiling;
 import ch.ethz.idsc.tensor.sca.Floor;
 import ch.ethz.idsc.tensor.sca.Sign;
 
 /** all pixels have the same amount of weight or clearance radius attached */
-public class BayesianOccupancyGrid implements RenderInterface {
-  private static final int OCCUPIED_COLOR = 0xFFFF << 16;
-  private static final int EMPTY_COLOR = 0x4000FF << 8;
-  private static final int UNKNOWN_COLOR = 0x7F909090;
+public class BayesianOccupancyGrid implements Region<Tensor>, RenderInterface {
+  private static final Set<Integer> VALUES = new HashSet<>();
+  private static final int MASK_OCCUPIED = 0xFFFF0000;
+  private static final int MASK_EMPTY = 0x4000FF00;
+  private static final int MASK_UNKNOWN = 0x7F909090;
+  private static final Color COLOR_OCCUPIED = new Color(MASK_OCCUPIED, true);
   // ---
   private final Tensor lbounds;
   private final Scalar gridRes; // [m] per cell
@@ -44,15 +49,16 @@ public class BayesianOccupancyGrid implements RenderInterface {
   private int[] imagePixels;
   private final Graphics2D imageGraphics;
   // ---
-  private final static double P_M = 0.5f; // prior
-  private final static double P_M_HIT = 0.9f; // inv sensor model p(m|z)
-  private final static double probThreshold = 0.5; // cells with p(m|z_1:t) > probThreshold are considered occupied
+  private static final double P_M = 0.5f; // prior
+  private static final double P_M_HIT = 0.9f; // inv sensor model p(m|z)
+  private static final double probThreshold = 0.5; // cells with p(m|z_1:t) > probThreshold are considered occupied
   private final double lThreshold;
   // ---
-  private final static int TYPE_HIT_FLOOR = 0; // TODO define somewhere in lidar module
-  private final static int TYPE_HIT_OBSTACLE = 1;
+  private static final int TYPE_HIT_FLOOR = 0; // TODO define somewhere in lidar module
+  private static final int TYPE_HIT_OBSTACLE = 1;
   // ---
   private Scalar obsDilationRadius;
+  private final Tensor invsc;
 
   /** @param lbounds vector of length 2
    * @param ubounds vector of length 2
@@ -70,7 +76,7 @@ public class BayesianOccupancyGrid implements RenderInterface {
     DataBufferInt dataBufferByte = (DataBufferInt) writableRaster.getDataBuffer();
     imagePixels = dataBufferByte.getData();
     // ---
-    imageGraphics = (Graphics2D) bufferedImage.getGraphics();
+    imageGraphics = bufferedImage.createGraphics();
     Tensor center = Mean.of(Tensors.of(lbounds, ubounds));
     gridRegion = new BoundedBoxRegion(center, ubounds.subtract(center));
     obsRegion = gridRegion;
@@ -82,8 +88,12 @@ public class BayesianOccupancyGrid implements RenderInterface {
     lThreshold = pToLogOdd(probThreshold); // convert prob threshold to logOdd threshold
     // ---
     Graphics graphics = bufferedImage.getGraphics();
-    graphics.setColor(new Color(UNKNOWN_COLOR, true));
+    graphics.setColor(new Color(MASK_UNKNOWN, true));
     graphics.fillRect(0, 0, bufferedImage.getWidth(), bufferedImage.getHeight());
+    // ---
+    invsc = DiagonalMatrix.of( //
+        gridRes.reciprocal().number().doubleValue(), //
+        -gridRes.reciprocal().number().doubleValue(), 1);
   }
 
   /** process a new lidar observation and update the occupancy map
@@ -107,11 +117,11 @@ public class BayesianOccupancyGrid implements RenderInterface {
       // Maximum likelihood estimation
       double logOdd = logOdds[idx];
       if (logOdd > lThreshold)
-        drawSphere(pos, obsDilationRadius, OCCUPIED_COLOR);
+        drawSphere(pos, obsDilationRadius, MASK_OCCUPIED);
       else if (logOdd < lThreshold)
-        drawCell(cell, EMPTY_COLOR);
+        drawCell(cell, MASK_EMPTY);
       else {
-        drawCell(cell, UNKNOWN_COLOR);
+        drawCell(cell, MASK_UNKNOWN);
       }
     }
   }
@@ -143,7 +153,23 @@ public class BayesianOccupancyGrid implements RenderInterface {
   }
 
   private void drawCell(Tensor cell, int color) {
+    // TODO relies on the assumption that cell encodes a coordinate strictly within bounds
+    // ... see also ImageRegion::isMember
     imagePixels[cellToIdx(cell)] = color;
+  }
+
+  @Override // from Region<Tensor>
+  public boolean isMember(Tensor state) {
+    try {
+      int argb = imagePixels[cellToIdx(state)];
+      if (VALUES.add(argb))
+        System.out.println(String.format("%08x", argb));
+      return argb == MASK_OCCUPIED; // FIXME
+    } catch (Exception exception) { // FIXME
+      // ---
+      System.out.println("out of bounds: " + state);
+    }
+    return true; // FIXME
   }
 
   private void drawSphere(Tensor pos, Scalar radius, int color) {
@@ -157,19 +183,24 @@ public class BayesianOccupancyGrid implements RenderInterface {
         pos.Get(0).multiply(gridInv).subtract(radiusScaled).number().doubleValue(), //
         pos.Get(1).multiply(gridInv).subtract(radiusScaled).number().doubleValue(), //
         2 * dim, 2 * dim);
-    imageGraphics.setColor(new Color(OCCUPIED_COLOR, true));
+    imageGraphics.setColor(COLOR_OCCUPIED);
     imageGraphics.fill(sphere);
   }
 
   @Override // from Renderinterface
   public void render(GeometricLayer geometricLayer, Graphics2D graphics) {
-    final Tensor matrix = geometricLayer.getMatrix();
-    AffineTransform affineTransform = AffineTransforms.toAffineTransform(matrix);
-    final double scale = gridRes.number().doubleValue();
-    affineTransform.scale(scale, scale);
-    affineTransform.translate( //
-        lbounds.Get(0).multiply(gridInv).number().doubleValue(), //
-        lbounds.Get(1).multiply(gridInv).number().doubleValue());
-    graphics.drawImage(bufferedImage, affineTransform, null);
+    Tensor model2pixel = geometricLayer.getMatrix();
+    Tensor translate = IdentityMatrix.of(3);
+    translate.set(RealScalar.of(-bufferedImage.getHeight()), 1, 2);
+    Tensor matrix = model2pixel.dot(invsc).dot(translate);
+    graphics.drawImage(bufferedImage, AffineTransforms.toAffineTransform(matrix), null);
+    // final Tensor matrix = geometricLayer.getMatrix();
+    // AffineTransform affineTransform = AffineTransforms.toAffineTransform(matrix);
+    // final double scale = gridRes.number().doubleValue();
+    // affineTransform.scale(scale, scale);
+    // affineTransform.translate( //
+    // lbounds.Get(0).multiply(gridInv).number().doubleValue(), //
+    // lbounds.Get(1).multiply(gridInv).number().doubleValue());
+    // graphics.drawImage(bufferedImage, affineTransform, null);
   }
 }

@@ -6,7 +6,6 @@ import java.awt.event.WindowEvent;
 
 import ch.ethz.idsc.owl.gui.ani.OwlyAnimationFrame;
 import ch.ethz.idsc.owl.mapping.BayesianOccupancyGrid;
-import ch.ethz.idsc.owl.math.region.Regions;
 import ch.ethz.idsc.owl.math.state.StateTime;
 import ch.ethz.idsc.owl.math.state.TrajectoryRegionQuery;
 import ch.ethz.idsc.tensor.DoubleScalar;
@@ -22,15 +21,16 @@ public class Se2BayesianOccupancyGridDemo extends Se2CarDemo {
   @Override
   void configure(OwlyAnimationFrame owlyAnimationFrame) {
     CarEntity se2Entity = CarEntity.createDefault(new StateTime(Tensors.vector(2, 4, 0), RealScalar.ZERO));
-    TrajectoryRegionQuery trq = createCarQuery(Regions.emptyRegion());
-    se2Entity.obstacleQuery = trq;    
     // create occupancy gird
-    BayesianOccupancyGrid om = new BayesianOccupancyGrid(Tensors.vector(0, 0), Tensors.vector(8, 8), DoubleScalar.of(0.15));
+    BayesianOccupancyGrid om = new BayesianOccupancyGrid(Tensors.vector(0, 0), Tensors.vector(8, 8), DoubleScalar.of(1));
     om.setObstacleRadius(DoubleScalar.of(0.25));
     //
+    TrajectoryRegionQuery trq = createCarQuery(om); // createCarQuery assumes om is timeInvariant
+    se2Entity.obstacleQuery = trq;
     owlyAnimationFrame.set(se2Entity);
     owlyAnimationFrame.addBackground(om);
     owlyAnimationFrame.setObstacleQuery(trq);
+    // ---
     //
     owlyAnimationFrame.jFrame.addWindowListener(new WindowAdapter() {
       @Override
