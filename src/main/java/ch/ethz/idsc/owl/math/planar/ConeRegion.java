@@ -1,9 +1,10 @@
 // code by jph
 package ch.ethz.idsc.owl.math.planar;
 
-import ch.ethz.idsc.owl.math.TensorDistance;
+import java.io.Serializable;
+
 import ch.ethz.idsc.owl.math.map.Se2Bijection;
-import ch.ethz.idsc.owl.math.region.Region;
+import ch.ethz.idsc.owl.math.region.RegionWithDistance;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Scalars;
@@ -15,7 +16,7 @@ import ch.ethz.idsc.tensor.sca.ArcTan;
 import ch.ethz.idsc.tensor.sca.Sign;
 
 /** planar infinite cone region */
-public class ConeRegion implements Region<Tensor>, TensorDistance {
+public class ConeRegion implements RegionWithDistance<Tensor>, Serializable {
   private static final Scalar PI_HALF = RealScalar.of(Math.PI / 2);
   // ---
   private final TensorUnaryOperator inverse;
@@ -36,14 +37,16 @@ public class ConeRegion implements Region<Tensor>, TensorDistance {
   @Override // from Region<Tensor>
   public boolean isMember(Tensor tensor) {
     Tensor local = inverse.apply(tensor);
-    Scalar angle = ArcTan.of(local.Get(0), local.Get(1)).abs(); // non-negative
+    local.set(Scalar::abs, 1); // normalize y coordinate
+    Scalar angle = ArcTan.of(local.Get(0), local.Get(1)); // non-negative
     return Scalars.lessThan(angle, semi);
   }
 
-  @Override // from TensorDistance
+  @Override // from DistanceFunction<Tensor>
   public Scalar distance(Tensor tensor) {
     Tensor local = inverse.apply(tensor);
-    Scalar angle = ArcTan.of(local.Get(0), local.Get(1)).abs(); // non-negative
+    local.set(Scalar::abs, 1); // normalize y coordinate
+    Scalar angle = ArcTan.of(local.Get(0), local.Get(1)); // non-negative
     if (Scalars.lessThan(angle, semi))
       return RealScalar.ZERO;
     return Scalars.lessThan(angle, semi_pi_half) //
