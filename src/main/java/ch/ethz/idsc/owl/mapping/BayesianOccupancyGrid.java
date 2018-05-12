@@ -59,11 +59,12 @@ public class BayesianOccupancyGrid implements Region<Tensor>, RenderInterface {
   private static final Scalar probThreshold = DoubleScalar.of(0.5); // cells with p(m|z_1:t) > probThreshold are considered occupied
   private final Scalar lThreshold;
   // ---
-  private static final int TYPE_HIT_FLOOR = 0; // TODO define somewhere in lidar module
-  private static final int TYPE_HIT_OBSTACLE = 1;
+  public static final int TYPE_HIT_FLOOR = 0; // TODO define somewhere in lidar module
+  public static final int TYPE_HIT_OBSTACLE = 1;
   // ---
   private Scalar obsDilationRadius;
   private final Tensor scaling;
+  private final Scalar[] PREDEFINED_P;
 
   /** Returns an instance of BayesianOccupancyGrid whose grid dimensions are ceiled to
    * fit a whole number of cells per dimension
@@ -86,6 +87,8 @@ public class BayesianOccupancyGrid implements Region<Tensor>, RenderInterface {
     GlobalAssert.that(VectorQ.ofLength(size, 2));
     System.out.print("Grid range: " + range + "\n");
     System.out.print("Grid size: " + size + "\n");
+    PREDEFINED_P = new Scalar[] { //
+        RealScalar.ONE.subtract(P_M_HIT), P_M_HIT };
     this.lbounds = lbounds;
     this.gridSize = size;
     this.gridRange = range;
@@ -125,14 +128,15 @@ public class BayesianOccupancyGrid implements Region<Tensor>, RenderInterface {
   public void processObservation(Tensor pos, int type) {
     if (gridRegion.isMember(pos)) { // check if measurement is inside current grid region
       Scalar p_m_z = P_M; // default p(m|z) to prior
-      switch (type) {
-      case TYPE_HIT_OBSTACLE:
-        p_m_z = P_M_HIT; // prob cell is occupied given lidar hit obstacle
-        break;
-      case TYPE_HIT_FLOOR:
-        p_m_z = RealScalar.ONE.subtract(P_M_HIT); // prob cell is occupied given lidar hit floor
-        break;
-      }
+      p_m_z = PREDEFINED_P[type];
+      // switch (type) {
+      // case TYPE_HIT_FLOOR: // 0
+      // p_m_z = RealScalar.ONE.subtract(P_M_HIT); // prob cell is occupied given lidar hit floor
+      // break;
+      // case TYPE_HIT_OBSTACLE: // 1
+      // p_m_z = P_M_HIT; // prob cell is occupied given lidar hit obstacle
+      // break;
+      // }
       Tensor cell = toCell(pos);
       int idx = cellToIdx(cell);
       updateCellLogOdd(idx, p_m_z);
@@ -220,16 +224,6 @@ public class BayesianOccupancyGrid implements Region<Tensor>, RenderInterface {
 
   @Override // from Region<Tensor>
   public boolean isMember(Tensor state) {
-    // try {
-    // byte gs = imagePixels[cellToIdx(toCell(state))];
-    // if (VALUES.add(gs))
-    // System.out.println(String.format("%08x", gs));
-    // return gs == MASK_OCCUPIED; // FIXME
-    // } catch (Exception exception) { // FIXME
-    // // ---
-    // System.out.println("out of bounds: " + state);
-    // }
-    // return true; // FIXME
     if (gridRegion.isMember(state)) {
       byte gs = imagePixels[cellToIdx(toCell(state))];
       return gs == MASK_OCCUPIED;
