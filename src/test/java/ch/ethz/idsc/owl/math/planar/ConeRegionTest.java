@@ -2,6 +2,7 @@
 package ch.ethz.idsc.owl.math.planar;
 
 import ch.ethz.idsc.tensor.RealScalar;
+import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Scalars;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
@@ -44,8 +45,21 @@ public class ConeRegionTest extends TestCase {
   }
 
   public void testDistanceRandom() {
-    ConeRegion coneRegion = new ConeRegion(Array.zeros(3), RealScalar.of(Math.PI / 4));
+    ConeRegion coneRegion = new ConeRegion(Tensors.vector(0.3, -0.2, -0.1), RealScalar.of(Math.PI / 4));
+    for (Tensor tensor : RandomVariate.of(NormalDistribution.standard(), 100, 2))
+      assertEquals(coneRegion.isMember(tensor), Scalars.isZero(coneRegion.distance(tensor)));
+  }
+
+  public void testObtuseRandom() {
+    ConeRegion coneRegion = new ConeRegion(Tensors.vector(0.1, 0.2, 0.3), RealScalar.of(Math.PI * 0.9));
+    for (Tensor tensor : RandomVariate.of(NormalDistribution.standard(), 100, 2))
+      assertEquals(coneRegion.isMember(tensor), Scalars.isZero(coneRegion.distance(tensor)));
+  }
+
+  public void testCompleteRandom() {
+    ConeRegion coneRegion = new ConeRegion(Tensors.vector(0.1, -0.1, 0.3), RealScalar.of(Math.PI * 1.1));
     for (Tensor tensor : RandomVariate.of(NormalDistribution.standard(), 100, 2)) {
+      assertTrue(coneRegion.isMember(tensor));
       assertEquals(coneRegion.isMember(tensor), Scalars.isZero(coneRegion.distance(tensor)));
     }
   }
@@ -54,18 +68,17 @@ public class ConeRegionTest extends TestCase {
     Sign.requirePositive(ArcTan.of(RealScalar.of(-3), RealScalar.ZERO));
   }
 
+  public void testObtuseAngle() {
+    ConeRegion coneRegion = new ConeRegion(Array.zeros(3), RealScalar.of(Math.PI * 0.99));
+    Tensor tensor = Tensors.vector(-2, 0);
+    assertFalse(coneRegion.isMember(tensor));
+    Scalar distance = coneRegion.distance(tensor);
+    assertTrue(Scalars.lessThan(distance, RealScalar.of(0.1)));
+  }
+
   public void testNegativeFail() {
     try {
       new ConeRegion(Tensors.vector(5, 0, Math.PI / 2), RealScalar.of(-Math.PI));
-      assertTrue(false);
-    } catch (Exception exception) {
-      // ---
-    }
-  }
-
-  public void testAngle() {
-    try {
-      new ConeRegion(Tensors.vector(5, 0, Math.PI / 2), RealScalar.of(Math.PI / 2 + 0.1));
       assertTrue(false);
     } catch (Exception exception) {
       // ---
