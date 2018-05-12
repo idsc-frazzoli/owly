@@ -13,7 +13,7 @@ import ch.ethz.idsc.tensor.sca.Clip;
 
 /** planar infinite cone region */
 public class Cone2Region implements Region<Tensor> {
-  private static final Scalar BOUND = RealScalar.of(Math.PI / 2);
+  static final Scalar PI_HALF = RealScalar.of(Math.PI / 2);
   // ---
   private final TensorUnaryOperator inverse;
   private final Clip clip;
@@ -21,13 +21,13 @@ public class Cone2Region implements Region<Tensor> {
   /** @param xya vector of the form {x,y,angle} where {x,y} is the tip of the cone
    * and angle aligns with the center line of the cone
    * @param semi in the interval [0, pi/2] */
-  /* package */ Cone2Region(Tensor xya, Scalar semi) {
+  public Cone2Region(Tensor xya, Scalar semi) {
     inverse = new Se2Bijection(xya).inverse();
-    GlobalAssert.that(Scalars.lessEquals(semi, BOUND));
+    GlobalAssert.that(Scalars.lessEquals(semi, PI_HALF));
     clip = Clip.function(semi.negate(), semi);
   }
 
-  @Override
+  @Override // from Region<Tensor>
   public boolean isMember(Tensor tensor) {
     Tensor local = inverse.apply(tensor);
     return clip.isInside(ArcTan.of(local.Get(0), local.Get(1)));

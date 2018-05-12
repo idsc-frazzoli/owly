@@ -6,7 +6,6 @@ import java.util.Arrays;
 import ch.ethz.idsc.owl.glc.adapter.SimpleTrajectoryRegionQuery;
 import ch.ethz.idsc.owl.gui.RenderInterface;
 import ch.ethz.idsc.owl.gui.ani.OwlyAnimationFrame;
-import ch.ethz.idsc.owl.math.ScalarTensorFunction;
 import ch.ethz.idsc.owl.math.map.BijectionFamily;
 import ch.ethz.idsc.owl.math.noise.SimplexContinuousNoise;
 import ch.ethz.idsc.owl.math.region.Region;
@@ -21,6 +20,7 @@ import ch.ethz.idsc.owly.demo.util.DemoInterface;
 import ch.ethz.idsc.owly.demo.util.SimpleTranslationFamily;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Tensors;
+import ch.ethz.idsc.tensor.opt.ScalarTensorFunction;
 
 public class Se2xTEllipsoidsDemo implements DemoInterface {
   @Override
