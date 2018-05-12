@@ -1,44 +1,51 @@
 // code by jph
-package ch.ethz.idsc.owl.math.region;
+package ch.ethz.idsc.owl.math.planar;
 
-import ch.ethz.idsc.owl.data.GlobalAssert;
 import ch.ethz.idsc.owl.math.map.Se2Bijection;
+import ch.ethz.idsc.owl.math.region.Region;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Scalars;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.lie.AngleVector;
-import ch.ethz.idsc.tensor.opt.TensorScalarFunction;
 import ch.ethz.idsc.tensor.opt.TensorUnaryOperator;
 import ch.ethz.idsc.tensor.red.Norm;
 import ch.ethz.idsc.tensor.sca.ArcTan;
+import ch.ethz.idsc.tensor.sca.Clip;
 import ch.ethz.idsc.tensor.sca.Sign;
 
-/** distance to cone 2 region */
-public class Cone2Distance implements TensorScalarFunction {
-  // private static final Scalar BOUND = RealScalar.of(Math.PI / 2);
+/** planar infinite cone region */
+public class ConeRegion implements Region<Tensor> {
+  private static final Scalar PI_HALF = RealScalar.of(Math.PI / 2);
   // ---
   private final TensorUnaryOperator inverse;
+  private final Clip clip;
   private final Scalar semi;
   private final Scalar semi_pi_half;
   private final Tensor normal;
 
   /** @param xya vector of the form {x,y,angle} where {x,y} is the tip of the cone
    * and angle aligns with the center line of the cone
-   * @param semi in the interval [0, pi/2] */
-  public Cone2Distance(Tensor xya, Scalar semi) {
+   * @param semi half angular width of cone in the interval [0, pi/2] */
+  public ConeRegion(Tensor xya, Scalar semi) {
     inverse = new Se2Bijection(xya).inverse();
-    GlobalAssert.that(Scalars.lessEquals(semi, Cone2Region.PI_HALF));
+    clip = Clip.function(semi.negate(), semi);
     this.semi = Sign.requirePositiveOrZero(semi);
-    semi_pi_half = semi.add(Cone2Region.PI_HALF);
+    semi_pi_half = semi.add(PI_HALF);
     normal = AngleVector.of(semi_pi_half);
+    Sign.requirePositiveOrZero(normal.Get(1));
   }
 
-  @Override // from TensorScalarFunction
-  public Scalar apply(Tensor tensor) {
+  @Override // from Region<Tensor>
+  public boolean isMember(Tensor tensor) {
     Tensor local = inverse.apply(tensor);
-    local.set(Scalar::abs, 1);
-    Scalar angle = ArcTan.of(local.Get(0), local.Get(1));
+    return clip.isInside(ArcTan.of(local.Get(0), local.Get(1)));
+  }
+
+  public Scalar distance(Tensor tensor) {
+    Tensor local = inverse.apply(tensor);
+    local.set(Scalar::abs, 1); // normalize y coordinate
+    Scalar angle = ArcTan.of(local.Get(0), local.Get(1)); // non-negative
     if (Scalars.lessThan(angle, semi))
       return RealScalar.ZERO;
     if (Scalars.lessThan(semi_pi_half, angle))

@@ -119,7 +119,9 @@ public class CarEntity extends Se2Entity {
       mapping.get().prepareForQuery();
     this.obstacleQuery = obstacleQuery;
     GoalInterface goalInterface = MultiCostGoalAdapter.of( //
-        Se2MinTimeGoalManager.create(goal, goalRadius, controls), extraCosts);
+        Se2MinTimeGoalManager.create(goal, goalRadius, controls),
+        // Se2MinTimeConeGoalManager.create(goal, RealScalar.of(Math.PI / 4), goalRadius.Get(2), controls),
+        extraCosts);
     extraConstraints.add(new TrajectoryObstacleConstraint(obstacleQuery));
     PlannerConstraint plannerConstraint = MultiConstraintAdapter.of(extraConstraints);
     TrajectoryPlanner trajectoryPlanner = new StandardTrajectoryPlanner( //
