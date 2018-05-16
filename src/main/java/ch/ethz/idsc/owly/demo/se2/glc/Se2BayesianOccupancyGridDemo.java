@@ -24,8 +24,8 @@ public class Se2BayesianOccupancyGridDemo extends Se2CarDemo {
   void configure(OwlyAnimationFrame owlyAnimationFrame) {
     CarEntity se2Entity = CarEntity.createDefault(new StateTime(Tensors.vector(2, 4, 0), RealScalar.ZERO));
     // create occupancy gird
-    Tensor lbounds = Tensors.vector(0, -0.5); // initial lower bounds of grid
-    Tensor range = Tensors.vector(9, 8); // size of grid in coordinate space
+    Tensor lbounds = Tensors.vector(0, 0); // initial lower bounds of grid
+    Tensor range = Tensors.vector(10, 10); // size of grid in coordinate space
     Scalar cellDim = DoubleScalar.of(0.25); // size of single cell in coordinate space
     BayesianOccupancyGrid om = BayesianOccupancyGrid.of(lbounds, range, cellDim);
     om.setObstacleRadius(DoubleScalar.of(0.25)); // cells within this radius around occupied cells become also occupied
@@ -45,10 +45,12 @@ public class Se2BayesianOccupancyGridDemo extends Se2CarDemo {
     });
     while (isLaunched) {
       try {
-        om.processObservation(RandomVariate.of(NormalDistribution.of(5, 0.3), 2), 1);
-        om.processObservation(RandomVariate.of(NormalDistribution.of(2, 0.2), 2), 0);
-        om.processObservation(RandomVariate.of(NormalDistribution.of(7.5, 0.2), 2), 1);
-        Thread.sleep(10);
+        om.setPose(se2Entity.getStateTimeNow().state(), RealScalar.of(0.99));
+        om.processObservation(RandomVariate.of(NormalDistribution.of(1, 0.2), 2), 1);
+        om.processObservation(RandomVariate.of(NormalDistribution.of(0, 0.2), 2), 0);
+        // om.processObservation(RandomVariate.of(NormalDistribution.of(4, 0.2), 2), 1);
+        om.genObstacleMap();
+        Thread.sleep(20);
       } catch (InterruptedException e) {
         e.printStackTrace();
       }
