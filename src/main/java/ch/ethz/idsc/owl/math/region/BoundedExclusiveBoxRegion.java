@@ -10,8 +10,8 @@ import ch.ethz.idsc.tensor.Tensor;
  * coordinates on the boundary are inside
  * same convention as {@link ImplicitFunctionRegion} */
 public class BoundedExclusiveBoxRegion implements Region<Tensor> {
-  protected final Tensor lo;
-  protected final Tensor hi;
+  private final Tensor lo;
+  private final Tensor hi;
 
   public BoundedExclusiveBoxRegion(Tensor center, Tensor radius) {
     lo = center.subtract(radius);
