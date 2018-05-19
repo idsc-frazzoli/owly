@@ -22,8 +22,6 @@ import ch.ethz.idsc.owl.gui.GeometricLayer;
 import ch.ethz.idsc.owl.gui.RenderInterface;
 import ch.ethz.idsc.owl.math.region.BoundedBoxRegion;
 import ch.ethz.idsc.owl.math.region.Region;
-import ch.ethz.idsc.owl.math.state.StateTime;
-import ch.ethz.idsc.owl.math.state.TrajectoryRegionQuery;
 import ch.ethz.idsc.tensor.DoubleScalar;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
@@ -35,7 +33,7 @@ import ch.ethz.idsc.tensor.sca.Floor;
 import ch.ethz.idsc.tensor.sca.Sign;
 
 /** all pixels have the same amount of weight or clearance radius attached */
-public class OccupancyMap2d implements MappingInterface, TrajectoryRegionQuery, RenderInterface {
+public class OccupancyMap2d implements MappingInterface, Region<Tensor>, RenderInterface {
   private static final int MAX_DEPTH = 7;
   private static final int MAX_DENSITY = 6;
   /** red channel is used for occupancy check */
@@ -93,7 +91,7 @@ public class OccupancyMap2d implements MappingInterface, TrajectoryRegionQuery, 
 
   /** Insert an occupied tile at @param state */
   public synchronized boolean insert(Tensor state) {
-    if (isOccupied(state))
+    if (isMember(state))
       return false;
     final Tensor tile = toTile(state); // get tile corresponding to state
     drawTile(tile);
@@ -113,9 +111,10 @@ public class OccupancyMap2d implements MappingInterface, TrajectoryRegionQuery, 
   }
 
   /** Check if tile at @param state is occupied */
-  public boolean isOccupied(Tensor state) {
+  @Override
+  public boolean isMember(Tensor state) {
     if (state.length() != 2)
-      state = state.extract(0, 2);
+      state = state.extract(0, 2); // TODO truncation may not needed if only state.Get(0) and state.Get(1) are used
     if (!mapRegion.isMember(state))
       return true;
     final Tensor tile = toTile(state);
@@ -154,16 +153,6 @@ public class OccupancyMap2d implements MappingInterface, TrajectoryRegionQuery, 
   @Override // from AbstractMap
   public void prepareForQuery() {
     buildNdTree(occupiedList);
-  }
-
-  @Override // from TrajectoryRegionQuery
-  public final Optional<StateTime> firstMember(List<StateTime> trajectory) {
-    return trajectory.stream().filter(this::isMember).findFirst();
-  }
-
-  @Override // from TrajectoryRegionQuery
-  public final boolean isMember(StateTime stateTime) {
-    return isOccupied(stateTime.state().extract(0, 2));
   }
 
   @Override // from Renderinterface
