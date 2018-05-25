@@ -12,6 +12,7 @@ import ch.ethz.idsc.owl.data.GlobalAssert;
 import ch.ethz.idsc.owl.math.map.Se2Utils;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
+import ch.ethz.idsc.tensor.alg.Array;
 import ch.ethz.idsc.tensor.alg.VectorQ;
 
 /**  */
@@ -19,6 +20,10 @@ public class GeometricLayer {
   private final Deque<AffineFrame2D> deque = new ArrayDeque<>();
   private final Tensor mouseSe2State;
 
+  public static GeometricLayer of(Tensor model2pixel) {
+    return new GeometricLayer(model2pixel, Array.zeros(3));
+  }
+  
   public GeometricLayer(Tensor model2pixel, Tensor mouseSe2State) {
     deque.push(new AffineFrame2D(model2pixel));
     this.mouseSe2State = mouseSe2State;
