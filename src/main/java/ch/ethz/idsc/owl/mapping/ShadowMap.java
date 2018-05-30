@@ -37,13 +37,11 @@ public class ShadowMap implements RenderInterface {
   private final LidarEmulator lidar;
   public final Supplier<StateTime> stateTimeSupplier;
   private boolean isPaused = false;
-  private final Area obstacleArea;
+  private final Area initArea;
   private Area shadowArea;
   private Timer increaserTimer;
   private final float vMax;
   private final float rMin;
-  private final Area initArea;
-
   public ShadowMap(LidarEmulator lidar, ImageRegion imageRegion, Supplier<StateTime> stateTimeSupplier, float vMax, float rMin) {
     this.lidar = lidar;
     this.stateTimeSupplier = stateTimeSupplier;
@@ -60,19 +58,14 @@ public class ShadowMap implements RenderInterface {
     Tensor translate = IdentityMatrix.of(3);
     translate.set(RealScalar.of(-bufferedImage.getHeight()), 1, 2);
     Tensor tmatrix = invsc.dot(translate);
-    obstacleArea = area.createTransformedArea(AffineTransforms.toAffineTransform(tmatrix));
+    Area obstacleArea = area.createTransformedArea(AffineTransforms.toAffineTransform(tmatrix));
     Rectangle2D rInit = new Rectangle2D.Double();
     rInit.setFrame(obstacleArea.getBounds());
     initArea = new Area(rInit);
     erode(initArea, rMin);
-    { // dilate(obstacleArea, rMin);
-      Stroke stroke = new BasicStroke(rMin * 2, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
-      Shape strokeShape = stroke.createStrokedShape(obstacleArea);
-      Area strokeArea = new Area(strokeShape);
-      obstacleArea.add(strokeArea);
-    }
-    this.shadowArea = new Area(rInit);
-    shadowArea.subtract(obstacleArea);
+    dilate(obstacleArea, rMin);
+    initArea.subtract(obstacleArea);
+    this.shadowArea = new Area(initArea);
     setColor(new Color(255, 50, 74));
   }
 
@@ -84,7 +77,6 @@ public class ShadowMap implements RenderInterface {
     dilate(lidarArea, rMin);
     area.subtract(lidarArea);
     dilate(area, timeDelta * vMax);
-    area.subtract(obstacleArea);
     area.intersect(initArea);
   }
 
@@ -130,6 +122,10 @@ public class ShadowMap implements RenderInterface {
 
   public final Area getCurrentMap() {
     return shadowArea;
+  }
+  
+  public final Area getInitMap() {
+    return initArea;
   }
 
   public void setColor(Color color) {
