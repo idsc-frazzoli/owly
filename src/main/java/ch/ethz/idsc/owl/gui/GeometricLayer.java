@@ -23,7 +23,7 @@ public class GeometricLayer {
   public static GeometricLayer of(Tensor model2pixel) {
     return new GeometricLayer(model2pixel, Array.zeros(3));
   }
-  
+
   public GeometricLayer(Tensor model2pixel, Tensor mouseSe2State) {
     deque.push(new AffineFrame2D(model2pixel));
     this.mouseSe2State = mouseSe2State;

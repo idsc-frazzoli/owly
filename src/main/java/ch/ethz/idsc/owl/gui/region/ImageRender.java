@@ -15,10 +15,9 @@ import ch.ethz.idsc.tensor.mat.DiagonalMatrix;
 import ch.ethz.idsc.tensor.mat.IdentityMatrix;
 
 public class ImageRender implements RenderInterface {
-  
   BufferedImage image;
   Tensor invsc;
-  
+
   public ImageRender(BufferedImage image, Tensor range) {
     this.image = image;
     int dim1 = image.getWidth();
@@ -28,18 +27,18 @@ public class ImageRender implements RenderInterface {
         scale.Get(0).reciprocal().number().doubleValue(), //
         -scale.Get(1).reciprocal().number().doubleValue(), 1);
   }
-  
+
   public static ImageRender of(BufferedImage image, Tensor range) {
     return new ImageRender(image, range);
   }
 
   public void scaleAlpha(float scale) {
-    float[] scales = {1.0f, 1.0f, 1.0f, scale};
-    float[] offsets = {0.0f, 0.0f, 0.0f, 0.0f};
+    float[] scales = { 1.0f, 1.0f, 1.0f, scale };
+    float[] offsets = { 0.0f, 0.0f, 0.0f, 0.0f };
     RescaleOp op = new RescaleOp(scales, offsets, null);
     image = op.filter(image, null);
   }
-  
+
   @Override
   public void render(GeometricLayer geometricLayer, Graphics2D graphics) {
     Tensor model2pixel = geometricLayer.getMatrix();

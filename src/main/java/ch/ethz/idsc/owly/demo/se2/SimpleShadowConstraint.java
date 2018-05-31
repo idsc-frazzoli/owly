@@ -21,7 +21,6 @@ import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.sca.Cos;
-import ch.ethz.idsc.tensor.sca.Floor;
 import ch.ethz.idsc.tensor.sca.Sin;
 
 @DontModify
@@ -33,7 +32,6 @@ public final class SimpleShadowConstraint implements PlannerConstraint, Serializ
   final Map<Tensor, Area> map = new HashMap<>();
   long counter = 0;
   long total = 0;
-  
 
   public SimpleShadowConstraint(ShadowMap shadowMap, Scalar gamma) {
     this.shadowMap = shadowMap;

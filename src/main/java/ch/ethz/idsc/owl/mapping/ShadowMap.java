@@ -22,10 +22,10 @@ import ch.ethz.idsc.owl.math.map.Se2Bijection;
 import ch.ethz.idsc.owl.math.region.ImageRegion;
 import ch.ethz.idsc.owl.math.state.StateTime;
 import ch.ethz.idsc.owl.sim.LidarEmulator;
-import ch.ethz.idsc.owly.demo.util.RegionRenders;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.alg.Array;
+import ch.ethz.idsc.tensor.io.ImageFormat;
 import ch.ethz.idsc.tensor.mat.DiagonalMatrix;
 import ch.ethz.idsc.tensor.mat.IdentityMatrix;
 
@@ -42,25 +42,23 @@ public class ShadowMap implements RenderInterface {
   private Timer increaserTimer;
   private final float vMax;
   private final float rMin;
+
   public ShadowMap(LidarEmulator lidar, ImageRegion imageRegion, Supplier<StateTime> stateTimeSupplier, float vMax, float rMin) {
     this.lidar = lidar;
     this.stateTimeSupplier = stateTimeSupplier;
     this.vMax = vMax;
     this.rMin = rMin;
-    BufferedImage bufferedImage = RegionRenders.image(imageRegion.image());
-    // TODO 244 and 5 magic const, redundant to values specified elsewhere
-    Area area = ImageArea.fromImage(bufferedImage, new Color(244, 244, 244), 5);
-    //
+    BufferedImage image = ImageFormat.of(imageRegion.image());
+    Area area = ImageArea.fromImage(image, new Color(255, 255, 255), 3);
     // convert imageRegion into Area
     Tensor scale = imageRegion.scale();
     Tensor invsc = DiagonalMatrix.of( //
         scale.Get(0).reciprocal(), scale.Get(1).negate().reciprocal(), RealScalar.ONE);
     Tensor translate = IdentityMatrix.of(3);
-    translate.set(RealScalar.of(-bufferedImage.getHeight()), 1, 2);
+    translate.set(RealScalar.of(-image.getHeight()), 1, 2);
     Tensor tmatrix = invsc.dot(translate);
     Area obstacleArea = area.createTransformedArea(AffineTransforms.toAffineTransform(tmatrix));
-    Rectangle2D rInit = new Rectangle2D.Double();
-    rInit.setFrame(obstacleArea.getBounds());
+    Rectangle2D rInit = obstacleArea.getBounds2D();
     initArea = new Area(rInit);
     erode(initArea, rMin);
     dilate(obstacleArea, rMin);
@@ -123,13 +121,13 @@ public class ShadowMap implements RenderInterface {
   public final Area getCurrentMap() {
     return shadowArea;
   }
-  
+
   public final Area getInitMap() {
     return initArea;
   }
 
   public void setColor(Color color) {
-    COLOR_SHADOW_FILL = new Color((color.getRGB() & 0xFFFFFF) | (16 << 24), true);
+    COLOR_SHADOW_FILL = new Color((color.getRGB() & 0xFFFFFF) | (40 << 24), true);
     COLOR_SHADOW_DRAW = new Color((color.getRGB() & 0xFFFFFF) | (64 << 24), true);
   }
 
