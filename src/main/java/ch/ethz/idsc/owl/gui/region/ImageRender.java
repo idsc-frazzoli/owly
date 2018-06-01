@@ -15,6 +15,10 @@ import ch.ethz.idsc.tensor.mat.DiagonalMatrix;
 import ch.ethz.idsc.tensor.mat.IdentityMatrix;
 
 public class ImageRender implements RenderInterface {
+  public static ImageRender of(BufferedImage image, Tensor range) {
+    return new ImageRender(image, range);
+  }
+
   BufferedImage image;
   Tensor invsc;
 
@@ -26,10 +30,6 @@ public class ImageRender implements RenderInterface {
     invsc = DiagonalMatrix.of( //
         scale.Get(0).reciprocal().number().doubleValue(), //
         -scale.Get(1).reciprocal().number().doubleValue(), 1);
-  }
-
-  public static ImageRender of(BufferedImage image, Tensor range) {
-    return new ImageRender(image, range);
   }
 
   public void scaleAlpha(float scale) {
