@@ -1,3 +1,4 @@
+// code by ynager
 package ch.ethz.idsc.owly.demo.util;
 
 import ch.ethz.idsc.tensor.Tensor;
@@ -11,7 +12,7 @@ public class LexicographicSlackTest extends TestCase {
     int comp;
     // ---
     Tensor slacks = Tensors.vector(0.1, 0.1, 0.1);
-    LexicographicSlack c = new LexicographicSlack(slacks);
+    LexicographicSlack c = LexicographicSlack.of(slacks);
     // ---
     a = Tensors.vector(111, 0, 0);
     b = Tensors.vector(100, 500, 500);
@@ -38,11 +39,14 @@ public class LexicographicSlackTest extends TestCase {
     comp = c.compare(a, b);
     assertEquals(comp, Integer.compare(1, 0));
     // ---
-    slacks = Tensors.vector(0.1, 0, 0.1);
-    c = new LexicographicSlack(slacks);
-    a = Tensors.vector(95, 100.01, 0);
-    b = Tensors.vector(100, 100, 100);
-    comp = c.compare(a, b);
+  }
+
+  public void testMore() {
+    Tensor slacks = Tensors.vector(0.1, 0, 0.1);
+    LexicographicSlack c = LexicographicSlack.of(slacks);
+    Tensor a = Tensors.vector(95, 100.01, 0);
+    Tensor b = Tensors.vector(100, 100, 100);
+    int comp = c.compare(a, b);
     assertEquals(comp, Integer.compare(1, 0));
   }
 }

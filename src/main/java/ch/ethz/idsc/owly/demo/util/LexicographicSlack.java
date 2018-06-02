@@ -9,17 +9,17 @@ import ch.ethz.idsc.tensor.sca.Sign;
 
 /** Lexicographical comparator with slack for VectorScalars */
 public class LexicographicSlack {
-  public static LexicographicSlack of(Tensor slacks) {
-    return new LexicographicSlack(slacks);
+  public static LexicographicSlack of(Tensor slack) {
+    return new LexicographicSlack(slack);
   }
-
-  Tensor slack;
-
-  public LexicographicSlack(Tensor slacks) {
-    this.slack = slacks;
-  }
-
   // ---
+
+  private final Tensor slack;
+
+  private LexicographicSlack(Tensor slack) {
+    this.slack = slack;
+  }
+
   public int compare(Tensor oldCost, Tensor newCost) {
     if (oldCost.length() != newCost.length() || oldCost.length() != slack.length())
       throw TensorRuntimeException.of(oldCost, newCost, slack);

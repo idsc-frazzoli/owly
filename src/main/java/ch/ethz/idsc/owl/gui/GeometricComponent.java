@@ -71,7 +71,7 @@ public final class GeometricComponent {
         mouseWheel += delta;
       } else {
         Scalar factor = Power.of(RealScalar.of(2), delta);
-        Tensor scale = DiagonalMatrix.of(Tensors.of(factor, factor, RealScalar.ONE));
+        Tensor scale = DiagonalMatrix.of(factor, factor, RealScalar.ONE);
         Tensor shift = Tensors.vector(event.getX(), event.getY());
         shift = shift.subtract(shift.multiply(factor));
         scale.set(shift.Get(0), 0, 2);

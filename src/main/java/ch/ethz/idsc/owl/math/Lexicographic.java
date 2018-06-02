@@ -1,5 +1,5 @@
 // code by jph
-package ch.ethz.idsc.owly.demo.util;
+package ch.ethz.idsc.owl.math;
 
 import java.util.Comparator;
 

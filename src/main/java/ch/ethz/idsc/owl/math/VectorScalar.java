@@ -3,46 +3,54 @@ package ch.ethz.idsc.owl.math;
 
 import java.io.Serializable;
 import java.math.MathContext;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
-import ch.ethz.idsc.owly.demo.util.Lexicographic;
 import ch.ethz.idsc.tensor.AbstractScalar;
-import ch.ethz.idsc.tensor.DoubleScalar;
 import ch.ethz.idsc.tensor.ExactScalarQ;
-import ch.ethz.idsc.tensor.MachineNumberQ;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.TensorRuntimeException;
 import ch.ethz.idsc.tensor.sca.Chop;
 import ch.ethz.idsc.tensor.sca.ChopInterface;
 import ch.ethz.idsc.tensor.sca.ExactScalarQInterface;
-import ch.ethz.idsc.tensor.sca.MachineNumberQInterface;
 import ch.ethz.idsc.tensor.sca.N;
 import ch.ethz.idsc.tensor.sca.NInterface;
 
+/** immutable
+ * 
+ * string expression is of the form [1, 2, 3] to prevent confusion with standard vectors */
 public class VectorScalar extends AbstractScalar implements //
-    ChopInterface, MachineNumberQInterface, NInterface, ExactScalarQInterface, Serializable, Comparable<Scalar> {
+    ChopInterface, ExactScalarQInterface, NInterface, Comparable<Scalar>, Serializable {
+  /** @param vector
+   * @return
+   * @throws Exception if input is not a vector, or contains entries of type {@link VectorScalar} */
   public static Scalar of(Tensor vector) {
+    if (vector.stream().map(Scalar.class::cast).anyMatch(VectorScalar.class::isInstance))
+      throw TensorRuntimeException.of(vector);
     return new VectorScalar(vector.copy());
   }
 
+  // ---
   private final Tensor vector;
 
   private VectorScalar(Tensor vector) {
     this.vector = vector;
   }
 
+  /** @return copy of content vector */
   public Tensor vector() {
     return vector.copy();
   }
 
   @Override // from Scalar
   public Scalar multiply(Scalar scalar) {
-    return of(vector.multiply(scalar));
+    return new VectorScalar(vector.multiply(scalar));
   }
 
   @Override // from Scalar
   public Scalar negate() {
-    return of(vector.negate());
+    return new VectorScalar(vector.negate());
   }
 
   @Override // from Scalar
@@ -52,7 +60,7 @@ public class VectorScalar extends AbstractScalar implements //
 
   @Override // from Scalar
   public Scalar abs() {
-    return of(vector.map(Scalar::abs));
+    return new VectorScalar(vector.map(Scalar::abs));
   }
 
   @Override // from Scalar
@@ -62,13 +70,46 @@ public class VectorScalar extends AbstractScalar implements //
 
   @Override // from Scalar
   public Scalar zero() {
-    return of(vector.map(Scalar::zero));
+    return new VectorScalar(vector.map(Scalar::zero));
   }
 
-  @Override // from Scalar
+  /***************************************************/
+  @Override // from AbstractScalar
   protected Scalar plus(Scalar scalar) {
     if (scalar instanceof VectorScalar) {
-      return of(((VectorScalar) scalar).vector.add(vector));
+      VectorScalar vectorScalar = (VectorScalar) scalar;
+      return new VectorScalar(vector.add(vectorScalar.vector));
+    }
+    throw TensorRuntimeException.of(this, scalar);
+  }
+
+  /***************************************************/
+  @Override // from ChopInterface
+  public Scalar chop(Chop chop) {
+    return new VectorScalar(chop.of(vector));
+  }
+
+  @Override // from NInterface
+  public Scalar n() {
+    return new VectorScalar(N.DOUBLE.of(vector));
+  }
+
+  @Override // from NInterface
+  public Scalar n(MathContext mathContext) {
+    return new VectorScalar(N.in(mathContext.getPrecision()).of(vector));
+  }
+
+  @Override // from ExactScalarQInterface
+  public boolean isExactScalar() {
+    return ExactScalarQ.all(vector);
+  }
+
+  /***************************************************/
+  @Override // from Comparable
+  public int compareTo(Scalar scalar) {
+    if (scalar instanceof VectorScalar) {
+      VectorScalar vectorScalar = (VectorScalar) scalar;
+      return Lexicographic.COMPARATOR.compare(vector, vectorScalar.vector());
     }
     throw TensorRuntimeException.of(this, scalar);
   }
@@ -86,43 +127,10 @@ public class VectorScalar extends AbstractScalar implements //
     return false;
   }
 
+  private static final Collector<CharSequence, ?, String> EMBRACE = Collectors.joining(", ", "[", "]");
+
   @Override // from Scalar
   public String toString() {
-    return vector.toString();
-  }
-
-  @Override // from ChopInterface
-  public Scalar chop(Chop chop) {
-    return of(vector.map(v -> chop.apply(v)));
-  }
-
-  // FIXME is this correct?
-  @Override // from MachineNumberQInterface
-  public boolean isMachineNumber() {
-    return !vector.flatten(-1).anyMatch(v -> !MachineNumberQ.of(v));
-  }
-
-  @Override // from NInterface
-  public Scalar n() {
-    return of(vector.map(v -> DoubleScalar.of(v.number().doubleValue())));
-  }
-
-  @Override // from NInterface
-  public Scalar n(MathContext mathContext) {
-    N n = N.in(mathContext.getPrecision());
-    return of(vector.map(v -> n.apply(v)));
-  }
-
-  @Override // from ExactScalarQInterface
-  public boolean isExactScalar() {
-    return ExactScalarQ.all(vector);
-  }
-
-  @Override // from Comparable
-  public int compareTo(Scalar o) {
-    if (o instanceof VectorScalar) {
-      return Lexicographic.COMPARATOR.compare(vector, ((VectorScalar) o).vector());
-    }
-    throw TensorRuntimeException.of(this, o);
+    return vector.stream().map(Tensor::toString).collect(EMBRACE);
   }
 }
