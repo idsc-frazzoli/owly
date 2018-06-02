@@ -10,6 +10,7 @@ import java.util.Arrays;
 import ch.ethz.idsc.owl.glc.adapter.SimpleTrajectoryRegionQuery;
 import ch.ethz.idsc.owl.gui.ani.OwlyAnimationFrame;
 import ch.ethz.idsc.owl.gui.region.ImageRender;
+import ch.ethz.idsc.owl.img.ImageAlpha;
 import ch.ethz.idsc.owl.img.ImageTensors;
 import ch.ethz.idsc.owl.mapping.ShadowMap;
 import ch.ethz.idsc.owl.math.Degree;
@@ -34,7 +35,7 @@ public class Se2ConstrainedShadowDemo extends Se2CarDemo {
   private static final float CAR_VELOCITY = 0.6f;
   private static final float CAR_RADIUS = 0.3f;
   private static final Color CAR_COLOR = new Color(200, 52, 20);
-  private final Tensor range = Tensors.vector(5, 10);
+  private static final Tensor RANGE = Tensors.vector(5, 10);
 
   @Override
   void configure(OwlyAnimationFrame owlyAnimationFrame) {
@@ -43,17 +44,18 @@ public class Se2ConstrainedShadowDemo extends Se2CarDemo {
     // R2ImageRegionWrap regionWrap = R2ImageRegions._SQUARE;
     Tensor image = ResourceData.of("/scenarios/multiarea.png");
     BufferedImage bufferedImage = ImageFormat.of(image);
-    ImageRender imgRender = ImageRender.of(bufferedImage, range);
+    bufferedImage = ImageAlpha.scale(bufferedImage, 0.3);
+    ImageRender imgRender = new ImageRender(bufferedImage, RANGE);
     Tensor imageCar = ImageTensors.reduceInverted(image, 1);
     Tensor imagePed = ImageTensors.reduceInverted(image, 2);
-    ImageRegion imageRegionCar = new ImageRegion(imageCar, range, false);
-    ImageRegion imageRegionPed = new ImageRegion(imagePed, range, false);
+    ImageRegion imageRegionCar = new ImageRegion(imageCar, RANGE, false);
+    ImageRegion imageRegionPed = new ImageRegion(imagePed, RANGE, false);
     Region<Tensor> intersectionRegion = RegionIntersection.wrap(Arrays.asList(imageRegionCar, imageRegionPed));
     TrajectoryRegionQuery trq = createCarQuery(imageRegionCar);
     se2Entity.obstacleQuery = trq;
     TrajectoryRegionQuery ray = SimpleTrajectoryRegionQuery.timeInvariant(imageRegionCar);
     TrajectoryRegionQuery rayComp = SimpleTrajectoryRegionQuery.timeInvariant(intersectionRegion);
-    imgRender.scaleAlpha(0.3f);
+    // imgRender.scaleAlpha(0.3f);
     owlyAnimationFrame.addBackground(imgRender);
     owlyAnimationFrame.setObstacleQuery(ray);
     // LIDAR
