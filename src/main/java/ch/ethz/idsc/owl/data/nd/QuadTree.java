@@ -70,7 +70,7 @@ public class QuadTree<T> implements Serializable {
    * @param maxX The largest x coordinate (easting, longitude) expected
    * @param maxY The largest y coordinate (northing, latitude) expected */
   public QuadTree(final double minX, final double minY, final double maxX, final double maxY) {
-    this.top = new Node<T>(minX, minY, maxX, maxY);
+    this.top = new Node<>(minX, minY, maxX, maxY);
   }
 
   /** Associates the specified value with the specified coordinates in this
@@ -504,7 +504,7 @@ public class QuadTree<T> implements Serializable {
     public Leaf(final double x, final double y, final T value) {
       this.x = x;
       this.y = y;
-      this.values = new ArrayList<T>(1);
+      this.values = new ArrayList<>(1);
       this.values.add(value);
     }
   }
@@ -547,7 +547,7 @@ public class QuadTree<T> implements Serializable {
     }
 
     public boolean put(final double x, final double y, final T value) {
-      return put(new Leaf<T>(x, y, value));
+      return put(new Leaf<>(x, y, value));
     }
 
     public boolean remove(final double x, final double y, final T value) {
@@ -784,10 +784,10 @@ public class QuadTree<T> implements Serializable {
     }
 
     private void split() {
-      this.northwest = new Node<T>(this.bounds.minX, this.bounds.centerY, this.bounds.centerX, this.bounds.maxY);
-      this.northeast = new Node<T>(this.bounds.centerX, this.bounds.centerY, this.bounds.maxX, this.bounds.maxY);
-      this.southeast = new Node<T>(this.bounds.centerX, this.bounds.minY, this.bounds.maxX, this.bounds.centerY);
-      this.southwest = new Node<T>(this.bounds.minX, this.bounds.minY, this.bounds.centerX, this.bounds.centerY);
+      this.northwest = new Node<>(this.bounds.minX, this.bounds.centerY, this.bounds.centerX, this.bounds.maxY);
+      this.northeast = new Node<>(this.bounds.centerX, this.bounds.centerY, this.bounds.maxX, this.bounds.maxY);
+      this.southeast = new Node<>(this.bounds.centerX, this.bounds.minY, this.bounds.maxX, this.bounds.centerY);
+      this.southwest = new Node<>(this.bounds.minX, this.bounds.minY, this.bounds.centerX, this.bounds.centerY);
       this.hasChilds = true;
       if (this.leaf != null) {
         getChild(this.leaf.x, this.leaf.y).put(this.leaf);
@@ -874,7 +874,7 @@ public class QuadTree<T> implements Serializable {
     }
 
     public Leaf<T> nextLeaf(final Leaf<T> currentLeaf) {
-      MutableLeaf<T> nextLeaf = new MutableLeaf<T>(null);
+      MutableLeaf<T> nextLeaf = new MutableLeaf<>(null);
       nextLeaf(currentLeaf, nextLeaf);
       return nextLeaf.value;
     }

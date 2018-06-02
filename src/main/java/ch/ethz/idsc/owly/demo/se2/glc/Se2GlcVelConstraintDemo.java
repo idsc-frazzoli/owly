@@ -8,6 +8,7 @@ import java.util.Arrays;
 
 import ch.ethz.idsc.owl.glc.adapter.GlcWaypointFollowing;
 import ch.ethz.idsc.owl.glc.std.FlowRegionConstraint;
+import ch.ethz.idsc.owl.glc.std.PlannerConstraint;
 import ch.ethz.idsc.owl.gui.RenderInterface;
 import ch.ethz.idsc.owl.gui.ani.OwlyAnimationFrame;
 import ch.ethz.idsc.owl.gui.ren.ArrowHeadRender;
@@ -78,7 +79,7 @@ public class Se2GlcVelConstraintDemo extends Se2CarDemo {
     // Flow constraint
     FreeBoundedIntervalRegion flowregion = new FreeBoundedIntervalRegion( //
         0, DoubleScalar.of(-0.6), DoubleScalar.of(0.6)); // only velocities between -0.6 and 0.6 are allowed
-    FlowRegionConstraint flowRegionConstraint = new FlowRegionConstraint(regions, flowregion, null);
+    PlannerConstraint flowRegionConstraint = FlowRegionConstraint.create(flowregion, regions);
     carEntity.extraConstraints.add(flowRegionConstraint);
     owlyAnimationFrame.set(carEntity);
     // Rendering
