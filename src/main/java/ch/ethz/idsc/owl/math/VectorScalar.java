@@ -4,6 +4,7 @@ package ch.ethz.idsc.owl.math;
 import java.io.Serializable;
 import java.math.MathContext;
 
+import ch.ethz.idsc.owly.demo.util.Lexicographic;
 import ch.ethz.idsc.tensor.AbstractScalar;
 import ch.ethz.idsc.tensor.DoubleScalar;
 import ch.ethz.idsc.tensor.ExactScalarQ;
@@ -19,7 +20,7 @@ import ch.ethz.idsc.tensor.sca.N;
 import ch.ethz.idsc.tensor.sca.NInterface;
 
 public class VectorScalar extends AbstractScalar implements //
-    ChopInterface, MachineNumberQInterface, NInterface, ExactScalarQInterface, Serializable {
+    ChopInterface, MachineNumberQInterface, NInterface, ExactScalarQInterface, Serializable, Comparable<Scalar> {
   public static Scalar of(Tensor vector) {
     return new VectorScalar(vector.copy());
   }
@@ -115,5 +116,13 @@ public class VectorScalar extends AbstractScalar implements //
   @Override // from ExactScalarQInterface
   public boolean isExactScalar() {
     return ExactScalarQ.all(vector);
+  }
+
+  @Override // from Comparable
+  public int compareTo(Scalar o) {
+    if (o instanceof VectorScalar) {
+      return Lexicographic.COMPARATOR.compare(vector, ((VectorScalar) o).vector());
+    }
+    throw TensorRuntimeException.of(this, o);
   }
 }

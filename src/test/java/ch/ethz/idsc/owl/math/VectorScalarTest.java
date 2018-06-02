@@ -23,8 +23,13 @@ public class VectorScalarTest extends TestCase {
     assertFalse(((VectorScalar) a).isMachineNumber());
     assertFalse(((VectorScalar) a).isExactScalar());
     a = VectorScalar.of(Tensors.of(RealScalar.ONE, DoubleScalar.ONE));
-    //assertTrue(((VectorScalar) a).isMachineNumber()); //FIXME
+    // assertTrue(((VectorScalar) a).isMachineNumber()); //FIXME
     assertTrue(((VectorScalar) a).isExactScalar());
+    // ---
+    Scalar v1 = VectorScalar.of(Tensors.vector(1, 6, 1));
+    Scalar v2 = VectorScalar.of(Tensors.vector(1, 5, 10));
+    Comparable<Scalar> comparable = (Comparable<Scalar>) v1;
+    assertEquals(comparable.compareTo(v2), Integer.compare(1, 0));
   }
 
   public void testFail() {
