@@ -30,9 +30,8 @@ public class SphericalRegion extends ImplicitFunctionRegion {
   /** @param center vector with length() == n
    * @param radius non-negative */
   public SphericalRegion(Tensor center, Scalar radius) {
-    VectorQ.elseThrow(center);
     GlobalAssert.that(Sign.isPositiveOrZero(radius));
-    this.center = center.copy();
+    this.center = VectorQ.require(center).copy();
     this.radius = radius;
   }
 

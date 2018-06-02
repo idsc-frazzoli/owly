@@ -40,8 +40,7 @@ public enum RegionRenders {
   }
 
   public static BufferedImage image(Tensor image) {
-    MatrixQ.elseThrow(image); // GlobalAssert.that(TensorRank.of(image) == 2);
-    return ImageFormat.of(image.map(RegionRenders::color));
+    return ImageFormat.of(MatrixQ.require(image).map(RegionRenders::color));
   }
 
   /** @param region

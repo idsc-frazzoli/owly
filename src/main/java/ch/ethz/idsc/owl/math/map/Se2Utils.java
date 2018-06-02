@@ -45,6 +45,21 @@ public enum Se2Utils {
         ArcTan.of(matrix.Get(0, 0), matrix.Get(1, 0))); // arc tan is numerically stable
   }
 
+  /** @param vector of the form {px, py}
+   * @return
+   * <pre>
+   * [1 0 px]
+   * [0 1 py]
+   * [0 0 1]
+   * </pre> */
+  public static Tensor toSE2Translation(Tensor xy) {
+    return Tensors.matrix(new Tensor[][] { //
+        { RealScalar.ONE, RealScalar.ZERO, xy.Get(0) }, //
+        { RealScalar.ZERO, RealScalar.ONE, xy.Get(1) }, //
+        { RealScalar.ZERO, RealScalar.ZERO, RealScalar.ONE }, //
+    });
+  }
+
   /** maps a vector x from the Lie-algebra se2 to a vector of the group SE2
    * 
    * @param x == {vx, vy, beta}
