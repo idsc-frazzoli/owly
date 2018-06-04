@@ -36,10 +36,8 @@ public class ShadowMap implements RenderInterface {
   // ---
   private final LidarEmulator lidar;
   public final Supplier<StateTime> stateTimeSupplier;
-  private boolean isPaused = false;
   private final Area initArea;
-  private Area shadowArea;
-  private Timer increaserTimer;
+  protected Area shadowArea;
   private final float vMax;
   private final float rMin;
 
@@ -65,6 +63,10 @@ public class ShadowMap implements RenderInterface {
     initArea.subtract(obstacleArea);
     this.shadowArea = new Area(initArea);
     setColor(new Color(255, 50, 74));
+  }
+
+  public void updateMap(StateTime stateTime, float timeDelta) {
+    updateMap(shadowArea, stateTime, timeDelta);
   }
 
   public void updateMap(Area area, StateTime stateTime, float timeDelta) {
@@ -94,36 +96,12 @@ public class ShadowMap implements RenderInterface {
     area.subtract(strokeArea);
   }
 
-  public final void startNonBlocking(int updateRate) {
-    TimerTask mapUpdate = new TimerTask() {
-      @Override
-      public void run() {
-        if (!isPaused)
-          updateMap(shadowArea, stateTimeSupplier.get(), 1.0f / updateRate);
-      }
-    };
-    increaserTimer = new Timer("MapUpdateTimer");
-    increaserTimer.scheduleAtFixedRate(mapUpdate, 10, 1000 / updateRate);
-  }
-
-  public final void flagShutdown() {
-    increaserTimer.cancel();
-  }
-
-  public final void pause() {
-    isPaused = true;
-  }
-
-  public final void resume() {
-    isPaused = false;
-  }
-
   public final Area getCurrentMap() {
     return shadowArea;
   }
 
   public final Area getInitMap() {
-    return initArea;
+    return new Area(initArea);
   }
 
   public void setColor(Color color) {

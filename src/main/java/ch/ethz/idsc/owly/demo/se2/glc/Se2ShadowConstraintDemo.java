@@ -8,7 +8,7 @@ import java.awt.event.WindowEvent;
 import ch.ethz.idsc.owl.glc.adapter.SimpleTrajectoryRegionQuery;
 import ch.ethz.idsc.owl.gui.ani.OwlyAnimationFrame;
 import ch.ethz.idsc.owl.img.ImageRegions;
-import ch.ethz.idsc.owl.mapping.ShadowMap;
+import ch.ethz.idsc.owl.mapping.ShadowMapSimulator;
 import ch.ethz.idsc.owl.math.Degree;
 import ch.ethz.idsc.owl.math.region.ImageRegion;
 import ch.ethz.idsc.owl.math.region.Region;
@@ -20,7 +20,6 @@ import ch.ethz.idsc.owly.demo.se2.CarVelocityFlows;
 import ch.ethz.idsc.owly.demo.se2.Se2PointsVsRegions;
 import ch.ethz.idsc.owly.demo.se2.SimpleShadowConstraint;
 import ch.ethz.idsc.owly.demo.util.RegionRenders;
-import ch.ethz.idsc.tensor.DoubleScalar;
 import ch.ethz.idsc.tensor.RealScalar;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
@@ -29,6 +28,8 @@ public class Se2ShadowConstraintDemo extends Se2CarDemo {
   private static final float PED_VELOCITY = 0.2f;
   private static final float PED_RADIUS = 0.1f;
   private static final Color PED_COLOR = new Color(23, 12, 200);
+  private static final float MAX_A = 0.2f; // [m/s²]
+  private static final float REACTION_TIME = 0.5f;
 
   @Override // from Se2CarDemo
   void configure(OwlyAnimationFrame owlyAnimationFrame) {
@@ -39,7 +40,7 @@ public class Se2ShadowConstraintDemo extends Se2CarDemo {
     ImageRegion imageRegion = //
         ImageRegions.loadFromRepository("/scenarios/street_2.png", Tensors.vector(9, 9), false);
     Region<Tensor> region = Se2PointsVsRegions.line(se2Entity.coords_X(), imageRegion);
-    TrajectoryRegionQuery trq = createCarQuery(region);
+    TrajectoryRegionQuery trq = createCarQuery(imageRegion);
     se2Entity.obstacleQuery = trq;
     TrajectoryRegionQuery ray = SimpleTrajectoryRegionQuery.timeInvariant(imageRegion);
     owlyAnimationFrame.setObstacleQuery(ray);
@@ -49,13 +50,14 @@ public class Se2ShadowConstraintDemo extends Se2CarDemo {
         LidarEmulator.DEFAULT, se2Entity::getStateTimeNow, ray);
     owlyAnimationFrame.addBackground(lidarEmulator);
     // SHADOWMAP
-    ShadowMap shadowMapPed = //
-        new ShadowMap(lidarEmulator, imageRegion, se2Entity::getStateTimeNow, PED_VELOCITY, PED_RADIUS);
+    ShadowMapSimulator shadowMapPed = //
+        new ShadowMapSimulator(lidarEmulator, imageRegion, se2Entity::getStateTimeNow, PED_VELOCITY, PED_RADIUS);
     shadowMapPed.setColor(PED_COLOR);
     owlyAnimationFrame.addBackground(shadowMapPed);
     shadowMapPed.startNonBlocking(10);
     // ShadowConstraint2 shadowConstraintPed = new ShadowConstraint2(shadowMapPed, DoubleScalar.of(3.0), se2Entity.eta());
-    SimpleShadowConstraint shadowConstraintPed = new SimpleShadowConstraint(shadowMapPed, DoubleScalar.of(3.2));
+    SimpleShadowConstraint shadowConstraintPed = //
+        new SimpleShadowConstraint(shadowMapPed, MAX_A, REACTION_TIME);
     se2Entity.extraConstraints.add(shadowConstraintPed);
     //
     owlyAnimationFrame.set(se2Entity);

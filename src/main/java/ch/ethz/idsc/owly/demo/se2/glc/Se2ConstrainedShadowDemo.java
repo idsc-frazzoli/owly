@@ -12,7 +12,7 @@ import ch.ethz.idsc.owl.gui.ani.OwlyAnimationFrame;
 import ch.ethz.idsc.owl.gui.region.ImageRender;
 import ch.ethz.idsc.owl.img.ImageAlpha;
 import ch.ethz.idsc.owl.img.ImageTensors;
-import ch.ethz.idsc.owl.mapping.ShadowMap;
+import ch.ethz.idsc.owl.mapping.ShadowMapSimulator;
 import ch.ethz.idsc.owl.math.Degree;
 import ch.ethz.idsc.owl.math.region.ImageRegion;
 import ch.ethz.idsc.owl.math.region.Region;
@@ -64,14 +64,14 @@ public class Se2ConstrainedShadowDemo extends Se2CarDemo {
     owlyAnimationFrame.addBackground(lidarEmulator);
     owlyAnimationFrame.set(se2Entity);
     // SHADOWMAP
-    ShadowMap shadowMapPed = //
-        new ShadowMap(lidarEmulator, imageRegionPed, se2Entity::getStateTimeNow, PED_VELOCITY, PED_RADIUS);
+    ShadowMapSimulator shadowMapPed = //
+        new ShadowMapSimulator(lidarEmulator, imageRegionPed, se2Entity::getStateTimeNow, PED_VELOCITY, PED_RADIUS);
     shadowMapPed.setColor(PED_COLOR);
     owlyAnimationFrame.addBackground(shadowMapPed);
     shadowMapPed.startNonBlocking(10);
     //
-    ShadowMap shadowMapCar = //
-        new ShadowMap(lidarEmulator, imageRegionCar, se2Entity::getStateTimeNow, CAR_VELOCITY, CAR_RADIUS);
+    ShadowMapSimulator shadowMapCar = //
+        new ShadowMapSimulator(lidarEmulator, imageRegionCar, se2Entity::getStateTimeNow, CAR_VELOCITY, CAR_RADIUS);
     shadowMapCar.setColor(CAR_COLOR);
     owlyAnimationFrame.addBackground(shadowMapCar);
     shadowMapCar.startNonBlocking(10);
