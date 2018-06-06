@@ -1,6 +1,9 @@
-# ch.ethz.idsc.owly <a href="https://travis-ci.org/idsc-frazzoli/owly"><img src="https://travis-ci.org/idsc-frazzoli/owly.svg?branch=master" alt="Build Status"></a>
+# DEPRECATED - PLEASE USE <a href="https://github.com/idsc-frazzoli/owl">OWL</a> INSTEAD
 
-The repository contains Java 8 implementations of motion planners and their variants, version `0.1.0`
+The repository contains rapid prototype implementations of motion planners and their variants, version `0.1.0`.
+
+The code includes experimental features that in their current form should not make their way to a live robot.
+We have extracted and refined the approved methods to the repository <a href="https://github.com/idsc-frazzoli/owl">owl</a>.
 
 List of algorithms: GLC, RRT*
 
@@ -23,7 +26,6 @@ The `owly` repository implements visualizations in 2D as showcased below.
 See also a [video](https://www.youtube.com/watch?v=lPQW3GqQqSY).
 
 The separate repository [owly3d](https://github.com/idsc-frazzoli/owly3d) implements animations and visualizations in 3D.
-
 
 ## Examples
 
