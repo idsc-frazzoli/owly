@@ -8,7 +8,7 @@ import java.awt.event.WindowEvent;
 import ch.ethz.idsc.owl.glc.adapter.SimpleTrajectoryRegionQuery;
 import ch.ethz.idsc.owl.gui.ani.OwlyAnimationFrame;
 import ch.ethz.idsc.owl.img.ImageRegions;
-import ch.ethz.idsc.owl.mapping.ShadowMap;
+import ch.ethz.idsc.owl.mapping.ShadowMapSimulator;
 import ch.ethz.idsc.owl.math.Degree;
 import ch.ethz.idsc.owl.math.region.ImageRegion;
 import ch.ethz.idsc.owl.math.state.StateTime;
@@ -47,14 +47,14 @@ public class Se2ShadowMapDemo extends Se2CarDemo {
     owlyAnimationFrame.addBackground(lidarEmulator);
     owlyAnimationFrame.set(se2Entity);
     // SHADOWMAP
-    ShadowMap shadowMapPed = //
-        new ShadowMap(lidarEmulator, imageRegion, se2Entity::getStateTimeNow, PED_VELOCITY, PED_RADIUS);
+    ShadowMapSimulator shadowMapPed = //
+        new ShadowMapSimulator(lidarEmulator, imageRegion, se2Entity::getStateTimeNow, PED_VELOCITY, PED_RADIUS);
     shadowMapPed.setColor(PED_COLOR);
     owlyAnimationFrame.addBackground(shadowMapPed);
     shadowMapPed.startNonBlocking(10);
     //
-    ShadowMap shadowMapCar = //
-        new ShadowMap(lidarEmulator, imageRegion, se2Entity::getStateTimeNow, CAR_VELOCITY, CAR_RADIUS);
+    ShadowMapSimulator shadowMapCar = //
+        new ShadowMapSimulator(lidarEmulator, imageRegion, se2Entity::getStateTimeNow, CAR_VELOCITY, CAR_RADIUS);
     shadowMapCar.setColor(CAR_COLOR);
     owlyAnimationFrame.addBackground(shadowMapCar);
     shadowMapCar.startNonBlocking(10);

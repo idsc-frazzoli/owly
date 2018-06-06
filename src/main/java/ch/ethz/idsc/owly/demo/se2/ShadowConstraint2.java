@@ -51,7 +51,6 @@ public final class ShadowConstraint2 implements PlannerConstraint, Serializable 
   public boolean isSatisfied(GlcNode glcNode, List<StateTime> trajectory, Flow flow) {
     //
     long startTime = System.nanoTime();
-    shadowMap.pause(); // TODO: hack, find cleaner solution to halt time or compensate for it
     // get time at root
     if (glcNode.isRoot()) {
       rootStateTime = glcNode.stateTime();
@@ -68,7 +67,7 @@ public final class ShadowConstraint2 implements PlannerConstraint, Serializable 
     // Scalar prevTime = glcNode.stateTime().time();
     // Scalar timeBetweenNodes = childStateTime.time().subtract(prevTime);
     shadowMap.updateMap(simShadowArea, childStateTime, 0.4f);
-    map.put(convertToKey(childStateTime), (Area) simShadowArea.clone());
+    map.put(convertToKey(childStateTime), simShadowArea);
     // simulate shadow map during braking
     shadowMap.updateMap(simShadowArea, childStateTime, tStop.number().floatValue());
     // calculate braking path
@@ -82,7 +81,6 @@ public final class ShadowConstraint2 implements PlannerConstraint, Serializable 
     simShadowArea.intersect(brakingLineArea);
     boolean value = simShadowArea.isEmpty();
     // boolean value = !simShadowArea.contains(posX+deltaX, posY+deltaY);
-    shadowMap.resume();
     // long stopTime = System.nanoTime();
     // long duration = stopTime - startTime;
     // total = total + duration;

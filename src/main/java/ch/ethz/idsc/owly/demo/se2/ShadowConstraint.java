@@ -31,7 +31,6 @@ public final class ShadowConstraint implements PlannerConstraint, Serializable {
   @Override // from CostIncrementFunction
   public boolean isSatisfied(GlcNode glcNode, List<StateTime> trajectory, Flow flow) {
     //
-    shadowMap.pause(); // TODO: hack, find cleaner solution to halt time or compensate for it
     // get time at root
     if (glcNode.isRoot()) {
       rootStateTime = glcNode.stateTime();
@@ -80,7 +79,6 @@ public final class ShadowConstraint implements PlannerConstraint, Serializable {
     shadowMap.updateMap(simShadowArea, targetNode.stateTime(), tStop.number().floatValue());
     // check if node is inside simulated shadow area
     boolean value = !simShadowArea.contains(posX, posY);
-    shadowMap.resume();
     return value;
   }
 }
