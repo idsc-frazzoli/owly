@@ -1,5 +1,5 @@
 // code by ynager
-package ch.ethz.idsc.owly.demo.util;
+package ch.ethz.idsc.owl.math;
 
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Scalars;
@@ -8,15 +8,15 @@ import ch.ethz.idsc.tensor.TensorRuntimeException;
 import ch.ethz.idsc.tensor.sca.Sign;
 
 /** Lexicographical comparator with slack for VectorScalars */
-public class LexicographicSlack {
-  public static LexicographicSlack of(Tensor slack) {
-    return new LexicographicSlack(slack);
+public class RelaxedLexicographic {
+  public static RelaxedLexicographic of(Tensor slack) {
+    return new RelaxedLexicographic(slack);
   }
   // ---
 
   private final Tensor slack;
 
-  private LexicographicSlack(Tensor slack) {
+  private RelaxedLexicographic(Tensor slack) {
     this.slack = slack;
   }
 
